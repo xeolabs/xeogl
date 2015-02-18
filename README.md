@@ -9,7 +9,7 @@ It's currently at **alpha** status, where in order to get the design right, the 
 
 ## Features 
 
- - [Nice API documentation](http://xeoengine.org/docs/index.html)
+ - [Complete API documentation](http://xeoengine.org/docs/index.html)
  - [Object-component based architecture](http://xeoengine.org/docs/classes/Scene.html)
  - [Defaults for *everything*](http://xeoengine.org/docs/classes/Scene.html)
  - [Shader-based effects pipelines](http://xeoengine.org/docs/classes/Shader.html)
