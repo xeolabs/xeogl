@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Material - xeoengine</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../../files/logo.png" title="xeoengine"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/GameObject.html">GameObject</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/math.html">math</a></li>
+                                <li><a href="../classes/Matrix.html">Matrix</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stats.html">Stats</a></li>
+                                <li><a href="../classes/Task.html">Task</a></li>
+                                <li><a href="../classes/Tasks.html">Tasks</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/XEO.html">XEO</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1>Material Class</h1>
+<div class="box meta">
+
+        <div class="extends">
+            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+        </div>
+
+        <div class="foundat">
+            Defined in: <a href="../files/src_core_material.js.html#l3"><code>src&#x2F;core&#x2F;material.js:3</code></a>
+        </div>
+
+            Module: <a href="../modules/XEO.html">XEO</a>
+
+</div>
+
+
+<div class="box intro">
+    <p>Defines the surface appearance of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+<ul>
+<li>Materials interact with <a href="../classes/Lights.html" class="crosslink">Lights</a> using the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model.</li>
+
+<li>Within XEO Engine&#39;s shading calculations, a Material&#39;s <a href="../classes/Material.html#property_ambient" class="crosslink">ambient</a>, <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> and
+ <a href="../classes/Material.html#property_specular" class="crosslink">specular</a> properties are multiplied by corresponding color properties on associated
+<a href="../classes/PointLight.html" class="crosslink">AmbientLights</a>, <a href="../classes/PointLight.html" class="crosslink">PointLights</a> and <a href="../classes/DirLight.html" class="crosslink">DirLights</a>.</li>
+
+<li>These Material properties, along with <a href="../classes/Material.html#property_emissive" class="crosslink">emissive</a>,
+<a href="../classes/Material.html#property_opacity" class="crosslink">opacity</a> and <a href="../classes/Material.html#property_reflectivity" class="crosslink">reflectivity</a>,
+specify attributes that are to be <strong>applied uniformly</strong> across the surface of associated <a href="../classes/Geometry.html" class="crosslink">Geometries</a>.</li>
+
+<li>Most of those attributes can be textured, <strong>effectively replacing the values set for those properties</strong>, by
+assigning <a href="../classes/Texture.html" class="crosslink">Textures</a> to the Material&#39;s
+<a href="../classes/Material.html#property_diffuseMap" class="crosslink">diffuseMap</a>, <a href="../classes/Material.html#property_specularMap" class="crosslink">specularMap</a>,
+<a href="../classes/Material.html#property_emissiveMap" class="crosslink">emissiveMap</a>, <a href="../classes/Material.html#property_opacityMap" class="crosslink">opacityMap</a>
+and  <a href="../classes/Material.html#property_reflectivityMap" class="crosslink">reflectivityMap</a> properties</li>
+
+<li>For example, the value of <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> will be ignored if your
+Material also has a <a href="../classes/Material.html#property_diffuseMap" class="crosslink">diffuseMap</a> set to a <a href="../classes/Texture.html" class="crosslink">Texture</a>.
+The <a href="../classes/Texture.html" class="crosslink">Texture&#39;s</a> pixel colors directly provide the diffuse color of each fragment across the
+<a href="../classes/Geometry.html" class="crosslink">Geometry</a> surface, ie. they are not multiplied by
+the <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> for each pixel, as is done in many shading systems.</li>
+
+</ul>
+
+<p><img src="http://www.gliffy.com/go/publish/image/6921713/L.png"></img></p>
+<h3 id="example">Example</h3>
+<p>The following example creates</p>
+<ul>
+<li>a <a href="../classes/Texture.html" class="crosslink">Texture</a>,</li>
+<li>a <a href="../classes/Material.html" class="crosslink">Material</a> which applies the <a href="../classes/Texture.html" class="crosslink">Texture</a> as a diffuse map,</li>
+<li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> and a <a href="../classes/DirLight.html" class="crosslink">DirLight</a>,</li>
+<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
+<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> associated with all of the above.</li>
+</ul>
+
+<p>Note that the value for the <a href="../classes/Material.html" class="crosslink">Material&#39;s</a> <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a>
+property is ignored and redundant, since we assign a <a href="../classes/Texture.html" class="crosslink">Texture</a> to the
+<a href="../classes/Material.html" class="crosslink">Material&#39;s</a> <a href="../classes/Material.html#property_diffuseMap" class="crosslink">diffuseMap</a> property.
+The <a href="../classes/Texture.html" class="crosslink">Texture&#39;s</a> pixel colors directly provide the diffuse color of each fragment across the
+<a href="../classes/Geometry.html" class="crosslink">Geometry</a> surface.</p>
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
+
+var diffuseMap = new XEO.Texture(scene, {
+   src: "diffuseMap.jpg"
+});
+
+var material = new XEO.Material(scene, {
+   ambient:    [0.3, 0.3, 0.3],
+   diffuse:    [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
+   diffuseMap: diffuseMap,
+   specular:   [1. 1, 1],
+   shininess:  30
+});
+
+var ambientLight = new XEO.AmbientLight(scene, {
+   ambient: [0.7, 0.7, 0.7]
+});
+
+var dirLight = new XEO.DirLight(scene, {
+   dir:        [-1, -1, -1],
+   diffuse:    [0.5, 0.7, 0.5],
+   specular:   [1.0, 1.0, 1.0],
+   space:      "view"
+});
+
+var lights = new XEO.Lights(scene, {
+   lights: [
+       ambientLight,
+       dirLight
+   ]
+});
+
+var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
+
+var object = new XEO.GameObject(scene, {
+   lights: lights,
+   material: material,
+   geometry: geometry
+});
+</code></pre>
+
+</div>
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Material" class="method item">
+            <h3 class="name"><code>Material</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[scene]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/src_core_material.js.html#l3"><code>src&#x2F;core&#x2F;material.js:3</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[scene]</code>
+                                <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this Material within the
+        default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg]</code>
+                                <span class="type"></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>The Material configuration</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[id]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[meta=null]</code>
+                                            <span class="type">String:Object</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Metadata to attach to this Material.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[ambient=[0.7, 0.7, 0.8 ]]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Material ambient color. Multiplied by <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> AmbientLight/color:property.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[diffuse=[ 1.0, 1.0, 1.0 ]]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Material diffuse color. Multiplied by <a href="../classes/PointLight.html" class="crosslink">PointLight</a> <a href="../classes/PointLight.html#property_diffuse" class="crosslink">diffuse</a> and <a href="../classes/DirLight.html" class="crosslink">DirLight</a> <a href="../classes/DirLight.html#property_diffuse" class="crosslink">diffuse</a></p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[specular=[ 1.0, 1.0, 1.0 ]]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Material specular color. Multiplied by <a href="../classes/PointLight.html" class="crosslink">PointLight</a> <a href="../classes/PointLight.html#property_specular" class="crosslink">specular</a> and <a href="../classes/DirLight.html" class="crosslink">DirLight</a> <a href="../classes/DirLight.html#property_specular" class="crosslink">specular</a></p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[emissive=[ 1.0, 1.0, 1.0 ]]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Material emissive color.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[opacity=1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.
+        Only applies while <a href="../classes/Modes.html" class="crosslink">Modes</a> <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a> equals <code>true</code>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[shininess=30]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Scalar in range 0-70 that determines the size and sharpness of specular highlights.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[reflectivity=1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Scalar in range 0-1 that controls how much <a href="../classes/CubeMap.html" class="crosslink">CubeMap</a> is reflected.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[diffuseMap=null]</code>
+                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A diffuse map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the diffuse property.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[specularMap=null]</code>
+                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A specular map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the specular property.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[emissiveMap=null]</code>
+                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>An emissive map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the emissive property.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[bumpMap=null]</code>
+                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A bump map <a href="../classes/Texture.html" class="crosslink">Texture</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[opacityMap=null]</code>
+                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>An opacity map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the opacity property.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[reflectivityMap=null]</code>
+                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A reflectivity control map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the reflectivity property.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+        </div>
+    </div>
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                            <li class="index-item method inherited">
+                                <a href="#method_destroy">destroy</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_error">error</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_fire">fire</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_log">log</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_off">off</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_on">on</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_once">once</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_warn">warn</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_ambient">ambient</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_className">className</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_diffuse">diffuse</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_diffuseMap">diffuseMap</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_emissive">emissive</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_emissiveMap">emissiveMap</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_metadata">metadata</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_opacity">opacity</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_opacityMap">opacityMap</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_reflectivity">reflectivity</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_reflectivityMap">reflectivityMap</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_shininess">shininess</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_specular">specular</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_specularMap">specularMap</a>
+
+                            </li>
+                            <li class="index-item property public inherited">
+                                <a href="#property_type">type</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_ambient">ambient</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_diffuse">diffuse</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_diffuseMap">diffuseMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_emissive">emissive</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_emissiveMap">emissiveMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_opacity">opacity</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_opacityMap">opacityMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_reflectivity">reflectivity</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_reflectivityMap">reflectivityMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_shininess">shininess</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_specular">specular</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_specularMap">specularMap</a>
+
+                            </li>
+                    </ul>
+                </div>
+        </div>
+
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+<div id="method_destroy" class="method item inherited">
+    <h3 class="name"><code>destroy</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_destroy">Component</a>:
+        <a href="../files/src_core_component.js.html#l594"><code>src&#x2F;core&#x2F;component.js:594</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Destroys this component.</p>
+<p>Fires a <a href="../classes/Component.html#event_destroyed" class="crosslink">destroyed</a> event on this Component.</p>
+<p>Automatically disassociates this component from other components, causing them to fall back on any
+defaults that this component overrode on them.</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_error" class="method item inherited">
+    <h3 class="name"><code>error</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_error">Component</a>:
+        <a href="../files/src_core_component.js.html#l439"><code>src&#x2F;core&#x2F;component.js:439</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs an error for this component to the JavaScript console.</p>
+<p>The console message will have this format: <em><code>[ERROR] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as an <a href="../classes/Scene.html#event_error" class="crosslink">error</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_fire" class="method item inherited">
+    <h3 class="name"><code>fire</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>value</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[forget=false]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_fire">Component</a>:
+        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Fires an event on this component.</p>
+<p>Notifies existing subscribers to the event, retains the event to give to
+any subsequent notifications on that location as they are made.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The event type name</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">value</code>
+                        <span class="type"><a href="../classes/GameObject.html" class="crosslink">GameObject</a></span>
+
+
+                    <div class="param-description">
+                        <p>The event</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[forget=false]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>When true, does not retain for subsequent subscribers</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_log" class="method item inherited">
+    <h3 class="name"><code>log</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_log">Component</a>:
+        <a href="../files/src_core_component.js.html#l422"><code>src&#x2F;core&#x2F;component.js:422</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs a console debugging message for this component.</p>
+<p>The console message will have this format: <em><code>[LOG] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as a <a href="../classes/Scene.html#event_log" class="crosslink">log</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_off" class="method item inherited">
+    <h3 class="name"><code>off</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>handle</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_off">Component</a>:
+        <a href="../files/src_core_component.js.html#l384"><code>src&#x2F;core&#x2F;component.js:384</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Cancels an event subscription that was previously made with <a href="../classes/Component.html#method_on" class="crosslink">on</a> or
+<a href="../classes/Component.html#method_once" class="crosslink">once</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">handle</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Publication handle</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_on" class="method item inherited">
+    <h3 class="name"><code>on</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">String</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_on">Component</a>:
+        <a href="../files/src_core_component.js.html#l355"><code>src&#x2F;core&#x2F;component.js:355</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Subscribes to an event on this component.</p>
+<p>This is the primary way to read data from SceneHub. Your callback will be triggered for
+the initial data and again whenever the data changes. Use {@link #off} to stop receiving updates.</p></p>
+<p>The callback is be called with this component as scope.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Publication event</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+
+
+                    <div class="param-description">
+                        <p>Called when fresh data is available at the event</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">String</span>:
+                    <p>Handle to the subscription, which may be used to unsubscribe with {@link #off}.</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_once" class="method item inherited">
+    <h3 class="name"><code>once</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_once">Component</a>:
+        <a href="../files/src_core_component.js.html#l403"><code>src&#x2F;core&#x2F;component.js:403</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.</p>
+<p>This is equivalent to calling <a href="../classes/Component.html#method_on" class="crosslink">on</a>, and then calling
+<a href="../classes/Component.html#method_off" class="crosslink">off</a> inside the callback function.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Data event to listen to</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function(data)</span>
+
+
+                    <div class="param-description">
+                        <p>Called when fresh data is available at the event</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_warn" class="method item inherited">
+    <h3 class="name"><code>warn</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_warn">Component</a>:
+        <a href="../files/src_core_component.js.html#l456"><code>src&#x2F;core&#x2F;component.js:456</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs a warning for this component to the JavaScript console.</p>
+<p>The console message will have this format: <em><code>[WARN] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as a <a href="../classes/Scene.html#event_warn" class="crosslink">warn</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+            </div>
+
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                    <div id="property_ambient" class="property item">
+                        <h3 class="name"><code>ambient</code></h3>
+                        <span class="type">Array(Number)</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l146"><code>src&#x2F;core&#x2F;material.js:146</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Material&#39;s ambient color, which is multiplied by the <a href="../classes/AmbientLight.html#property_ambient" class="crosslink">ambient</a>
+                    property of the <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a>.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_ambient" class="crosslink">ambient</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
+                    
+                    
+                    </div>
+                    <div id="property_className" class="property item inherited">
+                        <h3 class="name"><code>className</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_className">Component</a>:
+                            <a href="../files/src_core_component.js.html#l240"><code>src&#x2F;core&#x2F;component.js:240</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JavaScript class name for this Component.</p>
+                    <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_destroyed" class="property item inherited">
+                        <h3 class="name"><code>destroyed</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_destroyed">Component</a>:
+                            <a href="../files/src_core_component.js.html#l274"><code>src&#x2F;core&#x2F;component.js:274</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>True as soon as this Component has been destroyed</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_diffuse" class="property item">
+                        <h3 class="name"><code>diffuse</code></h3>
+                        <span class="type">Array(Number)</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l173"><code>src&#x2F;core&#x2F;material.js:173</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Material&#39;s diffuse color.</p>
+                    <p>This property may be textured by adding a <a href="../classes/Texture.html" class="crosslink">Texture</a> that has an
+                    Texture/applyTo:property set to <code>"diffuse"</code>.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_diffuse" class="crosslink">diffuse</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
+                    
+                    
+                    </div>
+                    <div id="property_diffuseMap" class="property item">
+                        <h3 class="name"><code>diffuseMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l356"><code>src&#x2F;core&#x2F;material.js:356</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A diffuse texture map attached to this Material.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_diffuseMap" class="crosslink">diffuseMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_emissive" class="property item">
+                        <h3 class="name"><code>emissive</code></h3>
+                        <span class="type">Array(Number)</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l231"><code>src&#x2F;core&#x2F;material.js:231</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Material&#39;s emissive color.</p>
+                    <p>This property may be textured by adding a <a href="../classes/Texture.html" class="crosslink">Texture</a> that has an
+                    Texture/applyTo:property set to <code>"emissive"</code>.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_emissive" class="crosslink">emissive</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
+                    
+                    
+                    </div>
+                    <div id="property_emissiveMap" class="property item">
+                        <h3 class="name"><code>emissiveMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l402"><code>src&#x2F;core&#x2F;material.js:402</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A emissive texture map attached to this Material.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_emissiveMap" class="crosslink">emissiveMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_id" class="property item inherited">
+                        <h3 class="name"><code>id</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_id">Component</a>:
+                            <a href="../files/src_core_component.js.html#l265"><code>src&#x2F;core&#x2F;component.js:265</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_metadata" class="property item inherited">
+                        <h3 class="name"><code>metadata</code></h3>
+                        <span class="type">Object</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_metadata">Component</a>:
+                            <a href="../files/src_core_component.js.html#l229"><code>src&#x2F;core&#x2F;component.js:229</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Metadata on this component.</p>
+                    <p>Fires a Component/metadata:event event on this Component when changed.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_opacity" class="property item">
+                        <h3 class="name"><code>opacity</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l260"><code>src&#x2F;core&#x2F;material.js:260</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Factor in the range [0..1] indicating how transparent the Material is.</p>
+                    <p>A value of 0.0 indicates fully transparent, 1.0 is fully opaque.</p>
+                    <p>If <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a> is not set to true on associated
+                    <a href="../classes/Modes.html" class="crosslink">Modes</a>, then the Material will remain fully opaque and this property will
+                    have no effect.</p>
+                    <p>This property may be textured by adding a <a href="../classes/Texture.html" class="crosslink">Texture</a> that has an
+                    Texture/applyTo:property set to <code>"opacity"</code>.</p>
+                    <p>Fires an <a href="../classes/Material.html#event_opacity" class="crosslink">opacity</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1.0</p>
+                    
+                    
+                    </div>
+                    <div id="property_opacityMap" class="property item">
+                        <h3 class="name"><code>opacityMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l425"><code>src&#x2F;core&#x2F;material.js:425</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A opacity texture map attached to this Material.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_opacityMap" class="crosslink">opacityMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_reflectivity" class="property item">
+                        <h3 class="name"><code>reflectivity</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l325"><code>src&#x2F;core&#x2F;material.js:325</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Scalar in range 0-1 that controls how much <a href="../classes/CubeMap.html" class="crosslink">CubeMap</a> is reflected by this Material.</p>
+                    <p>The surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.</p>
+                    <p>This property may be textured by adding a <a href="../classes/Texture.html" class="crosslink">Texture</a> that has an
+                    Texture/applyTo:property set to <code>"reflectivity"</code>.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_reflectivity" class="crosslink">reflectivity</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1.0</p>
+                    
+                    
+                    </div>
+                    <div id="property_reflectivityMap" class="property item">
+                        <h3 class="name"><code>reflectivityMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l448"><code>src&#x2F;core&#x2F;material.js:448</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A reflectivity texture map attached to this Material.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_reflectivityMap" class="crosslink">reflectivityMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_scene" class="property item inherited">
+                        <h3 class="name"><code>scene</code></h3>
+                        <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_scene">Component</a>:
+                            <a href="../files/src_core_component.js.html#l193"><code>src&#x2F;core&#x2F;component.js:193</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_shininess" class="property item">
+                        <h3 class="name"><code>shininess</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l295"><code>src&#x2F;core&#x2F;material.js:295</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A factor in range [0..128] that determines the size and sharpness of the specular highlights create by this Material.</p>
+                    <p>Larger values produce smaller, sharper highlights. A value of 0.0 gives very large highlights that are almost never
+                    desirable. Try values close to 10 for a larger, fuzzier highlight and values of 100 or more for a small, sharp
+                    highlight.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_shininess" class="crosslink">shininess</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 30.0</p>
+                    
+                    
+                    </div>
+                    <div id="property_specular" class="property item">
+                        <h3 class="name"><code>specular</code></h3>
+                        <span class="type">Array(Number)</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l202"><code>src&#x2F;core&#x2F;material.js:202</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The material&#39;s specular color.</p>
+                    <p>This property may be textured by adding a <a href="../classes/Texture.html" class="crosslink">Texture</a> that has an
+                    Texture/applyTo:property set to <code>"specular"</code>.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_specular" class="crosslink">specular</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [0.3, 0.3, 0.3]</p>
+                    
+                    
+                    </div>
+                    <div id="property_specularMap" class="property item">
+                        <h3 class="name"><code>specularMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l379"><code>src&#x2F;core&#x2F;material.js:379</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A specular texture map attached to this Material.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_specularMap" class="crosslink">specularMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_type" class="property item public inherited">
+                        <h3 class="name"><code>type</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_type">Component</a>:
+                            <a href="../files/src_core_component.js.html#l252"><code>src&#x2F;core&#x2F;component.js:252</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Type code for this Component.</p>
+                    <p>For example: &quot;ambientLight&quot;, &quot;colorTarget&quot;, &quot;lights&quot; etc.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+            </div>
+
+
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                    <div id="event_ambient" class="events item">
+                        <h3 class="name"><code>ambient</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l161"><code>src&#x2F;core&#x2F;material.js:161</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_ambient" class="crosslink">ambient</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Array(Number)</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_destroyed" class="events item inherited">
+                        <h3 class="name"><code>destroyed</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#event_destroyed">Component</a>:
+                            <a href="../files/src_core_component.js.html#l624"><code>src&#x2F;core&#x2F;component.js:624</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when this Component is destroyed.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_diffuse" class="events item">
+                        <h3 class="name"><code>diffuse</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l190"><code>src&#x2F;core&#x2F;material.js:190</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Array(Number)</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_diffuseMap" class="events item">
+                        <h3 class="name"><code>diffuseMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l368"><code>src&#x2F;core&#x2F;material.js:368</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_diffuseMap" class="crosslink">diffuseMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_emissive" class="events item">
+                        <h3 class="name"><code>emissive</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l248"><code>src&#x2F;core&#x2F;material.js:248</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_emissive" class="crosslink">emissive</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Array(Number)</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_emissiveMap" class="events item">
+                        <h3 class="name"><code>emissiveMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l414"><code>src&#x2F;core&#x2F;material.js:414</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_emissiveMap" class="crosslink">emissiveMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_opacity" class="events item">
+                        <h3 class="name"><code>opacity</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l283"><code>src&#x2F;core&#x2F;material.js:283</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_opacity" class="crosslink">opacity</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_opacityMap" class="events item">
+                        <h3 class="name"><code>opacityMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l437"><code>src&#x2F;core&#x2F;material.js:437</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_opacityMap" class="crosslink">opacityMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_reflectivity" class="events item">
+                        <h3 class="name"><code>reflectivity</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l344"><code>src&#x2F;core&#x2F;material.js:344</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_reflectivity" class="crosslink">reflectivity</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_reflectivityMap" class="events item">
+                        <h3 class="name"><code>reflectivityMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l460"><code>src&#x2F;core&#x2F;material.js:460</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_reflectivityMap" class="crosslink">reflectivityMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_shininess" class="events item">
+                        <h3 class="name"><code>shininess</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l313"><code>src&#x2F;core&#x2F;material.js:313</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_shininess" class="crosslink">shininess</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_specular" class="events item">
+                        <h3 class="name"><code>specular</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l219"><code>src&#x2F;core&#x2F;material.js:219</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_specular" class="crosslink">specular</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Array(Number)</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_specularMap" class="events item">
+                        <h3 class="name"><code>specularMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l391"><code>src&#x2F;core&#x2F;material.js:391</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_specularMap" class="crosslink">specularMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+            </div>
+    </div>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

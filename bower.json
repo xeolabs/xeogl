@@ -1,0 +1,25 @@
+{
+    "name": "xeoengine",
+    "version": "0.0.1",
+    "homepage": "http://xeoengine.org/",
+    "description": "A WebGL-based 3D Engine from XeoLabs",
+    "main": "build/xeoengine.js",
+    "keywords": [
+        "xeo",
+        "xeoengine",
+        "xeolabs",
+        "3D",
+        "webgl"
+    ],
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "*.md",
+        "docs",
+        "examples",
+        "src",
+        "test",
+        "utils",
+        "LICENSE"
+    ]
+}

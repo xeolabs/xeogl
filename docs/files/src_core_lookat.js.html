@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/core/lookat.js - xeoengine</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../../files/logo.png" title="xeoengine"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/GameObject.html">GameObject</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/math.html">math</a></li>
+                                <li><a href="../classes/Matrix.html">Matrix</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stats.html">Stats</a></li>
+                                <li><a href="../classes/Task.html">Task</a></li>
+                                <li><a href="../classes/Tasks.html">Tasks</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/XEO.html">XEO</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src/core/lookat.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&quot;use strict&quot;;
+
+/**
+ Defines a viewing transform as an {{#crossLink &quot;Lookat/eye:property&quot;}}eye{{/crossLink}} position, a
+ {{#crossLink &quot;Lookat/look:property&quot;}}look{{/crossLink}} position and an {{#crossLink &quot;Lookat/up:property&quot;}}up{{/crossLink}}
+ vector.
+
+ &lt;ul&gt;
+ &lt;li&gt;{{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with projection transforms such as
+ {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}, to define viewpoints on associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/6895163/L.png&quot;&gt;&lt;/img&gt;
+
+ ### Example
+
+ In this example, we&#x27;ll create a Lookat that positions the eye at -10 on the World-space Z-axis, while looking at the origin.
+ Then we&#x27;ll add that to a {{#crossLink &quot;Camera&quot;}}{{/crossLink}}. which we associate with a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+ var scene = new XEO.Scene();
+
+ var myLookat = new XEO.Lookat(scene, {
+       eye: [0,0,-10],
+       look: [0,0,0],
+       up: [0,1,0]
+   });
+
+ var camera = new XEO.Camera(scene, {
+       view: myLookat
+   });
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ var object = new XEO.GameObject(scene, {
+    camera: camera,
+    geometry: geometry
+ });
+
+ // Subscribe to changes on a camera property
+ lookat.on(&quot;eye&quot;, function(value) {
+       console.log(&quot;eye updated: &quot; + value[0] + &quot;, &quot; + value[1] + &quot;, &quot; + value[2]);
+   });
+
+ // Set the value of a camera property, which fires the event we just subscribed to
+ lookat.eye = [-5, 0, -10];
+
+ // Get the value of a camera property
+ var value = lookat.eye;
+
+ // Destroy ths lookat, causing the camera to fall back on the scene&#x27;s default viewing transform
+ lookat.destroy();
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class Lookat
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Lookat in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lookat.
+ @param [cfg.eye=[0,0,-10]] {Array of Number} Eye position.
+ @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we&#x27;re looking at.
+ @param [cfg.up=[0,1,0]] {Array of Number} The &quot;up&quot; vector.
+ @extends Component
+ @author xeolabs / http://xeolabs.com/
+ */
+XEO.Lookat = XEO.Component.extend({
+
+    className: &quot;XEO.Lookat&quot;,
+
+    type: &quot;lookat&quot;,
+
+    _init: function (cfg) {
+
+        this.eye = cfg.eye;
+        this.look = cfg.look;
+        this.up = cfg.up;
+
+        var core = this._core;
+
+        var self = this;
+
+        core.rebuild = function () {
+
+            // Build matrix values
+
+            core.matrix = XEO.math.lookAtMat4c(
+                core.eye[0], core.eye[1], core.eye[2],
+                core.look[0], core.look[1], core.look[2],
+                core.up[0], core.up[1], core.up[2]);
+
+            core.lookAt = {
+                eye: core.eye,
+                look: core.look,
+                up: core.up
+            };
+
+            // Build typed arrays for view matrix and normal matrix
+            // Avoid reallocating those if possible
+
+            if (!core.mat) {
+
+                // Create arrays
+
+                core.mat = new Float32Array(core.matrix);
+                core.normalMat = new Float32Array(
+                    XEO.math.transposeMat4(XEO.math.inverseMat4(core.matrix, XEO.math.mat4())));
+
+            } else {
+
+                // Insert into existing arrays
+
+                core.mat.set(core.matrix);
+                core.normalMat.set(
+                    XEO.math.transposeMat4(XEO.math.inverseMat4(core.matrix, XEO.math.mat4())));
+            }
+
+            /**
+             * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/matrix:property&quot;}}{{/crossLink}} property is regenerated.
+             * @event matrix
+             * @param value The property&#x27;s new value
+             */
+            self.fire(&quot;matrix&quot;, core.matrix);
+
+            core.dirty = false;
+        };
+
+        this._core.dirty = true;
+    },
+
+    /**
+     * Position of the eye.
+     * Fires an {{#crossLink &quot;Lookat/eye:event&quot;}}{{/crossLink}} event on change.
+     * @property eye
+     * @default [0,0,-10]
+     * @type Array(Number)
+     */
+    set eye(value) {
+        value = value || [0, 0, -10];
+        this._core.eye = value;
+        this._core.dirty = true;
+        this._renderer.imageDirty = true;
+
+        /**
+         * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/eye:property&quot;}}{{/crossLink}} property changes.
+         * @event eye
+         * @param value The property&#x27;s new value
+         */
+        this.fire(&quot;eye&quot;, value);
+    },
+
+    get eye() {
+        return this._core.eye;
+    },
+
+    /**
+     * Position of the point-of-interest.
+     * Fires a {{#crossLink &quot;Lookat/look:event&quot;}}{{/crossLink}} event on change.
+     * @property look
+     * @default [0,0,0]
+     * @type Array(Number)
+     */
+    set look(value) {
+        value = value || [0, 0, 0];
+        this._core.look = value;
+        this._core.dirty = true;
+        this._renderer.imageDirty = true;
+
+        /**
+         * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/look:property&quot;}}{{/crossLink}} property changes.
+         * @event look
+         * @param value The property&#x27;s new value
+         */
+        this.fire(&quot;look&quot;, value);
+    },
+
+    get look() {
+        return this._core.look;
+    },
+
+    /**
+     * Direction of the &quot;up&quot; vector.
+     * Fires an {{#crossLink &quot;Lookat/up:event&quot;}}{{/crossLink}} event on change.
+     * @property up
+     * @default [0,1,0]
+     * @type Array(Number)
+     */
+    set up(value) {
+        value = value || [0, 1, 0];
+        this._core.up = value;
+        this._core.dirty = true;
+        this._renderer.imageDirty = true;
+
+        /**
+         * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/up:property&quot;}}{{/crossLink}} property changes.
+         * @event up
+         * @param value The property&#x27;s new value
+         */
+        this.fire(&quot;up&quot;, value);
+    },
+
+    get up() {
+        return this._core.up;
+    },
+
+    /**
+     * The matrix for this viewing transform (read only). After any update to the
+     * {{#crossLink &quot;Lookat/look:event&quot;}}{{/crossLink}}, {{#crossLink &quot;Lookat/eye:event&quot;}}{{/crossLink}} or
+     * {{#crossLink &quot;Lookat/up:event&quot;}}{{/crossLink}} properties, this will be lazy-regenerated when next read, or
+     * on the next {{#crossLink &quot;Scene/tick:event&quot;}}{{/crossLink}} event from the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, whichever happens first. Whever this property is regenerated, it is
+     * fired in a {{#crossLink &quot;Lookat/matrix:event&quot;}}{{/crossLink}} event.
+     * @property matrix
+     * @type Array(Number)
+     */
+    get matrix() {
+        if (this._core.dirty) {
+            this._core.rebuild();
+        }
+        return this._core.matrix.slice(0);
+    },
+
+    _compile: function () {
+        this._renderer.viewTransform = this._core;
+    },
+
+    _getJSON: function () {
+        return {
+            eye: this.eye,
+            look: this.look,
+            up: this.up
+        };
+    }
+});
+
+
+XEO.Scene.prototype.newLookat = function (cfg) {
+    return new XEO.Lookat(this, cfg);
+};
+
+
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

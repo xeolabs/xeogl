@@ -1,0 +1,4402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Input - xeoengine</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../../files/logo.png" title="xeoengine"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/GameObject.html">GameObject</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/math.html">math</a></li>
+                                <li><a href="../classes/Matrix.html">Matrix</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stats.html">Stats</a></li>
+                                <li><a href="../classes/Task.html">Task</a></li>
+                                <li><a href="../classes/Tasks.html">Tasks</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/XEO.html">XEO</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1>Input Class</h1>
+<div class="box meta">
+
+        <div class="extends">
+            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+        </div>
+
+        <div class="foundat">
+            Defined in: <a href="../files/src_core_input.js.html#l3"><code>src&#x2F;core&#x2F;input.js:3</code></a>
+        </div>
+
+            Module: <a href="../modules/XEO.html">XEO</a>
+
+</div>
+
+
+<div class="box intro">
+    <p>Publishes any key and mouse events that occur on the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a>.</p>
+<p><img src="http://www.gliffy.com/go/publish/image/7123123/L.png"></img></p>
+<h3 id="example">Example</h3>
+<pre class="code prettyprint"><code class="lang-javascript">var myScene = new XEO.Scene();
+
+var input = myScene.input;
+
+input.on("mousedown", function(coords) {
+      console.log("Mouse down at: x=" + coords[0] + ", y=" + coords[1]);
+ });
+
+input.on("mouseup", function(coords) {
+      console.log("Mouse up at: x=" + coords[0] + ", y=" + coords[1]);
+ });
+
+input.on("mouseclicked", function(coords) {
+      console.log("Mouse clicked at: x=" + coords[0] + ", y=" + coords[1]);
+ });
+
+input.on("dblclick", function(coords) {
+      console.log("Double-click at: x=" + coords[0] + ", y=" + coords[1]);
+ });
+
+input.on("keydown", function(keyCode) {
+      switch (keyCode) {
+
+          case this.KEY_A:
+              console.log("The &#39;A&#39; key is down");
+              break;
+
+          case this.KEY_B:
+              console.log("The &#39;B&#39; key is down");
+              break;
+
+          case this.KEY_C:
+              console.log("The &#39;C&#39; key is down");
+              break;
+
+           default:
+              console.log("Some other key is down");
+      }
+ });
+
+input.on("keyup", function(keyCode) {
+    switch (keyCode) {
+
+          case this.KEY_A:
+              console.log("The &#39;A&#39; key is up");
+              break;
+
+          case this.KEY_B:
+              console.log("The &#39;B&#39; key is up");
+              break;
+
+          case this.KEY_C:
+              console.log("The &#39;C&#39; key is up");
+              break;
+
+           default:
+              console.log("Some other key is up");
+      }
+ });
+
+// TODO: ALT and CTRL keys etc
+</code></pre>
+
+</div>
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Input" class="method item">
+            <h3 class="name"><code>Input</code></h3>
+        
+                <span class="paren">()</span>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/src_core_input.js.html#l3"><code>src&#x2F;core&#x2F;input.js:3</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                            <li class="index-item method inherited">
+                                <a href="#method_destroy">destroy</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_error">error</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_fire">fire</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_log">log</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_off">off</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_on">on</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_once">once</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_warn">warn</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                            <li class="index-item property inherited">
+                                <a href="#property_className">className</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_A">KEY_A</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_ADD">KEY_ADD</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_ALT">KEY_ALT</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_B">KEY_B</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_BACK_SLASH">KEY_BACK_SLASH</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_BACKSPACE">KEY_BACKSPACE</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_C">KEY_C</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_CAPS_LOCK">KEY_CAPS_LOCK</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_CLOSE_BRACKET">KEY_CLOSE_BRACKET</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_COMMA">KEY_COMMA</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_CTRL">KEY_CTRL</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_D">KEY_D</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_DASH">KEY_DASH</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_DECIMAL_POINT">KEY_DECIMAL_POINT</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_DELETE">KEY_DELETE</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_DIVIDE">KEY_DIVIDE</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_DOWN_ARROW">KEY_DOWN_ARROW</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_E">KEY_E</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_END">KEY_END</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_ENTER">KEY_ENTER</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_EQUAL_SIGN">KEY_EQUAL_SIGN</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_ESCAPE">KEY_ESCAPE</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F">KEY_F</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F1">KEY_F1</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F10">KEY_F10</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F11">KEY_F11</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F12">KEY_F12</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F2">KEY_F2</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F3">KEY_F3</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F4">KEY_F4</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F5">KEY_F5</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F6">KEY_F6</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F7">KEY_F7</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F8">KEY_F8</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_F9">KEY_F9</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_FORWARD_SLASH">KEY_FORWARD_SLASH</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_G">KEY_G</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_GRAVE_ACCENT">KEY_GRAVE_ACCENT</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_H">KEY_H</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_HOME">KEY_HOME</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_I">KEY_I</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_INSERT">KEY_INSERT</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_J">KEY_J</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_K">KEY_K</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_L">KEY_L</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_LEFT_ARROW">KEY_LEFT_ARROW</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_LEFT_WINDOW">KEY_LEFT_WINDOW</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_M">KEY_M</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_MULTIPLY">KEY_MULTIPLY</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_N">KEY_N</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_0">KEY_NUM_0</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_1">KEY_NUM_1</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_2">KEY_NUM_2</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_3">KEY_NUM_3</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_4">KEY_NUM_4</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_5">KEY_NUM_5</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_6">KEY_NUM_6</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_7">KEY_NUM_7</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_8">KEY_NUM_8</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_9">KEY_NUM_9</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUM_LOCK">KEY_NUM_LOCK</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUMPAD 2">KEY_NUMPAD 2</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUMPAD_0">KEY_NUMPAD_0</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUMPAD_1">KEY_NUMPAD_1</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUMPAD_3">KEY_NUMPAD_3</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUMPAD_4">KEY_NUMPAD_4</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUMPAD_5">KEY_NUMPAD_5</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUMPAD_6">KEY_NUMPAD_6</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUMPAD_7">KEY_NUMPAD_7</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUMPAD_8">KEY_NUMPAD_8</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_NUMPAD_9">KEY_NUMPAD_9</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_O">KEY_O</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_OPEN_BRACKET">KEY_OPEN_BRACKET</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_P">KEY_P</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_PAGE_DOWN">KEY_PAGE_DOWN</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_PAGE_UP">KEY_PAGE_UP</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_PAUSE_BREAK">KEY_PAUSE_BREAK</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_PERIOD">KEY_PERIOD</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_Q">KEY_Q</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_R">KEY_R</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_RIGHT_ARROW">KEY_RIGHT_ARROW</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_RIGHT_WINDOW">KEY_RIGHT_WINDOW</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_S">KEY_S</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_SCROLL_LOCK">KEY_SCROLL_LOCK</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_SELECT">KEY_SELECT</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_SEMI_COLON">KEY_SEMI_COLON</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_SHIFT">KEY_SHIFT</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_SINGLE_QUOTE">KEY_SINGLE_QUOTE</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_SPACE">KEY_SPACE</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_SUBTRACT">KEY_SUBTRACT</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_T">KEY_T</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_TAB">KEY_TAB</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_U">KEY_U</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_UP_ARROW">KEY_UP_ARROW</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_V">KEY_V</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_W">KEY_W</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_X">KEY_X</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_Y">KEY_Y</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_KEY_Z">KEY_Z</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_metadata">metadata</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property public inherited">
+                                <a href="#property_type">type</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_dblclick">dblclick</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_keydown">keydown</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_keyup">keyup</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_mouseclicked">mouseclicked</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_mousedown">mousedown</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_mousedown">mousedown</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_mouseup">mouseup</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_mousewheel">mousewheel</a>
+
+                            </li>
+                    </ul>
+                </div>
+        </div>
+
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+<div id="method_destroy" class="method item inherited">
+    <h3 class="name"><code>destroy</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_destroy">Component</a>:
+        <a href="../files/src_core_component.js.html#l594"><code>src&#x2F;core&#x2F;component.js:594</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Destroys this component.</p>
+<p>Fires a <a href="../classes/Component.html#event_destroyed" class="crosslink">destroyed</a> event on this Component.</p>
+<p>Automatically disassociates this component from other components, causing them to fall back on any
+defaults that this component overrode on them.</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_error" class="method item inherited">
+    <h3 class="name"><code>error</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_error">Component</a>:
+        <a href="../files/src_core_component.js.html#l439"><code>src&#x2F;core&#x2F;component.js:439</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs an error for this component to the JavaScript console.</p>
+<p>The console message will have this format: <em><code>[ERROR] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as an <a href="../classes/Scene.html#event_error" class="crosslink">error</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_fire" class="method item inherited">
+    <h3 class="name"><code>fire</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>value</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[forget=false]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_fire">Component</a>:
+        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Fires an event on this component.</p>
+<p>Notifies existing subscribers to the event, retains the event to give to
+any subsequent notifications on that location as they are made.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The event type name</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">value</code>
+                        <span class="type"><a href="../classes/GameObject.html" class="crosslink">GameObject</a></span>
+
+
+                    <div class="param-description">
+                        <p>The event</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[forget=false]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>When true, does not retain for subsequent subscribers</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_log" class="method item inherited">
+    <h3 class="name"><code>log</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_log">Component</a>:
+        <a href="../files/src_core_component.js.html#l422"><code>src&#x2F;core&#x2F;component.js:422</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs a console debugging message for this component.</p>
+<p>The console message will have this format: <em><code>[LOG] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as a <a href="../classes/Scene.html#event_log" class="crosslink">log</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_off" class="method item inherited">
+    <h3 class="name"><code>off</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>handle</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_off">Component</a>:
+        <a href="../files/src_core_component.js.html#l384"><code>src&#x2F;core&#x2F;component.js:384</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Cancels an event subscription that was previously made with <a href="../classes/Component.html#method_on" class="crosslink">on</a> or
+<a href="../classes/Component.html#method_once" class="crosslink">once</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">handle</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Publication handle</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_on" class="method item inherited">
+    <h3 class="name"><code>on</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">String</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_on">Component</a>:
+        <a href="../files/src_core_component.js.html#l355"><code>src&#x2F;core&#x2F;component.js:355</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Subscribes to an event on this component.</p>
+<p>This is the primary way to read data from SceneHub. Your callback will be triggered for
+the initial data and again whenever the data changes. Use {@link #off} to stop receiving updates.</p></p>
+<p>The callback is be called with this component as scope.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Publication event</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+
+
+                    <div class="param-description">
+                        <p>Called when fresh data is available at the event</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">String</span>:
+                    <p>Handle to the subscription, which may be used to unsubscribe with {@link #off}.</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_once" class="method item inherited">
+    <h3 class="name"><code>once</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_once">Component</a>:
+        <a href="../files/src_core_component.js.html#l403"><code>src&#x2F;core&#x2F;component.js:403</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.</p>
+<p>This is equivalent to calling <a href="../classes/Component.html#method_on" class="crosslink">on</a>, and then calling
+<a href="../classes/Component.html#method_off" class="crosslink">off</a> inside the callback function.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Data event to listen to</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function(data)</span>
+
+
+                    <div class="param-description">
+                        <p>Called when fresh data is available at the event</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_warn" class="method item inherited">
+    <h3 class="name"><code>warn</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_warn">Component</a>:
+        <a href="../files/src_core_component.js.html#l456"><code>src&#x2F;core&#x2F;component.js:456</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs a warning for this component to the JavaScript console.</p>
+<p>The console message will have this format: <em><code>[WARN] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as a <a href="../classes/Scene.html#event_warn" class="crosslink">warn</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+            </div>
+
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                    <div id="property_className" class="property item inherited">
+                        <h3 class="name"><code>className</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_className">Component</a>:
+                            <a href="../files/src_core_component.js.html#l240"><code>src&#x2F;core&#x2F;component.js:240</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JavaScript class name for this Component.</p>
+                    <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_destroyed" class="property item inherited">
+                        <h3 class="name"><code>destroyed</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_destroyed">Component</a>:
+                            <a href="../files/src_core_component.js.html#l274"><code>src&#x2F;core&#x2F;component.js:274</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>True as soon as this Component has been destroyed</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_id" class="property item inherited">
+                        <h3 class="name"><code>id</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_id">Component</a>:
+                            <a href="../files/src_core_component.js.html#l265"><code>src&#x2F;core&#x2F;component.js:265</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_A" class="property item">
+                        <h3 class="name"><code>KEY_A</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l594"><code>src&#x2F;core&#x2F;input.js:594</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the A key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_ADD" class="property item">
+                        <h3 class="name"><code>KEY_ADD</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l914"><code>src&#x2F;core&#x2F;input.js:914</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the ADD key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_ALT" class="property item">
+                        <h3 class="name"><code>KEY_ALT</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l402"><code>src&#x2F;core&#x2F;input.js:402</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the ALT key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_B" class="property item">
+                        <h3 class="name"><code>KEY_B</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l602"><code>src&#x2F;core&#x2F;input.js:602</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the B key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_BACK_SLASH" class="property item">
+                        <h3 class="name"><code>KEY_BACK_SLASH</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1122"><code>src&#x2F;core&#x2F;input.js:1122</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the BACK_SLASH key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_BACKSPACE" class="property item">
+                        <h3 class="name"><code>KEY_BACKSPACE</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l362"><code>src&#x2F;core&#x2F;input.js:362</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the BACKSPACE key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_C" class="property item">
+                        <h3 class="name"><code>KEY_C</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l610"><code>src&#x2F;core&#x2F;input.js:610</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the C key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_CAPS_LOCK" class="property item">
+                        <h3 class="name"><code>KEY_CAPS_LOCK</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l418"><code>src&#x2F;core&#x2F;input.js:418</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the CAPS_LOCK key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_CLOSE_BRACKET" class="property item">
+                        <h3 class="name"><code>KEY_CLOSE_BRACKET</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1130"><code>src&#x2F;core&#x2F;input.js:1130</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the CLOSE_BRACKET key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_COMMA" class="property item">
+                        <h3 class="name"><code>KEY_COMMA</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1074"><code>src&#x2F;core&#x2F;input.js:1074</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the COMMA key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_CTRL" class="property item">
+                        <h3 class="name"><code>KEY_CTRL</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l394"><code>src&#x2F;core&#x2F;input.js:394</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the CTRL key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_D" class="property item">
+                        <h3 class="name"><code>KEY_D</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l618"><code>src&#x2F;core&#x2F;input.js:618</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the D key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_DASH" class="property item">
+                        <h3 class="name"><code>KEY_DASH</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1082"><code>src&#x2F;core&#x2F;input.js:1082</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the DASH key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_DECIMAL_POINT" class="property item">
+                        <h3 class="name"><code>KEY_DECIMAL_POINT</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l930"><code>src&#x2F;core&#x2F;input.js:930</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the DECIMAL POINT key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_DELETE" class="property item">
+                        <h3 class="name"><code>KEY_DELETE</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l506"><code>src&#x2F;core&#x2F;input.js:506</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the DELETE key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_DIVIDE" class="property item">
+                        <h3 class="name"><code>KEY_DIVIDE</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l938"><code>src&#x2F;core&#x2F;input.js:938</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the DIVIDE key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_DOWN_ARROW" class="property item">
+                        <h3 class="name"><code>KEY_DOWN_ARROW</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l490"><code>src&#x2F;core&#x2F;input.js:490</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the DOWN_ARROW key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_E" class="property item">
+                        <h3 class="name"><code>KEY_E</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l626"><code>src&#x2F;core&#x2F;input.js:626</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the E key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_END" class="property item">
+                        <h3 class="name"><code>KEY_END</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l450"><code>src&#x2F;core&#x2F;input.js:450</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the END key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_ENTER" class="property item">
+                        <h3 class="name"><code>KEY_ENTER</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l378"><code>src&#x2F;core&#x2F;input.js:378</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the ENTER key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_EQUAL_SIGN" class="property item">
+                        <h3 class="name"><code>KEY_EQUAL_SIGN</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1066"><code>src&#x2F;core&#x2F;input.js:1066</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the EQUAL_SIGN key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_ESCAPE" class="property item">
+                        <h3 class="name"><code>KEY_ESCAPE</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l426"><code>src&#x2F;core&#x2F;input.js:426</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the ESCAPE key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F" class="property item">
+                        <h3 class="name"><code>KEY_F</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l634"><code>src&#x2F;core&#x2F;input.js:634</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F1" class="property item">
+                        <h3 class="name"><code>KEY_F1</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l946"><code>src&#x2F;core&#x2F;input.js:946</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F1 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F10" class="property item">
+                        <h3 class="name"><code>KEY_F10</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1018"><code>src&#x2F;core&#x2F;input.js:1018</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F10 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F11" class="property item">
+                        <h3 class="name"><code>KEY_F11</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1026"><code>src&#x2F;core&#x2F;input.js:1026</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F11 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F12" class="property item">
+                        <h3 class="name"><code>KEY_F12</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1034"><code>src&#x2F;core&#x2F;input.js:1034</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F12 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F2" class="property item">
+                        <h3 class="name"><code>KEY_F2</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l954"><code>src&#x2F;core&#x2F;input.js:954</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F2 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F3" class="property item">
+                        <h3 class="name"><code>KEY_F3</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l962"><code>src&#x2F;core&#x2F;input.js:962</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F3 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F4" class="property item">
+                        <h3 class="name"><code>KEY_F4</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l970"><code>src&#x2F;core&#x2F;input.js:970</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F4 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F5" class="property item">
+                        <h3 class="name"><code>KEY_F5</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l978"><code>src&#x2F;core&#x2F;input.js:978</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F5 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F6" class="property item">
+                        <h3 class="name"><code>KEY_F6</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l986"><code>src&#x2F;core&#x2F;input.js:986</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F6 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F7" class="property item">
+                        <h3 class="name"><code>KEY_F7</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l994"><code>src&#x2F;core&#x2F;input.js:994</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F7 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F8" class="property item">
+                        <h3 class="name"><code>KEY_F8</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1002"><code>src&#x2F;core&#x2F;input.js:1002</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F8 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_F9" class="property item">
+                        <h3 class="name"><code>KEY_F9</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1010"><code>src&#x2F;core&#x2F;input.js:1010</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the F9 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_FORWARD_SLASH" class="property item">
+                        <h3 class="name"><code>KEY_FORWARD_SLASH</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1098"><code>src&#x2F;core&#x2F;input.js:1098</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the FORWARD_SLASH key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_G" class="property item">
+                        <h3 class="name"><code>KEY_G</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l642"><code>src&#x2F;core&#x2F;input.js:642</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the G key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_GRAVE_ACCENT" class="property item">
+                        <h3 class="name"><code>KEY_GRAVE_ACCENT</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1106"><code>src&#x2F;core&#x2F;input.js:1106</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the GRAVE_ACCENT key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_H" class="property item">
+                        <h3 class="name"><code>KEY_H</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l650"><code>src&#x2F;core&#x2F;input.js:650</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the H key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_HOME" class="property item">
+                        <h3 class="name"><code>KEY_HOME</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l458"><code>src&#x2F;core&#x2F;input.js:458</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the HOME key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_I" class="property item">
+                        <h3 class="name"><code>KEY_I</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l658"><code>src&#x2F;core&#x2F;input.js:658</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the I key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_INSERT" class="property item">
+                        <h3 class="name"><code>KEY_INSERT</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l498"><code>src&#x2F;core&#x2F;input.js:498</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the INSERT key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_J" class="property item">
+                        <h3 class="name"><code>KEY_J</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l666"><code>src&#x2F;core&#x2F;input.js:666</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the J key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_K" class="property item">
+                        <h3 class="name"><code>KEY_K</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l674"><code>src&#x2F;core&#x2F;input.js:674</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the K key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_L" class="property item">
+                        <h3 class="name"><code>KEY_L</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l682"><code>src&#x2F;core&#x2F;input.js:682</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the L key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_LEFT_ARROW" class="property item">
+                        <h3 class="name"><code>KEY_LEFT_ARROW</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l466"><code>src&#x2F;core&#x2F;input.js:466</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the LEFT_ARROW key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_LEFT_WINDOW" class="property item">
+                        <h3 class="name"><code>KEY_LEFT_WINDOW</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l802"><code>src&#x2F;core&#x2F;input.js:802</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the LEFT_WINDOW key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_M" class="property item">
+                        <h3 class="name"><code>KEY_M</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l690"><code>src&#x2F;core&#x2F;input.js:690</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the M key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_MULTIPLY" class="property item">
+                        <h3 class="name"><code>KEY_MULTIPLY</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l906"><code>src&#x2F;core&#x2F;input.js:906</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the MULTIPLY key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_N" class="property item">
+                        <h3 class="name"><code>KEY_N</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l698"><code>src&#x2F;core&#x2F;input.js:698</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the N key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_0" class="property item">
+                        <h3 class="name"><code>KEY_NUM_0</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l514"><code>src&#x2F;core&#x2F;input.js:514</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the 0 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_1" class="property item">
+                        <h3 class="name"><code>KEY_NUM_1</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l522"><code>src&#x2F;core&#x2F;input.js:522</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the 1 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_2" class="property item">
+                        <h3 class="name"><code>KEY_NUM_2</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l530"><code>src&#x2F;core&#x2F;input.js:530</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the 2 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_3" class="property item">
+                        <h3 class="name"><code>KEY_NUM_3</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l538"><code>src&#x2F;core&#x2F;input.js:538</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the 3 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_4" class="property item">
+                        <h3 class="name"><code>KEY_NUM_4</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l546"><code>src&#x2F;core&#x2F;input.js:546</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the 4 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_5" class="property item">
+                        <h3 class="name"><code>KEY_NUM_5</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l554"><code>src&#x2F;core&#x2F;input.js:554</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the 5 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_6" class="property item">
+                        <h3 class="name"><code>KEY_NUM_6</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l562"><code>src&#x2F;core&#x2F;input.js:562</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the 6 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_7" class="property item">
+                        <h3 class="name"><code>KEY_NUM_7</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l570"><code>src&#x2F;core&#x2F;input.js:570</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the 7 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_8" class="property item">
+                        <h3 class="name"><code>KEY_NUM_8</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l578"><code>src&#x2F;core&#x2F;input.js:578</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the 8 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_9" class="property item">
+                        <h3 class="name"><code>KEY_NUM_9</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l586"><code>src&#x2F;core&#x2F;input.js:586</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the 9 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUM_LOCK" class="property item">
+                        <h3 class="name"><code>KEY_NUM_LOCK</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1042"><code>src&#x2F;core&#x2F;input.js:1042</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the NUM_LOCK key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUMPAD 2" class="property item">
+                        <h3 class="name"><code>KEY_NUMPAD 2</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l842"><code>src&#x2F;core&#x2F;input.js:842</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the number pad 2 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUMPAD_0" class="property item">
+                        <h3 class="name"><code>KEY_NUMPAD_0</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l826"><code>src&#x2F;core&#x2F;input.js:826</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the number pad 0 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUMPAD_1" class="property item">
+                        <h3 class="name"><code>KEY_NUMPAD_1</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l834"><code>src&#x2F;core&#x2F;input.js:834</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the number pad 1 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUMPAD_3" class="property item">
+                        <h3 class="name"><code>KEY_NUMPAD_3</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l850"><code>src&#x2F;core&#x2F;input.js:850</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the number pad 3 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUMPAD_4" class="property item">
+                        <h3 class="name"><code>KEY_NUMPAD_4</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l858"><code>src&#x2F;core&#x2F;input.js:858</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the number pad 4 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUMPAD_5" class="property item">
+                        <h3 class="name"><code>KEY_NUMPAD_5</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l866"><code>src&#x2F;core&#x2F;input.js:866</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the number pad 5 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUMPAD_6" class="property item">
+                        <h3 class="name"><code>KEY_NUMPAD_6</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l874"><code>src&#x2F;core&#x2F;input.js:874</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the number pad 6 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUMPAD_7" class="property item">
+                        <h3 class="name"><code>KEY_NUMPAD_7</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l882"><code>src&#x2F;core&#x2F;input.js:882</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the number pad 7 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUMPAD_8" class="property item">
+                        <h3 class="name"><code>KEY_NUMPAD_8</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l890"><code>src&#x2F;core&#x2F;input.js:890</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the number pad 8 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_NUMPAD_9" class="property item">
+                        <h3 class="name"><code>KEY_NUMPAD_9</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l898"><code>src&#x2F;core&#x2F;input.js:898</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the number pad 9 key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_O" class="property item">
+                        <h3 class="name"><code>KEY_O</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l706"><code>src&#x2F;core&#x2F;input.js:706</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the O key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_OPEN_BRACKET" class="property item">
+                        <h3 class="name"><code>KEY_OPEN_BRACKET</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1114"><code>src&#x2F;core&#x2F;input.js:1114</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the OPEN_BRACKET key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_P" class="property item">
+                        <h3 class="name"><code>KEY_P</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l714"><code>src&#x2F;core&#x2F;input.js:714</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the P key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_PAGE_DOWN" class="property item">
+                        <h3 class="name"><code>KEY_PAGE_DOWN</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l442"><code>src&#x2F;core&#x2F;input.js:442</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the PAGE_DOWN key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_PAGE_UP" class="property item">
+                        <h3 class="name"><code>KEY_PAGE_UP</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l434"><code>src&#x2F;core&#x2F;input.js:434</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the PAGE_UP key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_PAUSE_BREAK" class="property item">
+                        <h3 class="name"><code>KEY_PAUSE_BREAK</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l410"><code>src&#x2F;core&#x2F;input.js:410</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the PAUSE_BREAK key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_PERIOD" class="property item">
+                        <h3 class="name"><code>KEY_PERIOD</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1090"><code>src&#x2F;core&#x2F;input.js:1090</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the PERIOD key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_Q" class="property item">
+                        <h3 class="name"><code>KEY_Q</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l722"><code>src&#x2F;core&#x2F;input.js:722</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the Q key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_R" class="property item">
+                        <h3 class="name"><code>KEY_R</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l730"><code>src&#x2F;core&#x2F;input.js:730</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the R key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_RIGHT_ARROW" class="property item">
+                        <h3 class="name"><code>KEY_RIGHT_ARROW</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l482"><code>src&#x2F;core&#x2F;input.js:482</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the RIGHT_ARROW key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_RIGHT_WINDOW" class="property item">
+                        <h3 class="name"><code>KEY_RIGHT_WINDOW</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l810"><code>src&#x2F;core&#x2F;input.js:810</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the RIGHT_WINDOW key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_S" class="property item">
+                        <h3 class="name"><code>KEY_S</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l738"><code>src&#x2F;core&#x2F;input.js:738</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the S key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_SCROLL_LOCK" class="property item">
+                        <h3 class="name"><code>KEY_SCROLL_LOCK</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1050"><code>src&#x2F;core&#x2F;input.js:1050</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the SCROLL_LOCK key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_SELECT" class="property item">
+                        <h3 class="name"><code>KEY_SELECT</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l818"><code>src&#x2F;core&#x2F;input.js:818</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the SELECT key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_SEMI_COLON" class="property item">
+                        <h3 class="name"><code>KEY_SEMI_COLON</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1058"><code>src&#x2F;core&#x2F;input.js:1058</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the SEMI_COLON key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_SHIFT" class="property item">
+                        <h3 class="name"><code>KEY_SHIFT</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l386"><code>src&#x2F;core&#x2F;input.js:386</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the SHIFT key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_SINGLE_QUOTE" class="property item">
+                        <h3 class="name"><code>KEY_SINGLE_QUOTE</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1138"><code>src&#x2F;core&#x2F;input.js:1138</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the SINGLE_QUOTE key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_SPACE" class="property item">
+                        <h3 class="name"><code>KEY_SPACE</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l1146"><code>src&#x2F;core&#x2F;input.js:1146</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the SPACE key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_SUBTRACT" class="property item">
+                        <h3 class="name"><code>KEY_SUBTRACT</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l922"><code>src&#x2F;core&#x2F;input.js:922</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the SUBTRACT key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_T" class="property item">
+                        <h3 class="name"><code>KEY_T</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l746"><code>src&#x2F;core&#x2F;input.js:746</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the T key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_TAB" class="property item">
+                        <h3 class="name"><code>KEY_TAB</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l370"><code>src&#x2F;core&#x2F;input.js:370</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the TAB key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_U" class="property item">
+                        <h3 class="name"><code>KEY_U</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l754"><code>src&#x2F;core&#x2F;input.js:754</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the U key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_UP_ARROW" class="property item">
+                        <h3 class="name"><code>KEY_UP_ARROW</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l474"><code>src&#x2F;core&#x2F;input.js:474</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the UP_ARROW key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_V" class="property item">
+                        <h3 class="name"><code>KEY_V</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l762"><code>src&#x2F;core&#x2F;input.js:762</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the V key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_W" class="property item">
+                        <h3 class="name"><code>KEY_W</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l770"><code>src&#x2F;core&#x2F;input.js:770</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the W key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_X" class="property item">
+                        <h3 class="name"><code>KEY_X</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l778"><code>src&#x2F;core&#x2F;input.js:778</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the X key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_Y" class="property item">
+                        <h3 class="name"><code>KEY_Y</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l786"><code>src&#x2F;core&#x2F;input.js:786</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the Y key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_KEY_Z" class="property item">
+                        <h3 class="name"><code>KEY_Z</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l794"><code>src&#x2F;core&#x2F;input.js:794</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Code for the Z key.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_metadata" class="property item inherited">
+                        <h3 class="name"><code>metadata</code></h3>
+                        <span class="type">Object</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_metadata">Component</a>:
+                            <a href="../files/src_core_component.js.html#l229"><code>src&#x2F;core&#x2F;component.js:229</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Metadata on this component.</p>
+                    <p>Fires a Component/metadata:event event on this Component when changed.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_scene" class="property item inherited">
+                        <h3 class="name"><code>scene</code></h3>
+                        <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_scene">Component</a>:
+                            <a href="../files/src_core_component.js.html#l193"><code>src&#x2F;core&#x2F;component.js:193</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_type" class="property item public inherited">
+                        <h3 class="name"><code>type</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_type">Component</a>:
+                            <a href="../files/src_core_component.js.html#l252"><code>src&#x2F;core&#x2F;component.js:252</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Type code for this Component.</p>
+                    <p>For example: &quot;ambientLight&quot;, &quot;colorTarget&quot;, &quot;lights&quot; etc.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+            </div>
+
+
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                    <div id="event_dblclick" class="events item">
+                        <h3 class="name"><code>dblclick</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l258"><code>src&#x2F;core&#x2F;input.js:258</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever the mouse is double-clicked over the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number, Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The mouse coordinates within the <a href="../classes/Canvas.html" class="crosslink">Canvas</a>,</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_destroyed" class="events item inherited">
+                        <h3 class="name"><code>destroyed</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#event_destroyed">Component</a>:
+                            <a href="../files/src_core_component.js.html#l624"><code>src&#x2F;core&#x2F;component.js:624</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when this Component is destroyed.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_keydown" class="events item">
+                        <h3 class="name"><code>keydown</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l142"><code>src&#x2F;core&#x2F;input.js:142</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever a key is pressed while the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a> has input focus.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The key code, for example <a href="../classes/Input.html#property_KEY_LEFT_ARROW" class="crosslink">KEY_LEFT_ARROW</a>,</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_keyup" class="events item">
+                        <h3 class="name"><code>keyup</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l167"><code>src&#x2F;core&#x2F;input.js:167</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever a key is released while the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a> has input focus.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The key code, for example <a href="../classes/Input.html#property_KEY_LEFT_ARROW" class="crosslink">KEY_LEFT_ARROW</a>,</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_mouseclicked" class="events item">
+                        <h3 class="name"><code>mouseclicked</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l314"><code>src&#x2F;core&#x2F;input.js:314</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever the mouse is clicked over the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number, Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The mouse coordinates within the <a href="../classes/Canvas.html" class="crosslink">Canvas</a>,</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_mousedown" class="events item">
+                        <h3 class="name"><code>mousedown</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l198"><code>src&#x2F;core&#x2F;input.js:198</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever the mouse is pressed over the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number, Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The mouse coordinates within the <a href="../classes/Canvas.html" class="crosslink">Canvas</a>,</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_mousedown" class="events item">
+                        <h3 class="name"><code>mousedown</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l274"><code>src&#x2F;core&#x2F;input.js:274</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever the mouse is moved over the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number, Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The mouse coordinates within the <a href="../classes/Canvas.html" class="crosslink">Canvas</a>,</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_mouseup" class="events item">
+                        <h3 class="name"><code>mouseup</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l227"><code>src&#x2F;core&#x2F;input.js:227</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever the mouse is released over the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number, Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The mouse coordinates within the <a href="../classes/Canvas.html" class="crosslink">Canvas</a>,</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_mousewheel" class="events item">
+                        <h3 class="name"><code>mousewheel</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_input.js.html#l289"><code>src&#x2F;core&#x2F;input.js:289</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever the mouse wheel is moved over the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">event</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The mouse wheeel event,</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">d</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The mouse wheel delta,</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+            </div>
+    </div>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

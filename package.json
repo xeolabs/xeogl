@@ -1,0 +1,29 @@
+{
+  "name": "xeoengine",
+  "title": "XeoEngine",
+  "version": "0.0.1",
+  "description": "A WebGL-Based 3D Engine from XeoLabs",
+  "homepage": "http://xeoengine.org/",
+  "author": {
+    "name": "Lindsay Kay",
+    "email": "lindsay.kay@xeolabs.com"
+  },
+  "license": "MIT License",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/xeolabs/xeoengine.git"
+  },
+  "dependencies": {
+    "grunt-contrib-yuidoc": "~0.6.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-concat": "~0.5.0",
+    "grunt-contrib-uglify": "~0.7.0",
+    "grunt-contrib-yuidoc": "~0.7.0"
+  },
+  "engines": {
+    "node": ">=0.10.17",
+    "npm": "1.3.8"
+  }
+}

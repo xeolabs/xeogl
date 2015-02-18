@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/core/material.js - xeoengine</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../../files/logo.png" title="xeoengine"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/GameObject.html">GameObject</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/math.html">math</a></li>
+                                <li><a href="../classes/Matrix.html">Matrix</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stats.html">Stats</a></li>
+                                <li><a href="../classes/Task.html">Task</a></li>
+                                <li><a href="../classes/Tasks.html">Tasks</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/XEO.html">XEO</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src/core/material.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&quot;use strict&quot;;
+
+/**
+ Defines the surface appearance of associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+
+ &lt;ul&gt;
+ &lt;li&gt;Materials interact with {{#crossLink &quot;Lights&quot;}}{{/crossLink}} using the &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; reflection model.&lt;/li&gt;
+
+ &lt;li&gt;Within XEO Engine&#x27;s shading calculations, a Material&#x27;s {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and
+  {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}} properties are multiplied by corresponding color properties on associated
+ {{#crossLink &quot;PointLight&quot;}}AmbientLights{{/crossLink}}, {{#crossLink &quot;PointLight&quot;}}PointLights{{/crossLink}} and {{#crossLink &quot;DirLight&quot;}}DirLights{{/crossLink}}.&lt;/li&gt;
+
+ &lt;li&gt;These Material properties, along with {{#crossLink &quot;Material/emissive:property&quot;}}{{/crossLink}},
+ {{#crossLink &quot;Material/opacity:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Material/reflectivity:property&quot;}}{{/crossLink}},
+ specify attributes that are to be **applied uniformly** across the surface of associated {{#crossLink &quot;Geometry&quot;}}Geometries{{/crossLink}}.&lt;/li&gt;
+
+ &lt;li&gt;Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
+ assigning {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} to the Material&#x27;s
+ {{#crossLink &quot;Material/diffuseMap:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Material/specularMap:property&quot;}}{{/crossLink}},
+ {{#crossLink &quot;Material/emissiveMap:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Material/opacityMap:property&quot;}}{{/crossLink}}
+ and  {{#crossLink &quot;Material/reflectivityMap:property&quot;}}{{/crossLink}} properties&lt;/li&gt;
+
+ &lt;li&gt;For example, the value of {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} will be ignored if your
+ Material also has a {{#crossLink &quot;Material/diffuseMap:property&quot;}}{{/crossLink}} set to a {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}.
+ The {{#crossLink &quot;Texture&quot;}}Texture&#x27;s{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
+ {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} surface, ie. they are not multiplied by
+ the {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} for each pixel, as is done in many shading systems.&lt;/li&gt;
+
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/6921713/L.png&quot;&gt;&lt;/img&gt;
+
+ ### Example
+
+ The following example creates
+ &lt;ul&gt;
+ &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} which applies the {{#crossLink &quot;Texture&quot;}}{{/crossLink}} as a diffuse map,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;DirLight&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} associated with all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ Note that the value for the {{#crossLink &quot;Material&quot;}}Material&#x27;s{{/crossLink}} {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}}
+ property is ignored and redundant, since we assign a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} to the
+ {{#crossLink &quot;Material&quot;}}Material&#x27;s{{/crossLink}} {{#crossLink &quot;Material/diffuseMap:property&quot;}}{{/crossLink}} property.
+ The {{#crossLink &quot;Texture&quot;}}Texture&#x27;s{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
+ {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} surface.
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ var scene = new XEO.Scene();
+
+ var diffuseMap = new XEO.Texture(scene, {
+    src: &quot;diffuseMap.jpg&quot;
+ });
+
+ var material = new XEO.Material(scene, {
+    ambient:    [0.3, 0.3, 0.3],
+    diffuse:    [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
+    diffuseMap: diffuseMap,
+    specular:   [1. 1, 1],
+    shininess:  30
+});
+
+ var ambientLight = new XEO.AmbientLight(scene, {
+    ambient: [0.7, 0.7, 0.7]
+ });
+
+ var dirLight = new XEO.DirLight(scene, {
+    dir:        [-1, -1, -1],
+    diffuse:    [0.5, 0.7, 0.5],
+    specular:   [1.0, 1.0, 1.0],
+    space:      &quot;view&quot;
+ });
+
+ var lights = new XEO.Lights(scene, {
+    lights: [
+        ambientLight,
+        dirLight
+    ]
+ });
+
+ var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
+
+ var object = new XEO.GameObject(scene, {
+    lights: lights,
+    material: material,
+    geometry: geometry
+});
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class Material
+ @module XEO
+ @constructor
+ @extends Component
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this Material within the
+ default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} The Material configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta=null] {String:Object} Metadata to attach to this Material.
+ @param [cfg.ambient=[0.7, 0.7, 0.8 ]] {Array of Number} Material ambient color. Multiplied by {{#crossLink &quot;AmbientLight&quot;}}AmbientLight{{/crossLink}} {{#crossLink &quot;AmbientLight/color:property&quot;}}color{{/crossLink}}.
+ @param [cfg.diffuse=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material diffuse color. Multiplied by {{#crossLink &quot;PointLight&quot;}}PointLight{{/crossLink}} {{#crossLink &quot;PointLight/diffuse:property&quot;}}diffuse{{/crossLink}} and {{#crossLink &quot;DirLight&quot;}}DirLight{{/crossLink}} {{#crossLink &quot;DirLight/diffuse:property&quot;}}diffuse{{/crossLink}}
+ @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material specular color. Multiplied by {{#crossLink &quot;PointLight&quot;}}PointLight{{/crossLink}} {{#crossLink &quot;PointLight/specular:property&quot;}}specular{{/crossLink}} and {{#crossLink &quot;DirLight&quot;}}DirLight{{/crossLink}} {{#crossLink &quot;DirLight/specular:property&quot;}}specular{{/crossLink}}
+ @param [cfg.emissive=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material emissive color.
+ @param [cfg.opacity=1] {Number} Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.
+ Only applies while {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} {{#crossLink &quot;Modes/transparent:property&quot;}}transparent{{/crossLink}} equals &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60;.
+ @param [cfg.shininess=30] {Number} Scalar in range 0-70 that determines the size and sharpness of specular highlights.
+ @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink &quot;CubeMap&quot;}}CubeMap{{/crossLink}} is reflected.
+ @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the diffuse property.
+ @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the specular property.
+ @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the emissive property.
+ @param [cfg.bumpMap=null] {Texture} A bump map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}.
+ @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the opacity property.
+ @param [cfg.reflectivityMap=null] {Texture} A reflectivity control map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the reflectivity property.
+ */
+XEO.Material = XEO.Component.extend({
+
+
+    className: &quot;XEO.Material&quot;,
+
+    type: &quot;material&quot;,
+
+    _init: function (cfg) {
+
+        this._textures = [];
+        this._dirtyTextureSubs = [];
+        this._destroyedTextureSubs = [];
+
+        this.ambient = cfg.ambient;
+        this.diffuse = cfg.diffuse;
+        this.specular = cfg.specular;
+        this.emissive = cfg.emissive;
+
+        this.opacity = cfg.opacity;
+        this.shininess = cfg.shininess;
+        this.reflectivity = cfg.reflectivity;
+
+        this.bumpMap = cfg.bumpMap;
+        this.diffuseMap = cfg.diffuseMap;
+        this.specularMap = cfg.specularMap;
+        this.emissiveMap = cfg.emissiveMap;
+        this.opacityMap = cfg.opacityMap;
+        this.reflectivityMap = cfg.reflectivityMap;
+    },
+
+    /**
+     * The Material&#x27;s ambient color, which is multiplied by the {{#crossLink &quot;AmbientLight/ambient:property&quot;}}{{/crossLink}}
+     * property of the {{#crossLink &quot;AmbientLight&quot;}}AmbientLight{{/crossLink}}.
+     *
+     * Fires a {{#crossLink &quot;Material/ambient:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property ambient
+     * @default [1.0, 1.0, 1.0]
+     * @type Array(Number)
+     */
+    set ambient(value) {
+        value = value || [ 1.0, 1.0, 1.0 ];
+        this._core.ambient = value;
+        this._renderer.imageDirty = true;
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}} property changes.
+         * @event ambient
+         * @param value {Array(Number)} The property&#x27;s new value
+         */
+        this.fire(&quot;ambient&quot;, value);
+    },
+
+    get ambient() {
+        return this._core.ambient;
+    },
+
+    /**
+     * The Material&#x27;s diffuse color.
+     *
+     * This property may be textured by adding a {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} that has an
+     * {{#crossLink &quot;Texture/applyTo:property&quot;}}{{/crossLink}} set to &#x60;&#x60;&#x60;&#x60;&quot;diffuse&quot;&#x60;&#x60;&#x60;&#x60;.
+     *
+     * Fires a {{#crossLink &quot;Material/diffuse:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property diffuse
+     * @default [1.0, 1.0, 1.0]
+     * @type Array(Number)
+     */
+    set diffuse(value) {
+        value = value || [ 1.0, 1.0, 1.0 ];
+        this._core.diffuse = value;
+        this._renderer.imageDirty = true;
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} property changes.
+         * @event diffuse
+         * @param value {Array(Number)} The property&#x27;s new value
+         */
+        this.fire(&quot;diffuse&quot;, value);
+    },
+
+    get diffuse() {
+        return this._core.diffuse;
+    },
+
+    /**
+     * The material&#x27;s specular color.
+     *
+     * This property may be textured by adding a {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} that has an
+     * {{#crossLink &quot;Texture/applyTo:property&quot;}}{{/crossLink}} set to &#x60;&#x60;&#x60;&#x60;&quot;specular&quot;&#x60;&#x60;&#x60;&#x60;.
+     *
+     * Fires a {{#crossLink &quot;Material/specular:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property specular
+     * @default [0.3, 0.3, 0.3]
+     * @type Array(Number)
+     */
+    set specular(value) {
+        value = value || [ 0.3, 0.3, 0.3 ];
+        this._core.specular = value;
+        this._renderer.imageDirty = true;
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}} property changes.
+         * @event specular
+         * @param value {Array(Number)} The property&#x27;s new value
+         */
+        this.fire(&quot;specular&quot;, value);
+    },
+
+    get specular() {
+        return this._core.specular;
+    },
+
+    /**
+     * The Material&#x27;s emissive color.
+     *
+     * This property may be textured by adding a {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} that has an
+     * {{#crossLink &quot;Texture/applyTo:property&quot;}}{{/crossLink}} set to &#x60;&#x60;&#x60;&#x60;&quot;emissive&quot;&#x60;&#x60;&#x60;&#x60;.
+     *
+     * Fires a {{#crossLink &quot;Material/emissive:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property emissive
+     * @default [1.0, 1.0, 1.0]
+     * @type Array(Number)
+     */
+    set emissive(value) {
+        value = value || [ 1.0, 1.0, 1.0 ];
+        this._core.emissive = value;
+        this._renderer.imageDirty = true;
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/emissive:property&quot;}}{{/crossLink}} property changes.
+         * @event emissive
+         * @param value {Array(Number)} The property&#x27;s new value
+         */
+        this.fire(&quot;emissive&quot;, value);
+    },
+
+    get emissive() {
+        return this._core.emissive;
+    },
+
+    /**
+     * Factor in the range [0..1] indicating how transparent the Material is.
+     *
+     * A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+     *
+     * If {{#crossLink &quot;Modes/transparent:property&quot;}}transparent{{/crossLink}} is not set to true on associated
+     * {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}}, then the Material will remain fully opaque and this property will
+     * have no effect.
+     *
+     * This property may be textured by adding a {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} that has an
+     * {{#crossLink &quot;Texture/applyTo:property&quot;}}{{/crossLink}} set to &#x60;&#x60;&#x60;&#x60;&quot;opacity&quot;&#x60;&#x60;&#x60;&#x60;.
+     *
+     * Fires an {{#crossLink &quot;Material/opacity:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property opacity
+     * @default 1.0
+     * @type Number
+     */
+    set opacity(value) {
+        value = value != undefined ? value : 1;
+        this._core.opacity = value;
+        this._renderer.imageDirty = true;
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/opacity:property&quot;}}{{/crossLink}} property changes.
+         * @event opacity
+         * @param value {Number} The property&#x27;s new value
+         */
+        this.fire(&quot;opacity&quot;, value);
+    },
+
+    get opacity() {
+        return this._core.opacity;
+    },
+
+    /**
+     * A factor in range [0..128] that determines the size and sharpness of the specular highlights create by this Material.
+     *
+     * Larger values produce smaller, sharper highlights. A value of 0.0 gives very large highlights that are almost never
+     * desirable. Try values close to 10 for a larger, fuzzier highlight and values of 100 or more for a small, sharp
+     * highlight.
+     *
+     * Fires a {{#crossLink &quot;Material/shininess:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property shininess
+     * @default 30.0
+     * @type Number
+     */
+    set shininess(value) {
+        value = value != undefined ? value : 30;
+        this._core.shininess = value;
+        this._renderer.imageDirty = true;
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/shininess:property&quot;}}{{/crossLink}} property changes.
+         * @event shininess
+         * @param value Number The property&#x27;s new value
+         */
+        this.fire(&quot;shininess&quot;, value);
+    },
+
+    get shininess() {
+        return this._core.shininess;
+    },
+
+    /**
+     * Scalar in range 0-1 that controls how much {{#crossLink &quot;CubeMap&quot;}}CubeMap{{/crossLink}} is reflected by this Material.
+     *
+     * The surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.
+     *
+     * This property may be textured by adding a {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} that has an
+     * {{#crossLink &quot;Texture/applyTo:property&quot;}}{{/crossLink}} set to &#x60;&#x60;&#x60;&#x60;&quot;reflectivity&quot;&#x60;&#x60;&#x60;&#x60;.
+     *
+     * Fires a {{#crossLink &quot;Material/reflectivity:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property reflectivity
+     * @default 1.0
+     * @type Number
+     */
+    set reflectivity(value) {
+        value = value != undefined ? value : 1.0;
+        this._core.reflectivity = value;
+        this._renderer.imageDirty = true;
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/reflectivity:property&quot;}}{{/crossLink}} property changes.
+         * @event reflectivity
+         * @param value Number The property&#x27;s new value
+         */
+        this.fire(&quot;reflectivity&quot;, value);
+    },
+
+    get reflectivity() {
+        return this._core.reflectivity;
+    },
+
+    /**
+     * A diffuse texture map attached to this Material.
+     *
+     * Fires a {{#crossLink &quot;Material/diffuseMap:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property diffuseMap
+     * @default null
+     * @type {Texture}
+     */
+    set diffuseMap(texture) {
+        this._attachTexture(&quot;diffuseMap&quot;, texture);
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/diffuseMap:property&quot;}}{{/crossLink}} property changes.
+         * @event diffuseMap
+         * @param value Number The property&#x27;s new value
+         */
+    },
+
+    get diffuseMap() {
+        return this._textures[&quot;diffuseMap&quot;];
+    },
+
+    /**
+     * A specular texture map attached to this Material.
+     *
+     * Fires a {{#crossLink &quot;Material/specularMap:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property specularMap
+     * @default null
+     * @type {Texture}
+     */
+    set specularMap(texture) {
+        this._attachTexture(&quot;specularMap&quot;, texture);
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/specularMap:property&quot;}}{{/crossLink}} property changes.
+         * @event specularMap
+         * @param value Number The property&#x27;s new value
+         */
+    },
+
+    get specularMap() {
+        return this._textures[&quot;specularMap&quot;];
+    },
+
+    /**
+     * A emissive texture map attached to this Material.
+     *
+     * Fires a {{#crossLink &quot;Material/emissiveMap:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property emissiveMap
+     * @default null
+     * @type {Texture}
+     */
+    set emissiveMap(texture) {
+        this._attachTexture(&quot;emissiveMap&quot;, texture);
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/emissiveMap:property&quot;}}{{/crossLink}} property changes.
+         * @event emissiveMap
+         * @param value Number The property&#x27;s new value
+         */
+    },
+
+    get emissiveMap() {
+        return this._textures[&quot;emissiveMap&quot;];
+    },
+
+    /**
+     * A opacity texture map attached to this Material.
+     *
+     * Fires a {{#crossLink &quot;Material/opacityMap:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property opacityMap
+     * @default null
+     * @type {Texture}
+     */
+    set opacityMap(texture) {
+        this._attachTexture(&quot;opacityMap&quot;, texture);
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/opacityMap:property&quot;}}{{/crossLink}} property changes.
+         * @event opacityMap
+         * @param value Number The property&#x27;s new value
+         */
+    },
+
+    get opacityMap() {
+        return this._textures[&quot;opacityMap&quot;];
+    },
+
+    /**
+     * A reflectivity texture map attached to this Material.
+     *
+     * Fires a {{#crossLink &quot;Material/reflectivityMap:event&quot;}}{{/crossLink}} event on change.
+     *
+     * @property reflectivityMap
+     * @default null
+     * @type {Texture}
+     */
+    set reflectivityMap(texture) {
+        this._attachTexture(&quot;reflectivityMap&quot;, texture);
+
+        /**
+         * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/reflectivityMap:property&quot;}}{{/crossLink}} property changes.
+         * @event reflectivityMap
+         * @param value Number The property&#x27;s new value
+         */
+    },
+
+    get reflectivityMap() {
+        return this._textures[&quot;reflectivityMap&quot;];
+    },
+
+    _attachTexture: function (type, texture) {
+
+        if (XEO._isString(texture)) {
+
+            // ID given for texture - find the texture component
+            var id = texture;
+
+            texture = this.scene.components[id];
+
+            if (!texture) {
+                this.error(&quot;Texture not found for ID: &#x27;&quot; + id + &quot;&#x27;&quot;);
+                return;
+            }
+        }
+
+        if (texture.type != &quot;texture&quot;) {
+            this.error(&quot;Component is not a texture: &#x27;&quot; + id + &quot;&#x27;&quot;);
+            return;
+        }
+
+        var oldTexture = this._textures[type];
+
+        if (oldTexture) {
+
+            // Replacing old texture
+
+            oldTexture.off(this._dirtyTextureSubs[type]);
+            oldTexture.off(this._destroyedTextureSubs[type]);
+        }
+
+        var self = this;
+
+        this._dirtyTextureSubs[type] = texture.on(&quot;dirty&quot;, function () {
+            self.fire(&quot;dirty&quot;, true);
+        });
+
+        this._dirtyTextureSubs[type] = texture.on(&quot;destroyed&quot;,
+            function () {
+                delete self._dirtyTextureSubs[type];
+                delete self._destroyedTextureSubs[type];
+                self.fire(&quot;dirty&quot;, true);
+                self.fire(type, null);
+            });
+
+        this._textures[type] = texture;
+
+        this.fire(type, texture);
+    },
+
+    _compile: function () {
+        // Set material state on renderer
+        this._renderer.material = this._core;
+        // Set texture state on renderer
+        var layers = [];
+        for (var i = 0, len = this._textures.length; i &lt; len; i++) {
+            layers.push(this._textures[i]._core);
+        }
+        var core = {
+            type: &quot;texture&quot;,
+            bumpMap: this.bumpMap ? this.bumpMap._core : null,
+            diffuseMap: this.diffuseMap ? this.diffuseMap._core : null,
+            specularMap: this.specularMap ? this.specularMap._core : null,
+            emissiveMap: this.emissiveMap ? this.emissiveMap._core : null,
+            opacityMap: this.opacityMap ? this.opacityMap._core : null,
+            reflectivityMap: this.reflectivityMap ? this.reflectivityMap._core : null,
+            hash: this._makeTexturesHash()
+        };
+
+        this._renderer.texture = core;
+    },
+
+    // Texture hash helps reuse pooled shaders
+    _makeTexturesHash: function (layers) {
+        var hash = [];
+        if (this.bumpMap) {
+            hash.push(&quot;/b&quot;);
+            if (this.bumpMap.matrix) {
+                hash.push(&quot;/anim&quot;);
+            }
+        }
+        if (this.diffuseMap) {
+            hash.push(&quot;/d&quot;);
+            if (this.bumpMap.matrix) {
+                hash.push(&quot;/anim&quot;);
+            }
+        }
+        if (this.specularMap) {
+            hash.push(&quot;/s&quot;);
+            if (this.bumpMap.matrix) {
+                hash.push(&quot;/anim&quot;);
+            }
+        }
+        if (this.emissiveMap) {
+            hash.push(&quot;/e&quot;);
+            if (this.bumpMap.matrix) {
+                hash.push(&quot;/anim&quot;);
+            }
+        }
+        if (this.opacityMap) {
+            hash.push(&quot;/o&quot;);
+            if (this.bumpMap.matrix) {
+                hash.push(&quot;/anim&quot;);
+            }
+        }
+        if (this.reflectivityMap) {
+            hash.push(&quot;/r&quot;);
+            if (this.bumpMap.matrix) {
+                hash.push(&quot;/anim&quot;);
+            }
+        }
+        return  hash.join(&quot;&quot;);
+    },
+
+    _getJSON: function () {
+
+        var json = {
+
+            // Colors
+
+            ambient: this.ambient,
+            diffuse: this.diffuse,
+            specular: this.specular,
+            emissive: this.emissive,
+
+            // Factors
+
+            opacity: this.opacity,
+            shininess: this.shininess,
+            reflectivity: this.reflectivity
+        };
+
+        // Textures
+
+        if (this.bumpMap) {
+            json.bumpMap = this.bumpMap.id;
+        }
+        if (this.diffuseMap) {
+            json.diffuseMap = this.diffuseMap.id;
+        }
+        if (this.specularMap) {
+            json.specularMap = this.specularMap.id;
+        }
+        if (this.emissiveMap) {
+            json.emissiveMap = this.emissiveMap.id;
+        }
+        if (this.opacityMap) {
+            json.opacityMap = this.opacityMap.id;
+        }
+        if (this.reflectivityMap) {
+            json.reflectivityMap = this.reflectivityMap.id;
+        }
+
+        return json;
+    }
+});
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
