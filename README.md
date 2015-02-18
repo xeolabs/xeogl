@@ -1,10 +1,10 @@
 # XeoEngine
 
-XeoEngine is a 3D engine on WebGL that aims to provide lots of power and flexibility within a comprehensive component-based API.
+XeoEngine is a 3D engine on WebGL that aims to provide lots of power and flexibility within a comprehensive *object-component-based* API.
 
 This engine is based on lessons learned from the development and application of [SceneJS](http://scenejs.org).
 
-It's currently at **alpha** status, where the documentation is provided for peer review ***before*** the implementation is released.
+It's currently at **alpha** status, where in order to get the design right, the documentation is released for peer review *before* the implementation.
 
 ## Features 
 
