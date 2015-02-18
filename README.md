@@ -9,7 +9,9 @@ It's currently at **alpha** status, where the documentation is provided for peer
 ## Features 
 
  - [Solid API documentation](http://xeoengine.org/docs/index.html)
- - [Simple object-component based architecture](http://xeoengine.org/docs/classes/Scene.html)
- - [Sensible defaults for *everything*](http://xeoengine.org/docs/classes/Scene.html)
+ - [Object-component based architecture](http://xeoengine.org/docs/classes/Scene.html)
+ - [Defaults for *everything*](http://xeoengine.org/docs/classes/Scene.html)
  - [Shader-based effects pipelines](http://xeoengine.org/docs/classes/Shader.html)
- - [Save and load scene state to/from JSON](http://xeoengine.org/docs/classes/Scene.html#savingAndLoadingJSON)
+ - [Save and load engine state to and from JSON](http://xeoengine.org/docs/classes/Scene.html#savingAndLoadingJSON)
+ - Automatic lost WebGL context recovery
+ - Optimized performance using draw list caching, state sorting etc. 
