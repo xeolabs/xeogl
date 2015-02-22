@@ -288,6 +288,17 @@ Full-Width Styles
     border-bottom-right-radius: 2px;
 }
 
+#top_wrap {
+    background: #ffffff;
+    text-align:center;
+    padding:10px;
+    /*background: -moz-linear-gradient(top, #373737, #212121);*/
+    /*background: -webkit-linear-gradient(top, #373737, #212121);*/
+    /*background: -ms-linear-gradient(top, #373737, #212121);*/
+    /*background: -o-linear-gradient(top, #373737, #212121);*/
+    /*background: linear-gradient(top, #373737, #212121);*/
+}
+
 #header_wrap {
     background: #000000;
     text-align:center;
