@@ -17,7 +17,7 @@
  essential components while falling back on the <a href="XEO.Scene.html#defaults" class="crosslink">Scene's default components</a>
  for everything else.
 
- <img src="../../files/shaderParamsExample1.png"></img>
+ <img src="../../assets/images/shaderParamsExample1.png"></img>
 
  In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
  screen-aligned quad, plus a {{#crossLink "Shader"}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
