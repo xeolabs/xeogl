@@ -1,13 +1,149 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html>
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Xeoengine : An object-component based 3D engine on WebGL ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="files/style.css">
+
+    <link href="files/prettify.css" rel="stylesheet"/>
+    <script src="files/prettify.js"></script>
+
+    <title>xeoEngine</title>
 </head>
+
 <body>
 
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+    <header class="inner">
+        <a id="forkme_banner" href="https://github.com/xeolabs/xeoengine">View on GitHub</a>
+
+        <img src="files/mesh_logo.jpg">
+
+        <h1 id="project_title">xeoEngine</h1>
+
+        <h2 id="project_tagline">A sleek and powerful 3D engine for WebGL</h2>
+
+        <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/xeolabs/xeoengine/zipball/master">Download this
+                project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/xeolabs/xeoengine/tarball/master">Download this
+                project as a tar.gz file</a>
+        </section>
+    </header>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+        <h3>About</h3>
+
+        <p>xeoEngine is a 3D engine for WebGL from <a href="">@xeolabs</a>.</p>
+        <ul>
+            <li>Flexible object-component API</li>
+            <li>Defaults everywhere, providing training wheels for learning the API
+            </li>
+            <li>Fully runtime-editable scene</li>
+            <li>Optimised - draw list caching, state sorting etc.</li>
+            <li>Save and load scenes as JSON</li>
+
+        </ul>
+
+
+        <h3>Usage</h3>
+
+        <p>Simply include <a href="build/xeoengine.js">xeoengine.js</a> in your project to begin creating 3D
+            worlds!</p>
+
+        <h3>
+            <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span
+                    class="octicon octicon-link"></span></a>Concept</h3>
+
+        <p>Build a 3D scene from components:</p>
+
+<pre class="prettyprint lang-javascript">// xeoEngine provides implicit defaults for everything, which provides
+// training wheels for learning the api. This example is using all sorts
+// of defaults, such as cameras, light sources etc.
+
+var scene = new XEO.Scene();
+
+var material = new XEO.Material(scene, {
+    diffuse: [ 0.6, 0.6, 0.7 ]
+});
+
+// A 2x2x2 box by default
+var geometry = new XEO.Geometry(scene);
+
+var object = new XEO.GameObject(scene, {
+    material: myMaterial,
+    geometry: myGeometry
+});
+</pre>
+
+        <p>Update a scene by setting component properties:</p>
+
+<pre class="prettyprint lang-javascript">// Everything in xeoEngine fires change events
+ material.on("diffuse",
+     function(value) {
+            console.log("Value of material diffuse is now: " + value);
+     });
+
+ // Read and write properties directly
+ // This is going to fire our change listener above
+ material.diffuse = [0.9, 0.9, 0.6];</pre>
+
+        <p>Dynamically edit a scene at runtime:</p>
+
+<pre class="prettyprint lang-javascript">
+  // Everything in your scene is editable
+  var texture = new XEO.Texture(scene, {
+      src: "myTexture.jpg"
+  });
+
+  material.diffuseMap = texture;</pre>
+
+        <p>Save and load the scene as JSON:</p>
+
+ <pre class="prettyprint lang-javascript">
+ var json = scene.json;
+
+ var scene2 = new XEO.Scene({ json: json });</pre>
+
+
+    </section>
+</div>
+
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+    <footer class="inner">
+        <p class="copyright">xeoEngine is maintained by <a href="https://github.com/xeolabs">xeoLabs</a></p>
+
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+    </footer>
+</div>
+
 <script>
-    window.location = "http://xeolabs.com/xeoengine/docs/classes/Scene.html";
+
+    addPrettify();
+
+    function addPrettify() {
+        var els = document.querySelectorAll('pre');
+        for (var i = 0, el; el = els[i]; i++) {
+            if (!el.classList.contains('noprettyprint')) {
+                el.classList.add('prettyprint');
+            }
+        }
+        var el = document.createElement('script');
+        el.type = 'text/javascript';
+        el.src = 'files/prettify.js';
+        el.onload = function () {
+            prettyPrint();
+        };
+        document.body.appendChild(el);
+    }
 </script>
 </body>
 </html>
