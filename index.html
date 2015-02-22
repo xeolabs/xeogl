@@ -41,16 +41,30 @@
     <section id="main_content" class="inner">
         <h3>About</h3>
 
-        <p>xeoEngine is a 3D engine for WebGL from <a href="">@xeolabs</a>.</p>
+        <h3>Features</h3>
+
         <ul>
-            <li>Flexible object-component API</li>
-            <li>Defaults everywhere, providing training wheels for learning the API
-            </li>
-            <li>Fully runtime-editable scene</li>
-            <li>Optimised - draw list caching, state sorting etc.</li>
-            <li>Save and load scenes as JSON</li>
+            <li>Scene is defined as an object-component graph</li>
+
+            <li>API provides sensible defaults for <strong>everything</strong></li>
+
+            <li>Dynamically edit anything in a scene at runtime</li>
+
+            <li>Save and and load scenes as JSON</li>
+
+            <li>Optimized to render large scenes efficiently</li>
+
+            <li>Supports a wide range of 3D effects</li>
 
         </ul>
+
+        <p></p>
+
+        <p></p>
+
+        <p></p>
+
+        <p></p>
 
 
         <h3>Usage</h3>
@@ -61,13 +75,15 @@
         <h3>
             <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span
                     class="octicon octicon-link"></span></a>Concept</h3>
+        <br>
 
-        <p>Build a 3D scene from components:</p>
+        <p>Plug a 3D scene together as a simple object-component graph, as shown below.
+            xeoEngine provides defaults for <i>everything</i>, so
+            only specify
+            what you need to override. Our example uses all sorts of defaults, such as the camera, lights, even
+            a default canvas.</p>
 
-<pre class="prettyprint lang-javascript">// xeoEngine provides implicit defaults for everything, which provides
-// training wheels for learning the api. This example is using all sorts
-// of defaults, such as cameras, light sources etc.
-
+<pre class="prettyprint lang-javascript">
 var scene = new XEO.Scene();
 
 var material = new XEO.Material(scene, {
@@ -83,29 +99,33 @@ var object = new XEO.GameObject(scene, {
 });
 </pre>
 
-        <p>Update a scene by setting component properties:</p>
+        <br>
 
-<pre class="prettyprint lang-javascript">// Everything in xeoEngine fires change events
- material.on("diffuse",
+        <p>Update scene state by setting component properties. All properties fire change events which you
+            can subscribe to.</p>
+
+<pre class="prettyprint lang-javascript">material.on("diffuse",
      function(value) {
             console.log("Value of material diffuse is now: " + value);
      });
 
- // Read and write properties directly
  // This is going to fire our change listener above
  material.diffuse = [0.9, 0.9, 0.6];</pre>
+        <br>
 
-        <p>Dynamically edit a scene at runtime:</p>
+        <p>Everything in your scene is dynamically editable. You can create, destroy, link and unlink
+            components, or edit any component property.</p>
 
 <pre class="prettyprint lang-javascript">
-  // Everything in your scene is editable
   var texture = new XEO.Texture(scene, {
       src: "myTexture.jpg"
   });
 
   material.diffuseMap = texture;</pre>
 
-        <p>Save and load the scene as JSON:</p>
+        <br>
+
+        <p>You can save and load a scene to and from JSON.</p>
 
  <pre class="prettyprint lang-javascript">
  var json = scene.json;
