@@ -25,7 +25,7 @@
 
         <h1 id="project_title">xeoEngine</h1>
 
-        <h2 id="project_tagline">A sleek and powerful 3D engine for WebGL</h2>
+        <h2 id="project_tagline">A sleek 3D rendering API for WebGL</h2>
 
         <section id="downloads">
             <a class="zip_download_link" href="https://github.com/xeolabs/xeoengine/zipball/master">Download this
@@ -41,21 +41,27 @@
     <section id="main_content" class="inner">
         <h3>About</h3>
 
+        <strong>xeoEngine</strong> is a WebGL-based 3D engine from <a href="https://twitter.com/?lang=en">@xeoLabs</a>
+
         <h3>Features</h3>
 
         <ul>
-            <li>Scene is defined as an object-component graph</li>
+            <li>Define a scene as a simple <a href="http://gameprogrammingpatterns.com/component.html">component-object
+                graph</a></li>
 
-            <li>API provides sensible defaults for <strong>everything</strong></li>
+            <li>Use sensible defaults for <strong>everything</strong>, ie. <a
+                    href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention over configuration</a>
+            </li>
 
-            <li>Dynamically edit anything in a scene at runtime</li>
+            <li>Dynamically change <strong>anything</strong> in a scene at runtime</li>
 
-            <li>Save and and load scenes as JSON</li>
+            <li>Export and import scenes as JSON</li>
 
-            <li>Optimized to render large scenes efficiently</li>
+            <li>Render large scenes efficiently</li>
 
-            <li>Supports a wide range of 3D effects</li>
+            <li>Suports a wide range of 3D effects</li>
 
+            <li>Complete <a href="./docs/">API docs</a></li>
         </ul>
 
         <p></p>
@@ -75,12 +81,14 @@
         <h3>
             <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span
                     class="octicon octicon-link"></span></a>Concept</h3>
-        <br>
 
-        <p>Plug a 3D scene together as a simple object-component graph, as shown below.
-            xeoEngine provides defaults for <i>everything</i>, so
-            only specify
-            what you need to override. Our example uses all sorts of defaults, such as the camera, lights, even
+        <img src="http://www.gliffy.com/go/publish/image/7304207/L.png">
+
+
+        <p><strong>Build</strong> a 3D scene as a simple component-object graph, as shown in this example. Since xeoEngine
+            provides
+            defaults for <i>everything</i>, only specify what you need to override. Our example uses all sorts of
+            defaults, such as the camera, lights, even
             a default canvas.</p>
 
 <pre class="prettyprint lang-javascript">
@@ -101,7 +109,7 @@ var object = new XEO.GameObject(scene, {
 
         <br>
 
-        <p>Update scene state by setting component properties. All properties fire change events which you
+        <p><strong>Animate</strong> your scene by setting component properties. All properties fire change events which you
             can subscribe to.</p>
 
 <pre class="prettyprint lang-javascript">material.on("diffuse",
@@ -113,8 +121,8 @@ var object = new XEO.GameObject(scene, {
  material.diffuse = [0.9, 0.9, 0.6];</pre>
         <br>
 
-        <p>Everything in your scene is dynamically editable. You can create, destroy, link and unlink
-            components, or edit any component property.</p>
+        <p><strong>Rebuild</strong> anything in your scene dynamically at runtime. You can create, destroy, link and unlink
+            components, or set any component property.</p>
 
 <pre class="prettyprint lang-javascript">
   var texture = new XEO.Texture(scene, {
@@ -125,7 +133,7 @@ var object = new XEO.GameObject(scene, {
 
         <br>
 
-        <p>You can save and load a scene to and from JSON.</p>
+        <p><strong>Save</strong> and <strong>load</strong> your scene as JSON.</p>
 
  <pre class="prettyprint lang-javascript">
  var json = scene.json;
