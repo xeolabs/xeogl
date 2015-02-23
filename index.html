@@ -18,9 +18,9 @@
 
 <!--<div id="top_wrap" class="outer">-->
 
-        <!--<br>-->
+<!--<br>-->
 
-    <!--</div>-->
+<!--</div>-->
 
 <!-- HEADER -->
 <div id="header_wrap" class="outer">
@@ -52,22 +52,21 @@
         <h3>Features</h3>
 
         <ul>
-            <li>Define a scene as a simple <a href="http://gameprogrammingpatterns.com/component.html">component-object
+            <li>Models a 3D scene as a fully-editable <a href="http://gameprogrammingpatterns.com/component.html">component-object
                 graph</a></li>
 
-            <li>Use sensible defaults for <strong>everything</strong>, ie. <a
-                    href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention over configuration</a>
+            <li>Applies <a href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention over
+                configuration</a>,
+                providing sensible defaults for <strong>everything</strong>
             </li>
 
-            <li>Dynamically redefine <strong>anything</strong> in a scene at runtime</li>
+            <li>Renders large and complex scenes efficiently</li>
 
-            <li>Render large scenes efficiently</li>
+            <li>Supports a wide range of 3D effects</li>
 
-            <li>Create a wide range of 3D effects</li>
+            <li>Exports and imports scenes as JSON</li>
 
-            <li>Export and import scenes as JSON</li>
-
-            <li>Complete <a href="./docs/">API docs</a></li>
+            <li>Has complete <a href="./docs/">API docs!</a></li>
         </ul>
 
         <p></p>
@@ -82,20 +81,22 @@
         <h3>Usage</h3>
 
         <p>Simply include <a href="build/xeoengine.js">xeoengine.js</a> in your project to begin creating 3D
-            worlds!</p>
-
+            worlds.</p>
+        <pre>&lt;script src="http://xeoengine.org/build/xeoengine.js"&gt;&lt;/script&gt;</pre>
         <h3>
             <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span
-                    class="octicon octicon-link"></span></a>Quick Start</h3>
+                    class="octicon octicon-link"></span></a>Concept</h3>
+
+
+        <p><strong>Define</strong> a 3D scene as a simple component-object graph, as shown in this example. A scene is
+            essentially a
+            soup of components that are tied together into enties by game objects.</p>
 
         <img src="http://www.gliffy.com/go/publish/image/7304207/L.png">
 
-
-        <p><strong>Define</strong> a 3D scene as a simple component-object graph, as shown in this example. Since xeoEngine
-            provides
-            defaults for <i>everything</i>, only specify what you need to override. Our example uses all sorts of
-            defaults, such as the camera, lights, even
-            a default canvas.</p>
+        <p>Since xeoEngine provides defaults for <i>everything</i>, we only specify what we need to override, in this
+            case the material and geometry for our game object. The game object will fall back on the scene's default
+            components for everything else.</p>
 
 <pre class="prettyprint lang-javascript">
 var scene = new XEO.Scene();
@@ -115,7 +116,8 @@ var object = new XEO.GameObject(scene, {
 
         <br>
 
-        <p><strong>Animate</strong> your scene by setting component properties. All properties fire change events which you
+        <p><strong>Animate</strong> your scene by setting component properties. All properties fire change events which
+            you
             can subscribe to.</p>
 
 <pre class="prettyprint lang-javascript">material.on("diffuse",
@@ -146,6 +148,14 @@ var object = new XEO.GameObject(scene, {
 
  var scene2 = new XEO.Scene({ json: json });</pre>
 
+        <br>
+
+        <p>Finally, access a scene's default components as shown below.</p>
+        <pre class="prettyprint lang-javascript">// Move the default camera's point-of-view back a bit
+scene.camera.view.eye = [0,-12, 0];
+
+// Set the diffuse color of one of the default lights
+scene.lights.lights[0].diffuse = [0.5, 1.0, 0.5];</pre>
 
     </section>
 </div>
