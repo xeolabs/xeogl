@@ -8,7 +8,7 @@
 
   <Ul>
   <li><a href="#ids">Component IDs</a></li>
-  <li><a href="#properties">Properties</a></li>
+  <li><a href="#props">Properties</a></li>
   <li><a href="#metadata">Metadata</a></li>
   <li><a href="#logging">Logging</a></li>
   <li><a href="#destruction">Destruction</a></li>
@@ -52,7 +52,7 @@
  ````
 
  <br>
- ### <a name="properties">Properties</a>
+ ### <a name="props">Properties</a>
 
  Almost every property on a XEO Component fires a change event when you update it.
 
