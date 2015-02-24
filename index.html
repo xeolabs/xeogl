@@ -69,15 +69,6 @@
             <li>Has complete <a href="./docs/">API docs!</a></li>
         </ul>
 
-        <p></p>
-
-        <p></p>
-
-        <p></p>
-
-        <p></p>
-
-
         <h3>Usage</h3>
 
         <p>Simply include <a href="build/xeoengine.min.js">xeoengine.js</a> in your project to begin creating 3D
@@ -87,16 +78,14 @@
             <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span
                     class="octicon octicon-link"></span></a>Concept</h3>
 
-
-        <p><strong>Define</strong> a 3D scene as a simple component-object graph, as shown in this example. A scene is
-            essentially a
-            soup of components that are tied together into enties by game objects.</p>
+        <p><strong>Create</strong> your 3D scene as a component-object graph. A scene is
+            essentially a soup of components that are tied together into enties by game objects.</p>
 
         <img src="http://www.gliffy.com/go/publish/image/7304207/L.png">
 
-        <p>Since xeoEngine provides defaults for <i>everything</i>, we only specify what we need to override, in this
-            case the material and geometry for our game object. The game object will fall back on the scene's default
-            components for everything else.</p>
+        <p>Since xeoEngine provides defaults for everything, we only specify what we need to override, in this case the
+            material and geometry for our game object. The game object will fall back on the scene's default components
+            for everything else (eg. camera, lights etc).</p>
 
 <pre class="prettyprint lang-javascript">
 var scene = new XEO.Scene();
@@ -129,7 +118,7 @@ var object = new XEO.GameObject(scene, {
  material.diffuse = [0.9, 0.9, 0.6];</pre>
         <br>
 
-        <p><strong>Redefine</strong> anything in your scene dynamically, at runtime. Create, destroy, link and unlink
+        <p><strong>Edit</strong> anything in your scene dynamically, at runtime. Create, destroy, link and unlink
             components, or set any component property.</p>
 
 <pre class="prettyprint lang-javascript">
