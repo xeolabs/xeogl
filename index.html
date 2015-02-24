@@ -52,10 +52,10 @@
         <h3>Features</h3>
 
         <ul>
-            <li>Models a 3D scene as a fully-editable <a href="http://gameprogrammingpatterns.com/component.html">component-object
+            <li>Models a 3D scene as a fully-editable <a target="other" class="definitionLink" href="http://gameprogrammingpatterns.com/component.html">component-object
                 graph</a></li>
 
-            <li>Applies <a href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention over
+            <li>Applies <a target="other" class="definitionLink" href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention over
                 configuration</a>,
                 providing sensible defaults for <strong>everything</strong>
             </li>
@@ -78,13 +78,21 @@
             <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span
                     class="octicon octicon-link"></span></a>Concept</h3>
 
-        <p><strong>Create</strong> your 3D scene as a component-object graph, as shown in this example. A scene is
-            essentially a soup of components that are tied together into enties by game objects.</p>
+        <p><strong>Create</strong> your 3D <a href="./docs/classes/Scene.html">scene</a> as a component-object graph, as
+            shown in this example. A scene is
+            essentially a soup of <a href="./docs/classes/Component.html">components</a> that are tied together into
+            enties by <a href="./docs/classes/GameObject.html">game objects</a>.</p>
 
-        <img src="http://www.gliffy.com/go/publish/image/7304207/L.png">
+        <div style="text-align:center">
+            <img src="http://www.gliffy.com/go/publish/image/7304207/L.png">
+        </div>
 
         <p>Since xeoEngine provides defaults for everything, we only specify what we need to override, in this case the
-            material and geometry for our game object. The game object will fall back on the scene's default components
+            <a href="./docs/classes/Material.html">material</a> and <a href="./docs/classes/Geometry.html">geometry</a>
+            for
+            our game object. The game object will fall back on the scene's
+            default <a  target="other" class="definitionLink" href="http://en.wikipedia.org/wiki/Flyweight_pattern">flyweight</a>
+            components
             (eg. camera, lights etc) for everything else.</p>
 
 <pre class="prettyprint lang-javascript">
@@ -116,6 +124,9 @@ var object = new XEO.GameObject(scene, {
 
  // This is going to fire our change listener above
  material.diffuse = [0.9, 0.9, 0.6];</pre>
+        <p>Likewise, you can set properties on your scene's default flyweight components:</p>
+        <pre class="prettyprint lang-javascript">scene.lights.lights[0].diffuse = [0.5, 1.0, 0.5];</pre>
+
         <br>
 
         <p><strong>Edit</strong> anything in your scene dynamically, at runtime. Create, destroy, link and unlink
@@ -137,14 +148,6 @@ var object = new XEO.GameObject(scene, {
 
  var scene2 = new XEO.Scene({ json: json });</pre>
 
-        <br>
-
-        <p>Finally, access a scene's default components as shown below.</p>
-        <pre class="prettyprint lang-javascript">// Move the default camera's point-of-view back a bit
-scene.camera.view.eye = [0,-12, 0];
-
-// Set the diffuse color of one of the default lights
-scene.lights.lights[0].diffuse = [0.5, 1.0, 0.5];</pre>
 
     </section>
 </div>
