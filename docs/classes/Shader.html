@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,7 +130,7 @@
 
 
 <div class="box intro">
-    <p>Specifies a custom GLSL shader to draw associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>Shader</strong> specifies a custom GLSL shader to draw attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <p><hr>
    <em>Contents</em>
    <Ul>
@@ -142,8 +141,8 @@
    <hr></p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>You can use XEO&#39;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#39;s set by other
-components on the associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+<li>You can use xeoEngine&#39;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#39;s set by other
+components on the attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
 
 <li>Use Shaders in combination with <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> components when you need to share
 the same Shaders among multiple <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> while setting the Shaders&#39; uniforms
@@ -157,9 +156,7 @@ and <a href="../classes/Texture.html" class="crosslink">Texture</a> components t
 <p><img src="http://www.gliffy.com/go/publish/image/7105141/L.png"></img></p>
 <h2 id="example">Example</h2>
 <p>The example below shows the simplest way to use a Shader, where we&#39;re just going to render a ripply water
-pattern to a screen-aligned quad. As with all our examples, we&#39;re just creating the
-essential components while falling back on the <a href="XEO.Scene.html#defaults" class="crosslink">Scene&#39;s default components</a>
-for everything else.</p>
+pattern to a screen-aligned quad.</p>
 <p><img src="../../assets/images/shaderExample1.png"></img></p>
 <p>In our scene definition, we have an  <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that has a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is our
 screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
@@ -236,7 +233,7 @@ var object = new XEO.GameObject(scene, {
        });
 </code></pre>
 <h2 id="shader-inputs">Shader Inputs</h2>
-<p>XEO provides various inputs for your shaders (TODO)</p>
+<p>xeoEngine provides various inputs for your shaders (TODO)</p>
 <h4 id="attributes">Attributes</h4>
 <p><em>Attributes are used in vertex shaders</em></p>
 <table>
@@ -1077,7 +1074,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_shader.js.html#l243"><code>src&#x2F;core&#x2F;shader.js:243</code></a>
+        <a href="../files/src_core_shader.js.html#l241"><code>src&#x2F;core&#x2F;shader.js:241</code></a>
         </p>
 
 
@@ -1087,7 +1084,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="description">
         <p>Sets one or more params for this Shader.</p>
 <p>These will be individually overridden by any <a href="../classes/ShaderParams.html#method_setParams" class="crosslink">params subsequently specified</a> on
-<a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> on associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+<a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> on attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <p>Fires a <a href="../classes/Shader.html#event_params" class="crosslink">params</a> event on change.</p>
 
     </div>
@@ -1239,7 +1236,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l218"><code>src&#x2F;core&#x2F;shader.js:218</code></a>
+                            <a href="../files/src_core_shader.js.html#l216"><code>src&#x2F;core&#x2F;shader.js:216</code></a>
                             </p>
                     
                     
@@ -1372,7 +1369,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l193"><code>src&#x2F;core&#x2F;shader.js:193</code></a>
+                            <a href="../files/src_core_shader.js.html#l191"><code>src&#x2F;core&#x2F;shader.js:191</code></a>
                             </p>
                     
                     
@@ -1430,7 +1427,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l231"><code>src&#x2F;core&#x2F;shader.js:231</code></a>
+                            <a href="../files/src_core_shader.js.html#l229"><code>src&#x2F;core&#x2F;shader.js:229</code></a>
                             </p>
                     
                     
@@ -1472,7 +1469,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l263"><code>src&#x2F;core&#x2F;shader.js:263</code></a>
+                            <a href="../files/src_core_shader.js.html#l261"><code>src&#x2F;core&#x2F;shader.js:261</code></a>
                             </p>
                     
                     
@@ -1514,7 +1511,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l206"><code>src&#x2F;core&#x2F;shader.js:206</code></a>
+                            <a href="../files/src_core_shader.js.html#l204"><code>src&#x2F;core&#x2F;shader.js:204</code></a>
                             </p>
                     
                     

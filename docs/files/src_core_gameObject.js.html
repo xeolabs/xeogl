@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,10 +120,10 @@
 &quot;use strict&quot;;
 
 /**
- A 3D object within a {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+ A **GameObject** is an entity within a xeoEngine {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
 
  &lt;ul&gt;
- &lt;li&gt;See the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} documentation for description and usage examples.&lt;/li&gt;
+ &lt;li&gt;See the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} class for more information on GameObjects.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7122967/L.png&quot;&gt;&lt;/img&gt;
@@ -132,49 +131,43 @@
  @class GameObject
  @module XEO
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this GameObject within the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this GameObject within xeoEngine&#x27;s default {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} by default.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GameObject.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} to attach to this GameObject.  Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/camera:property&quot;}}camera{{/crossLink}}.
- @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/clips:property&quot;}}clips{{/crossLink}}.
- @param [cfg.colorTarget] {String|ColorTarget} ID or instance of a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.colorTarget] {String|ColorTarget} ID or instance of a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/colorTarget:property&quot;}}colorTarget{{/crossLink}}.
- @param [cfg.depthTarget] {String|DepthTarget} ID or instance of a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.depthTarget] {String|DepthTarget} ID or instance of a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/depthTarget:property&quot;}}depthTarget{{/crossLink}}.
- @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, depth {{#crossLink &quot;Scene/depthBuf:property&quot;}}depthBuf{{/crossLink}}.
- @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/visibility:property&quot;}}visibility{{/crossLink}}.
- @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/modes:property&quot;}}modes{{/crossLink}}.
- @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/geometry:property&quot;}}geometry{{/crossLink}}, which is a 2x2x2 box.
- @param [cfg.layer] {String|Layer} ID or instance of a {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.layer] {String|Layer} ID or instance of a {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}}.
- @param [cfg.lights] {String|Lights} ID or instance of a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.lights] {String|Lights} ID or instance of a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/lights:property&quot;}}lights{{/crossLink}}.
- @param [cfg.material] {String|Material} ID or instance of a {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.material] {String|Material} ID or instance of a {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/material:property&quot;}}material{{/crossLink}}.
- @param [cfg.morphTargets] {String|MorphTargets} ID or instance of a {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} within the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s
+ @param [cfg.morphTargets] {String|MorphTargets} ID or instance of a {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s
  default instance, {{#crossLink &quot;Scene/morphTargets:property&quot;}}morphTargets{{/crossLink}}.
- @param [cfg.reflect] {String|Reflect} ID or instance of a {{#crossLink &quot;CubeMap&quot;}}CubeMap{{/crossLink}} within the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+ @param [cfg.reflect] {String|Reflect} ID or instance of a {{#crossLink &quot;CubeMap&quot;}}CubeMap{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
  {{#crossLink &quot;Scene/reflect:property&quot;}}reflection{{/crossLink}}.
- @param [cfg.shader] {String|Shader} ID or instance of a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} within the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+ @param [cfg.shader] {String|Shader} ID or instance of a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
  {{#crossLink &quot;Scene/shader:property&quot;}}shader{{/crossLink}}.
- @param [cfg.shaderParams] {String|ShaderParams} ID or instance of a {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} within the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+ @param [cfg.shaderParams] {String|ShaderParams} ID or instance of a {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
  {{#crossLink &quot;Scene/shaderParams:property&quot;}}shaderParams{{/crossLink}}.
- @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} within the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+ @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
  {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}.
- @param [cfg.transform] {String|Transform} ID or instance of a modelling transform within the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+ @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
  {{#crossLink &quot;Scene/transform:property&quot;}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
  @extends Component
  */
@@ -217,9 +210,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/camera:property&quot;}}camera{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/camera:property&quot;}}camera{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/camera:event&quot;}}{{/crossLink}} event on change.
@@ -241,9 +235,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/clips:property&quot;}}clips{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/clips:property&quot;}}clips{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/clips:event&quot;}}{{/crossLink}} event on change.
@@ -265,9 +260,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/colorTarget:property&quot;}}colorTarget{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/colorTarget:property&quot;}}colorTarget{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/colorTarget:event&quot;}}{{/crossLink}} event on change.
@@ -289,9 +285,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/colorBuf:property&quot;}}colorBuf{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/colorBuf:property&quot;}}colorBuf{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/colorBuf:event&quot;}}{{/crossLink}} event on change.
@@ -313,9 +310,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/depthTarget:property&quot;}}depthTarget{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/depthTarget:property&quot;}}depthTarget{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/depthTarget:event&quot;}}{{/crossLink}} event on change.
@@ -337,9 +335,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/depthBuf:property&quot;}}depthBuf{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     * parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/depthBuf:property&quot;}}depthBuf{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/depthBuf:event&quot;}}{{/crossLink}} event on change.
@@ -361,9 +360,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/visibility:property&quot;}}visibility{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/visibility:property&quot;}}visibility{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/visibility:event&quot;}}{{/crossLink}} event on change.
@@ -385,9 +385,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/modes:property&quot;}}modes{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/modes:property&quot;}}modes{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/modes:event&quot;}}{{/crossLink}} event on change.
@@ -409,9 +410,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/geometry:property&quot;}}camera{{/crossLink}}
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/geometry:property&quot;}}camera{{/crossLink}}
      * (a simple box) when set to a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/geometry:event&quot;}}{{/crossLink}} event on change.
@@ -433,9 +435,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/layer:event&quot;}}{{/crossLink}} event on change.
@@ -457,9 +460,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/lights:property&quot;}}lights{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/lights:property&quot;}}lights{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/lights:event&quot;}}{{/crossLink}} event on change.
@@ -481,9 +485,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/material:property&quot;}}material{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/material:property&quot;}}material{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/material:event&quot;}}{{/crossLink}} event on change.
@@ -505,9 +510,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/morphTargets:property&quot;}}morphTargets{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/morphTargets:property&quot;}}morphTargets{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/morphTargets:event&quot;}}{{/crossLink}} event on change.
@@ -529,9 +535,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/reflect:property&quot;}}reflect{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/reflect:property&quot;}}reflect{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/reflect:event&quot;}}{{/crossLink}} event on change.
@@ -553,9 +560,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/shader:property&quot;}}shader{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/shader:property&quot;}}shader{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/shader:event&quot;}}{{/crossLink}} event on change.
@@ -577,9 +585,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/shaderParams:property&quot;}}shaderParams{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/shaderParams:property&quot;}}shaderParams{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/shaderParams:event&quot;}}{{/crossLink}} event on change.
@@ -601,9 +610,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} associated with this GameObject.
+     * The {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}} when set to
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}} when set to
      * a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/stage:event&quot;}}{{/crossLink}} event on change.
@@ -625,9 +635,10 @@ XEO.GameObject = XEO.Component.extend({
     },
 
     /**
-     * The modelling transform associated with this GameObject.
+     * The modelling transform attached to this GameObject.
      *
-     * Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/transform:property&quot;}}transform{{/crossLink}}
+     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/transform:property&quot;}}transform{{/crossLink}}
      * (an identity matrix) when set to a null or undefined value.
      *
      * Fires a {{#crossLink &quot;GameObject/transform:event&quot;}}{{/crossLink}} event on change.
@@ -651,7 +662,7 @@ XEO.GameObject = XEO.Component.extend({
 
     _compile: function () {
 
-        // Set states associated with this GameObject on the renderer
+        // Set states attached to this GameObject on the renderer
 
         var children = this._children;
 

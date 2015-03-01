@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- Specifies the render order of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
+ A **Layer** specifies the render order of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  <ul>
  <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each {{#crossLink "Stage"}}Stage{{/crossLink}} will render its bin
@@ -16,8 +16,8 @@
  {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
 
 
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly associated with a Layer are implicitly
- associated with the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly
+ attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
  a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.</li>
 
@@ -58,9 +58,9 @@ XEO.Layer = XEO.Component.extend({
     },
 
     /**
-     * Indicates a *layer* rendering priority for the associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     * Indicates a *layer* rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
      *
-     * Each GameObject is also associated with a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
+     * Each GameObject is also attached to a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
      * priority via its {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} property.
      *
      * Fires a {{#crossLink "Layer/priority:event"}}{{/crossLink}} event on change.

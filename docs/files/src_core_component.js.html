@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,7 +120,7 @@
 &quot;use strict&quot;;
 
 /**
- Base class for all XEO components.
+ **Component* is the base class for all xeoEngine components.
 
  &lt;hr&gt;
   *Contents*
@@ -140,7 +139,7 @@
 
  Every Component has an ID that&#x27;s unique within the parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
 
- XEO Engine generates the IDs automatically by default, however you can also specify them yourself:
+ xeoEngine generates the IDs automatically by default, however you can also specify them yourself:
 
  &#x60;&#x60;&#x60;&#x60; javascript
  var scene = new XEO.Scene({
@@ -174,7 +173,7 @@
  &lt;br&gt;
  ### &lt;a name=&quot;props&quot;&gt;Properties&lt;/a&gt;
 
- Almost every property on a XEO Component fires a change event when you update it.
+ Almost every property on a xeoEngine Component fires a change event when you update it.
 
  For example, we can subscribe to the {{#crossLink &quot;Material/diffuse:event&quot;}}diffuse{{/crossLink}} event that a
  {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} fires when its {{#crossLink &quot;Material/diffuse:property&quot;}}diffuse{{/crossLink}}

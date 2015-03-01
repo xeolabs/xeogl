@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,7 +120,7 @@
 &quot;use strict&quot;;
 
 /**
- Sets uniform values for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **ShaderParams** sets uniform values for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  &lt;ul&gt;
  &lt;li&gt;Use these when you need to share the same {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}},
@@ -137,7 +136,7 @@
  essential components while falling back on the &lt;a href=&quot;XEO.Scene.html#defaults&quot; class=&quot;crosslink&quot;&gt;Scene&#x27;s default components&lt;/a&gt;
  for everything else.
 
- &lt;img src=&quot;../../files/shaderParamsExample1.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../assets/images/shaderParamsExample1.png&quot;&gt;&lt;/img&gt;
 
  In our scene definition, we have an  {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} that is our
  screen-aligned quad, plus a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
@@ -276,7 +275,7 @@ XEO.ShaderParams = XEO.Component.extend({
     },
 
     /**
-     * Sets one or more params for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on associated
+     * Sets one or more params for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached
      * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
      *
      * These will individually override any params of the same names that are {{#crossLink &quot;Shader/setParams:method&quot;}}already specified{{/crossLink}} on

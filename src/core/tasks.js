@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- Tracks general asynchronous tasks running within a {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ A **Tasks** tracks general asynchronous tasks running within a {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
  <ul>
  <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} has a Tasks component, available via the

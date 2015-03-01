@@ -234,7 +234,7 @@ XEO.Canvas = XEO.Component.extend({
      * Attempts to pick a {{#crossLink "GameObject"}}GameObject{{/crossLink}} at the given Canvas-space coordinates within the
      * parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
      *
-     * Ignores {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are associated
+     * Ignores {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are attached
      * to either a {{#crossLink "Stage"}}Stage{{/crossLink}} with {{#crossLink "Stage/pickable:property"}}pickable{{/crossLink}}
      * set *false* or a {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/picking:property"}}picking{{/crossLink}} set *false*.
      *

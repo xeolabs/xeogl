@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,16 +120,16 @@
 &quot;use strict&quot;;
 
 /**
-  Defines a perspective projection as a frustum.
+  A **Frustum** defines a perspective projection as a frustum-shaped view volume.
 
   {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with viewing transform components, such as
-  {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints for associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+  {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
   &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7103657/L.png&quot;&gt;&lt;/img&gt;
 
  ### Example
 
- The example below creates a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that&#x27;s associated with a
+ The example below creates a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that&#x27;s attached to a
  {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} that has a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} view transform and a Frustum
  projection transform.
 

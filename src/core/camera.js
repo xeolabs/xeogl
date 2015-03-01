@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- Defines a viewpoint on associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Camera** component defines a viewpoint on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  <ul>
 
@@ -22,9 +22,15 @@
 
  ### Example
 
- The example below creates a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's associated with a
- Camera that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a {{#crossLink "Perspective"}}Perspective{{/crossLink}}
- projection transform.
+ The following example creates
+ <ul>
+ <li>a {{#crossLink "Lookat"}}{{/crossLink}} view transform,</li>
+ <li>a {{#crossLink "Perspective"}}{{/crossLink}} projection transform,</li>
+ <li>a Camera attached to the {{#crossLink "Lookat"}}{{/crossLink}} and {{#crossLink "Perspective"}}{{/crossLink}},</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
+
 
  ```` javascript
  var scene = new XEO.Scene();

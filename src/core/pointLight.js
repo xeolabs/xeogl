@@ -1,15 +1,15 @@
 "use strict";
 
 /**
- A light source that originates from a single point and spreads outward in all directions, to illuminate
- associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **PointLight** defines a light source that originates from a single point and spreads outward in all directions, to illuminate
+ attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  <ul>
 
  <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are associated with {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
- <li>Within XEO Engine's Phong lighting calculations, PointLight {{#crossLink "PointLight/diffuse:property"}}{{/crossLink}} and
+ <li>Within xeoEngine's Phong lighting calculations, PointLight {{#crossLink "PointLight/diffuse:property"}}{{/crossLink}} and
  {{#crossLink "PointLight/specular:property"}}{{/crossLink}} are multiplied by {{#crossLink "Material"}}Material{{/crossLink}}
  {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and {{#crossLink "Material/specular:property"}}{{/crossLink}},
  respectively.</li>
@@ -27,8 +27,14 @@
 
  ### Example
 
- The example below creates a {{#crossLink "GameObject"}}{{/crossLink}} that has a {{#crossLink "Geometry"}}{{/crossLink}},
- a {{#crossLink "Material"}}{{/crossLink}}, and a {{#crossLink "Lights"}}{{/crossLink}} that has a {{#crossLink "PointLight"}}{{/crossLink}}.
+ The following example creates
+ <ul>
+ <li>a {{#crossLink "Material"}}{{/crossLink}},</li>
+ <li>a PointLight,</li>
+ <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the PointLight,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
 
  ```` javascript
  var scene = new XEO.Scene();
@@ -37,9 +43,6 @@
         diffuse: [1, 1, 1],
         specular: [1.1, 1]
  });
-
- // Within XEO Engine's Phong shading calculations, the PointLight's diffuse and
- // specular colors will be multiplied by the Material's diffuse and specular colors.
 
  // Our PointLight's intensity does not attenuate over distance.
 

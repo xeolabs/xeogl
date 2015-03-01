@@ -1,16 +1,16 @@
 "use strict";
 
 /**
-  Defines a perspective projection as a frustum.
+  A **Frustum** defines a perspective projection as a frustum-shaped view volume.
 
   {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
-  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
   <img src="http://www.gliffy.com/go/publish/image/7103657/L.png"></img>
 
  ### Example
 
- The example below creates a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's associated with a
+ The example below creates a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
  {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Frustum
  projection transform.
 

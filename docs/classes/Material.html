@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,17 +130,17 @@
 
 
 <div class="box intro">
-    <p>Defines the surface appearance of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>Material</strong> defines the surface appearance of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <ul>
 <li>Materials interact with <a href="../classes/Lights.html" class="crosslink">Lights</a> using the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model.</li>
 
-<li>Within XEO Engine&#39;s shading calculations, a Material&#39;s <a href="../classes/Material.html#property_ambient" class="crosslink">ambient</a>, <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> and
- <a href="../classes/Material.html#property_specular" class="crosslink">specular</a> properties are multiplied by corresponding color properties on associated
+<li>Within xeoEngine&#39;s shading calculations, a Material&#39;s <a href="../classes/Material.html#property_ambient" class="crosslink">ambient</a>, <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> and
+<a href="../classes/Material.html#property_specular" class="crosslink">specular</a> properties are multiplied by corresponding color properties on attached
 <a href="../classes/PointLight.html" class="crosslink">AmbientLights</a>, <a href="../classes/PointLight.html" class="crosslink">PointLights</a> and <a href="../classes/DirLight.html" class="crosslink">DirLights</a>.</li>
 
 <li>These Material properties, along with <a href="../classes/Material.html#property_emissive" class="crosslink">emissive</a>,
 <a href="../classes/Material.html#property_opacity" class="crosslink">opacity</a> and <a href="../classes/Material.html#property_reflectivity" class="crosslink">reflectivity</a>,
-specify attributes that are to be <strong>applied uniformly</strong> across the surface of associated <a href="../classes/Geometry.html" class="crosslink">Geometries</a>.</li>
+specify attributes that are to be <strong>applied uniformly</strong> across the surface of attached <a href="../classes/Geometry.html" class="crosslink">Geometries</a>.</li>
 
 <li>Most of those attributes can be textured, <strong>effectively replacing the values set for those properties</strong>, by
 assigning <a href="../classes/Texture.html" class="crosslink">Textures</a> to the Material&#39;s
@@ -165,7 +164,7 @@ the <a href="../classes/Material.html#property_diffuse" class="crosslink">diffus
 <li>a <a href="../classes/Material.html" class="crosslink">Material</a> which applies the <a href="../classes/Texture.html" class="crosslink">Texture</a> as a diffuse map,</li>
 <li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> and a <a href="../classes/DirLight.html" class="crosslink">DirLight</a>,</li>
 <li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
-<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> associated with all of the above.</li>
+<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
 </ul>
 
 <p>Note that the value for the <a href="../classes/Material.html" class="crosslink">Material&#39;s</a> <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a>
@@ -310,7 +309,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Material ambient color. Multiplied by <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> AmbientLight/color:property.</p>
+                                            <p>Material ambient color. Multiplied by <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> <a href="../classes/AmbientLight.html#property_ambient" class="crosslink">color</a>.</p>
         
                                         </div>
         
@@ -377,7 +376,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Scalar in range 0-1 that controls how much <a href="../classes/CubeMap.html" class="crosslink">CubeMap</a> is reflected.</p>
+                                            <p>Scalar in range 0-1 that controls how much CubeMap is reflected.</p>
         
                                         </div>
         
@@ -388,7 +387,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A diffuse map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the diffuse property.</p>
+                                            <p>A diffuse map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the diffuse property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Material.</p>
         
                                         </div>
         
@@ -399,7 +398,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A specular map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the specular property.</p>
+                                            <p>A specular map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the specular property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Material.</p>
         
                                         </div>
         
@@ -410,7 +409,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>An emissive map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the emissive property.</p>
+                                            <p>An emissive map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the emissive property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Material.</p>
         
                                         </div>
         
@@ -421,7 +420,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A bump map <a href="../classes/Texture.html" class="crosslink">Texture</a>.</p>
+                                            <p>A bump map <a href="../classes/Texture.html" class="crosslink">Texture</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Material.</p>
         
                                         </div>
         
@@ -432,7 +431,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>An opacity map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the opacity property.</p>
+                                            <p>An opacity map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the opacity property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Material.</p>
         
                                         </div>
         
@@ -443,7 +442,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A reflectivity control map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the reflectivity property.</p>
+                                            <p>A reflectivity control map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the reflectivity property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Material.</p>
         
                                         </div>
         
@@ -1255,8 +1254,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The Material&#39;s diffuse color.</p>
-                    <p>This property may be textured by adding a <a href="../classes/Texture.html" class="crosslink">Texture</a> that has an
-                    Texture/applyTo:property set to <code>"diffuse"</code>.</p>
+                    <p>This property may be overridden by <a href="../classes/Material.html#property_diffuseMap" class="crosslink">diffuseMap</a>.</p>
                     <p>Fires a <a href="../classes/Material.html#event_diffuse" class="crosslink">diffuse</a> event on change.</p>
                     
                         </div>
@@ -1276,14 +1274,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l356"><code>src&#x2F;core&#x2F;material.js:356</code></a>
+                            <a href="../files/src_core_material.js.html#l351"><code>src&#x2F;core&#x2F;material.js:351</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>A diffuse texture map attached to this Material.</p>
+                            <p>A diffuse <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this Material.</p>
+                    <p>This property overrides <a href="../classes/Material.html#property_diffuseMap" class="crosslink">diffuseMap</a> when not null or undefined.</p>
                     <p>Fires a <a href="../classes/Material.html#event_diffuseMap" class="crosslink">diffuseMap</a> event on change.</p>
                     
                         </div>
@@ -1303,7 +1302,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l231"><code>src&#x2F;core&#x2F;material.js:231</code></a>
+                            <a href="../files/src_core_material.js.html#l229"><code>src&#x2F;core&#x2F;material.js:229</code></a>
                             </p>
                     
                     
@@ -1311,8 +1310,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The Material&#39;s emissive color.</p>
-                    <p>This property may be textured by adding a <a href="../classes/Texture.html" class="crosslink">Texture</a> that has an
-                    Texture/applyTo:property set to <code>"emissive"</code>.</p>
+                    <p>This property may be overridden by <a href="../classes/Material.html#property_emissiveMap" class="crosslink">emissiveMap</a>.</p>
                     <p>Fires a <a href="../classes/Material.html#event_emissive" class="crosslink">emissive</a> event on change.</p>
                     
                         </div>
@@ -1332,15 +1330,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l402"><code>src&#x2F;core&#x2F;material.js:402</code></a>
+                            <a href="../files/src_core_material.js.html#l401"><code>src&#x2F;core&#x2F;material.js:401</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>A emissive texture map attached to this Material.</p>
-                    <p>Fires a <a href="../classes/Material.html#event_emissiveMap" class="crosslink">emissiveMap</a> event on change.</p>
+                            <p>An emissive <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this Material.</p>
+                    <p>This property overrides <a href="../classes/Material.html#property_emissive" class="crosslink">emissive</a> when not null or undefined.</p>
+                    <p>Fires an <a href="../classes/Material.html#event_emissiveMap" class="crosslink">emissiveMap</a> event on change.</p>
                     
                         </div>
                     
@@ -1411,7 +1410,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l260"><code>src&#x2F;core&#x2F;material.js:260</code></a>
+                            <a href="../files/src_core_material.js.html#l257"><code>src&#x2F;core&#x2F;material.js:257</code></a>
                             </p>
                     
                     
@@ -1420,11 +1419,10 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>Factor in the range [0..1] indicating how transparent the Material is.</p>
                     <p>A value of 0.0 indicates fully transparent, 1.0 is fully opaque.</p>
-                    <p>If <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a> is not set to true on associated
-                    <a href="../classes/Modes.html" class="crosslink">Modes</a>, then the Material will remain fully opaque and this property will
-                    have no effect.</p>
-                    <p>This property may be textured by adding a <a href="../classes/Texture.html" class="crosslink">Texture</a> that has an
-                    Texture/applyTo:property set to <code>"opacity"</code>.</p>
+                    <p>Attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> will appear transparent only if they are also attached
+                    to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
+                    set to <strong>true</strong>.</p>
+                    <p>This property may be overridden by <a href="../classes/Material.html#property_opacityMap" class="crosslink">opacityMap</a>.</p>
                     <p>Fires an <a href="../classes/Material.html#event_opacity" class="crosslink">opacity</a> event on change.</p>
                     
                         </div>
@@ -1444,15 +1442,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l425"><code>src&#x2F;core&#x2F;material.js:425</code></a>
+                            <a href="../files/src_core_material.js.html#l426"><code>src&#x2F;core&#x2F;material.js:426</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>A opacity texture map attached to this Material.</p>
-                    <p>Fires a <a href="../classes/Material.html#event_opacityMap" class="crosslink">opacityMap</a> event on change.</p>
+                            <p>An opacity <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this Material.</p>
+                    <p>This property overrides <a href="../classes/Material.html#property_opacity" class="crosslink">opacity</a> when not null or undefined.</p>
+                    <p>Fires an <a href="../classes/Material.html#event_opacityMap" class="crosslink">opacityMap</a> event on change.</p>
                     
                         </div>
                     
@@ -1471,17 +1470,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l325"><code>src&#x2F;core&#x2F;material.js:325</code></a>
+                            <a href="../files/src_core_material.js.html#l321"><code>src&#x2F;core&#x2F;material.js:321</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Scalar in range 0-1 that controls how much <a href="../classes/CubeMap.html" class="crosslink">CubeMap</a> is reflected by this Material.</p>
+                            <p>Scalar in range 0-1 that controls how much CubeMap is reflected by this Material.</p>
                     <p>The surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.</p>
-                    <p>This property may be textured by adding a <a href="../classes/Texture.html" class="crosslink">Texture</a> that has an
-                    Texture/applyTo:property set to <code>"reflectivity"</code>.</p>
+                    <p>This property may be overridden by <a href="../classes/Material.html#property_reflectivityMap" class="crosslink">reflectivityMap</a>.</p>
                     <p>Fires a <a href="../classes/Material.html#event_reflectivity" class="crosslink">reflectivity</a> event on change.</p>
                     
                         </div>
@@ -1501,14 +1499,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l448"><code>src&#x2F;core&#x2F;material.js:448</code></a>
+                            <a href="../files/src_core_material.js.html#l451"><code>src&#x2F;core&#x2F;material.js:451</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>A reflectivity texture map attached to this Material.</p>
+                            <p>A reflectivity <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this Material.</p>
+                    <p>This property overrides <a href="../classes/Material.html#property_reflectivity" class="crosslink">reflectivity</a> when not null or undefined.</p>
                     <p>Fires a <a href="../classes/Material.html#event_reflectivityMap" class="crosslink">reflectivityMap</a> event on change.</p>
                     
                         </div>
@@ -1554,7 +1553,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l295"><code>src&#x2F;core&#x2F;material.js:295</code></a>
+                            <a href="../files/src_core_material.js.html#l291"><code>src&#x2F;core&#x2F;material.js:291</code></a>
                             </p>
                     
                     
@@ -1584,7 +1583,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l202"><code>src&#x2F;core&#x2F;material.js:202</code></a>
+                            <a href="../files/src_core_material.js.html#l201"><code>src&#x2F;core&#x2F;material.js:201</code></a>
                             </p>
                     
                     
@@ -1592,8 +1591,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The material&#39;s specular color.</p>
-                    <p>This property may be textured by adding a <a href="../classes/Texture.html" class="crosslink">Texture</a> that has an
-                    Texture/applyTo:property set to <code>"specular"</code>.</p>
+                    <p>This property may be overridden by <a href="../classes/Material.html#property_specularMap" class="crosslink">specularMap</a>.</p>
                     <p>Fires a <a href="../classes/Material.html#event_specular" class="crosslink">specular</a> event on change.</p>
                     
                         </div>
@@ -1613,14 +1611,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l379"><code>src&#x2F;core&#x2F;material.js:379</code></a>
+                            <a href="../files/src_core_material.js.html#l376"><code>src&#x2F;core&#x2F;material.js:376</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>A specular texture map attached to this Material.</p>
+                            <p>A specular <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this Material.</p>
+                    <p>This property overrides <a href="../classes/Material.html#property_specular" class="crosslink">specular</a> when not null or undefined.</p>
                     <p>Fires a <a href="../classes/Material.html#event_specularMap" class="crosslink">specularMap</a> event on change.</p>
                     
                         </div>
@@ -1741,7 +1740,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l190"><code>src&#x2F;core&#x2F;material.js:190</code></a>
+                            <a href="../files/src_core_material.js.html#l189"><code>src&#x2F;core&#x2F;material.js:189</code></a>
                             </p>
                     
                     
@@ -1783,14 +1782,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l368"><code>src&#x2F;core&#x2F;material.js:368</code></a>
+                            <a href="../files/src_core_material.js.html#l365"><code>src&#x2F;core&#x2F;material.js:365</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_diffuseMap" class="crosslink">diffuseMap</a> property changes.</p>
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> property changes.</p>
                     
                         </div>
                     
@@ -1825,7 +1824,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l248"><code>src&#x2F;core&#x2F;material.js:248</code></a>
+                            <a href="../files/src_core_material.js.html#l245"><code>src&#x2F;core&#x2F;material.js:245</code></a>
                             </p>
                     
                     
@@ -1867,7 +1866,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l414"><code>src&#x2F;core&#x2F;material.js:414</code></a>
+                            <a href="../files/src_core_material.js.html#l415"><code>src&#x2F;core&#x2F;material.js:415</code></a>
                             </p>
                     
                     
@@ -1909,7 +1908,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l283"><code>src&#x2F;core&#x2F;material.js:283</code></a>
+                            <a href="../files/src_core_material.js.html#l279"><code>src&#x2F;core&#x2F;material.js:279</code></a>
                             </p>
                     
                     
@@ -1951,7 +1950,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l437"><code>src&#x2F;core&#x2F;material.js:437</code></a>
+                            <a href="../files/src_core_material.js.html#l440"><code>src&#x2F;core&#x2F;material.js:440</code></a>
                             </p>
                     
                     
@@ -1993,7 +1992,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l344"><code>src&#x2F;core&#x2F;material.js:344</code></a>
+                            <a href="../files/src_core_material.js.html#l339"><code>src&#x2F;core&#x2F;material.js:339</code></a>
                             </p>
                     
                     
@@ -2035,7 +2034,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l460"><code>src&#x2F;core&#x2F;material.js:460</code></a>
+                            <a href="../files/src_core_material.js.html#l465"><code>src&#x2F;core&#x2F;material.js:465</code></a>
                             </p>
                     
                     
@@ -2077,7 +2076,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l313"><code>src&#x2F;core&#x2F;material.js:313</code></a>
+                            <a href="../files/src_core_material.js.html#l309"><code>src&#x2F;core&#x2F;material.js:309</code></a>
                             </p>
                     
                     
@@ -2119,7 +2118,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l219"><code>src&#x2F;core&#x2F;material.js:219</code></a>
+                            <a href="../files/src_core_material.js.html#l217"><code>src&#x2F;core&#x2F;material.js:217</code></a>
                             </p>
                     
                     
@@ -2161,7 +2160,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l391"><code>src&#x2F;core&#x2F;material.js:391</code></a>
+                            <a href="../files/src_core_material.js.html#l390"><code>src&#x2F;core&#x2F;material.js:390</code></a>
                             </p>
                     
                     

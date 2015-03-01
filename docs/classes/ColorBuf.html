@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,7 +130,7 @@
 
 
 <div class="box intro">
-    <p>Configures the WebGL color buffer for associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>ColorBuf</strong> configures the WebGL color buffer for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <ul>
 
 <li>A ColorBuf configures <strong>the way</strong> that pixels are written to the WebGL color buffer, and is not to be confused
@@ -142,7 +141,28 @@ fed into <a href="../classes/Texture.html" class="crosslink">Textures</a>.</li>
 
 <p><img src="http://www.gliffy.com/go/publish/image/7104987/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>TODO</p>
+<p>In the example below we&#39;re configuring the WebGL color buffer for a <a href="../classes/GameObject.html" class="crosslink">GameObject</a>.</p>
+<p>The scene contains:</p>
+<ul>
+<li>a ColorBuf that enables blending and sets the color mask,</li>
+<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape and
+<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
+</ul>
+
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
+
+var depthBuf = new XEO.ColorTarget(scene, {
+    clearDepth: 0.5,
+    depthFunc: "less"
+});
+
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+var gameObject = new XEO.GameObject(scene, {
+    depthBuf: depthBuf,
+    geometry: geometry
+});
+</code></pre>
 
 </div>
 
@@ -895,7 +915,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_colorBuf.js.html#l43"><code>src&#x2F;core&#x2F;colorBuf.js:43</code></a>
+                            <a href="../files/src_core_colorBuf.js.html#l67"><code>src&#x2F;core&#x2F;colorBuf.js:67</code></a>
                             </p>
                     
                     
@@ -949,7 +969,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_colorBuf.js.html#l70"><code>src&#x2F;core&#x2F;colorBuf.js:70</code></a>
+                            <a href="../files/src_core_colorBuf.js.html#l94"><code>src&#x2F;core&#x2F;colorBuf.js:94</code></a>
                             </p>
                     
                     
@@ -1113,7 +1133,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_colorBuf.js.html#l57"><code>src&#x2F;core&#x2F;colorBuf.js:57</code></a>
+                            <a href="../files/src_core_colorBuf.js.html#l81"><code>src&#x2F;core&#x2F;colorBuf.js:81</code></a>
                             </p>
                     
                     
@@ -1155,7 +1175,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_colorBuf.js.html#l84"><code>src&#x2F;core&#x2F;colorBuf.js:84</code></a>
+                            <a href="../files/src_core_colorBuf.js.html#l108"><code>src&#x2F;core&#x2F;colorBuf.js:108</code></a>
                             </p>
                     
                     

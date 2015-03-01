@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,15 +120,15 @@
 &quot;use strict&quot;;
 
 /**
- A light source that illuminates all associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally
+ A **DirLight** is a light source that illuminates all attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally
  from a given direction.
 
  &lt;ul&gt;
 
  &lt;li&gt;DirLights are grouped, along with other light source types, within {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components,
- which are associated with {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ which are attached to {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
- &lt;li&gt;Within XEO Engine&#x27;s Phong lighting calculations, DirLight {{#crossLink &quot;DirLight/diffuse:property&quot;}}{{/crossLink}} and
+ &lt;li&gt;Within xeoEngine&#x27;s Phong lighting calculations, DirLight {{#crossLink &quot;DirLight/diffuse:property&quot;}}{{/crossLink}} and
  {{#crossLink &quot;DirLight/specular:property&quot;}}{{/crossLink}} are multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
  {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}},
  respectively.&lt;/li&gt;
@@ -144,9 +143,14 @@
 
  ### Example
 
- The example below creates a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}},
- a {{#crossLink &quot;Material&quot;}}{{/crossLink}}, and a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} that has a {{#crossLink &quot;DirLight&quot;}}{{/crossLink}}.
-
+ The following example creates
+ &lt;ul&gt;
+ &lt;li&gt;a {{#crossLink &quot;material&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a DirLight,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing the DirLight,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
 
  &#x60;&#x60;&#x60;&#x60; javascript
  var scene = new XEO.Scene();
@@ -157,9 +161,6 @@
     specular:   [1. 1, 1],
     shininess:  30
  });
-
- // Within XEO Engine&#x27;s Phong shading calculations, the DirLight&#x27;s diffuse and
- // specular colors will be multiplied by the Material&#x27;s diffuse and specular colors
 
  var dirLight = new XEO.DirLight(scene, {
     dir:        [-1, -1, -1],

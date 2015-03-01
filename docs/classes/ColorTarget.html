@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,7 +130,7 @@
 
 
 <div class="box intro">
-    <p>Captures rendered pixel colors of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>ColorTarget</strong> captures rendered pixel colors of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <ul>
 <li>A ColorTarget provides the pixel colors as a dynamic color image that may be fed into <a href="../classes/Texture.html" class="crosslink">Textures</a>.</li>
 <li>ColorTarget is not to be confused with <a href="../classes/ColorBuf.html" class="crosslink">ColorBuf</a>, which configures <strong><em>how</em></strong> the pixel colors are written with respect to the WebGL color buffer.</li>
@@ -143,41 +142,40 @@ with <a href="../classes/DepthTarget.html" class="crosslink">DepthTargets</a> an
 
 <p><img src="http://www.gliffy.com/go/publish/image/7096829/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>Shown below is a minimal example of how to use ColorTargets, in which we create an
-<a href="../classes/GameObject.html" class="crosslink">GameObject</a> that renders a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> to a
-ColorTarget, then a second <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that has a <a href="../classes/Material.html" class="crosslink">Material</a>
-with a <a href="../classes/Texture.html" class="crosslink">Texture</a> that sources its pixels from the ColorTarget. The end effect is a box
-that is textured with view of another box.</p>
-<p>As with all our examples, we&#39;re creating only the essential components while falling back on
-the <a href="XEO.Scene.html#defaults" class="crosslink">Scene&#39;s default components</a> for everything else.</p>
+<p>In the example below we essentially have one <a href="../classes/GameObject.html" class="crosslink">GameObject</a>
+that&#39;s rendered to a <a href="../classes/Texture.html" class="crosslink">Texture</a>, which is then applied to a second <a href="../classes/GameObject.html" class="crosslink">GameObject</a>.</p>
+<p>The scene contains:</p>
+<ul>
+<li>a ColorTarget,</li>
+<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape,
+<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that renders the <a href="../classes/Geometry.html" class="crosslink">Geometry</a> pixel color values to the ColorTarget,</li>
+<li>a <a href="../classes/Texture.html" class="crosslink">Texture</a> that sources its pixels from the ColorTarget,</li>
+<li>a <a href="../classes/Material.html" class="crosslink">Material</a> that includes the <a href="../classes/Texture.html" class="crosslink">Texture</a>, and</li>
+<li>a second <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that renders the <a href="../classes/Geometry.html" class="crosslink">Geometry</a>, with the <a href="../classes/Material.html" class="crosslink">Material</a> applied to it.</li>
+</ul>
+
+
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
-// Geometry without parameters will default to a 2x2x2 box. Note that we could have
-// instead just used the Scene&#39;s default Geometry, but we&#39;ll create our own for this example.
-var geometry = new XEO.Geometry(scene);
-
-// Our ColorTarget
 var colorTarget = new XEO.ColorTarget(scene);
 
-// GameObject that is rendered to the ColorTarget
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
 var firstGameObject = new XEO.GameObject(scene, {
       geometry: geometry,
       colorTarget: colorTarget
  });
 
-// Texture that sources its pixels from the ColorTarget
 var texture = new XEO.Texture(scene, {
      target: colorTarget
  });
 
-// Material that contains the texture
 var material = new XEO.Material(scene, {
       textures: [
           texture
       ]
  });
 
-// Second GameObject uses the Material, and is therefore textured with the image of the first GameObject
 var object2 = new XEO.GameObject(scene, {
       geometry: geometry,  // Reuse our simple box geometry
       material: material

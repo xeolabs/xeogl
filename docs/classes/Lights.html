@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,7 +130,7 @@
 
 
 <div class="box intro">
-    <p>A group of light sources to apply to associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>Lights</strong> is a group of light sources to apply to attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <p>A Lights may contain a virtually unlimited number of three types of light source:</p>
 <ul>
 <li><a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a>s, which are fixed-intensity and fixed-color, and
@@ -142,10 +141,10 @@ originates from a single point and spreads outward in all directions, and </li>
 <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> equally from a given direction</li>
 </ul>
 
-<p>Within XEO Engine&#39;s <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model, the ambient,
+<p>Within xeoEngine&#39;s <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model, the ambient,
 diffuse and specular components of light sources are multiplied by the
 <a href="../classes/Material.html#property_ambient" class="crosslink">ambient</a>, <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> and
-<a href="../classes/Material.html#property_specular" class="crosslink">specular</a> properties on associated  <a href="../classes/Material.html" class="crosslink">Materials</a>.</p>
+<a href="../classes/Material.html#property_specular" class="crosslink">specular</a> properties on attached  <a href="../classes/Material.html" class="crosslink">Materials</a>.</p>
 <p><img src="http://www.gliffy.com/go/publish/image/7092459/L.png"></img></p>
 <h3 id="example">Example</h3>
 <p>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that has a <a href="../classes/Geometry.html" class="crosslink">Geometry</a>,
@@ -160,7 +159,7 @@ var material = new XEO.Material(scene, {
    shininess:  30
 });
 
-// Within XEO Engine&#39;s lighting calculations, the AmbientLight&#39;s ambient color
+// Within xeoEngine&#39;s lighting calculations, the AmbientLight&#39;s ambient color
 // will be multiplied by the Material&#39;s ambient color, while the DirLight and PointLight&#39;s
 // diffuse and specular colors will be multiplied by the Material&#39;s diffuse and specular colors
 

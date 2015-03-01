@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,7 +120,7 @@
 &quot;use strict&quot;;
 
 /**
- Specifies the render order of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within their {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.
+ A **Layer** specifies the render order of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within their {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.
 
  &lt;ul&gt;
  &lt;li&gt;When the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} renders, each {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} will render its bin
@@ -136,8 +135,8 @@
  {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.&lt;/li&gt;
 
 
- &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} not explicitly associated with a Layer are implicitly
- associated with the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
+ &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly
+ attached to the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
  {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}}. which has
  a {{#crossLink &quot;Layer/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
 
@@ -178,9 +177,9 @@ XEO.Layer = XEO.Component.extend({
     },
 
     /**
-     * Indicates a *layer* rendering priority for the associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+     * Indicates a *layer* rendering priority for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
      *
-     * Each GameObject is also associated with a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}, which sets a *stage* rendering
+     * Each GameObject is also attached to a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}, which sets a *stage* rendering
      * priority via its {{#crossLink &quot;Stage/priority:property&quot;}}priority{{/crossLink}} property.
      *
      * Fires a {{#crossLink &quot;Layer/priority:event&quot;}}{{/crossLink}} event on change.

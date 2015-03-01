@@ -1,7 +1,7 @@
 "use strict";
 
 /**
-  Defines the geometric shape of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+  A **Geometry** defines the geometric shape of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
   <img src="http://www.gliffy.com/go/publish/image/7103669/L.png"></img>
 

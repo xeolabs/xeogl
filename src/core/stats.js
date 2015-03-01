@@ -3,7 +3,7 @@
 "use strict";
 
 /**
- Provides statistics on the parent {{#crossLink "Scene"}}{{/crossLink}}.
+ A **Stats** provides statistics on the parent {{#crossLink "Scene"}}{{/crossLink}}.
 
  <ul>
 
@@ -43,7 +43,7 @@
  var numGeometries = configs.props["numGeometries"];
  ````
 
- As mentioned, we can manage our own statistics as well (perhaps if we're extending XEO Engine):
+ As mentioned, we can manage our own statistics as well (perhaps if we're extending xeoEngine):
 
  ````Javascript
 

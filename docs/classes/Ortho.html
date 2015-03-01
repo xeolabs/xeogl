@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,18 +130,18 @@
 
 
 <div class="box intro">
-    <p>An orthographic projection transform.</p>
+    <p>An <strong>Ortho</strong> component defines an orthographic projection transform.</p>
 <ul>
 <li><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
-<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints for associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
 </ul>
 
 <p><img src="http://www.gliffy.com/go/publish/image/7097089/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s associated with a
+<p>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s attached to a
 <a href="../classes/Camera.html" class="crosslink">Camera</a> that has a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform and an Ortho
 projection transform.</p>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene(engine);
+<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
 
 var ortho = new XEO.Ortho(scene, {
    left:       1.0,    // Position of the left plane on the View-space X-axis
@@ -163,20 +162,6 @@ var object = new XEO.GameObject(scene, {
    camera: camera,
    geometry: geometry
 });
-
-// Subscribe to changes on a property of our ortho component
-ortho.on("near", function(value) {
-      console.log("ortho &#39;near&#39; updated: " + value);
-  });
-
-// Set the value of a property on our ortho component, which fires the event we just subscribed to
-ortho.near = 45.0;
-
-// Get the value of a property on our ortho component
-var value = ortho.near;
-
-// Destroy ths ortho component, causing the camera to fall back on the scene&#39;s default projection transform
-ortho.destroy();
 </code></pre>
 
 </div>
@@ -1006,7 +991,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l195"><code>src&#x2F;core&#x2F;ortho.js:195</code></a>
+                            <a href="../files/src_core_ortho.js.html#l181"><code>src&#x2F;core&#x2F;ortho.js:181</code></a>
                             </p>
                     
                     
@@ -1085,7 +1070,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l245"><code>src&#x2F;core&#x2F;ortho.js:245</code></a>
+                            <a href="../files/src_core_ortho.js.html#l231"><code>src&#x2F;core&#x2F;ortho.js:231</code></a>
                             </p>
                     
                     
@@ -1138,7 +1123,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l120"><code>src&#x2F;core&#x2F;ortho.js:120</code></a>
+                            <a href="../files/src_core_ortho.js.html#l106"><code>src&#x2F;core&#x2F;ortho.js:106</code></a>
                             </p>
                     
                     
@@ -1191,7 +1176,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l220"><code>src&#x2F;core&#x2F;ortho.js:220</code></a>
+                            <a href="../files/src_core_ortho.js.html#l206"><code>src&#x2F;core&#x2F;ortho.js:206</code></a>
                             </p>
                     
                     
@@ -1218,7 +1203,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l145"><code>src&#x2F;core&#x2F;ortho.js:145</code></a>
+                            <a href="../files/src_core_ortho.js.html#l131"><code>src&#x2F;core&#x2F;ortho.js:131</code></a>
                             </p>
                     
                     
@@ -1271,7 +1256,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l170"><code>src&#x2F;core&#x2F;ortho.js:170</code></a>
+                            <a href="../files/src_core_ortho.js.html#l156"><code>src&#x2F;core&#x2F;ortho.js:156</code></a>
                             </p>
                     
                     
@@ -1332,7 +1317,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l208"><code>src&#x2F;core&#x2F;ortho.js:208</code></a>
+                            <a href="../files/src_core_ortho.js.html#l194"><code>src&#x2F;core&#x2F;ortho.js:194</code></a>
                             </p>
                     
                     
@@ -1399,7 +1384,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l258"><code>src&#x2F;core&#x2F;ortho.js:258</code></a>
+                            <a href="../files/src_core_ortho.js.html#l244"><code>src&#x2F;core&#x2F;ortho.js:244</code></a>
                             </p>
                     
                     
@@ -1441,7 +1426,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l133"><code>src&#x2F;core&#x2F;ortho.js:133</code></a>
+                            <a href="../files/src_core_ortho.js.html#l119"><code>src&#x2F;core&#x2F;ortho.js:119</code></a>
                             </p>
                     
                     
@@ -1483,7 +1468,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l233"><code>src&#x2F;core&#x2F;ortho.js:233</code></a>
+                            <a href="../files/src_core_ortho.js.html#l219"><code>src&#x2F;core&#x2F;ortho.js:219</code></a>
                             </p>
                     
                     
@@ -1525,7 +1510,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l158"><code>src&#x2F;core&#x2F;ortho.js:158</code></a>
+                            <a href="../files/src_core_ortho.js.html#l144"><code>src&#x2F;core&#x2F;ortho.js:144</code></a>
                             </p>
                     
                     
@@ -1567,7 +1552,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l183"><code>src&#x2F;core&#x2F;ortho.js:183</code></a>
+                            <a href="../files/src_core_ortho.js.html#l169"><code>src&#x2F;core&#x2F;ortho.js:169</code></a>
                             </p>
                     
                     

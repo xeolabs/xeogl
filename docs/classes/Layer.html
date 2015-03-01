@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,7 +130,7 @@
 
 
 <div class="box intro">
-    <p>Specifies the render order of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within their <a href="../classes/Stage.html" class="crosslink">Stages</a>.</p>
+    <p>A <strong>Layer</strong> specifies the render order of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within their <a href="../classes/Stage.html" class="crosslink">Stages</a>.</p>
 <ul>
 <li>When the parent <a href="../classes/Scene.html" class="crosslink">Scene</a> renders, each <a href="../classes/Stage.html" class="crosslink">Stage</a> will render its bin
 of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> in turn, from the lowest priority <a href="../classes/Stage.html" class="crosslink">Stage</a> to the highest.</li>
@@ -145,8 +144,8 @@ by associating them with <a href="../classes/Layer.html" class="crosslink">Layer
 <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within <a href="../classes/Stage.html" class="crosslink">Stages</a>.</li>
 
 
-<li><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> not explicitly associated with a Layer are implicitly
-associated with the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default
+<li><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> not explicitly attached to a Layer are implicitly
+attached to the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default
 <a href="../classes/Scene.html#property_layer" class="crosslink">layer</a>. which has
 a <a href="../classes/Layer.html#property_priority" class="crosslink">priority</a> value of zero.</li>
 
@@ -1004,8 +1003,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Indicates a <em>layer</em> rendering priority for the associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
-                    <p>Each GameObject is also associated with a <a href="../classes/Stage.html" class="crosslink">Stage</a>, which sets a <em>stage</em> rendering
+                            <p>Indicates a <em>layer</em> rendering priority for the attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    <p>Each GameObject is also attached to a <a href="../classes/Stage.html" class="crosslink">Stage</a>, which sets a <em>stage</em> rendering
                     priority via its <a href="../classes/Stage.html#property_priority" class="crosslink">priority</a> property.</p>
                     <p>Fires a <a href="../classes/Layer.html#event_priority" class="crosslink">priority</a> event on change.</p>
                     

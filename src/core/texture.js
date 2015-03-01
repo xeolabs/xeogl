@@ -1,19 +1,19 @@
 /**
- A texture map.
+ A **Texture** specifies a texture map.
 
  <ul>
 
- <li>Textures are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are associated with
+ <li>Textures are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
  {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
  <li>To create a Texture from an image file, setting the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
  property to the image file path.</li>
 
  <li>To render color images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is associated with those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
  <li>Similarly, to render depth images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is associated with those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
  <li>For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Shader"}}Stages{{/crossLink}}.</li>
  </ul>
@@ -22,10 +22,14 @@
 
  ### Example
 
- The example below creates a {{#crossLink "Material"}}{{/crossLink}} containing diffuse, specular and
- bump {{#crossLink "Texture"}}Textures{{/crossLink}}, along with a {{#crossLink "Lights"}}{{/crossLink}}
- containing a {{#crossLink "PointLight"}}{{/crossLink}} and a {{#crossLink "AmbientLight"}}{{/crossLink}}, and associates
- those with a {{#crossLink "GameObject"}}{{/crossLink}}.
+ The following example creates
+ <ul>
+ <li>three {{#crossLink "Texture"}}{{/crossLink}}s,</li>
+ <li>a {{#crossLink "Material"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>
+ <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
 
  ```` javascript
  var scene = new XEO.Scene();

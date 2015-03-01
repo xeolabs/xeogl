@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,7 +120,7 @@
 &quot;use strict&quot;;
 
 /**
-  Configures the WebGL depth buffer for associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+  A **DepthMap** configures the WebGL depth buffer for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer, and is not to be confused
  with {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}}, which holds the final pixel depths as a color-encoded image
@@ -129,9 +128,33 @@
 
   &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7104991/L.png&quot;&gt;&lt;/img&gt;
 
-  ### Example
+ ### Example
 
- TODO
+ In the example below we&#x27;re configuring the WebGL depth buffer for a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
+
+ The scene contains:
+
+ &lt;ul&gt;
+ &lt;li&gt;a DepthBuf that configures the clear depth and depth comparison function,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var scene = new XEO.Scene();
+
+ var depthBuf = new XEO.ColorTarget(scene, {
+     clearDepth: 0.5,
+     depthFunc: &quot;less&quot;
+ });
+
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+ var gameObject = new XEO.GameObject(scene, {
+     depthBuf: depthBuf,
+     geometry: geometry
+ });
+ &#x60;&#x60;&#x60;&#x60;
 
  @class DepthBuf
  @module XEO

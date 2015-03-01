@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,9 +130,9 @@
 
 
 <div class="box intro">
-    <p>A 3D object within a <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+    <p>A <strong>GameObject</strong> is an entity within a xeoEngine <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <ul>
-<li>See the <a href="../classes/Scene.html" class="crosslink">Scene</a> documentation for description and usage examples.</li>
+<li>See the <a href="../classes/Scene.html" class="crosslink">Scene</a> class for more information on GameObjects.</li>
 </ul>
 
 <p><img src="http://www.gliffy.com/go/publish/image/7122967/L.png"></img></p>
@@ -188,7 +187,7 @@
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this GameObject within the default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this GameObject within xeoEngine&#39;s default <a href="../classes/XEO.html#property_scene" class="crosslink">scene</a> by default.</p>
         
                             </div>
         
@@ -233,7 +232,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Camera.html" class="crosslink">Camera</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/Camera.html" class="crosslink">Camera</a> to attach to this GameObject.  Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a>.</p>
         
                                         </div>
@@ -245,7 +244,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Clips.html" class="crosslink">Clips</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/Clips.html" class="crosslink">Clips</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_clips" class="crosslink">clips</a>.</p>
         
                                         </div>
@@ -257,7 +256,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_colorTarget" class="crosslink">colorTarget</a>.</p>
         
                                         </div>
@@ -269,7 +268,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_depthTarget" class="crosslink">depthTarget</a>.</p>
         
                                         </div>
@@ -281,7 +280,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, depth <a href="../classes/Scene.html#property_depthBuf" class="crosslink">depthBuf</a>.</p>
         
                                         </div>
@@ -293,7 +292,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Visibility.html" class="crosslink">Visibility</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/Visibility.html" class="crosslink">Visibility</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_visibility" class="crosslink">visibility</a>.</p>
         
                                         </div>
@@ -305,7 +304,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Modes.html" class="crosslink">Modes</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/Modes.html" class="crosslink">Modes</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_modes" class="crosslink">modes</a>.</p>
         
                                         </div>
@@ -317,7 +316,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_geometry" class="crosslink">geometry</a>, which is a 2x2x2 box.</p>
         
                                         </div>
@@ -329,7 +328,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Layer.html" class="crosslink">Layer</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/Layer.html" class="crosslink">Layer</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_layer" class="crosslink">layer</a>.</p>
         
                                         </div>
@@ -341,7 +340,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Lights.html" class="crosslink">Lights</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/Lights.html" class="crosslink">Lights</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_lights" class="crosslink">lights</a>.</p>
         
                                         </div>
@@ -353,7 +352,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Material.html" class="crosslink">Material</a> within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the
+                                            <p>ID or instance of a <a href="../classes/Material.html" class="crosslink">Material</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_material" class="crosslink">material</a>.</p>
         
                                         </div>
@@ -365,8 +364,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/MorphTargets.html" class="crosslink">MorphTargets</a> within the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
+                                            <p>ID or instance of a <a href="../classes/MorphTargets.html" class="crosslink">MorphTargets</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
         default instance, <a href="../classes/Scene.html#property_morphTargets" class="crosslink">morphTargets</a>.</p>
         
                                         </div>
@@ -378,8 +376,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/CubeMap.html" class="crosslink">CubeMap</a> within the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
+                                            <p>ID or instance of a CubeMap to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
         <a href="../classes/Scene.html#property_reflect" class="crosslink">reflection</a>.</p>
         
                                         </div>
@@ -391,8 +388,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Shader.html" class="crosslink">Shader</a> within the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
+                                            <p>ID or instance of a <a href="../classes/Shader.html" class="crosslink">Shader</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
         <a href="../classes/Scene.html#property_shader" class="crosslink">shader</a>.</p>
         
                                         </div>
@@ -404,8 +400,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> within the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
+                                            <p>ID or instance of a <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
         <a href="../classes/Scene.html#property_shaderParams" class="crosslink">shaderParams</a>.</p>
         
                                         </div>
@@ -417,8 +412,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of of a <a href="../classes/Stage.html" class="crosslink">Stage</a> within the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
+                                            <p>ID or instance of of a <a href="../classes/Stage.html" class="crosslink">Stage</a> to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
         <a href="../classes/Scene.html#property_stage" class="crosslink">stage</a>.</p>
         
                                         </div>
@@ -430,8 +424,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a modelling transform within the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
+                                            <p>ID or instance of a modelling transform to attach to this GameObject. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
         <a href="../classes/Scene.html#property_transform" class="crosslink">transform</a> (which is an identity matrix which performs no transformation).</p>
         
                                         </div>
@@ -1208,15 +1201,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l99"><code>src&#x2F;core&#x2F;gameObject.js:99</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l93"><code>src&#x2F;core&#x2F;gameObject.js:93</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Camera.html" class="crosslink">Camera</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> when set to
+                            <p>The <a href="../classes/Camera.html" class="crosslink">Camera</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_camera" class="crosslink">camera</a> event on change.</p>
                     
@@ -1263,15 +1257,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l123"><code>src&#x2F;core&#x2F;gameObject.js:123</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l118"><code>src&#x2F;core&#x2F;gameObject.js:118</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Clips.html" class="crosslink">Clips</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_clips" class="crosslink">clips</a> when set to
+                            <p>The <a href="../classes/Clips.html" class="crosslink">Clips</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_clips" class="crosslink">clips</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_clips" class="crosslink">clips</a> event on change.</p>
                     
@@ -1291,15 +1286,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l171"><code>src&#x2F;core&#x2F;gameObject.js:171</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l168"><code>src&#x2F;core&#x2F;gameObject.js:168</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/ColorBuf.html" class="crosslink">ColorBuf</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_colorBuf" class="crosslink">colorBuf</a> when set to
+                            <p>The <a href="../classes/ColorBuf.html" class="crosslink">ColorBuf</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_colorBuf" class="crosslink">colorBuf</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_colorBuf" class="crosslink">colorBuf</a> event on change.</p>
                     
@@ -1319,15 +1315,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l147"><code>src&#x2F;core&#x2F;gameObject.js:147</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l143"><code>src&#x2F;core&#x2F;gameObject.js:143</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_colorTarget" class="crosslink">colorTarget</a> when set to
+                            <p>The <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_colorTarget" class="crosslink">colorTarget</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_colorTarget" class="crosslink">colorTarget</a> event on change.</p>
                     
@@ -1347,15 +1344,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l219"><code>src&#x2F;core&#x2F;gameObject.js:219</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l218"><code>src&#x2F;core&#x2F;gameObject.js:218</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_depthBuf" class="crosslink">depthBuf</a> when set to
+                            <p>The <a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the
+                    parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_depthBuf" class="crosslink">depthBuf</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_depthBuf" class="crosslink">depthBuf</a> event on change.</p>
                     
@@ -1375,15 +1373,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l195"><code>src&#x2F;core&#x2F;gameObject.js:195</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l193"><code>src&#x2F;core&#x2F;gameObject.js:193</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_depthTarget" class="crosslink">depthTarget</a> when set to
+                            <p>The <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_depthTarget" class="crosslink">depthTarget</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_depthTarget" class="crosslink">depthTarget</a> event on change.</p>
                     
@@ -1428,15 +1427,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l291"><code>src&#x2F;core&#x2F;gameObject.js:291</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l293"><code>src&#x2F;core&#x2F;gameObject.js:293</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Geometry.html" class="crosslink">Geometry</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_geometry" class="crosslink">camera</a>
+                            <p>The <a href="../classes/Geometry.html" class="crosslink">Geometry</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_geometry" class="crosslink">camera</a>
                     (a simple box) when set to a null or undefined value.</p>
                     <p>Fires a GameObject/geometry:event event on change.</p>
                     
@@ -1482,15 +1482,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l315"><code>src&#x2F;core&#x2F;gameObject.js:315</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l318"><code>src&#x2F;core&#x2F;gameObject.js:318</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Layer.html" class="crosslink">Layer</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_layer" class="crosslink">layer</a> when set to
+                            <p>The <a href="../classes/Layer.html" class="crosslink">Layer</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_layer" class="crosslink">layer</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_layer" class="crosslink">layer</a> event on change.</p>
                     
@@ -1510,15 +1511,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l339"><code>src&#x2F;core&#x2F;gameObject.js:339</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l343"><code>src&#x2F;core&#x2F;gameObject.js:343</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Lights.html" class="crosslink">Lights</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_lights" class="crosslink">lights</a> when set to
+                            <p>The <a href="../classes/Lights.html" class="crosslink">Lights</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_lights" class="crosslink">lights</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_lights" class="crosslink">lights</a> event on change.</p>
                     
@@ -1538,15 +1540,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l363"><code>src&#x2F;core&#x2F;gameObject.js:363</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l368"><code>src&#x2F;core&#x2F;gameObject.js:368</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Material.html" class="crosslink">Material</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_material" class="crosslink">material</a> when set to
+                            <p>The <a href="../classes/Material.html" class="crosslink">Material</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_material" class="crosslink">material</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_material" class="crosslink">material</a> event on change.</p>
                     
@@ -1592,15 +1595,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l267"><code>src&#x2F;core&#x2F;gameObject.js:267</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l268"><code>src&#x2F;core&#x2F;gameObject.js:268</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Modes.html" class="crosslink">Modes</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_modes" class="crosslink">modes</a> when set to
+                            <p>The <a href="../classes/Modes.html" class="crosslink">Modes</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_modes" class="crosslink">modes</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_modes" class="crosslink">modes</a> event on change.</p>
                     
@@ -1620,15 +1624,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l387"><code>src&#x2F;core&#x2F;gameObject.js:387</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l393"><code>src&#x2F;core&#x2F;gameObject.js:393</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/MorphTargets.html" class="crosslink">MorphTargets</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_morphTargets" class="crosslink">morphTargets</a> when set to
+                            <p>The <a href="../classes/MorphTargets.html" class="crosslink">MorphTargets</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_morphTargets" class="crosslink">morphTargets</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_morphTargets" class="crosslink">morphTargets</a> event on change.</p>
                     
@@ -1648,15 +1653,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l411"><code>src&#x2F;core&#x2F;gameObject.js:411</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l418"><code>src&#x2F;core&#x2F;gameObject.js:418</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The Reflect associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_reflect" class="crosslink">reflect</a> when set to
+                            <p>The Reflect attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_reflect" class="crosslink">reflect</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_reflect" class="crosslink">reflect</a> event on change.</p>
                     
@@ -1702,15 +1708,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l435"><code>src&#x2F;core&#x2F;gameObject.js:435</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l443"><code>src&#x2F;core&#x2F;gameObject.js:443</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Shader.html" class="crosslink">Shader</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_shader" class="crosslink">shader</a> when set to
+                            <p>The <a href="../classes/Shader.html" class="crosslink">Shader</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_shader" class="crosslink">shader</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_shader" class="crosslink">shader</a> event on change.</p>
                     
@@ -1730,15 +1737,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l459"><code>src&#x2F;core&#x2F;gameObject.js:459</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l468"><code>src&#x2F;core&#x2F;gameObject.js:468</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_shaderParams" class="crosslink">shaderParams</a> when set to
+                            <p>The <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_shaderParams" class="crosslink">shaderParams</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_shaderParams" class="crosslink">shaderParams</a> event on change.</p>
                     
@@ -1758,15 +1766,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l483"><code>src&#x2F;core&#x2F;gameObject.js:483</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l493"><code>src&#x2F;core&#x2F;gameObject.js:493</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Stage.html" class="crosslink">Stage</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_stage" class="crosslink">stage</a> when set to
+                            <p>The <a href="../classes/Stage.html" class="crosslink">Stage</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_stage" class="crosslink">stage</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_stage" class="crosslink">stage</a> event on change.</p>
                     
@@ -1786,15 +1795,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l507"><code>src&#x2F;core&#x2F;gameObject.js:507</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l518"><code>src&#x2F;core&#x2F;gameObject.js:518</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The modelling transform associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_transform" class="crosslink">transform</a>
+                            <p>The modelling transform attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_transform" class="crosslink">transform</a>
                     (an identity matrix) when set to a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_transform" class="crosslink">transform</a> event on change.</p>
                     
@@ -1849,8 +1859,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Visibility.html" class="crosslink">Visibility</a> associated with this GameObject.</p>
-                    <p>Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_visibility" class="crosslink">visibility</a> when set to
+                            <p>The <a href="../classes/Visibility.html" class="crosslink">Visibility</a> attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_visibility" class="crosslink">visibility</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_visibility" class="crosslink">visibility</a> event on change.</p>
                     
@@ -1876,7 +1887,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l111"><code>src&#x2F;core&#x2F;gameObject.js:111</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l106"><code>src&#x2F;core&#x2F;gameObject.js:106</code></a>
                             </p>
                     
                     
@@ -1918,7 +1929,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l135"><code>src&#x2F;core&#x2F;gameObject.js:135</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l131"><code>src&#x2F;core&#x2F;gameObject.js:131</code></a>
                             </p>
                     
                     
@@ -1960,7 +1971,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l183"><code>src&#x2F;core&#x2F;gameObject.js:183</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l181"><code>src&#x2F;core&#x2F;gameObject.js:181</code></a>
                             </p>
                     
                     
@@ -2002,7 +2013,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l159"><code>src&#x2F;core&#x2F;gameObject.js:159</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l156"><code>src&#x2F;core&#x2F;gameObject.js:156</code></a>
                             </p>
                     
                     
@@ -2086,7 +2097,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l207"><code>src&#x2F;core&#x2F;gameObject.js:207</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l206"><code>src&#x2F;core&#x2F;gameObject.js:206</code></a>
                             </p>
                     
                     
@@ -2153,7 +2164,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l327"><code>src&#x2F;core&#x2F;gameObject.js:327</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l331"><code>src&#x2F;core&#x2F;gameObject.js:331</code></a>
                             </p>
                     
                     
@@ -2195,7 +2206,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l351"><code>src&#x2F;core&#x2F;gameObject.js:351</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l356"><code>src&#x2F;core&#x2F;gameObject.js:356</code></a>
                             </p>
                     
                     
@@ -2237,7 +2248,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l375"><code>src&#x2F;core&#x2F;gameObject.js:375</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l381"><code>src&#x2F;core&#x2F;gameObject.js:381</code></a>
                             </p>
                     
                     
@@ -2279,7 +2290,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l279"><code>src&#x2F;core&#x2F;gameObject.js:279</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l281"><code>src&#x2F;core&#x2F;gameObject.js:281</code></a>
                             </p>
                     
                     
@@ -2321,7 +2332,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l399"><code>src&#x2F;core&#x2F;gameObject.js:399</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l406"><code>src&#x2F;core&#x2F;gameObject.js:406</code></a>
                             </p>
                     
                     
@@ -2363,7 +2374,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l62"><code>src&#x2F;core&#x2F;gameObject.js:62</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l56"><code>src&#x2F;core&#x2F;gameObject.js:56</code></a>
                             </p>
                     
                     
@@ -2428,7 +2439,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l423"><code>src&#x2F;core&#x2F;gameObject.js:423</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l431"><code>src&#x2F;core&#x2F;gameObject.js:431</code></a>
                             </p>
                     
                     
@@ -2470,7 +2481,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l447"><code>src&#x2F;core&#x2F;gameObject.js:447</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l456"><code>src&#x2F;core&#x2F;gameObject.js:456</code></a>
                             </p>
                     
                     
@@ -2512,7 +2523,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l471"><code>src&#x2F;core&#x2F;gameObject.js:471</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l481"><code>src&#x2F;core&#x2F;gameObject.js:481</code></a>
                             </p>
                     
                     
@@ -2554,7 +2565,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l495"><code>src&#x2F;core&#x2F;gameObject.js:495</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l506"><code>src&#x2F;core&#x2F;gameObject.js:506</code></a>
                             </p>
                     
                     
@@ -2596,7 +2607,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l520"><code>src&#x2F;core&#x2F;gameObject.js:520</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l532"><code>src&#x2F;core&#x2F;gameObject.js:532</code></a>
                             </p>
                     
                     
@@ -2638,7 +2649,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l255"><code>src&#x2F;core&#x2F;gameObject.js:255</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l256"><code>src&#x2F;core&#x2F;gameObject.js:256</code></a>
                             </p>
                     
                     
@@ -2680,7 +2691,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_gameObject.js.html#l303"><code>src&#x2F;core&#x2F;gameObject.js:303</code></a>
+                            <a href="../files/src_core_gameObject.js.html#l306"><code>src&#x2F;core&#x2F;gameObject.js:306</code></a>
                             </p>
                     
                     

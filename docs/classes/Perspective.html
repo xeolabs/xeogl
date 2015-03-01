@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,20 +130,20 @@
 
 
 <div class="box intro">
-    <p>A perspective projection transform.</p>
+    <p>A <strong>Perspective</strong> component defines a perspective projection transform.</p>
 <ul>
 
 <li><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
-<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints on associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints on attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
 
 </ul>
 
 <p><img src="http://www.gliffy.com/go/publish/image/6895185/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s associated with a
+<p>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s attached to a
 <a href="../classes/Camera.html" class="crosslink">Camera</a> that has a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform and a Perspective
 projection transform.</p>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene(engine);
+<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
 
 var perspective = new XEO.Perspective(scene, {
       fovy: 60,
@@ -162,20 +161,6 @@ var object = new XEO.GameObject(scene, {
    camera: camera,
    geometry: geometry
 });
-
-// Subscribe to changes on a property of our perspective component
-perspective.on("fovy", function(value) {
-      console.log("perspective &#39;fovy&#39; updated: " + value);
-  });
-
-// Set the value of a property on our perspective component, which fires the event we just subscribed to
-perspective.fovy = 45.0;
-
-// Get the value of a property on our perspective component
-var value = perspective.fovy;
-
-// Destroy ths perspective component, causing the camera to fall back on the scene&#39;s default projection transform
-perspective.destroy();
 </code></pre>
 
 </div>
@@ -967,7 +952,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l148"><code>src&#x2F;core&#x2F;perspective.js:148</code></a>
+                            <a href="../files/src_core_perspective.js.html#l134"><code>src&#x2F;core&#x2F;perspective.js:134</code></a>
                             </p>
                     
                     
@@ -1046,7 +1031,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l198"><code>src&#x2F;core&#x2F;perspective.js:198</code></a>
+                            <a href="../files/src_core_perspective.js.html#l184"><code>src&#x2F;core&#x2F;perspective.js:184</code></a>
                             </p>
                     
                     
@@ -1073,7 +1058,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l123"><code>src&#x2F;core&#x2F;perspective.js:123</code></a>
+                            <a href="../files/src_core_perspective.js.html#l109"><code>src&#x2F;core&#x2F;perspective.js:109</code></a>
                             </p>
                     
                     
@@ -1152,7 +1137,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l173"><code>src&#x2F;core&#x2F;perspective.js:173</code></a>
+                            <a href="../files/src_core_perspective.js.html#l159"><code>src&#x2F;core&#x2F;perspective.js:159</code></a>
                             </p>
                     
                     
@@ -1239,7 +1224,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l161"><code>src&#x2F;core&#x2F;perspective.js:161</code></a>
+                            <a href="../files/src_core_perspective.js.html#l147"><code>src&#x2F;core&#x2F;perspective.js:147</code></a>
                             </p>
                     
                     
@@ -1306,7 +1291,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l211"><code>src&#x2F;core&#x2F;perspective.js:211</code></a>
+                            <a href="../files/src_core_perspective.js.html#l197"><code>src&#x2F;core&#x2F;perspective.js:197</code></a>
                             </p>
                     
                     
@@ -1348,7 +1333,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l136"><code>src&#x2F;core&#x2F;perspective.js:136</code></a>
+                            <a href="../files/src_core_perspective.js.html#l122"><code>src&#x2F;core&#x2F;perspective.js:122</code></a>
                             </p>
                     
                     
@@ -1390,7 +1375,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l186"><code>src&#x2F;core&#x2F;perspective.js:186</code></a>
+                            <a href="../files/src_core_perspective.js.html#l172"><code>src&#x2F;core&#x2F;perspective.js:172</code></a>
                             </p>
                     
                     

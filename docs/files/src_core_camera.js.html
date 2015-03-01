@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,7 +120,7 @@
 &quot;use strict&quot;;
 
 /**
- Defines a viewpoint on associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **Camera** component defines a viewpoint on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  &lt;ul&gt;
 
@@ -142,9 +141,15 @@
 
  ### Example
 
- The example below creates a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that&#x27;s associated with a
- Camera that has a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} view transform and a {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}
- projection transform.
+ The following example creates
+ &lt;ul&gt;
+ &lt;li&gt;a {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} view transform,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Perspective&quot;}}{{/crossLink}} projection transform,&lt;/li&gt;
+ &lt;li&gt;a Camera attached to the {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} and {{#crossLink &quot;Perspective&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
+
 
  &#x60;&#x60;&#x60;&#x60; javascript
  var scene = new XEO.Scene();

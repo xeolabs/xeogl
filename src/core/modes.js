@@ -1,11 +1,11 @@
 "use strict";
 
 /**
- Toggles rendering modes for associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Modes** toggles xeoEngine's rendering modes for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  <ul>
 
- <li>Though the rendering modes are defined by various different components associated with the {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
+ <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
  Modes components provide a single point through which you can toggle them on or off.</li>
 
  <li>A Modes may be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to toggle
@@ -79,7 +79,7 @@
  @param [cfg.picking=true] {Boolean}  Whether to enable picking.
  @param [cfg.clipping=true] {Boolean} Whether to enable clipping by {{#crossLink "Clips"}}{{/crossLink}}.
  @param [cfg.transparent=false] {Boolean} Whether to enable the transparency effect created by {{#crossLink "Material"}}Material{{/crossLink}}s when they have
- {{#crossLink "Material/opacity:property"}}{{/crossLink}} < 1.0. This mode will set associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
+ {{#crossLink "Material/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
  transparency pass with blending enabled etc), while
  the {{#crossLink "Material/opacity:property"}}{{/crossLink}} will indicate the **degree** of their transparency
  (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
@@ -115,7 +115,7 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Whether this Modes enables picking of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     Whether this Modes enables picking of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Picking is performed via calls to {{#crossLink "Canvas/pick:method"}}Canvas pick{{/crossLink}}.
 
@@ -142,9 +142,9 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Whether this Modes enables clipping of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     Whether this Modes enables clipping of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-     Clipping is done by {{#crossLink "Clips"}}{{/crossLink}} that are also associated with
+     Clipping is done by {{#crossLink "Clips"}}{{/crossLink}} that are also attached to
      the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Fires a {{#crossLink "Modes/clipping:event"}}{{/crossLink}} event on change.
@@ -171,9 +171,9 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Whether associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are transparent.
+     Whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are transparent.
 
-     When true. this property will set associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
+     When true. this property will set attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
      transparency pass with blending enabled etc), while
      the {{#crossLink "Material/opacity:property"}}{{/crossLink}} will be used to indicate the **degree** of their transparency
      (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
@@ -202,9 +202,9 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Whether this Modes enables backfaces to be visible on associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     Whether this Modes enables backfaces to be visible on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-     The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also associated with
+     The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
      the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Fires a {{#crossLink "Modes/backfaces:event"}}{{/crossLink}} event on change.
@@ -231,9 +231,9 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Indicates the winding direction of front faces on associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     Indicates the winding direction of front faces on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-     The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also associated with
+     The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
      the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Fires a {{#crossLink "Modes/frontface:event"}}{{/crossLink}} event on change.
@@ -260,10 +260,10 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Whether this Modes enables lighting on the backfaces of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     Whether this Modes enables lighting on the backfaces of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      The lights and geometry will be defined by {{#crossLink "Lights"}}{{/crossLink}} and {{#crossLink "Geometry"}}{{/crossLink}} components
-     that are also associated with the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     that are also attached to the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Fires a {{#crossLink "Modes/backfaceLighting:event"}}{{/crossLink}} event on change.
 
@@ -289,10 +289,10 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Whether this Modes enables textures to be applied to the backfaces of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     Whether this Modes enables textures to be applied to the backfaces of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      The textures and geometry will be defined by {{#crossLink "Texture"}}{{/crossLink}} and {{#crossLink "Geometry"}}{{/crossLink}} components
-     that are also associated with the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     that are also attached to the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Fires a {{#crossLink "Modes/backfaceTexturing:event"}}{{/crossLink}} event on change.
 
@@ -318,10 +318,10 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Whether this Modes enables diffuse lighting of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     Whether this Modes enables diffuse lighting of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Lighting will be defined by {{#crossLink "Lights"}}{{/crossLink}} and {{#crossLink "Geometry"}}{{/crossLink}} components
-     that are also associated with the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     that are also attached to the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Fires a {{#crossLink "Modes/diffuse:event"}}{{/crossLink}} event on change.
 
@@ -347,9 +347,9 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Whether this Modes enables specular lighting of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     Whether this Modes enables specular lighting of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-     Lighting will be defined by {{#crossLink "Lights"}}{{/crossLink}} components that are also associated with
+     Lighting will be defined by {{#crossLink "Lights"}}{{/crossLink}} components that are also attached to
      the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Fires a {{#crossLink "Modes/specular:event"}}{{/crossLink}} event on change.
@@ -376,10 +376,10 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Whether this Modes enables ambient lighting of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     Whether this Modes enables ambient lighting of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      The ambient lighting will be provided by {{#crossLink "AmbientLight"}}{{/crossLink}} components that are also
-     associated with the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     attached to the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Fires a {{#crossLink "Modes/ambient:event"}}{{/crossLink}} event on change.
 
@@ -405,10 +405,10 @@ XEO.Modes = XEO.Component.extend({
     },
 
     /**
-     Whether this Modes enables reflections on associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     Whether this Modes enables reflections on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-     The reflections will be defined by {{#crossLink "CubeMap"}}{{/crossLink}} components that are also associated
-     with the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     The reflections will be defined by {{#crossLink "CubeMap"}}{{/crossLink}} components that are also attached
+     to the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      Fires a {{#crossLink "Modes/reflection:event"}}{{/crossLink}} event on change.
 

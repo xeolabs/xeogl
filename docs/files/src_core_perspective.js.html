@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,12 +120,12 @@
 &quot;use strict&quot;;
 
 /**
- A perspective projection transform.
+ A **Perspective** component defines a perspective projection transform.
 
  &lt;ul&gt;
 
  &lt;li&gt;{{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints on associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
  &lt;/ul&gt;
 
@@ -134,12 +133,12 @@
 
  ### Example
 
- The example below creates a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that&#x27;s associated with a
+ The example below creates a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that&#x27;s attached to a
  {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} that has a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} view transform and a Perspective
  projection transform.
 
  &#x60;&#x60;&#x60;&#x60;Javascript
- var scene = new XEO.Scene(engine);
+ var scene = new XEO.Scene();
 
  var perspective = new XEO.Perspective(scene, {
        fovy: 60,
@@ -157,20 +156,6 @@
     camera: camera,
     geometry: geometry
  });
-
- // Subscribe to changes on a property of our perspective component
- perspective.on(&quot;fovy&quot;, function(value) {
-       console.log(&quot;perspective &#x27;fovy&#x27; updated: &quot; + value);
-   });
-
- // Set the value of a property on our perspective component, which fires the event we just subscribed to
- perspective.fovy = 45.0;
-
- // Get the value of a property on our perspective component
- var value = perspective.fovy;
-
- // Destroy ths perspective component, causing the camera to fall back on the scene&#x27;s default projection transform
- perspective.destroy();
  &#x60;&#x60;&#x60;&#x60;
 
  @class Perspective

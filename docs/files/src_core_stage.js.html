@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,7 +120,7 @@
 &quot;use strict&quot;;
 
 /**
- Partitions associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} into ordered render bins.
+ A **Stage** partitions attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} into ordered render bins.
 
  &lt;ul&gt;
  &lt;li&gt;When the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} renders, each Stage renders its bin
@@ -135,8 +134,8 @@
  &lt;li&gt;{{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}} are typically used to &lt;a href=&quot;https://www.opengl.org/wiki/Transparency_Sorting&quot; target=&quot;_other&quot;&gt;transparency-sort&lt;/a&gt; the
  {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within Stages.&lt;/li&gt;
 
- &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} not explicitly associated with a Stage are implicitly
- associated with the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
+ &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
+ attached to the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
  {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}. which has
  a {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
 
@@ -205,8 +204,8 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
- @param [cfg.priority=0] {Number} The rendering priority for the associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
- @param [cfg.pickable=true] {Boolean} Indicates whether associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are pickable.
+ @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are pickable.
  @extends Component
  */
 XEO.Stage = XEO.Component.extend({
@@ -247,7 +246,7 @@ XEO.Stage = XEO.Component.extend({
     },
 
     /**
-     * Indicates whether the associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are pickable (see {{#crossLink &quot;Canvas/pick:method&quot;}}Canvas#pick{{/crossLink}}).
+     * Indicates whether the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are pickable (see {{#crossLink &quot;Canvas/pick:method&quot;}}Canvas#pick{{/crossLink}}).
      *
      * Fires a {{#crossLink &quot;Stage/pickable:event&quot;}}{{/crossLink}} event on change.
      * @property pickable

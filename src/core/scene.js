@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- A XEO scene graph.
+ A **Scene** is a xeoEngine scene graph.
 
  <hr>
    *Contents*
@@ -16,16 +16,16 @@
 
  ## <a name="sceneStructure">Scene Structure</a>
 
- A Scene is a type of <a href="http://gameprogrammingpatterns.com/component.html" target="_other">object-component</a> graph.
+ A Scene is a type of <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-object</a> graph.
 
  A Scene contains a soup of instances of various {{#crossLink "Component"}}Component{{/crossLink}} subtypes, such as
  {{#crossLink "GameObject"}}GameObject{{/crossLink}}, {{#crossLink "Camera"}}Camera{{/crossLink}}, {{#crossLink "Material"}}Material{{/crossLink}},
  {{#crossLink "Lights"}}Lights{{/crossLink}} etc.  Each {{#crossLink "GameObject"}}GameObject{{/crossLink}} has a link to one of each of the other types,
  and the same component instances can be shared among many {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
- *** Under the hood:*** Within XEO Engine, each {{#crossLink "GameObject"}}GameObject{{/crossLink}} represents a draw call,
- while its components define all the WebGL state that will be bound for that call. To render a Scene, XEO traverses
- the graph to bind the states and make the draw calls, while using many optimizations for speed (eg. draw list caching and GL state sorting).
+ *** Under the hood:*** Within xeoEngine, each {{#crossLink "GameObject"}}GameObject{{/crossLink}} represents a draw call,
+ while its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses
+ the graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).
 
  <img src="http://www.gliffy.com/go/publish/image/7103731/L.png"></img>
 
@@ -33,7 +33,7 @@
 
  A Scene provides its own default *flyweight* instance of each component type
  (except for {{#crossLink "GameObject"}}GameObject{{/crossLink}}). Each {{#crossLink "GameObject"}}GameObject{{/crossLink}} you create
- will implicitly link a default instance for each type of component that you don't explicitly link it to. For example, when you create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} without
+ will implicitly link to a default instance for each type of component that you don't explicitly link it to. For example, when you create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} without
  a {{#crossLink "Lights"}}Lights{{/crossLink}}, the {{#crossLink "GameObject"}}GameObject{{/crossLink}} will link to the
  {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/lights:property"}}{{/crossLink}}. This mechanism
  provides ***training wheels*** to help you learn the API, and also helps keep examples simple, where many of the examples in this
@@ -122,31 +122,31 @@
  <br>
  ## <a name="defaults">The Default Scene</a>
 
- When you create components without specifying a Scene for them, XEO will put them in its default Scene.
+ When you create components without specifying a Scene for them, xeoEngine will put them in its default Scene.
 
  For example:
 
  ```` javascript
- var material2 = new XEO.Material({
-       diffuse: { r: 0.6, g: 0.6, b: 0.7 },
-       specular: { 1.0, 1.0, 1.0 }
-   });
+var material2 = new XEO.Material({
+    diffuse: { r: 0.6, g: 0.6, b: 0.7 },
+    specular: { 1.0, 1.0, 1.0 }
+});
 
- var geometry2 = new XEO.Geometry({
-       primitive: "triangles",
-       positions: [...],
-       normals: [...],
-       uvs: [...],
-       indices: [...]
-  });
+var geometry2 = new XEO.Geometry({
+     primitive: "triangles",
+     positions: [...],
+     normals: [...],
+     uvs: [...],
+     indices: [...]
+});
 
- var camera = new XEO.Camera();
+var camera = new XEO.Camera();
 
- var object1 = new XEO.GameObject({
-       material: material2,
-       geometry: geometry2,
-       camera: camera2
-  });
+var object1 = new XEO.GameObject({
+     material: material2,
+     geometry: geometry2,
+     camera: camera2
+});
  ````
 
  You can then obtain the default Scene from the {{#crossLink "XEO"}}XEO{{/crossLink}} object's
@@ -161,7 +161,7 @@
  var theScene = material2.scene;
  ````
 
- ***Note:*** XEO creates the default Scene as soon as you either
+ ***Note:*** xeoEngine creates the default Scene as soon as you either
  create your first Sceneless {{#crossLink "GameObject"}}GameObject{{/crossLink}} or reference the
  {{#crossLink "XEO"}}XEO{{/crossLink}} object's {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} property. Expect to
  see the HTML canvas for the default Scene magically appear in the page when you do that.
@@ -193,8 +193,7 @@
  @module XEO
  @constructor
  @param [cfg] Scene parameters
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Engine"}}Engine{{/crossLink}}, generated automatically when omitted.
- You only need to supply an ID if you need to be able to find the Scene by ID within the parent {{#crossLink "Engine"}}Engine{{/crossLink}}.
+ @param [cfg.id] {String} Optional ID, unique among all Scenes in xeoEngine, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scene.
  @param [cfg.canvasId] {String} ID of existing HTML5 canvas in the DOM - creates a full-page canvas automatically if this is omitted
  @param [cfg.components] {Array(GameObject)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
@@ -420,7 +419,7 @@ XEO.Scene = XEO.Component.extend({
      * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.project", with all other properties set to
      * their default values.
      *
-     * {{#crossLink "Camera"}}Cameras{{/crossLink}} within this Scene are associated with
+     * {{#crossLink "Camera"}}Cameras{{/crossLink}} within this Scene are attached to
      * this {{#crossLink "Perspective"}}Perspective{{/crossLink}} by default.
      * @property project
      * @final
@@ -439,7 +438,7 @@ XEO.Scene = XEO.Component.extend({
      * This {{#crossLink "Lookat"}}Lookat{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.view",
      * with all other properties initialised to their default values.
      *
-     * {{#crossLink "Camera"}}Cameras{{/crossLink}} within this Scene are associated with
+     * {{#crossLink "Camera"}}Cameras{{/crossLink}} within this Scene are attached to
      * this {{#crossLink "Lookat"}}Lookat{{/crossLink}} by default.
      * @property view
      * @final
@@ -458,7 +457,7 @@ XEO.Scene = XEO.Component.extend({
      * This {{#crossLink "Camera"}}Camera{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.camera",
      * with all other properties initialised to their default values.
      *
-     * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are associated with
+     * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to
      * this {{#crossLink "Camera"}}Camera{{/crossLink}} by default.
      * @property camera
      * @final
@@ -479,7 +478,7 @@ XEO.Scene = XEO.Component.extend({
      * This {{#crossLink "Matrix"}}Matrix{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.transform",
      * with all other properties initialised to their default values (ie. an identity matrix).
      *
-     * {{#crossLink "GameObjects"}}GameObjects{{/crossLink}}s within this Scene are associated with
+     * {{#crossLink "GameObjects"}}GameObjects{{/crossLink}}s within this Scene are attached to
      * this {{#crossLink "Matrix"}}Matrix{{/crossLink}} by default.
      *
      * @property transform

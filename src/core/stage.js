@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- Partitions associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} into ordered render bins.
+ A **Stage** partitions attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} into ordered render bins.
 
  <ul>
  <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
@@ -15,8 +15,8 @@
  <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
  {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within Stages.</li>
 
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly associated with a Stage are implicitly
- associated with the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
+ attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
  a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
 
@@ -85,8 +85,8 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
- @param [cfg.priority=0] {Number} The rendering priority for the associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
- @param [cfg.pickable=true] {Boolean} Indicates whether associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable.
+ @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable.
  @extends Component
  */
 XEO.Stage = XEO.Component.extend({
@@ -127,7 +127,7 @@ XEO.Stage = XEO.Component.extend({
     },
 
     /**
-     * Indicates whether the associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable (see {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}).
+     * Indicates whether the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable (see {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}).
      *
      * Fires a {{#crossLink "Stage/pickable:event"}}{{/crossLink}} event on change.
      * @property pickable

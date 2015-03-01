@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -119,21 +118,21 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A texture map.
+ A **Texture** specifies a texture map.
 
  &lt;ul&gt;
 
- &lt;li&gt;Textures are grouped within {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}s, which are associated with
+ &lt;li&gt;Textures are grouped within {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}s, which are attached to
  {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
  &lt;li&gt;To create a Texture from an image file, setting the Texture&#x27;s {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}}
  property to the image file path.&lt;/li&gt;
 
  &lt;li&gt;To render color images of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
- property to a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} that is associated with those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ property to a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
  &lt;li&gt;Similarly, to render depth images of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
- property to a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} that is associated with those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ property to a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
  &lt;li&gt;For special effects, we often use rendered Textures in combination with {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Stages{{/crossLink}}.&lt;/li&gt;
  &lt;/ul&gt;
@@ -142,10 +141,14 @@
 
  ### Example
 
- The example below creates a {{#crossLink &quot;Material&quot;}}{{/crossLink}} containing diffuse, specular and
- bump {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}, along with a {{#crossLink &quot;Lights&quot;}}{{/crossLink}}
- containing a {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}}, and associates
- those with a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
+ The following example creates
+ &lt;ul&gt;
+ &lt;li&gt;three {{#crossLink &quot;Texture&quot;}}{{/crossLink}}s,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} which applies the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}s as diffuse, bump and specular maps,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;PointLight&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
 
  &#x60;&#x60;&#x60;&#x60; javascript
  var scene = new XEO.Scene();

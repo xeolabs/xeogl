@@ -1,7 +1,7 @@
 "use strict";
 
 /**
-  Configures the WebGL depth buffer for associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+  A **DepthMap** configures the WebGL depth buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer, and is not to be confused
  with {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}, which holds the final pixel depths as a color-encoded image
@@ -9,9 +9,33 @@
 
   <img src="http://www.gliffy.com/go/publish/image/7104991/L.png"></img>
 
-  ### Example
+ ### Example
 
- TODO
+ In the example below we're configuring the WebGL depth buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
+
+ The scene contains:
+
+ <ul>
+ <li>a DepthBuf that configures the clear depth and depth comparison function,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
+
+ ````javascript
+ var scene = new XEO.Scene();
+
+ var depthBuf = new XEO.ColorTarget(scene, {
+     clearDepth: 0.5,
+     depthFunc: "less"
+ });
+
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+ var gameObject = new XEO.GameObject(scene, {
+     depthBuf: depthBuf,
+     geometry: geometry
+ });
+ ````
 
  @class DepthBuf
  @module XEO

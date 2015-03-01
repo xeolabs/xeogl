@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- A modelling transform, specified as a 4x4 matrix, that is applied to associated
+ A **Matrix** defines a modelling transform as a 4x4 matrix, to apply to attached
  {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  <img src="http://www.gliffy.com/go/publish/image/7123375/L.png"></img>

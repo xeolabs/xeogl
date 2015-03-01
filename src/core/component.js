@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- Base class for all XEO components.
+ **Component* is the base class for all xeoEngine components.
 
  <hr>
   *Contents*
@@ -20,7 +20,7 @@
 
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}.
 
- XEO Engine generates the IDs automatically by default, however you can also specify them yourself:
+ xeoEngine generates the IDs automatically by default, however you can also specify them yourself:
 
  ```` javascript
  var scene = new XEO.Scene({
@@ -54,7 +54,7 @@
  <br>
  ### <a name="props">Properties</a>
 
- Almost every property on a XEO Component fires a change event when you update it.
+ Almost every property on a xeoEngine Component fires a change event when you update it.
 
  For example, we can subscribe to the {{#crossLink "Material/diffuse:event"}}diffuse{{/crossLink}} event that a
  {{#crossLink "Material"}}Material{{/crossLink}} fires when its {{#crossLink "Material/diffuse:property"}}diffuse{{/crossLink}}

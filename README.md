@@ -16,3 +16,35 @@ It's currently at **alpha** status, where in order to get the design right, the 
  - [Save and load engine state to and from JSON](http://xeoengine.org/docs/classes/Scene.html#savingAndLoadingJSON)
  - Automatic lost WebGL context recovery
  - Optimized performance using draw list caching, state sorting etc. 
+ 
+ ## Building
+ 
+ Install node (Ubuntu):
+ 
+ ````
+ sudo apt-get install nodejs
+ ````
+ 
+ Install Grunt task runner:
+ 
+ ````
+ npm install grunt --save-dev
+ ````
+ 
+ Install Grunt task plugins:
+ 
+ ````
+ npm install grunt-contrib-concat --save-dev
+ npm install grunt-contrib-uglify --save-dev
+ npm install grunt-contrib-jshint --save-dev
+ npm install grunt-contrib-qunit --save-dev
+ npm install grunt-contrib-clean --save-dev
+ npm install grunt-contrib-yuidoc --save-dev
+
+ ````
+
+Build all:
+
+````
+grunt all
+````

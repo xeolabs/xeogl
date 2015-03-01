@@ -10,7 +10,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "ColorTarget",
         "Component",
         "Configs",
-        "CubeMap",
         "DepthBuf",
         "DepthTarget",
         "DirLight",

@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,7 +130,7 @@
 
 
 <div class="box intro">
-    <p>Provides statistics on the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+    <p>A <strong>Stats</strong> provides statistics on the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <ul>
 
 <li>Each <a href="../classes/Scene.html" class="crosslink">Scene</a> provides a Stats instance on itself.</li>
@@ -165,7 +164,7 @@ configs.off(handle);
 // we&#39;re getting the latest changes to the statistic.
 var numGeometries = configs.props["numGeometries"];
 </code></pre>
-<p>As mentioned, we can manage our own statistics as well (perhaps if we&#39;re extending XEO Engine):</p>
+<p>As mentioned, we can manage our own statistics as well (perhaps if we&#39;re extending xeoEngine):</p>
 <pre class="code prettyprint"><code class="lang-Javascript">
 // Create a statistic
 configs.zero("myStatistic");

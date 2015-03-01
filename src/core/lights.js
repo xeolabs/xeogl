@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- A group of light sources to apply to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Lights** is a group of light sources to apply to attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  A Lights may contain a virtually unlimited number of three types of light source:
 
@@ -14,10 +14,10 @@
  {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally from a given direction</li>
  </ul>
 
- Within XEO Engine's <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model, the ambient,
+ Within xeoEngine's <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model, the ambient,
  diffuse and specular components of light sources are multiplied by the
  {{#crossLink "Material/ambient:property"}}{{/crossLink}}, {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and
- {{#crossLink "Material/specular:property"}}{{/crossLink}} properties on associated  {{#crossLink "Material"}}Materials{{/crossLink}}.
+ {{#crossLink "Material/specular:property"}}{{/crossLink}} properties on attached  {{#crossLink "Material"}}Materials{{/crossLink}}.
 
 
  <img src="http://www.gliffy.com/go/publish/image/7092459/L.png"></img>
@@ -39,7 +39,7 @@
     shininess:  30
  });
 
- // Within XEO Engine's lighting calculations, the AmbientLight's ambient color
+ // Within xeoEngine's lighting calculations, the AmbientLight's ambient color
  // will be multiplied by the Material's ambient color, while the DirLight and PointLight's
  // diffuse and specular colors will be multiplied by the Material's diffuse and specular colors
 

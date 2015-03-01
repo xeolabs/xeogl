@@ -1,18 +1,18 @@
 "use strict";
 
 /**
- Defines the surface appearance of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Material** defines the surface appearance of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  <ul>
  <li>Materials interact with {{#crossLink "Lights"}}{{/crossLink}} using the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model.</li>
 
- <li>Within XEO Engine's shading calculations, a Material's {{#crossLink "Material/ambient:property"}}{{/crossLink}}, {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and
-  {{#crossLink "Material/specular:property"}}{{/crossLink}} properties are multiplied by corresponding color properties on associated
+ <li>Within xeoEngine's shading calculations, a Material's {{#crossLink "Material/ambient:property"}}{{/crossLink}}, {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and
+ {{#crossLink "Material/specular:property"}}{{/crossLink}} properties are multiplied by corresponding color properties on attached
  {{#crossLink "PointLight"}}AmbientLights{{/crossLink}}, {{#crossLink "PointLight"}}PointLights{{/crossLink}} and {{#crossLink "DirLight"}}DirLights{{/crossLink}}.</li>
 
  <li>These Material properties, along with {{#crossLink "Material/emissive:property"}}{{/crossLink}},
  {{#crossLink "Material/opacity:property"}}{{/crossLink}} and {{#crossLink "Material/reflectivity:property"}}{{/crossLink}},
- specify attributes that are to be **applied uniformly** across the surface of associated {{#crossLink "Geometry"}}Geometries{{/crossLink}}.</li>
+ specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink "Geometry"}}Geometries{{/crossLink}}.</li>
 
  <li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
  assigning {{#crossLink "Texture"}}Textures{{/crossLink}} to the Material's
@@ -38,7 +38,7 @@
  <li>a {{#crossLink "Material"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} associated with all of the above.</li>
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  Note that the value for the {{#crossLink "Material"}}Material's{{/crossLink}} {{#crossLink "Material/diffuse:property"}}{{/crossLink}}
@@ -98,7 +98,7 @@
  @param [cfg] {*} The Material configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this Material.
- @param [cfg.ambient=[0.7, 0.7, 0.8 ]] {Array of Number} Material ambient color. Multiplied by {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}} {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}}.
+ @param [cfg.ambient=[0.7, 0.7, 0.8 ]] {Array of Number} Material ambient color. Multiplied by {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}} {{#crossLink "AmbientLight/ambient:property"}}color{{/crossLink}}.
  @param [cfg.diffuse=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material diffuse color. Multiplied by {{#crossLink "PointLight"}}PointLight{{/crossLink}} {{#crossLink "PointLight/diffuse:property"}}diffuse{{/crossLink}} and {{#crossLink "DirLight"}}DirLight{{/crossLink}} {{#crossLink "DirLight/diffuse:property"}}diffuse{{/crossLink}}
  @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material specular color. Multiplied by {{#crossLink "PointLight"}}PointLight{{/crossLink}} {{#crossLink "PointLight/specular:property"}}specular{{/crossLink}} and {{#crossLink "DirLight"}}DirLight{{/crossLink}} {{#crossLink "DirLight/specular:property"}}specular{{/crossLink}}
  @param [cfg.emissive=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material emissive color.
@@ -106,12 +106,12 @@
  Only applies while {{#crossLink "Modes"}}Modes{{/crossLink}} {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} equals ````true````.
  @param [cfg.shininess=30] {Number} Scalar in range 0-70 that determines the size and sharpness of specular highlights.
  @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
- @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the diffuse property.
- @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property.
- @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property.
- @param [cfg.bumpMap=null] {Texture} A bump map {{#crossLink "Texture"}}Texture{{/crossLink}}.
- @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property.
- @param [cfg.reflectivityMap=null] {Texture} A reflectivity control map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property.
+ @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ @param [cfg.bumpMap=null] {Texture} A bump map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ @param [cfg.reflectivityMap=null] {Texture} A reflectivity control map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
  */
 XEO.Material = XEO.Component.extend({
 
@@ -144,14 +144,14 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * The Material's ambient color, which is multiplied by the {{#crossLink "AmbientLight/ambient:property"}}{{/crossLink}}
-     * property of the {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}.
-     *
-     * Fires a {{#crossLink "Material/ambient:event"}}{{/crossLink}} event on change.
-     *
-     * @property ambient
-     * @default [1.0, 1.0, 1.0]
-     * @type Array(Number)
+     The Material's ambient color, which is multiplied by the {{#crossLink "AmbientLight/ambient:property"}}{{/crossLink}}
+     property of the {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}.
+
+     Fires a {{#crossLink "Material/ambient:event"}}{{/crossLink}} event on change.
+
+     @property ambient
+     @default [1.0, 1.0, 1.0]
+     @type Array(Number)
      */
     set ambient(value) {
         value = value || [ 1.0, 1.0, 1.0 ];
@@ -171,16 +171,15 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * The Material's diffuse color.
-     *
-     * This property may be textured by adding a {{#crossLink "Texture"}}Texture{{/crossLink}} that has an
-     * {{#crossLink "Texture/applyTo:property"}}{{/crossLink}} set to ````"diffuse"````.
-     *
-     * Fires a {{#crossLink "Material/diffuse:event"}}{{/crossLink}} event on change.
-     *
-     * @property diffuse
-     * @default [1.0, 1.0, 1.0]
-     * @type Array(Number)
+     The Material's diffuse color.
+
+     This property may be overridden by {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}}.
+
+     Fires a {{#crossLink "Material/diffuse:event"}}{{/crossLink}} event on change.
+
+     @property diffuse
+     @default [1.0, 1.0, 1.0]
+     @type Array(Number)
      */
     set diffuse(value) {
         value = value || [ 1.0, 1.0, 1.0 ];
@@ -200,16 +199,15 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * The material's specular color.
-     *
-     * This property may be textured by adding a {{#crossLink "Texture"}}Texture{{/crossLink}} that has an
-     * {{#crossLink "Texture/applyTo:property"}}{{/crossLink}} set to ````"specular"````.
-     *
-     * Fires a {{#crossLink "Material/specular:event"}}{{/crossLink}} event on change.
-     *
-     * @property specular
-     * @default [0.3, 0.3, 0.3]
-     * @type Array(Number)
+     The material's specular color.
+
+     This property may be overridden by {{#crossLink "Material/specularMap:property"}}{{/crossLink}}.
+
+     Fires a {{#crossLink "Material/specular:event"}}{{/crossLink}} event on change.
+
+     @property specular
+     @default [0.3, 0.3, 0.3]
+     @type Array(Number)
      */
     set specular(value) {
         value = value || [ 0.3, 0.3, 0.3 ];
@@ -217,9 +215,9 @@ XEO.Material = XEO.Component.extend({
         this._renderer.imageDirty = true;
 
         /**
-         * Fired whenever this Material's {{#crossLink "Material/specular:property"}}{{/crossLink}} property changes.
-         * @event specular
-         * @param value {Array(Number)} The property's new value
+         Fired whenever this Material's {{#crossLink "Material/specular:property"}}{{/crossLink}} property changes.
+         @event specular
+         @param value {Array(Number)} The property's new value
          */
         this.fire("specular", value);
     },
@@ -229,16 +227,15 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * The Material's emissive color.
-     *
-     * This property may be textured by adding a {{#crossLink "Texture"}}Texture{{/crossLink}} that has an
-     * {{#crossLink "Texture/applyTo:property"}}{{/crossLink}} set to ````"emissive"````.
-     *
-     * Fires a {{#crossLink "Material/emissive:event"}}{{/crossLink}} event on change.
-     *
-     * @property emissive
-     * @default [1.0, 1.0, 1.0]
-     * @type Array(Number)
+     The Material's emissive color.
+
+     This property may be overridden by {{#crossLink "Material/emissiveMap:property"}}{{/crossLink}}.
+
+     Fires a {{#crossLink "Material/emissive:event"}}{{/crossLink}} event on change.
+
+     @property emissive
+     @default [1.0, 1.0, 1.0]
+     @type Array(Number)
      */
     set emissive(value) {
         value = value || [ 1.0, 1.0, 1.0 ];
@@ -246,9 +243,9 @@ XEO.Material = XEO.Component.extend({
         this._renderer.imageDirty = true;
 
         /**
-         * Fired whenever this Material's {{#crossLink "Material/emissive:property"}}{{/crossLink}} property changes.
-         * @event emissive
-         * @param value {Array(Number)} The property's new value
+         Fired whenever this Material's {{#crossLink "Material/emissive:property"}}{{/crossLink}} property changes.
+         @event emissive
+         @param value {Array(Number)} The property's new value
          */
         this.fire("emissive", value);
     },
@@ -258,22 +255,21 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * Factor in the range [0..1] indicating how transparent the Material is.
-     *
-     * A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
-     *
-     * If {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} is not set to true on associated
-     * {{#crossLink "Modes"}}Modes{{/crossLink}}, then the Material will remain fully opaque and this property will
-     * have no effect.
-     *
-     * This property may be textured by adding a {{#crossLink "Texture"}}Texture{{/crossLink}} that has an
-     * {{#crossLink "Texture/applyTo:property"}}{{/crossLink}} set to ````"opacity"````.
-     *
-     * Fires an {{#crossLink "Material/opacity:event"}}{{/crossLink}} event on change.
-     *
-     * @property opacity
-     * @default 1.0
-     * @type Number
+     Factor in the range [0..1] indicating how transparent the Material is.
+
+     A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+
+     Attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached
+     to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
+     set to **true**.
+
+     This property may be overridden by {{#crossLink "Material/opacityMap:property"}}{{/crossLink}}.
+
+     Fires an {{#crossLink "Material/opacity:event"}}{{/crossLink}} event on change.
+
+     @property opacity
+     @default 1.0
+     @type Number
      */
     set opacity(value) {
         value = value != undefined ? value : 1;
@@ -293,17 +289,17 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * A factor in range [0..128] that determines the size and sharpness of the specular highlights create by this Material.
-     *
-     * Larger values produce smaller, sharper highlights. A value of 0.0 gives very large highlights that are almost never
-     * desirable. Try values close to 10 for a larger, fuzzier highlight and values of 100 or more for a small, sharp
-     * highlight.
-     *
-     * Fires a {{#crossLink "Material/shininess:event"}}{{/crossLink}} event on change.
-     *
-     * @property shininess
-     * @default 30.0
-     * @type Number
+     A factor in range [0..128] that determines the size and sharpness of the specular highlights create by this Material.
+
+     Larger values produce smaller, sharper highlights. A value of 0.0 gives very large highlights that are almost never
+     desirable. Try values close to 10 for a larger, fuzzier highlight and values of 100 or more for a small, sharp
+     highlight.
+
+     Fires a {{#crossLink "Material/shininess:event"}}{{/crossLink}} event on change.
+
+     @property shininess
+     @default 30.0
+     @type Number
      */
     set shininess(value) {
         value = value != undefined ? value : 30;
@@ -311,9 +307,9 @@ XEO.Material = XEO.Component.extend({
         this._renderer.imageDirty = true;
 
         /**
-         * Fired whenever this Material's {{#crossLink "Material/shininess:property"}}{{/crossLink}} property changes.
-         * @event shininess
-         * @param value Number The property's new value
+         Fired whenever this Material's {{#crossLink "Material/shininess:property"}}{{/crossLink}} property changes.
+         @event shininess
+         @param value Number The property's new value
          */
         this.fire("shininess", value);
     },
@@ -323,18 +319,17 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected by this Material.
-     *
-     * The surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.
-     *
-     * This property may be textured by adding a {{#crossLink "Texture"}}Texture{{/crossLink}} that has an
-     * {{#crossLink "Texture/applyTo:property"}}{{/crossLink}} set to ````"reflectivity"````.
-     *
-     * Fires a {{#crossLink "Material/reflectivity:event"}}{{/crossLink}} event on change.
-     *
-     * @property reflectivity
-     * @default 1.0
-     * @type Number
+     Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected by this Material.
+
+     The surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.
+
+     This property may be overridden by {{#crossLink "Material/reflectivityMap:property"}}{{/crossLink}}.
+
+     Fires a {{#crossLink "Material/reflectivity:event"}}{{/crossLink}} event on change.
+
+     @property reflectivity
+     @default 1.0
+     @type Number
      */
     set reflectivity(value) {
         value = value != undefined ? value : 1.0;
@@ -342,9 +337,9 @@ XEO.Material = XEO.Component.extend({
         this._renderer.imageDirty = true;
 
         /**
-         * Fired whenever this Material's {{#crossLink "Material/reflectivity:property"}}{{/crossLink}} property changes.
-         * @event reflectivity
-         * @param value Number The property's new value
+         Fired whenever this Material's {{#crossLink "Material/reflectivity:property"}}{{/crossLink}} property changes.
+         @event reflectivity
+         @param value Number The property's new value
          */
         this.fire("reflectivity", value);
     },
@@ -354,21 +349,23 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * A diffuse texture map attached to this Material.
-     *
-     * Fires a {{#crossLink "Material/diffuseMap:event"}}{{/crossLink}} event on change.
-     *
-     * @property diffuseMap
-     * @default null
-     * @type {Texture}
+     A diffuse {{#crossLink "Texture"}}{{/crossLink}} attached to this Material.
+
+     This property overrides {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}} when not null or undefined.
+
+     Fires a {{#crossLink "Material/diffuseMap:event"}}{{/crossLink}} event on change.
+
+     @property diffuseMap
+     @default null
+     @type {Texture}
      */
     set diffuseMap(texture) {
         this._attachTexture("diffuseMap", texture);
 
         /**
-         * Fired whenever this Material's {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}} property changes.
-         * @event diffuseMap
-         * @param value Number The property's new value
+         Fired whenever this Material's {{#crossLink "Material/diffuse:property"}}{{/crossLink}} property changes.
+         @event diffuseMap
+         @param value Number The property's new value
          */
     },
 
@@ -377,21 +374,23 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * A specular texture map attached to this Material.
-     *
-     * Fires a {{#crossLink "Material/specularMap:event"}}{{/crossLink}} event on change.
-     *
-     * @property specularMap
-     * @default null
-     * @type {Texture}
+     A specular {{#crossLink "Texture"}}{{/crossLink}} attached to this Material.
+
+     This property overrides {{#crossLink "Material/specular:property"}}{{/crossLink}} when not null or undefined.
+
+     Fires a {{#crossLink "Material/specularMap:event"}}{{/crossLink}} event on change.
+
+     @property specularMap
+     @default null
+     @type {Texture}
      */
     set specularMap(texture) {
         this._attachTexture("specularMap", texture);
 
         /**
-         * Fired whenever this Material's {{#crossLink "Material/specularMap:property"}}{{/crossLink}} property changes.
-         * @event specularMap
-         * @param value Number The property's new value
+         Fired whenever this Material's {{#crossLink "Material/specularMap:property"}}{{/crossLink}} property changes.
+         @event specularMap
+         @param value Number The property's new value
          */
     },
 
@@ -400,21 +399,23 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * A emissive texture map attached to this Material.
-     *
-     * Fires a {{#crossLink "Material/emissiveMap:event"}}{{/crossLink}} event on change.
-     *
-     * @property emissiveMap
-     * @default null
-     * @type {Texture}
+     An emissive {{#crossLink "Texture"}}{{/crossLink}} attached to this Material.
+
+     This property overrides {{#crossLink "Material/emissive:property"}}{{/crossLink}} when not null or undefined.
+
+     Fires an {{#crossLink "Material/emissiveMap:event"}}{{/crossLink}} event on change.
+
+     @property emissiveMap
+     @default null
+     @type {Texture}
      */
     set emissiveMap(texture) {
         this._attachTexture("emissiveMap", texture);
 
         /**
-         * Fired whenever this Material's {{#crossLink "Material/emissiveMap:property"}}{{/crossLink}} property changes.
-         * @event emissiveMap
-         * @param value Number The property's new value
+         Fired whenever this Material's {{#crossLink "Material/emissiveMap:property"}}{{/crossLink}} property changes.
+         @event emissiveMap
+         @param value Number The property's new value
          */
     },
 
@@ -423,21 +424,23 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * A opacity texture map attached to this Material.
-     *
-     * Fires a {{#crossLink "Material/opacityMap:event"}}{{/crossLink}} event on change.
-     *
-     * @property opacityMap
-     * @default null
-     * @type {Texture}
+     An opacity {{#crossLink "Texture"}}{{/crossLink}} attached to this Material.
+
+     This property overrides {{#crossLink "Material/opacity:property"}}{{/crossLink}} when not null or undefined.
+
+     Fires an {{#crossLink "Material/opacityMap:event"}}{{/crossLink}} event on change.
+
+     @property opacityMap
+     @default null
+     @type {Texture}
      */
     set opacityMap(texture) {
         this._attachTexture("opacityMap", texture);
 
         /**
-         * Fired whenever this Material's {{#crossLink "Material/opacityMap:property"}}{{/crossLink}} property changes.
-         * @event opacityMap
-         * @param value Number The property's new value
+         Fired whenever this Material's {{#crossLink "Material/opacityMap:property"}}{{/crossLink}} property changes.
+         @event opacityMap
+         @param value Number The property's new value
          */
     },
 
@@ -446,21 +449,23 @@ XEO.Material = XEO.Component.extend({
     },
 
     /**
-     * A reflectivity texture map attached to this Material.
-     *
-     * Fires a {{#crossLink "Material/reflectivityMap:event"}}{{/crossLink}} event on change.
-     *
-     * @property reflectivityMap
-     * @default null
-     * @type {Texture}
+     A reflectivity {{#crossLink "Texture"}}{{/crossLink}} attached to this Material.
+
+     This property overrides {{#crossLink "Material/reflectivity:property"}}{{/crossLink}} when not null or undefined.
+
+     Fires a {{#crossLink "Material/reflectivityMap:event"}}{{/crossLink}} event on change.
+
+     @property reflectivityMap
+     @default null
+     @type {Texture}
      */
     set reflectivityMap(texture) {
         this._attachTexture("reflectivityMap", texture);
 
         /**
-         * Fired whenever this Material's {{#crossLink "Material/reflectivityMap:property"}}{{/crossLink}} property changes.
-         * @event reflectivityMap
-         * @param value Number The property's new value
+         Fired whenever this Material's {{#crossLink "Material/reflectivityMap:property"}}{{/crossLink}} property changes.
+         @event reflectivityMap
+         @param value Number The property's new value
          */
     },
 

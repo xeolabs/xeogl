@@ -1,15 +1,15 @@
 "use strict";
 
 /**
- A light source that illuminates all associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally
+ A **DirLight** is a light source that illuminates all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally
  from a given direction.
 
  <ul>
 
  <li>DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are associated with {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
- <li>Within XEO Engine's Phong lighting calculations, DirLight {{#crossLink "DirLight/diffuse:property"}}{{/crossLink}} and
+ <li>Within xeoEngine's Phong lighting calculations, DirLight {{#crossLink "DirLight/diffuse:property"}}{{/crossLink}} and
  {{#crossLink "DirLight/specular:property"}}{{/crossLink}} are multiplied by {{#crossLink "Material"}}Material{{/crossLink}}
  {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and {{#crossLink "Material/specular:property"}}{{/crossLink}},
  respectively.</li>
@@ -24,9 +24,14 @@
 
  ### Example
 
- The example below creates a {{#crossLink "GameObject"}}{{/crossLink}} that has a {{#crossLink "Geometry"}}{{/crossLink}},
- a {{#crossLink "Material"}}{{/crossLink}}, and a {{#crossLink "Lights"}}{{/crossLink}} that has a {{#crossLink "DirLight"}}{{/crossLink}}.
-
+ The following example creates
+ <ul>
+ <li>a {{#crossLink "material"}}{{/crossLink}},</li>
+ <li>a DirLight,</li>
+ <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the DirLight,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
 
  ```` javascript
  var scene = new XEO.Scene();
@@ -37,9 +42,6 @@
     specular:   [1. 1, 1],
     shininess:  30
  });
-
- // Within XEO Engine's Phong shading calculations, the DirLight's diffuse and
- // specular colors will be multiplied by the Material's diffuse and specular colors
 
  var dirLight = new XEO.DirLight(scene, {
     dir:        [-1, -1, -1],

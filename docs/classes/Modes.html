@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,10 +130,10 @@
 
 
 <div class="box intro">
-    <p>Toggles rendering modes for associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>Modes</strong> toggles xeoEngine&#39;s rendering modes for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <ul>
 
-<li>Though the rendering modes are defined by various different components associated with the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>,
+<li>Though the rendering modes are defined by various different components attached to the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>,
 Modes components provide a single point through which you can toggle them on or off.</li>
 
 <li>A Modes may be shared among multiple <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to toggle
@@ -311,7 +310,7 @@ modes.destroy();
         
                                         <div class="param-description">
                                             <p>Whether to enable the transparency effect created by <a href="../classes/Material.html" class="crosslink">Material</a>s when they have
-        <a href="../classes/Material.html#property_opacity" class="crosslink">opacity</a> &lt; 1.0. This mode will set associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> transparent (ie. to be rendered in a
+        <a href="../classes/Material.html#property_opacity" class="crosslink">opacity</a> &lt; 1.0. This mode will set attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> transparent (ie. to be rendered in a
         transparency pass with blending enabled etc), while
         the <a href="../classes/Material.html#property_opacity" class="crosslink">opacity</a> will indicate the <strong>degree</strong> of their transparency
         (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).</p>
@@ -1129,9 +1128,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables ambient lighting of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                            <p>Whether this Modes enables ambient lighting of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>The ambient lighting will be provided by <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> components that are also
-                    associated with the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    attached to the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_ambient" class="crosslink">ambient</a> event on change.</p>
                     
                         </div>
@@ -1158,9 +1157,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables lighting on the backfaces of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                            <p>Whether this Modes enables lighting on the backfaces of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>The lights and geometry will be defined by <a href="../classes/Lights.html" class="crosslink">Lights</a> and <a href="../classes/Geometry.html" class="crosslink">Geometry</a> components
-                    that are also associated with the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    that are also attached to the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_backfaceLighting" class="crosslink">backfaceLighting</a> event on change.</p>
                     
                         </div>
@@ -1187,8 +1186,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables backfaces to be visible on associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
-                    <p>The backfaces will belong to <a href="../classes/Geometry.html" class="crosslink">Geometry</a> compoents that are also associated with
+                            <p>Whether this Modes enables backfaces to be visible on attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    <p>The backfaces will belong to <a href="../classes/Geometry.html" class="crosslink">Geometry</a> compoents that are also attached to
                     the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_backfaces" class="crosslink">backfaces</a> event on change.</p>
                     
@@ -1216,9 +1215,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables textures to be applied to the backfaces of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                            <p>Whether this Modes enables textures to be applied to the backfaces of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>The textures and geometry will be defined by <a href="../classes/Texture.html" class="crosslink">Texture</a> and <a href="../classes/Geometry.html" class="crosslink">Geometry</a> components
-                    that are also associated with the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    that are also attached to the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_backfaceTexturing" class="crosslink">backfaceTexturing</a> event on change.</p>
                     
                         </div>
@@ -1272,8 +1271,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables clipping of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
-                    <p>Clipping is done by <a href="../classes/Clips.html" class="crosslink">Clips</a> that are also associated with
+                            <p>Whether this Modes enables clipping of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    <p>Clipping is done by <a href="../classes/Clips.html" class="crosslink">Clips</a> that are also attached to
                     the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_clipping" class="crosslink">clipping</a> event on change.</p>
                     
@@ -1326,9 +1325,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables diffuse lighting of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                            <p>Whether this Modes enables diffuse lighting of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Lighting will be defined by <a href="../classes/Lights.html" class="crosslink">Lights</a> and <a href="../classes/Geometry.html" class="crosslink">Geometry</a> components
-                    that are also associated with the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    that are also attached to the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_diffuse" class="crosslink">diffuse</a> event on change.</p>
                     
                         </div>
@@ -1355,8 +1354,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Indicates the winding direction of front faces on associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
-                    <p>The faces will belong to <a href="../classes/Geometry.html" class="crosslink">Geometry</a> components that are also associated with
+                            <p>Indicates the winding direction of front faces on attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    <p>The faces will belong to <a href="../classes/Geometry.html" class="crosslink">Geometry</a> components that are also attached to
                     the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_frontface" class="crosslink">frontface</a> event on change.</p>
                     
@@ -1461,7 +1460,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables picking of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                            <p>Whether this Modes enables picking of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Picking is performed via calls to <a href="../classes/Canvas.html#method_pick" class="crosslink">Canvas pick</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_picking" class="crosslink">picking</a> event on change.</p>
                     
@@ -1489,9 +1488,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables reflections on associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
-                    <p>The reflections will be defined by <a href="../classes/CubeMap.html" class="crosslink">CubeMap</a> components that are also associated
-                    with the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                            <p>Whether this Modes enables reflections on attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    <p>The reflections will be defined by CubeMap components that are also attached
+                    to the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_reflection" class="crosslink">reflection</a> event on change.</p>
                     
                         </div>
@@ -1544,8 +1543,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables specular lighting of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
-                    <p>Lighting will be defined by <a href="../classes/Lights.html" class="crosslink">Lights</a> components that are also associated with
+                            <p>Whether this Modes enables specular lighting of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    <p>Lighting will be defined by <a href="../classes/Lights.html" class="crosslink">Lights</a> components that are also attached to
                     the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_specular" class="crosslink">specular</a> event on change.</p>
                     
@@ -1573,8 +1572,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are transparent.</p>
-                    <p>When true. this property will set associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> transparent (ie. to be rendered in a
+                            <p>Whether attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are transparent.</p>
+                    <p>When true. this property will set attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> transparent (ie. to be rendered in a
                     transparency pass with blending enabled etc), while
                     the <a href="../classes/Material.html#property_opacity" class="crosslink">opacity</a> will be used to indicate the <strong>degree</strong> of their transparency
                     (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).</p>

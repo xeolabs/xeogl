@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- Captures rendered pixel colors of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **ColorTarget** captures rendered pixel colors of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  <ul>
  <li>A ColorTarget provides the pixel colors as a dynamic color image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
@@ -16,44 +16,43 @@
 
  ### Example
 
- Shown below is a minimal example of how to use ColorTargets, in which we create an
- {{#crossLink "GameObject"}}GameObject{{/crossLink}} that renders a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to a
- ColorTarget, then a second {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Material"}}Material{{/crossLink}}
- with a {{#crossLink "Texture"}}Texture{{/crossLink}} that sources its pixels from the ColorTarget. The end effect is a box
- that is textured with view of another box.
+ In the example below we essentially have one {{#crossLink "GameObject"}}{{/crossLink}}
+ that's rendered to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied to a second {{#crossLink "GameObject"}}{{/crossLink}}.
 
- As with all our examples, we're creating only the essential components while falling back on
- the <a href="XEO.Scene.html#defaults" class="crosslink">Scene's default components</a> for everything else.
+ The scene contains:
+
+ <ul>
+ <li>a ColorTarget,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} pixel color values to the ColorTarget,</li>
+ <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the ColorTarget,</li>
+ <li>a {{#crossLink "Material"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
+ <li>a second {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
+ </ul>
+
 
  ````javascript
  var scene = new XEO.Scene();
 
- // Geometry without parameters will default to a 2x2x2 box. Note that we could have
- // instead just used the Scene's default Geometry, but we'll create our own for this example.
- var geometry = new XEO.Geometry(scene);
-
- // Our ColorTarget
  var colorTarget = new XEO.ColorTarget(scene);
 
- // GameObject that is rendered to the ColorTarget
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
  var firstGameObject = new XEO.GameObject(scene, {
        geometry: geometry,
        colorTarget: colorTarget
   });
 
- // Texture that sources its pixels from the ColorTarget
  var texture = new XEO.Texture(scene, {
       target: colorTarget
   });
 
- // Material that contains the texture
  var material = new XEO.Material(scene, {
        textures: [
            texture
        ]
   });
 
- // Second GameObject uses the Material, and is therefore textured with the image of the first GameObject
  var object2 = new XEO.GameObject(scene, {
        geometry: geometry,  // Reuse our simple box geometry
        material: material

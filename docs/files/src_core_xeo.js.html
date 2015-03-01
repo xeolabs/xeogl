@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -180,22 +179,26 @@
         constructor: XEO,
 
         /**
-         * The default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
-         *
-         * Components created without an explicit parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} will be created within this
-         * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} by default.
-         *
-         * @property scene
-         * @namespace XEO
-         * @final
-         * @type Scene
+         The default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+
+         Components created without an explicit parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} will be created within this
+         {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} by default.
+
+         xeoEngine creates the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as soon as you either
+         reference this property for the first time, or create your first {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} without
+         a specified {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+
+         @property scene
+         @namespace XEO
+         @final
+         @type Scene
          */
         get scene() {
             return this._scene || (this._scene = new XEO.Scene());
         },
 
         /**
-         * Registers a scene on this engine
+         * Registers a scene on xeoEngine
          * @method _addScene
          * @param {Scene} scene The scene
          * @private

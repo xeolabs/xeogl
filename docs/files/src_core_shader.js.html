@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,7 +120,7 @@
 &quot;use strict&quot;;
 
 /**
- Specifies a custom GLSL shader to draw associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **Shader** specifies a custom GLSL shader to draw attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  &lt;hr&gt;
     *Contents*
@@ -135,8 +134,8 @@
  ## Overview
 
  &lt;ul&gt;
- &lt;li&gt;You can use XEO&#x27;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#x27;s set by other
- components on the associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;You can use xeoEngine&#x27;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#x27;s set by other
+ components on the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
  &lt;li&gt;Use Shaders in combination with {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} components when you need to share
  the same Shaders among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} while setting the Shaders&#x27; uniforms
@@ -152,11 +151,9 @@
  ## Example
 
  The example below shows the simplest way to use a Shader, where we&#x27;re just going to render a ripply water
- pattern to a screen-aligned quad. As with all our examples, we&#x27;re just creating the
- essential components while falling back on the &lt;a href=&quot;XEO.Scene.html#defaults&quot; class=&quot;crosslink&quot;&gt;Scene&#x27;s default components&lt;/a&gt;
- for everything else.
+ pattern to a screen-aligned quad.
 
- &lt;img src=&quot;../../files/shaderExample1.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../assets/images/shaderExample1.png&quot;&gt;&lt;/img&gt;
 
  In our scene definition, we have an  {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} that is our
  screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
@@ -240,7 +237,7 @@
 
  ## Shader Inputs
 
- XEO provides various inputs for your shaders (TODO)
+ xeoEngine provides various inputs for your shaders (TODO)
 
  #### Attributes
 
@@ -364,7 +361,7 @@ XEO.Shader = XEO.Component.extend({
      * Sets one or more params for this Shader.
      *
      * These will be individually overridden by any {{#crossLink &quot;ShaderParams/setParams:method&quot;}}params subsequently specified{{/crossLink}} on
-     * {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} on associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+     * {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
      *
      * Fires a {{#crossLink &quot;Shader/params:event&quot;}}{{/crossLink}} event on change.
      *

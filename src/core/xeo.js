@@ -60,22 +60,26 @@
         constructor: XEO,
 
         /**
-         * The default {{#crossLink "Scene"}}Scene{{/crossLink}}.
-         *
-         * Components created without an explicit parent {{#crossLink "Scene"}}Scene{{/crossLink}} will be created within this
-         * {{#crossLink "Scene"}}Scene{{/crossLink}} by default.
-         *
-         * @property scene
-         * @namespace XEO
-         * @final
-         * @type Scene
+         The default {{#crossLink "Scene"}}Scene{{/crossLink}}.
+
+         Components created without an explicit parent {{#crossLink "Scene"}}Scene{{/crossLink}} will be created within this
+         {{#crossLink "Scene"}}Scene{{/crossLink}} by default.
+
+         xeoEngine creates the default {{#crossLink "Scene"}}Scene{{/crossLink}} as soon as you either
+         reference this property for the first time, or create your first {{#crossLink "GameObject"}}GameObject{{/crossLink}} without
+         a specified {{#crossLink "Scene"}}Scene{{/crossLink}}.
+
+         @property scene
+         @namespace XEO
+         @final
+         @type Scene
          */
         get scene() {
             return this._scene || (this._scene = new XEO.Scene());
         },
 
         /**
-         * Registers a scene on this engine
+         * Registers a scene on xeoEngine
          * @method _addScene
          * @param {Scene} scene The scene
          * @private

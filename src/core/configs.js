@@ -22,7 +22,7 @@
 
  ### Configurations used by the Scene
 
- Don't use the following names for your own properties, because these are already used by XEO Engine:
+ Don't use the following names for your own properties, because these are already used by xeoEngine:
 
  | Name  | Description  |
  |---|---|

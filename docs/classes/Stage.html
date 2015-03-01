@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,7 +130,7 @@
 
 
 <div class="box intro">
-    <p>Partitions associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> into ordered render bins.</p>
+    <p>A <strong>Stage</strong> partitions attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> into ordered render bins.</p>
 <ul>
 <li>When the parent <a href="../classes/Scene.html" class="crosslink">Scene</a> renders, each Stage renders its bin
 of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> in turn, from the lowest priority Stage to the highest.</li>
@@ -144,8 +143,8 @@ by associating them with <a href="../classes/Layer.html" class="crosslink">Layer
 <li><a href="../classes/Layer.html" class="crosslink">Layers</a> are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
 <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within Stages.</li>
 
-<li><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> not explicitly associated with a Stage are implicitly
-associated with the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default
+<li><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> not explicitly attached to a Stage are implicitly
+attached to the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default
 <a href="../classes/Scene.html#property_stage" class="crosslink">stage</a>. which has
 a <a href="../classes/Stage.html#property_priority" class="crosslink">priority</a> value of zero.</li>
 
@@ -297,7 +296,7 @@ var object2 = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>The rendering priority for the associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                                            <p>The rendering priority for the attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
         
                                         </div>
         
@@ -308,7 +307,7 @@ var object2 = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Indicates whether associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are pickable.</p>
+                                            <p>Indicates whether attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are pickable.</p>
         
                                         </div>
         
@@ -1063,7 +1062,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Indicates whether the associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are pickable (see <a href="../classes/Canvas.html#method_pick" class="crosslink">Canvas#pick</a>).</p>
+                            <p>Indicates whether the attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are pickable (see <a href="../classes/Canvas.html#method_pick" class="crosslink">Canvas#pick</a>).</p>
                     <p>Fires a <a href="../classes/Stage.html#event_pickable" class="crosslink">pickable</a> event on change.</p>
                     
                         </div>

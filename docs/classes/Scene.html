@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,7 +130,7 @@
 
 
 <div class="box intro">
-    <p>A XEO scene graph.</p>
+    <p>A <strong>Scene</strong> is a xeoEngine scene graph.</p>
 <p><hr>
   <em>Contents</em>
    <Ul>
@@ -143,19 +142,19 @@
    </ul>
    <hr></p>
 <h2 id="-a-name-scenestructure-scene-structure-a-"><a name="sceneStructure">Scene Structure</a></h2>
-<p>A Scene is a type of <a href="http://gameprogrammingpatterns.com/component.html" target="_other">object-component</a> graph.</p>
+<p>A Scene is a type of <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-object</a> graph.</p>
 <p>A Scene contains a soup of instances of various <a href="../classes/Component.html" class="crosslink">Component</a> subtypes, such as
 <a href="../classes/GameObject.html" class="crosslink">GameObject</a>, <a href="../classes/Camera.html" class="crosslink">Camera</a>, <a href="../classes/Material.html" class="crosslink">Material</a>,
 <a href="../classes/Lights.html" class="crosslink">Lights</a> etc.  Each <a href="../classes/GameObject.html" class="crosslink">GameObject</a> has a link to one of each of the other types,
 and the same component instances can be shared among many <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
-<p><strong><em> Under the hood:</em></strong> Within XEO Engine, each <a href="../classes/GameObject.html" class="crosslink">GameObject</a> represents a draw call,
-while its components define all the WebGL state that will be bound for that call. To render a Scene, XEO traverses
-the graph to bind the states and make the draw calls, while using many optimizations for speed (eg. draw list caching and GL state sorting).</p>
+<p><strong><em> Under the hood:</em></strong> Within xeoEngine, each <a href="../classes/GameObject.html" class="crosslink">GameObject</a> represents a draw call,
+while its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses
+the graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).</p>
 <p><img src="http://www.gliffy.com/go/publish/image/7103731/L.png"></img></p>
 <h4 id="default-components">Default Components</h4>
 <p>A Scene provides its own default <em>flyweight</em> instance of each component type
 (except for <a href="../classes/GameObject.html" class="crosslink">GameObject</a>). Each <a href="../classes/GameObject.html" class="crosslink">GameObject</a> you create
-will implicitly link a default instance for each type of component that you don&#39;t explicitly link it to. For example, when you create a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> without
+will implicitly link to a default instance for each type of component that you don&#39;t explicitly link it to. For example, when you create a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> without
 a <a href="../classes/Lights.html" class="crosslink">Lights</a>, the <a href="../classes/GameObject.html" class="crosslink">GameObject</a> will link to the
 <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_lights" class="crosslink">lights</a>. This mechanism
 provides <strong><em>training wheels</em></strong> to help you learn the API, and also helps keep examples simple, where many of the examples in this
@@ -226,28 +225,28 @@ created earlier:</p>
 </code></pre>
 <p><br></p>
 <h2 id="-a-name-defaults-the-default-scene-a-"><a name="defaults">The Default Scene</a></h2>
-<p>When you create components without specifying a Scene for them, XEO will put them in its default Scene.</p>
+<p>When you create components without specifying a Scene for them, xeoEngine will put them in its default Scene.</p>
 <p>For example:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material2 = new XEO.Material({
-      diffuse: { r: 0.6, g: 0.6, b: 0.7 },
-      specular: { 1.0, 1.0, 1.0 }
-  });
+   diffuse: { r: 0.6, g: 0.6, b: 0.7 },
+   specular: { 1.0, 1.0, 1.0 }
+});
 
 var geometry2 = new XEO.Geometry({
-      primitive: "triangles",
-      positions: [...],
-      normals: [...],
-      uvs: [...],
-      indices: [...]
- });
+    primitive: "triangles",
+    positions: [...],
+    normals: [...],
+    uvs: [...],
+    indices: [...]
+});
 
 var camera = new XEO.Camera();
 
 var object1 = new XEO.GameObject({
-      material: material2,
-      geometry: geometry2,
-      camera: camera2
- });
+    material: material2,
+    geometry: geometry2,
+    camera: camera2
+});
 </code></pre>
 <p>You can then obtain the default Scene from the <a href="../classes/XEO.html" class="crosslink">XEO</a> object&#39;s
 <a href="../classes/XEO.html#property_scene" class="crosslink">scene</a> property:</p>
@@ -256,7 +255,7 @@ var object1 = new XEO.GameObject({
 <p>or from one of the components we just created:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var theScene = material2.scene;
 </code></pre>
-<p><strong><em>Note:</em></strong> XEO creates the default Scene as soon as you either
+<p><strong><em>Note:</em></strong> xeoEngine creates the default Scene as soon as you either
 create your first Sceneless <a href="../classes/GameObject.html" class="crosslink">GameObject</a> or reference the
 <a href="../classes/XEO.html" class="crosslink">XEO</a> object&#39;s <a href="../classes/XEO.html#property_scene" class="crosslink">scene</a> property. Expect to
 see the HTML canvas for the default Scene magically appear in the page when you do that.</p>
@@ -335,8 +334,7 @@ if those arrays are huge.</p>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent Engine, generated automatically when omitted.
-        You only need to supply an ID if you need to be able to find the Scene by ID within the parent Engine.</p>
+                                            <p>Optional ID, unique among all Scenes in xeoEngine, generated automatically when omitted.</p>
         
                                         </div>
         
@@ -1126,7 +1124,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l455"><code>src&#x2F;core&#x2F;scene.js:455</code></a>
+                            <a href="../files/src_core_scene.js.html#l454"><code>src&#x2F;core&#x2F;scene.js:454</code></a>
                             </p>
                     
                     
@@ -1136,7 +1134,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/Camera.html" class="crosslink">Camera</a> provided by this Scene.</p>
                     <p>This <a href="../classes/Camera.html" class="crosslink">Camera</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.camera",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are associated with
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to
                     this <a href="../classes/Camera.html" class="crosslink">Camera</a> by default.</p>
                     
                         </div>
@@ -1156,7 +1154,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l254"><code>src&#x2F;core&#x2F;scene.js:254</code></a>
+                            <a href="../files/src_core_scene.js.html#l253"><code>src&#x2F;core&#x2F;scene.js:253</code></a>
                             </p>
                     
                     
@@ -1209,7 +1207,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l496"><code>src&#x2F;core&#x2F;scene.js:496</code></a>
+                            <a href="../files/src_core_scene.js.html#l495"><code>src&#x2F;core&#x2F;scene.js:495</code></a>
                             </p>
                     
                     
@@ -1239,7 +1237,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l515"><code>src&#x2F;core&#x2F;scene.js:515</code></a>
+                            <a href="../files/src_core_scene.js.html#l514"><code>src&#x2F;core&#x2F;scene.js:514</code></a>
                             </p>
                     
                     
@@ -1269,7 +1267,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l534"><code>src&#x2F;core&#x2F;scene.js:534</code></a>
+                            <a href="../files/src_core_scene.js.html#l533"><code>src&#x2F;core&#x2F;scene.js:533</code></a>
                             </p>
                     
                     
@@ -1298,7 +1296,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l236"><code>src&#x2F;core&#x2F;scene.js:236</code></a>
+                            <a href="../files/src_core_scene.js.html#l235"><code>src&#x2F;core&#x2F;scene.js:235</code></a>
                             </p>
                     
                     
@@ -1324,7 +1322,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l245"><code>src&#x2F;core&#x2F;scene.js:245</code></a>
+                            <a href="../files/src_core_scene.js.html#l244"><code>src&#x2F;core&#x2F;scene.js:244</code></a>
                             </p>
                     
                     
@@ -1351,7 +1349,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l553"><code>src&#x2F;core&#x2F;scene.js:553</code></a>
+                            <a href="../files/src_core_scene.js.html#l552"><code>src&#x2F;core&#x2F;scene.js:552</code></a>
                             </p>
                     
                     
@@ -1381,7 +1379,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l573"><code>src&#x2F;core&#x2F;scene.js:573</code></a>
+                            <a href="../files/src_core_scene.js.html#l572"><code>src&#x2F;core&#x2F;scene.js:572</code></a>
                             </p>
                     
                     
@@ -1436,7 +1434,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l631"><code>src&#x2F;core&#x2F;scene.js:631</code></a>
+                            <a href="../files/src_core_scene.js.html#l630"><code>src&#x2F;core&#x2F;scene.js:630</code></a>
                             </p>
                     
                     
@@ -1490,7 +1488,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l275"><code>src&#x2F;core&#x2F;scene.js:275</code></a>
+                            <a href="../files/src_core_scene.js.html#l274"><code>src&#x2F;core&#x2F;scene.js:274</code></a>
                             </p>
                     
                     
@@ -1516,7 +1514,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l648"><code>src&#x2F;core&#x2F;scene.js:648</code></a>
+                            <a href="../files/src_core_scene.js.html#l647"><code>src&#x2F;core&#x2F;scene.js:647</code></a>
                             </p>
                     
                     
@@ -1546,7 +1544,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l668"><code>src&#x2F;core&#x2F;scene.js:668</code></a>
+                            <a href="../files/src_core_scene.js.html#l667"><code>src&#x2F;core&#x2F;scene.js:667</code></a>
                             </p>
                     
                     
@@ -1576,7 +1574,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l715"><code>src&#x2F;core&#x2F;scene.js:715</code></a>
+                            <a href="../files/src_core_scene.js.html#l714"><code>src&#x2F;core&#x2F;scene.js:714</code></a>
                             </p>
                     
                     
@@ -1633,7 +1631,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l612"><code>src&#x2F;core&#x2F;scene.js:612</code></a>
+                            <a href="../files/src_core_scene.js.html#l611"><code>src&#x2F;core&#x2F;scene.js:611</code></a>
                             </p>
                     
                     
@@ -1663,7 +1661,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l735"><code>src&#x2F;core&#x2F;scene.js:735</code></a>
+                            <a href="../files/src_core_scene.js.html#l734"><code>src&#x2F;core&#x2F;scene.js:734</code></a>
                             </p>
                     
                     
@@ -1693,7 +1691,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l416"><code>src&#x2F;core&#x2F;scene.js:416</code></a>
+                            <a href="../files/src_core_scene.js.html#l415"><code>src&#x2F;core&#x2F;scene.js:415</code></a>
                             </p>
                     
                     
@@ -1704,7 +1702,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>This <a href="../classes/Perspective.html" class="crosslink">Perspective</a> has an
                     <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.project", with all other properties set to
                     their default values.</p>
-                    <p><a href="../classes/Camera.html" class="crosslink">Cameras</a> within this Scene are associated with
+                    <p><a href="../classes/Camera.html" class="crosslink">Cameras</a> within this Scene are attached to
                     this <a href="../classes/Perspective.html" class="crosslink">Perspective</a> by default.</p>
                     
                         </div>
@@ -1724,7 +1722,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l754"><code>src&#x2F;core&#x2F;scene.js:754</code></a>
+                            <a href="../files/src_core_scene.js.html#l753"><code>src&#x2F;core&#x2F;scene.js:753</code></a>
                             </p>
                     
                     
@@ -1781,7 +1779,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l774"><code>src&#x2F;core&#x2F;scene.js:774</code></a>
+                            <a href="../files/src_core_scene.js.html#l773"><code>src&#x2F;core&#x2F;scene.js:773</code></a>
                             </p>
                     
                     
@@ -1812,7 +1810,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l794"><code>src&#x2F;core&#x2F;scene.js:794</code></a>
+                            <a href="../files/src_core_scene.js.html#l793"><code>src&#x2F;core&#x2F;scene.js:793</code></a>
                             </p>
                     
                     
@@ -1842,7 +1840,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l813"><code>src&#x2F;core&#x2F;scene.js:813</code></a>
+                            <a href="../files/src_core_scene.js.html#l812"><code>src&#x2F;core&#x2F;scene.js:812</code></a>
                             </p>
                     
                     
@@ -1873,7 +1871,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l291"><code>src&#x2F;core&#x2F;scene.js:291</code></a>
+                            <a href="../files/src_core_scene.js.html#l290"><code>src&#x2F;core&#x2F;scene.js:290</code></a>
                             </p>
                     
                     
@@ -1899,7 +1897,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l283"><code>src&#x2F;core&#x2F;scene.js:283</code></a>
+                            <a href="../files/src_core_scene.js.html#l282"><code>src&#x2F;core&#x2F;scene.js:282</code></a>
                             </p>
                     
                     
@@ -1925,7 +1923,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l476"><code>src&#x2F;core&#x2F;scene.js:476</code></a>
+                            <a href="../files/src_core_scene.js.html#l475"><code>src&#x2F;core&#x2F;scene.js:475</code></a>
                             </p>
                     
                     
@@ -1935,7 +1933,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default modelling transform provided by this Scene.</p>
                     <p>This <a href="../classes/Matrix.html" class="crosslink">Matrix</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.transform",
                     with all other properties initialised to their default values (ie. an identity matrix).</p>
-                    <p>GameObjectss within this Scene are associated with
+                    <p>GameObjectss within this Scene are attached to
                     this <a href="../classes/Matrix.html" class="crosslink">Matrix</a> by default.</p>
                     
                         </div>
@@ -1983,7 +1981,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l436"><code>src&#x2F;core&#x2F;scene.js:436</code></a>
+                            <a href="../files/src_core_scene.js.html#l435"><code>src&#x2F;core&#x2F;scene.js:435</code></a>
                             </p>
                     
                     
@@ -1993,7 +1991,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default viewing transform provided by this Scene, which is a <a href="../classes/Lookat.html" class="crosslink">Lookat</a>.</p>
                     <p>This <a href="../classes/Lookat.html" class="crosslink">Lookat</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.view",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/Camera.html" class="crosslink">Cameras</a> within this Scene are associated with
+                    <p><a href="../classes/Camera.html" class="crosslink">Cameras</a> within this Scene are attached to
                     this <a href="../classes/Lookat.html" class="crosslink">Lookat</a> by default.</p>
                     
                         </div>
@@ -2013,7 +2011,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l592"><code>src&#x2F;core&#x2F;scene.js:592</code></a>
+                            <a href="../files/src_core_scene.js.html#l591"><code>src&#x2F;core&#x2F;scene.js:591</code></a>
                             </p>
                     
                     
@@ -2048,7 +2046,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l408"><code>src&#x2F;core&#x2F;scene.js:408</code></a>
+                            <a href="../files/src_core_scene.js.html#l407"><code>src&#x2F;core&#x2F;scene.js:407</code></a>
                             </p>
                     
                     
@@ -2090,7 +2088,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l387"><code>src&#x2F;core&#x2F;scene.js:387</code></a>
+                            <a href="../files/src_core_scene.js.html#l386"><code>src&#x2F;core&#x2F;scene.js:386</code></a>
                             </p>
                     
                     
@@ -2157,7 +2155,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l211"><code>src&#x2F;core&#x2F;scene.js:211</code></a>
+                            <a href="../files/src_core_scene.js.html#l210"><code>src&#x2F;core&#x2F;scene.js:210</code></a>
                             </p>
                     
                     
@@ -2199,7 +2197,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l205"><code>src&#x2F;core&#x2F;scene.js:205</code></a>
+                            <a href="../files/src_core_scene.js.html#l204"><code>src&#x2F;core&#x2F;scene.js:204</code></a>
                             </p>
                     
                     
@@ -2241,7 +2239,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l348"><code>src&#x2F;core&#x2F;scene.js:348</code></a>
+                            <a href="../files/src_core_scene.js.html#l347"><code>src&#x2F;core&#x2F;scene.js:347</code></a>
                             </p>
                     
                     
@@ -2267,7 +2265,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l217"><code>src&#x2F;core&#x2F;scene.js:217</code></a>
+                            <a href="../files/src_core_scene.js.html#l216"><code>src&#x2F;core&#x2F;scene.js:216</code></a>
                             </p>
                     
                     

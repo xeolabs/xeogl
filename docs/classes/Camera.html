@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,7 +130,7 @@
 
 
 <div class="box intro">
-    <p>Defines a viewpoint on associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>Camera</strong> component defines a viewpoint on attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <ul>
 
 <li> A Camera is composed of a viewing transform and a projection transform.</li>
@@ -149,9 +148,16 @@ You would override those with your own transform components as necessary.</li>
 
 <p><img src="http://www.gliffy.com/go/publish/image/6891059/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s associated with a
-Camera that has a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform and a <a href="../classes/Perspective.html" class="crosslink">Perspective</a>
-projection transform.</p>
+<p>The following example creates</p>
+<ul>
+<li>a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform,</li>
+<li>a <a href="../classes/Perspective.html" class="crosslink">Perspective</a> projection transform,</li>
+<li>a Camera attached to the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> and <a href="../classes/Perspective.html" class="crosslink">Perspective</a>,</li>
+<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
+<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
+</ul>
+
+
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
 var lookat = new XEO.Lookat(scene, {
@@ -1040,7 +1046,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_camera.js.html#l86"><code>src&#x2F;core&#x2F;camera.js:86</code></a>
+                            <a href="../files/src_core_camera.js.html#l92"><code>src&#x2F;core&#x2F;camera.js:92</code></a>
                             </p>
                     
                     
@@ -1123,7 +1129,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_camera.js.html#l112"><code>src&#x2F;core&#x2F;camera.js:112</code></a>
+                            <a href="../files/src_core_camera.js.html#l118"><code>src&#x2F;core&#x2F;camera.js:118</code></a>
                             </p>
                     
                     
@@ -1183,7 +1189,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_camera.js.html#l100"><code>src&#x2F;core&#x2F;camera.js:100</code></a>
+                            <a href="../files/src_core_camera.js.html#l106"><code>src&#x2F;core&#x2F;camera.js:106</code></a>
                             </p>
                     
                     
@@ -1225,7 +1231,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_camera.js.html#l126"><code>src&#x2F;core&#x2F;camera.js:126</code></a>
+                            <a href="../files/src_core_camera.js.html#l132"><code>src&#x2F;core&#x2F;camera.js:132</code></a>
                             </p>
                     
                     

@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,7 +130,7 @@
 
 
 <div class="box intro">
-    <p>A group of arbitrarily-aligned <a href="../classes/Clip.html" class="crosslink">Clip</a> planes that clip fragments of associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>Clips</strong> is a group of arbitrarily-aligned <a href="../classes/Clip.html" class="crosslink">Clip</a> planes that clip fragments of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <ul>
 
 <li>Each <a href="../classes/Clip.html" class="crosslink">Clip</a> is specified in World-space, as being perpendicular to a vector
@@ -153,10 +152,19 @@ activate or deactivate it, or to switch which side it discards fragments from.</
 
 <p><img src="http://www.gliffy.com/go/publish/image/6890347/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s clipped by a <a href="../classes/Clips.html" class="crosslink">Clips</a>
-that contains two <a href="../classes/Clip.html" class="crosslink">Clip</a> planes. The first <a href="../classes/Clip.html" class="crosslink">Clip</a> plane is on the
-positive diagonal, while the second is on the negative diagonal. The <a href="../classes/GameObject.html" class="crosslink">GameObject&#39;s</a>
-<a href="../classes/Geometry.html" class="crosslink">Geometry</a> is the default 2x2x2 box, and the planes will clip off two of the box&#39;s corners.</p>
+<ul>
+
+<li>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s clipped by a <a href="../classes/Clips.html" class="crosslink">Clips</a>
+that contains two <a href="../classes/Clip.html" class="crosslink">Clip</a> planes.</li>
+
+<li>The first <a href="../classes/Clip.html" class="crosslink">Clip</a> plane is on the
+positive diagonal, while the second is on the negative diagonal.</li>
+
+<li>The <a href="../classes/GameObject.html" class="crosslink">GameObject&#39;s</a>
+<a href="../classes/Geometry.html" class="crosslink">Geometry</a> is the default 2x2x2 box, and the planes will clip off two of the box&#39;s corners.</li>
+
+</ul>
+
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
 // Clip plane on negative diagonal
@@ -192,13 +200,13 @@ var object = new XEO.GameObject(scene, {
 
 // Subscribe to change of a clip plane&#39;s distance
 clip1.on("dist",
-   function(value) {
+function(value) {
        // Property value has changed
    });
 
 // Subscribe to change of a clip plane&#39;s direction
 clip2.on("dir",
-   function(dir) {
+function(dir) {
        // Property value has changed
    });
 
@@ -976,7 +984,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_clips.js.html#l121"><code>src&#x2F;core&#x2F;clips.js:121</code></a>
+                            <a href="../files/src_core_clips.js.html#l129"><code>src&#x2F;core&#x2F;clips.js:129</code></a>
                             </p>
                     
                     
@@ -1140,7 +1148,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_clips.js.html#l194"><code>src&#x2F;core&#x2F;clips.js:194</code></a>
+                            <a href="../files/src_core_clips.js.html#l202"><code>src&#x2F;core&#x2F;clips.js:202</code></a>
                             </p>
                     
                     

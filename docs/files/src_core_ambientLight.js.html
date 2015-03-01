@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,20 +120,19 @@
 &quot;use strict&quot;;
 
 /**
- A light source of fixed intensity and color that affects all associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
+ An **AmbientLight** defines a light source of fixed intensity and color that affects all attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
  equally.
 
  &lt;ul&gt;
 
  &lt;li&gt;AmbientLights are grouped, along with other light source types, within
- {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components, which are associated
- with {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components, which are attached to {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
- &lt;li&gt;Within XEO Engine&#x27;s Phong shading calculations, AmbientLight {{#crossLink &quot;AmbientLight/ambient:property&quot;}}ambient{{/crossLink}} is
+ &lt;li&gt;Within xeoEngine&#x27;s Phong shading calculations, AmbientLight {{#crossLink &quot;AmbientLight/ambient:property&quot;}}ambient{{/crossLink}} is
  multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}}.&lt;/li&gt;
 
  &lt;li&gt;Ambient lighting may be toggled for specific {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} via
- the {{#crossLink &quot;Modes/ambient:property&quot;}}{{/crossLink}} property on associated {{#crossLink &quot;Modes&quot;}}{{/crossLink}} components.&lt;/li&gt;
+ the {{#crossLink &quot;Modes/ambient:property&quot;}}{{/crossLink}} property on attached {{#crossLink &quot;Modes&quot;}}{{/crossLink}} components.&lt;/li&gt;
 
  &lt;/ul&gt;
 
@@ -142,9 +140,14 @@
 
  ### Example
 
- The example below creates a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}},
- a {{#crossLink &quot;Material&quot;}}{{/crossLink}}, and a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} that has an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}}.
-
+ The following example creates
+ &lt;ul&gt;
+ &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;an AmbientLight,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing the AmbientLight,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
 
  &#x60;&#x60;&#x60;&#x60; javascript
  var scene = new XEO.Scene();
@@ -156,7 +159,7 @@
     shininess: 30
  });
 
- // Within XEO Engine&#x27;s lighting calculations, the AmbientLight&#x27;s
+ // Within xeoEngine&#x27;s lighting calculations, the AmbientLight&#x27;s
  // ambient color will be multiplied by the Material&#x27;s ambient color
 
  var ambientLight = new XEO.AmbientLight(scene, {

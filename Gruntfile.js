@@ -1,103 +1,25 @@
-/*
- XeoEngine - WebGL Scene Graph Engine
- Copyright (c) 2015, Lindsay Kay
- lindsay.kay@xeolabs.com
- All rights reserved.
- */
-
-'use strict';
-
-var jsFiles = [
-
-    // API classes (public)
-
-    // These files before everything else
-    'src/xeo.js', // Engine namespace
-    'src/node.js', // Base node component type
-
-    'src/ambientLight.js',
-    'src/camera.js',
-    'src/canvas.js',
-    'src/clip.js',
-    'src/clips.js',
-    'src/colorBuf.js',
-    'src/colorTarget.js',
-    'src/component.js',
-    'src/configs.js',
-    'src/depthBuf.js',
-    'src/depthTarget.js',
-    'src/dirLight.js',
-    'src/visibility.js',
-    'src/modes.js',
-    'src/frustum.js',
-    'src/geometry.js',
-    'src/helloWorld.js',
-    'src/input.js',
-    'src/layer.js',
-    'src/lights.js',
-    'src/lookat.js',
-    'src/matrix.js',
-    'src/material.js',
-    'src/morphGeometry.js',
-    'src/name.js',
-    'src/gameObject.js',
-    'src/ortho.js',
-    'src/perspective.js',
-    'src/pointLight.js',
-    'src/scene.js',
-    'src/shader.js',
-    'src/shaderParams.js',
-    'src/stage.js',
-    'src/stats.js',
-    'src/tag.js',
-    'src/task.js',
-    'src/tasks.js',
-    'src/texture.js',
-
-    // Utilities (private)
-
-    'src/utils/map.js',
-
-    // Math library (public)
-
-    'src/math/math.js',
-
-    // WebGL wrappers (private)
-
-    'src/webgl/webgl.js',
-    'src/webgl/arrayBuffer.js',
-    'src/webgl/attribute.js',
-    'src/webgl/program.js',
-    'src/webgl/renderBuffer.js',
-    'src/webgl/sampler.js',
-    'src/webgl/texture2d.js',
-    'src/webgl/uniform.js',
-
-    // Renderer (private)
-
-    'src/renderer/renderer.js'
-    //...
-
-];
-
-
 module.exports = function (grunt) {
+
+    "use strict";
+
+    var devScripts = grunt.file.readJSON("dev-scripts.json");
 
     grunt.initConfig({
 
         pkg: grunt.file.readJSON('package.json'),
-        build_dir: 'build/<%= pkg.name %>.js',
-        release_dir: "build",
+        ENGINE_VERSION: "<%= pkg.version %>",
+        build_dir: "build/<%= ENGINE_VERSION %>",
         license: grunt.file.read("LICENSE.txt"),
 
         concat: {
             options: {
                 banner: grunt.file.read('BANNER'),
-                separator: ';'
+                separator: ';',
+                process: true
             },
-            dist: {
-                src: jsFiles,
-                dest: 'build/<%= pkg.name %>.js'
+            engine: {
+                src: devScripts.engine,
+                dest: "<%= build_dir %>/xeoengine-<%= ENGINE_VERSION %>.js"
             }
         },
 
@@ -106,12 +28,13 @@ module.exports = function (grunt) {
                 report: "min",
                 banner: grunt.file.read('BANNER')
             },
-            build: {
-                src: 'build/<%= pkg.name %>.js',
-                dest: 'build/<%= pkg.name %>.min.js'
+            engine: {
+                files: {
+                    "<%= build_dir %>/xeoengine-<%= ENGINE_VERSION %>.min.js": "<%= concat.engine.dest %>"
+                }
             }
         },
-        
+
         jshint: {
             options: {
                 eqeqeq: true,
@@ -130,24 +53,24 @@ module.exports = function (grunt) {
                     node: true
                 }
             },
-            scripts: {
+            engine: {
                 options: {
                     browser: true,
                     globals: {
-                        XEO: true,
-                        alert: true,
-                        console: true
+                        XEO: true
                     }
                 },
-                src: jsFiles
+                src: [
+                    "<%= concat.engine.src %>"
+                ]
             }
         },
-        
+
         clean: {
             tmp: "tmp/*.js",
             docs: ["docs/*"]
         },
-        
+
         qunit: {
             all: ["test/*.html"]
         },
@@ -159,10 +82,23 @@ module.exports = function (grunt) {
                 version: '<%= pkg.version %>',
                 url: '<%= pkg.homepage %>',
                 options: {
-                    paths: ['src/core/', 'src/math'],
-                    outdir: './docs/'
+                    paths: ['src/core'],
+                    outdir: './docs/',
+                    "exclude" : "renderer, utils, webgl"
                 },
                 logo: '../files/logo.png'
+            }
+
+        },
+
+        copy: {
+            minified: {
+                src: '<%= build_dir %>/xeoengine-<%= ENGINE_VERSION %>.min.js',
+                dest: 'build/xeoengine.min.js'
+            },
+            unminified: {
+                src: '<%= build_dir %>/xeoengine-<%= ENGINE_VERSION %>.js',
+                dest: 'build/xeoengine.js'
             }
         }
     });
@@ -173,11 +109,22 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-qunit");
     grunt.loadNpmTasks("grunt-contrib-yuidoc");
+    grunt.loadNpmTasks('grunt-contrib-copy');
+
 
     grunt.registerTask("compile", ["clean", "concat", "uglify"]);
     grunt.registerTask("build", ["test", "compile"]);
-    grunt.registerTask("test", ["jshint", "qunit"]);
+    grunt.registerTask("test", [ ]);
+//    grunt.registerTask("test", ["jshint", "qunit"]);
     grunt.registerTask("docs", ["clean", "yuidoc"]);
     grunt.registerTask("default", "test");
     grunt.registerTask("all", ["build", "docs"]);
+
+    grunt.registerTask("snapshot", ["concat", "uglify", "copy"]);
+
+//    grunt.registerTask('snapshot', 'Deploy snapshot builds',
+//        function () {
+//            grunt.task.run('all');
+//            grunt.file.copy("<%= build_dir %>/xeoengine-<%= ENGINE_VERSION %>.min.js", "xeoengine-<%= ENGINE_VERSION %>.min.js");
+//        });
 };

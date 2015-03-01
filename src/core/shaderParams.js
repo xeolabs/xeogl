@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- Sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  <ul>
  <li>Use these when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
@@ -156,7 +156,7 @@ XEO.ShaderParams = XEO.Component.extend({
     },
 
     /**
-     * Sets one or more params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on associated
+     * Sets one or more params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
      * {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
      *
      * These will individually override any params of the same names that are {{#crossLink "Shader/setParams:method"}}already specified{{/crossLink}} on

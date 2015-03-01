@@ -1,20 +1,19 @@
 "use strict";
 
 /**
- A light source of fixed intensity and color that affects all associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ An **AmbientLight** defines a light source of fixed intensity and color that affects all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
  equally.
 
  <ul>
 
  <li>AmbientLights are grouped, along with other light source types, within
- {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are associated
- with {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
- <li>Within XEO Engine's Phong shading calculations, AmbientLight {{#crossLink "AmbientLight/ambient:property"}}ambient{{/crossLink}} is
+ <li>Within xeoEngine's Phong shading calculations, AmbientLight {{#crossLink "AmbientLight/ambient:property"}}ambient{{/crossLink}} is
  multiplied by {{#crossLink "Material"}}Material{{/crossLink}} {{#crossLink "Material/ambient:property"}}{{/crossLink}}.</li>
 
  <li>Ambient lighting may be toggled for specific {{#crossLink "GameObject"}}GameObjects{{/crossLink}} via
- the {{#crossLink "Modes/ambient:property"}}{{/crossLink}} property on associated {{#crossLink "Modes"}}{{/crossLink}} components.</li>
+ the {{#crossLink "Modes/ambient:property"}}{{/crossLink}} property on attached {{#crossLink "Modes"}}{{/crossLink}} components.</li>
 
  </ul>
 
@@ -22,9 +21,14 @@
 
  ### Example
 
- The example below creates a {{#crossLink "GameObject"}}{{/crossLink}} that has a {{#crossLink "Geometry"}}{{/crossLink}},
- a {{#crossLink "Material"}}{{/crossLink}}, and a {{#crossLink "Lights"}}{{/crossLink}} that has an {{#crossLink "AmbientLight"}}{{/crossLink}}.
-
+ The following example creates
+ <ul>
+ <li>a {{#crossLink "Material"}}{{/crossLink}},</li>
+ <li>an AmbientLight,</li>
+ <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the AmbientLight,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
 
  ```` javascript
  var scene = new XEO.Scene();
@@ -36,7 +40,7 @@
     shininess: 30
  });
 
- // Within XEO Engine's lighting calculations, the AmbientLight's
+ // Within xeoEngine's lighting calculations, the AmbientLight's
  // ambient color will be multiplied by the Material's ambient color
 
  var ambientLight = new XEO.AmbientLight(scene, {

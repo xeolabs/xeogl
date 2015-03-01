@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/core/cubeMap.js - xeoengine</title>
+    <title>src/core/webgl/webgl.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -114,44 +113,66 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/core/cubeMap.js</h1>
+<h1 class="file-heading">File: src/core/webgl/webgl.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+XEO.webgl = {
 
-/**
- *
- * @class CubeMap
- *  @module XEO
- * @constructor
- * @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this CubeMap within the
- * default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- * @param [cfg] {*} CubeMap configuration
- * @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
- * @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CubeMap.
- * @extends Component
- */
-XEO.CubeMap = XEO.Component.extend({
-
-    className: &quot;XEO.CubeMap&quot;,
-
-    type: &quot;cubeMap&quot;,
-
-    _init: function (cfg) {
-
-    },
-
-    _compile: function (ctx) {
-
-    },
-
-    _getJSON : function() {
-        return {
-
-        };
+    /** Maps XEO component parameter names to WebGL enum names
+     */
+    enums: {
+        funcAdd: &quot;FUNC_ADD&quot;,
+        funcSubtract: &quot;FUNC_SUBTRACT&quot;,
+        funcReverseSubtract: &quot;FUNC_REVERSE_SUBTRACT&quot;,
+        zero: &quot;ZERO&quot;,
+        one: &quot;ONE&quot;,
+        srcColor: &quot;SRC_COLOR&quot;,
+        oneMinusSrcColor: &quot;ONE_MINUS_SRC_COLOR&quot;,
+        dstColor: &quot;DST_COLOR&quot;,
+        oneMinusDstColor: &quot;ONE_MINUS_DST_COLOR&quot;,
+        srcAlpha: &quot;SRC_ALPHA&quot;,
+        oneMinusSrcAlpha: &quot;ONE_MINUS_SRC_ALPHA&quot;,
+        dstAlpha: &quot;DST_ALPHA&quot;,
+        oneMinusDstAlpha: &quot;ONE_MINUS_DST_ALPHA&quot;,
+        contantColor: &quot;CONSTANT_COLOR&quot;,
+        oneMinusConstantColor: &quot;ONE_MINUS_CONSTANT_COLOR&quot;,
+        constantAlpha: &quot;CONSTANT_ALPHA&quot;,
+        oneMinusConstantAlpha: &quot;ONE_MINUS_CONSTANT_ALPHA&quot;,
+        srcAlphaSaturate: &quot;SRC_ALPHA_SATURATE&quot;,
+        front: &quot;FRONT&quot;,
+        back: &quot;BACK&quot;,
+        frontAndBack: &quot;FRONT_AND_BACK&quot;,
+        never: &quot;NEVER&quot;,
+        less: &quot;LESS&quot;,
+        equal: &quot;EQUAL&quot;,
+        lequal: &quot;LEQUAL&quot;,
+        greater: &quot;GREATER&quot;,
+        notequal: &quot;NOTEQUAL&quot;,
+        gequal: &quot;GEQUAL&quot;,
+        always: &quot;ALWAYS&quot;,
+        cw: &quot;CW&quot;,
+        ccw: &quot;CCW&quot;,
+        linear: &quot;LINEAR&quot;,
+        nearest: &quot;NEAREST&quot;,
+        linearMipMapNearest: &quot;LINEAR_MIPMAP_NEAREST&quot;,
+        nearestMipMapNearest: &quot;NEAREST_MIPMAP_NEAREST&quot;,
+        nearestMipMapLinear: &quot;NEAREST_MIPMAP_LINEAR&quot;,
+        linearMipMapLinear: &quot;LINEAR_MIPMAP_LINEAR&quot;,
+        repeat: &quot;REPEAT&quot;,
+        clampToEdge: &quot;CLAMP_TO_EDGE&quot;,
+        mirroredRepeat: &quot;MIRRORED_REPEAT&quot;,
+        alpha: &quot;ALPHA&quot;,
+        rgb: &quot;RGB&quot;,
+        rgba: &quot;RGBA&quot;,
+        luminance: &quot;LUMINANCE&quot;,
+        luminanceAlpha: &quot;LUMINANCE_ALPHA&quot;,
+        textureBinding2D: &quot;TEXTURE_BINDING_2D&quot;,
+        textureBindingCubeMap: &quot;TEXTURE_BINDING_CUBE_MAP&quot;,
+        compareRToTexture: &quot;COMPARE_R_TO_TEXTURE&quot;, // Hardware Shadowing Z-depth,
+        unsignedByte: &quot;UNSIGNED_BYTE&quot;
     }
-});
+}
 
     </pre>
 </div>

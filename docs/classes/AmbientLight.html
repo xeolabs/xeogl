@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,26 +130,32 @@
 
 
 <div class="box intro">
-    <p>A light source of fixed intensity and color that affects all associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>
+    <p>An <strong>AmbientLight</strong> defines a light source of fixed intensity and color that affects all attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>
 equally.</p>
 <ul>
 
 <li>AmbientLights are grouped, along with other light source types, within
-<a href="../classes/Lights.html" class="crosslink">Lights</a> components, which are associated
-with <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+<a href="../classes/Lights.html" class="crosslink">Lights</a> components, which are attached to <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
 
-<li>Within XEO Engine&#39;s Phong shading calculations, AmbientLight <a href="../classes/AmbientLight.html#property_ambient" class="crosslink">ambient</a> is
+<li>Within xeoEngine&#39;s Phong shading calculations, AmbientLight <a href="../classes/AmbientLight.html#property_ambient" class="crosslink">ambient</a> is
 multiplied by <a href="../classes/Material.html" class="crosslink">Material</a> <a href="../classes/Material.html#property_ambient" class="crosslink">ambient</a>.</li>
 
 <li>Ambient lighting may be toggled for specific <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> via
-the <a href="../classes/Modes.html#property_ambient" class="crosslink">ambient</a> property on associated <a href="../classes/Modes.html" class="crosslink">Modes</a> components.</li>
+the <a href="../classes/Modes.html#property_ambient" class="crosslink">ambient</a> property on attached <a href="../classes/Modes.html" class="crosslink">Modes</a> components.</li>
 
 </ul>
 
 <p><img src="http://www.gliffy.com/go/publish/image/7092465/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that has a <a href="../classes/Geometry.html" class="crosslink">Geometry</a>,
-a <a href="../classes/Material.html" class="crosslink">Material</a>, and a <a href="../classes/Lights.html" class="crosslink">Lights</a> that has an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a>.</p>
+<p>The following example creates</p>
+<ul>
+<li>a <a href="../classes/Material.html" class="crosslink">Material</a>,</li>
+<li>an AmbientLight,</li>
+<li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing the AmbientLight,</li>
+<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
+<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
+</ul>
+
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
 var material = new XEO.Material(scene, {
@@ -160,7 +165,7 @@ var material = new XEO.Material(scene, {
    shininess: 30
 });
 
-// Within XEO Engine&#39;s lighting calculations, the AmbientLight&#39;s
+// Within xeoEngine&#39;s lighting calculations, the AmbientLight&#39;s
 // ambient color will be multiplied by the Material&#39;s ambient color
 
 var ambientLight = new XEO.AmbientLight(scene, {
@@ -374,6 +379,10 @@ ambientLight.off(handle); // Detach the change listener
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_Items in this map">Items in this map</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -925,7 +934,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ambientLight.js.html#l98"><code>src&#x2F;core&#x2F;ambientLight.js:98</code></a>
+                            <a href="../files/src_core_ambientLight.js.html#l102"><code>src&#x2F;core&#x2F;ambientLight.js:102</code></a>
                             </p>
                     
                     
@@ -1014,6 +1023,30 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_Items in this map" class="property item">
+                        <h3 class="name"><code>Items in this map</code></h3>
+                        <span class="type">Unknown</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_utils_map.js.html#l9"><code>src&#x2F;core&#x2F;utils&#x2F;map.js:9</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
                         </div>
                     
                     
@@ -1116,7 +1149,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ambientLight.js.html#l112"><code>src&#x2F;core&#x2F;ambientLight.js:112</code></a>
+                            <a href="../files/src_core_ambientLight.js.html#l116"><code>src&#x2F;core&#x2F;ambientLight.js:116</code></a>
                             </p>
                     
                     

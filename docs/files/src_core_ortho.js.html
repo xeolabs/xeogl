@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,23 +120,23 @@
 &quot;use strict&quot;;
 
 /**
- An orthographic projection transform.
+ An **Ortho** component defines an orthographic projection transform.
 
  &lt;ul&gt;
  &lt;li&gt;{{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints for associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7097089/L.png&quot;&gt;&lt;/img&gt;
 
  ### Example
 
- The example below creates a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that&#x27;s associated with a
+ The example below creates a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that&#x27;s attached to a
  {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} that has a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} view transform and an Ortho
  projection transform.
 
  &#x60;&#x60;&#x60;&#x60;Javascript
- var scene = new XEO.Scene(engine);
+ var scene = new XEO.Scene();
 
  var ortho = new XEO.Ortho(scene, {
     left:       1.0,    // Position of the left plane on the View-space X-axis
@@ -158,20 +157,6 @@
     camera: camera,
     geometry: geometry
  });
-
- // Subscribe to changes on a property of our ortho component
- ortho.on(&quot;near&quot;, function(value) {
-       console.log(&quot;ortho &#x27;near&#x27; updated: &quot; + value);
-   });
-
- // Set the value of a property on our ortho component, which fires the event we just subscribed to
- ortho.near = 45.0;
-
- // Get the value of a property on our ortho component
- var value = ortho.near;
-
- // Destroy ths ortho component, causing the camera to fall back on the scene&#x27;s default projection transform
- ortho.destroy();
  &#x60;&#x60;&#x60;&#x60;
 
  @class Ortho

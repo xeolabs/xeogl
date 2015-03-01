@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,7 +120,7 @@
 &quot;use strict&quot;;
 
 /**
- A group of arbitrarily-aligned {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} planes that clip fragments of associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **Clips** is a group of arbitrarily-aligned {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} planes that clip fragments of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  &lt;ul&gt;
 
@@ -146,10 +145,18 @@
 
  ### Example
 
- The example below creates a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that&#x27;s clipped by a {{#crossLink &quot;Clips&quot;}}{{/crossLink}}
- that contains two {{#crossLink &quot;Clip&quot;}}{{/crossLink}} planes. The first {{#crossLink &quot;Clip&quot;}}{{/crossLink}} plane is on the
- positive diagonal, while the second is on the negative diagonal. The {{#crossLink &quot;GameObject&quot;}}GameObject&#x27;s{{/crossLink}}
- {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} is the default 2x2x2 box, and the planes will clip off two of the box&#x27;s corners.
+ &lt;ul&gt;
+
+ &lt;li&gt;The example below creates a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that&#x27;s clipped by a {{#crossLink &quot;Clips&quot;}}{{/crossLink}}
+ that contains two {{#crossLink &quot;Clip&quot;}}{{/crossLink}} planes.&lt;/li&gt;
+
+ &lt;li&gt;The first {{#crossLink &quot;Clip&quot;}}{{/crossLink}} plane is on the
+ positive diagonal, while the second is on the negative diagonal.&lt;/li&gt;
+
+ &lt;li&gt;The {{#crossLink &quot;GameObject&quot;}}GameObject&#x27;s{{/crossLink}}
+ {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} is the default 2x2x2 box, and the planes will clip off two of the box&#x27;s corners.&lt;/li&gt;
+
+ &lt;/ul&gt;
 
  &#x60;&#x60;&#x60;&#x60;javascript
  var scene = new XEO.Scene();
@@ -187,13 +194,13 @@
 
  // Subscribe to change of a clip plane&#x27;s distance
  clip1.on(&quot;dist&quot;,
-    function(value) {
+ function(value) {
         // Property value has changed
     });
 
  // Subscribe to change of a clip plane&#x27;s direction
  clip2.on(&quot;dir&quot;,
-    function(dir) {
+ function(dir) {
         // Property value has changed
     });
 
@@ -312,9 +319,9 @@ XEO.Clips = XEO.Component.extend({
         }
 
         /**
-          Fired whenever this Clips&#x27; {{#crossLink &quot;Clips/clips:property&quot;}}{{/crossLink}} property changes.
-          @event clips
-          @param value {Array of XEO.Clip} The property&#x27;s new value
+         Fired whenever this Clips&#x27; {{#crossLink &quot;Clips/clips:property&quot;}}{{/crossLink}} property changes.
+         @event clips
+         @param value {Array of XEO.Clip} The property&#x27;s new value
          */
         this.fire(&quot;dirty&quot;, true);
         this.fire(&quot;clips&quot;, this._clips);

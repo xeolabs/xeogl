@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,7 +120,7 @@
 &quot;use strict&quot;;
 
 /**
- Toggles the visibility of associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **Visibility** toggles the visibility of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  &lt;ul&gt;
  &lt;li&gt;A Visibility may be shared among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to toggle
@@ -178,7 +177,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Visibility.
- @param [cfg.visible=true] {Boolean} Flag which controls visibility of the associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
+ @param [cfg.visible=true] {Boolean} Flag which controls visibility of the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
  @extends Component
  */
 XEO.Visibility = XEO.Component.extend({
@@ -192,7 +191,7 @@ XEO.Visibility = XEO.Component.extend({
     },
 
     /**
-      Indicates whether associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are visible or not.
+      Indicates whether attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are visible or not.
 
       Fires a {{#crossLink &quot;Visibility/visible:event&quot;}}{{/crossLink}} event on change.
 

@@ -1,11 +1,11 @@
 "use strict";
 
 /**
- An arbitrarily-aligned World-space clip plane.
+ A **Clip** is an arbitrarily-aligned World-space clip plane.
 
  <ul>
 
- <li>These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are associated with
+ <li>These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
  {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
  for a usage example.</li>
 

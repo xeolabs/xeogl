@@ -1,5 +1,5 @@
 /**
- * @class Wrapper for a WebGL program
+ * Wrapper for a WebGL program
  *
  * @param gl WebGL gl
  * @param vertex Source code for vertex shader

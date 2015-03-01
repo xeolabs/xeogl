@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -121,13 +120,12 @@
 &quot;use strict&quot;;
 
 /**
- *
- Captures rendered pixel depths of associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **DepthTarget** captures the rendered pixel depths of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  &lt;ul&gt;
-    &lt;li&gt;A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.&lt;/li&gt;
-    &lt;li&gt;DepthTarget is not to be confused with {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.&lt;/li&gt;
-    &lt;li&gt;Use {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
+ &lt;li&gt;A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;DepthTarget is not to be confused with {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.&lt;/li&gt;
+ &lt;li&gt;Use {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
  the {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} that consume it.&lt;/li&gt;
  &lt;li&gt;For special effects, we often use DepthTargets and {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in combination
  with {{#crossLink &quot;ColorTarget&quot;}}ColorTargets{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.&lt;/li&gt;
@@ -137,58 +135,56 @@
 
  ### Example
 
- Shown below is a minimal and not particularly practical example of how to use DepthTargets. We&#x27;re creating only the
- essential components here, while falling back on the &lt;a href=&quot;XEO.Scene.html#defaults&quot;  class=&quot;crosslink&quot;&gt;Scene&#x27;s default components&lt;/a&gt;
- for everything else. In practice, you would be using the {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} with
- a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} in order to perform some sort of post-effect.
+ In the example below we essentially have one {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
+ that renders its fragment depth values to a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, which is then applied
+ to a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
 
+
+ The scene contains:
+
+ &lt;ul&gt;
+ &lt;li&gt;a DepthTarget,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape,
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} fragment depth values to the DepthTarget,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that sources its pixels from the DepthTarget,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that includes the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, and&lt;/li&gt;
+ &lt;li&gt;a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, with the {{#crossLink &quot;Material&quot;}}{{/crossLink}} applied to it.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ The pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second
+ {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} as a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}. In practice the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}
+ would carry the depth values into a custom {{#crossLink &quot;Shader&quot;}}{{/crossLink}}, which would then be applied to the second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
 
  &#x60;&#x60;&#x60;&#x60;javascript
-
  var scene = new XEO.Scene();
 
- // Geometry without parameters will default to a 2x2x2 box. Note that we could have
- // instead just used the Scene&#x27;s default Geometry, but we&#x27;ll create our own for this example.
- var geometry = new XEO.Geometry(scene);
 
- // Our DepthTarget
+ var geometry = new XEO.Geometry(scene); // Default to a 2x2x2 box.
+
+
  var depthTarget = new XEO.DepthTarget(scene);
 
- // GameObject whose pixel depths are rendered to the ColorTarget.
- // The depth values are actually encoded into the pixel colors of the ColorTarget.
+
  var object1 = new XEO.GameObject(scene, {
-       depthTarget: depthTarget
-   });
+    depthTarget: depthTarget
+ });
 
- // Texture that sources its pixels from the ColorTarget. Remember that the pixel colours
- // will be encoded depths, so will look a little weird. As mentioned earlier, in practice
- // this texture would not be rendered directly, where it would instead be used to carry
- // the depth values into a Shader.
  var texture = new XEO.Texture(scene, {
-      target: depthTarget
-  });
+    target: depthTarget
+ });
 
- // Create a material that applies the texture
+
  var material = new XEO.Material(scene, {
-       textures: [
-           texture
-       ]
-  });
+    textures: [
+        texture
+    ]
+ });
 
- // Material that contains the texture
- var myShader = new XEO.Shaderl(scene, {
-       vertex: &quot;&quot;,
-       fragment: &quot;&quot;
-  });
 
- // Second GameObject uses the Material, and is therefore textured with the color-encoded
- // pixel depths rendered from the first GameObject
  var object2 = new XEO.GameObject(scene, {
-        geometry: geometry,  // Reuse our simple box geometry
-       material: material,
-       shader: myShader
-   });
-
+    geometry: geometry,  // Reuse our simple box geometry
+    material: material
+ });
  &#x60;&#x60;&#x60;&#x60;
  @class DepthTarget
  @module XEO

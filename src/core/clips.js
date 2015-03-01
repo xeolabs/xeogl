@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- A group of arbitrarily-aligned {{#crossLink "Clip"}}Clip{{/crossLink}} planes that clip fragments of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Clips** is a group of arbitrarily-aligned {{#crossLink "Clip"}}Clip{{/crossLink}} planes that clip fragments of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  <ul>
 
@@ -26,10 +26,18 @@
 
  ### Example
 
- The example below creates a {{#crossLink "GameObject"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
- that contains two {{#crossLink "Clip"}}{{/crossLink}} planes. The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
- positive diagonal, while the second is on the negative diagonal. The {{#crossLink "GameObject"}}GameObject's{{/crossLink}}
- {{#crossLink "Geometry"}}{{/crossLink}} is the default 2x2x2 box, and the planes will clip off two of the box's corners.
+ <ul>
+
+ <li>The example below creates a {{#crossLink "GameObject"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
+ that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.</li>
+
+ <li>The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
+ positive diagonal, while the second is on the negative diagonal.</li>
+
+ <li>The {{#crossLink "GameObject"}}GameObject's{{/crossLink}}
+ {{#crossLink "Geometry"}}{{/crossLink}} is the default 2x2x2 box, and the planes will clip off two of the box's corners.</li>
+
+ </ul>
 
  ````javascript
  var scene = new XEO.Scene();
@@ -67,13 +75,13 @@
 
  // Subscribe to change of a clip plane's distance
  clip1.on("dist",
-    function(value) {
+ function(value) {
         // Property value has changed
     });
 
  // Subscribe to change of a clip plane's direction
  clip2.on("dir",
-    function(dir) {
+ function(dir) {
         // Property value has changed
     });
 
@@ -192,9 +200,9 @@ XEO.Clips = XEO.Component.extend({
         }
 
         /**
-          Fired whenever this Clips' {{#crossLink "Clips/clips:property"}}{{/crossLink}} property changes.
-          @event clips
-          @param value {Array of XEO.Clip} The property's new value
+         Fired whenever this Clips' {{#crossLink "Clips/clips:property"}}{{/crossLink}} property changes.
+         @event clips
+         @param value {Array of XEO.Clip} The property's new value
          */
         this.fire("dirty", true);
         this.fire("clips", this._clips);

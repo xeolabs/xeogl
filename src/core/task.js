@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- Represents an asynchronously-running process within a {{#crossLink "Tasks"}}Tasks{{/crossLink}}.
+ A **Task** represents an asynchronously-running process within a {{#crossLink "Tasks"}}Tasks{{/crossLink}}.
 
  <img src="http://www.gliffy.com/go/publish/image/7123427/L.png"></img>
 

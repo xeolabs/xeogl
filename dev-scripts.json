@@ -1,0 +1,63 @@
+{
+    "engine": [
+        "src/core/xeo.js",
+
+        "src/core/component.js",
+        "src/core/ambientLight.js",
+        "src/core/camera.js",
+        "src/core/canvas.js",
+        "src/core/clip.js",
+        "src/core/clips.js",
+        "src/core/colorBuf.js",
+        "src/core/colorTarget.js",
+        "src/core/component.js",
+        "src/core/configs.js",
+        "src/core/depthBuf.js",
+        "src/core/depthTarget.js",
+        "src/core/dirLight.js",
+        "src/core/visibility.js",
+        "src/core/modes.js",
+        "src/core/frustum.js",
+        "src/core/geometry.js",
+        "src/core/helloWorld.js",
+        "src/core/input.js",
+        "src/core/layer.js",
+        "src/core/lights.js",
+        "src/core/lookat.js",
+        "src/core/matrix.js",
+        "src/core/material.js",
+        "src/core/morphGeometry.js",
+        "src/core/name.js",
+        "src/core/gameObject.js",
+        "src/core/ortho.js",
+        "src/core/perspective.js",
+        "src/core/pointLight.js",
+        "src/core/scene.js",
+        "src/core/shader.js",
+        "src/core/shaderParams.js",
+        "src/core/stage.js",
+        "src/core/stats.js",
+        "src/core/tag.js",
+        "src/core/task.js",
+        "src/core/tasks.js",
+        "src/core/texture.js",
+
+        "src/core/utils/map.js",
+        "src/core/math/math.js",
+
+        "src/core/webgl/webgl.js",
+        "src/core/webgl/arrayBuffer.js",
+        "src/core/webgl/attribute.js",
+        "src/core/webgl/program.js",
+        "src/core/webgl/renderBuffer.js",
+        "src/core/webgl/sampler.js",
+        "src/core/webgl/texture2d.js",
+        "src/core/webgl/uniform.js",
+
+        "src/core/renderer/renderer.js"
+    ],
+
+    "extras": [
+
+    ]
+}

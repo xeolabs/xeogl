@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- Specifies a custom GLSL shader to draw associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Shader** specifies a custom GLSL shader to draw attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  <hr>
     *Contents*
@@ -15,8 +15,8 @@
  ## Overview
 
  <ul>
- <li>You can use XEO's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
- components on the associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
+ components on the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
  <li>Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
  the same Shaders among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms
@@ -32,9 +32,7 @@
  ## Example
 
  The example below shows the simplest way to use a Shader, where we're just going to render a ripply water
- pattern to a screen-aligned quad. As with all our examples, we're just creating the
- essential components while falling back on the <a href="XEO.Scene.html#defaults" class="crosslink">Scene's default components</a>
- for everything else.
+ pattern to a screen-aligned quad.
 
  <img src="../../assets/images/shaderExample1.png"></img>
 
@@ -120,7 +118,7 @@
 
  ## Shader Inputs
 
- XEO provides various inputs for your shaders (TODO)
+ xeoEngine provides various inputs for your shaders (TODO)
 
  #### Attributes
 
@@ -244,7 +242,7 @@ XEO.Shader = XEO.Component.extend({
      * Sets one or more params for this Shader.
      *
      * These will be individually overridden by any {{#crossLink "ShaderParams/setParams:method"}}params subsequently specified{{/crossLink}} on
-     * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
      *
      * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
      *

@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- Toggles the visibility of associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Visibility** toggles the visibility of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  <ul>
  <li>A Visibility may be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to toggle
@@ -58,7 +58,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Visibility.
- @param [cfg.visible=true] {Boolean} Flag which controls visibility of the associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ @param [cfg.visible=true] {Boolean} Flag which controls visibility of the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
  @extends Component
  */
 XEO.Visibility = XEO.Component.extend({
@@ -72,7 +72,7 @@ XEO.Visibility = XEO.Component.extend({
     },
 
     /**
-      Indicates whether associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are visible or not.
+      Indicates whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are visible or not.
 
       Fires a {{#crossLink "Visibility/visible:event"}}{{/crossLink}} event on change.
 

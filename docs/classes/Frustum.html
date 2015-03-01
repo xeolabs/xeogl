@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,12 +130,12 @@
 
 
 <div class="box intro">
-    <p>Defines a perspective projection as a frustum.</p>
+    <p>A <strong>Frustum</strong> defines a perspective projection as a frustum-shaped view volume.</p>
 <p><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
-<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints for associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <p><img src="http://www.gliffy.com/go/publish/image/7103657/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p> The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s associated with a
+<p> The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s attached to a
  <a href="../classes/Camera.html" class="crosslink">Camera</a> that has a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform and a Frustum
  projection transform.</p>
 <pre class="code prettyprint"><code class="lang-Javascript"> var scene = new XEO.Scene(engine);

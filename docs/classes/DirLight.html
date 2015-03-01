@@ -47,7 +47,6 @@
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubeMap.html">CubeMap</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -131,14 +130,14 @@
 
 
 <div class="box intro">
-    <p>A light source that illuminates all associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> equally
+    <p>A <strong>DirLight</strong> is a light source that illuminates all attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> equally
 from a given direction.</p>
 <ul>
 
 <li>DirLights are grouped, along with other light source types, within <a href="../classes/Lights.html" class="crosslink">Lights</a> components,
-which are associated with <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+which are attached to <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
 
-<li>Within XEO Engine&#39;s Phong lighting calculations, DirLight <a href="../classes/DirLight.html#property_diffuse" class="crosslink">diffuse</a> and
+<li>Within xeoEngine&#39;s Phong lighting calculations, DirLight <a href="../classes/DirLight.html#property_diffuse" class="crosslink">diffuse</a> and
 <a href="../classes/DirLight.html#property_specular" class="crosslink">specular</a> are multiplied by <a href="../classes/Material.html" class="crosslink">Material</a>
 <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> and <a href="../classes/Material.html#property_specular" class="crosslink">specular</a>,
 respectively.</li>
@@ -151,8 +150,15 @@ and <a href="../classes/Modes.html#property_ambient" class="crosslink">ambient</
 
 <p><img src="http://www.gliffy.com/go/publish/image/7096639/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that has a <a href="../classes/Geometry.html" class="crosslink">Geometry</a>,
-a <a href="../classes/Material.html" class="crosslink">Material</a>, and a <a href="../classes/Lights.html" class="crosslink">Lights</a> that has a <a href="../classes/DirLight.html" class="crosslink">DirLight</a>.</p>
+<p>The following example creates</p>
+<ul>
+<li>a <a href="../classes/Material.html" class="crosslink">Material</a>,</li>
+<li>a DirLight,</li>
+<li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing the DirLight,</li>
+<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
+<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
+</ul>
+
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
 var material = new XEO.Material(scene, {
@@ -161,9 +167,6 @@ var material = new XEO.Material(scene, {
    specular:   [1. 1, 1],
    shininess:  30
 });
-
-// Within XEO Engine&#39;s Phong shading calculations, the DirLight&#39;s diffuse and
-// specular colors will be multiplied by the Material&#39;s diffuse and specular colors
 
 var dirLight = new XEO.DirLight(scene, {
    dir:        [-1, -1, -1],
@@ -1039,7 +1042,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l139"><code>src&#x2F;core&#x2F;dirLight.js:139</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l141"><code>src&#x2F;core&#x2F;dirLight.js:141</code></a>
                             </p>
                     
                     
@@ -1066,7 +1069,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l113"><code>src&#x2F;core&#x2F;dirLight.js:113</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l115"><code>src&#x2F;core&#x2F;dirLight.js:115</code></a>
                             </p>
                     
                     
@@ -1171,7 +1174,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l191"><code>src&#x2F;core&#x2F;dirLight.js:191</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l193"><code>src&#x2F;core&#x2F;dirLight.js:193</code></a>
                             </p>
                     
                     
@@ -1204,7 +1207,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l165"><code>src&#x2F;core&#x2F;dirLight.js:165</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l167"><code>src&#x2F;core&#x2F;dirLight.js:167</code></a>
                             </p>
                     
                     
@@ -1290,7 +1293,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l153"><code>src&#x2F;core&#x2F;dirLight.js:153</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l155"><code>src&#x2F;core&#x2F;dirLight.js:155</code></a>
                             </p>
                     
                     
@@ -1332,7 +1335,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l127"><code>src&#x2F;core&#x2F;dirLight.js:127</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l129"><code>src&#x2F;core&#x2F;dirLight.js:129</code></a>
                             </p>
                     
                     
@@ -1374,7 +1377,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l215"><code>src&#x2F;core&#x2F;dirLight.js:215</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l217"><code>src&#x2F;core&#x2F;dirLight.js:217</code></a>
                             </p>
                     
                     
@@ -1416,7 +1419,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l179"><code>src&#x2F;core&#x2F;dirLight.js:179</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l181"><code>src&#x2F;core&#x2F;dirLight.js:181</code></a>
                             </p>
                     
                     

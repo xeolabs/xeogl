@@ -1,23 +1,23 @@
 "use strict";
 
 /**
- An orthographic projection transform.
+ An **Ortho** component defines an orthographic projection transform.
 
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
  </ul>
 
  <img src="http://www.gliffy.com/go/publish/image/7097089/L.png"></img>
 
  ### Example
 
- The example below creates a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's associated with a
+ The example below creates a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
  {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and an Ortho
  projection transform.
 
  ````Javascript
- var scene = new XEO.Scene(engine);
+ var scene = new XEO.Scene();
 
  var ortho = new XEO.Ortho(scene, {
     left:       1.0,    // Position of the left plane on the View-space X-axis
@@ -38,20 +38,6 @@
     camera: camera,
     geometry: geometry
  });
-
- // Subscribe to changes on a property of our ortho component
- ortho.on("near", function(value) {
-       console.log("ortho 'near' updated: " + value);
-   });
-
- // Set the value of a property on our ortho component, which fires the event we just subscribed to
- ortho.near = 45.0;
-
- // Get the value of a property on our ortho component
- var value = ortho.near;
-
- // Destroy ths ortho component, causing the camera to fall back on the scene's default projection transform
- ortho.destroy();
  ````
 
  @class Ortho

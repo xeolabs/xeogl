@@ -1,12 +1,12 @@
 "use strict";
 
 /**
- A perspective projection transform.
+ A **Perspective** component defines a perspective projection transform.
 
  <ul>
 
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
  </ul>
 
@@ -14,12 +14,12 @@
 
  ### Example
 
- The example below creates a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's associated with a
+ The example below creates a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
  {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Perspective
  projection transform.
 
  ````Javascript
- var scene = new XEO.Scene(engine);
+ var scene = new XEO.Scene();
 
  var perspective = new XEO.Perspective(scene, {
        fovy: 60,
@@ -37,20 +37,6 @@
     camera: camera,
     geometry: geometry
  });
-
- // Subscribe to changes on a property of our perspective component
- perspective.on("fovy", function(value) {
-       console.log("perspective 'fovy' updated: " + value);
-   });
-
- // Set the value of a property on our perspective component, which fires the event we just subscribed to
- perspective.fovy = 45.0;
-
- // Get the value of a property on our perspective component
- var value = perspective.fovy;
-
- // Destroy ths perspective component, causing the camera to fall back on the scene's default projection transform
- perspective.destroy();
  ````
 
  @class Perspective
