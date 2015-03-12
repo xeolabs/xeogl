@@ -160,6 +160,7 @@ material.log("Everything is fine, situation normal.");
      [ERROR] myMaterial: Aw, snap!
      ````
      <br>
+
      ### <a name="destruction">Destruction</a>
 
      Get notification of destruction directly on the Components:
