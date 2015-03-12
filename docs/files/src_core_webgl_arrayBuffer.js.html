@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,109 +126,114 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-/** Buffer for vertices and indices
- *
- * @param gl  WebGL gl
- * @param type     Eg. ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER
- * @param values   WebGL array wrapper
- * @param numItems Count of items in array wrapper
- * @param itemSize Size of each item
- * @param usage    Eg. STATIC_DRAW
- */
-XEO.webgl.ArrayBuffer = function (gl, type, values, numItems, itemSize, usage) {
+(function () {
+
+    &quot;use strict&quot;;
+
+    /** Buffer for vertices and indices
+     *
+     * @param gl  WebGL gl
+     * @param type     Eg. ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER
+     * @param values   WebGL array wrapper
+     * @param numItems Count of items in array wrapper
+     * @param itemSize Size of each item
+     * @param usage    Eg. STATIC_DRAW
+     */
+    XEO.webgl.ArrayBuffer = function (gl, type, values, numItems, itemSize, usage) {
+
+        /**
+         * True when this buffer is allocated and ready to go
+         * @type {boolean}
+         */
+        this.allocated = false;
+
+        this.gl = gl;
+        this.type = type;
+        this.numItems = numItems;
+        this.itemSize = itemSize;
+        this.usage = usage;
+
+        this._allocate(values, numItems);
+    };
 
     /**
-     * True when this buffer is allocated and ready to go
-     * @type {boolean}
+     * Allocates this buffer
+     *
+     * @param values
+     * @param numItems
+     * @private
      */
-    this.allocated = false;
-
-    this.gl = gl;
-    this.type = type;
-    this.numItems = numItems;
-    this.itemSize = itemSize;
-    this.usage = usage;
-
-    this._allocate(values, numItems);
-};
-
-/**
- * Allocates this buffer
- *
- * @param values
- * @param numItems
- * @private
- */
-XEO.webgl.ArrayBuffer.prototype._allocate = function (values, numItems) {
-    this.allocated = false;
-    this.handle = this.gl.createBuffer();
-    if (!this.handle) {
-        throw &quot;Failed to allocate WebGL ArrayBuffer&quot;;
-    }
-    if (this.handle) {
-        this.gl.bindBuffer(this.type, this.handle);
-        this.gl.bufferData(this.type, values, this.usage);
-        this.gl.bindBuffer(this.type, null);
-        this.numItems = numItems;
-        this.length = values.length;
-        this.allocated = true;
-    }
-};
-
-/**
- * Updates values within this buffer, reallocating if needed
- *
- * @param data
- * @param offset
- */
-XEO.webgl.ArrayBuffer.prototype.setData = function (data, offset) {
-    if (!this.allocated) {
-        return;
-    }
-    if (data.length &gt; this.length) {
-        // Needs reallocation
-        this.destroy();
-        this._allocate(data, data.length);
-    } else {
-        // No reallocation needed
-        if (offset || offset === 0) {
-            this.gl.bufferSubData(this.type, offset, data);
-        } else {
-            this.gl.bufferData(this.type, data);
+    XEO.webgl.ArrayBuffer.prototype._allocate = function (values, numItems) {
+        this.allocated = false;
+        this.handle = this.gl.createBuffer();
+        if (!this.handle) {
+            throw &quot;Failed to allocate WebGL ArrayBuffer&quot;;
         }
-    }
-};
+        if (this.handle) {
+            this.gl.bindBuffer(this.type, this.handle);
+            this.gl.bufferData(this.type, values, this.usage);
+            this.gl.bindBuffer(this.type, null);
+            this.numItems = numItems;
+            this.length = values.length;
+            this.allocated = true;
+        }
+    };
 
-/**
- * Unbinds this buffer on WebGL
- */
-XEO.webgl.ArrayBuffer.prototype.unbind = function () {
-    if (!this.allocated) {
-        return;
-    }
-    this.gl.bindBuffer(this.type, null);
-};
+    /**
+     * Updates values within this buffer, reallocating if needed
+     *
+     * @param data
+     * @param offset
+     */
+    XEO.webgl.ArrayBuffer.prototype.setData = function (data, offset) {
+        if (!this.allocated) {
+            return;
+        }
+        if (data.length &gt; this.length) {
+            // Needs reallocation
+            this.destroy();
+            this._allocate(data, data.length);
+        } else {
+            // No reallocation needed
+            if (offset || offset === 0) {
+                this.gl.bufferSubData(this.type, offset, data);
+            } else {
+                this.gl.bufferData(this.type, data);
+            }
+        }
+    };
 
-/**
- * Destroys this buffer
- */
-XEO.webgl.ArrayBuffer.prototype.destroy = function () {
-    if (!this.allocated) {
-        return;
-    }
-    this.gl.deleteBuffer(this.handle);
-    this.handle = null;
-    this.allocated = false;
-};
+    /**
+     * Unbinds this buffer on WebGL
+     */
+    XEO.webgl.ArrayBuffer.prototype.unbind = function () {
+        if (!this.allocated) {
+            return;
+        }
+        this.gl.bindBuffer(this.type, null);
+    };
+
+    /**
+     * Destroys this buffer
+     */
+    XEO.webgl.ArrayBuffer.prototype.destroy = function () {
+        if (!this.allocated) {
+            return;
+        }
+        this.gl.deleteBuffer(this.handle);
+        this.handle = null;
+        this.allocated = false;
+    };
 
 
-XEO.webgl.ArrayBuffer.prototype.bind = function () {
-    if (!this.allocated) {
-        return;
-    }
-    this.gl.bindBuffer(this.type, this.handle);
-};
+    XEO.webgl.ArrayBuffer.prototype.bind = function () {
+        if (!this.allocated) {
+            return;
+        }
+        this.gl.bindBuffer(this.type, this.handle);
+    };
 
+})();
 
 
     </pre>

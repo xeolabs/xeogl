@@ -259,7 +259,7 @@ form {
 }
 
 .definitionLink {
-    /*font-style: italic;*/
+    font-style: italic;
 }
 
 /*a[href^="http:"]*/

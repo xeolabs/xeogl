@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>My test runner</title>
+    <link rel="shortcut icon" type="image/png" href="../jasmine/jasmine_favicon.png" />
+    <link rel="stylesheet" type="text/css" href="../jasmine/jasmine.css" />
+    <script type="text/javascript" src="../jasmine/jasmine.js"></script>
+    <script type="text/javascript" src="../jasmine/jasmine-html.js"></script>
+
+    <!-- Test code -->
+    <script type="text/javascript" src="../test/source.spec.js"></script>
+
+    <!-- Source -->
+    <script type="text/javascript" src="../src/source.js"></script>
+
+</head>
+
+<body>
+<h1>My test runner</h1>
+
+<script type="text/javascript" src="jasmine-spec.js"></script>
+<script type="text/javascript">
+    jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+    jasmine.getEnv().execute();
+</script>
+
+</body>
+</html>

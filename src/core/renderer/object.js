@@ -1,63 +1,69 @@
-XEO.renderer = XEO.renderer || {};
+(function () {
 
-/**
- * @class A draw list object within a {@link XEO.renderer.Renderer}
- */
-XEO.renderer.GameObject = function(id) {
+    "use strict";
 
-    /**
-     * ID for this objects, unique among all objects in the display
-     * @type Number
-     */
-    this.id = id;
+    XEO.renderer = XEO.renderer || {};
 
     /**
-     * Hash code for this object, unique among all objects in the display
-     * @type String
+     * @class A draw list object within a {@link XEO.renderer.Renderer}
      */
-    this.hash = null;
+    XEO.renderer.GameObject = function (id) {
 
-    /**
-     * State sort key, computed from {@link #layer}, {@link #program} and {@link #texture}
-     * @type Number
-     */
-    this.sortKey = null;
+        /**
+         * ID for this objects, unique among all objects in the display
+         * @type Number
+         */
+        this.id = id;
 
-    /**
-     * Sequence of state chunks applied to render this object
-     * @type {[XEO.Chunk]} chunks
-     */
-    this.chunks = [];
+        /**
+         * Hash code for this object, unique among all objects in the display
+         * @type String
+         */
+        this.hash = null;
 
-    /**
-     * Number of state chunks applied to render this object
-     * @type Number
-     */
-    this.chunksLen = 0;
+        /**
+         * State sort key, computed from {@link #layer}, {@link #program} and {@link #texture}
+         * @type Number
+         */
+        this.sortKey = null;
 
-    /**
-     * Shader programs that render this object, also used for (re)computing {@link #sortKey}
-     * @type renderer.Program
-     */
-    this.program = null;
+        /**
+         * Sequence of state chunks applied to render this object
+         * @type {[XEO.Chunk]} chunks
+         */
+        this.chunks = [];
 
-    /**
-     * State for the {@link XEO.Layer} that this object was compiled from, used for (re)computing {@link #sortKey} and visibility cull
-     */
-    this.layer = null;
+        /**
+         * Number of state chunks applied to render this object
+         * @type Number
+         */
+        this.chunksLen = 0;
 
-     /**
-     * State for the {@link XEO.Texture} that this object was compiled from, used for (re)computing {@link #sortKey}
-     */
-    this.texture = null;
+        /**
+         * Shader programs that render this object, also used for (re)computing {@link #sortKey}
+         * @type renderer.Program
+         */
+        this.program = null;
 
-    /**
-     * State for the {@link XEO.Modes} that this object was compiled from, used for visibility cull
-     */
-    this.flags = null;
+        /**
+         * State for the {@link XEO.Layer} that this object was compiled from, used for (re)computing {@link #sortKey} and visibility cull
+         */
+        this.layer = null;
 
-    /**
-     * State for the {@link XEO.Tag} that this object was compiled from, used for visibility cull
-     */
-    this.tag = null;
-};
+        /**
+         * State for the {@link XEO.Texture} that this object was compiled from, used for (re)computing {@link #sortKey}
+         */
+        this.texture = null;
+
+        /**
+         * State for the {@link XEO.Modes} that this object was compiled from, used for visibility cull
+         */
+        this.flags = null;
+
+        /**
+         * State for the {@link XEO.Tag} that this object was compiled from, used for visibility cull
+         */
+        this.tag = null;
+    };
+
+})();

@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,28 +126,32 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+(function () {
 
-/** An attribute within a {@link XEO.webgl.Shader}
- */
-XEO.webgl.Attribute = function (gl, program, name, type, size, location) {
+    &quot;use strict&quot;;
 
-    this.gl = gl;
-    this.location = location;
+    /** An attribute within a {@link XEO.webgl.Shader}
+     */
+    XEO.webgl.Attribute = function (gl, program, name, type, size, location) {
 
-    this.bindFloatArrayBuffer = function (buffer) {
-        if (buffer) {
-            buffer.bind();
-            gl.enableVertexAttribArray(location);
-            gl.vertexAttribPointer(location, buffer.itemSize, gl.FLOAT, false, 0, 0);   // Vertices are not homogeneous - no w-element
-        }
+        this.gl = gl;
+        this.location = location;
+
+        this.bindFloatArrayBuffer = function (buffer) {
+            if (buffer) {
+                buffer.bind();
+                gl.enableVertexAttribArray(location);
+                gl.vertexAttribPointer(location, buffer.itemSize, gl.FLOAT, false, 0, 0);   // Vertices are not homogeneous - no w-element
+            }
+        };
     };
-};
 
-XEO.webgl.Attribute.prototype.bindInterleavedFloatArrayBuffer = function (components, stride, byteOffset) {
-    this.gl.enableVertexAttribArray(this.location);
-    this.gl.vertexAttribPointer(this.location, components, this.gl.FLOAT, false, stride, byteOffset);   // Vertices are not homogeneous - no w-element
-};
+    XEO.webgl.Attribute.prototype.bindInterleavedFloatArrayBuffer = function (components, stride, byteOffset) {
+        this.gl.enableVertexAttribArray(this.location);
+        this.gl.vertexAttribPointer(this.location, components, this.gl.FLOAT, false, stride, byteOffset);   // Vertices are not homogeneous - no w-element
+    };
 
+})();
     </pre>
 </div>
                     </div>

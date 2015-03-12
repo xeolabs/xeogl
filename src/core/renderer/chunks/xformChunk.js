@@ -1,54 +1,60 @@
-XEO.ChunkFactory.createChunkType({
+(function () {
 
-    type: "xform",
+    "use strict";
 
-    build : function() {
+    XEO.ChunkFactory.createChunkType({
 
-        var draw = this.program.draw;
+        type: "xform",
 
-        this._uMatLocationDraw = draw.getUniformLocation("XEO_uMMatrix");
-        this._uNormalMatLocationDraw = draw.getUniformLocation("XEO_uMNMatrix");
+        build: function () {
 
-        var pick = this.program.pick;
+            var draw = this.program.draw;
 
-        this._uMatLocationPick = pick.getUniformLocation("XEO_uMMatrix");
-    },
+            this._uMatLocationDraw = draw.getUniformLocation("XEO_uMMatrix");
+            this._uNormalMatLocationDraw = draw.getUniformLocation("XEO_uMNMatrix");
 
-    draw : function(frameCtx) {
+            var pick = this.program.pick;
 
-        /* Rebuild core's matrix from matrices at cores on path up to root
-         */
-        if (SceneJS_configsModule.configs.forceXFormCoreRebuild === true || this.core.dirty && this.core.build) {
-            this.core.build();
+            this._uMatLocationPick = pick.getUniformLocation("XEO_uMMatrix");
+        },
+
+        draw: function (frameCtx) {
+
+            /* Rebuild state's matrix from matrices at cores on path up to root
+             */
+            if (SceneJS_configsModule.configs.forceXFormCoreRebuild === true || this.state.dirty && this.state.build) {
+                this.state.build();
+            }
+
+            var gl = this.program.gl;
+
+            if (this._uMatLocationDraw) {
+                gl.uniformMatrix4fv(this._uMatLocationDraw, gl.FALSE, this.state.mat);
+            }
+
+            if (this._uNormalMatLocationDraw) {
+                gl.uniformMatrix4fv(this._uNormalMatLocationDraw, gl.FALSE, this.state.normalMat);
+            }
+
+            frameCtx.modelMat = this.state.mat;
+        },
+
+        pick: function (frameCtx) {
+
+            /* Rebuild state's matrix from matrices at cores on path up to root
+             */
+            if (this.state.dirty) {
+                this.state.build();
+            }
+
+            var gl = this.program.gl;
+
+            if (this._uMatLocationPick) {
+                gl.uniformMatrix4fv(this._uMatLocationPick, gl.FALSE, this.state.mat);
+            }
+
+            frameCtx.modelMat = this.state.mat;
         }
+    });
 
-        var gl = this.program.gl;
-
-        if (this._uMatLocationDraw) {
-            gl.uniformMatrix4fv(this._uMatLocationDraw, gl.FALSE, this.core.mat);
-        }
-
-        if (this._uNormalMatLocationDraw) {
-            gl.uniformMatrix4fv(this._uNormalMatLocationDraw, gl.FALSE, this.core.normalMat);
-        }
-
-        frameCtx.modelMat = this.core.mat;
-    },
-
-    pick : function(frameCtx) {
-
-        /* Rebuild core's matrix from matrices at cores on path up to root
-         */
-        if (this.core.dirty) {
-            this.core.build();
-        }
-
-        var gl = this.program.gl;
-
-        if (this._uMatLocationPick) {
-            gl.uniformMatrix4fv(this._uMatLocationPick, gl.FALSE, this.core.mat);
-        }
-
-        frameCtx.modelMat = this.core.mat;
-    }
-});
+})();

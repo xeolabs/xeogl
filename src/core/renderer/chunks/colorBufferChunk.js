@@ -1,35 +1,41 @@
-/**
- *
- */
-XEO.ChunkFactory.createChunkType({
+(function () {
 
-    type:"colorBuf",
+    "use strict";
 
-    // Avoid reapplication of a chunk after a program switch.
-    programGlobal:true,
+    /**
+     *
+     */
+    XEO.ChunkFactory.createChunkType({
 
-    build:function () {
-    },
+        type: "colorBuf",
 
-    drawAndPick:function (frameCtx) {
+        // Avoid reapplication of a chunk after a program switch.
+        programGlobal: true,
 
-        if (!frameCtx.transparent) { // Blending forced when rendering transparent bin
+        build: function () {
+        },
 
-            var blendEnabled = this.core.blendEnabled;
+        drawAndPick: function (frameCtx) {
 
-            var gl = this.program.gl;
+            if (!frameCtx.transparent) { // Blending forced when rendering transparent bin
 
-            if (frameCtx.blendEnabled != blendEnabled) {
-                if (blendEnabled) {
-                    gl.enable(gl.BLEND);
-                } else {
-                    gl.disable(gl.BLEND);
+                var blendEnabled = this.state.blendEnabled;
+
+                var gl = this.program.gl;
+
+                if (frameCtx.blendEnabled !== blendEnabled) {
+                    if (blendEnabled) {
+                        gl.enable(gl.BLEND);
+                    } else {
+                        gl.disable(gl.BLEND);
+                    }
+                    frameCtx.blendEnabled = blendEnabled;
                 }
-                frameCtx.blendEnabled = blendEnabled;
-            }
 
-            var colorMask = this.core.colorMask;
-            gl.colorMask(colorMask.r, colorMask.g, colorMask.b, colorMask.a);
+                var colorMask = this.state.colorMask;
+                gl.colorMask(colorMask.r, colorMask.g, colorMask.b, colorMask.a);
+            }
         }
-    }
-});
+    });
+
+})();

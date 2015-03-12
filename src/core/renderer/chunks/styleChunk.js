@@ -1,21 +1,27 @@
-/**
- *
- */
-XEO.ChunkFactory.createChunkType({
+(function () {
 
-    type:"style",
+    "use strict";
 
-    // Avoid reapplication of a chunk after a program switch.
-    programGlobal:true,
+    /**
+     *
+     */
+    XEO.ChunkFactory.createChunkType({
 
-    drawAndPick:function (frameCtx) {
+        type: "style",
 
-        var lineWidth = this.core.lineWidth;
+        // Avoid reapplication of a chunk after a program switch.
+        programGlobal: true,
 
-        if (frameCtx.lineWidth != lineWidth) {
-            var gl = this.program.gl;
-            gl.lineWidth(lineWidth);
-            frameCtx.lineWidth = lineWidth;
+        drawAndPick: function (frameCtx) {
+
+            var lineWidth = this.state.lineWidth;
+
+            if (frameCtx.lineWidth !== lineWidth) {
+                var gl = this.program.gl;
+                gl.lineWidth(lineWidth);
+                frameCtx.lineWidth = lineWidth;
+            }
         }
-    }
-});
+    });
+
+})();

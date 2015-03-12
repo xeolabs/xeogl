@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -121,7 +130,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_ortho.js.html#l3"><code>src&#x2F;core&#x2F;ortho.js:3</code></a>
+            Defined in: <a href="../files/src_core_ortho.js.html#l6"><code>src&#x2F;core&#x2F;ortho.js:6</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -138,30 +147,30 @@
 
 <p><img src="http://www.gliffy.com/go/publish/image/7097089/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>The example below creates a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s attached to a
+<p>In this example we have a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s attached to a
 <a href="../classes/Camera.html" class="crosslink">Camera</a> that has a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform and an Ortho
 projection transform.</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
 
 var ortho = new XEO.Ortho(scene, {
-   left:       1.0,    // Position of the left plane on the View-space X-axis
-   right:      1.0,    // Position of the right plane on the View-space X-axis
-   top:        1.0,    // Position of the top plane on the View-space Y-axis.
-   bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.
-   near:       0.1,    // Position of the near plane on the View-space Z-axis.
-   far:        10000   // Position of the far plane on the positive View-space Z-axis.
-});
+    left:       1.0,    // Position of the left plane on the View-space X-axis
+    right:      1.0,    // Position of the right plane on the View-space X-axis
+    top:        1.0,    // Position of the top plane on the View-space Y-axis.
+    bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.
+    near:       0.1,    // Position of the near plane on the View-space Z-axis.
+    far:        10000   // Position of the far plane on the positive View-space Z-axis.
+ });
 
 var camera = new XEO.Camera(scene, {
-      project: ortho
-});
+  project: ortho
+ });
 
 var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
 var object = new XEO.GameObject(scene, {
-   camera: camera,
-   geometry: geometry
-});
+    camera: camera,
+    geometry: geometry
+ });
 </code></pre>
 
 </div>
@@ -192,7 +201,7 @@ var object = new XEO.GameObject(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_ortho.js.html#l3"><code>src&#x2F;core&#x2F;ortho.js:3</code></a>
+                <a href="../files/src_core_ortho.js.html#l6"><code>src&#x2F;core&#x2F;ortho.js:6</code></a>
                 </p>
         
         
@@ -492,7 +501,7 @@ var object = new XEO.GameObject(scene, {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l594"><code>src&#x2F;core&#x2F;component.js:594</code></a>
+        <a href="../files/src_core_component.js.html#l605"><code>src&#x2F;core&#x2F;component.js:605</code></a>
         </p>
 
 
@@ -532,7 +541,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l439"><code>src&#x2F;core&#x2F;component.js:439</code></a>
+        <a href="../files/src_core_component.js.html#l450"><code>src&#x2F;core&#x2F;component.js:450</code></a>
         </p>
 
 
@@ -595,7 +604,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        <a href="../files/src_core_component.js.html#l341"><code>src&#x2F;core&#x2F;component.js:341</code></a>
         </p>
 
 
@@ -674,7 +683,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l422"><code>src&#x2F;core&#x2F;component.js:422</code></a>
+        <a href="../files/src_core_component.js.html#l433"><code>src&#x2F;core&#x2F;component.js:433</code></a>
         </p>
 
 
@@ -731,7 +740,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l384"><code>src&#x2F;core&#x2F;component.js:384</code></a>
+        <a href="../files/src_core_component.js.html#l395"><code>src&#x2F;core&#x2F;component.js:395</code></a>
         </p>
 
 
@@ -792,7 +801,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l355"><code>src&#x2F;core&#x2F;component.js:355</code></a>
+        <a href="../files/src_core_component.js.html#l366"><code>src&#x2F;core&#x2F;component.js:366</code></a>
         </p>
 
 
@@ -872,7 +881,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l403"><code>src&#x2F;core&#x2F;component.js:403</code></a>
+        <a href="../files/src_core_component.js.html#l414"><code>src&#x2F;core&#x2F;component.js:414</code></a>
         </p>
 
 
@@ -939,7 +948,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l456"><code>src&#x2F;core&#x2F;component.js:456</code></a>
+        <a href="../files/src_core_component.js.html#l467"><code>src&#x2F;core&#x2F;component.js:467</code></a>
         </p>
 
 
@@ -991,7 +1000,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l181"><code>src&#x2F;core&#x2F;ortho.js:181</code></a>
+                            <a href="../files/src_core_ortho.js.html#l195"><code>src&#x2F;core&#x2F;ortho.js:195</code></a>
                             </p>
                     
                     
@@ -1019,7 +1028,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l240"><code>src&#x2F;core&#x2F;component.js:240</code></a>
+                            <a href="../files/src_core_component.js.html#l322"><code>src&#x2F;core&#x2F;component.js:322</code></a>
                             </p>
                     
                     
@@ -1045,7 +1054,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l274"><code>src&#x2F;core&#x2F;component.js:274</code></a>
+                            <a href="../files/src_core_component.js.html#l263"><code>src&#x2F;core&#x2F;component.js:263</code></a>
                             </p>
                     
                     
@@ -1070,7 +1079,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l231"><code>src&#x2F;core&#x2F;ortho.js:231</code></a>
+                            <a href="../files/src_core_ortho.js.html#l251"><code>src&#x2F;core&#x2F;ortho.js:251</code></a>
                             </p>
                     
                     
@@ -1098,7 +1107,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l265"><code>src&#x2F;core&#x2F;component.js:265</code></a>
+                            <a href="../files/src_core_component.js.html#l254"><code>src&#x2F;core&#x2F;component.js:254</code></a>
                             </p>
                     
                     
@@ -1123,7 +1132,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l106"><code>src&#x2F;core&#x2F;ortho.js:106</code></a>
+                            <a href="../files/src_core_ortho.js.html#l111"><code>src&#x2F;core&#x2F;ortho.js:111</code></a>
                             </p>
                     
                     
@@ -1150,7 +1159,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l229"><code>src&#x2F;core&#x2F;component.js:229</code></a>
+                            <a href="../files/src_core_component.js.html#l244"><code>src&#x2F;core&#x2F;component.js:244</code></a>
                             </p>
                     
                     
@@ -1176,7 +1185,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l206"><code>src&#x2F;core&#x2F;ortho.js:206</code></a>
+                            <a href="../files/src_core_ortho.js.html#l223"><code>src&#x2F;core&#x2F;ortho.js:223</code></a>
                             </p>
                     
                     
@@ -1203,7 +1212,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l131"><code>src&#x2F;core&#x2F;ortho.js:131</code></a>
+                            <a href="../files/src_core_ortho.js.html#l139"><code>src&#x2F;core&#x2F;ortho.js:139</code></a>
                             </p>
                     
                     
@@ -1231,7 +1240,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l193"><code>src&#x2F;core&#x2F;component.js:193</code></a>
+                            <a href="../files/src_core_component.js.html#l205"><code>src&#x2F;core&#x2F;component.js:205</code></a>
                             </p>
                     
                     
@@ -1256,7 +1265,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l156"><code>src&#x2F;core&#x2F;ortho.js:156</code></a>
+                            <a href="../files/src_core_ortho.js.html#l167"><code>src&#x2F;core&#x2F;ortho.js:167</code></a>
                             </p>
                     
                     
@@ -1285,7 +1294,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l252"><code>src&#x2F;core&#x2F;component.js:252</code></a>
+                            <a href="../files/src_core_component.js.html#l310"><code>src&#x2F;core&#x2F;component.js:310</code></a>
                             </p>
                     
                     
@@ -1317,7 +1326,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l194"><code>src&#x2F;core&#x2F;ortho.js:194</code></a>
+                            <a href="../files/src_core_ortho.js.html#l210"><code>src&#x2F;core&#x2F;ortho.js:210</code></a>
                             </p>
                     
                     
@@ -1359,7 +1368,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l624"><code>src&#x2F;core&#x2F;component.js:624</code></a>
+                            <a href="../files/src_core_component.js.html#l635"><code>src&#x2F;core&#x2F;component.js:635</code></a>
                             </p>
                     
                     
@@ -1384,7 +1393,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l244"><code>src&#x2F;core&#x2F;ortho.js:244</code></a>
+                            <a href="../files/src_core_ortho.js.html#l266"><code>src&#x2F;core&#x2F;ortho.js:266</code></a>
                             </p>
                     
                     
@@ -1426,7 +1435,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l119"><code>src&#x2F;core&#x2F;ortho.js:119</code></a>
+                            <a href="../files/src_core_ortho.js.html#l126"><code>src&#x2F;core&#x2F;ortho.js:126</code></a>
                             </p>
                     
                     
@@ -1468,7 +1477,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l219"><code>src&#x2F;core&#x2F;ortho.js:219</code></a>
+                            <a href="../files/src_core_ortho.js.html#l238"><code>src&#x2F;core&#x2F;ortho.js:238</code></a>
                             </p>
                     
                     
@@ -1510,7 +1519,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l144"><code>src&#x2F;core&#x2F;ortho.js:144</code></a>
+                            <a href="../files/src_core_ortho.js.html#l154"><code>src&#x2F;core&#x2F;ortho.js:154</code></a>
                             </p>
                     
                     
@@ -1552,7 +1561,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ortho.js.html#l169"><code>src&#x2F;core&#x2F;ortho.js:169</code></a>
+                            <a href="../files/src_core_ortho.js.html#l182"><code>src&#x2F;core&#x2F;ortho.js:182</code></a>
                             </p>
                     
                     

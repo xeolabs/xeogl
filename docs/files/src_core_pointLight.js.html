@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,55 +126,57 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
- A **PointLight** defines a light source that originates from a single point and spreads outward in all directions, to illuminate
- attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+    &quot;use strict&quot;;
 
- &lt;ul&gt;
+    /**
+     A **PointLight** defines a light source that originates from a single point and spreads outward in all directions, to illuminate
+     attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
- &lt;li&gt;PointLights are grouped, along with other light source types, within {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+     &lt;ul&gt;
 
- &lt;li&gt;Within xeoEngine&#x27;s Phong lighting calculations, PointLight {{#crossLink &quot;PointLight/diffuse:property&quot;}}{{/crossLink}} and
- {{#crossLink &quot;PointLight/specular:property&quot;}}{{/crossLink}} are multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
- {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}},
- respectively.&lt;/li&gt;
+     &lt;li&gt;PointLights are grouped, along with other light source types, within {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components,
+     which are attached to {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
- &lt;li&gt;PointLights have {{#crossLink &quot;PointLight/constantAttenuation:property&quot;}}{{/crossLink}}, {{#crossLink &quot;PointLight/linearAttenuation:property&quot;}}{{/crossLink}} and
- {{#crossLink &quot;PointLight/quadraticAttenuation:property&quot;}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.&lt;/li&gt;
+     &lt;li&gt;Within xeoEngine&#x27;s Phong lighting calculations, PointLight {{#crossLink &quot;PointLight/diffuse:property&quot;}}{{/crossLink}} and
+     {{#crossLink &quot;PointLight/specular:property&quot;}}{{/crossLink}} are multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
+     {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}},
+     respectively.&lt;/li&gt;
 
- &lt;li&gt;Diffuse, specular and ambient lighting may also be enabled or disabled for specific {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
- via {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}
- and {{#crossLink &quot;Modes/ambient:property&quot;}}{{/crossLink}} flags on {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} components.&lt;/li&gt;
+     &lt;li&gt;PointLights have {{#crossLink &quot;PointLight/constantAttenuation:property&quot;}}{{/crossLink}}, {{#crossLink &quot;PointLight/linearAttenuation:property&quot;}}{{/crossLink}} and
+     {{#crossLink &quot;PointLight/quadraticAttenuation:property&quot;}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.&lt;/li&gt;
 
- &lt;/ul&gt;
+     &lt;li&gt;Diffuse, specular and ambient lighting may also be enabled or disabled for specific {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
+     via {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}
+     and {{#crossLink &quot;Modes/ambient:property&quot;}}{{/crossLink}} flags on {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} components.&lt;/li&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7096613/L.png&quot;&gt;&lt;/img&gt;
+     &lt;/ul&gt;
 
- ### Example
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7096613/L.png&quot;&gt;&lt;/img&gt;
 
- The following example creates
- &lt;ul&gt;
- &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}},&lt;/li&gt;
- &lt;li&gt;a PointLight,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing the PointLight,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
- &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
- &lt;/ul&gt;
+     ### Example
 
- &#x60;&#x60;&#x60;&#x60; javascript
- var scene = new XEO.Scene();
+     In this example we have
+     &lt;ul&gt;
+     &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}},&lt;/li&gt;
+     &lt;li&gt;a PointLight,&lt;/li&gt;
+     &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing the PointLight,&lt;/li&gt;
+     &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+     &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+     &lt;/ul&gt;
 
- var material = new XEO.Material(scene, {
+     &#x60;&#x60;&#x60;&#x60; javascript
+     var scene = new XEO.Scene();
+
+     var material = new XEO.Material(scene, {
         diffuse: [1, 1, 1],
         specular: [1.1, 1]
  });
 
- // Our PointLight&#x27;s intensity does not attenuate over distance.
+     // Our PointLight&#x27;s intensity does not attenuate over distance.
 
- var pointLight = new XEO.PointLight(scene, {
+     var pointLight = new XEO.PointLight(scene, {
         pos: [0, 100, 100],
         diffuse: [0.5, 0.7, 0.5],
         specular: [1.0, 1.0, 1.0],
@@ -175,280 +186,305 @@
         space: &quot;view&quot;
  });
 
- var lights = new XEO.Lights(scene, {
+     var lights = new XEO.Lights(scene, {
         lights: [
             pointLight
         ]
  });
 
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+     var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+     var object = new XEO.GameObject(scene, {
         lights: lights,
         material: material,
         geometry: geometry
   });
- &#x60;&#x60;&#x60;&#x60;
+     &#x60;&#x60;&#x60;&#x60;
 
- As with all components, we can &lt;a href=&quot;XEO.Component.html#changeEvents&quot; class=&quot;crosslink&quot;&gt;observe and change properties&lt;/a&gt; on PointLights like so:
+     As with all components, we can &lt;a href=&quot;XEO.Component.html#changeEvents&quot; class=&quot;crosslink&quot;&gt;observe and change properties&lt;/a&gt; on PointLights like so:
 
- &#x60;&#x60;&#x60;&#x60;Javascript
- var handle = pointLight.on(&quot;diffuse&quot;, // Attach a change listener to a property
- function(value) {
+     &#x60;&#x60;&#x60;&#x60;Javascript
+     var handle = pointLight.on(&quot;diffuse&quot;, // Attach a change listener to a property
+     function(value) {
         // Property value has changed
     });
 
- pointLight.diffuse = [0.4, 0.6, 0.4]; // Fires the change listener
+     pointLight.diffuse = [0.4, 0.6, 0.4]; // Fires the change listener
 
- pointLight.off(handle); // Detach the change listener
- &#x60;&#x60;&#x60;&#x60;
- @class PointLight
- @module XEO
- @constructor
- @extends Component
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this PointLight within the
- default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
- @param [cfg] {*} The PointLight configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PointLight.
- @param [cfg.pos=[ 1.0, 1.0, 1.0 ]] {Array(Number)} Position, in either World or View space, depending on the value of the **space** parameter.
- @param [cfg.diffuse=[0.7, 0.7, 0.8 ]] {Array(Number)} Diffuse color of this PointLight.
- @param [cfg.specular=[1.0, 1.0, 1.1 ]] {Array(Number)} Specular color of this PointLight.
- @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
- @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
- @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
- @param [cfg.space=&quot;view&quot;] {String} The coordinate system this PointLight is defined in - &quot;view&quot; or &quot;space&quot;.
- */
-XEO.PointLight = XEO.Component.extend({
-
-    className: &quot;XEO.PointLight&quot;,
-
-    type: &quot;light&quot;,
-
-    _init: function (cfg) {
-        this.mode = &quot;point&quot;;
-        this._core.mode = this.mode;
-        this.pos = cfg.pos;
-        this.diffuse = cfg.diffuse;
-        this.specular = cfg.specular;
-        this.constantAttenuation = cfg.constantAttenuation;
-        this.linearAttenuation = cfg.linearAttenuation;
-        this.quadraticAttenuation = cfg.quadraticAttenuation;
-        this.space = cfg.space;
-    },
-
-    /**
-     The position of this PointLight.
-
-     This will be either World- or View-space, depending on the value of {{#crossLink &quot;PointLight/space:property&quot;}}{{/crossLink}}.
-
-     Fires a {{#crossLink &quot;PointLight/pos:event&quot;}}{{/crossLink}} event on change.
-
-     @property pos
-     @default [1.0, 1.0, 1.0]
-     @type Array(Number)
+     pointLight.off(handle); // Detach the change listener
+     &#x60;&#x60;&#x60;&#x60;
+     @class PointLight
+     @module XEO
+     @constructor
+     @extends Component
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this PointLight within the
+     default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
+     @param [cfg] {*} The PointLight configuration
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PointLight.
+     @param [cfg.pos=[ 1.0, 1.0, 1.0 ]] {Array(Number)} Position, in either World or View space, depending on the value of the **space** parameter.
+     @param [cfg.diffuse=[0.7, 0.7, 0.8 ]] {Array(Number)} Diffuse color of this PointLight.
+     @param [cfg.specular=[1.0, 1.0, 1.1 ]] {Array(Number)} Specular color of this PointLight.
+     @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
+     @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
+     @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
+     @param [cfg.space=&quot;view&quot;] {String} The coordinate system this PointLight is defined in - &quot;view&quot; or &quot;space&quot;.
      */
-    set pos(value) {
-        value = value || [ 1.0, 1.0, 1.0 ];
-        this._core.pos = value;
-        this._renderer.imageDirty = true;
+    XEO.PointLight = XEO.Component.extend({
 
-        /**
-         Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/pos:property&quot;}}{{/crossLink}} property changes.
-         @event pos
-         @param value The property&#x27;s new value
-         */
-        this.fire(&quot;pos&quot;, value);
-    },
+        className: &quot;XEO.PointLight&quot;,
 
-    get pos() {
-        return this._core.pos;
-    },
+        type: &quot;light&quot;,
 
-    /**
-     The diffuse color of this PointLight.
+        _init: function (cfg) {
+            this.mode = &quot;point&quot;;
+            this._state.mode = this.mode;
+            this.pos = cfg.pos;
+            this.diffuse = cfg.diffuse;
+            this.specular = cfg.specular;
+            this.constantAttenuation = cfg.constantAttenuation;
+            this.linearAttenuation = cfg.linearAttenuation;
+            this.quadraticAttenuation = cfg.quadraticAttenuation;
+            this.space = cfg.space;
+        },
 
-     Fires a {{#crossLink &quot;PointLight/diffuse:event&quot;}}{{/crossLink}} event on change.
+        _props: {
 
-     @property diffuse
-     @default [0.7, 0.7, 0.8]
-     @type Array(Number)
-     */
-    set diffuse(value) {
-        value = value || [0.7, 0.7, 0.8 ];
-        this._core.diffuse = value;
-        this._renderer.imageDirty = true;
+            /**
+             The position of this PointLight.
 
-        /**
-         Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/diffuse:property&quot;}}{{/crossLink}} property changes.
-         @event diffuse
-         @param value The property&#x27;s new value
-         */
-        this.fire(&quot;diffuse&quot;, value);
-    },
+             This will be either World- or View-space, depending on the value of {{#crossLink &quot;PointLight/space:property&quot;}}{{/crossLink}}.
 
-    get diffuse() {
-        return this._core.diffuse;
-    },
+             Fires a {{#crossLink &quot;PointLight/pos:event&quot;}}{{/crossLink}} event on change.
 
-    /**
-     The specular color of this PointLight.
+             @property pos
+             @default [1.0, 1.0, 1.0]
+             @type Array(Number)
+             */
+            pos: {
 
-     Fires a {{#crossLink &quot;PointLight/specular:event&quot;}}{{/crossLink}} event on change.
+                set: function (value) {
+                    value = value || [ 1.0, 1.0, 1.0 ];
+                    this._state.pos = value;
+                    this._renderer.imageDirty = true;
 
-     @property specular
-     @default [0.7, 0.7, 0.8]
-     @type Array(Number)
-     */
-    set specular(value) {
-        value = value || [0.7, 0.7, 0.8 ];
-        this._core.specular = value;
-        this._renderer.imageDirty = true;
+                    /**
+                     Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/pos:property&quot;}}{{/crossLink}} property changes.
+                     @event pos
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;pos&quot;, value);
+                },
 
-        /**
-         * Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/specular:property&quot;}}{{/crossLink}} property changes.
-         * @event specular
-         * @param value The property&#x27;s new value
-         */
-        this.fire(&quot;specular&quot;, value);
-    },
+                get: function () {
+                    return this._state.pos;
+                }
+            },
 
-    get specular() {
-        return this._core.specular;
-    },
+            /**
+             The diffuse color of this PointLight.
 
-    /**
-     The constant attenuation factor for this PointLight.
+             Fires a {{#crossLink &quot;PointLight/diffuse:event&quot;}}{{/crossLink}} event on change.
 
-     Fires a {{#crossLink &quot;PointLight/constantAttenuation:event&quot;}}{{/crossLink}} event on change.
+             @property diffuse
+             @default [0.7, 0.7, 0.8]
+             @type Array(Number)
+             */
+            diffuse: {
 
-     @property constantAttenuation
-     @default 0
-     @type Number
-     */
-    set constantAttenuation(value) {
-        value = value || 0.0;
-        this._core.constantAttenuation = value;
-        this._renderer.imageDirty = true;
+                set: function (value) {
+                    value = value || [0.7, 0.7, 0.8 ];
+                    this._state.diffuse = value;
+                    this._renderer.imageDirty = true;
 
-        /**
-         Fired whenever this PointLight&#x27;s {{#crossLink &quot;PointLight/constantAttenuation:property&quot;}}{{/crossLink}} property changes.
+                    /**
+                     Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/diffuse:property&quot;}}{{/crossLink}} property changes.
+                     @event diffuse
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;diffuse&quot;, value);
+                },
 
-         @event constantAttenuation
-         @param value The property&#x27;s new value
-         */
-        this.fire(&quot;constantAttenuation&quot;, value);
-    },
+                get: function () {
+                    return this._state.diffuse;
+                }
+            },
 
-    get constantAttenuation() {
-        return this._core.constantAttenuation;
-    },
+            /**
+             The specular color of this PointLight.
 
-    /**
-     The linear attenuation factor for this PointLight.
+             Fires a {{#crossLink &quot;PointLight/specular:event&quot;}}{{/crossLink}} event on change.
 
-     Fires a {{#crossLink &quot;PointLight/linearAttenuation:event&quot;}}{{/crossLink}} event on change.
+             @property specular
+             @default [0.7, 0.7, 0.8]
+             @type Array(Number)
+             */
+            specular: {
 
-     @property linearAttenuation
-     @default 0
-     @type Number
-     */
-    set linearAttenuation(value) {
-        value = value || 0.0;
-        this._core.linearAttenuation = value;
-        this._renderer.imageDirty = true;
+                set: function (value) {
+                    value = value || [0.7, 0.7, 0.8 ];
+                    this._state.specular = value;
+                    this._renderer.imageDirty = true;
 
-        /**
-         Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/linearAttenuation:property&quot;}}{{/crossLink}} property changes.
+                    /**
+                     * Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/specular:property&quot;}}{{/crossLink}} property changes.
+                     * @event specular
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;specular&quot;, value);
+                },
 
-         @event linearAttenuation
-         @param value The property&#x27;s new value
-         */
-        this.fire(&quot;linearAttenuation&quot;, value);
-    },
+                get: function () {
+                    return this._state.specular;
+                }
+            },
 
-    get linearAttenuation() {
-        return this._core.linearAttenuation;
-    },
+            /**
+             The constant attenuation factor for this PointLight.
 
-    /**
-     The quadratic attenuation factor for this Pointlight.
+             Fires a {{#crossLink &quot;PointLight/constantAttenuation:event&quot;}}{{/crossLink}} event on change.
 
-     Fires a {{#crossLink &quot;PointLight/quadraticAttenuation:event&quot;}}{{/crossLink}} event on change.
+             @property constantAttenuation
+             @default 0
+             @type Number
+             */
+            constantAttenuation: {
 
-     @property quadraticAttenuation
-     @default 0
-     @type Number
-     */
-    set quadraticAttenuation(value) {
-        value = value || 0.0;
-        this._core.quadraticAttenuation = value;
-        this._renderer.imageDirty = true;
+                set: function (value) {
+                    value = value || 0.0;
+                    this._state.constantAttenuation = value;
+                    this._renderer.imageDirty = true;
 
-        /**
-         Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/quadraticAttenuation:property&quot;}}{{/crossLink}} property changes.
+                    /**
+                     Fired whenever this PointLight&#x27;s {{#crossLink &quot;PointLight/constantAttenuation:property&quot;}}{{/crossLink}} property changes.
 
-         @event quadraticAttenuation
-         @param value The property&#x27;s new value
-         */
-        this.fire(&quot;quadraticAttenuation&quot;, value);
-    },
+                     @event constantAttenuation
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;constantAttenuation&quot;, value);
+                },
 
-    get quadraticAttenuation() {
-        return this._core.quadraticAttenuation;
-    },
+                get: function () {
+                    return this._state.constantAttenuation;
+                }
+            },
 
-    /**
-     Indicates which coordinate space this PointLight is in.
+            /**
+             The linear attenuation factor for this PointLight.
 
-     Supported values are:
+             Fires a {{#crossLink &quot;PointLight/linearAttenuation:event&quot;}}{{/crossLink}} event on change.
 
-     &lt;ul&gt;
-     &lt;li&gt;&quot;view&quot; - View space, aligned within the view volume as if fixed to the viewer&#x27;s head&lt;/li&gt;
-     &lt;li&gt;&quot;world&quot; - World space, fixed within the world, moving within the view volume with respect to camera&lt;/li&gt;
-     &lt;/ul&gt;
+             @property linearAttenuation
+             @default 0
+             @type Number
+             */
+            linearAttenuation: {
 
-     Fires a {{#crossLink &quot;PointLight/space:event&quot;}}{{/crossLink}} event on change.
+                set: function (value) {
+                    value = value || 0.0;
+                    this._state.linearAttenuation = value;
+                    this._renderer.imageDirty = true;
 
-     @property space
-     @default &quot;view&quot;
-     @type String
-     */
-    set space(value) {
-        value = value || &quot;view&quot;;
-        if (value == this._core.space) {
-            return;
+                    /**
+                     Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/linearAttenuation:property&quot;}}{{/crossLink}} property changes.
+
+                     @event linearAttenuation
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;linearAttenuation&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.linearAttenuation;
+                }
+            },
+
+            /**
+             The quadratic attenuation factor for this Pointlight.
+
+             Fires a {{#crossLink &quot;PointLight/quadraticAttenuation:event&quot;}}{{/crossLink}} event on change.
+
+             @property quadraticAttenuation
+             @default 0
+             @type Number
+             */
+            quadraticAttenuation: {
+
+                set: function (value) {
+                    value = value || 0.0;
+                    this._state.quadraticAttenuation = value;
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/quadraticAttenuation:property&quot;}}{{/crossLink}} property changes.
+
+                     @event quadraticAttenuation
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;quadraticAttenuation&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.quadraticAttenuation;
+                }
+            },
+
+            /**
+             Indicates which coordinate space this PointLight is in.
+
+             Supported values are:
+
+             &lt;ul&gt;
+             &lt;li&gt;&quot;view&quot; - View space, aligned within the view volume as if fixed to the viewer&#x27;s head&lt;/li&gt;
+             &lt;li&gt;&quot;world&quot; - World space, fixed within the world, moving within the view volume with respect to camera&lt;/li&gt;
+             &lt;/ul&gt;
+
+             Fires a {{#crossLink &quot;PointLight/space:event&quot;}}{{/crossLink}} event on change.
+
+             @property space
+             @default &quot;view&quot;
+             @type String
+             */
+            space: {
+
+                set: function (value) {
+                    value = value || &quot;view&quot;;
+                    if (value === this._state.space) {
+                        return;
+                    }
+                    this._state.space = value;
+                    this.fire(&quot;dirty&quot;, true); // Need to rebuild shader
+
+                    /**
+                     Fired whenever this Pointlight&#x27;s  {{#crossLink &quot;PointLight/space:property&quot;}}{{/crossLink}} property changes.
+
+                     @event space
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;space&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.space;
+                }
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                mode: this.mode,
+                pos: this.pos,
+                diffuse: this.diffuse,
+                specular: this.specular,
+                constantAttenuation: this.constantAttenuation,
+                linearAttenuation: this.linearAttenuation,
+                quadraticAttenuation: this.quadraticAttenuation,
+                space: this.space
+            };
         }
-        this._core.space = value;
-        this.fire(&quot;dirty&quot;, true); // Need to rebuild shader
+    });
 
-        /**
-         Fired whenever this Pointlight&#x27;s  {{#crossLink &quot;PointLight/space:property&quot;}}{{/crossLink}} property changes.
-
-         @event space
-         @param value The property&#x27;s new value
-         */
-        this.fire(&quot;space&quot;, value);
-    },
-
-    get space() {
-        return this._core.space;
-    },
-
-    _getJSON: function () {
-        return {
-            mode: this.mode,
-            pos: this.pos,
-            diffuse: this.diffuse,
-            specular: this.specular,
-            constantAttenuation: this.constantAttenuation,
-            linearAttenuation: this.linearAttenuation,
-            quadraticAttenuation: this.quadraticAttenuation,
-            space: this.space
-        };
-    }
-});
-
+})();
 
     </pre>
 </div>

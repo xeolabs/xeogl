@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -121,7 +130,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_modes.js.html#l3"><code>src&#x2F;core&#x2F;modes.js:3</code></a>
+            Defined in: <a href="../files/src_core_modes.js.html#l6"><code>src&#x2F;core&#x2F;modes.js:6</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -143,7 +152,7 @@ rendering modes for them as a group.</li>
 
 <p><img src="http://www.gliffy.com/go/publish/image/7123073/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>The following example creates a Modes that toggles rendering modes for
+<p>In this example we have a Modes that toggles rendering modes for
 two <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>. The properties of the Modes are initialised to their
 default values.</p>
 <pre class="code prettyprint"><code class="lang-javascript">
@@ -152,33 +161,33 @@ var scene = new XEO.Scene();
 
 // Create a Modes with default properties
 var modes = new XEO.Modes(scene, {
-       picking: true,              // Enable picking
-       clipping true,              // Enable effect of XEO.Clip components
-       transparent : false,        // Disable transparency
-       backfaces : true,           // Render backfaces
-       frontface : "ccw",          // Frontfaces have counter-clockwise vertex
-       backfaceLighting : true,    // Enable backface lighting
-       backfaceTexturing : true,   // Enable backfaces texturing
-       diffuse : true,             // Enable diffuse lighting
-       specular : true,            // Enable specular lighting
-       ambient : true,             // Enable ambient lighting
-       reflection : true           // Enable reflections
- });
+   picking: true,              // Enable picking
+   clipping true,              // Enable effect of XEO.Clip components
+   transparent : false,        // Disable transparency
+   backfaces : true,           // Render backfaces
+   frontface : "ccw",          // Frontfaces have counter-clockwise vertex
+   backfaceLighting : true,    // Enable backface lighting
+   backfaceTexturing : true,   // Enable backfaces texturing
+   diffuse : true,             // Enable diffuse lighting
+   specular : true,            // Enable specular lighting
+   ambient : true,             // Enable ambient lighting
+   reflection : true           // Enable reflections
+  });
 
 // Create two GameObjects whose rendering modes will be controlled by our Modes
 
 var object1 = new XEO.GameObject(scene, {
-      modes: modes
- });
+  modes: modes
+  });
 
 var object2 = new XEO.GameObject(scene, {
-      modes: modes
- });
+  modes: modes
+  });
 
 // Subscribe to change on the Modes&#39; "specular" property
 var handle = modes.on("specular", function(value) {
-      //...
- });
+  //...
+  });
 
 // Disable specular lighting on our GameObjects by flipping the Modes&#39; "specular" property,
 // which will also call our handler
@@ -220,7 +229,7 @@ modes.destroy();
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_modes.js.html#l3"><code>src&#x2F;core&#x2F;modes.js:3</code></a>
+                <a href="../files/src_core_modes.js.html#l6"><code>src&#x2F;core&#x2F;modes.js:6</code></a>
                 </p>
         
         
@@ -622,7 +631,7 @@ modes.destroy();
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l594"><code>src&#x2F;core&#x2F;component.js:594</code></a>
+        <a href="../files/src_core_component.js.html#l605"><code>src&#x2F;core&#x2F;component.js:605</code></a>
         </p>
 
 
@@ -662,7 +671,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l439"><code>src&#x2F;core&#x2F;component.js:439</code></a>
+        <a href="../files/src_core_component.js.html#l450"><code>src&#x2F;core&#x2F;component.js:450</code></a>
         </p>
 
 
@@ -725,7 +734,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        <a href="../files/src_core_component.js.html#l341"><code>src&#x2F;core&#x2F;component.js:341</code></a>
         </p>
 
 
@@ -804,7 +813,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l422"><code>src&#x2F;core&#x2F;component.js:422</code></a>
+        <a href="../files/src_core_component.js.html#l433"><code>src&#x2F;core&#x2F;component.js:433</code></a>
         </p>
 
 
@@ -861,7 +870,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l384"><code>src&#x2F;core&#x2F;component.js:384</code></a>
+        <a href="../files/src_core_component.js.html#l395"><code>src&#x2F;core&#x2F;component.js:395</code></a>
         </p>
 
 
@@ -922,7 +931,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l355"><code>src&#x2F;core&#x2F;component.js:355</code></a>
+        <a href="../files/src_core_component.js.html#l366"><code>src&#x2F;core&#x2F;component.js:366</code></a>
         </p>
 
 
@@ -1002,7 +1011,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l403"><code>src&#x2F;core&#x2F;component.js:403</code></a>
+        <a href="../files/src_core_component.js.html#l414"><code>src&#x2F;core&#x2F;component.js:414</code></a>
         </p>
 
 
@@ -1069,7 +1078,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l456"><code>src&#x2F;core&#x2F;component.js:456</code></a>
+        <a href="../files/src_core_component.js.html#l467"><code>src&#x2F;core&#x2F;component.js:467</code></a>
         </p>
 
 
@@ -1121,7 +1130,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l378"><code>src&#x2F;core&#x2F;modes.js:378</code></a>
+                            <a href="../files/src_core_modes.js.html#l410"><code>src&#x2F;core&#x2F;modes.js:410</code></a>
                             </p>
                     
                     
@@ -1150,7 +1159,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l262"><code>src&#x2F;core&#x2F;modes.js:262</code></a>
+                            <a href="../files/src_core_modes.js.html#l282"><code>src&#x2F;core&#x2F;modes.js:282</code></a>
                             </p>
                     
                     
@@ -1179,7 +1188,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l204"><code>src&#x2F;core&#x2F;modes.js:204</code></a>
+                            <a href="../files/src_core_modes.js.html#l218"><code>src&#x2F;core&#x2F;modes.js:218</code></a>
                             </p>
                     
                     
@@ -1208,7 +1217,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l291"><code>src&#x2F;core&#x2F;modes.js:291</code></a>
+                            <a href="../files/src_core_modes.js.html#l314"><code>src&#x2F;core&#x2F;modes.js:314</code></a>
                             </p>
                     
                     
@@ -1238,7 +1247,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l240"><code>src&#x2F;core&#x2F;component.js:240</code></a>
+                            <a href="../files/src_core_component.js.html#l322"><code>src&#x2F;core&#x2F;component.js:322</code></a>
                             </p>
                     
                     
@@ -1264,7 +1273,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l144"><code>src&#x2F;core&#x2F;modes.js:144</code></a>
+                            <a href="../files/src_core_modes.js.html#l152"><code>src&#x2F;core&#x2F;modes.js:152</code></a>
                             </p>
                     
                     
@@ -1293,7 +1302,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l274"><code>src&#x2F;core&#x2F;component.js:274</code></a>
+                            <a href="../files/src_core_component.js.html#l263"><code>src&#x2F;core&#x2F;component.js:263</code></a>
                             </p>
                     
                     
@@ -1318,7 +1327,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l320"><code>src&#x2F;core&#x2F;modes.js:320</code></a>
+                            <a href="../files/src_core_modes.js.html#l346"><code>src&#x2F;core&#x2F;modes.js:346</code></a>
                             </p>
                     
                     
@@ -1347,7 +1356,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l233"><code>src&#x2F;core&#x2F;modes.js:233</code></a>
+                            <a href="../files/src_core_modes.js.html#l250"><code>src&#x2F;core&#x2F;modes.js:250</code></a>
                             </p>
                     
                     
@@ -1377,7 +1386,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l265"><code>src&#x2F;core&#x2F;component.js:265</code></a>
+                            <a href="../files/src_core_component.js.html#l254"><code>src&#x2F;core&#x2F;component.js:254</code></a>
                             </p>
                     
                     
@@ -1402,7 +1411,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l440"><code>src&#x2F;core&#x2F;modes.js:440</code></a>
+                            <a href="../files/src_core_modes.js.html#l479"><code>src&#x2F;core&#x2F;modes.js:479</code></a>
                             </p>
                     
                     
@@ -1427,7 +1436,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l229"><code>src&#x2F;core&#x2F;component.js:229</code></a>
+                            <a href="../files/src_core_component.js.html#l244"><code>src&#x2F;core&#x2F;component.js:244</code></a>
                             </p>
                     
                     
@@ -1453,7 +1462,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l117"><code>src&#x2F;core&#x2F;modes.js:117</code></a>
+                            <a href="../files/src_core_modes.js.html#l122"><code>src&#x2F;core&#x2F;modes.js:122</code></a>
                             </p>
                     
                     
@@ -1481,7 +1490,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l407"><code>src&#x2F;core&#x2F;modes.js:407</code></a>
+                            <a href="../files/src_core_modes.js.html#l442"><code>src&#x2F;core&#x2F;modes.js:442</code></a>
                             </p>
                     
                     
@@ -1511,7 +1520,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l193"><code>src&#x2F;core&#x2F;component.js:193</code></a>
+                            <a href="../files/src_core_component.js.html#l205"><code>src&#x2F;core&#x2F;component.js:205</code></a>
                             </p>
                     
                     
@@ -1536,7 +1545,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l349"><code>src&#x2F;core&#x2F;modes.js:349</code></a>
+                            <a href="../files/src_core_modes.js.html#l378"><code>src&#x2F;core&#x2F;modes.js:378</code></a>
                             </p>
                     
                     
@@ -1565,7 +1574,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l173"><code>src&#x2F;core&#x2F;modes.js:173</code></a>
+                            <a href="../files/src_core_modes.js.html#l184"><code>src&#x2F;core&#x2F;modes.js:184</code></a>
                             </p>
                     
                     
@@ -1598,7 +1607,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l252"><code>src&#x2F;core&#x2F;component.js:252</code></a>
+                            <a href="../files/src_core_component.js.html#l310"><code>src&#x2F;core&#x2F;component.js:310</code></a>
                             </p>
                     
                     
@@ -1630,7 +1639,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l395"><code>src&#x2F;core&#x2F;modes.js:395</code></a>
+                            <a href="../files/src_core_modes.js.html#l429"><code>src&#x2F;core&#x2F;modes.js:429</code></a>
                             </p>
                     
                     
@@ -1672,7 +1681,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l279"><code>src&#x2F;core&#x2F;modes.js:279</code></a>
+                            <a href="../files/src_core_modes.js.html#l301"><code>src&#x2F;core&#x2F;modes.js:301</code></a>
                             </p>
                     
                     
@@ -1714,7 +1723,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l221"><code>src&#x2F;core&#x2F;modes.js:221</code></a>
+                            <a href="../files/src_core_modes.js.html#l237"><code>src&#x2F;core&#x2F;modes.js:237</code></a>
                             </p>
                     
                     
@@ -1756,7 +1765,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l308"><code>src&#x2F;core&#x2F;modes.js:308</code></a>
+                            <a href="../files/src_core_modes.js.html#l333"><code>src&#x2F;core&#x2F;modes.js:333</code></a>
                             </p>
                     
                     
@@ -1798,7 +1807,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l161"><code>src&#x2F;core&#x2F;modes.js:161</code></a>
+                            <a href="../files/src_core_modes.js.html#l171"><code>src&#x2F;core&#x2F;modes.js:171</code></a>
                             </p>
                     
                     
@@ -1840,7 +1849,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l624"><code>src&#x2F;core&#x2F;component.js:624</code></a>
+                            <a href="../files/src_core_component.js.html#l635"><code>src&#x2F;core&#x2F;component.js:635</code></a>
                             </p>
                     
                     
@@ -1865,7 +1874,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l337"><code>src&#x2F;core&#x2F;modes.js:337</code></a>
+                            <a href="../files/src_core_modes.js.html#l365"><code>src&#x2F;core&#x2F;modes.js:365</code></a>
                             </p>
                     
                     
@@ -1907,7 +1916,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l250"><code>src&#x2F;core&#x2F;modes.js:250</code></a>
+                            <a href="../files/src_core_modes.js.html#l269"><code>src&#x2F;core&#x2F;modes.js:269</code></a>
                             </p>
                     
                     
@@ -1949,7 +1958,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l132"><code>src&#x2F;core&#x2F;modes.js:132</code></a>
+                            <a href="../files/src_core_modes.js.html#l139"><code>src&#x2F;core&#x2F;modes.js:139</code></a>
                             </p>
                     
                     
@@ -1991,7 +2000,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l424"><code>src&#x2F;core&#x2F;modes.js:424</code></a>
+                            <a href="../files/src_core_modes.js.html#l461"><code>src&#x2F;core&#x2F;modes.js:461</code></a>
                             </p>
                     
                     
@@ -2033,7 +2042,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l366"><code>src&#x2F;core&#x2F;modes.js:366</code></a>
+                            <a href="../files/src_core_modes.js.html#l397"><code>src&#x2F;core&#x2F;modes.js:397</code></a>
                             </p>
                     
                     
@@ -2075,7 +2084,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_modes.js.html#l192"><code>src&#x2F;core&#x2F;modes.js:192</code></a>
+                            <a href="../files/src_core_modes.js.html#l205"><code>src&#x2F;core&#x2F;modes.js:205</code></a>
                             </p>
                     
                     

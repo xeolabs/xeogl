@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,63 +126,68 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-XEO.webgl = {
+(function () {
 
-    /** Maps XEO component parameter names to WebGL enum names
-     */
-    enums: {
-        funcAdd: &quot;FUNC_ADD&quot;,
-        funcSubtract: &quot;FUNC_SUBTRACT&quot;,
-        funcReverseSubtract: &quot;FUNC_REVERSE_SUBTRACT&quot;,
-        zero: &quot;ZERO&quot;,
-        one: &quot;ONE&quot;,
-        srcColor: &quot;SRC_COLOR&quot;,
-        oneMinusSrcColor: &quot;ONE_MINUS_SRC_COLOR&quot;,
-        dstColor: &quot;DST_COLOR&quot;,
-        oneMinusDstColor: &quot;ONE_MINUS_DST_COLOR&quot;,
-        srcAlpha: &quot;SRC_ALPHA&quot;,
-        oneMinusSrcAlpha: &quot;ONE_MINUS_SRC_ALPHA&quot;,
-        dstAlpha: &quot;DST_ALPHA&quot;,
-        oneMinusDstAlpha: &quot;ONE_MINUS_DST_ALPHA&quot;,
-        contantColor: &quot;CONSTANT_COLOR&quot;,
-        oneMinusConstantColor: &quot;ONE_MINUS_CONSTANT_COLOR&quot;,
-        constantAlpha: &quot;CONSTANT_ALPHA&quot;,
-        oneMinusConstantAlpha: &quot;ONE_MINUS_CONSTANT_ALPHA&quot;,
-        srcAlphaSaturate: &quot;SRC_ALPHA_SATURATE&quot;,
-        front: &quot;FRONT&quot;,
-        back: &quot;BACK&quot;,
-        frontAndBack: &quot;FRONT_AND_BACK&quot;,
-        never: &quot;NEVER&quot;,
-        less: &quot;LESS&quot;,
-        equal: &quot;EQUAL&quot;,
-        lequal: &quot;LEQUAL&quot;,
-        greater: &quot;GREATER&quot;,
-        notequal: &quot;NOTEQUAL&quot;,
-        gequal: &quot;GEQUAL&quot;,
-        always: &quot;ALWAYS&quot;,
-        cw: &quot;CW&quot;,
-        ccw: &quot;CCW&quot;,
-        linear: &quot;LINEAR&quot;,
-        nearest: &quot;NEAREST&quot;,
-        linearMipMapNearest: &quot;LINEAR_MIPMAP_NEAREST&quot;,
-        nearestMipMapNearest: &quot;NEAREST_MIPMAP_NEAREST&quot;,
-        nearestMipMapLinear: &quot;NEAREST_MIPMAP_LINEAR&quot;,
-        linearMipMapLinear: &quot;LINEAR_MIPMAP_LINEAR&quot;,
-        repeat: &quot;REPEAT&quot;,
-        clampToEdge: &quot;CLAMP_TO_EDGE&quot;,
-        mirroredRepeat: &quot;MIRRORED_REPEAT&quot;,
-        alpha: &quot;ALPHA&quot;,
-        rgb: &quot;RGB&quot;,
-        rgba: &quot;RGBA&quot;,
-        luminance: &quot;LUMINANCE&quot;,
-        luminanceAlpha: &quot;LUMINANCE_ALPHA&quot;,
-        textureBinding2D: &quot;TEXTURE_BINDING_2D&quot;,
-        textureBindingCubeMap: &quot;TEXTURE_BINDING_CUBE_MAP&quot;,
-        compareRToTexture: &quot;COMPARE_R_TO_TEXTURE&quot;, // Hardware Shadowing Z-depth,
-        unsignedByte: &quot;UNSIGNED_BYTE&quot;
-    }
-}
+    &quot;use strict&quot;;
 
+    XEO.webgl = {
+
+        /** Maps XEO component parameter names to WebGL enum names
+         */
+        enums: {
+            funcAdd: &quot;FUNC_ADD&quot;,
+            funcSubtract: &quot;FUNC_SUBTRACT&quot;,
+            funcReverseSubtract: &quot;FUNC_REVERSE_SUBTRACT&quot;,
+            zero: &quot;ZERO&quot;,
+            one: &quot;ONE&quot;,
+            srcColor: &quot;SRC_COLOR&quot;,
+            oneMinusSrcColor: &quot;ONE_MINUS_SRC_COLOR&quot;,
+            dstColor: &quot;DST_COLOR&quot;,
+            oneMinusDstColor: &quot;ONE_MINUS_DST_COLOR&quot;,
+            srcAlpha: &quot;SRC_ALPHA&quot;,
+            oneMinusSrcAlpha: &quot;ONE_MINUS_SRC_ALPHA&quot;,
+            dstAlpha: &quot;DST_ALPHA&quot;,
+            oneMinusDstAlpha: &quot;ONE_MINUS_DST_ALPHA&quot;,
+            contantColor: &quot;CONSTANT_COLOR&quot;,
+            oneMinusConstantColor: &quot;ONE_MINUS_CONSTANT_COLOR&quot;,
+            constantAlpha: &quot;CONSTANT_ALPHA&quot;,
+            oneMinusConstantAlpha: &quot;ONE_MINUS_CONSTANT_ALPHA&quot;,
+            srcAlphaSaturate: &quot;SRC_ALPHA_SATURATE&quot;,
+            front: &quot;FRONT&quot;,
+            back: &quot;BACK&quot;,
+            frontAndBack: &quot;FRONT_AND_BACK&quot;,
+            never: &quot;NEVER&quot;,
+            less: &quot;LESS&quot;,
+            equal: &quot;EQUAL&quot;,
+            lequal: &quot;LEQUAL&quot;,
+            greater: &quot;GREATER&quot;,
+            notequal: &quot;NOTEQUAL&quot;,
+            gequal: &quot;GEQUAL&quot;,
+            always: &quot;ALWAYS&quot;,
+            cw: &quot;CW&quot;,
+            ccw: &quot;CCW&quot;,
+            linear: &quot;LINEAR&quot;,
+            nearest: &quot;NEAREST&quot;,
+            linearMipMapNearest: &quot;LINEAR_MIPMAP_NEAREST&quot;,
+            nearestMipMapNearest: &quot;NEAREST_MIPMAP_NEAREST&quot;,
+            nearestMipMapLinear: &quot;NEAREST_MIPMAP_LINEAR&quot;,
+            linearMipMapLinear: &quot;LINEAR_MIPMAP_LINEAR&quot;,
+            repeat: &quot;REPEAT&quot;,
+            clampToEdge: &quot;CLAMP_TO_EDGE&quot;,
+            mirroredRepeat: &quot;MIRRORED_REPEAT&quot;,
+            alpha: &quot;ALPHA&quot;,
+            rgb: &quot;RGB&quot;,
+            rgba: &quot;RGBA&quot;,
+            luminance: &quot;LUMINANCE&quot;,
+            luminanceAlpha: &quot;LUMINANCE_ALPHA&quot;,
+            textureBinding2D: &quot;TEXTURE_BINDING_2D&quot;,
+            textureBindingCubeMap: &quot;TEXTURE_BINDING_CUBE_MAP&quot;,
+            compareRToTexture: &quot;COMPARE_R_TO_TEXTURE&quot;, // Hardware Shadowing Z-depth,
+            unsignedByte: &quot;UNSIGNED_BYTE&quot;
+        }
+    };
+
+})();
     </pre>
 </div>
                     </div>

@@ -47,7 +47,7 @@
     <section id="main_content" class="inner">
         <h3>About</h3>
 
-        <strong>xeoEngine</strong> is a WebGL-based 3D engine from <a href="https://twitter.com/xeolabs">@xeoLabs</a>
+        <strong>xeoEngine</strong> is another WebGL-based 3D engine from <a href="https://twitter.com/xeolabs">@xeoLabs</a>
 
         <h3>Features</h3>
 
@@ -71,7 +71,7 @@
 
         <h3>Usage</h3>
 
-        <p>Simply include <a href="build/xeoengine.min.js">xeoengine.js</a> in your project to begin creating 3D
+        <p>Simply include <a href="build/xeoengine.min.js">xeoengine.min.js</a> in your project to begin creating 3D
             worlds.</p>
         <pre>&lt;script src="http://xeoengine.org/build/xeoengine.min.js"&gt;&lt;/script&gt;</pre>
         <h3>
@@ -79,7 +79,7 @@
                     class="octicon octicon-link"></span></a>Concept</h3>
 
         <p><strong>Create</strong> your 3D <a href="./docs/classes/Scene.html">scene</a> as a component-object graph, as
-            shown in this example. A scene is
+            shown below. A scene is
             essentially a soup of <a href="./docs/classes/Component.html">components</a> that are tied together into
             enties by <a href="./docs/classes/GameObject.html">game objects</a>.</p>
 
@@ -91,8 +91,7 @@
             <a href="./docs/classes/Material.html">material</a> and <a href="./docs/classes/Geometry.html">geometry</a>
             for
             our game object. The game object will fall back on the scene's
-            default <a  target="other" class="definitionLink" href="http://en.wikipedia.org/wiki/Flyweight_pattern">flyweight</a>
-            components
+            default flyweight components
             (eg. <a href="./docs/classes/Camera.html">camera</a>, <a href="./docs/classes/Lights.html">lights</a> etc) for everything else.</p>
 
 <pre class="prettyprint lang-javascript">
@@ -132,21 +131,19 @@ var object = new XEO.GameObject(scene, {
         <p><strong>Edit</strong> anything in your scene dynamically, at runtime. Create, destroy, link and unlink
             components, or set any component property.</p>
 
-<pre class="prettyprint lang-javascript">
-  var texture = new XEO.Texture(scene, {
+<pre class="prettyprint lang-javascript">var texture = new XEO.Texture(scene, {
       src: "myTexture.jpg"
   });
 
-  material.diffuseMap = texture;</pre>
+material.diffuseMap = texture;</pre>
 
         <br>
 
-        <p><strong>Save</strong> and <strong>load</strong> your scene as JSON.</p>
+        <p><strong>Save</strong> and <strong>load</strong> your scene as JSON:</p>
 
- <pre class="prettyprint lang-javascript">
- var json = scene.json;
+ <pre class="prettyprint lang-javascript">var json = scene.json;
 
- var scene2 = new XEO.Scene({ json: json });</pre>
+var scene2 = new XEO.Scene({ json: json });</pre>
 
 
     </section>

@@ -1,23 +1,29 @@
-XEO.renderer = XEO.renderer || {};
+(function () {
 
-XEO.renderer.GameObjectFactory = new (function () {
+    "use strict";
 
-    var freeGameObjects = [];
-    var numFreeGameObjects = 0;
+    XEO.renderer = XEO.renderer || {};
 
-    this.getGameObject = function (id) {
-        var object;
-        if (numFreeGameObjects > 0) {
-            object = freeGameObjects[--numFreeGameObjects];
-            object.id = id;
-            return object;
-        }
-        return new XEO.renderer.GameObject(id);
+    XEO.renderer.ObjectFactory = function () {
+
+        var freeGameObjects = [];
+        var numFreeGameObjects = 0;
+
+        this.getGameObject = function (id) {
+            var object;
+            if (numFreeGameObjects > 0) {
+                object = freeGameObjects[--numFreeGameObjects];
+                object.id = id;
+                return object;
+            }
+            return new XEO.renderer.GameObject(id);
+        };
+
+        this.putGameObject = function (object) {
+            freeGameObjects[numFreeGameObjects++] = object;
+        };
     };
 
-    this.putGameObject = function (object) {
-        freeGameObjects[numFreeGameObjects++] = object;
-    };
 })();
 
 

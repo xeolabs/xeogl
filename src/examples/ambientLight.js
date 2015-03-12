@@ -1,3 +1,4 @@
+
 var scene = new XEO.Scene();
 
 var material = new XEO.Material(scene, {

@@ -1,7 +1,8 @@
 {
     "engine": [
+        "src/core/inheritance.js",
         "src/core/xeo.js",
-
+        "src/core/utils/map.js",
         "src/core/component.js",
         "src/core/ambientLight.js",
         "src/core/camera.js",
@@ -26,12 +27,13 @@
         "src/core/lookat.js",
         "src/core/matrix.js",
         "src/core/material.js",
-        "src/core/morphGeometry.js",
+        "src/core/morphTargets.js",
         "src/core/name.js",
         "src/core/gameObject.js",
         "src/core/ortho.js",
         "src/core/perspective.js",
         "src/core/pointLight.js",
+        "src/core/reflect.js",
         "src/core/scene.js",
         "src/core/shader.js",
         "src/core/shaderParams.js",
@@ -42,7 +44,6 @@
         "src/core/tasks.js",
         "src/core/texture.js",
 
-        "src/core/utils/map.js",
         "src/core/math/math.js",
 
         "src/core/webgl/webgl.js",
@@ -54,7 +55,16 @@
         "src/core/webgl/texture2d.js",
         "src/core/webgl/uniform.js",
 
-        "src/core/renderer/renderer.js"
+        "src/core/renderer/renderer.js",
+        "src/core/renderer/object.js",
+        "src/core/renderer/objectFactory.js",
+        "src/core/renderer/program.js",
+        "src/core/renderer/programFactory.js",
+        "src/core/renderer/programSource.js",
+        "src/core/renderer/programSourceFactory.js",
+        "src/core/renderer/renderContext.js",
+
+        "src/core/renderer/chunks/chunkFactory.js"
     ],
 
     "extras": [

@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,57 +126,60 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
- A **Shader** specifies a custom GLSL shader to draw attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+    &quot;use strict&quot;;
 
- &lt;hr&gt;
-    *Contents*
-    &lt;Ul&gt;
-        &lt;li&gt;&lt;a href=&quot;#overview&quot;&gt;Overview&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href=&quot;#shaderInputs&quot;&gt;Shader Inputs&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href=&quot;#example&quot;&gt;Example&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-    &lt;hr&gt;
 
- ## Overview
+    /**
+     A **Shader** specifies a custom GLSL shader to draw attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
- &lt;ul&gt;
- &lt;li&gt;You can use xeoEngine&#x27;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#x27;s set by other
- components on the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+     &lt;hr&gt;
+     *Contents*
+     &lt;Ul&gt;
+     &lt;li&gt;&lt;a href=&quot;#overview&quot;&gt;Overview&lt;/a&gt;&lt;/li&gt;
+     &lt;li&gt;&lt;a href=&quot;#shaderInputs&quot;&gt;Shader Inputs&lt;/a&gt;&lt;/li&gt;
+     &lt;li&gt;&lt;a href=&quot;#example&quot;&gt;Example&lt;/a&gt;&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;hr&gt;
 
- &lt;li&gt;Use Shaders in combination with {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} components when you need to share
- the same Shaders among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} while setting the Shaders&#x27; uniforms
- differently for each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.&lt;/li&gt;
+     ## Overview
 
- &lt;li&gt;Use {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}}, {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}}
- and {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.&lt;/li&gt;
+     &lt;ul&gt;
+     &lt;li&gt;You can use xeoEngine&#x27;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#x27;s set by other
+     components on the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
- &lt;/ul&gt;
+     &lt;li&gt;Use Shaders in combination with {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} components when you need to share
+     the same Shaders among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} while setting the Shaders&#x27; uniforms
+     differently for each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.&lt;/li&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105141/L.png&quot;&gt;&lt;/img&gt;
+     &lt;li&gt;Use {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}}, {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}}
+     and {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.&lt;/li&gt;
 
- ## Example
+     &lt;/ul&gt;
 
- The example below shows the simplest way to use a Shader, where we&#x27;re just going to render a ripply water
- pattern to a screen-aligned quad.
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105141/L.png&quot;&gt;&lt;/img&gt;
 
- &lt;img src=&quot;../../assets/images/shaderExample1.png&quot;&gt;&lt;/img&gt;
+     ## Example
 
- In our scene definition, we have an  {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} that is our
- screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
- Finally, we animate the rippling by periodically updating the Shader&#x27;s &quot;time&quot; uniform.
+     This example shows the simplest way to use a Shader, where we&#x27;re just going to render a ripply water
+     pattern to a screen-aligned quad.
 
- &#x60;&#x60;&#x60;&#x60;javascript
+     &lt;img src=&quot;../../assets/images/shaderExample1.png&quot;&gt;&lt;/img&gt;
 
- var scene = new XEO.Scene();
+     In our scene definition, we have an  {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} that is our
+     screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
+     Finally, we animate the rippling by periodically updating the Shader&#x27;s &quot;time&quot; uniform.
 
- // Shader that&#x27;s used by our GameObject. Note the &#x27;XEO_aPosition&#x27; and &#x27;XEO_aUV attributes&#x27;,
- // which will receive the positions and UVs from the Geometry. Also note the &#x27;time&#x27;
- // uniform, which we&#x27;ll be animating via Shader#setParams.
+     &#x60;&#x60;&#x60;&#x60;javascript
 
- var shader = new XEO.Shader(scene, {
+     var scene = new XEO.Scene();
+
+     // Shader that&#x27;s used by our GameObject. Note the &#x27;XEO_aPosition&#x27; and &#x27;XEO_aUV attributes&#x27;,
+     // which will receive the positions and UVs from the Geometry. Also note the &#x27;time&#x27;
+     // uniform, which we&#x27;ll be animating via Shader#setParams.
+
+     var shader = new XEO.Shader(scene, {
 
        // Vertex shading stage
        vertex: [
@@ -210,8 +222,8 @@
        }
   });
 
- // A screen-aligned quad
- var quad = new XEO.Geometry(scene, {
+     // A screen-aligned quad
+     var quad = new XEO.Geometry(scene, {
        primitive:&quot;triangles&quot;,
        positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
@@ -219,188 +231,211 @@
        indices:[ 0, 1, 2, 0, 2, 3 ]
   });
 
- var object = new XEO.GameObject(scene, {
+     var object = new XEO.GameObject(scene, {
        shader: shader,
        geometry: quad
   });
 
- &#x60;&#x60;&#x60;&#x60;
- Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, to make the water ripple:
+     &#x60;&#x60;&#x60;&#x60;
+     Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, to make the water ripple:
 
- &#x60;&#x60;&#x60;&#x60; javascript
- scene.on(&quot;tick&quot;, function(params) {
+     &#x60;&#x60;&#x60;&#x60; javascript
+     scene.on(&quot;tick&quot;, function(params) {
             shader.setParams({
                 time: params.timeElapsed
             });
         });
- &#x60;&#x60;&#x60;&#x60;
+     &#x60;&#x60;&#x60;&#x60;
 
- ## Shader Inputs
+     ## Shader Inputs
 
- xeoEngine provides various inputs for your shaders (TODO)
+     xeoEngine provides various inputs for your shaders (TODO)
 
- #### Attributes
+     #### Attributes
 
- *Attributes are used in vertex shaders*
+     *Attributes are used in vertex shaders*
 
- | Attribute  | Description | Depends on  |
- |---|---|
- | attribute vec3   XEO_aPosition   | Vertex positions | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} |
- | attribute vec2   XEO_aUV         | UV coordinates | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
- | attribute vec3   XEO_aNormal     | Normal vectors | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}}  |
- | attribute vec4   XEO_aVertexColor  | Vertex colors  | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/colors:property&quot;}}{{/crossLink}}  |
- | attribute vec4 XEO_aTangent    | Tangent vectors for normal mapping | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
+     | Attribute  | Description | Depends on  |
+     |---|---|
+     | attribute vec3   XEO_aPosition   | Vertex positions | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} |
+     | attribute vec2   XEO_aUV         | UV coordinates | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
+     | attribute vec3   XEO_aNormal     | Normal vectors | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}}  |
+     | attribute vec4   XEO_aVertexColor  | Vertex colors  | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/colors:property&quot;}}{{/crossLink}}  |
+     | attribute vec4 XEO_aTangent    | Tangent vectors for normal mapping | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
 
- #### Uniforms
+     #### Uniforms
 
- *Uniforms are used in vertex and fragment shaders*
+     *Uniforms are used in vertex and fragment shaders*
 
- | Uniform  | Description | Depends on  |
- |---|---|
- | uniform mat4  XEO_uMNMatrix               | Modelling normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Matrix&quot;}}{{/crossLink}} |
- | uniform mat4  XEO_uVMatrix                | View matrix | {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
- | uniform mat4  XEO_uVNMatrix               | View normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
- | uniform mat4  XEO_uPMatrix                | Projection matrix | {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
- | uniform mat4  XEO_uPNMatrix               | Projection normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
- | uniform float XEO_uZNear                  | Near clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
- | uniform float XEO_uZFar                   | Far clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
- | uniform vec3  XEO_uAmbientColor | Ambient light color | {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} |
- | uniform vec3 XEO_uLightDir&amp;lt;N&amp;gt; | Direction of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} at index N in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} |
-
-
+     | Uniform  | Description | Depends on  |
+     |---|---|
+     | uniform mat4  XEO_uMNMatrix               | Modelling normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Transform&quot;}}{{/crossLink}} |
+     | uniform mat4  XEO_uVMatrix                | View matrix | {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
+     | uniform mat4  XEO_uVNMatrix               | View normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
+     | uniform mat4  XEO_uPMatrix                | Projection matrix | {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+     | uniform mat4  XEO_uPNMatrix               | Projection normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+     | uniform float XEO_uZNear                  | Near clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+     | uniform float XEO_uZFar                   | Far clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+     | uniform vec3  XEO_uAmbientColor | Ambient light color | {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} |
+     | uniform vec3 XEO_uLightDir&amp;lt;N&amp;gt; | Direction of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} at index N in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} |
 
 
- #### Varying
-
- *Varying types are used in fragment shaders*
-
- | Varying | Description | Depends on  |
- |---|---|
- | varying vec4 XEO_vWorldVertex | |
- | varying vec4 XEO_vViewVertex | |
- | varying vec4 XEO_vColor | |
 
 
- @class Shader
- @module XEO
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Shader in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
- @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
- @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
- @param [cfg.params={}] {GameObject} Values for uniforms defined in the vertex and/or fragment stages.
- @extends Component
- */
-XEO.Shader = XEO.Component.extend({
+     #### Varying
 
-    className: &quot;XEO.Shader&quot;,
+     *Varying types are used in fragment shaders*
 
-    type: &quot;shader&quot;,
+     | Varying | Description | Depends on  |
+     |---|---|
+     | varying vec4 XEO_vWorldVertex | |
+     | varying vec4 XEO_vViewVertex | |
+     | varying vec4 XEO_vColor | |
 
-    _init: function (cfg) {
-        this._core.shaders = {};
-        this.vertex = cfg.vertex;
-        this.fragment = cfg.fragment;
-        this.setParams(cfg.params);
-    },
 
-    /**
-     * GLSL source code for the vertex stage of this shader.
-     *
-     * Fires a {{#crossLink &quot;Shader/vertex:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property vertex
-     * @default null
-     * @type String
+     @class Shader
+     @module XEO
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Shader in the default
+     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
+     @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
+     @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
+     @param [cfg.params={}] {GameObject} Values for uniforms defined in the vertex and/or fragment stages.
+     @extends Component
      */
-    set vertex(value) {
-        this._core.shaders.vertex = value;
-        this.fire(&quot;dirty&quot;, true);
+    XEO.Shader = XEO.Component.extend({
 
-        /**
-         * Fired whenever this Shader&#x27;s {{#crossLink &quot;Shader/vertex:property&quot;}}{{/crossLink}} property changes.
-         * @event vertex
-         * @param value The property&#x27;s new value
-         */
-        this.fire(&quot;vertex&quot;, value);
-    },
+        className: &quot;XEO.Shader&quot;,
 
-    get vertex() {
-        return this._core.shaders.vertex;
-    },
+        type: &quot;shader&quot;,
 
-    /**
-     * GLSL source code for the fragment stage of this shader.
-     *
-     * Fires a {{#crossLink &quot;Shader/fragment:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property fragment
-     * @default null
-     * @type String
-     */
-    set fragment(value) {
-        this._core.shaders.fragment = value;
-        this.fire(&quot;dirty&quot;, true);
+        _init: function (cfg) {
+            this._state.shaders = {};
+            this.vertex = cfg.vertex;
+            this.fragment = cfg.fragment;
+            this.setParams(cfg.params);
+        },
 
-        /**
-         * Fired whenever this Shader&#x27;s {{#crossLink &quot;Shader/fragment:property&quot;}}{{/crossLink}} property changes.
-         * @event fragment
-         * @param value The property&#x27;s new value
-         */
-        this.fire(&quot;fragment&quot;, value);
-    },
+        _props: {
 
-    get fragment() {
-        return this._core.shaders.fragment;
-    },
+            /**
+             * GLSL source code for the vertex stage of this shader.
+             *
+             * Fires a {{#crossLink &quot;Shader/vertex:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property vertex
+             * @default null
+             * @type String
+             */
+            vertex: {
 
-    /**
-     * Sets one or more params for this Shader.
-     *
-     * These will be individually overridden by any {{#crossLink &quot;ShaderParams/setParams:method&quot;}}params subsequently specified{{/crossLink}} on
-     * {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-     *
-     * Fires a {{#crossLink &quot;Shader/params:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @method setParams
-     * @param {} [params={}] Values for params to set on this Shader, keyed to their names.
-     */
-    setParams: function (params) {
-        this._core.params = this._core.params || {};
-        for (var name in params) {
-            if (params.hasOwnProperty(name)) {
-                this._core.params[name] = params[name];
+                set: function (value) {
+                    this._state.shaders.vertex = value;
+                    this.fire(&quot;dirty&quot;, true);
+
+                    /**
+                     * Fired whenever this Shader&#x27;s {{#crossLink &quot;Shader/vertex:property&quot;}}{{/crossLink}} property changes.
+                     * @event vertex
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;vertex&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.shaders.vertex;
+                }
+            },
+
+            /**
+             * GLSL source code for the fragment stage of this shader.
+             *
+             * Fires a {{#crossLink &quot;Shader/fragment:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property fragment
+             * @default null
+             * @type String
+             */
+            fragment: {
+
+                set: function (value) {
+                    this._state.shaders.fragment = value;
+                    this.fire(&quot;dirty&quot;, true);
+
+                    /**
+                     * Fired whenever this Shader&#x27;s {{#crossLink &quot;Shader/fragment:property&quot;}}{{/crossLink}} property changes.
+                     * @event fragment
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;fragment&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.shaders.fragment;
+                }
+            },
+
+            /**
+             * Params for this shader.
+             *
+             * Fires a {{#crossLink &quot;Shader/params:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property params
+             * @default {}
+             * @type {}
+             */
+            params: {
+                get: function () {
+                    return this._state.params;
+                }
             }
-        }
-        this._renderer.imageDirty = true;
+        },
 
         /**
-         * Fired whenever this Shader&#x27;s  {{#crossLink &quot;Shader/params:property&quot;}}{{/crossLink}} property has been updated.
-         * @event params
-         * @param value The property&#x27;s new value
+         * Sets one or more params for this Shader.
+         *
+         * These will be individually overridden by any {{#crossLink &quot;ShaderParams/setParams:method&quot;}}params subsequently specified{{/crossLink}} on
+         * {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+         *
+         * Fires a {{#crossLink &quot;Shader/params:event&quot;}}{{/crossLink}} event on change.
+         *
+         * @method setParams
+         * @param {} [params={}] Values for params to set on this Shader, keyed to their names.
          */
-        this.fire(&quot;params&quot;, this._core.params);
-    },
+        setParams: function (params) {
+            this._state.params = this._state.params || {};
+            for (var name in params) {
+                if (params.hasOwnProperty(name)) {
+                    this._state.params[name] = params[name];
+                }
+            }
+            this._renderer.imageDirty = true;
 
-    get params() {
-        return this._core.params;
-    },
+            /**
+             * Fired whenever this Shader&#x27;s  {{#crossLink &quot;Shader/params:property&quot;}}{{/crossLink}} property has been updated.
+             * @event params
+             * @param value The property&#x27;s new value
+             */
+            this.fire(&quot;params&quot;, this._state.params);
+        },
 
-    _compile: function () {
-        this._renderer.shader = this._core;
-    },
 
-    _getJSON: function () {
-        return {
-            vertex: this.vertex,
-            fragment: this.fragment,
-            params: this.params
-        };
-    }
-});
+        _compile: function () {
+            this._renderer.shader = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                vertex: this.vertex,
+                fragment: this.fragment,
+                params: this.params
+            };
+        }
+    });
+
+})();
     </pre>
 </div>
                     </div>

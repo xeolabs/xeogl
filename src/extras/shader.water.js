@@ -1,0 +1,79 @@
+/**
+ A ripply water shader.
+
+ @class Shader.Water
+ @module XEO
+ @extends Shader
+ */
+XEO.Shader.Water = XEO.Geometry.extend({
+
+    className: "XEO.Shader.Water",
+
+    // Constructor
+
+    _init: function (cfg) {
+
+        // Call XEO.Component's init method
+        this._super(XEO._apply({
+
+            // Vertex shading stage
+            vertex: [
+                "attribute vec3 XEO_aPosition;",
+                "attribute vec2 XEO_aUV;",
+                "varying vec2 vUv;",
+                "void main () {",
+                "    gl_Position = vec4(XEO_aPosition, 1.0);",
+                "    vUv = XEO_aUV;",
+                "}"
+            ],
+
+            // Fragment shading stage
+            fragment: [
+                "precision mediump float;",
+
+                "uniform float time;",
+                "varying vec2 vUv;",
+
+                "void main( void ) {",
+                "    vec2 sp = vUv;",
+                "    vec2 p = sp*5.0 - vec2(10.0);",
+                "    vec2 i = p;",
+                "    float c = 1.0;",
+                "    float inten = 0.10;",
+                "    for (int n = 0; n < 10; n++) {",
+                "        float t = time * (1.0 - (3.0 / float(n+1)));",
+                "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
+                "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
+                "    }",
+                "    c /= float(10);",
+                "    c = 1.5-sqrt(c);",
+                "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
+                "}"
+            ],
+
+            // Initial value for the 'time' uniform in the fragment stage.
+            params: {
+                time: 0.0
+            }
+
+        }, cfg));
+
+        // Animate the water ripple
+
+        var self = this;
+
+        this._tick = this.scene.on("tick",
+            function (e) {
+                self.setParams({
+                    time: e.time
+                });
+            });
+    },
+
+    // Destructor
+
+    _destroy: function () {
+        this._super();
+        this.scene.off(this._tick);
+    }
+});

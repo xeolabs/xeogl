@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,171 +126,184 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
- A **Stage** partitions attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} into ordered render bins.
+    &quot;use strict&quot;;
 
- &lt;ul&gt;
- &lt;li&gt;When the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} renders, each Stage renders its bin
- of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.&lt;/li&gt;
 
- &lt;li&gt;Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.&lt;/li&gt;
+    /**
+     A **Stage** partitions attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} into ordered render bins.
 
- &lt;li&gt;You can control the render order of the individual {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} ***within*** a Stage
- by associating them with {{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}}.&lt;/li&gt;
+     &lt;ul&gt;
+     &lt;li&gt;When the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} renders, each Stage renders its bin
+     of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.&lt;/li&gt;
 
- &lt;li&gt;{{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}} are typically used to &lt;a href=&quot;https://www.opengl.org/wiki/Transparency_Sorting&quot; target=&quot;_other&quot;&gt;transparency-sort&lt;/a&gt; the
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within Stages.&lt;/li&gt;
+     &lt;li&gt;Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.&lt;/li&gt;
 
- &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
- attached to the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
- {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}. which has
- a {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
+     &lt;li&gt;You can control the render order of the individual {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} ***within*** a Stage
+     by associating them with {{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}}.&lt;/li&gt;
 
- &lt;/ul&gt;
+     &lt;li&gt;{{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}} are typically used to &lt;a href=&quot;https://www.opengl.org/wiki/Transparency_Sorting&quot; target=&quot;_other&quot;&gt;transparency-sort&lt;/a&gt; the
+     {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within Stages.&lt;/li&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105073/L.png&quot;&gt;&lt;/img&gt;
+     &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
+     attached to the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
+     {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}. which has
+     a {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
 
- ### Example
+     &lt;/ul&gt;
 
- In example below, we&#x27;re performing render-to-texture using {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} and
- {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} components.
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105073/L.png&quot;&gt;&lt;/img&gt;
 
- Note how we use two prioritized Stages, to ensure that the {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} is
- rendered ***before*** the {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} that consumes it.
+     ### Example
 
- &#x60;&#x60;&#x60;&#x60;javascript
- var scene = new XEO.Scene();
+     In this example we&#x27;re performing render-to-texture using {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} and
+     {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} components.
 
- // First stage: an GameObject that renders to a ColorTarget
+     Note how we use two prioritized Stages, to ensure that the {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} is
+     rendered ***before*** the {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} that consumes it.
 
- var stage1 = new XEO.Stage(scene, {
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var scene = new XEO.Scene();
+
+     // First stage: an GameObject that renders to a ColorTarget
+
+     var stage1 = new XEO.Stage(scene, {
        priority: 0
   });
 
- var geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box
+     var geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box
 
- var colorTarget = new XEO.ColorTarget(scene);
+     var colorTarget = new XEO.ColorTarget(scene);
 
- var object1 = new XEO.GameObject(scene, {
+     var object1 = new XEO.GameObject(scene, {
        stage: stage1,
        geometry: geometry,
        colorTarget: colorTarget
   });
 
 
- // Second stage: an GameObject with a Texture that sources from the ColorTarget
+     // Second stage: an GameObject with a Texture that sources from the ColorTarget
 
- var stage2 = new XEO.Stage(scene, {
+     var stage2 = new XEO.Stage(scene, {
        priority: 1
   });
 
- var texture = new XEO.Texture(scene, {
+     var texture = new XEO.Texture(scene, {
        target: colorTarget
   });
 
- var material = new XEO.Material(scene, {
+     var material = new XEO.Material(scene, {
        textures: [
            texture
        ]
   });
 
- var geometry2 = new XEO.Geometry(scene);
+     var geometry2 = new XEO.Geometry(scene);
 
- var object2 = new XEO.GameObject(scene, {
+     var object2 = new XEO.GameObject(scene, {
        stage: stage2,
        material: material,
        geometry: geometry2
   });
- &#x60;&#x60;&#x60;&#x60;
+     &#x60;&#x60;&#x60;&#x60;
 
- @class Stage
- @module XEO
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Stage in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
- @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
- @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are pickable.
- @extends Component
- */
-XEO.Stage = XEO.Component.extend({
-
-    className: &quot;XEO.Stage&quot;,
-
-    type: &quot;stage&quot;,
-
-    _init: function (cfg) {
-        this.priority = cfg.priority;
-        this.pickable = cfg.pickable;
-    },
-
-    /**
-     * Indicates the rendering priority for the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in this Stage.
-     *
-     * Fires a {{#crossLink &quot;Stage/priority:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property priority
-     * @default 0
-     * @type Number
+     @class Stage
+     @module XEO
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Stage in the default
+     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
+     @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+     @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are pickable.
+     @extends Component
      */
-    set priority(value) {
-        value = value || 0;
-        this._core.priority = value;
-        this._renderer.stateOrderDirty = true;
+    XEO.Stage = XEO.Component.extend({
 
-        /**
-         * Fired whenever this Stage&#x27;s {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} property changes.
-         * @event priority
-         * @param value The property&#x27;s new value
-         */
-        this.fire(&quot;priority&quot;, value);
-    },
+        className: &quot;XEO.Stage&quot;,
 
-    get priority() {
-        return this._core.priority;
-    },
+        type: &quot;stage&quot;,
 
-    /**
-     * Indicates whether the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are pickable (see {{#crossLink &quot;Canvas/pick:method&quot;}}Canvas#pick{{/crossLink}}).
-     *
-     * Fires a {{#crossLink &quot;Stage/pickable:event&quot;}}{{/crossLink}} event on change.
-     * @property pickable
-     * @default true
-     * @type Boolean
-     */
-    set pickable(value) {
-        value = value !== false; // Default is true
-        this._core.pickable = value;
-        this._renderer.drawListDirty = true;
+        _init: function (cfg) {
+            this.priority = cfg.priority;
+            this.pickable = cfg.pickable;
+        },
 
-        /**
-         * Fired whenever this Stage&#x27;s {{#crossLink &quot;Stage/pickable:pickable&quot;}}{{/crossLink}} property changes.
-         * @event pickable
-         * @param value The property&#x27;s new value
-         */
-        this.fire(&quot;pickable&quot;, value);
-    },
+        _props: {
 
-    get pickable() {
-        return this._core.pickable;
-    },
+            priority: {
 
-    _compile: function () {
-        this._renderer.stage = this._core;
-    },
+                /**
+                 * Indicates the rendering priority for the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in this Stage.
+                 *
+                 * Fires a {{#crossLink &quot;Stage/priority:event&quot;}}{{/crossLink}} event on change.
+                 *
+                 * @property priority
+                 * @default 0
+                 * @type Number
+                 */
+                set: function (value) {
+                    value = value || 0;
+                    this._state.priority = value;
+                    this._renderer.stateOrderDirty = true;
 
-    _getJSON: function () {
-        return {
-            priority: this.priority,
-            pickable: this.pickable
-        };
-    }
-});
+                    /**
+                     * Fired whenever this Stage&#x27;s {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} property changes.
+                     * @event priority
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;priority&quot;, value);
+                },
 
+                get: function () {
+                    return this._state.priority;
+                }
+            },
+
+            /**
+             * Indicates whether the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are pickable (see {{#crossLink &quot;Canvas/pick:method&quot;}}Canvas#pick{{/crossLink}}).
+             *
+             * Fires a {{#crossLink &quot;Stage/pickable:event&quot;}}{{/crossLink}} event on change.
+             * @property pickable
+             * @default true
+             * @type Boolean
+             */
+            pickable: {
+
+                set: function (value) {
+                    value = value !== false; // Default is true
+                    this._state.pickable = value;
+                    this._renderer.drawListDirty = true;
+
+                    /**
+                     * Fired whenever this Stage&#x27;s {{#crossLink &quot;Stage/pickable:pickable&quot;}}{{/crossLink}} property changes.
+                     * @event pickable
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;pickable&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.pickable;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.stage = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                priority: this.priority,
+                pickable: this.pickable
+            };
+        }
+    });
+
+})();
     </pre>
 </div>
                     </div>

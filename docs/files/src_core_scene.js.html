@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,85 +126,88 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
- A **Scene** is a xeoEngine scene graph.
+    &quot;use strict&quot;;
 
- &lt;hr&gt;
-   *Contents*
-    &lt;Ul&gt;
-    &lt;li&gt;&lt;a href=&quot;#sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#sceneCanvas&quot;&gt;The Scene Canvas&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#findingByID&quot;&gt;Finding Scenes and Components by ID&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#defaults&quot;&gt;The Default Scene&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#savingAndLoadingJSON&quot;&gt;Saving and Loading Scenes&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-    &lt;hr&gt;
 
- ## &lt;a name=&quot;sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;
+    /**
+     A **Scene** is a xeoEngine scene graph.
 
- A Scene is a type of &lt;a href=&quot;http://gameprogrammingpatterns.com/component.html&quot; target=&quot;_other&quot;&gt;component-object&lt;/a&gt; graph.
+     &lt;hr&gt;
+     *Contents*
+     &lt;Ul&gt;
+     &lt;li&gt;&lt;a href=&quot;#sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;&lt;/li&gt;
+     &lt;li&gt;&lt;a href=&quot;#sceneCanvas&quot;&gt;The Scene Canvas&lt;/a&gt;&lt;/li&gt;
+     &lt;li&gt;&lt;a href=&quot;#findingByID&quot;&gt;Finding Scenes and Components by ID&lt;/a&gt;&lt;/li&gt;
+     &lt;li&gt;&lt;a href=&quot;#defaults&quot;&gt;The Default Scene&lt;/a&gt;&lt;/li&gt;
+     &lt;li&gt;&lt;a href=&quot;#savingAndLoadingJSON&quot;&gt;Saving and Loading Scenes&lt;/a&gt;&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;hr&gt;
 
- A Scene contains a soup of instances of various {{#crossLink &quot;Component&quot;}}Component{{/crossLink}} subtypes, such as
- {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}, {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}, {{#crossLink &quot;Material&quot;}}Material{{/crossLink}},
- {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} etc.  Each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} has a link to one of each of the other types,
- and the same component instances can be shared among many {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+     ## &lt;a name=&quot;sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;
 
- *** Under the hood:*** Within xeoEngine, each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} represents a draw call,
- while its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses
- the graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).
+     A Scene is a type of &lt;a href=&quot;http://gameprogrammingpatterns.com/component.html&quot; target=&quot;_other&quot;&gt;component-object&lt;/a&gt; graph.
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7103731/L.png&quot;&gt;&lt;/img&gt;
+     A Scene contains a soup of instances of various {{#crossLink &quot;Component&quot;}}Component{{/crossLink}} subtypes, such as
+     {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}, {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}, {{#crossLink &quot;Material&quot;}}Material{{/crossLink}},
+     {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} etc.  Each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} has a link to one of each of the other types,
+     and the same component instances can be shared among many {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
- #### Default Components
+     *** Under the hood:*** Within xeoEngine, each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} represents a draw call,
+     while its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses
+     the graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).
 
- A Scene provides its own default *flyweight* instance of each component type
- (except for {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}). Each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} you create
- will implicitly link to a default instance for each type of component that you don&#x27;t explicitly link it to. For example, when you create a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} without
- a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}}, the {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} will link to the
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/lights:property&quot;}}{{/crossLink}}. This mechanism
- provides ***training wheels*** to help you learn the API, and also helps keep examples simple, where many of the examples in this
- documentation are implicitly using those defaults when they are not central to discussion.
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7103731/L.png&quot;&gt;&lt;/img&gt;
 
- At the bottom of the diagram above, the blue {{#crossLink &quot;Material&quot;}}Material{{/crossLink}},
- {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} and {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components
- represent some of the defaults provided by our Scene. For brevity, the diagram only shows those three
- types of component (there are actually around two dozen).
+     #### Default Components
 
- Note that we did not link the second {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} to a
- {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}, causing it to be implicitly linked to our Scene&#x27;s
- default {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}. That {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
- is the only default our {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are falling back on in this example, with other
- default component types, such as the {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} and the {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}},
- hanging around dormant until a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} is linked to them.
+     A Scene provides its own default *flyweight* instance of each component type
+     (except for {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}). Each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} you create
+     will implicitly link to a default instance for each type of component that you don&#x27;t explicitly link it to. For example, when you create a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} without
+     a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}}, the {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} will link to the
+     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/lights:property&quot;}}{{/crossLink}}. This mechanism
+     provides ***training wheels*** to help you learn the API, and also helps keep examples simple, where many of the examples in this
+     documentation are implicitly using those defaults when they are not central to discussion.
 
- Note also how the same {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} is linked to both of our
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}. Whenever we update that
- {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}, it&#x27;s going to affect both of those
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in one shot. Think of the defaults as the Scene&#x27;s ***global*** component
- instances, which you may optionally override on a per-{{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} basis with your own
- component instances. In many Scenes, for example, you might not even bother to create your own {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} and just
- let all your {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} fall back on the default one.
+     At the bottom of the diagram above, the blue {{#crossLink &quot;Material&quot;}}Material{{/crossLink}},
+     {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} and {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components
+     represent some of the defaults provided by our Scene. For brevity, the diagram only shows those three
+     types of component (there are actually around two dozen).
 
- &lt;br&gt;
- ### Example
+     Note that we did not link the second {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} to a
+     {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}, causing it to be implicitly linked to our Scene&#x27;s
+     default {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}. That {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
+     is the only default our {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are falling back on in this example, with other
+     default component types, such as the {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} and the {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}},
+     hanging around dormant until a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} is linked to them.
 
- Here&#x27;s the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} when we need to
- override the default components that the Scene would have provided them, and that same component instances may be shared among multiple GameObjects.
+     Note also how the same {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} is linked to both of our
+     {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}. Whenever we update that
+     {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}, it&#x27;s going to affect both of those
+     {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in one shot. Think of the defaults as the Scene&#x27;s ***global*** component
+     instances, which you may optionally override on a per-{{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} basis with your own
+     component instances. In many Scenes, for example, you might not even bother to create your own {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} and just
+     let all your {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} fall back on the default one.
 
- &#x60;&#x60;&#x60;&#x60; javascript
- var scene = new XEO.Scene({
+     &lt;br&gt;
+     ### Example
+
+     Here&#x27;s the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} when we need to
+     override the default components that the Scene would have provided them, and that same component instances may be shared among multiple GameObjects.
+
+     &#x60;&#x60;&#x60;&#x60; javascript
+     var scene = new XEO.Scene({
        id: &quot;myScene&quot;   // ID is optional on all components
   });
 
- var material = new XEO.Material(myScene, {
+     var material = new XEO.Material(myScene, {
        id: &quot;myMaterial&quot;,         // We&#x27;ll use this ID to show how to find components by ID
        diffuse: [ 0.6, 0.6, 0.7 ],
        specular: [ 1.0, 1.0, 1.0 ]
    });
 
- var geometry = new XEO.Geometry(myScene, {
+     var geometry = new XEO.Geometry(myScene, {
        primitive: &quot;triangles&quot;,
        positions: [...],
        normals: [...],
@@ -203,55 +215,55 @@
        indices: [...]
   });
 
- var camera = new XEO.Camera(myScene);
+     var camera = new XEO.Camera(myScene);
 
- var object1 = new XEO.GameObject(myScene, {
+     var object1 = new XEO.GameObject(myScene, {
        material: myMaterial,
        geometry: myGeometry,
        camera: myCamera
   });
 
- // Second object uses Scene&#x27;s default Material
- var object1 = new XEO.GameObject(myScene, {
+     // Second object uses Scene&#x27;s default Material
+     var object1 = new XEO.GameObject(myScene, {
        geometry: myGeometry,
        camera: myCamera
   });
- &#x60;&#x60;&#x60;&#x60;
+     &#x60;&#x60;&#x60;&#x60;
 
 
- &lt;br&gt;
- ## &lt;a name=&quot;sceneCanvas&quot;&gt;The Scene Canvas&lt;/a&gt;
+     &lt;br&gt;
+     ## &lt;a name=&quot;sceneCanvas&quot;&gt;The Scene Canvas&lt;/a&gt;
 
- &lt;br&gt;
- ## &lt;a name=&quot;findingByID&quot;&gt;Finding Scenes and Components by ID&lt;/a&gt;
+     &lt;br&gt;
+     ## &lt;a name=&quot;findingByID&quot;&gt;Finding Scenes and Components by ID&lt;/a&gt;
 
- We can have as many Scenes as we want, and can find them by ID on the {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s {{#crossLink &quot;XEO/scenes:property&quot;}}scenes{{/crossLink}} map:
+     We can have as many Scenes as we want, and can find them by ID on the {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s {{#crossLink &quot;XEO/scenes:property&quot;}}scenes{{/crossLink}} map:
 
- &#x60;&#x60;&#x60;&#x60;javascript
- var theScene = XEO.scenes[&quot;myScene&quot;];
- &#x60;&#x60;&#x60;&#x60;
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var theScene = XEO.scenes[&quot;myScene&quot;];
+     &#x60;&#x60;&#x60;&#x60;
 
- Likewise we can find a Scene&#x27;s components within the Scene itself, such as the {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} we
- created earlier:
+     Likewise we can find a Scene&#x27;s components within the Scene itself, such as the {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} we
+     created earlier:
 
- &#x60;&#x60;&#x60;&#x60;javascript
- var theMaterial = myScene.components[&quot;myMaterial&quot;];
- &#x60;&#x60;&#x60;&#x60;
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var theMaterial = myScene.components[&quot;myMaterial&quot;];
+     &#x60;&#x60;&#x60;&#x60;
 
- &lt;br&gt;
- ## &lt;a name=&quot;defaults&quot;&gt;The Default Scene&lt;/a&gt;
+     &lt;br&gt;
+     ## &lt;a name=&quot;defaults&quot;&gt;The Default Scene&lt;/a&gt;
 
- When you create components without specifying a Scene for them, xeoEngine will put them in its default Scene.
+     When you create components without specifying a Scene for them, xeoEngine will put them in its default Scene.
 
- For example:
+     For example:
 
- &#x60;&#x60;&#x60;&#x60; javascript
-var material2 = new XEO.Material({
+     &#x60;&#x60;&#x60;&#x60; javascript
+     var material2 = new XEO.Material({
     diffuse: { r: 0.6, g: 0.6, b: 0.7 },
     specular: { 1.0, 1.0, 1.0 }
 });
 
-var geometry2 = new XEO.Geometry({
+     var geometry2 = new XEO.Geometry({
      primitive: &quot;triangles&quot;,
      positions: [...],
      normals: [...],
@@ -259,765 +271,809 @@ var geometry2 = new XEO.Geometry({
      indices: [...]
 });
 
-var camera = new XEO.Camera();
+     var camera = new XEO.Camera();
 
-var object1 = new XEO.GameObject({
+     var object1 = new XEO.GameObject({
      material: material2,
      geometry: geometry2,
      camera: camera2
 });
- &#x60;&#x60;&#x60;&#x60;
+     &#x60;&#x60;&#x60;&#x60;
 
- You can then obtain the default Scene from the {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s
- {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} property:
+     You can then obtain the default Scene from the {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s
+     {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} property:
 
- &#x60;&#x60;&#x60;&#x60;javascript
- var theScene = XEO.scene;
- &#x60;&#x60;&#x60;&#x60;
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var theScene = XEO.scene;
+     &#x60;&#x60;&#x60;&#x60;
 
- or from one of the components we just created:
- &#x60;&#x60;&#x60;&#x60;javascript
- var theScene = material2.scene;
- &#x60;&#x60;&#x60;&#x60;
+     or from one of the components we just created:
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var theScene = material2.scene;
+     &#x60;&#x60;&#x60;&#x60;
 
- ***Note:*** xeoEngine creates the default Scene as soon as you either
- create your first Sceneless {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} or reference the
- {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} property. Expect to
- see the HTML canvas for the default Scene magically appear in the page when you do that.
+     ***Note:*** xeoEngine creates the default Scene as soon as you either
+     create your first Sceneless {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} or reference the
+     {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} property. Expect to
+     see the HTML canvas for the default Scene magically appear in the page when you do that.
 
- &lt;br&gt;
+     &lt;br&gt;
 
- ## &lt;a name=&quot;savingAndLoadingJSON&quot;&gt;Saving and Loading Scenes&lt;/a&gt;
+     ## &lt;a name=&quot;savingAndLoadingJSON&quot;&gt;Saving and Loading Scenes&lt;/a&gt;
 
- The entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a
- Scene, then save it and restore it again to exactly how it was when you saved it.
+     The entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a
+     Scene, then save it and restore it again to exactly how it was when you saved it.
 
- &#x60;&#x60;&#x60;&#x60;javascript
- // Serialize the scene to JSON
- var json = myScene.json;
+     &#x60;&#x60;&#x60;&#x60;javascript
+     // Serialize the scene to JSON
+     var json = myScene.json;
 
- // Create another scene from that JSON, in a fresh canvas:
- var myOtherScene = new XEO.Scene({
+     // Create another scene from that JSON, in a fresh canvas:
+     var myOtherScene = new XEO.Scene({
       json: json
   });
 
- &#x60;&#x60;&#x60;&#x60;
+     &#x60;&#x60;&#x60;&#x60;
 
- ***Note:*** this will save your {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}}s&#x27; array properties
- ({{#crossLink &quot;Geometry/positions:property&quot;}}positions{{/crossLink}}, {{#crossLink &quot;Geometry/normals:property&quot;}}normals{{/crossLink}},
- {{#crossLink &quot;Geometry/indices:property&quot;}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
- if those arrays are huge.
+     ***Note:*** this will save your {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}}s&#x27; array properties
+     ({{#crossLink &quot;Geometry/positions:property&quot;}}positions{{/crossLink}}, {{#crossLink &quot;Geometry/normals:property&quot;}}normals{{/crossLink}},
+     {{#crossLink &quot;Geometry/indices:property&quot;}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
+     if those arrays are huge.
 
- @class Scene
- @module XEO
- @constructor
- @param [cfg] Scene parameters
- @param [cfg.id] {String} Optional ID, unique among all Scenes in xeoEngine, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scene.
- @param [cfg.canvasId] {String} ID of existing HTML5 canvas in the DOM - creates a full-page canvas automatically if this is omitted
- @param [cfg.components] {Array(GameObject)} JSON array containing parameters for {{#crossLink &quot;Component&quot;}}Component{{/crossLink}} subtypes to immediately create within the Scene.
- @extends Component
- */
-
-
-/**
- * Fired whenever a debug message logged on a component within this Scene.
- * @event log
- * @param {String} value The debug message
- */
-
-/**
- * Fired whenever an error is logged on a component within this Scene.
- * @event error
- * @param {String} value The error message
- */
-
-/**
- * Fired whenever a warning is logged on a component within this Scene.
- * @event warn
- * @param {String} value The warning message
- */
+     @class Scene
+     @module XEO
+     @constructor
+     @param [cfg] Scene parameters
+     @param [cfg.id] {String} Optional ID, unique among all Scenes in xeoEngine, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scene.
+     @param [cfg.canvasId] {String} ID of existing HTML5 canvas in the DOM - creates a full-page canvas automatically if this is omitted
+     @param [cfg.components] {Array(GameObject)} JSON array containing parameters for {{#crossLink &quot;Component&quot;}}Component{{/crossLink}} subtypes to immediately create within the Scene.
+     @extends Component
+     */
 
 
-XEO.Scene = XEO.Component.extend({
+    /**
+     * Fired whenever a debug message logged on a component within this Scene.
+     * @event log
+     * @param {String} value The debug message
+     */
 
-    className: &quot;XEO.Scene&quot;,
+    /**
+     * Fired whenever an error is logged on a component within this Scene.
+     * @event error
+     * @param {String} value The error message
+     */
 
-    type: &quot;scene&quot;,
+    /**
+     * Fired whenever a warning is logged on a component within this Scene.
+     * @event warn
+     * @param {String} value The warning message
+     */
 
-    _init: function (cfg) {
 
-        var self = this;
+    XEO.Scene = XEO.Component.extend({
 
-        this._componentIDMap = new XEO.utils.Map();
+        className: &quot;XEO.Scene&quot;,
 
-        /**
-         * The {{#crossLink &quot;Component&quot;}}Component{{/crossLink}}s within this Scene, mapped to their IDs.
-         * @property components
-         * @type {String:XEO.Component}
-         */
-        this.components = {};
+        type: &quot;scene&quot;,
 
-        this._dirtyGameObjects = {};
+        _init: function (cfg) {
 
-        /**
-         * Configurations for this Scene. Set whatever properties on here that will be
-         * useful to the components within the Scene.
-         * @final
-         * @property configs
-         * @type {Configs}
-         */
-        this.configs = new XEO.Configs(this, cfg.configs);
+            var self = this;
 
-        /**
-         * Manages the HTML5 canvas for this Scene.
-         * @final
-         * @property canvas
-         * @type {Canvas}
-         */
-        this.canvas = new XEO.Canvas(this, {
-            canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
-            contextAttr: cfg.contextAttr || {}
-        });
+            this._componentIDMap = new XEO.utils.Map();
 
-        this.canvas.on(&quot;webglContextFailed&quot;,
-            function () {
-                alert(&quot;XeoEngine failed to find WebGL&quot;);
+            /**
+             * The {{#crossLink &quot;Component&quot;}}Component{{/crossLink}}s within this Scene, mapped to their IDs.
+             * @property components
+             * @type {String:XEO.Component}
+             */
+            this.components = {};
+
+            this._dirtyGameObjects = {};
+
+            /**
+             * Configurations for this Scene. Set whatever properties on here that will be
+             * useful to the components within the Scene.
+             * @final
+             * @property configs
+             * @type {Configs}
+             */
+            this.configs = new XEO.Configs(this, cfg.configs);
+
+            /**
+             * Manages the HTML5 canvas for this Scene.
+             * @final
+             * @property canvas
+             * @type {Canvas}
+             */
+            this.canvas = new XEO.Canvas(this, {
+                canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
+                contextAttr: cfg.contextAttr || {}
             });
 
-        this._renderer = new XEO.Renderer({
-            canvas: this.canvas,
-            transparent: cfg.transparent
-        });
-
-        /**
-         * Publishes input events that occur on this Scene&#x27;s canvas.
-         * @final
-         * @property input
-         * @type {Input}
-         */
-        this.input = new XEO.Input(this, this.canvas.canvas);
-
-        /**
-         * Tracks any asynchronous tasks that occur within this Scene.
-         * @final
-         * @property tasks
-         * @type {Tasks}
-         */
-        this.tasks = new XEO.Tasks(this);
-
-        /**
-         * Tracks statistics within this Scene, such as numbers of textures, geometries etc.
-         * @final
-         * @property stats
-         * @type {Stats}
-         */
-        this.stats = new XEO.Stats(this, {
-            objects: 0,
-            geometries: 0,
-            textures: 0
-        });
-
-        // Register Scene on engine
-        // Do this BEFORE we add components below
-        this.engine._addScene(this);
-
-        // Add components specified as JSON
-        // This may also add the default components for this Scene
-        var components = cfg.components;
-        if (components) {
-            var component;
-            var className;
-            var constructor;
-            for (var i = 0, len = components.length; i &lt; len; i++) {
-                component = components[i];
-                className = component.className;
-                if (className) {
-                    constructor = window[className];
-                    if (constructor) {
-                        new constructor(this, component);
-                    }
-                }
-            }
-        }
-
-        // Create the default components if not already created.
-        // These may have already been created in the JSON above.
-
-        this.camera;
-        this.clips;
-        this.colorTarget;
-        this.colorBuf;
-        this.depthTarget;
-        this.depthBuf;
-        this.visibility;
-        this.modes;
-        this.geometry;
-        this.layer;
-        this.lights;
-        this.material;
-        this.morphTargets;
-        this.reflect;
-        this.shader;
-        this.shaderParams;
-        this.stage;
-        this.transform;
-
-        /**
-         * Fired periodically, this event is the &quot;heartbeat&quot; of a Scene. A render will follow if any
-         * Scene components are updated within subscribers to this event, or have already been updated previously.
-         * @event tick
-         */
-        this.engine.on(&quot;tick&quot;, function (params) {
-            self.fire(&quot;tick&quot;, params);
-        })
-    },
-
-    _addComponent: function (c) {
-
-        if (c.id) {
-            if (this.components[c.id]) {
-                this.error(&quot;A component with this ID already exists in this Scene: &quot; + c.id);
-                return;
-            }
-        } else {
-            c.id = this._componentIDMap.addItem({});
-        }
-
-        this.components[c.id] = c;
-
-        var isGameObject = c.type == &quot;object&quot;;
-
-        var self = this;
-
-        c.on(&quot;destroyed&quot;,
-            function () {
-
-                self._componentIDMap.removeItem(c.id);
-                delete self.components[c.id];
-
-                if (isGameObject) {
-                    self.stats.dec(&quot;objects&quot;);
-                    delete self._dirtyGameObjects[c.id];
-                    self.fire(&quot;dirty&quot;, true);
-                }
-
-                /**
-                 * Fired whenever a component within this Scene has been destroyed.
-                 * @event componentDestroyed
-                 * @param {Component} value The component that was destroyed
-                 */
-                self.fire(&quot;componentDestroyed&quot;, c, true);
-            });
-
-        if (isGameObject) {
-
-            this.stats.inc(&quot;objects&quot;);
-
-            c.on(&quot;dirty&quot;,
+            this.canvas.on(&quot;webglContextFailed&quot;,
                 function () {
-                    if (!self._dirtyGameObjects[c.id]) {
-                        self._dirtyGameObjects[c.id] = object;
-                    }
-                    self.fire(&quot;dirty&quot;, true);
+                    alert(&quot;XeoEngine failed to find WebGL&quot;);
                 });
-        }
 
-        /**
-         * Fired whenever a component has been created within this Scene.
-         * @event componentCreated
-         * @param {Component} value The component that was created
-         */
-        this.fire(&quot;componentCreated&quot;, c, true);
-    },
-
-    /**
-     * The default projection transform provided by this Scene, which is a {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}.
-     *
-     * This {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} has an
-     * {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.project&quot;, with all other properties set to
-     * their default values.
-     *
-     * {{#crossLink &quot;Camera&quot;}}Cameras{{/crossLink}} within this Scene are attached to
-     * this {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} by default.
-     * @property project
-     * @final
-     * @type Perspective
-     */
-    get project() {
-        return this.components[&quot;default.project&quot;] ||
-            new XEO.Perspective(this, {
-                id: &quot;default.project&quot;
+            this._renderer = new XEO.renderer.Renderer({
+                canvas: this.canvas,
+                transparent: cfg.transparent
             });
-    },
 
-    /**
-     * The default viewing transform provided by this Scene, which is a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}.
-     *
-     * This {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.view&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;Camera&quot;}}Cameras{{/crossLink}} within this Scene are attached to
-     * this {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} by default.
-     * @property view
-     * @final
-     * @type Lookat
-     */
-    get view() {
-        return this.components[&quot;default.view&quot;] ||
-            new XEO.Lookat(this, {
-                id: &quot;default.view&quot;
+            /**
+             * Publishes input events that occur on this Scene&#x27;s canvas.
+             * @final
+             * @property input
+             * @type {Input}
+             */
+            this.input = new XEO.Input(this, {
+                canvas: this.canvas.canvas
             });
-    },
 
-    /**
-     * The default {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.camera&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to
-     * this {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} by default.
-     * @property camera
-     * @final
-     * @type Camera
-     */
-    get camera() {
-        return this.components[&quot;default.camera&quot;] ||
-            new XEO.Camera(this, {
-                id: &quot;default.camera&quot;,
-                project: &quot;default.view&quot;,
-                view: &quot;default.lookat&quot;
+            /**
+             * Tracks any asynchronous tasks that occur within this Scene.
+             * @final
+             * @property tasks
+             * @type {Tasks}
+             */
+            this.tasks = new XEO.Tasks(this);
+
+            /**
+             * Tracks statistics within this Scene, such as numbers of textures, geometries etc.
+             * @final
+             * @property stats
+             * @type {Stats}
+             */
+            this.stats = new XEO.Stats(this, {
+                objects: 0,
+                geometries: 0,
+                textures: 0
             });
-    },
 
-    /**
-     * The default modelling transform provided by this Scene.
-     *
-     * This {{#crossLink &quot;Matrix&quot;}}Matrix{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.transform&quot;,
-     * with all other properties initialised to their default values (ie. an identity matrix).
-     *
-     * {{#crossLink &quot;GameObjects&quot;}}GameObjects{{/crossLink}}s within this Scene are attached to
-     * this {{#crossLink &quot;Matrix&quot;}}Matrix{{/crossLink}} by default.
-     *
-     * @property transform
-     * @final
-     * @type Matrix
-     */
-    get transform() {
-        return this.components[&quot;default.transform&quot;] ||
-            new XEO.Matrix(this, {
-                id: &quot;default.transform&quot;
-            });
-    },
+            // Register Scene on engine
+            // Do this BEFORE we add components below
+            XEO._addScene(this);
 
-    /**
-     * The default {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.clips&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} by default.
-     * @property clips
-     * @final
-     * @type Clips
-     */
-    get clips() {
-        return this.components[&quot;default.clips&quot;] ||
-            new XEO.Clips(this, {
-                id: &quot;default.clips&quot;
-            });
-    },
-
-    /**
-     * The default {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.colorBuf&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} by default.
-     * @property colorBuf
-     * @final
-     * @type ColorBuf
-     */
-    get colorBuf() {
-        return this.components[&quot;default.colorBuf&quot;] ||
-            new XEO.ColorBuf(this, {
-                id: &quot;default.colorBuf&quot;
-            });
-    },
-
-    /**
-     * The default {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.colorTarget&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} by default.
-     * @property colorTarget
-     * @final
-     * @type ColorTarget
-     */
-    get colorTarget() {
-        return this.components[&quot;default.colorTarget&quot;] ||
-            new XEO.ColorTarget(this, {
-                id: &quot;default.colorTarget&quot;
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthBuf&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} by default.
-     *
-     * @property depthBuf
-     * @final
-     * @type DepthBuf
-     */
-    get depthBuf() {
-        return this.components[&quot;default.depthBuf&quot;] ||
-            new XEO.DepthBuf(this, {
-                id: &quot;default.depthBuf&quot;
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthTarget&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} by default.
-     * @property depthTarget
-     * @final
-     * @type DepthTarget
-     */
-    get depthTarget() {
-        return this.components[&quot;default.depthTarget&quot;] ||
-            new XEO.DepthTarget(this, {
-                id: &quot;default.colorTarget&quot;
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.visibility&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} by default.
-     * @property visibility
-     * @final
-     * @type Visibility
-     */
-    get visibility() {
-        return this.components[&quot;default.visibility&quot;] ||
-            new XEO.Visibility(this, {
-                id: &quot;default.visibility&quot;,
-                enabled: true
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.modes&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} by default.
-     * @property modes
-     * @final
-     * @type Modes
-     */
-    get modes() {
-        return this.components[&quot;default.modes&quot;] ||
-            new XEO.Modes(this, {
-                id: &quot;default.modes&quot;
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} provided by this Scene, which is a 2x2x2 box centered at the World-space origin.
-     *
-     * This {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.geometry&quot;.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} by default.
-     * @property geometry
-     * @final
-     * @type Geometry
-     */
-    get geometry() {
-        return this.components[&quot;default.geometry&quot;] ||
-            new XEO.Geometry(this, {
-                id: &quot;default.geometry&quot;
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.layer&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} by default.
-     * @property layer
-     * @final
-     * @type Layer
-     */
-    get layer() {
-        return this.components[&quot;default.layer&quot;] ||
-            new XEO.Layer(this, {
-                id: &quot;default.layer&quot;,
-                priority: 0
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to *&#x60;&#x60;&#x60;&#x60;&quot;default.lights&quot;&#x60;&#x60;&#x60;&#x60;*,
-     * with all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}}).
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} by default.
-     * @property lights
-     * @final
-     * @type Lights
-     */
-    get lights() {
-        return this.components[&quot;default.lights&quot;] ||
-            new XEO.Lights(this, {
-                id: &quot;default.lights&quot;,
-                lights: [
-
-                    // Ambient light source #0
-                    new XEO.AmbientLight(this, {
-                        id: &quot;default.light0&quot;,
-                        color: [0.7, 0.7, 0.7]
-                    }),
-
-                    // Directional light source #1
-                    new XEO.DirLight(this, {
-                        id: &quot;default.light1&quot;,
-                        dir: [-0.5, -0.5, -1.0 ],
-                        color: [1.0, 1.0, 1.0 ],
-                        specular: true,
-                        diffuse: true,
-                        space: &quot;view&quot;
-                    }),
-
-                    // Directional light source #2
-                    new XEO.DirLight(this, {
-                        id: &quot;default.light2&quot;,
-                        dir: [1.0, -0.9, -0.7 ],
-                        color: [1.0, 1.0, 1.0 ],
-                        specular: true,
-                        diffuse: true,
-                        space: &quot;view&quot;
-                    })
-                ]
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} has
-     * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.material&quot;, with all
-     * other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} by default.
-     * @property material
-     * @final
-     * @type Material
-     */
-    get material() {
-        return this.components[&quot;default.material&quot;] ||
-            new XEO.Material(this, {
-                id: &quot;default.material&quot;
-            });
-    },
-
-    /**
-     * The default {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.morphTargets&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} by default.
-     * @property morphTargets
-     * @final
-     * @type MorphTargets
-     */
-    get morphTargets() {
-        return this.components[&quot;default.morphTargets&quot;] ||
-            new XEO.MorphTargets(this, {
-                id: &quot;default.morphTargets&quot;
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} provided by this Scene,
-     * (which is a neutral {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} that has no effect).
-     *
-     * This {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.reflect&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} by default.
-     * @property reflect
-     * @final
-     * @type Reflect
-     */
-    get reflect() {
-        return this.components[&quot;default.reflect&quot;] ||
-            new XEO.Reflect(this, {
-                id: &quot;default.reflect&quot;
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} provided by this Scene
-     * (which is a neutral {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} that has no effect).
-     *
-     * This {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.shader&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} by default.
-     * @property shader
-     * @final
-     * @type Shader
-     */
-    get shader() {
-        return this.components[&quot;default.shader&quot;] ||
-            this.components[&quot;default.shader&quot;] || new XEO.Shader(this, {
-            id: &quot;default.shader&quot;
-        })
-    },
-
-    /**
-     * The default {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.shaderParams&quot;,
-     * with all other properties initialised to their default values.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;ShaderParams&quot;}}Shader{{/crossLink}} by default.
-     * @property shaderParams
-     * @final
-     * @type ShaderParams
-     */
-    get shaderParams() {
-        return this.components[&quot;default.shaderParams&quot;] ||
-            new XEO.ShaderParams(this, {
-                id: &quot;default.shaderParams&quot;
-            })
-    },
-
-    /**
-     * The default {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} provided by this Scene.
-     *
-     * This {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} has
-     * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.stage&quot; and
-     * a {{#crossLink &quot;Stage/priority:property&quot;}}priority{{/crossLink}} equal to &#x60;&#x60;&#x60;&#x60;0&#x60;&#x60;&#x60;&#x60;.
-     *
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
-     * {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} by default.
-     * @property stage
-     * @final
-     * @type Stage
-     */
-    get stage() {
-        return this.components[&quot;default.stage&quot;] ||
-            new XEO.Stage(this, {
-                id: &quot;default.stage&quot;,
-                priority: 0
-            })
-    },
-
-    /**
-     * Destroys all components in this Scene
-     */
-    clear: function () {
-        var component;
-        for (var id in this.components) {
-            if (this.components.hasOwnProperty(id)) {
-                component = this.components[id];
-                if (!component.id != this.id) { // This Scene is also in the component map
-                    component.destroy();
+            // Add components specified as JSON
+            // This may also add the default components for this Scene
+            var components = cfg.components;
+            if (components) {
+                var component;
+                var className;
+                var constructor;
+                for (var i = 0, len = components.length; i &lt; len; i++) {
+                    component = components[i];
+                    className = component.className;
+                    if (className) {
+                        constructor = window[className];
+                        if (constructor) {
+                            new constructor(this, component);
+                        }
+                    }
                 }
             }
-        }
-        this._dirtyGameObjects = {};
-    },
 
-    /**
-     * Compiles and renders this Scene
-     * @private
-     */
-    _compile: function () {
+            // Create the default components if not already created.
+            // These may have already been created in the JSON above.
 
-        // Compile dirty objects, if any
+            this.view;
+            this.project;
 
-        for (var id in this._dirtyGameObjects) {
-            if (this._dirtyGameObjects.hasOwnProperty(id)) {
-                this._dirtyGameObjects[i]._compile();
+            this.camera;
+
+            this.clips;
+            this.colorTarget;
+            this.colorBuf;
+            this.depthTarget;
+            this.depthBuf;
+            this.visibility;
+            this.modes;
+            this.geometry;
+            this.layer;
+            this.lights;
+            this.material;
+            this.morphTargets;
+            this.reflect;
+            this.shader;
+            this.shaderParams;
+            this.stage;
+            this.transform;
+
+        },
+
+        _addComponent: function (c) {
+
+            if (c.id) {
+                if (this.components[c.id]) {
+                    this.error(&quot;A component with this ID already exists in this Scene: &quot; + c.id);
+                    return;
+                }
+            } else {
+                c.id = this._componentIDMap.addItem({});
+            }
+
+            this.components[c.id] = c;
+
+            var isGameObject = c.type === &quot;object&quot;;
+
+            var self = this;
+
+            c.on(&quot;destroyed&quot;,
+                function () {
+
+                    self._componentIDMap.removeItem(c.id);
+                    delete self.components[c.id];
+
+                    if (isGameObject) {
+                        self.stats.dec(&quot;objects&quot;);
+                        delete self._dirtyGameObjects[c.id];
+                        self.fire(&quot;dirty&quot;, true);
+                    }
+
+                    /**
+                     * Fired whenever a component within this Scene has been destroyed.
+                     * @event componentDestroyed
+                     * @param {Component} value The component that was destroyed
+                     */
+                    self.fire(&quot;componentDestroyed&quot;, c, true);
+                });
+
+            if (isGameObject) {
+
+                this.stats.inc(&quot;objects&quot;);
+
+                c.on(&quot;dirty&quot;,
+                    function () {
+                        if (!self._dirtyGameObjects[c.id]) {
+                            self._dirtyGameObjects[c.id] = object;
+                        }
+                        self.fire(&quot;dirty&quot;, true);
+                    });
+            }
+
+            /**
+             * Fired whenever a component has been created within this Scene.
+             * @event componentCreated
+             * @param {Component} value The component that was created
+             */
+            this.fire(&quot;componentCreated&quot;, c, true);
+        },
+
+        _props: {
+
+            /**
+             * The default projection transform provided by this Scene, which is a {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}.
+             *
+             * This {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} has an
+             * {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.project&quot;, with all other properties set to
+             * their default values.
+             *
+             * {{#crossLink &quot;Camera&quot;}}Cameras{{/crossLink}} within this Scene are attached to
+             * this {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} by default.
+             * @property project
+             * @final
+             * @type Perspective
+             */
+            project: {
+
+                get: function () {
+                    return this.components[&quot;default.project&quot;] ||
+                        new XEO.Perspective(this, {
+                            id: &quot;default.project&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default viewing transform provided by this Scene, which is a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}.
+             *
+             * This {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.view&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;Camera&quot;}}Cameras{{/crossLink}} within this Scene are attached to
+             * this {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} by default.
+             * @property view
+             * @final
+             * @type Lookat
+             */
+            view: {
+
+                get: function () {
+                    return this.components[&quot;default.view&quot;] ||
+                        new XEO.Lookat(this, {
+                            id: &quot;default.view&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.camera&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to
+             * this {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} by default.
+             * @property camera
+             * @final
+             * @type Camera
+             */
+            camera: {
+
+                get: function () {
+                    return this.components[&quot;default.camera&quot;] ||
+                        new XEO.Camera(this, {
+                            id: &quot;default.camera&quot;,
+                            project: &quot;default.project&quot;,
+                            view: &quot;default.view&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default modelling transform provided by this Scene.
+             *
+             * This {{#crossLink &quot;Transform&quot;}}Transform{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.transform&quot;,
+             * with all other properties initialised to their default values (ie. an identity matrix).
+             *
+             * {{#crossLink &quot;GameObjects&quot;}}GameObjects{{/crossLink}}s within this Scene are attached to
+             * this {{#crossLink &quot;Transform&quot;}}Transform{{/crossLink}} by default.
+             *
+             * @property transform
+             * @final
+             * @type Transform
+             */
+            transform: {
+
+                get: function () {
+                    return this.components[&quot;default.transform&quot;] ||
+                        new XEO.Transform(this, {
+                            id: &quot;default.transform&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.clips&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} by default.
+             * @property clips
+             * @final
+             * @type Clips
+             */
+            clips: {
+
+                get: function () {
+                    return this.components[&quot;default.clips&quot;] ||
+                        new XEO.Clips(this, {
+                            id: &quot;default.clips&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.colorBuf&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} by default.
+             * @property colorBuf
+             * @final
+             * @type ColorBuf
+             */
+            colorBuf: {
+
+                get: function () {
+                    return this.components[&quot;default.colorBuf&quot;] ||
+                        new XEO.ColorBuf(this, {
+                            id: &quot;default.colorBuf&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.colorTarget&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} by default.
+             * @property colorTarget
+             * @final
+             * @type ColorTarget
+             */
+            colorTarget: {
+                get: function () {
+                    return this.components[&quot;default.colorTarget&quot;] ||
+                        new XEO.ColorTarget(this, {
+                            id: &quot;default.colorTarget&quot;
+                        })
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthBuf&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} by default.
+             *
+             * @property depthBuf
+             * @final
+             * @type DepthBuf
+             */
+            depthBuf: {
+                get: function () {
+                    return this.components[&quot;default.depthBuf&quot;] ||
+                        new XEO.DepthBuf(this, {
+                            id: &quot;default.depthBuf&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthTarget&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} by default.
+             * @property depthTarget
+             * @final
+             * @type DepthTarget
+             */
+            depthTarget: {
+                get: function () {
+                    return this.components[&quot;default.depthTarget&quot;] ||
+                        new XEO.DepthTarget(this, {
+                            id: &quot;default.depthTarget&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.visibility&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} by default.
+             * @property visibility
+             * @final
+             * @type Visibility
+             */
+            visibility: {
+                get: function () {
+                    return this.components[&quot;default.visibility&quot;] ||
+                        new XEO.Visibility(this, {
+                            id: &quot;default.visibility&quot;,
+                            enabled: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.modes&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} by default.
+             * @property modes
+             * @final
+             * @type Modes
+             */
+            modes: {
+                get: function () {
+                    return this.components[&quot;default.modes&quot;] ||
+                        new XEO.Modes(this, {
+                            id: &quot;default.modes&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} provided by this Scene, which is a 2x2x2 box centered at the World-space origin.
+             *
+             * This {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.geometry&quot;.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} by default.
+             * @property geometry
+             * @final
+             * @type Geometry
+             */
+            geometry: {
+                get: function () {
+                    return this.components[&quot;default.geometry&quot;] ||
+                        new XEO.Geometry(this, {
+                            id: &quot;default.geometry&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.layer&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} by default.
+             * @property layer
+             * @final
+             * @type Layer
+             */
+            layer: {
+                get: function () {
+                    return this.components[&quot;default.layer&quot;] ||
+                        new XEO.Layer(this, {
+                            id: &quot;default.layer&quot;,
+                            priority: 0
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to *&#x60;&#x60;&#x60;&#x60;&quot;default.lights&quot;&#x60;&#x60;&#x60;&#x60;*,
+             * with all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}}).
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} by default.
+             * @property lights
+             * @final
+             * @type Lights
+             */
+            lights: {
+                get: function () {
+                    return this.components[&quot;default.lights&quot;] ||
+                        new XEO.Lights(this, {
+                            id: &quot;default.lights&quot;,
+                            lights: [
+
+                                // Ambient light source #0
+                                new XEO.AmbientLight(this, {
+                                    id: &quot;default.light0&quot;,
+                                    color: [0.7, 0.7, 0.7]
+                                }),
+
+                                // Directional light source #1
+                                new XEO.DirLight(this, {
+                                    id: &quot;default.light1&quot;,
+                                    dir: [-0.5, -0.5, -1.0 ],
+                                    color: [1.0, 1.0, 1.0 ],
+                                    specular: true,
+                                    diffuse: true,
+                                    space: &quot;view&quot;
+                                }),
+
+                                // Directional light source #2
+                                new XEO.DirLight(this, {
+                                    id: &quot;default.light2&quot;,
+                                    dir: [1.0, -0.9, -0.7 ],
+                                    color: [1.0, 1.0, 1.0 ],
+                                    specular: true,
+                                    diffuse: true,
+                                    space: &quot;view&quot;
+                                })
+                            ]
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} has
+             * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.material&quot;, with all
+             * other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} by default.
+             * @property material
+             * @final
+             * @type Material
+             */
+            material: {
+                get: function () {
+                    return this.components[&quot;default.material&quot;] ||
+                        new XEO.Material(this, {
+                            id: &quot;default.material&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.morphTargets&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} by default.
+             * @property morphTargets
+             * @final
+             * @type MorphTargets
+             */
+            morphTargets: {
+                get: function () {
+                    return this.components[&quot;default.morphTargets&quot;] ||
+                        new XEO.MorphTargets(this, {
+                            id: &quot;default.morphTargets&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} provided by this Scene,
+             * (which is a neutral {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} that has no effect).
+             *
+             * This {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.reflect&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} by default.
+             * @property reflect
+             * @final
+             * @type Reflect
+             */
+            reflect: {
+                get: function () {
+                    return this.components[&quot;default.reflect&quot;] ||
+                        new XEO.Reflect(this, {
+                            id: &quot;default.reflect&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} provided by this Scene
+             * (which is a neutral {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} that has no effect).
+             *
+             * This {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.shader&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} by default.
+             * @property shader
+             * @final
+             * @type Shader
+             */
+            shader: {
+                get: function () {
+                    return this.components[&quot;default.shader&quot;] ||
+                        this.components[&quot;default.shader&quot;] || new XEO.Shader(this, {
+                        id: &quot;default.shader&quot;
+                    });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.shaderParams&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;ShaderParams&quot;}}Shader{{/crossLink}} by default.
+             * @property shaderParams
+             * @final
+             * @type ShaderParams
+             */
+            shaderParams: {
+                get: function () {
+                    return this.components[&quot;default.shaderParams&quot;] ||
+                        new XEO.ShaderParams(this, {
+                            id: &quot;default.shaderParams&quot;
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} has
+             * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.stage&quot; and
+             * a {{#crossLink &quot;Stage/priority:property&quot;}}priority{{/crossLink}} equal to &#x60;&#x60;&#x60;&#x60;0&#x60;&#x60;&#x60;&#x60;.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} by default.
+             * @property stage
+             * @final
+             * @type Stage
+             */
+            stage: {
+                get: function () {
+                    return this.components[&quot;default.stage&quot;] ||
+                        new XEO.Stage(this, {
+                            id: &quot;default.stage&quot;,
+                            priority: 0
+                        });
+                }
+            },
+
+            /**
+             * Destroys all components in this Scene
+             */
+            clear: function () {
+                var component;
+                for (var id in this.components) {
+                    if (this.components.hasOwnProperty(id)) {
+                        component = this.components[id];
+                        if (!component.id !== this.id) { // This Scene is also in the component map
+                            component.destroy();
+                        }
+                    }
+                }
+                this._dirtyGameObjects = {};
+            },
+
+            /**
+             * Compiles and renders this Scene
+             * @private
+             */
+            _compile: function () {
+
+                // Compile dirty objects, if any
+
+                for (var id in this._dirtyGameObjects) {
+                    if (this._dirtyGameObjects.hasOwnProperty(id)) {
+                        this._dirtyGameObjects[i]._compile();
+                    }
+                }
+
+                this._dirtyGameObjects = {};
+
+                this._renderer.render({
+                    clear: i === 0
+                });
+
+            },
+
+            _getJSON: function () {
+
+                // Get list of component JSONs, in ascending order of component creation
+                var components = [];
+                var priorities = [];
+                for (var id in this.components) {
+                    if (this.components.hasOwnProperty(id)) {
+                        components.push(this.components[id]);
+                    }
+                }
+                components.sort(function (a, b) {
+                    return a._componentOrder - b._componentOrder
+                });
+                var componentJSONs = [];
+                for (var i = 0, len = components.length; i &lt; len; i++) {
+                    componentJSONs.push(components[i].json);
+                }
+                return {
+                    components: componentJSONs
+                };
+            },
+
+            _destroy: function () {
+                this.clear();
             }
         }
+    });
 
-        this._dirtyGameObjects = {};
-
-        this._renderer.render({
-            clear: i == 0
-        });
-
-    },
-
-    _getJSON: function () {
-
-        // Get list of component JSONs, in ascending order of component creation
-        var components = [];
-        var priorities = [];
-        for (var id in this.components) {
-            if (this.components.hasOwnProperty(id)) {
-                components.push(this.components[id]);
-            }
-        }
-        components.sort(function (a, b) {
-            return a._componentOrder - b._componentOrder
-        });
-        var componentJSONs = [];
-        for (var i = 0, len = components.length; i &lt; len; i++) {
-            componentJSONs.push(components[i].json);
-        }
-        return {
-            components: componentJSONs
-        };
-    },
-
-    _destroy: function () {
-        this.clear();
-    }
-});
-
-
-XEO.Engine.prototype.newScene = function (cfg) {
-    return new XEO.Scene(this, cfg);
-};
+})();
     </pre>
 </div>
                     </div>

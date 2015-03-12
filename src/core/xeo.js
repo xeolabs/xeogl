@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * The XeoEngine namespace
  * @class XEO
@@ -8,6 +6,8 @@
  * @author xeolabs / http://xeolabs.com/
  */
 (function () {
+
+    "use strict";
 
     var XEO = function () {
 
@@ -123,8 +123,7 @@
          * @private
          */
         _isArray: function (testGameObject) {
-            return testGameObject && !(testGameObject.propertyIsEnumerable('length'))
-                && typeof testGameObject === 'object' && typeof testGameObject.length === 'number';
+            return testGameObject && !(testGameObject.propertyIsEnumerable('length')) && typeof testGameObject === 'object' && typeof testGameObject.length === 'number';
         },
 
         /**
@@ -134,7 +133,7 @@
          * @private
          */
         _isString: function (value) {
-            return (typeof value == 'string' || value instanceof String);
+            return (typeof value === 'string' || value instanceof String);
         },
 
         /** Returns a shallow copy
@@ -161,31 +160,16 @@
         _applyIf: function (o, o2) {
             for (var name in o) {
                 if (o.hasOwnProperty(name)) {
-                    if (o2[name] == undefined || o2[name] == null) {
+                    if (o2[name] === undefined || o2[name] === null) {
                         o2[name] = o[name];
                     }
                 }
             }
             return o2;
-        },
-
-        /**
-         * Create a new component type
-         * @param cfg
-         * @returns {Component.prototype}
-         * @private
-         */
-        _createType: function (cfg) {
-            var claz = XEO.Component;
-            for (var key in cfg) {
-                claz.prototype[key] = key;
-            }
-            return claz;
         }
     };
 
     window.XEO = new XEO();
 
 })();
-
 

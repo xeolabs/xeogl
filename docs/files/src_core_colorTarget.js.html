@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,106 +126,110 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
- A **ColorTarget** captures rendered pixel colors of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
- &lt;ul&gt;
- &lt;li&gt;A ColorTarget provides the pixel colors as a dynamic color image that may be fed into {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.&lt;/li&gt;
- &lt;li&gt;ColorTarget is not to be confused with {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.&lt;/li&gt;
- &lt;li&gt;Use {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
- the {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} that consume it.&lt;/li&gt;
- &lt;li&gt;For special effects, we often use ColorTargets and {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in combination
- with {{#crossLink &quot;DepthTarget&quot;}}DepthTargets{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.&lt;/li&gt;
- &lt;/ul&gt;
-
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7096829/L.png&quot;&gt;&lt;/img&gt;
-
- ### Example
-
- In the example below we essentially have one {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
- that&#x27;s rendered to a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, which is then applied to a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
-
- The scene contains:
-
- &lt;ul&gt;
- &lt;li&gt;a ColorTarget,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape,
- &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} pixel color values to the ColorTarget,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that sources its pixels from the ColorTarget,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that includes the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, and&lt;/li&gt;
- &lt;li&gt;a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, with the {{#crossLink &quot;Material&quot;}}{{/crossLink}} applied to it.&lt;/li&gt;
- &lt;/ul&gt;
+    &quot;use strict&quot;;
 
 
- &#x60;&#x60;&#x60;&#x60;javascript
- var scene = new XEO.Scene();
+    /**
+     A **ColorTarget** captures rendered pixel colors of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
- var colorTarget = new XEO.ColorTarget(scene);
+     &lt;ul&gt;
+     &lt;li&gt;A ColorTarget provides the pixel colors as a dynamic color image that may be fed into {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.&lt;/li&gt;
+     &lt;li&gt;ColorTarget is not to be confused with {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.&lt;/li&gt;
+     &lt;li&gt;Use {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
+     the {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} that consume it.&lt;/li&gt;
+     &lt;li&gt;For special effects, we often use ColorTargets and {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in combination
+     with {{#crossLink &quot;DepthTarget&quot;}}DepthTargets{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.&lt;/li&gt;
+     &lt;/ul&gt;
 
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7096829/L.png&quot;&gt;&lt;/img&gt;
 
- var firstGameObject = new XEO.GameObject(scene, {
-       geometry: geometry,
-       colorTarget: colorTarget
-  });
+     ### Example
 
- var texture = new XEO.Texture(scene, {
-      target: colorTarget
-  });
+     In this example we essentially have one {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
+     that&#x27;s rendered to a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, which is then applied to a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
 
- var material = new XEO.Material(scene, {
-       textures: [
+     The scene contains:
+
+     &lt;ul&gt;
+     &lt;li&gt;a ColorTarget,&lt;/li&gt;
+     &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape,
+     &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} pixel color values to the ColorTarget,&lt;/li&gt;
+     &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that sources its pixels from the ColorTarget,&lt;/li&gt;
+     &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that includes the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, and&lt;/li&gt;
+     &lt;li&gt;a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, with the {{#crossLink &quot;Material&quot;}}{{/crossLink}} applied to it.&lt;/li&gt;
+     &lt;/ul&gt;
+
+
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var scene = new XEO.Scene();
+
+     var colorTarget = new XEO.ColorTarget(scene);
+
+     var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+     var firstGameObject = new XEO.GameObject(scene, {
+        geometry: geometry,
+        colorTarget: colorTarget
+     });
+
+     var texture = new XEO.Texture(scene, {
+        target: colorTarget
+     });
+
+     var material = new XEO.Material(scene, {
+        textures: [
            texture
-       ]
-  });
+        ]
+     });
 
- var object2 = new XEO.GameObject(scene, {
-       geometry: geometry,  // Reuse our simple box geometry
-       material: material
-   });
- &#x60;&#x60;&#x60;&#x60;
+     var object2 = new XEO.GameObject(scene, {
+        geometry: geometry,  // Reuse our simple box geometry
+        material: material
+     });
+     &#x60;&#x60;&#x60;&#x60;
 
- @class ColorTarget
- @module XEO
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this ColorTarget within the
- default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} ColorTarget configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
- @extends Component
- */
-XEO.ColorTarget = XEO.Component.extend({
+     @class ColorTarget
+     @module XEO
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this ColorTarget within the
+     default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} ColorTarget configuration
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
+     @extends Component
+     */
+    XEO.ColorTarget = XEO.Component.extend({
 
-    className: &quot;XEO.ColorTarget&quot;,
+        className: &quot;XEO.ColorTarget&quot;,
 
-    type: &quot;renderBuf&quot;,
+        type: &quot;renderBuf&quot;,
 
-    // Map of  components to cores, for reallocation on WebGL context restore
-    _componentCoreMap: {},
+        // Map of  components to cores, for reallocation on WebGL context restore
+        _componentCoreMap: {},
 
-    _init: function (cfg) {
-        this._core.bufType = &quot;color&quot;;
-        this._componentCoreMap[this._core.id] = this._core;
-        this._core.renderBuf = new XEO.webgl.RenderBuffer({ canvas: this.scene.canvas });
-    },
+        _init: function () {
+            this._state.bufType = &quot;color&quot;;
+            this._componentCoreMap[this._state.id] = this._state;
+            this._state.renderBuf = new XEO.webgl.RenderBuffer({ canvas: this.scene.canvas });
+        },
 
-    _compile: function () {
-        this._renderer.colorTarget = this._core;
-    },
+        _compile: function () {
+            this._renderer.colorTarget = this._state;
+        },
 
-    _destroy: function () {
-        if (this._core) {
-            if (this._core.renderBuf) {
-                this._core.renderBuf.destroy();
+        _destroy: function () {
+            if (this._state) {
+                if (this._state.renderBuf) {
+                    this._state.renderBuf.destroy();
+                }
+                delete this._componentCoreMap[this._state.id];
             }
-            delete this._componentCoreMap[this._core.id];
         }
-    }
-});
+    });
 
+})();
 
 
     </pre>

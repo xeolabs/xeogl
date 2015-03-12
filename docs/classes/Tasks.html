@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -121,7 +130,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_tasks.js.html#l3"><code>src&#x2F;core&#x2F;tasks.js:3</code></a>
+            Defined in: <a href="../files/src_core_tasks.js.html#l6"><code>src&#x2F;core&#x2F;tasks.js:6</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -143,7 +152,7 @@ application-level processes you are running.</li>
 
 <p><img src="http://www.gliffy.com/go/publish/image/7122907/L.png"></img></p>
 <h3 id="example">Example</h3>
-<p>The following example shows how to manage tasks and subscribe to their life cycles.</p>
+<p>This example shows how to manage tasks and subscribe to their life cycles.</p>
 <pre class="code prettyprint"><code class="lang-Javascript">
 // Create a Scene
 var scene = new XEO.Scene();
@@ -153,40 +162,40 @@ var tasks = scene.tasks;
 
 // Subscribe to all task creations
 tasks.on("started", function(task) {
-      console.log("Task started: " + task.id +", " + task.description);
- });
+  console.log("Task started: " + task.id +", " + task.description);
+  });
 
 // Subscribe to all task completions
 tasks.on("completed", function(task) {
-      console.log("Task completed: " + task.id +", " + task.description);
- });
+  console.log("Task completed: " + task.id +", " + task.description);
+  });
 
 // Subscribe to all task failures
 tasks.on("failed", function(task) {
-      console.log("Task failed: " + task.id +", " + task.description);
- });
+  console.log("Task failed: " + task.id +", " + task.description);
+  });
 
 // Create and start Task "foo"
 var taskFoo = tasks.create({
-      id: "foo", // Optional, unique ID generated automatically when omitted
-      description: "Loading something"
- });
+  id: "foo", // Optional, unique ID generated automatically when omitted
+  description: "Loading something"
+  });
 
 // Create and start Task "bar"
 var taskBar = tasks.create({
-      id: "bar",
-      description: "Loading something else"
- });
+  id: "bar",
+  description: "Loading something else"
+  });
 
 // Subscribe to completion of Task "foo"
 taskFoo.on("completed", function(task) {
-      console.log("Task completed: " + task.id +", " + task.description);
- });
+  console.log("Task completed: " + task.id +", " + task.description);
+  });
 
 // Subscribe to failure of a specific task
 taskFoo.on("failed", function(task) {
-      console.log("Task failed: " + task.id +", " + task.description);
- });
+  console.log("Task failed: " + task.id +", " + task.description);
+  });
 
 // Set Task "foo" as completed, via the Tasks
 // Fires the "completed" handler we registered above, also fires "completed" on the Task itself
@@ -215,7 +224,7 @@ myTask2.setFailed();
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_tasks.js.html#l3"><code>src&#x2F;core&#x2F;tasks.js:3</code></a>
+                <a href="../files/src_core_tasks.js.html#l6"><code>src&#x2F;core&#x2F;tasks.js:6</code></a>
                 </p>
         
         
@@ -379,7 +388,7 @@ myTask2.setFailed();
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_tasks.js.html#l92"><code>src&#x2F;core&#x2F;tasks.js:92</code></a>
+        <a href="../files/src_core_tasks.js.html#l93"><code>src&#x2F;core&#x2F;tasks.js:93</code></a>
         </p>
 
 
@@ -466,7 +475,7 @@ clash with an existing <a href="../classes/Task.html" class="crosslink">Task</a>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l594"><code>src&#x2F;core&#x2F;component.js:594</code></a>
+        <a href="../files/src_core_component.js.html#l605"><code>src&#x2F;core&#x2F;component.js:605</code></a>
         </p>
 
 
@@ -506,7 +515,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l439"><code>src&#x2F;core&#x2F;component.js:439</code></a>
+        <a href="../files/src_core_component.js.html#l450"><code>src&#x2F;core&#x2F;component.js:450</code></a>
         </p>
 
 
@@ -569,7 +578,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        <a href="../files/src_core_component.js.html#l341"><code>src&#x2F;core&#x2F;component.js:341</code></a>
         </p>
 
 
@@ -648,7 +657,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l422"><code>src&#x2F;core&#x2F;component.js:422</code></a>
+        <a href="../files/src_core_component.js.html#l433"><code>src&#x2F;core&#x2F;component.js:433</code></a>
         </p>
 
 
@@ -705,7 +714,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l384"><code>src&#x2F;core&#x2F;component.js:384</code></a>
+        <a href="../files/src_core_component.js.html#l395"><code>src&#x2F;core&#x2F;component.js:395</code></a>
         </p>
 
 
@@ -766,7 +775,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l355"><code>src&#x2F;core&#x2F;component.js:355</code></a>
+        <a href="../files/src_core_component.js.html#l366"><code>src&#x2F;core&#x2F;component.js:366</code></a>
         </p>
 
 
@@ -846,7 +855,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l403"><code>src&#x2F;core&#x2F;component.js:403</code></a>
+        <a href="../files/src_core_component.js.html#l414"><code>src&#x2F;core&#x2F;component.js:414</code></a>
         </p>
 
 
@@ -913,7 +922,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_tasks.js.html#l159"><code>src&#x2F;core&#x2F;tasks.js:159</code></a>
+        <a href="../files/src_core_tasks.js.html#l160"><code>src&#x2F;core&#x2F;tasks.js:160</code></a>
         </p>
 
 
@@ -970,7 +979,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_tasks.js.html#l179"><code>src&#x2F;core&#x2F;tasks.js:179</code></a>
+        <a href="../files/src_core_tasks.js.html#l180"><code>src&#x2F;core&#x2F;tasks.js:180</code></a>
         </p>
 
 
@@ -1027,7 +1036,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l456"><code>src&#x2F;core&#x2F;component.js:456</code></a>
+        <a href="../files/src_core_component.js.html#l467"><code>src&#x2F;core&#x2F;component.js:467</code></a>
         </p>
 
 
@@ -1080,7 +1089,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l240"><code>src&#x2F;core&#x2F;component.js:240</code></a>
+                            <a href="../files/src_core_component.js.html#l322"><code>src&#x2F;core&#x2F;component.js:322</code></a>
                             </p>
                     
                     
@@ -1106,7 +1115,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l274"><code>src&#x2F;core&#x2F;component.js:274</code></a>
+                            <a href="../files/src_core_component.js.html#l263"><code>src&#x2F;core&#x2F;component.js:263</code></a>
                             </p>
                     
                     
@@ -1132,7 +1141,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l265"><code>src&#x2F;core&#x2F;component.js:265</code></a>
+                            <a href="../files/src_core_component.js.html#l254"><code>src&#x2F;core&#x2F;component.js:254</code></a>
                             </p>
                     
                     
@@ -1157,7 +1166,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l229"><code>src&#x2F;core&#x2F;component.js:229</code></a>
+                            <a href="../files/src_core_component.js.html#l244"><code>src&#x2F;core&#x2F;component.js:244</code></a>
                             </p>
                     
                     
@@ -1184,7 +1193,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l193"><code>src&#x2F;core&#x2F;component.js:193</code></a>
+                            <a href="../files/src_core_component.js.html#l205"><code>src&#x2F;core&#x2F;component.js:205</code></a>
                             </p>
                     
                     
@@ -1211,7 +1220,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l252"><code>src&#x2F;core&#x2F;component.js:252</code></a>
+                            <a href="../files/src_core_component.js.html#l310"><code>src&#x2F;core&#x2F;component.js:310</code></a>
                             </p>
                     
                     
@@ -1243,7 +1252,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_tasks.js.html#l125"><code>src&#x2F;core&#x2F;tasks.js:125</code></a>
+                            <a href="../files/src_core_tasks.js.html#l126"><code>src&#x2F;core&#x2F;tasks.js:126</code></a>
                             </p>
                     
                     
@@ -1285,7 +1294,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l624"><code>src&#x2F;core&#x2F;component.js:624</code></a>
+                            <a href="../files/src_core_component.js.html#l635"><code>src&#x2F;core&#x2F;component.js:635</code></a>
                             </p>
                     
                     
@@ -1310,7 +1319,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_tasks.js.html#l137"><code>src&#x2F;core&#x2F;tasks.js:137</code></a>
+                            <a href="../files/src_core_tasks.js.html#l138"><code>src&#x2F;core&#x2F;tasks.js:138</code></a>
                             </p>
                     
                     
@@ -1352,7 +1361,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_tasks.js.html#l149"><code>src&#x2F;core&#x2F;tasks.js:149</code></a>
+                            <a href="../files/src_core_tasks.js.html#l150"><code>src&#x2F;core&#x2F;tasks.js:150</code></a>
                             </p>
                     
                     

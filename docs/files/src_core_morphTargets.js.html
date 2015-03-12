@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,103 +126,119 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
-  A **MorphTargets** defines interpolation targets for morphing {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}}s on
-  attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-  &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7123401/L.png&quot;&gt;&lt;/img&gt;
-
-  ### Example
-
- @class MorphTargets
-  @module XEO
-  @constructor
-  @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this MorphTarget in the default
-  {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-  @param [cfg] {*} Configs
-  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MorphTarget.
-  @param [cfg.targets=[]] {Array} The morph targets.
-  @param [cfg.factor=0] {Number} The morph factor.
-  @extends Component
- */
-XEO.MorphTargets = XEO.Component.extend({
-
-    className: &quot;XEO.MorphTargets&quot;,
-
-    type: &quot;MorphTargets&quot;,
-
-    _init: function (cfg) {
-
-        this.scene.on(&quot;webglContextRestored&quot;,
-            function () {
-
-            });
-    },
+    &quot;use strict&quot;;
 
 
     /**
-     * The morph targets.
-     *
-     *TODO
-     *
-     * @property targets
-     * @default []
-     * @type Array
+     A **MorphTargets** defines interpolation targets for morphing {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}}s on
+     attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7123401/L.png&quot;&gt;&lt;/img&gt;
+
+     ### Example
+
+     @class MorphTargets
+     @module XEO
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this MorphTarget in the default
+     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MorphTarget.
+     @param [cfg.targets=[]] {Array} The morph targets.
+     @param [cfg.factor=0] {Number} The morph factor.
+     @extends Component
      */
-    set targets(value) {
+    XEO.MorphTargets = XEO.Component.extend({
+
+        className: &quot;XEO.MorphTargets&quot;,
+
+        type: &quot;MorphTargets&quot;,
+
+        _init: function (cfg) {
+
+            this.scene.on(&quot;webglContextRestored&quot;,
+                function () {
+
+                });
+
+            this.targets = cfg.targets;
+            this.factor = cfg.factor;
+        },
+
+
+        _props: {
+
+            /**
+             * The morph targets.
+             *
+             *TODO
+             *
+             * @property targets
+             * @default []
+             * @type Array
+             */
+            targets: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this MorphTarget&#x27;s  {{#crossLink &quot;MorphTargets/targets:property&quot;}}{{/crossLink}} property changes.
+                     * @event targets
+                     * @param value The property&#x27;s new value
+                     */
+                },
+
+                get: function () {
+
+                }
+            },
+
+            /**
+             * The morph factor
+             *
+             * @property factor
+             * @default 0
+             * @type Number
+             */
+            factor: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this MorphTarget&#x27;s  {{#crossLink &quot;MorphTargets/factor:property&quot;}}{{/crossLink}} property changes.
+                     * @event factor
+                     * @param value The property&#x27;s new value
+                     */
+                },
+
+                get: function () {
+                    return this._state.factor;
+                }
+            },
+
+            _compile: function () {
+                this._renderer.MorphTargets = this._state;
+            }
+        },
 
         /**
-         * Fired whenever this MorphTarget&#x27;s  {{#crossLink &quot;MorphTargets/targets:property&quot;}}{{/crossLink}} property changes.
-         * @event targets
-         * @param value The property&#x27;s new value
+         * JSON representation of this component
+         * @property json
+         * @type GameObject
          */
-    },
 
-    get targets() {
+        _getJSON: function () {
+            return {
+                targets: this.targets,
+                factor: this.factor
+            };
+        }
+    });
 
-    },
-
-    /**
-     * The morph factor
-     *
-     * @property factor
-     * @default 0
-     * @type Number
-     */
-    set factor(value) {
-
-        /**
-         * Fired whenever this MorphTarget&#x27;s  {{#crossLink &quot;MorphTargets/factor:property&quot;}}{{/crossLink}} property changes.
-         * @event factor
-         * @param value The property&#x27;s new value
-         */
-    },
-
-    get factor() {
-        return this._core.factor;
-    },
-
-    _compile: function () {
-        this._renderer.MorphTargets = this._core;
-    },
-
-    /**
-     * JSON representation of this component
-     * @property json
-     * @type GameObject
-     */
-
-    _getJSON: function () {
-        return {
-            targets: this.targets,
-            factor: this.factor
-        };
-    }
-});
-
+})();
 
 
 

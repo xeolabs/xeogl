@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,607 +126,669 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
- A **GameObject** is an entity within a xeoEngine {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+    &quot;use strict&quot;;
 
- &lt;ul&gt;
- &lt;li&gt;See the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} class for more information on GameObjects.&lt;/li&gt;
- &lt;/ul&gt;
-
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7122967/L.png&quot;&gt;&lt;/img&gt;
-
- @class GameObject
- @module XEO
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this GameObject within xeoEngine&#x27;s default {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} by default.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GameObject.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} to attach to this GameObject.  Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/camera:property&quot;}}camera{{/crossLink}}.
- @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/clips:property&quot;}}clips{{/crossLink}}.
- @param [cfg.colorTarget] {String|ColorTarget} ID or instance of a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/colorTarget:property&quot;}}colorTarget{{/crossLink}}.
- @param [cfg.depthTarget] {String|DepthTarget} ID or instance of a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/depthTarget:property&quot;}}depthTarget{{/crossLink}}.
- @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, depth {{#crossLink &quot;Scene/depthBuf:property&quot;}}depthBuf{{/crossLink}}.
- @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/visibility:property&quot;}}visibility{{/crossLink}}.
- @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/modes:property&quot;}}modes{{/crossLink}}.
- @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/geometry:property&quot;}}geometry{{/crossLink}}, which is a 2x2x2 box.
- @param [cfg.layer] {String|Layer} ID or instance of a {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}}.
- @param [cfg.lights] {String|Lights} ID or instance of a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/lights:property&quot;}}lights{{/crossLink}}.
- @param [cfg.material] {String|Material} ID or instance of a {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/material:property&quot;}}material{{/crossLink}}.
- @param [cfg.morphTargets] {String|MorphTargets} ID or instance of a {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s
- default instance, {{#crossLink &quot;Scene/morphTargets:property&quot;}}morphTargets{{/crossLink}}.
- @param [cfg.reflect] {String|Reflect} ID or instance of a {{#crossLink &quot;CubeMap&quot;}}CubeMap{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
- {{#crossLink &quot;Scene/reflect:property&quot;}}reflection{{/crossLink}}.
- @param [cfg.shader] {String|Shader} ID or instance of a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
- {{#crossLink &quot;Scene/shader:property&quot;}}shader{{/crossLink}}.
- @param [cfg.shaderParams] {String|ShaderParams} ID or instance of a {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
- {{#crossLink &quot;Scene/shaderParams:property&quot;}}shaderParams{{/crossLink}}.
- @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
- {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}.
- @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
- {{#crossLink &quot;Scene/transform:property&quot;}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
- @extends Component
- */
-
-/**
- * Fired when this GameObject is *picked* via a call to the {{#crossLink &quot;Canvas/pick:method&quot;}}{{/crossLink}} method
- * on the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas {{/crossLink}}.
- * @event picked
- * @param {String} objectId The ID of this GameObject.
- * @param {Number} canvasX The X-axis Canvas coordinate that was picked.
- * @param {Number} canvasY The Y-axis Canvas coordinate that was picked.
- */
-
-XEO.GameObject = XEO.Component.extend({
-
-    className: &quot;XEO.GameObject&quot;,
-
-    type: &quot;object&quot;,
-
-    _init: function (cfg) {
-
-        this.camera = cfg.camera;
-        this.clips = cfg.clips;
-        this.colorTarget = cfg.colorTarget;
-        this.colorBuf = cfg.colorBuf;
-        this.depthTarget = cfg.depthTarget;
-        this.depthBuf = cfg.depthBuf;
-        this.visibility = cfg.visibility;
-        this.modes = cfg.modes;
-        this.geometry = cfg.geometry;
-        this.layer = cfg.layer;
-        this.lights = cfg.lights;
-        this.material = cfg.material;
-        this.morphTargets = cfg.morphTargets;
-        this.reflect = cfg.reflect;
-        this.shader = cfg.shader;
-        this.shaderParams = cfg.shaderParams;
-        this.stage = cfg.stage;
-        this.transform = cfg.transform;
-    },
 
     /**
-     * The {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/camera:property&quot;}}camera{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/camera:event&quot;}}{{/crossLink}} event on change.
-     * @property camera
-     * @type Camera
+     A **GameObject** is an entity within a xeoEngine {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+
+     &lt;ul&gt;
+     &lt;li&gt;See the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} class for more information on GameObjects.&lt;/li&gt;
+     &lt;/ul&gt;
+
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7122967/L.png&quot;&gt;&lt;/img&gt;
+
+     @class GameObject
+     @module XEO
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this GameObject within xeoEngine&#x27;s default {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} by default.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GameObject.
+     @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} to attach to this GameObject.  Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/camera:property&quot;}}camera{{/crossLink}}.
+     @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/clips:property&quot;}}clips{{/crossLink}}.
+     @param [cfg.colorTarget] {String|ColorTarget} ID or instance of a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/colorTarget:property&quot;}}colorTarget{{/crossLink}}.
+     @param [cfg.depthTarget] {String|DepthTarget} ID or instance of a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/depthTarget:property&quot;}}depthTarget{{/crossLink}}.
+     @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, depth {{#crossLink &quot;Scene/depthBuf:property&quot;}}depthBuf{{/crossLink}}.
+     @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/visibility:property&quot;}}visibility{{/crossLink}}.
+     @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/modes:property&quot;}}modes{{/crossLink}}.
+     @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/geometry:property&quot;}}geometry{{/crossLink}}, which is a 2x2x2 box.
+     @param [cfg.layer] {String|Layer} ID or instance of a {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}}.
+     @param [cfg.lights] {String|Lights} ID or instance of a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/lights:property&quot;}}lights{{/crossLink}}.
+     @param [cfg.material] {String|Material} ID or instance of a {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+     parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/material:property&quot;}}material{{/crossLink}}.
+     @param [cfg.morphTargets] {String|MorphTargets} ID or instance of a {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s
+     default instance, {{#crossLink &quot;Scene/morphTargets:property&quot;}}morphTargets{{/crossLink}}.
+     @param [cfg.reflect] {String|Reflect} ID or instance of a {{#crossLink &quot;CubeMap&quot;}}CubeMap{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+     {{#crossLink &quot;Scene/reflect:property&quot;}}reflection{{/crossLink}}.
+     @param [cfg.shader] {String|Shader} ID or instance of a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+     {{#crossLink &quot;Scene/shader:property&quot;}}shader{{/crossLink}}.
+     @param [cfg.shaderParams] {String|ShaderParams} ID or instance of a {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+     {{#crossLink &quot;Scene/shaderParams:property&quot;}}shaderParams{{/crossLink}}.
+     @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+     {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}.
+     @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this GameObject. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+     {{#crossLink &quot;Scene/transform:property&quot;}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
+     @extends Component
      */
-    set camera(value) {
-
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/camera:property&quot;}}{{/crossLink}} property changes.
-         * @event camera
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;camera&quot;, value);
-    },
-
-    get camera() {
-        return this._children.camera;
-    },
 
     /**
-     * The {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/clips:property&quot;}}clips{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/clips:event&quot;}}{{/crossLink}} event on change.
-     * @property clips
-     * @type Clips
+     * Fired when this GameObject is *picked* via a call to the {{#crossLink &quot;Canvas/pick:method&quot;}}{{/crossLink}} method
+     * on the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas {{/crossLink}}.
+     * @event picked
+     * @param {String} objectId The ID of this GameObject.
+     * @param {Number} canvasX The X-axis Canvas coordinate that was picked.
+     * @param {Number} canvasY The Y-axis Canvas coordinate that was picked.
      */
-    set clips(value) {
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/clips:property&quot;}}{{/crossLink}} property changes.
-         * @event clips
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;clips&quot;, value);
-    },
+    XEO.GameObject = XEO.Component.extend({
 
-    get clips() {
-        return this._children.clips;
-    },
+        className: &quot;XEO.GameObject&quot;,
 
-    /**
-     * The {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/colorTarget:property&quot;}}colorTarget{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/colorTarget:event&quot;}}{{/crossLink}} event on change.
-     * @property colorTarget
-     * @type ColorTarget
-     */
-    set colorTarget(value) {
+        type: &quot;object&quot;,
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/colorTarget:property&quot;}}{{/crossLink}} property changes.
-         * @event colorTarget
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;colorTarget&quot;, value);
-    },
+        _init: function (cfg) {
 
-    get colorTarget() {
-        return this._children.colorTarget;
-    },
+            this.camera = cfg.camera;
+            this.clips = cfg.clips;
+            this.colorTarget = cfg.colorTarget;
+            this.colorBuf = cfg.colorBuf;
+            this.depthTarget = cfg.depthTarget;
+            this.depthBuf = cfg.depthBuf;
+            this.visibility = cfg.visibility;
+            this.modes = cfg.modes;
+            this.geometry = cfg.geometry;
+            this.layer = cfg.layer;
+            this.lights = cfg.lights;
+            this.material = cfg.material;
+            this.morphTargets = cfg.morphTargets;
+            this.reflect = cfg.reflect;
+            this.shader = cfg.shader;
+            this.shaderParams = cfg.shaderParams;
+            this.stage = cfg.stage;
+            this.transform = cfg.transform;
+        },
 
-    /**
-     * The {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/colorBuf:property&quot;}}colorBuf{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/colorBuf:event&quot;}}{{/crossLink}} event on change.
-     * @property colorBuf
-     * @type ColorBuf
-     */
-    set colorBuf(value) {
+        _props: {
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/colorBuf:property&quot;}}{{/crossLink}} property changes.
-         * @event colorBuf
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;colorBuf&quot;, value);
-    },
 
-    get colorBuf() {
-        return this._children.colorBuf;
-    },
+            /**
+             * The {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/camera:property&quot;}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/camera:event&quot;}}{{/crossLink}} event on change.
+             * @property camera
+             * @type Camera
+             */
+            camera: {
 
-    /**
-     * The {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/depthTarget:property&quot;}}depthTarget{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/depthTarget:event&quot;}}{{/crossLink}} event on change.
-     * @property depthTarget
-     * @type DepthTarget
-     */
-    set depthTarget(value) {
+                set: function (value) {
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/depthTarget:property&quot;}}{{/crossLink}} property changes.
-         * @event depthTarget
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;depthTarget&quot;, value);
-    },
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/camera:property&quot;}}{{/crossLink}} property changes.
+                     * @event camera
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;camera&quot;, value);
+                },
 
-    get depthTarget() {
-        return this._children.depthTarget;
-    },
+                get: function () {
+                    return this._children.camera;
+                }
+            },
 
-    /**
-     * The {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
-     * parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/depthBuf:property&quot;}}depthBuf{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/depthBuf:event&quot;}}{{/crossLink}} event on change.
-     * @property depthBuf
-     * @type DepthBuf
-     */
-    set depthBuf(value) {
+            /**
+             * The {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/clips:property&quot;}}clips{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/clips:event&quot;}}{{/crossLink}} event on change.
+             * @property clips
+             * @type Clips
+             */
+            clips: {
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/depthBuf:property&quot;}}{{/crossLink}} property changes.
-         * @event depthBuf
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;depthBuf&quot;, value);
-    },
+                set: function (value) {
 
-    get depthBuf() {
-        return this._children.depthBuf;
-    },
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/clips:property&quot;}}{{/crossLink}} property changes.
+                     * @event clips
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;clips&quot;, value);
+                },
 
-    /**
-     * The {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/visibility:property&quot;}}visibility{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/visibility:event&quot;}}{{/crossLink}} event on change.
-     * @property visibility
-     * @type Visibility
-     */
-    set visibility(value) {
+                get: function () {
+                    return this._children.clips;
+                }
+            },
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/visibility:property&quot;}}{{/crossLink}} property changes.
-         * @event visibility
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;visibility&quot;, value);
-    },
+            /**
+             * The {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/colorTarget:property&quot;}}colorTarget{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/colorTarget:event&quot;}}{{/crossLink}} event on change.
+             * @property colorTarget
+             * @type ColorTarget
+             */
+            colorTarget: {
 
-    get visibility() {
-        return this._children.visibility;
-    },
+                set: function (value) {
 
-    /**
-     * The {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/modes:property&quot;}}modes{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/modes:event&quot;}}{{/crossLink}} event on change.
-     * @property modes
-     * @type Modes
-     */
-    set modes(value) {
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/colorTarget:property&quot;}}{{/crossLink}} property changes.
+                     * @event colorTarget
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;colorTarget&quot;, value);
+                },
 
-        /**
-         * Fired whenever this GameObject&#x27;s {{#crossLink &quot;GameObject/modes:property&quot;}}{{/crossLink}} property changes.
-         * @event modes
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;modes&quot;, value);
-    },
+                get: function () {
+                    return this._children.colorTarget;
+                }
+            },
 
-    get modes() {
-        return this._children.modes;
-    },
+            /**
+             * The {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/colorBuf:property&quot;}}colorBuf{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/colorBuf:event&quot;}}{{/crossLink}} event on change.
+             * @property colorBuf
+             * @type ColorBuf
+             */
+            colorBuf: {
 
-    /**
-     * The {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/geometry:property&quot;}}camera{{/crossLink}}
-     * (a simple box) when set to a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/geometry:event&quot;}}{{/crossLink}} event on change.
-     * @property geometry
-     * @type Geometry
-     */
-    set geometry(value) {
+                set: function (value) {
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/geometry:property&quot;}}{{/crossLink}} property changes.
-         * @event visibility
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;geometry&quot;, value);
-    },
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/colorBuf:property&quot;}}{{/crossLink}} property changes.
+                     * @event colorBuf
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;colorBuf&quot;, value);
+                },
 
-    get geometry() {
-        return this._children.geometry;
-    },
+                get: function () {
+                    return this._children.colorBuf;
+                }
+            },
 
-    /**
-     * The {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/layer:event&quot;}}{{/crossLink}} event on change.
-     * @property layer
-     * @type Layer
-     */
-    set layer(value) {
+            /**
+             * The {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/depthTarget:property&quot;}}depthTarget{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/depthTarget:event&quot;}}{{/crossLink}} event on change.
+             * @property depthTarget
+             * @type DepthTarget
+             */
+            depthTarget: {
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/layer:property&quot;}}{{/crossLink}} property changes.
-         * @event layer
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;layer&quot;, value);
-    },
+                set: function (value) {
 
-    get layer() {
-        return this._children.layer;
-    },
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/depthTarget:property&quot;}}{{/crossLink}} property changes.
+                     * @event depthTarget
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;depthTarget&quot;, value);
+                },
 
-    /**
-     * The {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/lights:property&quot;}}lights{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/lights:event&quot;}}{{/crossLink}} event on change.
-     * @property lights
-     * @type Lights
-     */
-    set lights(value) {
+                get: function () {
+                    return this._children.depthTarget;
+                }
+            },
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/lights:property&quot;}}{{/crossLink}} property changes.
-         * @event lights
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;lights&quot;, value);
-    },
+            /**
+             * The {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the
+             * parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/depthBuf:property&quot;}}depthBuf{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/depthBuf:event&quot;}}{{/crossLink}} event on change.
+             * @property depthBuf
+             * @type DepthBuf
+             */
+            depthBuf: {
 
-    get lights() {
-        return this._children.lights;
-    },
+                set: function (value) {
 
-    /**
-     * The {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/material:property&quot;}}material{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/material:event&quot;}}{{/crossLink}} event on change.
-     * @property material
-     * @type Material
-     */
-    set material(value) {
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/depthBuf:property&quot;}}{{/crossLink}} property changes.
+                     * @event depthBuf
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;depthBuf&quot;, value);
+                },
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/material:property&quot;}}{{/crossLink}} property changes.
-         * @event material
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;material&quot;, value);
-    },
+                get: function () {
+                    return this._children.depthBuf;
+                }
+            },
 
-    get material() {
-        return this._children.material;
-    },
+            /**
+             * The {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/visibility:property&quot;}}visibility{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/visibility:event&quot;}}{{/crossLink}} event on change.
+             * @property visibility
+             * @type Visibility
+             */
+            visibility: {
 
-    /**
-     * The {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/morphTargets:property&quot;}}morphTargets{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/morphTargets:event&quot;}}{{/crossLink}} event on change.
-     * @property morphTargets
-     * @type MorphTargets
-     */
-    set morphTargets(value) {
+                set: function (value) {
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/morphTargets:property&quot;}}{{/crossLink}} property changes.
-         * @event morphTargets
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;morphTargets&quot;, value);
-    },
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/visibility:property&quot;}}{{/crossLink}} property changes.
+                     * @event visibility
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;visibility&quot;, value);
+                },
 
-    get morphTargets() {
-        return this._children.morphTargets;
-    },
+                get: function () {
+                    return this._children.visibility;
+                }
+            },
 
-    /**
-     * The {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/reflect:property&quot;}}reflect{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/reflect:event&quot;}}{{/crossLink}} event on change.
-     * @property reflect
-     * @type Reflect
-     */
-    set reflect(value) {
+            /**
+             * The {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/modes:property&quot;}}modes{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/modes:event&quot;}}{{/crossLink}} event on change.
+             * @property modes
+             * @type Modes
+             */
+            modes: {
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/reflect:property&quot;}}{{/crossLink}} property changes.
-         * @event reflect
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;reflect&quot;, value);
-    },
+                set: function (value) {
 
-    get reflect() {
-        return this._children.reflect;
-    },
+                    /**
+                     * Fired whenever this GameObject&#x27;s {{#crossLink &quot;GameObject/modes:property&quot;}}{{/crossLink}} property changes.
+                     * @event modes
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;modes&quot;, value);
+                },
 
-    /**
-     * The {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/shader:property&quot;}}shader{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/shader:event&quot;}}{{/crossLink}} event on change.
-     * @property shader
-     * @type Shader
-     */
-    set shader(value) {
+                get: function () {
+                    return this._children.modes;
+                }
+            },
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/shader:property&quot;}}{{/crossLink}} property changes.
-         * @event shader
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;shader&quot;, value);
-    },
+            /**
+             * The {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/geometry:property&quot;}}camera{{/crossLink}}
+             * (a simple box) when set to a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/geometry:event&quot;}}{{/crossLink}} event on change.
+             * @property geometry
+             * @type Geometry
+             */
+            geometry: {
 
-    get shader() {
-        return this._children.shader;
-    },
+                set: function (value) {
 
-    /**
-     * The {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/shaderParams:property&quot;}}shaderParams{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/shaderParams:event&quot;}}{{/crossLink}} event on change.
-     * @property shaderParams
-     * @type ShaderParams
-     */
-    set shaderParams(value) {
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/geometry:property&quot;}}{{/crossLink}} property changes.
+                     * @event visibility
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;geometry&quot;, value);
+                },
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/shaderParams:property&quot;}}{{/crossLink}} property changes.
-         * @event shaderParams
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;shaderParams&quot;, value);
-    },
+                get: function () {
+                    return this._children.geometry;
+                }
+            },
 
-    get shaderParams() {
-        return this._children.shaderParams;
-    },
+            /**
+             * The {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/layer:event&quot;}}{{/crossLink}} event on change.
+             * @property layer
+             * @type Layer
+             */
+            layer: {
 
-    /**
-     * The {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}} when set to
-     * a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/stage:event&quot;}}{{/crossLink}} event on change.
-     * @property stage
-     * @type Stage
-     */
-    set stage(value) {
+                set: function (value) {
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/stage:property&quot;}}{{/crossLink}} property changes.
-         * @event stage
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;stage&quot;, value);
-    },
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/layer:property&quot;}}{{/crossLink}} property changes.
+                     * @event layer
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;layer&quot;, value);
+                },
 
-    get stage() {
-        return this._children.stage;
-    },
+                get: function () {
+                    return this._children.layer;
+                }
+            },
 
-    /**
-     * The modelling transform attached to this GameObject.
-     *
-     * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/transform:property&quot;}}transform{{/crossLink}}
-     * (an identity matrix) when set to a null or undefined value.
-     *
-     * Fires a {{#crossLink &quot;GameObject/transform:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property transform
-     * @type Component
-     */
-    set transform(value) {
+            /**
+             * The {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/lights:property&quot;}}lights{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/lights:event&quot;}}{{/crossLink}} event on change.
+             * @property lights
+             * @type Lights
+             */
+            lights: {
 
-        /**
-         * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/transform:property&quot;}}{{/crossLink}} property changes.
-         * @event transform
-         * @param value The property&#x27;s new value
-         */
-        this._setChild(&quot;transform&quot;, value);
-    },
+                set: function (value) {
 
-    get transform() {
-        return this._children.transform;
-    },
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/lights:property&quot;}}{{/crossLink}} property changes.
+                     * @event lights
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;lights&quot;, value);
+                },
 
-    _compile: function () {
+                get: function () {
+                    return this._children.lights;
+                }
+            },
 
-        // Set states attached to this GameObject on the renderer
+            /**
+             * The {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/material:property&quot;}}material{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/material:event&quot;}}{{/crossLink}} event on change.
+             * @property material
+             * @type Material
+             */
+            material: {
 
-        var children = this._children;
+                set: function (value) {
 
-        children.camera._compile();
-        children.clips._compile();
-        children.colorTarget._compile();
-        children.colorBuf._compile();
-        children.depthTarget._compile();
-        children.depthBuf._compile();
-        children.visibility._compile();
-        children.modes._compile();
-        children.geometry._compile();
-        children.layer._compile();
-        children.lights._compile();
-        children.material._compile();
-        children.morphTargets._compile();
-        children.reflect._compile();
-        children.shader._compile();
-        children.shaderParams._compile();
-        children.stage._compile();
-        children.transform._compile();
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/material:property&quot;}}{{/crossLink}} property changes.
+                     * @event material
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;material&quot;, value);
+                },
 
-        // (Re)build this GameObject in the renderer
+                get: function () {
+                    return this._children.material;
+                }
+            },
 
-        this._renderer.buildGameObject(this.id);
-    },
+            /**
+             * The {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/morphTargets:property&quot;}}morphTargets{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/morphTargets:event&quot;}}{{/crossLink}} event on change.
+             * @property morphTargets
+             * @type MorphTargets
+             */
+            morphTargets: {
 
-    _getJSON: function () {
-        return {
-            camera: this.camera.id,
-            clips: this.clips.id,
-            colorTarget: this.colorTarget.id,
-            colorBuf: this.colorBuf.id,
-            depthTarget: this.depthTarget.id,
-            depthBuf: this.depthBuf.id,
-            visibility: this.visibility.id,
-            modes: this.modes.id,
-            geometry: this.geometry.id,
-            layer: this.layer.id,
-            lights: this.lights.id,
-            material: this.material.id,
-            morphTargets: this.morphTargets.id,
-            reflect: this.reflect.id,
-            shader: this.shader.id,
-            shaderParams: this.shaderParams.id,
-            stage: this.stage.id,
-            transform: this.transform.id
-        };
-    },
+                set: function (value) {
 
-    _destroy: function () {
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/morphTargets:property&quot;}}{{/crossLink}} property changes.
+                     * @event morphTargets
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;morphTargets&quot;, value);
+                },
 
-        this._renderer.removeGameObject(this.id);
-    }
-});
+                get: function () {
+                    return this._children.morphTargets;
+                }
+            },
+
+            /**
+             * The {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/reflect:property&quot;}}reflect{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/reflect:event&quot;}}{{/crossLink}} event on change.
+             * @property reflect
+             * @type Reflect
+             */
+            reflect: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/reflect:property&quot;}}{{/crossLink}} property changes.
+                     * @event reflect
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;reflect&quot;, value);
+                },
+
+                get: function () {
+                    return this._children.reflect;
+                }
+            },
+
+            /**
+             * The {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/shader:property&quot;}}shader{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/shader:event&quot;}}{{/crossLink}} event on change.
+             * @property shader
+             * @type Shader
+             */
+            shader: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/shader:property&quot;}}{{/crossLink}} property changes.
+                     * @event shader
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;shader&quot;, value);
+                },
+
+                get: function () {
+                    return this._children.shader;
+                }
+            },
+
+            /**
+             * The {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/shaderParams:property&quot;}}shaderParams{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/shaderParams:event&quot;}}{{/crossLink}} event on change.
+             * @property shaderParams
+             * @type ShaderParams
+             */
+            shaderParams: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/shaderParams:property&quot;}}{{/crossLink}} property changes.
+                     * @event shaderParams
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;shaderParams&quot;, value);
+                },
+
+                get: function () {
+                    return this._children.shaderParams;
+                }
+            },
+
+            /**
+             * The {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/stage:event&quot;}}{{/crossLink}} event on change.
+             * @property stage
+             * @type Stage
+             */
+            stage: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/stage:property&quot;}}{{/crossLink}} property changes.
+                     * @event stage
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;stage&quot;, value);
+                },
+
+                get: function () {
+                    return this._children.stage;
+                }
+            },
+
+            /**
+             * The modelling transform attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/transform:property&quot;}}transform{{/crossLink}}
+             * (an identity matrix) when set to a null or undefined value.
+             *
+             * Fires a {{#crossLink &quot;GameObject/transform:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property transform
+             * @type Component
+             */
+            transform: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this GameObject&#x27;s  {{#crossLink &quot;GameObject/transform:property&quot;}}{{/crossLink}} property changes.
+                     * @event transform
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;transform&quot;, value);
+                },
+
+                get: function () {
+                    return this._children.transform;
+                }
+            }
+        },
+
+        _compile: function () {
+
+            // Set states attached to this GameObject on the renderer
+
+            var children = this._children;
+
+            children.camera._compile();
+            children.clips._compile();
+            children.colorTarget._compile();
+            children.colorBuf._compile();
+            children.depthTarget._compile();
+            children.depthBuf._compile();
+            children.visibility._compile();
+            children.modes._compile();
+            children.geometry._compile();
+            children.layer._compile();
+            children.lights._compile();
+            children.material._compile();
+            children.morphTargets._compile();
+            children.reflect._compile();
+            children.shader._compile();
+            children.shaderParams._compile();
+            children.stage._compile();
+            children.transform._compile();
+
+            // (Re)build this GameObject in the renderer
+
+            this._renderer.buildGameObject(this.id);
+        },
+
+        _getJSON: function () {
+            return {
+                camera: this.camera.id,
+                clips: this.clips.id,
+                colorTarget: this.colorTarget.id,
+                colorBuf: this.colorBuf.id,
+                depthTarget: this.depthTarget.id,
+                depthBuf: this.depthBuf.id,
+                visibility: this.visibility.id,
+                modes: this.modes.id,
+                geometry: this.geometry.id,
+                layer: this.layer.id,
+                lights: this.lights.id,
+                material: this.material.id,
+                morphTargets: this.morphTargets.id,
+                reflect: this.reflect.id,
+                shader: this.shader.id,
+                shaderParams: this.shaderParams.id,
+                stage: this.stage.id,
+                transform: this.transform.id
+            };
+        },
+
+        _destroy: function () {
+            this._renderer.removeGameObject(this.id);
+        }
+    });
+
+})();
 
 
 

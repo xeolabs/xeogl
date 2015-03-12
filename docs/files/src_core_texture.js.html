@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,55 +126,59 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-/**
- A **Texture** specifies a texture map.
+(function () {
 
- &lt;ul&gt;
+    &quot;use strict&quot;;
 
- &lt;li&gt;Textures are grouped within {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}s, which are attached to
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+    /**
+     A **Texture** specifies a texture map.
 
- &lt;li&gt;To create a Texture from an image file, setting the Texture&#x27;s {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}}
- property to the image file path.&lt;/li&gt;
+     &lt;ul&gt;
 
- &lt;li&gt;To render color images of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
- property to a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+     &lt;li&gt;Textures are grouped within {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}s, which are attached to
+     {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
- &lt;li&gt;Similarly, to render depth images of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
- property to a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+     &lt;li&gt;To create a Texture from an image file, setting the Texture&#x27;s {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}}
+     property to the image file path.&lt;/li&gt;
 
- &lt;li&gt;For special effects, we often use rendered Textures in combination with {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Stages{{/crossLink}}.&lt;/li&gt;
- &lt;/ul&gt;
+     &lt;li&gt;To render color images of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
+     property to a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7092447/L.png&quot;&gt;&lt;/img&gt;
+     &lt;li&gt;Similarly, to render depth images of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
+     property to a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
- ### Example
+     &lt;li&gt;For special effects, we often use rendered Textures in combination with {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Stages{{/crossLink}}.&lt;/li&gt;
+     &lt;/ul&gt;
 
- The following example creates
- &lt;ul&gt;
- &lt;li&gt;three {{#crossLink &quot;Texture&quot;}}{{/crossLink}}s,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} which applies the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}s as diffuse, bump and specular maps,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;PointLight&quot;}}{{/crossLink}},&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
- &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
- &lt;/ul&gt;
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7092447/L.png&quot;&gt;&lt;/img&gt;
 
- &#x60;&#x60;&#x60;&#x60; javascript
- var scene = new XEO.Scene();
+     ### Example
 
- var diffuseMap = new XEO.Texture(scene, {
+     This example creates
+     &lt;ul&gt;
+     &lt;li&gt;three {{#crossLink &quot;Texture&quot;}}{{/crossLink}}s,&lt;/li&gt;
+     &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} which applies the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}s as diffuse, bump and specular maps,&lt;/li&gt;
+     &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;PointLight&quot;}}{{/crossLink}},&lt;/li&gt;
+     &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+     &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+     &lt;/ul&gt;
+
+     &#x60;&#x60;&#x60;&#x60; javascript
+     var scene = new XEO.Scene();
+
+     var diffuseMap = new XEO.Texture(scene, {
     src: &quot;diffuseMap.jpg&quot;
 });
 
- var bumpMap = new XEO.Texture(scene, {
+     var bumpMap = new XEO.Texture(scene, {
     src: &quot;bumpMap.jpg&quot;
 });
 
- var specularMap = new XEO.Texture(scene, {
+     var specularMap = new XEO.Texture(scene, {
     src: &quot;specularMap.jpg&quot;
 });
 
- var material = new XEO.Material(scene, {
+     var material = new XEO.Material(scene, {
     ambient: [0.3, 0.3, 0.3],
     shininess: 30,
     diffuseMap: diffuseMap,
@@ -173,875 +186,940 @@
     specularMap: specularMap
 });
 
- var light1 = new XEO.PointLight(scene, {
+     var light1 = new XEO.PointLight(scene, {
     pos: [0, 100, 100],
     diffuse: [0.5, 0.7, 0.5],
     specular: [1.0, 1.0, 1.0]
 });
 
- var light2 = new XEO.AmbientLight(scene, {
+     var light2 = new XEO.AmbientLight(scene, {
     ambient: [0.5, 0.7, 0.5]
 });
 
- var lights = new XEO.Lights(scene, {
+     var lights = new XEO.Lights(scene, {
     lights: [
         light1,
         light2
     ]
 });
 
- var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
+     var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
 
- var object = new XEO.GameObject(scene, {
+     var object = new XEO.GameObject(scene, {
     lights: lights,
     material: material,
     geometry: geometry
 });
- &#x60;&#x60;&#x60;&#x60;
+     &#x60;&#x60;&#x60;&#x60;
 
- @class Texture
- @module XEO
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Texture in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Texture.
- @param [cfg.minFilter]
- @param [cfg.magFilter]
- @param [cfg.wrapS]
- @param [cfg.wrapT]
- @param [cfg.isDepth]
- @param [cfg.depthMode]
- @param [cfg.depthCompareMode]
- @param [cfg.flipY]
- @param [cfg.width]
- @param [cfg.height]
- @param [cfg.internalFormat]
- @param [cfg.sourceFormat]
- @param [cfg.sourceType]
- @param [cfg.translate]
- @param [cfg.scale]
- @param [cfg.rotate]
- @extends Component
- */
-XEO.Texture = XEO.Component.extend({
+     @class Texture
+     @module XEO
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Texture in the default
+     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Texture.
+     @param [cfg.minFilter]
+     @param [cfg.magFilter]
+     @param [cfg.wrapS]
+     @param [cfg.wrapT]
+     @param [cfg.isDepth]
+     @param [cfg.depthMode]
+     @param [cfg.depthCompareMode]
+     @param [cfg.flipY]
+     @param [cfg.width]
+     @param [cfg.height]
+     @param [cfg.internalFormat]
+     @param [cfg.sourceFormat]
+     @param [cfg.sourceType]
+     @param [cfg.translate]
+     @param [cfg.scale]
+     @param [cfg.rotate]
+     @extends Component
+     */
+    XEO.Texture = XEO.Component.extend({
 
-    className: &quot;XEO.Texture&quot;,
+        className: &quot;XEO.Texture&quot;,
 
-    type: &quot;texture&quot;,
+        type: &quot;texture&quot;,
 
-    _init: function (cfg) {
+        _init: function (cfg) {
 
-        this._srcDirty = false;
-        this._textureDirty = false;
+            this._srcDirty = false;
+            this._textureDirty = false;
 
-        // Texture creation params
+            // Texture creation params
 
-        this.minFilter = cfg.minFilter;
-        this.magFilter = cfg.magFilter;
-        this.wrapS = cfg.wrapS;
-        this.wrapT = cfg.wrapT;
-        this.isDepth = cfg.isDepth;
-        this.depthMode = cfg.depthMode;
-        this.depthCompareMode = cfg.depthCompareMode;
-        this.depthCompareFunc = cfg.depthCompareFunc;
-        this.flipY = cfg.flipY;
-        this.width = cfg.width;
-        this.height = cfg.height;
-        this.internalFormat = cfg.internalFormat;
-        this.sourceFormat = cfg.sourceFormat;
-        this.sourceType = cfg.sourceType;
+            this.minFilter = cfg.minFilter;
+            this.magFilter = cfg.magFilter;
+            this.wrapS = cfg.wrapS;
+            this.wrapT = cfg.wrapT;
+            this.isDepth = cfg.isDepth;
+            this.depthMode = cfg.depthMode;
+            this.depthCompareMode = cfg.depthCompareMode;
+            this.depthCompareFunc = cfg.depthCompareFunc;
+            this.flipY = cfg.flipY;
+            this.width = cfg.width;
+            this.height = cfg.height;
+            this.internalFormat = cfg.internalFormat;
+            this.sourceFormat = cfg.sourceFormat;
+            this.sourceType = cfg.sourceType;
 
-        // Texture application params
+            // Texture application params
 
-        this.translate = cfg.translate;
-        this.scale = cfg.scale;
-        this.rotate = cfg.rotate;
+            this.translate = cfg.translate;
+            this.scale = cfg.scale;
+            this.rotate = cfg.rotate;
 
-        // Texture source
+            // Texture source
 
-        if (cfg.src) {
-            this.src = cfg.src;
+            if (cfg.src) {
+                this.src = cfg.src;
 
-        } else if (cfg.target) {
-            this.target = cfg.target;
-        }
+            } else if (cfg.target) {
+                this.target = cfg.target;
+            }
 
-        // Create state core
+            // Create state state
 
-        var core = this._core;
+            var state = this._state;
 
-        core.waitForLoad = cfg.waitForLoad !== false;
-        core.texture = null;
-        core.matrix = null;
+            state.waitForLoad = cfg.waitForLoad !== false;
+            state.texture = null;
+            state.matrix = null;
 
-        core._matrixDirty = true;
-        core._textureDirty = true;
+            state._matrixDirty = true;
+            state._textureDirty = true;
 
-        core.buildMatrix = function () {
-            self._buildMatrix(core);
-        };
+            state.buildMatrix = function () {
+                self._buildMatrix(state);
+            };
 
-        // Build transform matrix
+            // Build transform matrix
 
-        core.buildMatrix.call(this._core);
+            state.buildMatrix.call(state);
 
-        // Initialise texture
+            // Initialise texture
 
-        if (cfg.src) { // Load from URL
-            this._core.src = cfg.src;
-            this._loadTexture(cfg.src);
+            if (cfg.src) { // Load from URL
+                this._state.src = cfg.src;
+                this._loadTexture(cfg.src);
 
-        } else if (cfg.image) { // Create from image
-            this._core.image = cfg.image;
-            this._initTexture(cfg.image);
+            } else if (cfg.image) { // Create from image
+                this._state.image = cfg.image;
+                this._initTexture(cfg.image);
 
-        } else if (cfg.target) { // Render to this target
-            this.scene.getComponent(cfg.target,
-                function (target) {
-                    self.setTarget(target);
-                });
-        }
+            } else if (cfg.target) { // Render to this target
+                this.scene.getComponent(cfg.target,
+                    function (target) {
+                        self.setTarget(target);
+                    });
+            }
 
-        // Handle WebGL context restore
+            // Handle WebGL context restore
 
-        this._webglContextRestored = this.scene.canvas.on(
-            &quot;webglContextRestored&quot;,
-            function () {
-                if (self._core.src) {
-                    self._loadTexture(self._core.src);
+            this._webglContextRestored = this.scene.canvas.on(
+                &quot;webglContextRestored&quot;,
+                function () {
+                    if (self._state.src) {
+                        self._loadTexture(self._state.src);
 
-                } else if (self._core.image) {
-                    self._initTexture(self._core.image);
+                    } else if (self._state.image) {
+                        self._initTexture(self._state.image);
 
-                } else if (self._core.target) {
+                    } else if (self._state.target) {
 //                    self.getScene().getComponent(cfg.target,
 //                        function (target) {
-//                            self.setTarget(self._core.target);
+//                            self.setTarget(self._state.target);
 //                        });
+                    }
+                });
+
+            this.scene.stats.inc(&quot;textures&quot;);
+        },
+
+        _psops: {
+
+            /**
+             * Path to an image file to source this texture from.
+             *
+             * Sets the {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}} and
+             * {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} properties to null.
+             *
+             * Fires a {{#crossLink &quot;Texture/src:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property src
+             * @default null
+             * @type String
+             */
+            src: {
+
+                set  function (value) {
+                    this._state.image = null;
+                    this._state.src = value;
+                    this._state.target = null;
+                    var self = this;
+                    this.scene.once(&quot;tick&quot;, function () {
+                        self._loadTexture(self._state.src);
+                    });
+                    this._srcDirty = true;
+
+                    /**
+                     * Fired whenever this Texture&#x27;s {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} property changes.
+                     * @event src
+                     * @param value The property&#x27;s new value
+                     * @type String
+                     */
+                    this.fire(&quot;src&quot;, value);
+                },
+
+                get  function () {
+                    return this._state.src;
                 }
-            });
-
-        this.scene.stats.inc(&quot;textures&quot;);
-    },
-
-    /**
-     * Path to an image file to source this texture from.
-     *
-     * Sets the {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}} and
-     * {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} properties to null.
-     *
-     * Fires a {{#crossLink &quot;Texture/src:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property src
-     * @default null
-     * @type String
-     */
-    set src(value) {
-        this._core.image = null;
-        this._core.src = value;
-        this._core.target = null;
-        var self = this;
-        this.scene.once(&quot;tick&quot;, function () {
-            self._loadTexture(self._core.src);
-        });
-        this._srcDirty = true;
-
-        /**
-         * Fired whenever this Texture&#x27;s {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} property changes.
-         * @event src
-         * @param value The property&#x27;s new value
-         * @type String
-         */
-        this.fire(&quot;src&quot;, value);
-    },
-
-    get src() {
-        return this._core.src;
-    },
-
-    /**
-     * Instance or ID of a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} or
-     * {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} to source this texture from.
-     *
-     * Sets the {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} and
-     * {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} properties to null.
-     *
-     * Fires a {{#crossLink &quot;Texture/target:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property target
-     * @default null
-     * @type String | XEO.ColorTarget | XEO.DepthTarget
-     */
-    set target(value) {
-        this._setChild(&quot;renderBuf&quot;, value); // Target is a render buffer
-        this._core.image = null;
-        this._core.src = null;
-        this._core.target = null;
-        this._targetDirty = true;
-        this._setDirty();
-
-        /**
-         * Fired whenever this Texture&#x27;s   {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}} property changes.
-         * @event target
-         * @param value The property&#x27;s new value
-         * @type String | XEO.ColorTarget | XEO.DepthTarget
-         */
-        this.fire(&quot;target&quot;, value);
-    },
-
-    get target() {
-        return this._children.renderBuf;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/translate:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property translate
-     * @default [0, 0, 0]
-     * @type Array(Number)
-     */
-    set translate(value) {
-        value = value || [0, 0, 0];
-        this._core.translate = value;
-        this._core._matrixDirty = true;
-
-        /**
-         * Fired whenever this Texture&#x27;s   {{#crossLink &quot;Texture/translate:property&quot;}}{{/crossLink}} property changes.
-         * @event translate
-         * @param value {Array(Number)} The property&#x27;s new value
-         */
-        this.fire(&quot;translate&quot;, value);
-    },
-
-    get translate() {
-        return this._core.translate;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/scale:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property scale
-     * @default [0, 0, 0]
-     * @type Array(Number)
-     */
-    set scale(value) {
-        value = value || [1, 1, 1];
-        this._core.scale = value;
-        this._core._matrixDirty = true;
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s   {{#crossLink &quot;Texture/scale:property&quot;}}{{/crossLink}} property changes.
-         * @event scale
-         * @param value {Array(Number)} The property&#x27;s new value
-         */
-        this.fire(&quot;scale&quot;, value);
-    },
-
-    get scale() {
-        return this._core.scale;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/rotate:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property rotate
-     * @default 0
-     * @type Number
-     */
-    set rotate(value) {
-        value = value || 0;
-        this._core.rotate = value;
-        this._core._matrixDirty = true;
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/rotate:property&quot;}}{{/crossLink}} property changes.
-         * @event rotate
-         * @param value {Number} The property&#x27;s new value
-         */
-        this.fire(&quot;rotate&quot;, value);
-    },
-
-    get rotate() {
-        return this._core.rotate;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/minFilter:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property minFilter
-     * @default &quot;linearMipMapNearest&quot;
-     * @type String
-     */
-    set minFilter(value) {
-        value = value || &quot;linearMipMapNearest&quot;;
-        this._core.minFilter = value;
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/minFilter:property&quot;}}{{/crossLink}} property changes.
-         * @event minFilter
-         * @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;minFilter&quot;, value);
-    },
-
-    get minFilter() {
-        return this._core.minFilter;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/magFilter:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property magFilter
-     * @default &quot;linear&quot;
-     * @type String
-     */
-    set magFilter(value) {
-        value = value || &quot;linear&quot;;
-        this._core.magFilter = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/magFilter:property&quot;}}{{/crossLink}} property changes.
-         * @event magFilter
-         * @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;magFilter&quot;, value);
-    },
-
-    get magFilter() {
-        return this._core.magFilter;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/wrapS:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property wrapS
-     * @default &quot;repeat&quot;
-     * @type String
-     */
-    set wrapS(value) {
-        value = value || &quot;repeat&quot;;
-        this._core.wrapS = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/wrapS:property&quot;}}{{/crossLink}} property changes.
-         * @event wrapS
-         * @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;wrapS&quot;, value);
-    },
-
-    get wrapS() {
-        return this._core.wrapS;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/wrapT:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property wrapT
-     * @default &quot;repeat&quot;
-     * @type String
-     */
-    set wrapT(value) {
-        value = value || &quot;repeat&quot;;
-        this._core.wrapT = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/wrapT:property&quot;}}{{/crossLink}} property changes.
-         * @event wrapT
-         * @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;wrapT&quot;, value);
-    },
-
-    get wrapT() {
-        return this._core.wrapT;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires an {{#crossLink &quot;Texture/isDepth:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property isDepth
-     * @default false
-     * @type Boolean
-     */
-    set isDepth(value) {
-        value = value === true;
-        this._core.isDepth = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/isDepth:property&quot;}}{{/crossLink}} property changes.
-         * @event isDepth
-         * @param value {Boolean} The property&#x27;s new value
-         */
-        this.fire(&quot;isDepth&quot;, value);
-    },
-
-    get isDepth() {
-        return this._core.isDepth;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/depthMode:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property depthMode
-     * @default &quot;luminance&quot;
-     * @type String
-     */
-    set depthMode(value) {
-        value = value || &quot;luminance&quot;;
-        this._core.depthMode = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/depthMode:property&quot;}}{{/crossLink}} property changes.
-         * @event depthMode
-         * @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;depthMode&quot;, value);
-    },
-
-    get depthMode() {
-        return this._core.depthMode;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/depthMode:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property depthCompareMode
-     * @default &quot;compareRToTexture&quot;
-     * @type String
-     */
-    set depthCompareMode(value) {
-        value = value || &quot;compareRToTexture&quot;;
-        this._core.depthCompareMode = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/depthCompareMode:property&quot;}}{{/crossLink}} property changes.
-         * @event depthCompareMode
-         * @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;depthCompareMode&quot;, value);
-    },
-
-    get depthCompareMode() {
-        return this._core.depthCompareMode;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/depthCompareFunc:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property depthCompareFunc
-     * @default &quot;lequal&quot;
-     * @type String
-     */
-    set depthCompareFunc(value) {
-        value = value || &quot;lequal&quot;;
-        this._core.depthCompareFunc = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/depthCompareFunc:property&quot;}}{{/crossLink}} property changes.
-         * @event depthCompareFunc
-         * @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;depthCompareFunc&quot;, value);
-    },
-
-    get depthCompareFunc() {
-        return this._core.depthCompareFunc;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/flipY:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property flipY
-     * @default false
-     * @type Boolean
-     */
-    set flipY(value) {
-        value = value !== false;
-        this._core.flipY = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/flipY:property&quot;}}{{/crossLink}} property changes.
-         * @event flipY
-         * @param value {Boolean} The property&#x27;s new value
-         */
-        this.fire(&quot;flipY&quot;, value);
-    },
-
-    get flipY() {
-        return this._core.flipY;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/width:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property width
-     * @default false
-     * @type Number
-     */
-    set width(value) {
-        value = value != undefined ? value : 1.0;
-        this._core.width = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/width:property&quot;}}{{/crossLink}} property changes.
-         * @event width
-         * @param value {Number} The property&#x27;s new value
-         */
-        this.fire(&quot;width&quot;, value);
-    },
-
-    get width() {
-        return this._core.width;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires a {{#crossLink &quot;Texture/height:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property height
-     * @default false
-     * @type Number
-     */
-    set height(value) {
-        value = value != undefined ? value : 1.0;
-        this._core.height = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/height:property&quot;}}{{/crossLink}} property changes.
-         * @event height
-         * @param value {Number} The property&#x27;s new value
-         */
-        this.fire(&quot;height&quot;, value);
-    },
-
-    get height() {
-        return this._core.height;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires an {{#crossLink &quot;Texture/internalFormat:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property internalFormat
-     * @default &quot;alpha&quot;
-     * @type String
-     */
-    set internalFormat(value) {
-        value = value || &quot;alpha&quot;;
-        this._core.internalFormat = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/internalFormat:property&quot;}}{{/crossLink}} property changes.
-         * @event internalFormat
-         * @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;internalFormat&quot;, value);
-    },
-
-    get internalFormat() {
-        return this._core.internalFormat;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires an {{#crossLink &quot;Texture/sourceFormat:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property sourceFormat
-     * @default &quot;alpha&quot;
-     * @type String
-     */
-    set sourceFormat(value) {
-        value = value || &quot;alpha&quot;;
-        this._core.sourceFormat = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/sourceFormat:property&quot;}}{{/crossLink}} property changes.
-         * @event sourceFormat
-         * @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;sourceFormat&quot;, value);
-    },
-
-    get sourceFormat() {
-        return this._core.sourceFormat;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires an {{#crossLink &quot;Texture/sourceType:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property sourceType
-     * @default &quot;unsignedByte&quot;
-     * @type String
-     */
-    set sourceType(value) {
-        value = value || &quot;unsignedByte&quot;;
-        this._core.sourceType = value;
-
-        //...
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/sourceType:property&quot;}}{{/crossLink}} property changes.
-         * @event sourceType
-         * @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;sourceType&quot;, value);
-    },
-
-    get sourceType() {
-        return this._core.sourceType;
-    },
-
-    /**
-     * TODO
-     *
-     * Fires an {{#crossLink &quot;Texture/image:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property image
-     * @default null
-     * @type {HTML Image}
-     */
-    set image(value) {
-
-        /**
-         * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} property changes.
-         * @event image
-         * @param value {HTML Image} The property&#x27;s new value
-         */
-        this.fire(&quot;image&quot;, value);
-    },
-
-    get image() {
-
-    },
-
-    /**
-     * Rebuilds the texture transform matrix
-     * @private
-     */
-    _buildMatrix: function () {
-        var matrix;
-        var t;
-        if (this.translate.x != 0 || this.translate.y != 0) {
-            matrix = XEO.math.translationMat4v([ this.translate.x || 0, this.translate.y || 0, 0]);
-        }
-        if (this.scale.x != 1 || this.scale.y != 1) {
-            t = XEO.math.scalingMat4v([ this.scale.x || 1, this.scale.y || 1, 1]);
-            matrix = matrix ? XEO.math.mulMat4(matrix, t) : t;
-        }
-        if (this.rotate != 0) {
-            t = XEO.math.rotationMat4v(this.rotate * 0.0174532925, [0, 0, 1]);
-            matrix = matrix ? XEO.math.mulMat4(matrix, t) : t;
-        }
-        if (matrix) {
-            this.matrix = matrix;
-            if (!this.matrixAsArray) {
-                this.matrixAsArray = new Float32Array(this.matrix);
-            } else {
-                this.matrixAsArray.set(this.matrix);
+            },
+
+            /**
+             * Instance or ID of a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} or
+             * {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} to source this texture from.
+             *
+             * Sets the {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} and
+             * {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} properties to null.
+             *
+             * Fires a {{#crossLink &quot;Texture/target:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property target
+             * @default null
+             * @type String | XEO.ColorTarget | XEO.DepthTarget
+             */
+            target: {
+
+                set  function (value) {
+                    this._setChild(&quot;renderBuf&quot;, value); // Target is a render buffer
+                    this._state.image = null;
+                    this._state.src = null;
+                    this._state.target = null;
+                    this._targetDirty = true;
+                    this._setDirty();
+
+                    /**
+                     * Fired whenever this Texture&#x27;s   {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}} property changes.
+                     * @event target
+                     * @param value The property&#x27;s new value
+                     * @type String | XEO.ColorTarget | XEO.DepthTarget
+                     */
+                    this.fire(&quot;target&quot;, value);
+                },
+
+                get  function () {
+                    return this._children.renderBuf;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/translate:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property translate
+             * @default [0, 0, 0]
+             * @type Array(Number)
+             */
+            translate: {
+
+                set  function (value) {
+                    value = value || [0, 0, 0];
+                    this._state.translate = value;
+                    this._state._matrixDirty = true;
+
+                    /**
+                     * Fired whenever this Texture&#x27;s   {{#crossLink &quot;Texture/translate:property&quot;}}{{/crossLink}} property changes.
+                     * @event translate
+                     * @param value {Array(Number)} The property&#x27;s new value
+                     */
+                    this.fire(&quot;translate&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.translate;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/scale:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property scale
+             * @default [0, 0, 0]
+             * @type Array(Number)
+             */
+            scale: {
+
+                set: function (value) {
+                    value = value || [1, 1, 1];
+                    this._state.scale = value;
+                    this._state._matrixDirty = true;
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s   {{#crossLink &quot;Texture/scale:property&quot;}}{{/crossLink}} property changes.
+                     * @event scale
+                     * @param value {Array(Number)} The property&#x27;s new value
+                     */
+                    this.fire(&quot;scale&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.scale;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/rotate:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property rotate
+             * @default 0
+             * @type Number
+             */
+            rotate: {
+
+                set: function (value) {
+                    value = value || 0;
+                    this._state.rotate = value;
+                    this._state._matrixDirty = true;
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/rotate:property&quot;}}{{/crossLink}} property changes.
+                     * @event rotate
+                     * @param value {Number} The property&#x27;s new value
+                     */
+                    this.fire(&quot;rotate&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.rotate;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/minFilter:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property minFilter
+             * @default &quot;linearMipMapNearest&quot;
+             * @type String
+             */
+            minFilter: {
+
+                set: function (value) {
+                    value = value || &quot;linearMipMapNearest&quot;;
+                    this._state.minFilter = value;
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/minFilter:property&quot;}}{{/crossLink}} property changes.
+                     * @event minFilter
+                     * @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;minFilter&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.minFilter;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/magFilter:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property magFilter
+             * @default &quot;linear&quot;
+             * @type String
+             */
+            magFilter: {
+
+                set: function (value) {
+                    value = value || &quot;linear&quot;;
+                    this._state.magFilter = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/magFilter:property&quot;}}{{/crossLink}} property changes.
+                     * @event magFilter
+                     * @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;magFilter&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.magFilter;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/wrapS:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property wrapS
+             * @default &quot;repeat&quot;
+             * @type String
+             */
+            wrapS: {
+
+                set: function (value) {
+                    value = value || &quot;repeat&quot;;
+                    this._state.wrapS = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/wrapS:property&quot;}}{{/crossLink}} property changes.
+                     * @event wrapS
+                     * @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;wrapS&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.wrapS;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/wrapT:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property wrapT
+             * @default &quot;repeat&quot;
+             * @type String
+             */
+            wrapT: {
+
+                set: function (value) {
+                    value = value || &quot;repeat&quot;;
+                    this._state.wrapT = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/wrapT:property&quot;}}{{/crossLink}} property changes.
+                     * @event wrapT
+                     * @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;wrapT&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.wrapT;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires an {{#crossLink &quot;Texture/isDepth:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property isDepth
+             * @default false
+             * @type Boolean
+             */
+            isDepth: {
+
+                set: function (value) {
+                    value = value === true;
+                    this._state.isDepth = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/isDepth:property&quot;}}{{/crossLink}} property changes.
+                     * @event isDepth
+                     * @param value {Boolean} The property&#x27;s new value
+                     */
+                    this.fire(&quot;isDepth&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.isDepth;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/depthMode:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property depthMode
+             * @default &quot;luminance&quot;
+             * @type String
+             */
+            depthMode: {
+
+                set: function (value) {
+                    value = value || &quot;luminance&quot;;
+                    this._state.depthMode = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/depthMode:property&quot;}}{{/crossLink}} property changes.
+                     * @event depthMode
+                     * @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;depthMode&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.depthMode;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/depthMode:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property depthCompareMode
+             * @default &quot;compareRToTexture&quot;
+             * @type String
+             */
+            depthCompareMode: {
+
+                set: function (value) {
+                    value = value || &quot;compareRToTexture&quot;;
+                    this._state.depthCompareMode = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/depthCompareMode:property&quot;}}{{/crossLink}} property changes.
+                     * @event depthCompareMode
+                     * @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;depthCompareMode&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.depthCompareMode;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/depthCompareFunc:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property depthCompareFunc
+             * @default &quot;lequal&quot;
+             * @type String
+             */
+            depthCompareFunc: {
+
+                set: function (value) {
+                    value = value || &quot;lequal&quot;;
+                    this._state.depthCompareFunc = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/depthCompareFunc:property&quot;}}{{/crossLink}} property changes.
+                     * @event depthCompareFunc
+                     * @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;depthCompareFunc&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.depthCompareFunc;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/flipY:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property flipY
+             * @default false
+             * @type Boolean
+             */
+            flipY: {
+
+                set: function (value) {
+                    value = value !== false;
+                    this._state.flipY = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/flipY:property&quot;}}{{/crossLink}} property changes.
+                     * @event flipY
+                     * @param value {Boolean} The property&#x27;s new value
+                     */
+                    this.fire(&quot;flipY&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.flipY;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/width:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property width
+             * @default false
+             * @type Number
+             */
+            width: {
+
+                set: function (value) {
+                    value = value !== undefined ? value : 1.0;
+                    this._state.width = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/width:property&quot;}}{{/crossLink}} property changes.
+                     * @event width
+                     * @param value {Number} The property&#x27;s new value
+                     */
+                    this.fire(&quot;width&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.width;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires a {{#crossLink &quot;Texture/height:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property height
+             * @default false
+             * @type Number
+             */
+            height: {
+
+                set: function (value) {
+                    value = value !== undefined ? value : 1.0;
+                    this._state.height = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/height:property&quot;}}{{/crossLink}} property changes.
+                     * @event height
+                     * @param value {Number} The property&#x27;s new value
+                     */
+                    this.fire(&quot;height&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.height;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires an {{#crossLink &quot;Texture/internalFormat:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property internalFormat
+             * @default &quot;alpha&quot;
+             * @type String
+             */
+            internalFormat: {
+
+                set: function (value) {
+                    value = value || &quot;alpha&quot;;
+                    this._state.internalFormat = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/internalFormat:property&quot;}}{{/crossLink}} property changes.
+                     * @event internalFormat
+                     * @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;internalFormat&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.internalFormat;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires an {{#crossLink &quot;Texture/sourceFormat:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property sourceFormat
+             * @default &quot;alpha&quot;
+             * @type String
+             */
+            sourceFormat: {
+
+                set: function (value) {
+                    value = value || &quot;alpha&quot;;
+                    this._state.sourceFormat = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/sourceFormat:property&quot;}}{{/crossLink}} property changes.
+                     * @event sourceFormat
+                     * @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;sourceFormat&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.sourceFormat;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires an {{#crossLink &quot;Texture/sourceType:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property sourceType
+             * @default &quot;unsignedByte&quot;
+             * @type String
+             */
+            sourceType: {
+
+                set: function (value) {
+                    value = value || &quot;unsignedByte&quot;;
+                    this._state.sourceType = value;
+
+                    //...
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/sourceType:property&quot;}}{{/crossLink}} property changes.
+                     * @event sourceType
+                     * @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;sourceType&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.sourceType;
+                }
+            },
+
+            /**
+             * TODO
+             *
+             * Fires an {{#crossLink &quot;Texture/image:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property image
+             * @default null
+             * @type {HTML Image}
+             */
+            image: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} property changes.
+                     * @event image
+                     * @param value {HTML Image} The property&#x27;s new value
+                     */
+                    this.fire(&quot;image&quot;, value);
+                },
+
+                get: function () {
+
+                }
             }
-        }
-        this._matrixDirty = false;
-    },
+        },
 
-    /**
-     * Initialises texture using image loaded from given URL
-     * @param src
-     * @private
-     */
-    _loadTexture: function (src) {
-        var self = this;
-        var task = this.scene.tasks.create({
-            description: &quot;Loading texture&quot;
-        });
-        var image = new Image();
-        image.onload = function () {
-            self._initTexture(image);
-            task.setCompleted();
-        };
-        image.onerror = function () {
-            task.setFailed();
-        };
-        if (src.indexOf(&quot;data&quot;) == 0) {  // Image data
-            image.src = src;
-        } else { // Image file
-            image.crossOrigin = &quot;Anonymous&quot;;
-            image.src = src;
-        }
-    },
-
-    _initTexture: function (image) {
-        var exists = !!this._core.texture;
-        var gl = this.scene.canvas.gl;
-        var texture = exists ? this._core.texture.texture : gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._ensureImageSizePowerOfTwo(image));
-        if (!exists) {
-            this._core.texture = new XEO.webgl.Texture2D(gl, {
-                texture: texture, // WebGL texture object
-                minFilter: this._getGLOption(&quot;minFilter&quot;, gl.LINEAR_MIPMAP_NEAREST),
-                magFilter: this._getGLOption(&quot;magFilter&quot;, gl.LINEAR),
-                wrapS: this._getGLOption(&quot;wrapS&quot;, gl.REPEAT),
-                wrapT: this._getGLOption(&quot;wrapT&quot;, gl.REPEAT),
-                isDepth: this._getOption(this._core.isDepth, false),
-                depthMode: this._getGLOption(&quot;depthMode&quot;, gl.LUMINANCE),
-                depthCompareMode: this._getGLOption(&quot;depthCompareMode&quot;, gl.COMPARE_R_TO_TEXTURE),
-                depthCompareFunc: this._getGLOption(&quot;depthCompareFunc&quot;, gl.LEQUAL),
-                flipY: this._getOption(this._core.flipY, true),
-                width: this._getOption(this._core.width, 1),
-                height: this._getOption(this._core.height, 1),
-                internalFormat: this._getGLOption(&quot;internalFormat&quot;, gl.LEQUAL),
-                sourceFormat: this._getGLOption(&quot;sourceType&quot;, gl.ALPHA),
-                sourceType: this._getGLOption(&quot;sourceType&quot;, gl.UNSIGNED_BYTE),
-                update: null
-            });
-            if (this.destroyed) { // component was destroyed while loading
-                this._core.texture.destroy();
+        /**
+         * Rebuilds the texture transform matrix
+         * @private
+         */
+        _buildMatrix: function () {
+            var matrix;
+            var t;
+            if (this.translate.x !== 0 || this.translate.y !== 0) {
+                matrix = XEO.math.translationMat4v([ this.translate.x || 0, this.translate.y || 0, 0]);
             }
+            if (this.scale.x !== 1 || this.scale.y !== 1) {
+                t = XEO.math.scalingMat4v([ this.scale.x || 1, this.scale.y || 1, 1]);
+                matrix = matrix ? XEO.math.mulMat4(matrix, t) : t;
+            }
+            if (this.rotate !== 0) {
+                t = XEO.math.rotationMat4v(this.rotate * 0.0174532925, [0, 0, 1]);
+                matrix = matrix ? XEO.math.mulMat4(matrix, t) : t;
+            }
+            if (matrix) {
+                this.matrix = matrix;
+                if (!this.matrixAsArray) {
+                    this.matrixAsArray = new Float32Array(this.matrix);
+                } else {
+                    this.matrixAsArray.set(this.matrix);
+                }
+            }
+            this._matrixDirty = false;
+        },
+
+        /**
+         * Initialises texture using image loaded from given URL
+         * @param src
+         * @private
+         */
+        _loadTexture: function (src) {
+            var self = this;
+            var task = this.scene.tasks.create({
+                description: &quot;Loading texture&quot;
+            });
+            var image = new Image();
+            image.onload = function () {
+                self._initTexture(image);
+                task.setCompleted();
+            };
+            image.onerror = function () {
+                task.setFailed();
+            };
+            if (src.indexOf(&quot;data&quot;) === 0) {  // Image data
+                image.src = src;
+            } else { // Image file
+                image.crossOrigin = &quot;Anonymous&quot;;
+                image.src = src;
+            }
+        },
+
+        _initTexture: function (image) {
+            var exists = !!this._state.texture;
+            var gl = this.scene.canvas.gl;
+            var texture = exists ? this._state.texture.texture : gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._ensureImageSizePowerOfTwo(image));
+            if (!exists) {
+                this._state.texture = new XEO.webgl.Texture2D(gl, {
+                    texture: texture, // WebGL texture object
+                    minFilter: this._getGLOption(&quot;minFilter&quot;, gl.LINEAR_MIPMAP_NEAREST),
+                    magFilter: this._getGLOption(&quot;magFilter&quot;, gl.LINEAR),
+                    wrapS: this._getGLOption(&quot;wrapS&quot;, gl.REPEAT),
+                    wrapT: this._getGLOption(&quot;wrapT&quot;, gl.REPEAT),
+                    isDepth: this._getOption(this._state.isDepth, false),
+                    depthMode: this._getGLOption(&quot;depthMode&quot;, gl.LUMINANCE),
+                    depthCompareMode: this._getGLOption(&quot;depthCompareMode&quot;, gl.COMPARE_R_TO_TEXTURE),
+                    depthCompareFunc: this._getGLOption(&quot;depthCompareFunc&quot;, gl.LEQUAL),
+                    flipY: this._getOption(this._state.flipY, true),
+                    width: this._getOption(this._state.width, 1),
+                    height: this._getOption(this._state.height, 1),
+                    internalFormat: this._getGLOption(&quot;internalFormat&quot;, gl.LEQUAL),
+                    sourceFormat: this._getGLOption(&quot;sourceType&quot;, gl.ALPHA),
+                    sourceType: this._getGLOption(&quot;sourceType&quot;, gl.UNSIGNED_BYTE),
+                    update: null
+                });
+                if (this.destroyed) { // component was destroyed while loading
+                    this._state.texture.destroy();
+                }
+            }
+            this._renderer.imageDirty = true;
+        },
+
+        _ensureImageSizePowerOfTwo: function (image) {
+            if (!this._isPowerOfTwo(image.width) || !this._isPowerOfTwo(image.height)) {
+                var canvas = document.createElement(&quot;canvas&quot;);
+                canvas.width = this._nextHighestPowerOfTwo(image.width);
+                canvas.height = this._nextHighestPowerOfTwo(image.height);
+                var ctx = canvas.getContext(&quot;2d&quot;);
+                ctx.drawImage(image,
+                    0, 0, image.width, image.height,
+                    0, 0, canvas.width, canvas.height);
+                image = canvas;
+                image.crossOrigin = &quot;&quot;;
+            }
+            return image;
+        },
+
+        _isPowerOfTwo: function (x) {
+            return (x &amp; (x - 1)) === 0;
+        },
+
+        _nextHighestPowerOfTwo: function (x) {
+            --x;
+            for (var i = 1; i &lt; 32; i &lt;&lt;= 1) {
+                x = x | x &gt;&gt; i;
+            }
+            return x + 1;
+        },
+
+        _getGLOption: function (name, defaultVal) {
+            var gl = this.scene.canvas.gl;
+            var value = this._state[name];
+            if (value === undefined) {
+                return defaultVal;
+            }
+            var glName = XEO.webgl.enums[value];
+            if (glName === undefined) {
+                throw SceneJS_error.fatalError(
+                    SceneJS.errors.ILLEGAL_COMPONENT_CONFIG,
+                        &quot;Unrecognised value for texture component property &#x27;&quot; + name + &quot;&#x27; value: &#x27;&quot; + value + &quot;&#x27;&quot;);
+            }
+            return gl[glName];
+        },
+
+        _getOption: function (value, defaultVal) {
+            return (value === undefined) ? defaultVal : value;
+        },
+
+        _getJSON: function () {
+            var json = {
+                translate: this.translate,
+                scale: this.scale,
+                rotate: this.rotate,
+                minFilter: this.minFilter,
+                magFilter: this.magFilter,
+                wrapS: this.wrapS,
+                wrapT: this.wrapT,
+                isDepth: this.isDepth,
+                depthMode: this.depthMode,
+                depthCompareMode: this.depthCompareMode,
+                depthCompareFunc: this.depthCompareFunc,
+                flipY: this.flipY,
+                width: this.width,
+                height: this.height,
+                internalFormat: this.internalFormat,
+                sourceFormat: this.sourceFormat,
+                sourceType: this.sourceType
+            };
+            if (this.src) {
+                json.src = this.src;
+            } else if (this.target) {
+                json.target = this.target.id;
+            }
+            //...
+            return json;
+        },
+
+        _destroy: function () {
+            this.scene.off(this._tick);
+            this.scene.canvas.off(this._webglContextRestored);
+            this.scene.stats.dec(&quot;textures&quot;);
         }
-        this._renderer.imageDirty = true;
-    },
+    });
 
-    _ensureImageSizePowerOfTwo: function (image) {
-        if (!this._isPowerOfTwo(image.width) || !this._isPowerOfTwo(image.height)) {
-            var canvas = document.createElement(&quot;canvas&quot;);
-            canvas.width = this._nextHighestPowerOfTwo(image.width);
-            canvas.height = this._nextHighestPowerOfTwo(image.height);
-            var ctx = canvas.getContext(&quot;2d&quot;);
-            ctx.drawImage(image,
-                0, 0, image.width, image.height,
-                0, 0, canvas.width, canvas.height);
-            image = canvas;
-            image.crossOrigin = &quot;&quot;;
-        }
-        return image;
-    },
-
-    _isPowerOfTwo: function (x) {
-        return (x &amp; (x - 1)) == 0;
-    },
-
-    _nextHighestPowerOfTwo: function (x) {
-        --x;
-        for (var i = 1; i &lt; 32; i &lt;&lt;= 1) {
-            x = x | x &gt;&gt; i;
-        }
-        return x + 1;
-    },
-
-    _getGLOption: function (name, defaultVal) {
-        var gl = this.scene.canvas.gl;
-        var value = this._core[name];
-        if (value == undefined) {
-            return defaultVal;
-        }
-        var glName = XEO.webgl.enums[value];
-        if (glName == undefined) {
-            throw SceneJS_error.fatalError(
-                SceneJS.errors.ILLEGAL_COMPONENT_CONFIG,
-                    &quot;Unrecognised value for texture component property &#x27;&quot; + name + &quot;&#x27; value: &#x27;&quot; + value + &quot;&#x27;&quot;);
-        }
-        return gl[glName];
-    },
-
-    _getOption: function (value, defaultVal) {
-        return (value == undefined) ? defaultVal : value;
-    },
-
-    _getJSON: function () {
-        var json = {
-            translate: this.translate,
-            scale: this.scale,
-            rotate: this.rotate,
-            minFilter: this.minFilter,
-            magFilter: this.magFilter,
-            wrapS: this.wrapS,
-            wrapT: this.wrapT,
-            isDepth: this.isDepth,
-            depthMode: this.depthMode,
-            depthCompareMode: this.depthCompareMode,
-            depthCompareFunc: this.depthCompareFunc,
-            flipY: this.flipY,
-            width: this.width,
-            height: this.height,
-            internalFormat: this.internalFormat,
-            sourceFormat: this.sourceFormat,
-            sourceType: this.sourceType
-        };
-        if (this.src) {
-            json.src = this.src;
-        } else if (this.target) {
-            json.target = this.target.id;
-        }
-        //...
-        return json;
-    },
-
-    _destroy: function () {
-        this.scene.off(this._tick);
-        this.scene.canvas.off(this._webglContextRestored);
-        this.scene.stats.dec(&quot;textures&quot;);
-    }
-});
+})();
     </pre>
 </div>
                     </div>

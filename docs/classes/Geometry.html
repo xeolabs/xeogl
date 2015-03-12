@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -121,7 +130,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_geometry.js.html#l3"><code>src&#x2F;core&#x2F;geometry.js:3</code></a>
+            Defined in: <a href="../files/src_core_geometry.js.html#l6"><code>src&#x2F;core&#x2F;geometry.js:6</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -133,113 +142,113 @@
     <p>A <strong>Geometry</strong> defines the geometric shape of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <p><img src="http://www.gliffy.com/go/publish/image/7103669/L.png"></img></p>
 <h3 id="example-1">Example 1</h3>
-<p> If you create a Geometry with no specified shape, it will be a 2x2x2 box by default:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> var geometry = new XEO.Geometry(scene); // 2x2x2 box
+<p>If you create a Geometry with no specified shape, it will be a 2x2x2 box by default:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var geometry = new XEO.Geometry(scene); // 2x2x2 box
 
- var object2 = new XEO.GameObject(scene, {
-  geometry: geometry
- });
+var object2 = new XEO.GameObject(scene, {
+   geometry: geometry
+});
 </code></pre>
 <h3 id="example-2">Example 2</h3>
-<p> If you create a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> with no Geometry, it will inherit its <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
- default <a href="../classes/Scene.html#property_geometry" class="crosslink">geometry</a>, which is also a 2x2x2 box:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> var scene = new XEO.Scene();
+<p>If you create a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> with no Geometry, it will inherit its <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
+default <a href="../classes/Scene.html#property_geometry" class="crosslink">geometry</a>, which is also a 2x2x2 box:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
- var object1 = new XEO.GameObject(scene);
+var object1 = new XEO.GameObject(scene);
 </code></pre>
 <h3 id="example-3">Example 3</h3>
-<p> Finally, we&#39;ll create a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> with a Geometry that we have <strong>explicitly</strong>
- configured to be a 2x2x2 box:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> // Create a 2x2x2 box centered at the World-space origin
- var geometry2 = new XEO.Geometry(scene, {
+<p>Finally, we&#39;ll create a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> with a Geometry that we have <strong>explicitly</strong>
+configured to be a 2x2x2 box:</p>
+<pre class="code prettyprint"><code class="lang-javascript">// Create a 2x2x2 box centered at the World-space origin
+var geometry2 = new XEO.Geometry(scene, {
 
-      // Supported primitives are &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;,
-      // &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.primitive: "triangles",
-      primitive: "triangles",
+   // Supported primitives are &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;,
+   // &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.primitive: "triangles",
+   primitive: "triangles",
 
-      // Vertex positions
-      positions : [
-          // Front face
-          -1.0, -1.0, 1.0,
-          1.0, -1.0, 1.0,
-          1.0, 1.0, 1.0,
-          -1.0, 1.0, 1.0,
+   // Vertex positions
+   positions : [
+       // Front face
+       -1.0, -1.0, 1.0,
+       1.0, -1.0, 1.0,
+       1.0, 1.0, 1.0,
+       -1.0, 1.0, 1.0,
 
-          // Back face
-          -1.0, -1.0, -1.0,
-          -1.0, 1.0, -1.0,
-           1.0, 1.0, -1.0,
-          1.0, -1.0, -1.0,
+       // Back face
+       -1.0, -1.0, -1.0,
+       -1.0, 1.0, -1.0,
+        1.0, 1.0, -1.0,
+       1.0, -1.0, -1.0,
 
-          // Top face
-          -1.0, 1.0, -1.0,
-          -1.0, 1.0, 1.0,
-          1.0, 1.0, 1.0,
-          1.0, 1.0, -1.0,
+       // Top face
+       -1.0, 1.0, -1.0,
+       -1.0, 1.0, 1.0,
+       1.0, 1.0, 1.0,
+       1.0, 1.0, -1.0,
 
-          // Bottom face
-          -1.0, -1.0, -1.0,
-          1.0, -1.0, -1.0,
-          1.0, -1.0, 1.0,
-          -1.0, -1.0, 1.0,
+       // Bottom face
+       -1.0, -1.0, -1.0,
+       1.0, -1.0, -1.0,
+       1.0, -1.0, 1.0,
+       -1.0, -1.0, 1.0,
 
-          // Right face
-          1.0, -1.0, -1.0,
-          1.0, 1.0, -1.0,
-          1.0, 1.0, 1.0,
-          1.0, -1.0, 1.0,
+       // Right face
+       1.0, -1.0, -1.0,
+       1.0, 1.0, -1.0,
+       1.0, 1.0, 1.0,
+       1.0, -1.0, 1.0,
 
-          // Left face
-          -1.0, -1.0, -1.0,
-          -1.0, -1.0, 1.0,
-          -1.0, 1.0, 1.0,
-          -1.0, 1.0, -1.0
-      ],
+       // Left face
+       -1.0, -1.0, -1.0,
+       -1.0, -1.0, 1.0,
+       -1.0, 1.0, 1.0,
+       -1.0, 1.0, -1.0
+   ],
 
-      // Vertex colors
-      colors: [
-          1.0,  1.0,  1.0,  1.0,    // Front face: white
-          1.0,  0.0,  0.0,  1.0,    // Back face: red
-          0.0,  1.0,  0.0,  1.0,    // Top face: green
-          0.0,  0.0,  1.0,  1.0,    // Bottom face: blue
-          1.0,  1.0,  0.0,  1.0,    // Right face: yellow
-          1.0,  0.0,  1.0,  1.0     // Left face: purple
-      ],
+   // Vertex colors
+   colors: [
+       1.0,  1.0,  1.0,  1.0,    // Front face: white
+       1.0,  0.0,  0.0,  1.0,    // Back face: red
+       0.0,  1.0,  0.0,  1.0,    // Top face: green
+       0.0,  0.0,  1.0,  1.0,    // Bottom face: blue
+       1.0,  1.0,  0.0,  1.0,    // Right face: yellow
+       1.0,  0.0,  1.0,  1.0     // Left face: purple
+   ],
 
-      // Vertex normals
-      normals: [
-          0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-          1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-          0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
-          -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
-          0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
-          0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
-      ],
+   // Vertex normals
+   normals: [
+       0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+       1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+       0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+       -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
+       0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
+       0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+   ],
 
-      // UV coordinates
-      uv: [
-          1, 1, 0, 1, 0, 0, 1, 0,
-          0, 1, 0, 0, 1, 0, 1, 1,
-          1, 0, 1, 1, 0, 1, 0, 0,
-          1, 1, 0, 1, 0, 0, 1, 0,
-          0, 0, 1, 0, 1, 1, 0, 1,
-          0, 0, 1, 0, 1, 1, 0, 1
-      ],
+   // UV coordinates
+   uv: [
+       1, 1, 0, 1, 0, 0, 1, 0,
+       0, 1, 0, 0, 1, 0, 1, 1,
+       1, 0, 1, 1, 0, 1, 0, 0,
+       1, 1, 0, 1, 0, 0, 1, 0,
+       0, 0, 1, 0, 1, 1, 0, 1,
+       0, 0, 1, 0, 1, 1, 0, 1
+   ],
 
-      // Triangle indices
-      indices: [
-          0,  1,  2,      0,  2,  3,    // front
-          4,  5,  6,      4,  6,  7,    // back
-          8,  9,  10,     8,  10, 11,   // top
-          12, 13, 14,     12, 14, 15,   // bottom
-          16, 17, 18,     16, 18, 19,   // right
-          20, 21, 22,     20, 22, 23    // left
-      ]
-});
+   // Triangle indices
+   indices: [
+       0,  1,  2,      0,  2,  3,    // front
+       4,  5,  6,      4,  6,  7,    // back
+       8,  9,  10,     8,  10, 11,   // top
+       12, 13, 14,     12, 14, 15,   // bottom
+       16, 17, 18,     16, 18, 19,   // right
+       20, 21, 22,     20, 22, 23    // left
+   ]
+  });
 
 var object = new XEO.GameObject(myScene, {
-      geometry: geometry2
-});
+   geometry: geometry2
+  });
 </code></pre>
 
 </div>
@@ -270,7 +279,7 @@ var object = new XEO.GameObject(myScene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_geometry.js.html#l3"><code>src&#x2F;core&#x2F;geometry.js:3</code></a>
+                <a href="../files/src_core_geometry.js.html#l6"><code>src&#x2F;core&#x2F;geometry.js:6</code></a>
                 </p>
         
         
@@ -590,7 +599,7 @@ var object = new XEO.GameObject(myScene, {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l594"><code>src&#x2F;core&#x2F;component.js:594</code></a>
+        <a href="../files/src_core_component.js.html#l605"><code>src&#x2F;core&#x2F;component.js:605</code></a>
         </p>
 
 
@@ -630,7 +639,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l439"><code>src&#x2F;core&#x2F;component.js:439</code></a>
+        <a href="../files/src_core_component.js.html#l450"><code>src&#x2F;core&#x2F;component.js:450</code></a>
         </p>
 
 
@@ -693,7 +702,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        <a href="../files/src_core_component.js.html#l341"><code>src&#x2F;core&#x2F;component.js:341</code></a>
         </p>
 
 
@@ -772,7 +781,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l422"><code>src&#x2F;core&#x2F;component.js:422</code></a>
+        <a href="../files/src_core_component.js.html#l433"><code>src&#x2F;core&#x2F;component.js:433</code></a>
         </p>
 
 
@@ -829,7 +838,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l384"><code>src&#x2F;core&#x2F;component.js:384</code></a>
+        <a href="../files/src_core_component.js.html#l395"><code>src&#x2F;core&#x2F;component.js:395</code></a>
         </p>
 
 
@@ -890,7 +899,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l355"><code>src&#x2F;core&#x2F;component.js:355</code></a>
+        <a href="../files/src_core_component.js.html#l366"><code>src&#x2F;core&#x2F;component.js:366</code></a>
         </p>
 
 
@@ -970,7 +979,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l403"><code>src&#x2F;core&#x2F;component.js:403</code></a>
+        <a href="../files/src_core_component.js.html#l414"><code>src&#x2F;core&#x2F;component.js:414</code></a>
         </p>
 
 
@@ -1037,7 +1046,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l456"><code>src&#x2F;core&#x2F;component.js:456</code></a>
+        <a href="../files/src_core_component.js.html#l467"><code>src&#x2F;core&#x2F;component.js:467</code></a>
         </p>
 
 
@@ -1090,7 +1099,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l240"><code>src&#x2F;core&#x2F;component.js:240</code></a>
+                            <a href="../files/src_core_component.js.html#l322"><code>src&#x2F;core&#x2F;component.js:322</code></a>
                             </p>
                     
                     
@@ -1116,7 +1125,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l404"><code>src&#x2F;core&#x2F;geometry.js:404</code></a>
+                            <a href="../files/src_core_geometry.js.html#l424"><code>src&#x2F;core&#x2F;geometry.js:424</code></a>
                             </p>
                     
                     
@@ -1143,7 +1152,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l274"><code>src&#x2F;core&#x2F;component.js:274</code></a>
+                            <a href="../files/src_core_component.js.html#l263"><code>src&#x2F;core&#x2F;component.js:263</code></a>
                             </p>
                     
                     
@@ -1169,7 +1178,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l265"><code>src&#x2F;core&#x2F;component.js:265</code></a>
+                            <a href="../files/src_core_component.js.html#l254"><code>src&#x2F;core&#x2F;component.js:254</code></a>
                             </p>
                     
                     
@@ -1194,7 +1203,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l425"><code>src&#x2F;core&#x2F;geometry.js:425</code></a>
+                            <a href="../files/src_core_geometry.js.html#l448"><code>src&#x2F;core&#x2F;geometry.js:448</code></a>
                             </p>
                     
                     
@@ -1221,7 +1230,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l229"><code>src&#x2F;core&#x2F;component.js:229</code></a>
+                            <a href="../files/src_core_component.js.html#l244"><code>src&#x2F;core&#x2F;component.js:244</code></a>
                             </p>
                     
                     
@@ -1247,7 +1256,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l340"><code>src&#x2F;core&#x2F;geometry.js:340</code></a>
+                            <a href="../files/src_core_geometry.js.html#l351"><code>src&#x2F;core&#x2F;geometry.js:351</code></a>
                             </p>
                     
                     
@@ -1274,7 +1283,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l318"><code>src&#x2F;core&#x2F;geometry.js:318</code></a>
+                            <a href="../files/src_core_geometry.js.html#l326"><code>src&#x2F;core&#x2F;geometry.js:326</code></a>
                             </p>
                     
                     
@@ -1301,7 +1310,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l258"><code>src&#x2F;core&#x2F;geometry.js:258</code></a>
+                            <a href="../files/src_core_geometry.js.html#l263"><code>src&#x2F;core&#x2F;geometry.js:263</code></a>
                             </p>
                     
                     
@@ -1330,7 +1339,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l193"><code>src&#x2F;core&#x2F;component.js:193</code></a>
+                            <a href="../files/src_core_component.js.html#l205"><code>src&#x2F;core&#x2F;component.js:205</code></a>
                             </p>
                     
                     
@@ -1357,7 +1366,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l252"><code>src&#x2F;core&#x2F;component.js:252</code></a>
+                            <a href="../files/src_core_component.js.html#l310"><code>src&#x2F;core&#x2F;component.js:310</code></a>
                             </p>
                     
                     
@@ -1383,7 +1392,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l361"><code>src&#x2F;core&#x2F;geometry.js:361</code></a>
+                            <a href="../files/src_core_geometry.js.html#l375"><code>src&#x2F;core&#x2F;geometry.js:375</code></a>
                             </p>
                     
                     
@@ -1410,7 +1419,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l383"><code>src&#x2F;core&#x2F;geometry.js:383</code></a>
+                            <a href="../files/src_core_geometry.js.html#l400"><code>src&#x2F;core&#x2F;geometry.js:400</code></a>
                             </p>
                     
                     
@@ -1443,7 +1452,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l415"><code>src&#x2F;core&#x2F;geometry.js:415</code></a>
+                            <a href="../files/src_core_geometry.js.html#l437"><code>src&#x2F;core&#x2F;geometry.js:437</code></a>
                             </p>
                     
                     
@@ -1485,7 +1494,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l624"><code>src&#x2F;core&#x2F;component.js:624</code></a>
+                            <a href="../files/src_core_component.js.html#l635"><code>src&#x2F;core&#x2F;component.js:635</code></a>
                             </p>
                     
                     
@@ -1510,7 +1519,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l436"><code>src&#x2F;core&#x2F;geometry.js:436</code></a>
+                            <a href="../files/src_core_geometry.js.html#l461"><code>src&#x2F;core&#x2F;geometry.js:461</code></a>
                             </p>
                     
                     
@@ -1552,7 +1561,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l351"><code>src&#x2F;core&#x2F;geometry.js:351</code></a>
+                            <a href="../files/src_core_geometry.js.html#l364"><code>src&#x2F;core&#x2F;geometry.js:364</code></a>
                             </p>
                     
                     
@@ -1594,7 +1603,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l329"><code>src&#x2F;core&#x2F;geometry.js:329</code></a>
+                            <a href="../files/src_core_geometry.js.html#l339"><code>src&#x2F;core&#x2F;geometry.js:339</code></a>
                             </p>
                     
                     
@@ -1636,7 +1645,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l305"><code>src&#x2F;core&#x2F;geometry.js:305</code></a>
+                            <a href="../files/src_core_geometry.js.html#l312"><code>src&#x2F;core&#x2F;geometry.js:312</code></a>
                             </p>
                     
                     
@@ -1678,7 +1687,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l372"><code>src&#x2F;core&#x2F;geometry.js:372</code></a>
+                            <a href="../files/src_core_geometry.js.html#l388"><code>src&#x2F;core&#x2F;geometry.js:388</code></a>
                             </p>
                     
                     
@@ -1720,7 +1729,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l394"><code>src&#x2F;core&#x2F;geometry.js:394</code></a>
+                            <a href="../files/src_core_geometry.js.html#l413"><code>src&#x2F;core&#x2F;geometry.js:413</code></a>
                             </p>
                     
                     

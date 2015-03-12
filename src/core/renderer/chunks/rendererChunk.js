@@ -1,22 +1,28 @@
-/**
- *
- */
-XEO.ChunkFactory.createChunkType({
+(function () {
 
-    type: "renderer",
+    "use strict";
 
-    build: function () {
-    },
+    /**
+     *
+     */
+    XEO.ChunkFactory.createChunkType({
 
-    drawAndPick: function (frameCtx) {
+        type: "renderer",
 
-        if (this.core.props) {
-            var gl = this.program.gl;
-            if (frameCtx.renderer) {
-                frameCtx.renderer.props.restoreProps(gl);
-                frameCtx.renderer = this.core;
+        build: function () {
+        },
+
+        drawAndPick: function (frameCtx) {
+
+            if (this.state.props) {
+                var gl = this.program.gl;
+                if (frameCtx.renderer) {
+                    frameCtx.renderer.props.restoreProps(gl);
+                    frameCtx.renderer = this.state;
+                }
+                this.state.props.setProps(gl);
             }
-            this.core.props.setProps(gl);
         }
-    }
-});
+    });
+
+})();

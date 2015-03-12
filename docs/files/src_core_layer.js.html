@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,105 +126,115 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
- A **Layer** specifies the render order of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within their {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.
+    &quot;use strict&quot;;
 
- &lt;ul&gt;
- &lt;li&gt;When the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} renders, each {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} will render its bin
- of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in turn, from the lowest priority {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} to the highest.&lt;/li&gt;
-
- &lt;li&gt;{{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.&lt;/li&gt;
-
- &lt;li&gt;You can control the render order of the individual {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} ***within*** a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}
- by associating them with {{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}}.&lt;/li&gt;
-
- &lt;li&gt;{{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}} are typically used to &lt;a href=&quot;https://www.opengl.org/wiki/Transparency_Sorting&quot; target=&quot;_other&quot;&gt;transparency-sort&lt;/a&gt; the
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.&lt;/li&gt;
-
-
- &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly
- attached to the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
- {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}}. which has
- a {{#crossLink &quot;Layer/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
-
- &lt;li&gt;You can use Layers without defining any {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} if you simply let your
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} fall back on the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
- {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}. which has a {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
- &lt;/ul&gt;
-
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105071/L.png&quot;&gt;&lt;/img&gt;
-
- ### Example
-
- &#x60;&#x60;&#x60;&#x60;javascript
-
- TODO
-
- &#x60;&#x60;&#x60;&#x60;
-
- @class Layer
- @module XEO
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Geometry in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Layer.
- @param [cfg.priority=0] {Number} The rendering priority,
- @extends Component
- */
-XEO.Layer = XEO.Component.extend({
-
-    className: &quot;XEO.Layer&quot;,
-
-    type: &quot;layer&quot;,
-
-    _init: function (cfg) {
-        this.priority = cfg.priority;
-    },
 
     /**
-     * Indicates a *layer* rendering priority for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-     *
-     * Each GameObject is also attached to a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}, which sets a *stage* rendering
-     * priority via its {{#crossLink &quot;Stage/priority:property&quot;}}priority{{/crossLink}} property.
-     *
-     * Fires a {{#crossLink &quot;Layer/priority:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property priority
-     * @default 0
-     * @type Number
+     A **Layer** specifies the render order of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within their {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.
+
+     &lt;ul&gt;
+     &lt;li&gt;When the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} renders, each {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} will render its bin
+     of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in turn, from the lowest priority {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} to the highest.&lt;/li&gt;
+
+     &lt;li&gt;{{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.&lt;/li&gt;
+
+     &lt;li&gt;You can control the render order of the individual {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} ***within*** a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}
+     by associating them with {{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}}.&lt;/li&gt;
+
+     &lt;li&gt;{{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}} are typically used to &lt;a href=&quot;https://www.opengl.org/wiki/Transparency_Sorting&quot; target=&quot;_other&quot;&gt;transparency-sort&lt;/a&gt; the
+     {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.&lt;/li&gt;
+
+
+     &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly
+     attached to the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
+     {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}}. which has
+     a {{#crossLink &quot;Layer/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
+
+     &lt;li&gt;You can use Layers without defining any {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} if you simply let your
+     {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} fall back on the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
+     {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}. which has a {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
+     &lt;/ul&gt;
+
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105071/L.png&quot;&gt;&lt;/img&gt;
+
+     ### Example
+
+     &#x60;&#x60;&#x60;&#x60;javascript
+
+     TODO
+
+     &#x60;&#x60;&#x60;&#x60;
+
+     @class Layer
+     @module XEO
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Geometry in the default
+     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Layer.
+     @param [cfg.priority=0] {Number} The rendering priority,
+     @extends Component
      */
-    set priority(value) {
-        value = value || 0;
-        this._core.priority = value;
-        this._renderer.stateOrderDirty = true;
+    XEO.Layer = XEO.Component.extend({
 
-        /**
-         * Fired whenever this Layer&#x27;s  {{#crossLink &quot;Layer/priority:property&quot;}}{{/crossLink}} property changes.
-         * @event priority
-         * @param value The property&#x27;s new value
-         */
-        this.fire(&quot;priority&quot;, value);
-    },
+        className: &quot;XEO.Layer&quot;,
 
-    get priority() {
-        return this._core.priority;
-    },
+        type: &quot;layer&quot;,
 
-    _compile: function (ctx) {
-        this._renderer.layer = this._core;
-    },
+        _init: function (cfg) {
+            this.priority = cfg.priority;
+        },
 
-    _getJSON: function () {
-        return {
-            priority: this.priority
-        };
-    }
-});
+        _props: {
 
+            /**
+             * Indicates a *layer* rendering priority for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+             *
+             * Each GameObject is also attached to a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}, which sets a *stage* rendering
+             * priority via its {{#crossLink &quot;Stage/priority:property&quot;}}priority{{/crossLink}} property.
+             *
+             * Fires a {{#crossLink &quot;Layer/priority:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property priority
+             * @default 0
+             * @type Number
+             */
+            priority: {
+
+                set: function (value) {
+                    value = value || 0;
+                    this._state.priority = value;
+                    this._renderer.stateOrderDirty = true;
+
+                    /**
+                     * Fired whenever this Layer&#x27;s  {{#crossLink &quot;Layer/priority:property&quot;}}{{/crossLink}} property changes.
+                     * @event priority
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;priority&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.priority;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.layer = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                priority: this.priority
+            };
+        }
+    });
+
+})();
     </pre>
 </div>
                     </div>

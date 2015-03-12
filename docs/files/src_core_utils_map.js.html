@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,63 +126,69 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-XEO.utils = XEO.utils || {};
+(function () {
 
-/**
- * Generic map of IDs to items - can generate own IDs or accept given IDs. IDs should be strings in order to not
- * clash with internally generated IDs, which are numbers.
- */
-XEO.utils.Map = function (items, baseId) {
+    &quot;use strict&quot;;
+
+    XEO.utils = XEO.utils || {};
 
     /**
-     * @property Items in this map
+     * Generic map of IDs to items - can generate own IDs or accept given IDs. IDs should be strings in order to not
+     * clash with internally generated IDs, which are numbers.
      */
-    this.items = items || [];
+    XEO.utils.Map = function (items, baseId) {
 
-    baseId = _baseId || 0;
-    var lastUniqueId = baseId + 1;
+        /**
+         * @property Items in this map
+         */
+        this.items = items || [];
 
-    /**
-     * Adds an item to the map and returns the ID of the item in the map. If an ID is given, the item is
-     * mapped to that ID. Otherwise, the map automatically generates the ID and maps to that.
-     *
-     * id = myMap.addItem(&quot;foo&quot;) // ID internally generated
-     *
-     * id = myMap.addItem(&quot;foo&quot;, &quot;bar&quot;) // ID is &quot;foo&quot;
-     *
-     */
-    this.addItem = function () {
-        var item;
-        if (arguments.length == 2) {
-            var id = arguments[0];
-            item = arguments[1];
-            if (this.items[id]) { // Won&#x27;t happen if given ID is string
-                throw &quot;ID clash: &#x27;&quot; + id + &quot;&#x27;&quot;;
-            }
-            this.items[id] = item;
-            return id;
+        baseId = baseId || 0;
+        var lastUniqueId = baseId + 1;
 
-        } else {
-            while (true) {
-                item = arguments[0];
-                var findId = lastUniqueId++;
-                if (!this.items[findId]) {
-                    this.items[findId] = item;
-                    return findId;
+        /**
+         * Adds an item to the map and returns the ID of the item in the map. If an ID is given, the item is
+         * mapped to that ID. Otherwise, the map automatically generates the ID and maps to that.
+         *
+         * id = myMap.addItem(&quot;foo&quot;) // ID internally generated
+         *
+         * id = myMap.addItem(&quot;foo&quot;, &quot;bar&quot;) // ID is &quot;foo&quot;
+         *
+         */
+        this.addItem = function () {
+            var item;
+            if (arguments.length === 2) {
+                var id = arguments[0];
+                item = arguments[1];
+                if (this.items[id]) { // Won&#x27;t happen if given ID is string
+                    throw &quot;ID clash: &#x27;&quot; + id + &quot;&#x27;&quot;;
+                }
+                this.items[id] = item;
+                return id;
+
+            } else {
+                while (true) {
+                    item = arguments[0];
+                    var findId = lastUniqueId++;
+                    if (!this.items[findId]) {
+                        this.items[findId] = item;
+                        return findId;
+                    }
                 }
             }
-        }
+        };
+
+        /**
+         * Removes the item of the given ID from the map and returns it
+         */
+        this.removeItem = function (id) {
+            var item = this.items[id];
+            delete this.items[id];
+            return item;
+        };
     };
 
-    /**
-     * Removes the item of the given ID from the map and returns it
-     */
-    this.removeItem = function (id) {
-        var item = this.items[id];
-        delete this.items[id];
-        return item;
-    };
-};
+})();
     </pre>
 </div>
                     </div>

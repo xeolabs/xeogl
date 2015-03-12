@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,39 +126,42 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
- A **ShaderParams** sets uniform values for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+    &quot;use strict&quot;;
 
- &lt;ul&gt;
- &lt;li&gt;Use these when you need to share the same {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}},
- while setting the {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}&#x27; uniforms differently for each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.&lt;/li&gt;
- &lt;/ul&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105099/L.png&quot;&gt;&lt;/img&gt;
+    /**
+     A **ShaderParams** sets uniform values for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
- ### Example
+     &lt;ul&gt;
+     &lt;li&gt;Use these when you need to share the same {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}},
+     while setting the {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}&#x27; uniforms differently for each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.&lt;/li&gt;
+     &lt;/ul&gt;
 
- The example below shows the simplest way to use a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}}, where we&#x27;re just going to render a ripply water
- pattern to a screen-aligned quad. As with all our examples, we&#x27;re just creating the
- essential components while falling back on the &lt;a href=&quot;XEO.Scene.html#defaults&quot; class=&quot;crosslink&quot;&gt;Scene&#x27;s default components&lt;/a&gt;
- for everything else.
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105099/L.png&quot;&gt;&lt;/img&gt;
 
- &lt;img src=&quot;../../assets/images/shaderParamsExample1.png&quot;&gt;&lt;/img&gt;
+     ### Example
 
- In our scene definition, we have an  {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} that is our
- screen-aligned quad, plus a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
- Finally, we animate the rippling by periodically updating the {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}}&#x27;s &quot;time&quot; uniform.
+     This example shows the simplest way to use a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}}, where we&#x27;re just going to render a ripply water
+     pattern to a screen-aligned quad. As with all our examples, we&#x27;re just creating the
+     essential components while falling back on the &lt;a href=&quot;XEO.Scene.html#defaults&quot; class=&quot;crosslink&quot;&gt;Scene&#x27;s default components&lt;/a&gt;
+     for everything else.
 
- &#x60;&#x60;&#x60;&#x60;javascript
- var scene = new XEO.Scene();
+     &lt;img src=&quot;../../assets/images/shaderParamsExample1.png&quot;&gt;&lt;/img&gt;
 
- // Shader that&#x27;s shared by both our GameObjects. Note the &#x27;XEO_aPosition&#x27; and &#x27;XEO_aUV attributes&#x27;,
- // which will receive the positions and UVs from the Geometry components. Also note the &#x27;time&#x27;
- // uniform, which we&#x27;ll be animating via the ShaderParams components.
+     In our scene definition, we have an  {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} that is our
+     screen-aligned quad, plus a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
+     Finally, we animate the rippling by periodically updating the {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}}&#x27;s &quot;time&quot; uniform.
 
- var shader = new XEO.Shader(scene, {
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var scene = new XEO.Scene();
+
+     // Shader that&#x27;s shared by both our GameObjects. Note the &#x27;XEO_aPosition&#x27; and &#x27;XEO_aUV attributes&#x27;,
+     // which will receive the positions and UVs from the Geometry components. Also note the &#x27;time&#x27;
+     // uniform, which we&#x27;ll be animating via the ShaderParams components.
+
+     var shader = new XEO.Shader(scene, {
 
        // Vertex shading stage
        vertex: [
@@ -192,10 +204,10 @@
        }
   });
 
- // First GameObject using our Shader, with a quad covering the left half of the canvas,
- // along with its own ShaderParams to independently set its own values for the Shader&#x27;s uniforms.
+     // First GameObject using our Shader, with a quad covering the left half of the canvas,
+     // along with its own ShaderParams to independently set its own values for the Shader&#x27;s uniforms.
 
- var quad1 = new XEO.Geometry(scene, {
+     var quad1 = new XEO.Geometry(scene, {
        primitive:&quot;triangles&quot;,
        positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
@@ -203,22 +215,22 @@
        indices:[ 0, 1, 2, 0, 2, 3 ]
   });
 
- var shaderParams1 = new XEO.ShaderParams(scene, {
+     var shaderParams1 = new XEO.ShaderParams(scene, {
        params: {
            time: 0.0
        }
   });
 
- var object1 = new XEO.GameObject(scene, {
+     var object1 = new XEO.GameObject(scene, {
        shader: shader,
        geometry: quad1,
        shaderParams1: shaderParams1
   });
 
- // Second GameObject using the Shader, with a quad covering the right half of the canvas,
- // along with its own ShaderParams to independently set its own values for the Shader&#x27;s uniforms.
+     // Second GameObject using the Shader, with a quad covering the right half of the canvas,
+     // along with its own ShaderParams to independently set its own values for the Shader&#x27;s uniforms.
 
- var quad2 = new XEO.Geometry(scene, {
+     var quad2 = new XEO.Geometry(scene, {
        primitive:&quot;triangles&quot;,
        positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
@@ -226,23 +238,23 @@
        indices:[ 0, 1, 2, 0, 2, 3 ]
   });
 
- var shaderParams2 = new XEO.ShaderParams(scene, {
+     var shaderParams2 = new XEO.ShaderParams(scene, {
        params: {
            time: 0.0
        }
   });
 
- var object2 = new XEO.GameObject(scene, {
+     var object2 = new XEO.GameObject(scene, {
        shader: shader,
        geometry2: quad2,
        shaderParams2: shaderParams2
   });
 
- &#x60;&#x60;&#x60;&#x60;
- Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, for each GameObject independently:
+     &#x60;&#x60;&#x60;&#x60;
+     Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, for each GameObject independently:
 
- &#x60;&#x60;&#x60;&#x60; javascript
- scene.on(&quot;tick&quot;, function(params) {
+     &#x60;&#x60;&#x60;&#x60; javascript
+     scene.on(&quot;tick&quot;, function(params) {
 
             shaderParams1.setParams({
                 time: params.timeElapsed
@@ -252,71 +264,88 @@
                 time: params.timeElapsed  * 0.5
             });
         });
- &#x60;&#x60;&#x60;&#x60;
- @class ShaderParams
- @module XEO
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this ShaderParams in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
- @param [cfg.params={}] {GameObject} The {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} parameter values.
- @extends Component
- */
-XEO.ShaderParams = XEO.Component.extend({
-
-    className: &quot;XEO.ShaderParams&quot;,
-
-    type: &quot;shaderParams&quot;,
-
-    _init: function (cfg) {
-        this.setParams(cfg.params);
-    },
-
-    /**
-     * Sets one or more params for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached
-     * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-     *
-     * These will individually override any params of the same names that are {{#crossLink &quot;Shader/setParams:method&quot;}}already specified{{/crossLink}} on
-     * those {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.
-     *
-     * Fires a {{#crossLink &quot;ShaderParams/params:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @method setParams
-     * @param {} [params={}] Values for params to set on the {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}, keyed to their names.
+     &#x60;&#x60;&#x60;&#x60;
+     @class ShaderParams
+     @module XEO
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this ShaderParams in the default
+     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
+     @param [cfg.params={}] {GameObject} The {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} parameter values.
+     @extends Component
      */
-    setParams: function (params) {
-        this._core.params = this._core.params || {};
-        for (var name in params) {
-            if (params.hasOwnProperty(name)) {
-                this._core.params[name] = params[name];
+    XEO.ShaderParams = XEO.Component.extend({
+
+        className: &quot;XEO.ShaderParams&quot;,
+
+        type: &quot;shaderParams&quot;,
+
+        _init: function (cfg) {
+            this.setParams(cfg.params);
+        },
+
+        _props: {
+
+            /**
+             * Params for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+             *
+             * Fires a {{#crossLink &quot;Shader/params:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property params
+             * @default {}
+             * @type {}
+             */
+            params: {
+                get: function () {
+                    return this._state.params;
+                }
             }
-        }
-        this._renderer.imageDirty = true;
+        },
 
         /**
-         * Fired whenever this ShaderParams&#x27; {{#crossLink &quot;ShaderParams/params:property&quot;}}{{/crossLink}} property has been updated.
-         * @event params
-         * @param value The property&#x27;s new value
+         * Sets one or more params for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached
+         * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+         *
+         * These will individually override any params of the same names that are {{#crossLink &quot;Shader/setParams:method&quot;}}already specified{{/crossLink}} on
+         * those {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.
+         *
+         * Fires a {{#crossLink &quot;ShaderParams/params:event&quot;}}{{/crossLink}} event on change.
+         *
+         * @method setParams
+         * @param {} [params={}] Values for params to set on the {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}, keyed to their names.
          */
-        this.fire(&quot;params&quot;, this._core.params);
-    },
+        setParams: function (params) {
+            this._state.params = this._state.params || {};
+            for (var name in params) {
+                if (params.hasOwnProperty(name)) {
+                    this._state.params[name] = params[name];
+                }
+            }
+            this._renderer.imageDirty = true;
 
-    get params() {
-        return this._core.params;
-    },
+            /**
+             * Fired whenever this ShaderParams&#x27; {{#crossLink &quot;ShaderParams/params:property&quot;}}{{/crossLink}} property has been updated.
+             * @event params
+             * @param value The property&#x27;s new value
+             */
+            this.fire(&quot;params&quot;, this._state.params);
+        },
 
-    _compile: function () {
-        this._renderer.shader = this._core;
-    },
+        _compile: function () {
+            this._renderer.shader = this._state;
+        },
 
-    _getJSON: function () {
-        return {
-            params: this.params
-        };
-    }
-});
+        _getJSON: function () {
+            return {
+                params: this.params
+            };
+        }
+    });
+
+})();
     </pre>
 </div>
                     </div>

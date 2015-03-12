@@ -1,11 +1,16 @@
+(function () {
 
-XEO.webgl.Sampler = function (gl, program, name, type, size, location) {
+    "use strict";
 
-    this.bindTexture = function (texture, unit) {
-        if (texture.bind(unit)) {
-            gl.uniform1i(location, unit);
-            return true;
-        }
-        return false;
+    XEO.webgl.Sampler = function (gl, program, name, type, size, location) {
+
+        this.bindTexture = function (texture, unit) {
+            if (texture.bind(unit)) {
+                gl.uniform1i(location, unit);
+                return true;
+            }
+            return false;
+        };
     };
-};
+
+})();

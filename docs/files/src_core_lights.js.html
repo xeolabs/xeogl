@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,63 +126,66 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
- A **Lights** is a group of light sources to apply to attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
- A Lights may contain a virtually unlimited number of three types of light source:
-
- &lt;ul&gt;
- &lt;li&gt;{{#crossLink &quot;AmbientLight&quot;}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
- affect all the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally,&lt;/li&gt;
- &lt;li&gt;{{#crossLink &quot;PointLight&quot;}}PointLight{{/crossLink}}s, which emit light that
- originates from a single point and spreads outward in all directions, and &lt;/li&gt;
- &lt;li&gt;{{#crossLink &quot;DirLight&quot;}}DirLight{{/crossLink}}s, which illuminate all the
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally from a given direction&lt;/li&gt;
- &lt;/ul&gt;
-
- Within xeoEngine&#x27;s &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; reflection model, the ambient,
- diffuse and specular components of light sources are multiplied by the
- {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and
- {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}} properties on attached  {{#crossLink &quot;Material&quot;}}Materials{{/crossLink}}.
+    &quot;use strict&quot;;
 
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7092459/L.png&quot;&gt;&lt;/img&gt;
+    /**
+     A **Lights** is a group of light sources to apply to attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
- ### Example
+     A Lights may contain a virtually unlimited number of three types of light source:
 
- The example below creates a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}},
- a {{#crossLink &quot;Material&quot;}}{{/crossLink}} and a {{#crossLink &quot;Lights&quot;}}{{/crossLink}}. The {{#crossLink &quot;Lights&quot;}}{{/crossLink}}
- contains an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}}, a {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;PointLight&quot;}}{{/crossLink}}.
+     &lt;ul&gt;
+     &lt;li&gt;{{#crossLink &quot;AmbientLight&quot;}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
+     affect all the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally,&lt;/li&gt;
+     &lt;li&gt;{{#crossLink &quot;PointLight&quot;}}PointLight{{/crossLink}}s, which emit light that
+     originates from a single point and spreads outward in all directions, and &lt;/li&gt;
+     &lt;li&gt;{{#crossLink &quot;DirLight&quot;}}DirLight{{/crossLink}}s, which illuminate all the
+     {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally from a given direction&lt;/li&gt;
+     &lt;/ul&gt;
+
+     Within xeoEngine&#x27;s &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; reflection model, the ambient,
+     diffuse and specular components of light sources are multiplied by the
+     {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and
+     {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}} properties on attached  {{#crossLink &quot;Material&quot;}}Materials{{/crossLink}}.
 
 
- &#x60;&#x60;&#x60;&#x60; javascript
- var scene = new XEO.Scene();
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7092459/L.png&quot;&gt;&lt;/img&gt;
 
- var material = new XEO.Material(scene, {
-    ambient:    [0.3, 0.3, 0.3],
-    diffuse:    [0.7, 0.7, 0.7],
-    specular:   [1. 1, 1],
-    shininess:  30
- });
+     ### Example
 
- // Within xeoEngine&#x27;s lighting calculations, the AmbientLight&#x27;s ambient color
- // will be multiplied by the Material&#x27;s ambient color, while the DirLight and PointLight&#x27;s
- // diffuse and specular colors will be multiplied by the Material&#x27;s diffuse and specular colors
+     In this example we have a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}},
+     a {{#crossLink &quot;Material&quot;}}{{/crossLink}} and a {{#crossLink &quot;Lights&quot;}}{{/crossLink}}. The {{#crossLink &quot;Lights&quot;}}{{/crossLink}}
+     contains an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}}, a {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;PointLight&quot;}}{{/crossLink}}.
 
- var ambientLight = new XEO.AmbientLight(scene, {
-    ambient: [0.7, 0.7, 0.7]
- });
 
- var dirLight = new XEO.DirLight(scene, {
-    dir:        [-1, -1, -1],
-    diffuse:    [0.5, 0.7, 0.5],
-    specular:   [1.0, 1.0, 1.0],
-    space:      &quot;view&quot;
- });
+     &#x60;&#x60;&#x60;&#x60; javascript
+     var scene = new XEO.Scene();
 
- var pointLight = new XEO.PointLight(scene, {
+     var material = new XEO.Material(scene, {
+        ambient:    [0.3, 0.3, 0.3],
+        diffuse:    [0.7, 0.7, 0.7],
+        specular:   [1. 1, 1],
+        shininess:  30
+    });
+
+     // Within xeoEngine&#x27;s lighting calculations, the AmbientLight&#x27;s ambient color
+     // will be multiplied by the Material&#x27;s ambient color, while the DirLight and PointLight&#x27;s
+     // diffuse and specular colors will be multiplied by the Material&#x27;s diffuse and specular colors
+
+     var ambientLight = new XEO.AmbientLight(scene, {
+        ambient: [0.7, 0.7, 0.7]
+    });
+
+     var dirLight = new XEO.DirLight(scene, {
+        dir:        [-1, -1, -1],
+        diffuse:    [0.5, 0.7, 0.5],
+        specular:   [1.0, 1.0, 1.0],
+        space:      &quot;view&quot;
+    });
+
+     var pointLight = new XEO.PointLight(scene, {
         pos: [0, 100, 100],
         diffuse: [0.5, 0.7, 0.5],
         specular: [1.0, 1.0, 1.0],
@@ -181,165 +193,177 @@
         linearAttenuation: 0,
         quadraticAttenuation: 0,
         space: &quot;view&quot;
- });
+    });
 
- var lights = new XEO.Lights(scene, {
-    lights: [
-        ambientLight,
-        dirLight,
-        pointLight
-    ]
- });
+     var lights = new XEO.Lights(scene, {
+        lights: [
+            ambientLight,
+            dirLight,
+            pointLight
+        ]
+    });
 
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+     var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
-    lights: lights,
-    material: material,
-    geometry: geometry
- });
- &#x60;&#x60;&#x60;&#x60;
+     var object = new XEO.GameObject(scene, {
+        lights: lights,
+        material: material,
+        geometry: geometry
+    });
+     &#x60;&#x60;&#x60;&#x60;
 
- @class Lights
- @constructor
- @module XEO
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Lights in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
- @extends Component
- */
-XEO.Lights = XEO.Component.extend({
+     @class Lights
+     @constructor
+     @module XEO
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Lights in the default
+     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
+     @extends Component
+     */
+    XEO.Lights = XEO.Component.extend({
 
-    className: &quot;XEO.Lights&quot;,
+        className: &quot;XEO.Lights&quot;,
 
-    type: &quot;lights&quot;,
+        type: &quot;lights&quot;,
 
-    _init: function (cfg) {
+        _init: function (cfg) {
 
-        this._lights = [];
-        this._dirtySubs = [];
-        this._destroyedSubs = [];
+            this._lights = [];
+            this._dirtySubs = [];
+            this._destroyedSubs = [];
 
-        this.lights = cfg.lights;
-    },
+            this.lights = cfg.lights;
+        },
 
-    set lights(value) {
+        _props: {
 
-        var light;
+            lights: {
 
-        // Unsubscribe from events on old lights        
-        for (var i = 0, len = this._lights.length; i &lt; len; i++) {
-            light = this._lights[i];
-            light.off(this._dirtySubs[i]);
-            light.off(this._destroyedSubs[i]);
-        }
+                set: function (value) {
 
-        this._lights = [];
-        this._dirtySubs = [];
-        this._destroyedSubs = [];
+                    value = value || [];
 
-        var lights = [];
-        var self = this;
+                    var light;
 
-        for (var i = 0, len = value.length; i &lt; len; i++) {
+                    // Unsubscribe from events on old lights
+                    for (var i = 0, len = this._lights.length; i &lt; len; i++) {
+                        light = this._lights[i];
+                        light.off(this._dirtySubs[i]);
+                        light.off(this._destroyedSubs[i]);
+                    }
 
-            light = value[i];
+                    this._lights = [];
+                    this._dirtySubs = [];
+                    this._destroyedSubs = [];
 
-            if (XEO._isString(light)) {
+                    var lights = [];
+                    var self = this;
 
-                // ID given for light - find the light component
+                    function lightDirty() {
+                        self.fire(&quot;dirty&quot;, true);
+                    }
 
-                var id = light;
-                light = this.components[id];
-                if (!light) {
-                    this.error(&quot;Light not found for ID: &#x27;&quot; + id + &quot;&#x27;&quot;);
-                    continue;
-                }
-            }
-
-            if (light.type != &quot;light&quot;) {
-                this.error(&quot;Component is not a light: &#x27;&quot; + light.id + &quot;&#x27;&quot;);
-                continue;
-            }
-
-            this._lights.push(light);
-
-            this._dirtySubs.push(light.on(&quot;dirty&quot;,
-                function () {
-                    self.fire(&quot;dirty&quot;, true);
-                }));
-
-            this._destroyedSubs.push(light.on(&quot;destroyed&quot;,
-                function () {
-                    var id = this.id; // Light ID
-                    for (var i = 0, len = self._lights.length; i &lt; len; i++) {
-                        if (self._lights[i].id == id) {
-                            self._lights = self._lights.slice(i, i + 1);
-                            self._dirtySubs = self._dirtySubs.slice(i, i + 1);
-                            self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
-                            self.fire(&quot;dirty&quot;, true);
-                            self.fire(&quot;lights&quot;, self._lights);
-                            return;
+                    function lightDestroyed() {
+                        var id = this.id; // Light ID
+                        for (var i = 0, len = self._lights.length; i &lt; len; i++) {
+                            if (self._lights[i].id === id) {
+                                self._lights = self._lights.slice(i, i + 1);
+                                self._dirtySubs = self._dirtySubs.slice(i, i + 1);
+                                self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
+                                self.fire(&quot;dirty&quot;, true);
+                                self.fire(&quot;lights&quot;, self._lights);
+                                return;
+                            }
                         }
                     }
-                }));
 
-            lights.push(light);
-        }
+                    for (var i = 0, len = value.length; i &lt; len; i++) {
 
-        this.fire(&quot;dirty&quot;, true);
-        this.fire(&quot;lights&quot;, this._lights);
-    },
+                        light = value[i];
 
-    get lights() {
-        return this._lights.slice(0, this._lights.length);
-    },
+                        if (XEO._isString(light)) {
 
-    _compile: function () {
-        var lights = [];
-        for (var i = 0, len = this._lights.length; i &lt; len; i++) {
-            lights.push(this._lights[i]._core)
-        }
-        var core = {
-            type: &quot;lights&quot;,
-            lights: lights,
-            hash: this._makeHash(lights)
-        };
-        this._renderer.lights = core;
-    },
+                            // ID given for light - find the light component
 
-    _makeHash: function (lights) {
-        if (lights.length == 0) {
-            return &quot;&quot;;
-        }
-        var parts = [];
-        var light;
-        for (var i = 0, len = lights.length; i &lt; len; i++) {
-            light = lights[i];
-            parts.push(light.mode);
-            if (light.specular) {
-                parts.push(&quot;s&quot;);
+                            var id = light;
+                            light = this.components[id];
+                            if (!light) {
+                                this.error(&quot;Component with this ID not found: &#x27;&quot; + id + &quot;&#x27;&quot;);
+                                continue;
+                            }
+                        }
+
+                        if (light.type !== &quot;light&quot;) {
+                            this.error(&quot;Component with this ID is not a light source: &#x27;&quot; + light.id + &quot;&#x27;&quot;);
+                            continue;
+                        }
+
+                        this._lights.push(light);
+
+                        this._dirtySubs.push(light.on(&quot;dirty&quot;, lightDirty));
+
+                        this._destroyedSubs.push(light.on(&quot;destroyed&quot;, lightDestroyed));
+
+                        lights.push(light);
+                    }
+
+                    this.fire(&quot;dirty&quot;, true);
+                    this.fire(&quot;lights&quot;, this._lights);
+                },
+
+                get: function () {
+                    return this._lights.slice(0, this._lights.length);
+                }
             }
-            if (light.diffuse) {
-                parts.push(&quot;d&quot;);
-            }
-            parts.push((light.space == &quot;world&quot;) ? &quot;w&quot; : &quot;v&quot;);
-        }
-        return parts.join(&quot;&quot;);
-    },
+        },
 
-    _getJSON: function () {
-        var lightIds = [];
-        for (var i = 0, len = this._lights.length; i &lt; len; i++) {
-            lightIds.push(this._lights[i].id);
+        _compile: function () {
+            var lights = [];
+            for (var i = 0, len = this._lights.length; i &lt; len; i++) {
+                lights.push(this._lights[i]._state);
+            }
+            var state = {
+                type: &quot;lights&quot;,
+                lights: lights,
+                hash: this._makeHash(lights)
+            };
+            this._renderer.lights = state;
+        },
+
+        _makeHash: function (lights) {
+            if (lights.length === 0) {
+                return &quot;&quot;;
+            }
+            var parts = [];
+            var light;
+            for (var i = 0, len = lights.length; i &lt; len; i++) {
+                light = lights[i];
+                parts.push(light.mode);
+                if (light.specular) {
+                    parts.push(&quot;s&quot;);
+                }
+                if (light.diffuse) {
+                    parts.push(&quot;d&quot;);
+                }
+                parts.push((light.space === &quot;world&quot;) ? &quot;w&quot; : &quot;v&quot;);
+            }
+            return parts.join(&quot;&quot;);
+        },
+
+        _getJSON: function () {
+            var lightIds = [];
+            for (var i = 0, len = this._lights.length; i &lt; len; i++) {
+                lightIds.push(this._lights[i].id);
+            }
+            return {
+                lights: lightIds
+            };
         }
-        return {
-            lights: lightIds
-        };
-    }
-});
+    });
+
+})();
     </pre>
 </div>
                     </div>

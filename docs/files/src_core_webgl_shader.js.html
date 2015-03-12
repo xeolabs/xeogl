@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,51 +126,55 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+(function () {
 
-/**
- * A vertex/fragment shader in a program
- *
- * @param gl WebGL gl
- * @param type gl.VERTEX_SHADER | gl.FRAGMENT_SHADER
- * @param source Source code for shader
- */
-XEO.webgl.Shader = function (gl, type, source) {
+    &quot;use strict&quot;;
 
     /**
-     * True as soon as this shader is allocated and ready to go
-     * @type {boolean}
+     * A vertex/fragment shader in a program
+     *
+     * @param gl WebGL gl
+     * @param type gl.VERTEX_SHADER | gl.FRAGMENT_SHADER
+     * @param source Source code for shader
      */
-    this.allocated = false;
+    XEO.webgl.Shader = function (gl, type, source) {
 
-    this.handle = gl.createShader(type);
+        /**
+         * True as soon as this shader is allocated and ready to go
+         * @type {boolean}
+         */
+        this.allocated = false;
 
-    if (!this.handle) {
-        throw &quot;Failed to create WebGL shader&quot;;
-    }
+        this.handle = gl.createShader(type);
 
-    gl.shaderSource(this.handle, source);
-    gl.compileShader(this.handle);
-
-    this.valid = (gl.getShaderParameter(this.handle, gl.COMPILE_STATUS) != 0);
-
-    if (!this.valid) {
-
-        if (!gl.isContextLost()) { // Handled explicitely elsewhere, so wont rehandle here
-
-            XEO.log.error(&quot;Shader program failed to compile: &quot; + gl.getShaderInfoLog(this.handle));
-            XEO.log.error(&quot;Shader source:&quot;);
-            var lines = source.split(&#x27;\n&#x27;);
-            for (var j = 0; j &lt; lines.length; j++) {
-                XEO.log.error((j + 1) + &quot;: &quot; + lines[j]);
-            }
-
-            throw &quot;Shader program failed to compile&quot;;
+        if (!this.handle) {
+            throw &quot;Failed to create WebGL shader&quot;;
         }
-    }
 
-    this.allocated = true;
-};
+        gl.shaderSource(this.handle, source);
+        gl.compileShader(this.handle);
 
+        this.valid = (gl.getShaderParameter(this.handle, gl.COMPILE_STATUS) !== 0);
+
+        if (!this.valid) {
+
+            if (!gl.isContextLost()) { // Handled explicitely elsewhere, so wont rehandle here
+
+                XEO.log.error(&quot;Shader program failed to compile: &quot; + gl.getShaderInfoLog(this.handle));
+                XEO.log.error(&quot;Shader source:&quot;);
+                var lines = source.split(&#x27;\n&#x27;);
+                for (var j = 0; j &lt; lines.length; j++) {
+                    XEO.log.error((j + 1) + &quot;: &quot; + lines[j]);
+                }
+
+                throw &quot;Shader program failed to compile&quot;;
+            }
+        }
+
+        this.allocated = true;
+    };
+
+})();
     </pre>
 </div>
                     </div>

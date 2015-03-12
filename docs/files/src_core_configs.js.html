@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,87 +126,91 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
- Holds configuration properties for the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
-
- &lt;ul&gt;
-
- &lt;li&gt;Each {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} provides a Configs instance on itself.&lt;/li&gt;
-
- &lt;li&gt;A Configs is just a plain {{#crossLink &quot;Component&quot;}}{{/crossLink}} with no extras.&lt;/li&gt;
-
- &lt;li&gt;Config property values are set on a Configs using its {{#crossLink &quot;Component/fire:method&quot;}}{{/crossLink}} method,
- and may be subscribed to with {{#crossLink &quot;Component/on:method&quot;}}{{/crossLink}}.&lt;/li&gt;
-
- &lt;li&gt;You can define your own properties in a Configs, but take care not to clobber those used by the
- {{#crossLink &quot;Scene&quot;}}{{/crossLink}} (see table below).&lt;/li&gt;
-
- &lt;/ul&gt;
-
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7123181/L.png&quot;&gt;&lt;/img&gt;
+    &quot;use strict&quot;;
 
 
- ### Configurations used by the Scene
+    /**
+     Holds configuration properties for the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
 
- Don&#x27;t use the following names for your own properties, because these are already used by xeoEngine:
+     &lt;ul&gt;
 
- | Name  | Description  |
- |---|---|
- | foo  | foo property  |
- | bar  | bar property  |
+     &lt;li&gt;Each {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} provides a Configs instance on itself.&lt;/li&gt;
+
+     &lt;li&gt;A Configs is just a plain {{#crossLink &quot;Component&quot;}}{{/crossLink}} with no extras.&lt;/li&gt;
+
+     &lt;li&gt;Config property values are set on a Configs using its {{#crossLink &quot;Component/fire:method&quot;}}{{/crossLink}} method,
+     and may be subscribed to with {{#crossLink &quot;Component/on:method&quot;}}{{/crossLink}}.&lt;/li&gt;
+
+     &lt;li&gt;You can define your own properties in a Configs, but take care not to clobber those used by the
+     {{#crossLink &quot;Scene&quot;}}{{/crossLink}} (see table below).&lt;/li&gt;
+
+     &lt;/ul&gt;
+
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7123181/L.png&quot;&gt;&lt;/img&gt;
 
 
- ### Example
+     ### Configurations used by the Scene
 
- &#x60;&#x60;&#x60;&#x60;Javascript
+     Don&#x27;t use the following names for your own properties, because these are already used by xeoEngine:
 
- var scene = new XEO.Scene();
+     | Name  | Description  |
+     |---|---|
+     | foo  | foo property  |
+     | bar  | bar property  |
 
- var configs = scene.configs;
 
- // Subscribe to change of a Config property.
- // The subscriber is also immediately notified of the current value via the callback.
- configs.on(&quot;foo&quot;, function(value) {
-       console.log(&quot;foo = &quot; + value);
-  });
+     ### Example
 
- // Change a Configs property
- configs.fire(&quot;foo&quot;, &quot;Hello!&quot;);
+     &#x60;&#x60;&#x60;&#x60;Javascript
 
- // Read the current value of a Configs property.
- // Normally we would asynchronously subscribe with #on though, to be sure that
- // we&#x27;re getting the latest changes to the property.
- var bar = configs.props[&quot;bar&quot;];
- &#x60;&#x60;&#x60;&#x60;
+     var scene = new XEO.Scene();
 
- @class Configs
- @module XEO
- @constructor
- @param [scene] {Scene} Parent scene - creates this component in the default scene when omitted.
- @param {GameObject} [cfg]  Config values.
- @extends Component
- */
-XEO.Configs = XEO.Component.extend({
+     var configs = scene.configs;
 
-    className: &quot;XEO.Configs&quot;,
+     // Subscribe to change of a Config property.
+     // The subscriber is also immediately notified of the current value via the callback.
+     configs.on(&quot;foo&quot;, function(value) {
+        console.log(&quot;foo = &quot; + value);
+     });
 
-    type: &quot;configs&quot;,
+     // Change a Configs property
+     configs.fire(&quot;foo&quot;, &quot;Hello!&quot;);
 
-    _init: function (cfg) {
-        for (var key in cfg) {
-            if (cfg.hasOwnProperty(key)) {
-                this.fire(key, cfg[key]);
+     // Read the current value of a Configs property.
+     // Normally we would asynchronously subscribe with #on though, to be sure that
+     // we&#x27;re getting the latest changes to the property.
+     var bar = configs.props[&quot;bar&quot;];
+     &#x60;&#x60;&#x60;&#x60;
+
+     @class Configs
+     @module XEO
+     @constructor
+     @param [scene] {Scene} Parent scene - creates this component in the default scene when omitted.
+     @param {GameObject} [cfg]  Config values.
+     @extends Component
+     */
+    XEO.Configs = XEO.Component.extend({
+
+        className: &quot;XEO.Configs&quot;,
+
+        type: &quot;configs&quot;,
+
+        _init: function (cfg) {
+            for (var key in cfg) {
+                if (cfg.hasOwnProperty(key)) {
+                    this.fire(key, cfg[key]);
+                }
             }
+        },
+
+        _toJSON: function () {
+            return  XEO._copy(this.props);
         }
-    },
+    });
 
-    _toJSON: function () {
-        return  XEO._copy(this.props);
-    }
-});
-
+})();
 
 
     </pre>

@@ -53,29 +53,38 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/math.html">math</a></li>
-                                <li><a href="../classes/Matrix.html">Matrix</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
+                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -117,164 +126,176 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&quot;use strict&quot;;
+(function () {
 
-/**
-  A **DepthMap** configures the WebGL depth buffer for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
- A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer, and is not to be confused
- with {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}}, which holds the final pixel depths as a color-encoded image
- so that they may be fed into depth {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.
-
-  &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7104991/L.png&quot;&gt;&lt;/img&gt;
-
- ### Example
-
- In the example below we&#x27;re configuring the WebGL depth buffer for a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
-
- The scene contains:
-
- &lt;ul&gt;
- &lt;li&gt;a DepthBuf that configures the clear depth and depth comparison function,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape and
- &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
- &lt;/ul&gt;
-
- &#x60;&#x60;&#x60;&#x60;javascript
- var scene = new XEO.Scene();
-
- var depthBuf = new XEO.ColorTarget(scene, {
-     clearDepth: 0.5,
-     depthFunc: &quot;less&quot;
- });
-
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
- var gameObject = new XEO.GameObject(scene, {
-     depthBuf: depthBuf,
-     geometry: geometry
- });
- &#x60;&#x60;&#x60;&#x60;
-
- @class DepthBuf
- @module XEO
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this DepthBuf
-  within the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} DepthBuf configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthBuf.
- @param [cfg.clearDepth=1.0] {Number} The clear depth.
- @param [cfg.depthFunc=&quot;less&quot;] {String} The depth function.
- @extends Component
- */
-XEO.DepthBuf = XEO.Component.extend({
-
-    className: &quot;XEO.DepthBuf&quot;,
-
-    type: &quot;DepthBuf&quot;,
-
-    _init: function (cfg) {
-        this.clearDepth = cfg.clearDepth;
-        this.depthFunc = cfg.depthFunc;
-    },
+    &quot;use strict&quot;;
 
     /**
-     * The clear depth for this DepthBuf.
-     *
-     * Fires a {{#crossLink &quot;DepthBuf/clearDepth:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property clearDepth
-     * @default 1.0
-     * @type Number
+     A **DepthMap** configures the WebGL depth buffer for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+
+     A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer, and is not to be confused
+     with {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}}, which holds the final pixel depths as a color-encoded image
+     so that they may be fed into depth {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.
+
+     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7104991/L.png&quot;&gt;&lt;/img&gt;
+
+     ### Example
+
+     In this example we&#x27;re configuring the WebGL depth buffer for a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
+
+     The scene contains:
+
+     &lt;ul&gt;
+     &lt;li&gt;a DepthBuf that configures the clear depth and depth comparison function,&lt;/li&gt;
+     &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape and
+     &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+     &lt;/ul&gt;
+
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var scene = new XEO.Scene();
+
+     var depthBuf = new XEO.ColorTarget(scene, {
+        clearDepth: 0.5,
+        depthFunc: &quot;less&quot;
+     });
+
+     var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+     var gameObject = new XEO.GameObject(scene, {
+        depthBuf: depthBuf,
+        geometry: geometry
+     });
+     &#x60;&#x60;&#x60;&#x60;
+
+     @class DepthBuf
+     @module XEO
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this DepthBuf
+     within the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} DepthBuf configuration
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthBuf.
+     @param [cfg.clearDepth=1.0] {Number} The clear depth.
+     @param [cfg.depthFunc=&quot;less&quot;] {String} The depth function.
+     @extends Component
      */
-    set clearDepth(value) {
-        value = value != undefined ? value : 1.0;
-        this._core.clearDepth = value;
-        this._renderer.imageDirty = true;
+    XEO.DepthBuf = XEO.Component.extend({
+
+        className: &quot;XEO.DepthBuf&quot;,
+
+        type: &quot;DepthBuf&quot;,
+
+        _init: function (cfg) {
+            this.clearDepth = cfg.clearDepth;
+            this.depthFunc = cfg.depthFunc;
+        },
+
+        _props: {
+
+            /**
+             * The clear depth for this DepthBuf.
+             *
+             * Fires a {{#crossLink &quot;DepthBuf/clearDepth:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property clearDepth
+             * @default 1.0
+             * @type Number
+             */
+            clearDepth: {
+
+                set: function (value) {
+                    value = value !== undefined ? value : 1.0;
+                    this._state.clearDepth = value;
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this DepthBuf&#x27;s {{#crossLink &quot;DepthBuf/clearDepth:property&quot;}}{{/crossLink}} property changes.
+
+                     @event clearDepth
+                     @param value {Number} The property&#x27;s new value
+                     */
+                    this.fire(&quot;clearDepth&quot;, value);
+                },
+
+                get: function () {
+                    return this._state.clearDepth;
+                }
+            },
+
+            /**
+             * The depth function for this DepthBuf.
+             *
+             * Accepted values are:
+             *
+             * &lt;ul&gt;
+             *     &lt;li&gt;&quot;less&quot;&lt;/li&gt;
+             *     &lt;li&gt;&quot;equal&quot;&lt;/li&gt;
+             *     &lt;li&gt;&quot;lequal&quot;&lt;/li&gt;
+             *     &lt;li&gt;&quot;greater&quot;&lt;/li&gt;
+             *     &lt;li&gt;&quot;notequal&quot;&lt;/li&gt;
+             *     &lt;li&gt;&quot;gequal&quot;&lt;/li&gt;
+             * &lt;/ul&gt;
+             *
+             * Fires a {{#crossLink &quot;DepthBuf/depthFunc:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property depthFunc
+             * @default &quot;less&quot;
+             * @type Number
+             */
+            depthFunc: {
+
+                set: function (value) {
+                    value = value || &quot;less&quot;;
+                    var enumName = this._depthFuncNames[value];
+                    if (enumName === undefined) {
+                        this.error(&quot;unsupported value for &#x27;clearFunc&#x27; attribute on depthBuf component: &#x27;&quot; + value +
+                            &quot;&#x27; - supported values are &#x27;less&#x27;, &#x27;equal&#x27;, &#x27;lequal&#x27;, &#x27;greater&#x27;, &#x27;notequal&#x27; and &#x27;gequal&#x27;&quot;);
+                        return;
+                    }
+                    this._state.depthFunc = this.scene.canvas.gl[enumName];
+                    this._state.depthFuncName = value;
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this DepthBuf&#x27;s {{#crossLink &quot;DepthBuf/depthFunc:property&quot;}}{{/crossLink}} property changes.
+                     @event depthFunc
+                     @param value {String} The property&#x27;s new value
+                     */
+                    this.fire(&quot;depthFunc&quot;, value);
+                },
+
+                get: function() {
+                    return this._state.depthFuncName;
+                }
+            }
+        },
 
         /**
-          Fired whenever this DepthBuf&#x27;s {{#crossLink &quot;DepthBuf/clearDepth:property&quot;}}{{/crossLink}} property changes.
-
-          @event clearDepth
-          @param value {Number} The property&#x27;s new value
+         * Lookup GL depth function enums
+         * @private
          */
-        this.fire(&quot;clearDepth&quot;, value);
-    },
+        _depthFuncNames: {
+            less: &quot;LESS&quot;,
+            equal: &quot;EQUAL&quot;,
+            lequal: &quot;LEQUAL&quot;,
+            greater: &quot;GREATER&quot;,
+            notequal: &quot;NOTEQUAL&quot;,
+            gequal: &quot;GEQUAL&quot;
+        },
 
-    get clearDepth() {
-        return this._core.clearDepth;
-    },
+        _compile: function () {
+            this._renderer.depthBuf = this._state;
+        },
 
-    /**
-     * The depth function for this DepthBuf.
-     *
-     * Accepted values are:
-     *
-     * &lt;ul&gt;
-     *     &lt;li&gt;&quot;less&quot;&lt;/li&gt;
-     *     &lt;li&gt;&quot;equal&quot;&lt;/li&gt;
-     *     &lt;li&gt;&quot;lequal&quot;&lt;/li&gt;
-     *     &lt;li&gt;&quot;greater&quot;&lt;/li&gt;
-     *     &lt;li&gt;&quot;notequal&quot;&lt;/li&gt;
-     *     &lt;li&gt;&quot;gequal&quot;&lt;/li&gt;
-     * &lt;/ul&gt;
-     *
-     * Fires a {{#crossLink &quot;DepthBuf/depthFunc:event&quot;}}{{/crossLink}} event on change.
-     *
-     * @property depthFunc
-     * @default &quot;less&quot;
-     * @type Number
-     */
-    set depthFunc(value) {
-        value = value || &quot;less&quot;;
-        var enumName = this._depthFuncNames[value];
-        if (enumName == undefined) {
-            this.error(&quot;unsupported value for &#x27;clearFunc&#x27; attribute on depthBuf component: &#x27;&quot; + value
-                + &quot;&#x27; - supported values are &#x27;less&#x27;, &#x27;equal&#x27;, &#x27;lequal&#x27;, &#x27;greater&#x27;, &#x27;notequal&#x27; and &#x27;gequal&#x27;&quot;);
-            return;
+        _getJSON: function () {
+            return {
+                clearDepth: this.clearDepth,
+                depthFunc: this.depthFunc
+            };
         }
-        this._core.depthFunc = this.scene.canvas.gl[enumName];
-        this._core.depthFuncName = value;
-        this._renderer.imageDirty = true;
+    });
 
-        /**
-          Fired whenever this DepthBuf&#x27;s {{#crossLink &quot;DepthBuf/depthFunc:property&quot;}}{{/crossLink}} property changes.
-          @event depthFunc
-          @param value {String} The property&#x27;s new value
-         */
-        this.fire(&quot;depthFunc&quot;, value);
-    },
-
-    /**
-     * Lookup GL depth function enums
-     * @private
-     */
-    _depthFuncNames: {
-        less: &quot;LESS&quot;,
-        equal: &quot;EQUAL&quot;,
-        lequal: &quot;LEQUAL&quot;,
-        greater: &quot;GREATER&quot;,
-        notequal: &quot;NOTEQUAL&quot;,
-        gequal: &quot;GEQUAL&quot;
-    },
-
-    get depthFunc() {
-        return this._core.depthFuncName;
-    },
-
-    _compile: function () {
-        this._renderer.depthBuf = this._core;
-    },
-
-    _getJSON: function () {
-        return {
-            clearDepth: this.clearDepth,
-            depthFunc: this.depthFunc
-        };
-    }
-});
-
+})();
 
     </pre>
 </div>

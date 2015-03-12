@@ -1,31 +1,37 @@
-/**
- *
- */
-XEO.ChunkFactory.createChunkType({
+(function () {
 
-    type: "uniforms",
+    "use strict";
 
-    build : function() {
-    },
+    /**
+     *
+     */
+    XEO.ChunkFactory.createChunkType({
 
-    drawAndPick: function(frameCtx) {
+        type: "uniforms",
 
-        var paramsStack = this.core.paramsStack;
+        build: function () {
+        },
 
-        if (paramsStack) {
+        drawAndPick: function (frameCtx) {
 
-            var program = frameCtx.pick ? this.program.pick : this.program.draw;
-            var params;
-            var name;
+            var paramsStack = this.state.paramsStack;
 
-            for (var i = 0, len = paramsStack.length; i < len; i++) {
-                params = paramsStack[i];
-                for (name in params) {
-                    if (params.hasOwnProperty(name)) {
-                        program.setUniform(name, params[name]);  // TODO: cache locations
+            if (paramsStack) {
+
+                var program = frameCtx.pick ? this.program.pick : this.program.draw;
+                var params;
+                var name;
+
+                for (var i = 0, len = paramsStack.length; i < len; i++) {
+                    params = paramsStack[i];
+                    for (name in params) {
+                        if (params.hasOwnProperty(name)) {
+                            program.setUniform(name, params[name]);  // TODO: cache locations
+                        }
                     }
                 }
             }
         }
-    }
-});
+    });
+
+})();

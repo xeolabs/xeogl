@@ -71,8 +71,14 @@ module.exports = function (grunt) {
             docs: ["docs/*"]
         },
 
-        qunit: {
-            all: ["test/*.html"]
+        jasmine: {
+            pivotal: {
+                src: 'src/**/*.js',
+                options: {
+                    specs: 'tests/*Spec.js',
+                    helpers: 'tests/*Helper.js'
+                }
+            }
         },
 
         yuidoc: {
@@ -82,7 +88,7 @@ module.exports = function (grunt) {
                 version: '<%= pkg.version %>',
                 url: '<%= pkg.homepage %>',
                 options: {
-                    paths: ['src/core'],
+                    paths: ['src/core', 'src/extras'],
                     outdir: './docs/',
                     "exclude" : "renderer, utils, webgl"
                 },
@@ -110,11 +116,13 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-qunit");
     grunt.loadNpmTasks("grunt-contrib-yuidoc");
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
 
 
-    grunt.registerTask("compile", ["clean", "concat", "uglify"]);
+    grunt.registerTask("compile", ["clean", "concat"]);
     grunt.registerTask("build", ["test", "compile"]);
-    grunt.registerTask("test", [ ]);
+//    grunt.registerTask("test", [ ]);
+    grunt.registerTask("test", ["qunit"]);
 //    grunt.registerTask("test", ["jshint", "qunit"]);
     grunt.registerTask("docs", ["clean", "yuidoc"]);
     grunt.registerTask("default", "test");
