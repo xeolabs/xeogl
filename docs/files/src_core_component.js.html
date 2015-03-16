@@ -53,8 +53,6 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
-                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
@@ -72,7 +70,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
@@ -84,7 +81,6 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.Boundary.html">XEO.Boundary</a></li>
-                                <li><a href="../classes/XEO.MyComponent.html">XEO.MyComponent</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -156,7 +152,7 @@
      xeoEngine generates the IDs automatically by default, however you can also specify them yourself:
 
      &#x60;&#x60;&#x60;&#x60;javascript
-var scene = new XEO.Scene({
+     var scene = new XEO.Scene({
        id: &quot;myScene&quot;
   });
 
@@ -177,7 +173,7 @@ var scene = new XEO.Scene({
      Then you can find your components like this:
 
      &#x60;&#x60;&#x60;&#x60;javascript
-var theScene = XEO.scenes[&quot;myScene&quot;];
+     var theScene = XEO.scenes[&quot;myScene&quot;];
 
      var theMaterial = theScene.components[&quot;myMaterial&quot;];
      &#x60;&#x60;&#x60;&#x60;
@@ -193,7 +189,7 @@ var theScene = XEO.scenes[&quot;myScene&quot;];
      property is updated, like so:
 
      &#x60;&#x60;&#x60;&#x60;javascript
-// Bind a change callback to a property
+     // Bind a change callback to a property
      var handle = material.on(&quot;diffuse&quot;, function(diffuse) {
       console.log(&quot;Material diffuse color has changed to: [&quot; + diffuse[0] + &quot;, &quot; + diffuse[1] + &quot;,&quot; + diffuse[2] + &quot;]&quot;);
   });
@@ -211,7 +207,7 @@ var theScene = XEO.scenes[&quot;myScene&quot;];
      property is linked to a different {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}, like so:
 
      &#x60;&#x60;&#x60;&#x60; javascript
-// Bind a change callback to the GameObject&#x27;s Material
+     // Bind a change callback to the GameObject&#x27;s Material
      object1.on(&quot;material&quot;, function(material) {
       console.log(&quot;GameObject&#x27;s Material has changed to: &quot; + material.id);
   });
@@ -234,7 +230,7 @@ var theScene = XEO.scenes[&quot;myScene&quot;];
      You could use metadata to attach authoring or version information, like this:
 
      &#x60;&#x60;&#x60;&#x60;javascript
-var scene = new XEO.Scene({
+     var scene = new XEO.Scene({
         id: &quot;myScene&quot;,
         metadata: {
             title: &quot;My awesome 3D scene&quot;,
@@ -257,7 +253,7 @@ var scene = new XEO.Scene({
      As with all properties, you can subscribe and change the metadata like this:
 
      &#x60;&#x60;&#x60;&#x60;javascript
-material.on(&quot;metadata&quot;, function(value) {
+     material.on(&quot;metadata&quot;, function(value) {
         console.log(&quot;Metadata changed: &quot; + JSON.stringify(value));
  });
 
@@ -275,18 +271,20 @@ material.on(&quot;metadata&quot;, function(value) {
      Components have methods to log ID-prefixed messages to the JavaScript console:
 
      &#x60;&#x60;&#x60;&#x60;javascript
-material.log(&quot;Everything is fine, situation normal.&quot;);
+     material.log(&quot;Everything is fine, situation normal.&quot;);
      material.warn(&quot;Wait, whats that red light?&quot;);
      material.error(&quot;Aw, snap!&quot;);
      &#x60;&#x60;&#x60;&#x60;
 
      The logged messages will look like this:
 
-     &#x60;&#x60;&#x60;&#x60;
-[LOG]   myMaterial: Everything is fine, situation normal.
+     &#x60;&#x60;&#x60;&#x60;text
+     [LOG]   myMaterial: Everything is fine, situation normal.
      [WARN]  myMaterial: Wait, whats that red light..
      [ERROR] myMaterial: Aw, snap!
+
      &#x60;&#x60;&#x60;&#x60;
+
      &lt;br&gt;
 
      ### &lt;a name=&quot;destruction&quot;&gt;Destruction&lt;/a&gt;
@@ -294,7 +292,7 @@ material.log(&quot;Everything is fine, situation normal.&quot;);
      Get notification of destruction directly on the Components:
 
      &#x60;&#x60;&#x60;&#x60;javascript
-material.on(&quot;destroyed&quot;, function() {
+     material.on(&quot;destroyed&quot;, function() {
         this.log(&quot;Component was destroyed: &quot; + this.id);
       });
      &#x60;&#x60;&#x60;&#x60;
@@ -302,7 +300,7 @@ material.on(&quot;destroyed&quot;, function() {
      Or get notification of destruction of any Component within its {{#crossLink &quot;Scene&quot;}}{{/crossLink}}, indiscriminately:
 
      &#x60;&#x60;&#x60;&#x60;javascript
-scene.on(&quot;componentDestroyed&quot;, function(component) {
+     scene.on(&quot;componentDestroyed&quot;, function(component) {
         this.log(&quot;Component was destroyed: &quot; + component.id);
  });
      &#x60;&#x60;&#x60;&#x60;
@@ -310,7 +308,7 @@ scene.on(&quot;componentDestroyed&quot;, function(component) {
      Then destroy a component like this:
 
      &#x60;&#x60;&#x60;&#x60;javascript
-material.destroy();
+     material.destroy();
      &#x60;&#x60;&#x60;&#x60;
 
      Other Components that are linked to it will fall back on a default of some sort. For example, any
@@ -320,7 +318,7 @@ material.destroy();
      @class Component
      @module XEO
      @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this DepthBuf
+     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Component
      within the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
      @param [cfg] {*} DepthBuf configuration
      @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.

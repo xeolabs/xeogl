@@ -28,7 +28,7 @@
      xeoEngine generates the IDs automatically by default, however you can also specify them yourself:
 
      ````javascript
-var scene = new XEO.Scene({
+     var scene = new XEO.Scene({
        id: "myScene"
   });
 
@@ -49,7 +49,7 @@ var scene = new XEO.Scene({
      Then you can find your components like this:
 
      ````javascript
-var theScene = XEO.scenes["myScene"];
+     var theScene = XEO.scenes["myScene"];
 
      var theMaterial = theScene.components["myMaterial"];
      ````
@@ -65,7 +65,7 @@ var theScene = XEO.scenes["myScene"];
      property is updated, like so:
 
      ````javascript
-// Bind a change callback to a property
+     // Bind a change callback to a property
      var handle = material.on("diffuse", function(diffuse) {
       console.log("Material diffuse color has changed to: [" + diffuse[0] + ", " + diffuse[1] + "," + diffuse[2] + "]");
   });
@@ -83,7 +83,7 @@ var theScene = XEO.scenes["myScene"];
      property is linked to a different {{#crossLink "Material"}}Material{{/crossLink}}, like so:
 
      ```` javascript
-// Bind a change callback to the GameObject's Material
+     // Bind a change callback to the GameObject's Material
      object1.on("material", function(material) {
       console.log("GameObject's Material has changed to: " + material.id);
   });
@@ -106,7 +106,7 @@ var theScene = XEO.scenes["myScene"];
      You could use metadata to attach authoring or version information, like this:
 
      ````javascript
-var scene = new XEO.Scene({
+     var scene = new XEO.Scene({
         id: "myScene",
         metadata: {
             title: "My awesome 3D scene",
@@ -129,7 +129,7 @@ var scene = new XEO.Scene({
      As with all properties, you can subscribe and change the metadata like this:
 
      ````javascript
-material.on("metadata", function(value) {
+     material.on("metadata", function(value) {
         console.log("Metadata changed: " + JSON.stringify(value));
  });
 
@@ -147,18 +147,20 @@ material.on("metadata", function(value) {
      Components have methods to log ID-prefixed messages to the JavaScript console:
 
      ````javascript
-material.log("Everything is fine, situation normal.");
+     material.log("Everything is fine, situation normal.");
      material.warn("Wait, whats that red light?");
      material.error("Aw, snap!");
      ````
 
      The logged messages will look like this:
 
-     ````
-[LOG]   myMaterial: Everything is fine, situation normal.
+     ````text
+     [LOG]   myMaterial: Everything is fine, situation normal.
      [WARN]  myMaterial: Wait, whats that red light..
      [ERROR] myMaterial: Aw, snap!
+
      ````
+
      <br>
 
      ### <a name="destruction">Destruction</a>
@@ -166,7 +168,7 @@ material.log("Everything is fine, situation normal.");
      Get notification of destruction directly on the Components:
 
      ````javascript
-material.on("destroyed", function() {
+     material.on("destroyed", function() {
         this.log("Component was destroyed: " + this.id);
       });
      ````
@@ -174,7 +176,7 @@ material.on("destroyed", function() {
      Or get notification of destruction of any Component within its {{#crossLink "Scene"}}{{/crossLink}}, indiscriminately:
 
      ````javascript
-scene.on("componentDestroyed", function(component) {
+     scene.on("componentDestroyed", function(component) {
         this.log("Component was destroyed: " + component.id);
  });
      ````
@@ -182,7 +184,7 @@ scene.on("componentDestroyed", function(component) {
      Then destroy a component like this:
 
      ````javascript
-material.destroy();
+     material.destroy();
      ````
 
      Other Components that are linked to it will fall back on a default of some sort. For example, any
@@ -192,7 +194,7 @@ material.destroy();
      @class Component
      @module XEO
      @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this DepthBuf
+     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Component
      within the default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
      @param [cfg] {*} DepthBuf configuration
      @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.

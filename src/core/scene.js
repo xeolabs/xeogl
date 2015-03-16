@@ -7,14 +7,17 @@
      A **Scene** is a xeoEngine scene graph.
 
      <hr>
+
      *Contents*
+
      <Ul>
-     <li><a href="#sceneStructure">Scene Structure</a></li>
-     <li><a href="#sceneCanvas">The Scene Canvas</a></li>
-     <li><a href="#findingByID">Finding Scenes and Components by ID</a></li>
-     <li><a href="#defaults">The Default Scene</a></li>
-     <li><a href="#savingAndLoadingJSON">Saving and Loading Scenes</a></li>
+        <li><a href="#sceneStructure">Scene Structure</a></li>
+        <li><a href="#sceneCanvas">The Scene Canvas</a></li>
+        <li><a href="#findingByID">Finding Scenes and Components by ID</a></li>
+        <li><a href="#defaults">The Default Scene</a></li>
+        <li><a href="#savingAndLoadingJSON">Saving and Loading Scenes</a></li>
      </ul>
+
      <hr>
 
      ## <a name="sceneStructure">Scene Structure</a>

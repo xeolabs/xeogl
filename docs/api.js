@@ -16,8 +16,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Frustum",
         "GameObject",
         "Geometry",
-        "Geometry.OBJ",
-        "Geometry.Quad",
         "Input",
         "Layer",
         "Lights",
@@ -34,7 +32,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Scale",
         "Scene",
         "Shader",
-        "Shader.Water",
         "ShaderParams",
         "Stage",
         "Stats",
@@ -46,7 +43,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Visibility",
         "XEO",
         "XEO.Boundary",
-        "XEO.MyComponent",
         "math"
     ],
     "modules": [

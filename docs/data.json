@@ -453,49 +453,6 @@
             "namespaces": {
                 "XEO": 1
             }
-        },
-        "src/extras/boilerplate.js": {
-            "name": "src/extras/boilerplate.js",
-            "modules": {},
-            "classes": {
-                "XEO.MyComponent": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/extras/geometry.box.js": {
-            "name": "src/extras/geometry.box.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/extras/geometry.obj.js": {
-            "name": "src/extras/geometry.obj.js",
-            "modules": {},
-            "classes": {
-                "Geometry.OBJ": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/extras/geometry.quad.js": {
-            "name": "src/extras/geometry.quad.js",
-            "modules": {},
-            "classes": {
-                "Geometry.Quad": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/extras/shader.water.js": {
-            "name": "src/extras/shader.water.js",
-            "modules": {},
-            "classes": {
-                "Shader.Water": 1
-            },
-            "fors": {},
-            "namespaces": {}
         }
     },
     "modules": {
@@ -545,18 +502,14 @@
                 "Transform": 1,
                 "Translate": 1,
                 "Visibility": 1,
-                "XEO": 1,
-                "XEO.MyComponent": 1,
-                "Geometry.Quad": 1,
-                "Geometry.OBJ": 1,
-                "Shader.Water": 1
+                "XEO": 1
             },
             "fors": {},
             "namespaces": {
                 "XEO": 1
             },
             "tag": "main",
-            "file": "src/extras/shader.water.js",
+            "file": "src/core/xeo.js",
             "line": 1,
             "description": "The XeoEngine namespace",
             "static": 1,
@@ -1001,12 +954,12 @@
             "namespace": "",
             "file": "src/core/component.js",
             "line": 5,
-            "description": "The **Component** class is the base class for all xeoEngine components.\nEvery Component has an ID that's unique within the parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n     <hr>\n     *Contents*\n<Ul>\n     <li><a href=\"#ids\">Component IDs</a></li>\n     <li><a href=\"#componentProps\">Properties</a></li>\n     <li><a href=\"#metadata\">Metadata</a></li>\n     <li><a href=\"#logging\">Logging</a></li>\n     <li><a href=\"#destruction\">Destruction</a></li>\n     </ul>\n     <hr>\n<br>\n### <a name=\"ids\">Component IDs</a>\nEvery Component has an ID that's unique within the parent {{#crossLink \"Scene\"}}{{/crossLink}}.\nxeoEngine generates the IDs automatically by default, however you can also specify them yourself:\n````javascript\nvar scene = new XEO.Scene({\n       id: \"myScene\"\n  });\nvar material = new XEO.Material(scene, {\n        id: \"myMaterial\"\n   });\nvar geometry = new XEO.Geometry(scene, {\n        id: \"myGeometry\"\n  });\nvar object = new XEO.GameObject(scene, {\n        material: material,\n        geometry: geometry\n  });\n     ````\nThen you can find your components like this:\n````javascript\nvar theScene = XEO.scenes[\"myScene\"];\nvar theMaterial = theScene.components[\"myMaterial\"];\n     ````\n<br>\n### <a name=\"componentProps\">Properties</a>\nAlmost every property on a xeoEngine Component fires a change event when you update it.\nFor example, we can subscribe to the {{#crossLink \"Material/diffuse:event\"}}diffuse{{/crossLink}} event that a\n     {{#crossLink \"Material\"}}Material{{/crossLink}} fires when its {{#crossLink \"Material/diffuse:property\"}}diffuse{{/crossLink}}\n     property is updated, like so:\n````javascript\n// Bind a change callback to a property\n     var handle = material.on(\"diffuse\", function(diffuse) {\n      console.log(\"Material diffuse color has changed to: [\" + diffuse[0] + \", \" + diffuse[1] + \",\" + diffuse[2] + \"]\");\n  });\n// Change the property value, which fires the callback\n     material.diffuse = [ 0.0, 0.5, 0.5 ];\n// Unsubscribe from the property change event\n     material.off(handle);\n     ````\nWe can also subscribe to changes in component structure, since components are properties of other components. For example, we can\n     subscribe to the '{{#crossLink \"GameObject/material:event\"}}material{{/crossLink}}' event that an\n     {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} fires when its {{#crossLink \"GameObject/material:property\"}}material{{/crossLink}}\n     property is linked to a different {{#crossLink \"Material\"}}Material{{/crossLink}}, like so:\n```` javascript\n// Bind a change callback to the GameObject's Material\n     object1.on(\"material\", function(material) {\n      console.log(\"GameObject's Material has changed to: \" + material.id);\n  });\n// Now replace that Material with another\n     object1.material = new XEO.Material({\n       id: \"myOtherMaterial\",\n       diffuse: [ 0.3, 0.3, 0.6 ]\n       //..\n   });\n     ````\n<br>\n### <a name=\"metadata\">Metadata</a>\nYou can set optional ***metadata*** on your Components, which can be anything you like. These are intended\n     to help manage your components within your application code or content pipeline.\nYou could use metadata to attach authoring or version information, like this:\n````javascript\nvar scene = new XEO.Scene({\n        id: \"myScene\",\n        metadata: {\n            title: \"My awesome 3D scene\",\n            author: \"@xeolabs\",\n     date: \"February 13 2015\"\n     }\n     });\nvar material = new XEO.Material(scene, {\n        id: \"myMaterial\",\n        diffuse: [1, 0, 0],\n        metadata: {\n            description: \"Bright red color with no textures\",\n            version: \"0.1\",\n            foo: \"bar\"\n        }\n   });\n     ````\nAs with all properties, you can subscribe and change the metadata like this:\n````javascript\nmaterial.on(\"metadata\", function(value) {\n        console.log(\"Metadata changed: \" + JSON.stringify(value));\n });\nmaterial.metadata = {\n        description: \"Bright red color with no textures\",\n        version: \"0.2\",\n        foo: \"baz\"\n };\n     ````\n<br>\n### <a name=\"logging\">Logging</a>\nComponents have methods to log ID-prefixed messages to the JavaScript console:\n````javascript\nmaterial.log(\"Everything is fine, situation normal.\");\n     material.warn(\"Wait, whats that red light?\");\n     material.error(\"Aw, snap!\");\n     ````\nThe logged messages will look like this:\n````\n[LOG]   myMaterial: Everything is fine, situation normal.\n     [WARN]  myMaterial: Wait, whats that red light..\n     [ERROR] myMaterial: Aw, snap!\n     ````\n     <br>\n     ### <a name=\"destruction\">Destruction</a>\nGet notification of destruction directly on the Components:\n````javascript\nmaterial.on(\"destroyed\", function() {\n        this.log(\"Component was destroyed: \" + this.id);\n      });\n     ````\nOr get notification of destruction of any Component within its {{#crossLink \"Scene\"}}{{/crossLink}}, indiscriminately:\n````javascript\nscene.on(\"componentDestroyed\", function(component) {\n        this.log(\"Component was destroyed: \" + component.id);\n });\n     ````\nThen destroy a component like this:\n````javascript\nmaterial.destroy();\n     ````\nOther Components that are linked to it will fall back on a default of some sort. For example, any\n     {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that were linked to our {{#crossLink \"Material\"}}{{/crossLink}}\n     will then automatically link to the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/material:property\"}}{{/crossLink}}.",
+            "description": "The **Component** class is the base class for all xeoEngine components.\nEvery Component has an ID that's unique within the parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n     <hr>\n     *Contents*\n<Ul>\n     <li><a href=\"#ids\">Component IDs</a></li>\n     <li><a href=\"#componentProps\">Properties</a></li>\n     <li><a href=\"#metadata\">Metadata</a></li>\n     <li><a href=\"#logging\">Logging</a></li>\n     <li><a href=\"#destruction\">Destruction</a></li>\n     </ul>\n     <hr>\n<br>\n### <a name=\"ids\">Component IDs</a>\nEvery Component has an ID that's unique within the parent {{#crossLink \"Scene\"}}{{/crossLink}}.\nxeoEngine generates the IDs automatically by default, however you can also specify them yourself:\n````javascript\n     var scene = new XEO.Scene({\n       id: \"myScene\"\n  });\nvar material = new XEO.Material(scene, {\n        id: \"myMaterial\"\n   });\nvar geometry = new XEO.Geometry(scene, {\n        id: \"myGeometry\"\n  });\nvar object = new XEO.GameObject(scene, {\n        material: material,\n        geometry: geometry\n  });\n     ````\nThen you can find your components like this:\n````javascript\n     var theScene = XEO.scenes[\"myScene\"];\nvar theMaterial = theScene.components[\"myMaterial\"];\n     ````\n<br>\n### <a name=\"componentProps\">Properties</a>\nAlmost every property on a xeoEngine Component fires a change event when you update it.\nFor example, we can subscribe to the {{#crossLink \"Material/diffuse:event\"}}diffuse{{/crossLink}} event that a\n     {{#crossLink \"Material\"}}Material{{/crossLink}} fires when its {{#crossLink \"Material/diffuse:property\"}}diffuse{{/crossLink}}\n     property is updated, like so:\n````javascript\n     // Bind a change callback to a property\n     var handle = material.on(\"diffuse\", function(diffuse) {\n      console.log(\"Material diffuse color has changed to: [\" + diffuse[0] + \", \" + diffuse[1] + \",\" + diffuse[2] + \"]\");\n  });\n// Change the property value, which fires the callback\n     material.diffuse = [ 0.0, 0.5, 0.5 ];\n// Unsubscribe from the property change event\n     material.off(handle);\n     ````\nWe can also subscribe to changes in component structure, since components are properties of other components. For example, we can\n     subscribe to the '{{#crossLink \"GameObject/material:event\"}}material{{/crossLink}}' event that an\n     {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} fires when its {{#crossLink \"GameObject/material:property\"}}material{{/crossLink}}\n     property is linked to a different {{#crossLink \"Material\"}}Material{{/crossLink}}, like so:\n```` javascript\n     // Bind a change callback to the GameObject's Material\n     object1.on(\"material\", function(material) {\n      console.log(\"GameObject's Material has changed to: \" + material.id);\n  });\n// Now replace that Material with another\n     object1.material = new XEO.Material({\n       id: \"myOtherMaterial\",\n       diffuse: [ 0.3, 0.3, 0.6 ]\n       //..\n   });\n     ````\n<br>\n### <a name=\"metadata\">Metadata</a>\nYou can set optional ***metadata*** on your Components, which can be anything you like. These are intended\n     to help manage your components within your application code or content pipeline.\nYou could use metadata to attach authoring or version information, like this:\n````javascript\n     var scene = new XEO.Scene({\n        id: \"myScene\",\n        metadata: {\n            title: \"My awesome 3D scene\",\n            author: \"@xeolabs\",\n     date: \"February 13 2015\"\n     }\n     });\nvar material = new XEO.Material(scene, {\n        id: \"myMaterial\",\n        diffuse: [1, 0, 0],\n        metadata: {\n            description: \"Bright red color with no textures\",\n            version: \"0.1\",\n            foo: \"bar\"\n        }\n   });\n     ````\nAs with all properties, you can subscribe and change the metadata like this:\n````javascript\n     material.on(\"metadata\", function(value) {\n        console.log(\"Metadata changed: \" + JSON.stringify(value));\n });\nmaterial.metadata = {\n        description: \"Bright red color with no textures\",\n        version: \"0.2\",\n        foo: \"baz\"\n };\n     ````\n<br>\n### <a name=\"logging\">Logging</a>\nComponents have methods to log ID-prefixed messages to the JavaScript console:\n````javascript\n     material.log(\"Everything is fine, situation normal.\");\n     material.warn(\"Wait, whats that red light?\");\n     material.error(\"Aw, snap!\");\n     ````\nThe logged messages will look like this:\n````text\n     [LOG]   myMaterial: Everything is fine, situation normal.\n     [WARN]  myMaterial: Wait, whats that red light..\n     [ERROR] myMaterial: Aw, snap!\n````\n<br>\n### <a name=\"destruction\">Destruction</a>\nGet notification of destruction directly on the Components:\n````javascript\n     material.on(\"destroyed\", function() {\n        this.log(\"Component was destroyed: \" + this.id);\n      });\n     ````\nOr get notification of destruction of any Component within its {{#crossLink \"Scene\"}}{{/crossLink}}, indiscriminately:\n````javascript\n     scene.on(\"componentDestroyed\", function(component) {\n        this.log(\"Component was destroyed: \" + component.id);\n });\n     ````\nThen destroy a component like this:\n````javascript\n     material.destroy();\n     ````\nOther Components that are linked to it will fall back on a default of some sort. For example, any\n     {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that were linked to our {{#crossLink \"Material\"}}{{/crossLink}}\n     will then automatically link to the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/material:property\"}}{{/crossLink}}.",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this DepthBuf\n     within the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Component\n     within the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -2435,7 +2388,7 @@
             "namespace": "",
             "file": "src/core/scene.js",
             "line": 6,
-            "description": "A **Scene** is a xeoEngine scene graph.\n\n<hr>\n*Contents*\n<Ul>\n<li><a href=\"#sceneStructure\">Scene Structure</a></li>\n<li><a href=\"#sceneCanvas\">The Scene Canvas</a></li>\n<li><a href=\"#findingByID\">Finding Scenes and Components by ID</a></li>\n<li><a href=\"#defaults\">The Default Scene</a></li>\n<li><a href=\"#savingAndLoadingJSON\">Saving and Loading Scenes</a></li>\n</ul>\n<hr>\n\n## <a name=\"sceneStructure\">Scene Structure</a>\n\nA Scene is a type of <a href=\"http://gameprogrammingpatterns.com/component.html\" target=\"_other\">component-object</a> graph.\n\nA Scene contains a soup of instances of various {{#crossLink \"Component\"}}Component{{/crossLink}} subtypes, such as\n{{#crossLink \"GameObject\"}}GameObject{{/crossLink}}, {{#crossLink \"Camera\"}}Camera{{/crossLink}}, {{#crossLink \"Material\"}}Material{{/crossLink}},\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} etc.  Each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} has a link to one of each of the other types,\nand the same component instances can be shared among many {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n*** Under the hood:*** Within xeoEngine, each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} represents a draw call,\nwhile its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses\nthe graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).\n\n<img src=\"http://www.gliffy.com/go/publish/image/7103731/L.png\"></img>\n\n#### Default Components\n\nA Scene provides its own default *flyweight* instance of each component type\n(except for {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}). Each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} you create\nwill implicitly link to a default instance for each type of component that you don't explicitly link it to. For example, when you create a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} without\na {{#crossLink \"Lights\"}}Lights{{/crossLink}}, the {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} will link to the\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/lights:property\"}}{{/crossLink}}. This mechanism\nprovides ***training wheels*** to help you learn the API, and also helps keep examples simple, where many of the examples in this\ndocumentation are implicitly using those defaults when they are not central to discussion.\n\nAt the bottom of the diagram above, the blue {{#crossLink \"Material\"}}Material{{/crossLink}},\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} and {{#crossLink \"Camera\"}}Camera{{/crossLink}} components\nrepresent some of the defaults provided by our Scene. For brevity, the diagram only shows those three\ntypes of component (there are actually around two dozen).\n\nNote that we did not link the second {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} to a\n{{#crossLink \"Material\"}}Material{{/crossLink}}, causing it to be implicitly linked to our Scene's\ndefault {{#crossLink \"Material\"}}Material{{/crossLink}}. That {{#crossLink \"Material\"}}Material{{/crossLink}}\nis the only default our {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are falling back on in this example, with other\ndefault component types, such as the {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} and the {{#crossLink \"Camera\"}}Camera{{/crossLink}},\nhanging around dormant until a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} is linked to them.\n\nNote also how the same {{#crossLink \"Camera\"}}Camera{{/crossLink}} is linked to both of our\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}. Whenever we update that\n{{#crossLink \"Camera\"}}Camera{{/crossLink}}, it's going to affect both of those\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} in one shot. Think of the defaults as the Scene's ***global*** component\ninstances, which you may optionally override on a per-{{#crossLink \"GameObject\"}}GameObject{{/crossLink}} basis with your own\ncomponent instances. In many Scenes, for example, you might not even bother to create your own {{#crossLink \"Camera\"}}Camera{{/crossLink}} and just\nlet all your {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} fall back on the default one.\n\n<br>\n### Example\n\nHere's the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} when we need to\noverride the default components that the Scene would have provided them, and that same component instances may be shared among multiple GameObjects.\n\n```` javascript\nvar scene = new XEO.Scene({\n  id: \"myScene\"   // ID is optional on all components\n  });\n\nvar material = new XEO.Material(myScene, {\n  id: \"myMaterial\",         // We'll use this ID to show how to find components by ID\n  diffuse: [ 0.6, 0.6, 0.7 ],\n  specular: [ 1.0, 1.0, 1.0 ]\n   });\n\nvar geometry = new XEO.Geometry(myScene, {\n  primitive: \"triangles\",\n  positions: [...],\n  normals: [...],\n  uvs: [...],\n  indices: [...]\n  });\n\nvar camera = new XEO.Camera(myScene);\n\nvar object1 = new XEO.GameObject(myScene, {\n  material: myMaterial,\n  geometry: myGeometry,\n  camera: myCamera\n  });\n\n// Second object uses Scene's default Material\nvar object1 = new XEO.GameObject(myScene, {\n  geometry: myGeometry,\n  camera: myCamera\n  });\n````\n\n\n<br>\n## <a name=\"sceneCanvas\">The Scene Canvas</a>\n\n<br>\n## <a name=\"findingByID\">Finding Scenes and Components by ID</a>\n\nWe can have as many Scenes as we want, and can find them by ID on the {{#crossLink \"XEO\"}}XEO{{/crossLink}} object's {{#crossLink \"XEO/scenes:property\"}}scenes{{/crossLink}} map:\n\n````javascript\nvar theScene = XEO.scenes[\"myScene\"];\n````\n\nLikewise we can find a Scene's components within the Scene itself, such as the {{#crossLink \"Material\"}}Material{{/crossLink}} we\ncreated earlier:\n\n````javascript\nvar theMaterial = myScene.components[\"myMaterial\"];\n````\n\n<br>\n## <a name=\"defaults\">The Default Scene</a>\n\nWhen you create components without specifying a Scene for them, xeoEngine will put them in its default Scene.\n\nFor example:\n\n```` javascript\nvar material2 = new XEO.Material({\n    diffuse: { r: 0.6, g: 0.6, b: 0.7 },\n    specular: { 1.0, 1.0, 1.0 }\n});\n\nvar geometry2 = new XEO.Geometry({\nprimitive: \"triangles\",\npositions: [...],\nnormals: [...],\nuvs: [...],\nindices: [...]\n});\n\nvar camera = new XEO.Camera();\n\nvar object1 = new XEO.GameObject({\nmaterial: material2,\ngeometry: geometry2,\ncamera: camera2\n});\n````\n\nYou can then obtain the default Scene from the {{#crossLink \"XEO\"}}XEO{{/crossLink}} object's\n{{#crossLink \"XEO/scene:property\"}}scene{{/crossLink}} property:\n\n````javascript\nvar theScene = XEO.scene;\n````\n\nor from one of the components we just created:\n````javascript\nvar theScene = material2.scene;\n````\n\n***Note:*** xeoEngine creates the default Scene as soon as you either\ncreate your first Sceneless {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} or reference the\n{{#crossLink \"XEO\"}}XEO{{/crossLink}} object's {{#crossLink \"XEO/scene:property\"}}scene{{/crossLink}} property. Expect to\nsee the HTML canvas for the default Scene magically appear in the page when you do that.\n\n<br>\n\n## <a name=\"savingAndLoadingJSON\">Saving and Loading Scenes</a>\n\nThe entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a\nScene, then save it and restore it again to exactly how it was when you saved it.\n\n````javascript\n// Serialize the scene to JSON\nvar json = myScene.json;\n\n// Create another scene from that JSON, in a fresh canvas:\nvar myOtherScene = new XEO.Scene({\n json: json\n  });\n\n````\n\n***Note:*** this will save your {{#crossLink \"Geometry\"}}Geometry{{/crossLink}}s' array properties\n({{#crossLink \"Geometry/positions:property\"}}positions{{/crossLink}}, {{#crossLink \"Geometry/normals:property\"}}normals{{/crossLink}},\n{{#crossLink \"Geometry/indices:property\"}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser\nif those arrays are huge.",
+            "description": "A **Scene** is a xeoEngine scene graph.\n\n<hr>\n\n*Contents*\n\n<Ul>\n   <li><a href=\"#sceneStructure\">Scene Structure</a></li>\n   <li><a href=\"#sceneCanvas\">The Scene Canvas</a></li>\n   <li><a href=\"#findingByID\">Finding Scenes and Components by ID</a></li>\n   <li><a href=\"#defaults\">The Default Scene</a></li>\n   <li><a href=\"#savingAndLoadingJSON\">Saving and Loading Scenes</a></li>\n</ul>\n\n<hr>\n\n## <a name=\"sceneStructure\">Scene Structure</a>\n\nA Scene is a type of <a href=\"http://gameprogrammingpatterns.com/component.html\" target=\"_other\">component-object</a> graph.\n\nA Scene contains a soup of instances of various {{#crossLink \"Component\"}}Component{{/crossLink}} subtypes, such as\n{{#crossLink \"GameObject\"}}GameObject{{/crossLink}}, {{#crossLink \"Camera\"}}Camera{{/crossLink}}, {{#crossLink \"Material\"}}Material{{/crossLink}},\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} etc.  Each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} has a link to one of each of the other types,\nand the same component instances can be shared among many {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n*** Under the hood:*** Within xeoEngine, each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} represents a draw call,\nwhile its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses\nthe graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).\n\n<img src=\"http://www.gliffy.com/go/publish/image/7103731/L.png\"></img>\n\n#### Default Components\n\nA Scene provides its own default *flyweight* instance of each component type\n(except for {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}). Each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} you create\nwill implicitly link to a default instance for each type of component that you don't explicitly link it to. For example, when you create a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} without\na {{#crossLink \"Lights\"}}Lights{{/crossLink}}, the {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} will link to the\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/lights:property\"}}{{/crossLink}}. This mechanism\nprovides ***training wheels*** to help you learn the API, and also helps keep examples simple, where many of the examples in this\ndocumentation are implicitly using those defaults when they are not central to discussion.\n\nAt the bottom of the diagram above, the blue {{#crossLink \"Material\"}}Material{{/crossLink}},\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} and {{#crossLink \"Camera\"}}Camera{{/crossLink}} components\nrepresent some of the defaults provided by our Scene. For brevity, the diagram only shows those three\ntypes of component (there are actually around two dozen).\n\nNote that we did not link the second {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} to a\n{{#crossLink \"Material\"}}Material{{/crossLink}}, causing it to be implicitly linked to our Scene's\ndefault {{#crossLink \"Material\"}}Material{{/crossLink}}. That {{#crossLink \"Material\"}}Material{{/crossLink}}\nis the only default our {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are falling back on in this example, with other\ndefault component types, such as the {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} and the {{#crossLink \"Camera\"}}Camera{{/crossLink}},\nhanging around dormant until a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} is linked to them.\n\nNote also how the same {{#crossLink \"Camera\"}}Camera{{/crossLink}} is linked to both of our\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}. Whenever we update that\n{{#crossLink \"Camera\"}}Camera{{/crossLink}}, it's going to affect both of those\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} in one shot. Think of the defaults as the Scene's ***global*** component\ninstances, which you may optionally override on a per-{{#crossLink \"GameObject\"}}GameObject{{/crossLink}} basis with your own\ncomponent instances. In many Scenes, for example, you might not even bother to create your own {{#crossLink \"Camera\"}}Camera{{/crossLink}} and just\nlet all your {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} fall back on the default one.\n\n<br>\n### Example\n\nHere's the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} when we need to\noverride the default components that the Scene would have provided them, and that same component instances may be shared among multiple GameObjects.\n\n```` javascript\nvar scene = new XEO.Scene({\n  id: \"myScene\"   // ID is optional on all components\n  });\n\nvar material = new XEO.Material(myScene, {\n  id: \"myMaterial\",         // We'll use this ID to show how to find components by ID\n  diffuse: [ 0.6, 0.6, 0.7 ],\n  specular: [ 1.0, 1.0, 1.0 ]\n   });\n\nvar geometry = new XEO.Geometry(myScene, {\n  primitive: \"triangles\",\n  positions: [...],\n  normals: [...],\n  uvs: [...],\n  indices: [...]\n  });\n\nvar camera = new XEO.Camera(myScene);\n\nvar object1 = new XEO.GameObject(myScene, {\n  material: myMaterial,\n  geometry: myGeometry,\n  camera: myCamera\n  });\n\n// Second object uses Scene's default Material\nvar object1 = new XEO.GameObject(myScene, {\n  geometry: myGeometry,\n  camera: myCamera\n  });\n````\n\n\n<br>\n## <a name=\"sceneCanvas\">The Scene Canvas</a>\n\n<br>\n## <a name=\"findingByID\">Finding Scenes and Components by ID</a>\n\nWe can have as many Scenes as we want, and can find them by ID on the {{#crossLink \"XEO\"}}XEO{{/crossLink}} object's {{#crossLink \"XEO/scenes:property\"}}scenes{{/crossLink}} map:\n\n````javascript\nvar theScene = XEO.scenes[\"myScene\"];\n````\n\nLikewise we can find a Scene's components within the Scene itself, such as the {{#crossLink \"Material\"}}Material{{/crossLink}} we\ncreated earlier:\n\n````javascript\nvar theMaterial = myScene.components[\"myMaterial\"];\n````\n\n<br>\n## <a name=\"defaults\">The Default Scene</a>\n\nWhen you create components without specifying a Scene for them, xeoEngine will put them in its default Scene.\n\nFor example:\n\n```` javascript\nvar material2 = new XEO.Material({\n    diffuse: { r: 0.6, g: 0.6, b: 0.7 },\n    specular: { 1.0, 1.0, 1.0 }\n});\n\nvar geometry2 = new XEO.Geometry({\nprimitive: \"triangles\",\npositions: [...],\nnormals: [...],\nuvs: [...],\nindices: [...]\n});\n\nvar camera = new XEO.Camera();\n\nvar object1 = new XEO.GameObject({\nmaterial: material2,\ngeometry: geometry2,\ncamera: camera2\n});\n````\n\nYou can then obtain the default Scene from the {{#crossLink \"XEO\"}}XEO{{/crossLink}} object's\n{{#crossLink \"XEO/scene:property\"}}scene{{/crossLink}} property:\n\n````javascript\nvar theScene = XEO.scene;\n````\n\nor from one of the components we just created:\n````javascript\nvar theScene = material2.scene;\n````\n\n***Note:*** xeoEngine creates the default Scene as soon as you either\ncreate your first Sceneless {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} or reference the\n{{#crossLink \"XEO\"}}XEO{{/crossLink}} object's {{#crossLink \"XEO/scene:property\"}}scene{{/crossLink}} property. Expect to\nsee the HTML canvas for the default Scene magically appear in the page when you do that.\n\n<br>\n\n## <a name=\"savingAndLoadingJSON\">Saving and Loading Scenes</a>\n\nThe entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a\nScene, then save it and restore it again to exactly how it was when you saved it.\n\n````javascript\n// Serialize the scene to JSON\nvar json = myScene.json;\n\n// Create another scene from that JSON, in a fresh canvas:\nvar myOtherScene = new XEO.Scene({\n json: json\n  });\n\n````\n\n***Note:*** this will save your {{#crossLink \"Geometry\"}}Geometry{{/crossLink}}s' array properties\n({{#crossLink \"Geometry/positions:property\"}}positions{{/crossLink}}, {{#crossLink \"Geometry/normals:property\"}}normals{{/crossLink}},\n{{#crossLink \"Geometry/indices:property\"}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser\nif those arrays are huge.",
             "is_constructor": 1,
             "params": [
                 {
@@ -2991,66 +2944,6 @@
             "_main": true,
             "static": 1,
             "author": "xeolabs / http://xeolabs.com/"
-        },
-        "XEO.MyComponent": {
-            "name": "XEO.MyComponent",
-            "shortname": "MyComponent",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "XEO",
-            "file": "src/extras/boilerplate.js",
-            "line": 1,
-            "description": "A **MyComponent** is a custom component you created for xeoEngine.\nUse this code and these comments as a boilerplate for your Component subclasses.\n<ul>\n <li>Say something here about your component</li>\n <li>Say another thing about your component, maybe mention how it interacts with other component types</li>\n </ul>\nFor each xeoEngine component, I use Gliffy (https://www.gliffy.com/) to embed an instance diagram that shows\n where the component fits within xeoEngine. For example:\n<img src=\"http://www.gliffy.com/go/publish/image/7430557/L.png\">\n###\nNext up is an example of how to use this component:\n```` javascript\n var myComponent = new MyComponent(scene, {\n    foo: 42,\n    bar: \"baz\"\n });\nmyComponent.on(\"foo\", function(value) {\n    //..\n });\nmyComponent.foo = 34;\n//...\n ````",
-            "extends": "Component"
-        },
-        "Geometry.Quad": {
-            "name": "Geometry.Quad",
-            "shortname": "Geometry.Quad",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/extras/geometry.quad.js",
-            "line": 1,
-            "description": "A quad-shaped geometry.",
-            "extends": "Geometry"
-        },
-        "Geometry.OBJ": {
-            "name": "Geometry.OBJ",
-            "shortname": "Geometry.OBJ",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/extras/geometry.obj.js",
-            "line": 1,
-            "description": "A Geometry imported from a Wavefront .OBJ file.\n```` javascript\n var geometry = new XEO.Geometry.OBJ(scene, {\n    src: \"file.obj\"\n });\nvar object = new XEO.GameObject(myScene, {\n    geometry: geometry\n });\n ````",
-            "extends": "Geometry"
-        },
-        "Shader.Water": {
-            "name": "Shader.Water",
-            "shortname": "Shader.Water",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/extras/shader.water.js",
-            "line": 1,
-            "description": "A ripply water shader.",
-            "extends": "Shader"
         }
     },
     "classitems": [
@@ -4942,7 +4835,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 205,
+            "line": 208,
             "description": "The parent {{#crossLink \"Scene\"}}{{/crossLink}} that contains this Component.",
             "itemtype": "property",
             "name": "scene",
@@ -4953,7 +4846,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 244,
+            "line": 247,
             "description": "Metadata on this component.\n\nFires a {{#crossLink \"Component/metadata:event\"}}{{/crossLink}} event on this Component when changed.",
             "itemtype": "property",
             "name": "metadata",
@@ -4963,7 +4856,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 254,
+            "line": 257,
             "description": "Unique ID for this Component within its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "id",
@@ -4974,7 +4867,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 263,
+            "line": 266,
             "description": "True as soon as this Component has been destroyed",
             "itemtype": "property",
             "name": "destroyed",
@@ -4984,7 +4877,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 310,
+            "line": 313,
             "description": "Type code for this Component.\n\nFor example: \"ambientLight\", \"colorTarget\", \"lights\" etc.",
             "itemtype": "property",
             "name": "type",
@@ -4997,7 +4890,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 322,
+            "line": 325,
             "description": "JavaScript class name for this Component.\n\nFor example: \"XEO.AmbientLight\", \"XEO.ColorTarget\", \"XEO.Lights\" etc.",
             "itemtype": "property",
             "name": "className",
@@ -5008,7 +4901,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 333,
+            "line": 336,
             "description": "Initializes this component",
             "params": [
                 {
@@ -5023,7 +4916,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 341,
+            "line": 344,
             "description": "Fires an event on this component.\n\nNotifies existing subscribers to the event, retains the event to give to\nany subsequent notifications on that location as they are made.",
             "itemtype": "method",
             "name": "fire",
@@ -5051,7 +4944,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 366,
+            "line": 369,
             "description": "Subscribes to an event on this component.\n\nThis is the primary way to read data from SceneHub. Your callback will be triggered for\nthe initial data and again whenever the data changes. Use {@link #off} to stop receiving updates.</p>\n\nThe callback is be called with this component as scope.",
             "itemtype": "method",
             "name": "on",
@@ -5076,7 +4969,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 395,
+            "line": 398,
             "description": "Cancels an event subscription that was previously made with {{#crossLink \"Component/on:method\"}}{{/crossLink}} or\n{{#crossLink \"Component/once:method\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "off",
@@ -5092,7 +4985,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 414,
+            "line": 417,
             "description": "Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.\n\nThis is equivalent to calling {{#crossLink \"Component/on:method\"}}{{/crossLink}}, and then calling\n{{#crossLink \"Component/off:method\"}}{{/crossLink}} inside the callback function.",
             "itemtype": "method",
             "name": "once",
@@ -5113,7 +5006,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 433,
+            "line": 436,
             "description": "Logs a console debugging message for this component.\n\nThe console message will have this format: *````[LOG] <component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/log:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "log",
@@ -5129,7 +5022,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 450,
+            "line": 453,
             "description": "Logs an error for this component to the JavaScript console.\n\nThe console message will have this format: *````[ERROR] <component id>: <message>````*\n\nAlso fires the message as an {{#crossLink \"Scene/error:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "error",
@@ -5145,7 +5038,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 467,
+            "line": 470,
             "description": "Logs a warning for this component to the JavaScript console.\n\nThe console message will have this format: *````[WARN] <component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/warn:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "warn",
@@ -5161,7 +5054,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 484,
+            "line": 487,
             "description": "Adds a child component to this.\nWhen component not given, attaches the scene's default instance for the given type.\nPublishes the new child component on this component, keyed to the given type.",
             "params": [
                 {
@@ -5182,7 +5075,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 605,
+            "line": 608,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.",
             "itemtype": "method",
             "name": "destroy",
@@ -5191,7 +5084,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 635,
+            "line": 638,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -8810,7 +8703,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 207,
+            "line": 210,
             "description": "Fired whenever a debug message logged on a component within this Scene.",
             "itemtype": "event",
             "name": "log",
@@ -8826,7 +8719,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 213,
+            "line": 216,
             "description": "Fired whenever an error is logged on a component within this Scene.",
             "itemtype": "event",
             "name": "error",
@@ -8842,7 +8735,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 219,
+            "line": 222,
             "description": "Fired whenever a warning is logged on a component within this Scene.",
             "itemtype": "event",
             "name": "warn",
@@ -8858,7 +8751,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 238,
+            "line": 241,
             "description": "The {{#crossLink \"Component\"}}Component{{/crossLink}}s within this Scene, mapped to their IDs.",
             "itemtype": "property",
             "name": "components",
@@ -8868,7 +8761,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 247,
+            "line": 250,
             "description": "Configurations for this Scene. Set whatever properties on here that will be\nuseful to the components within the Scene.",
             "final": 1,
             "itemtype": "property",
@@ -8879,7 +8772,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 256,
+            "line": 259,
             "description": "Manages the HTML5 canvas for this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -8890,7 +8783,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 277,
+            "line": 280,
             "description": "Publishes input events that occur on this Scene's canvas.",
             "final": 1,
             "itemtype": "property",
@@ -8901,7 +8794,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 287,
+            "line": 290,
             "description": "Tracks any asynchronous tasks that occur within this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -8912,7 +8805,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 295,
+            "line": 298,
             "description": "Tracks statistics within this Scene, such as numbers of textures, geometries etc.",
             "final": 1,
             "itemtype": "property",
@@ -8923,7 +8816,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 387,
+            "line": 390,
             "description": "Fired whenever a component within this Scene has been destroyed.",
             "itemtype": "event",
             "name": "componentDestroyed",
@@ -8939,7 +8832,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 408,
+            "line": 411,
             "description": "Fired whenever a component has been created within this Scene.",
             "itemtype": "event",
             "name": "componentCreated",
@@ -8955,7 +8848,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 418,
+            "line": 421,
             "description": "The default projection transform provided by this Scene, which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nThis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.project\", with all other properties set to\ntheir default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "project",
@@ -8966,7 +8859,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 441,
+            "line": 444,
             "description": "The default viewing transform provided by this Scene, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nThis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.view\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "view",
@@ -8977,7 +8870,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 463,
+            "line": 466,
             "description": "The default {{#crossLink \"Camera\"}}Camera{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Camera\"}}Camera{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.camera\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Camera\"}}Camera{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "camera",
@@ -8988,7 +8881,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 487,
+            "line": 490,
             "description": "The default modelling transform provided by this Scene.\n\nThis {{#crossLink \"Transform\"}}Transform{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"GameObjects\"}}GameObjects{{/crossLink}}s within this Scene are attached to\nthis {{#crossLink \"Transform\"}}Transform{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -8999,7 +8892,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 510,
+            "line": 513,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -9010,7 +8903,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 532,
+            "line": 535,
             "description": "The default {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -9021,7 +8914,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 554,
+            "line": 557,
             "description": "The default {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorTarget\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -9032,7 +8925,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 575,
+            "line": 578,
             "description": "The default {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -9043,7 +8936,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 597,
+            "line": 600,
             "description": "The default {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -9054,7 +8947,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 618,
+            "line": 621,
             "description": "The default {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.visibility\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"Visibility\"}}Visibility{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "visibility",
@@ -9065,7 +8958,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 640,
+            "line": 643,
             "description": "The default {{#crossLink \"Modes\"}}Modes{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Modes\"}}Modes{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.modes\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"Modes\"}}Modes{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "modes",
@@ -9076,7 +8969,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 661,
+            "line": 664,
             "description": "The default {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} provided by this Scene, which is a 2x2x2 box centered at the World-space origin.\n\nThis {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -9087,7 +8980,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 680,
+            "line": 683,
             "description": "The default {{#crossLink \"Layer\"}}Layer{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Layer\"}}Layer{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.layer\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"Layer\"}}Layer{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "layer",
@@ -9098,7 +8991,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 702,
+            "line": 705,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -9109,7 +9002,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 751,
+            "line": 754,
             "description": "The default {{#crossLink \"Material\"}}Material{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Material\"}}Material{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"Material\"}}Material{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -9120,7 +9013,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 773,
+            "line": 776,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -9131,7 +9024,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 794,
+            "line": 797,
             "description": "The default {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} provided by this Scene,\n(which is a neutral {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.reflect\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"Reflect\"}}Reflect{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "reflect",
@@ -9142,7 +9035,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 816,
+            "line": 819,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is a neutral {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -9153,7 +9046,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 838,
+            "line": 841,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"ShaderParams\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -9164,7 +9057,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 859,
+            "line": 862,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} created within this Scene will get this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -9175,14 +9068,14 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 882,
+            "line": 885,
             "description": "Destroys all components in this Scene",
             "class": "Scene",
             "module": "XEO"
         },
         {
             "file": "src/core/scene.js",
-            "line": 898,
+            "line": 901,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -10350,80 +10243,6 @@
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
-        },
-        {
-            "file": "src/extras/boilerplate.js",
-            "line": 63,
-            "description": "The \"foo\" property of this MyComponent.\n\nFires a {{#crossLink \"MyComponent/foo:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "foo",
-            "default": "0",
-            "type": "Number",
-            "class": "XEO.MyComponent",
-            "module": "XEO"
-        },
-        {
-            "file": "src/extras/boilerplate.js",
-            "line": 77,
-            "description": "Fired whenever this MyComponent's {{#crossLink \"MyComponent/foo:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "foo",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "XEO.MyComponent",
-            "module": "XEO"
-        },
-        {
-            "file": "src/extras/boilerplate.js",
-            "line": 90,
-            "description": "The \"bar\" property of this MyComponent.\n\nFires a {{#crossLink \"MyComponent/bar:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "bar",
-            "default": "0",
-            "type": "Number",
-            "class": "XEO.MyComponent",
-            "module": "XEO"
-        },
-        {
-            "file": "src/extras/boilerplate.js",
-            "line": 104,
-            "description": "Fired whenever this MyComponent's {{#crossLink \"MyComponent/bar:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "bar",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "XEO.MyComponent",
-            "module": "XEO"
-        },
-        {
-            "file": "src/extras/boilerplate.js",
-            "line": 118,
-            "description": "A method of this MyComponent.",
-            "itemtype": "method",
-            "name": "doSomething",
-            "params": [
-                {
-                    "name": "params",
-                    "description": ""
-                }
-            ],
-            "class": "XEO.MyComponent",
-            "module": "XEO"
-        },
-        {
-            "file": "src/extras/boilerplate.js",
-            "line": 127,
-            "description": "Returns a JSON object containing the component's property values",
-            "class": "XEO.MyComponent",
-            "module": "XEO"
         }
     ],
     "warnings": [
@@ -10809,11 +10628,11 @@
         },
         {
             "message": "Missing item type\nInitializes this component",
-            "line": " src/core/component.js:333"
+            "line": " src/core/component.js:336"
         },
         {
             "message": "Missing item type\nAdds a child component to this.\nWhen component not given, attaches the scene's default instance for the given type.\nPublishes the new child component on this component, keyed to the given type.",
-            "line": " src/core/component.js:484"
+            "line": " src/core/component.js:487"
         },
         {
             "message": "Missing item type\nLookup GL depth function enums",
@@ -10861,11 +10680,11 @@
         },
         {
             "message": "Missing item type\nDestroys all components in this Scene",
-            "line": " src/core/scene.js:882"
+            "line": " src/core/scene.js:885"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/core/scene.js:898"
+            "line": " src/core/scene.js:901"
         },
         {
             "message": "Missing item type\nRebuilds the texture transform matrix",
@@ -10894,10 +10713,6 @@
         {
             "message": "Missing item type\nAdd properties of o to o2 where undefined or null on o2",
             "line": " src/core/xeo.js:156"
-        },
-        {
-            "message": "Missing item type\nReturns a JSON object containing the component's property values",
-            "line": " src/extras/boilerplate.js:127"
         }
     ]
 }
