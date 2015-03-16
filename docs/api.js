@@ -42,7 +42,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Translate",
         "Visibility",
         "XEO",
-        "XEO.Boundary",
         "math"
     ],
     "modules": [

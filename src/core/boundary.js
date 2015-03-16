@@ -6,7 +6,7 @@
     /**
      *
      *
-     * @class XEO.Boundary
+     *
      * @constructor
      * @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary in the
      * default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.

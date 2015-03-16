@@ -84,9 +84,7 @@
         "src/core/boundary.js": {
             "name": "src/core/boundary.js",
             "modules": {},
-            "classes": {
-                "XEO.Boundary": 1
-            },
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -462,7 +460,6 @@
             "classes": {
                 "math": 1,
                 "AmbientLight": 1,
-                "XEO.Boundary": 1,
                 "Camera": 1,
                 "Canvas": 1,
                 "Clip": 1,
@@ -578,70 +575,6 @@
                             "optdefault": "[0.7, 0.7, 0.8]"
                         }
                     ]
-                }
-            ],
-            "extends": "Component"
-        },
-        "XEO.Boundary": {
-            "name": "XEO.Boundary",
-            "shortname": "XEO.Boundary",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/boundary.js",
-            "line": 6,
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Boundary in the\n default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Boundary configuration",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.\n You only need to supply an ID if you need to be able to find the Clip by ID within the {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Clip.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "mode",
-                            "description": "Clipping mode - \"disabled\" to clip nothing, \"inside\" to reject points inside the plane, \"outside\" to reject points outside the plane.",
-                            "type": "String",
-                            "optional": true,
-                            "optdefault": "\"disabled\""
-                        }
-                    ]
-                },
-                {
-                    "name": "dir",
-                    "description": "The direction of the clipping plane from the World-space origin.",
-                    "type": "Array of Number",
-                    "optional": true,
-                    "optdefault": " [1, 0, 0]"
-                },
-                {
-                    "name": "dist",
-                    "description": "Distance to the clipping plane along the direction vector.",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "1.0"
                 }
             ],
             "extends": "Component"
@@ -4446,6 +4379,63 @@
                 }
             ],
             "class": "AmbientLight",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/boundary.js",
+            "line": 6,
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Boundary in the\n default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Boundary configuration",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.\n You only need to supply an ID if you need to be able to find the Clip by ID within the {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Clip.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "mode",
+                            "description": "Clipping mode - \"disabled\" to clip nothing, \"inside\" to reject points inside the plane, \"outside\" to reject points outside the plane.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"disabled\""
+                        }
+                    ]
+                },
+                {
+                    "name": "dir",
+                    "description": "The direction of the clipping plane from the World-space origin.",
+                    "type": "Array of Number",
+                    "optional": true,
+                    "optdefault": " [1, 0, 0]"
+                },
+                {
+                    "name": "dist",
+                    "description": "Distance to the clipping plane along the direction vector.",
+                    "type": "Number",
+                    "optional": true,
+                    "optdefault": "1.0"
+                }
+            ],
+            "extends": "Component",
+            "class": "Camera",
             "module": "XEO"
         },
         {
@@ -10609,6 +10599,10 @@
         {
             "message": "Missing item type",
             "line": " src/core/webgl/webgl.js:7"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/core/boundary.js:6"
         },
         {
             "message": "Missing item type\nNames of recognised WebGL contexts",
