@@ -4948,6 +4948,13 @@
                     "name": "callback",
                     "description": "Called when fresh data is available at the event",
                     "type": "Function"
+                },
+                {
+                    "name": "scope",
+                    "description": "Scope for the callback",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "this"
                 }
             ],
             "return": {
@@ -4959,7 +4966,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 398,
+            "line": 399,
             "description": "Cancels an event subscription that was previously made with {{#crossLink \"Component/on:method\"}}{{/crossLink}} or\n{{#crossLink \"Component/once:method\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "off",
@@ -4975,7 +4982,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 417,
+            "line": 418,
             "description": "Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.\n\nThis is equivalent to calling {{#crossLink \"Component/on:method\"}}{{/crossLink}}, and then calling\n{{#crossLink \"Component/off:method\"}}{{/crossLink}} inside the callback function.",
             "itemtype": "method",
             "name": "once",
@@ -4996,7 +5003,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 436,
+            "line": 437,
             "description": "Logs a console debugging message for this component.\n\nThe console message will have this format: *````[LOG] <component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/log:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "log",
@@ -5012,7 +5019,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 453,
+            "line": 454,
             "description": "Logs an error for this component to the JavaScript console.\n\nThe console message will have this format: *````[ERROR] <component id>: <message>````*\n\nAlso fires the message as an {{#crossLink \"Scene/error:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "error",
@@ -5028,7 +5035,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 470,
+            "line": 471,
             "description": "Logs a warning for this component to the JavaScript console.\n\nThe console message will have this format: *````[WARN] <component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/warn:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "warn",
@@ -5044,7 +5051,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 487,
+            "line": 488,
             "description": "Adds a child component to this.\nWhen component not given, attaches the scene's default instance for the given type.\nPublishes the new child component on this component, keyed to the given type.",
             "params": [
                 {
@@ -5065,7 +5072,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 608,
+            "line": 609,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.",
             "itemtype": "method",
             "name": "destroy",
@@ -5074,7 +5081,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 638,
+            "line": 639,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -10626,7 +10633,7 @@
         },
         {
             "message": "Missing item type\nAdds a child component to this.\nWhen component not given, attaches the scene's default instance for the given type.\nPublishes the new child component on this component, keyed to the given type.",
-            "line": " src/core/component.js:487"
+            "line": " src/core/component.js:488"
         },
         {
             "message": "Missing item type\nLookup GL depth function enums",

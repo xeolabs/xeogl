@@ -286,16 +286,6 @@
             this._handleLocs = {}; // Maps handles to loc names
             this.props = {}; // Maps locations to publications
 
-            // Unique state ID
-            var stateId = this._stateIDMap.addItem({});
-
-            // State core
-            this._state = {
-                type: this.type, // state type
-                stateId: stateId, // GL state ID
-                hash: "" + stateId // Default state hash
-            };
-
             // Initialize
             if (this._init) {
                 this._init(cfg);
@@ -308,7 +298,7 @@
             }
         },
 
-        _stateIDMap: new XEO.utils.Map({}),
+
 
         /**
          Type code for this Component.
@@ -357,10 +347,12 @@
                 this.props[event] = value; // Save notification
             }
             var subsForLoc = this._locSubs[event];
+            var sub;
             if (subsForLoc) { // Notify subscriptions
                 for (var handle in subsForLoc) {
                     if (subsForLoc.hasOwnProperty(handle)) {
-                        subsForLoc[handle].call(this, value);
+                        sub = subsForLoc[handle];
+                        sub.callback.call(sub.scope, value);
                     }
                 }
             }
@@ -377,20 +369,24 @@
          * @method on
          * @param {String} event Publication event
          * @param {Function} callback Called when fresh data is available at the event
+         * @param {Object} [scope=this] Scope for the callback
          * @return {String} Handle to the subscription, which may be used to unsubscribe with {@link #off}.
          */
-        on: function (event, callback) {
+        on: function (event, callback, scope) {
             var subsForLoc = this._locSubs[event];
             if (!subsForLoc) {
                 subsForLoc = {};
                 this._locSubs[event] = subsForLoc;
             }
             var handle = this._handleMap.addItem(); // Create unique handle
-            subsForLoc[handle] = callback;
+            subsForLoc[handle] = {
+                scope: scope || this,
+                callback: callback
+            };
             this._handleLocs[handle] = event;
             var value = this.props[event];
             if (value) { // A publication exists, notify callback immediately
-                callback.call(this, value);
+                callback.call(scope || this, value);
             }
             return handle;
         },
@@ -423,14 +419,16 @@
          * @method once
          * @param {String} event Data event to listen to
          * @param {Function(data)} callback Called when fresh data is available at the event
+         * @param {Object} [scope=this] Scope for the callback
          */
-        once: function (event, callback) {
+        once: function (event, callback, scope) {
             var self = this;
             var handle = this.on(event,
                 function (value) {
                     self.off(handle);
                     callback(value);
-                });
+                },
+            scope);
         },
 
         /**
@@ -626,9 +624,6 @@
                     child.off(this._childDirtySubs[type]);
                 }
             }
-
-            // Destroy state core
-            XEO.Component._stateIDMap.removeItem(this._state.stateId);
 
             // Execute subclass behaviour
             if (this._destroy) {

@@ -77,6 +77,22 @@
             }
         },
 
+        /**
+         * Sets a property on this Configs.
+         *
+         * Fires an event with the same name as the property. Existing subscribers to the event will be
+         * notified immediately of the property value. Like all events on a Component, this Configs will
+         * retain the event, to notify any subsequent subscribers.
+         *
+         * @method set
+         * @param {String} name The property name
+         * @param {GameObject} value The property value
+         * @param {Boolean} [forget=false] When true, does not retain for subsequent subscribers
+         */
+        set: function(name, value) {
+            this.fire(name, value);
+        },
+
         _toJSON: function () {
             return  XEO._copy(this.props);
         }

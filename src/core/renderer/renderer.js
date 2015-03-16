@@ -72,6 +72,8 @@
      */
     XEO.renderer.Renderer = function (cfg) {
 
+        this._stateIDMap = new XEO.utils.Map({});
+
         // Display is bound to the lifetime of an HTML5 canvas
         this._canvas = cfg.canvas;
 
@@ -326,6 +328,39 @@
          */
         this.pickBufDirty = true;           // Redraw pick buffer
         this.rayPickBufDirty = true;        // Redraw raypick buffer
+    };
+
+    /**
+     * Create a new state object
+     */
+    XEO.renderer.renderer.createState = function (cfg) {
+
+        // Generate state ID
+        var stateId = this._stateIDMap.addItem({});
+
+        return new (function () {
+
+            // Unique state ID
+            this.stateId = stateId;
+
+            // Unique state hash
+            this.hash = cfg.hash || "" + this.stateId; // Initial state hash
+
+            // Create caller props
+
+            for (var key in cfg) {
+                if (cfg.hasOwnProperty(key)) {
+                    this[key] = cfg[key];
+                }
+            }
+        })();
+    };
+
+    /**
+     * Destroys a state object
+     */
+    XEO.renderer.renderer.destroyState = function (state) {
+        this._stateIDMap.removeItem(state.stateId); // Recycle state ID
     };
 
     /**

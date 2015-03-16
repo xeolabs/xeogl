@@ -500,9 +500,10 @@
          * @method on
          * @param {String} event Publication event
          * @param {Function} callback Called when fresh data is available at the event
+         * @param {Object} [scope=this] Scope for the callback
          * @return {String} Handle to the subscription, which may be used to unsubscribe with {@link #off}.
          */
-        on: function (event, callback) {
+        on: function (event, callback, scope) {
             var subsForLoc = this._locSubs[event];
             if (!subsForLoc) {
                 subsForLoc = {};
@@ -513,7 +514,7 @@
             this._handleLocs[handle] = event;
             var value = this.props[event];
             if (value) { // A publication exists, notify callback immediately
-                callback.call(this, value);
+                callback.call(scope || this, value);
             }
             return handle;
         },

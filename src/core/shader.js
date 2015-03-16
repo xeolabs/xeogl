@@ -206,6 +206,8 @@
 
                 set: function (value) {
                     this._state.shaders.vertex = value;
+
+                    // Trigger recompile
                     this.fire("dirty", true);
 
                     /**
@@ -234,6 +236,8 @@
 
                 set: function (value) {
                     this._state.shaders.fragment = value;
+
+                    // Trigger recompile
                     this.fire("dirty", true);
 
                     /**

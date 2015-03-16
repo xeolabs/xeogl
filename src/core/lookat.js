@@ -76,60 +76,23 @@
 
         _init: function (cfg) {
 
-            this.eye = cfg.eye;
-            this.look = cfg.look;
-            this.up = cfg.up;
-
-            var state = this._state;
-
             var self = this;
 
-            state.rebuild = function () {
+            // Renderer state
 
-                // Build matrix values
-
-                state.matrix = XEO.math.lookAtMat4c(
-                    state.eye[0], state.eye[1], state.eye[2],
-                    state.look[0], state.look[1], state.look[2],
-                    state.up[0], state.up[1], state.up[2]);
-
-                state.lookAt = {
-                    eye: state.eye,
-                    look: state.look,
-                    up: state.up
-                };
-
-                // Build typed arrays for view matrix and normal matrix
-                // Avoid reallocating those if possible
-
-                if (!state.mat) {
-
-                    // Create arrays
-
-                    state.mat = new Float32Array(state.matrix);
-                    state.normalMat = new Float32Array(
-                        XEO.math.transposeMat4(XEO.math.inverseMat4(state.matrix, XEO.math.mat4())));
-
-                } else {
-
-                    // Insert into existing arrays
-
-                    state.mat.set(state.matrix);
-                    state.normalMat.set(
-                        XEO.math.transposeMat4(XEO.math.inverseMat4(state.matrix, XEO.math.mat4())));
-                }
+            this._state = this._renderer.createState("lookat", function() {
 
                 /**
                  * Fired whenever this Lookat's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
                  * @event matrix
                  * @param value The property's new value
                  */
-                self.fire("matrix", state.matrix);
+                self.fire("matrix", this.matrix);
+            });
 
-                state.dirty = false;
-            };
-
-            this._state.dirty = true;
+            this.eye = cfg.eye;
+            this.look = cfg.look;
+            this.up = cfg.up;
         },
 
         _props: {
@@ -241,6 +204,10 @@
 
         _compile: function () {
             this._renderer.viewTransform = this._state;
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         },
 
         _getJSON: function () {
