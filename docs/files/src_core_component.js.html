@@ -126,25 +126,23 @@
     &quot;use strict&quot;;
 
     /**
-
      The **Component** class is the base class for all xeoEngine components.
 
-     Every Component has an ID that&#x27;s unique within the parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
      &lt;hr&gt;
+
      *Contents*
 
      &lt;Ul&gt;
-     &lt;li&gt;&lt;a href=&quot;#ids&quot;&gt;Component IDs&lt;/a&gt;&lt;/li&gt;
-     &lt;li&gt;&lt;a href=&quot;#componentProps&quot;&gt;Properties&lt;/a&gt;&lt;/li&gt;
-     &lt;li&gt;&lt;a href=&quot;#metadata&quot;&gt;Metadata&lt;/a&gt;&lt;/li&gt;
-     &lt;li&gt;&lt;a href=&quot;#logging&quot;&gt;Logging&lt;/a&gt;&lt;/li&gt;
-     &lt;li&gt;&lt;a href=&quot;#destruction&quot;&gt;Destruction&lt;/a&gt;&lt;/li&gt;
+         &lt;li&gt;&lt;a href=&quot;#ids&quot;&gt;Component IDs&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#componentProps&quot;&gt;Properties&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#metadata&quot;&gt;Metadata&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#logging&quot;&gt;Logging&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#destruction&quot;&gt;Destruction&lt;/a&gt;&lt;/li&gt;
      &lt;/ul&gt;
+
      &lt;hr&gt;
 
-     &lt;br&gt;
-
-     ### &lt;a name=&quot;ids&quot;&gt;Component IDs&lt;/a&gt;
+     ## &lt;a name=&quot;ids&quot;&gt;Component IDs&lt;/a&gt;
 
      Every Component has an ID that&#x27;s unique within the parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
 
@@ -177,9 +175,7 @@
      var theMaterial = theScene.components[&quot;myMaterial&quot;];
      &#x60;&#x60;&#x60;&#x60;
 
-     &lt;br&gt;
-
-     ### &lt;a name=&quot;componentProps&quot;&gt;Properties&lt;/a&gt;
+     ## &lt;a name=&quot;componentProps&quot;&gt;Properties&lt;/a&gt;
 
      Almost every property on a xeoEngine Component fires a change event when you update it.
 
@@ -219,9 +215,7 @@
    });
      &#x60;&#x60;&#x60;&#x60;
 
-     &lt;br&gt;
-
-     ### &lt;a name=&quot;metadata&quot;&gt;Metadata&lt;/a&gt;
+     ## &lt;a name=&quot;metadata&quot;&gt;Metadata&lt;/a&gt;
 
      You can set optional ***metadata*** on your Components, which can be anything you like. These are intended
      to help manage your components within your application code or content pipeline.
@@ -263,9 +257,7 @@
  };
      &#x60;&#x60;&#x60;&#x60;
 
-     &lt;br&gt;
-
-     ### &lt;a name=&quot;logging&quot;&gt;Logging&lt;/a&gt;
+     ## &lt;a name=&quot;logging&quot;&gt;Logging&lt;/a&gt;
 
      Components have methods to log ID-prefixed messages to the JavaScript console:
 
@@ -283,8 +275,6 @@
      [ERROR] myMaterial: Aw, snap!
 
      &#x60;&#x60;&#x60;&#x60;
-
-     &lt;br&gt;
 
      ### &lt;a name=&quot;destruction&quot;&gt;Destruction&lt;/a&gt;
 
@@ -409,16 +399,6 @@
             this._handleLocs = {}; // Maps handles to loc names
             this.props = {}; // Maps locations to publications
 
-            // Unique state ID
-            var stateId = this._stateIDMap.addItem({});
-
-            // State core
-            this._state = {
-                type: this.type, // state type
-                stateId: stateId, // GL state ID
-                hash: &quot;&quot; + stateId // Default state hash
-            };
-
             // Initialize
             if (this._init) {
                 this._init(cfg);
@@ -431,7 +411,7 @@
             }
         },
 
-        _stateIDMap: new XEO.utils.Map({}),
+
 
         /**
          Type code for this Component.
@@ -447,6 +427,9 @@
 
         /**
          JavaScript class name for this Component.
+
+         This is used when &lt;a href=&quot;Scene.html#savingAndLoading&quot;&gt;loading Scenes from JSON&lt;/a&gt;, and is included in the JSON
+         representation of this Component, so that this class may be instantiated when loading it from the JSON representation.
 
          For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.
 
@@ -480,10 +463,12 @@
                 this.props[event] = value; // Save notification
             }
             var subsForLoc = this._locSubs[event];
+            var sub;
             if (subsForLoc) { // Notify subscriptions
                 for (var handle in subsForLoc) {
                     if (subsForLoc.hasOwnProperty(handle)) {
-                        subsForLoc[handle].call(this, value);
+                        sub = subsForLoc[handle];
+                        sub.callback.call(sub.scope, value);
                     }
                 }
             }
@@ -510,7 +495,10 @@
                 this._locSubs[event] = subsForLoc;
             }
             var handle = this._handleMap.addItem(); // Create unique handle
-            subsForLoc[handle] = callback;
+            subsForLoc[handle] = {
+                scope: scope || this,
+                callback: callback
+            };
             this._handleLocs[handle] = event;
             var value = this.props[event];
             if (value) { // A publication exists, notify callback immediately
@@ -547,14 +535,16 @@
          * @method once
          * @param {String} event Data event to listen to
          * @param {Function(data)} callback Called when fresh data is available at the event
+         * @param {Object} [scope=this] Scope for the callback
          */
-        once: function (event, callback) {
+        once: function (event, callback, scope) {
             var self = this;
             var handle = this.on(event,
                 function (value) {
                     self.off(handle);
                     callback(value);
-                });
+                },
+            scope);
         },
 
         /**
@@ -750,9 +740,6 @@
                     child.off(this._childDirtySubs[type]);
                 }
             }
-
-            // Destroy state core
-            XEO.Component._stateIDMap.removeItem(this._state.stateId);
 
             // Execute subclass behaviour
             if (this._destroy) {

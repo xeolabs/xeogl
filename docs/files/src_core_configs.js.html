@@ -146,20 +146,22 @@
      &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7123181/L.png&quot;&gt;&lt;/img&gt;
 
 
-     ### Configurations used by the Scene
+     ## Configurations used by xeoEngine
 
      Don&#x27;t use the following names for your own properties, because these are already used by xeoEngine:
 
      | Name  | Description  |
      |---|---|
-     | foo  | foo property  |
-     | bar  | bar property  |
+     | TODO  | TODO  |
+     | TODO  | TODO  |
 
 
-     ### Example
+     ## Example
+
+     In this example, we&#x27;re subscribing to change events for a {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} &quot;foo&quot; configuration property, then updating that
+     that property, which fires the change event.
 
      &#x60;&#x60;&#x60;&#x60;Javascript
-
      var scene = new XEO.Scene();
 
      var configs = scene.configs;
@@ -171,7 +173,7 @@
      });
 
      // Change a Configs property
-     configs.fire(&quot;foo&quot;, &quot;Hello!&quot;);
+     configs.set(&quot;foo&quot;, &quot;Hello!&quot;);
 
      // Read the current value of a Configs property.
      // Normally we would asynchronously subscribe with #on though, to be sure that
@@ -198,6 +200,22 @@
                     this.fire(key, cfg[key]);
                 }
             }
+        },
+
+        /**
+         * Sets a property on this Configs.
+         *
+         * Fires an event with the same name as the property. Existing subscribers to the event will be
+         * notified immediately of the property value. Like all events on a Component, this Configs will
+         * retain the event, to notify any subsequent subscribers.
+         *
+         * @method set
+         * @param {String} name The property name
+         * @param {GameObject} value The property value
+         * @param {Boolean} [forget=false] When true, does not retain for subsequent subscribers
+         */
+        set: function(name, value) {
+            this.fire(name, value);
         },
 
         _toJSON: function () {

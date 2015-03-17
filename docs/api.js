@@ -51,7 +51,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "XEO",
             "name": "XEO",
-            "description": "The XeoEngine namespace"
+            "description": "The xeoEngine namespace."
         }
     ]
 } };

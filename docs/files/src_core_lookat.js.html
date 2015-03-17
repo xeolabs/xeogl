@@ -137,7 +137,7 @@
 
      &lt;img src=&quot;http://www.gliffy.com/go/publish/image/6895163/L.png&quot;&gt;&lt;/img&gt;
 
-     ### Example
+     ## Example
 
      In this example we have a Lookat that positions the eye at -10 on the World-space Z-axis, while looking at the origin.
      Then we&#x27;ll add that to a {{#crossLink &quot;Camera&quot;}}{{/crossLink}}. which we associate with a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
@@ -199,60 +199,23 @@
 
         _init: function (cfg) {
 
-            this.eye = cfg.eye;
-            this.look = cfg.look;
-            this.up = cfg.up;
-
-            var state = this._state;
-
             var self = this;
 
-            state.rebuild = function () {
+            // Renderer state
 
-                // Build matrix values
-
-                state.matrix = XEO.math.lookAtMat4c(
-                    state.eye[0], state.eye[1], state.eye[2],
-                    state.look[0], state.look[1], state.look[2],
-                    state.up[0], state.up[1], state.up[2]);
-
-                state.lookAt = {
-                    eye: state.eye,
-                    look: state.look,
-                    up: state.up
-                };
-
-                // Build typed arrays for view matrix and normal matrix
-                // Avoid reallocating those if possible
-
-                if (!state.mat) {
-
-                    // Create arrays
-
-                    state.mat = new Float32Array(state.matrix);
-                    state.normalMat = new Float32Array(
-                        XEO.math.transposeMat4(XEO.math.inverseMat4(state.matrix, XEO.math.mat4())));
-
-                } else {
-
-                    // Insert into existing arrays
-
-                    state.mat.set(state.matrix);
-                    state.normalMat.set(
-                        XEO.math.transposeMat4(XEO.math.inverseMat4(state.matrix, XEO.math.mat4())));
-                }
+            this._state = this._renderer.createState(&quot;lookat&quot;, function() {
 
                 /**
                  * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/matrix:property&quot;}}{{/crossLink}} property is regenerated.
                  * @event matrix
                  * @param value The property&#x27;s new value
                  */
-                self.fire(&quot;matrix&quot;, state.matrix);
+                self.fire(&quot;matrix&quot;, this.matrix);
+            });
 
-                state.dirty = false;
-            };
-
-            this._state.dirty = true;
+            this.eye = cfg.eye;
+            this.look = cfg.look;
+            this.up = cfg.up;
         },
 
         _props: {
@@ -364,6 +327,10 @@
 
         _compile: function () {
             this._renderer.viewTransform = this._state;
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         },
 
         _getJSON: function () {

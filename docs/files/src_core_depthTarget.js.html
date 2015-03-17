@@ -139,7 +139,7 @@
 
      &lt;img src=&quot;http://www.gliffy.com/go/publish/image/6895849/L.png&quot;&gt;&lt;/img&gt;
 
-     ### Example
+     ## Example
 
      In this example we essentially have one {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
      that renders its fragment depth values to a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, which is then applied
@@ -149,12 +149,12 @@
      The scene contains:
 
      &lt;ul&gt;
-     &lt;li&gt;a DepthTarget,&lt;/li&gt;
-     &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape,
-     &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} fragment depth values to the DepthTarget,&lt;/li&gt;
-     &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that sources its pixels from the DepthTarget,&lt;/li&gt;
-     &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that includes the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, and&lt;/li&gt;
-     &lt;li&gt;a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, with the {{#crossLink &quot;Material&quot;}}{{/crossLink}} applied to it.&lt;/li&gt;
+         &lt;li&gt;a DepthTarget,&lt;/li&gt;
+        &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape,
+        &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} fragment depth values to the DepthTarget,&lt;/li&gt;
+        &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that sources its pixels from the DepthTarget,&lt;/li&gt;
+        &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that includes the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, and&lt;/li&gt;
+        &lt;li&gt;a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, with the {{#crossLink &quot;Material&quot;}}{{/crossLink}} applied to it.&lt;/li&gt;
      &lt;/ul&gt;
 
      The pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second
@@ -164,12 +164,9 @@
      &#x60;&#x60;&#x60;&#x60;javascript
      var scene = new XEO.Scene();
 
-
      var geometry = new XEO.Geometry(scene); // Default to a 2x2x2 box.
 
-
      var depthTarget = new XEO.DepthTarget(scene);
-
 
      var object1 = new XEO.GameObject(scene, {
         depthTarget: depthTarget
@@ -179,13 +176,11 @@
         target: depthTarget
      });
 
-
      var material = new XEO.Material(scene, {
         textures: [
             texture
         ]
      });
-
 
      var object2 = new XEO.GameObject(scene, {
         geometry: geometry,  // Reuse our simple box geometry

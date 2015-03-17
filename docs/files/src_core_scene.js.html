@@ -138,7 +138,7 @@
         &lt;li&gt;&lt;a href=&quot;#sceneCanvas&quot;&gt;The Scene Canvas&lt;/a&gt;&lt;/li&gt;
         &lt;li&gt;&lt;a href=&quot;#findingByID&quot;&gt;Finding Scenes and Components by ID&lt;/a&gt;&lt;/li&gt;
         &lt;li&gt;&lt;a href=&quot;#defaults&quot;&gt;The Default Scene&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href=&quot;#savingAndLoadingJSON&quot;&gt;Saving and Loading Scenes&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#savingAndLoading&quot;&gt;Saving and Loading Scenes&lt;/a&gt;&lt;/li&gt;
      &lt;/ul&gt;
 
      &lt;hr&gt;
@@ -188,8 +188,7 @@
      component instances. In many Scenes, for example, you might not even bother to create your own {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} and just
      let all your {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} fall back on the default one.
 
-     &lt;br&gt;
-     ### Example
+     ## Example
 
      Here&#x27;s the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} when we need to
      override the default components that the Scene would have provided them, and that same component instances may be shared among multiple GameObjects.
@@ -228,11 +227,10 @@
   });
      &#x60;&#x60;&#x60;&#x60;
 
-
-     &lt;br&gt;
      ## &lt;a name=&quot;sceneCanvas&quot;&gt;The Scene Canvas&lt;/a&gt;
 
-     &lt;br&gt;
+     See the {{#crossLink &quot;Canvas&quot;}}{{/crossLink}} component.
+
      ## &lt;a name=&quot;findingByID&quot;&gt;Finding Scenes and Components by ID&lt;/a&gt;
 
      We can have as many Scenes as we want, and can find them by ID on the {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s {{#crossLink &quot;XEO/scenes:property&quot;}}scenes{{/crossLink}} map:
@@ -248,7 +246,6 @@
      var theMaterial = myScene.components[&quot;myMaterial&quot;];
      &#x60;&#x60;&#x60;&#x60;
 
-     &lt;br&gt;
      ## &lt;a name=&quot;defaults&quot;&gt;The Default Scene&lt;/a&gt;
 
      When you create components without specifying a Scene for them, xeoEngine will put them in its default Scene.
@@ -295,9 +292,7 @@
      {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} property. Expect to
      see the HTML canvas for the default Scene magically appear in the page when you do that.
 
-     &lt;br&gt;
-
-     ## &lt;a name=&quot;savingAndLoadingJSON&quot;&gt;Saving and Loading Scenes&lt;/a&gt;
+     ## &lt;a name=&quot;savingAndLoading&quot;&gt;Saving and Loading Scenes&lt;/a&gt;
 
      The entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a
      Scene, then save it and restore it again to exactly how it was when you saved it.

@@ -329,6 +329,8 @@
 
                 set: function (value) {
                     this._state.shaders.vertex = value;
+
+                    // Trigger recompile
                     this.fire(&quot;dirty&quot;, true);
 
                     /**
@@ -357,6 +359,8 @@
 
                 set: function (value) {
                     this._state.shaders.fragment = value;
+
+                    // Trigger recompile
                     this.fire(&quot;dirty&quot;, true);
 
                     /**

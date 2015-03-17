@@ -134,7 +134,7 @@
 
      &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7104991/L.png&quot;&gt;&lt;/img&gt;
 
-     ### Example
+     ## Example
 
      In this example we&#x27;re configuring the WebGL depth buffer for a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
 
@@ -149,7 +149,7 @@
      &#x60;&#x60;&#x60;&#x60;javascript
      var scene = new XEO.Scene();
 
-     var depthBuf = new XEO.ColorTarget(scene, {
+     var depthBuf = new XEO.DepthBuf(scene, {
         clearDepth: 0.5,
         depthFunc: &quot;less&quot;
      });

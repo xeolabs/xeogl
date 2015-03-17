@@ -134,133 +134,138 @@
 
 
 <div class="box intro">
-    <p>The <strong>Component</strong> class is the base class for all xeoEngine components.
-Every Component has an ID that&#39;s unique within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.
-     <hr>
-     <em>Contents</em></p>
+    <p>The <strong>Component</strong> class is the base class for all xeoEngine components.</p>
+<hr>
+
+<p><em>Contents</em></p>
 <p><Ul>
-     <li><a href="#ids">Component IDs</a></li>
-     <li><a href="#componentProps">Properties</a></li>
-     <li><a href="#metadata">Metadata</a></li>
-     <li><a href="#logging">Logging</a></li>
-     <li><a href="#destruction">Destruction</a></li>
-     </ul>
-     <hr>
-<br></p>
-<h3 id="-a-name-ids-component-ids-a-"><a name="ids">Component IDs</a></h3>
-<p>Every Component has an ID that&#39;s unique within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.
-xeoEngine generates the IDs automatically by default, however you can also specify them yourself:</p>
-<pre class="code prettyprint"><code class="lang-javascript">     var scene = new XEO.Scene({
-       id: "myScene"
+    <li><a href="#ids">Component IDs</a></li>
+   <li><a href="#componentProps">Properties</a></li>
+   <li><a href="#metadata">Metadata</a></li>
+   <li><a href="#logging">Logging</a></li>
+   <li><a href="#destruction">Destruction</a></li>
+</ul></p>
+<hr>
+
+<h2 id="-a-name-ids-component-ids-a-"><a name="ids">Component IDs</a></h2>
+<p>Every Component has an ID that&#39;s unique within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<p>xeoEngine generates the IDs automatically by default, however you can also specify them yourself:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene({
+  id: "myScene"
   });
+
 var material = new XEO.Material(scene, {
-        id: "myMaterial"
+   id: "myMaterial"
    });
+
 var geometry = new XEO.Geometry(scene, {
-        id: "myGeometry"
+   id: "myGeometry"
   });
+
 var object = new XEO.GameObject(scene, {
-        material: material,
-        geometry: geometry
+   material: material,
+   geometry: geometry
   });
 </code></pre>
 <p>Then you can find your components like this:</p>
-<pre class="code prettyprint"><code class="lang-javascript">     var theScene = XEO.scenes["myScene"];
+<pre class="code prettyprint"><code class="lang-javascript">var theScene = XEO.scenes["myScene"];
+
 var theMaterial = theScene.components["myMaterial"];
 </code></pre>
-<p><br></p>
-<h3 id="-a-name-componentprops-properties-a-"><a name="componentProps">Properties</a></h3>
-<p>Almost every property on a xeoEngine Component fires a change event when you update it.
-For example, we can subscribe to the <a href="../classes/Material.html#event_diffuse" class="crosslink">diffuse</a> event that a
-     <a href="../classes/Material.html" class="crosslink">Material</a> fires when its <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a>
-     property is updated, like so:</p>
-<pre class="code prettyprint"><code class="lang-javascript">     // Bind a change callback to a property
-     var handle = material.on("diffuse", function(diffuse) {
-      console.log("Material diffuse color has changed to: [" + diffuse[0] + ", " + diffuse[1] + "," + diffuse[2] + "]");
+<h2 id="-a-name-componentprops-properties-a-"><a name="componentProps">Properties</a></h2>
+<p>Almost every property on a xeoEngine Component fires a change event when you update it.</p>
+<p>For example, we can subscribe to the <a href="../classes/Material.html#event_diffuse" class="crosslink">diffuse</a> event that a
+<a href="../classes/Material.html" class="crosslink">Material</a> fires when its <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a>
+property is updated, like so:</p>
+<pre class="code prettyprint"><code class="lang-javascript">// Bind a change callback to a property
+var handle = material.on("diffuse", function(diffuse) {
+ console.log("Material diffuse color has changed to: [" + diffuse[0] + ", " + diffuse[1] + "," + diffuse[2] + "]");
   });
+
 // Change the property value, which fires the callback
-     material.diffuse = [ 0.0, 0.5, 0.5 ];
+material.diffuse = [ 0.0, 0.5, 0.5 ];
+
 // Unsubscribe from the property change event
-     material.off(handle);
+material.off(handle);
 </code></pre>
 <p>We can also subscribe to changes in component structure, since components are properties of other components. For example, we can
-     subscribe to the &#39;<a href="../classes/GameObject.html#event_material" class="crosslink">material</a>&#39; event that an
-     <a href="../classes/GameObject.html" class="crosslink">GameObject</a> fires when its <a href="../classes/GameObject.html#property_material" class="crosslink">material</a>
-     property is linked to a different <a href="../classes/Material.html" class="crosslink">Material</a>, like so:</p>
-<pre class="code prettyprint"><code class="lang-javascript">     // Bind a change callback to the GameObject&#39;s Material
-     object1.on("material", function(material) {
-      console.log("GameObject&#39;s Material has changed to: " + material.id);
+subscribe to the &#39;<a href="../classes/GameObject.html#event_material" class="crosslink">material</a>&#39; event that an
+<a href="../classes/GameObject.html" class="crosslink">GameObject</a> fires when its <a href="../classes/GameObject.html#property_material" class="crosslink">material</a>
+property is linked to a different <a href="../classes/Material.html" class="crosslink">Material</a>, like so:</p>
+<pre class="code prettyprint"><code class="lang-javascript">// Bind a change callback to the GameObject&#39;s Material
+object1.on("material", function(material) {
+ console.log("GameObject&#39;s Material has changed to: " + material.id);
   });
+
 // Now replace that Material with another
-     object1.material = new XEO.Material({
-       id: "myOtherMaterial",
-       diffuse: [ 0.3, 0.3, 0.6 ]
-       //..
+object1.material = new XEO.Material({
+  id: "myOtherMaterial",
+  diffuse: [ 0.3, 0.3, 0.6 ]
+  //..
    });
 </code></pre>
-<p><br></p>
-<h3 id="-a-name-metadata-metadata-a-"><a name="metadata">Metadata</a></h3>
+<h2 id="-a-name-metadata-metadata-a-"><a name="metadata">Metadata</a></h2>
 <p>You can set optional <strong><em>metadata</em></strong> on your Components, which can be anything you like. These are intended
-     to help manage your components within your application code or content pipeline.
-You could use metadata to attach authoring or version information, like this:</p>
-<pre class="code prettyprint"><code class="lang-javascript">     var scene = new XEO.Scene({
-        id: "myScene",
-        metadata: {
-            title: "My awesome 3D scene",
-            author: "@xeolabs",
-     date: "February 13 2015"
-     }
-     });
+to help manage your components within your application code or content pipeline.</p>
+<p>You could use metadata to attach authoring or version information, like this:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene({
+   id: "myScene",
+   metadata: {
+       title: "My awesome 3D scene",
+       author: "@xeolabs",
+date: "February 13 2015"
+}
+});
+
 var material = new XEO.Material(scene, {
-        id: "myMaterial",
-        diffuse: [1, 0, 0],
-        metadata: {
-            description: "Bright red color with no textures",
-            version: "0.1",
-            foo: "bar"
-        }
+   id: "myMaterial",
+   diffuse: [1, 0, 0],
+   metadata: {
+       description: "Bright red color with no textures",
+       version: "0.1",
+       foo: "bar"
+   }
    });
 </code></pre>
 <p>As with all properties, you can subscribe and change the metadata like this:</p>
-<pre class="code prettyprint"><code class="lang-javascript">     material.on("metadata", function(value) {
-        console.log("Metadata changed: " + JSON.stringify(value));
+<pre class="code prettyprint"><code class="lang-javascript">material.on("metadata", function(value) {
+   console.log("Metadata changed: " + JSON.stringify(value));
  });
+
 material.metadata = {
-        description: "Bright red color with no textures",
-        version: "0.2",
-        foo: "baz"
+   description: "Bright red color with no textures",
+   version: "0.2",
+   foo: "baz"
  };
 </code></pre>
-<p><br></p>
-<h3 id="-a-name-logging-logging-a-"><a name="logging">Logging</a></h3>
+<h2 id="-a-name-logging-logging-a-"><a name="logging">Logging</a></h2>
 <p>Components have methods to log ID-prefixed messages to the JavaScript console:</p>
-<pre class="code prettyprint"><code class="lang-javascript">     material.log("Everything is fine, situation normal.");
-     material.warn("Wait, whats that red light?");
-     material.error("Aw, snap!");
+<pre class="code prettyprint"><code class="lang-javascript">material.log("Everything is fine, situation normal.");
+material.warn("Wait, whats that red light?");
+material.error("Aw, snap!");
 </code></pre>
 <p>The logged messages will look like this:</p>
-<pre class="code prettyprint"><code class="lang-text">     [LOG]   myMaterial: Everything is fine, situation normal.
-     [WARN]  myMaterial: Wait, whats that red light..
-     [ERROR] myMaterial: Aw, snap!
+<pre class="code prettyprint"><code class="lang-text">[LOG]   myMaterial: Everything is fine, situation normal.
+[WARN]  myMaterial: Wait, whats that red light..
+[ERROR] myMaterial: Aw, snap!
 </code></pre>
-<p><br></p>
 <h3 id="-a-name-destruction-destruction-a-"><a name="destruction">Destruction</a></h3>
 <p>Get notification of destruction directly on the Components:</p>
-<pre class="code prettyprint"><code class="lang-javascript">     material.on("destroyed", function() {
-        this.log("Component was destroyed: " + this.id);
-      });
+<pre class="code prettyprint"><code class="lang-javascript">material.on("destroyed", function() {
+   this.log("Component was destroyed: " + this.id);
+ });
 </code></pre>
 <p>Or get notification of destruction of any Component within its <a href="../classes/Scene.html" class="crosslink">Scene</a>, indiscriminately:</p>
-<pre class="code prettyprint"><code class="lang-javascript">     scene.on("componentDestroyed", function(component) {
-        this.log("Component was destroyed: " + component.id);
+<pre class="code prettyprint"><code class="lang-javascript">scene.on("componentDestroyed", function(component) {
+   this.log("Component was destroyed: " + component.id);
  });
 </code></pre>
 <p>Then destroy a component like this:</p>
-<pre class="code prettyprint"><code class="lang-javascript">     material.destroy();
+<pre class="code prettyprint"><code class="lang-javascript">material.destroy();
 </code></pre>
 <p>Other Components that are linked to it will fall back on a default of some sort. For example, any
-     <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> that were linked to our <a href="../classes/Material.html" class="crosslink">Material</a>
-     will then automatically link to the <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default <a href="../classes/Scene.html#property_material" class="crosslink">material</a>.</p>
+<a href="../classes/GameObject.html" class="crosslink">GameObjects</a> that were linked to our <a href="../classes/Material.html" class="crosslink">Material</a>
+will then automatically link to the <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default <a href="../classes/Scene.html#property_material" class="crosslink">material</a>.</p>
 
 </div>
 
@@ -313,7 +318,7 @@ material.metadata = {
         
                             <div class="param-description">
                                 <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Component
-             within the default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+        within the default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -476,7 +481,7 @@ material.metadata = {
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l609"><code>src&#x2F;core&#x2F;component.js:609</code></a>
+        <a href="../files/src_core_component.js.html#l599"><code>src&#x2F;core&#x2F;component.js:599</code></a>
         </p>
 
 
@@ -516,7 +521,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l454"><code>src&#x2F;core&#x2F;component.js:454</code></a>
+        <a href="../files/src_core_component.js.html#l444"><code>src&#x2F;core&#x2F;component.js:444</code></a>
         </p>
 
 
@@ -579,7 +584,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l344"><code>src&#x2F;core&#x2F;component.js:344</code></a>
+        <a href="../files/src_core_component.js.html#l327"><code>src&#x2F;core&#x2F;component.js:327</code></a>
         </p>
 
 
@@ -658,7 +663,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l437"><code>src&#x2F;core&#x2F;component.js:437</code></a>
+        <a href="../files/src_core_component.js.html#l427"><code>src&#x2F;core&#x2F;component.js:427</code></a>
         </p>
 
 
@@ -715,7 +720,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l399"><code>src&#x2F;core&#x2F;component.js:399</code></a>
+        <a href="../files/src_core_component.js.html#l387"><code>src&#x2F;core&#x2F;component.js:387</code></a>
         </p>
 
 
@@ -779,7 +784,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l369"><code>src&#x2F;core&#x2F;component.js:369</code></a>
+        <a href="../files/src_core_component.js.html#l354"><code>src&#x2F;core&#x2F;component.js:354</code></a>
         </p>
 
 
@@ -858,6 +863,9 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
                 <li class="arg">
                         <code>callback</code>
                 </li>
+                <li class="arg">
+                        <code class="optional">[scope=this]</code>
+                </li>
             </ul><span class="paren">)</span>
         </div>
 
@@ -871,7 +879,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l418"><code>src&#x2F;core&#x2F;component.js:418</code></a>
+        <a href="../files/src_core_component.js.html#l406"><code>src&#x2F;core&#x2F;component.js:406</code></a>
         </p>
 
 
@@ -911,6 +919,18 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
                     </div>
 
                 </li>
+                <li class="param">
+                        <code class="param-name optional">[scope=this]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Scope for the callback</p>
+
+                    </div>
+
+                </li>
             </ul>
         </div>
 
@@ -938,7 +958,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l471"><code>src&#x2F;core&#x2F;component.js:471</code></a>
+        <a href="../files/src_core_component.js.html#l461"><code>src&#x2F;core&#x2F;component.js:461</code></a>
         </p>
 
 
@@ -991,7 +1011,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l325"><code>src&#x2F;core&#x2F;component.js:325</code></a>
+                            <a href="../files/src_core_component.js.html#l305"><code>src&#x2F;core&#x2F;component.js:305</code></a>
                             </p>
                     
                     
@@ -999,6 +1019,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>JavaScript class name for this Component.</p>
+                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
+                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
                     <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
                     
                         </div>
@@ -1017,7 +1039,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l266"><code>src&#x2F;core&#x2F;component.js:266</code></a>
+                            <a href="../files/src_core_component.js.html#l256"><code>src&#x2F;core&#x2F;component.js:256</code></a>
                             </p>
                     
                     
@@ -1043,7 +1065,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l257"><code>src&#x2F;core&#x2F;component.js:257</code></a>
+                            <a href="../files/src_core_component.js.html#l247"><code>src&#x2F;core&#x2F;component.js:247</code></a>
                             </p>
                     
                     
@@ -1068,7 +1090,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l247"><code>src&#x2F;core&#x2F;component.js:247</code></a>
+                            <a href="../files/src_core_component.js.html#l237"><code>src&#x2F;core&#x2F;component.js:237</code></a>
                             </p>
                     
                     
@@ -1095,7 +1117,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l208"><code>src&#x2F;core&#x2F;component.js:208</code></a>
+                            <a href="../files/src_core_component.js.html#l198"><code>src&#x2F;core&#x2F;component.js:198</code></a>
                             </p>
                     
                     
@@ -1122,7 +1144,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l313"><code>src&#x2F;core&#x2F;component.js:313</code></a>
+                            <a href="../files/src_core_component.js.html#l293"><code>src&#x2F;core&#x2F;component.js:293</code></a>
                             </p>
                     
                     
@@ -1154,7 +1176,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l639"><code>src&#x2F;core&#x2F;component.js:639</code></a>
+                            <a href="../files/src_core_component.js.html#l626"><code>src&#x2F;core&#x2F;component.js:626</code></a>
                             </p>
                     
                     
