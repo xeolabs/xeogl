@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_layer.js.html#l6"><code>src&#x2F;core&#x2F;layer.js:6</code></a>
+            Defined in: <a href="../files/src_core_layer.js.html#l1"><code>src&#x2F;core&#x2F;layer.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -136,7 +136,7 @@
 <div class="box intro">
     <p>A <strong>Layer</strong> specifies the render order of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within their <a href="../classes/Stage.html" class="crosslink">Stages</a>.</p>
 <ul>
-<li>When the parent <a href="../classes/Scene.html" class="crosslink">Scene</a> renders, each <a href="../classes/Stage.html" class="crosslink">Stage</a> will render its bin
+<li>When xeoEngine renders a <a href="../classes/Scene.html" class="crosslink">Scene</a>, each <a href="../classes/Stage.html" class="crosslink">Stage</a> within that will render its bin
 of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> in turn, from the lowest priority <a href="../classes/Stage.html" class="crosslink">Stage</a> to the highest.</li>
 
 <li><a href="../classes/Stage.html" class="crosslink">Stages</a> are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
@@ -160,8 +160,85 @@ a <a href="../classes/Layer.html#property_priority" class="crosslink">priority</
 
 <p><img src="http://www.gliffy.com/go/publish/image/7105071/L.png"></img></p>
 <h2 id="example">Example</h2>
-<pre class="code prettyprint"><code class="lang-javascript">
-TODO
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
+
+var stage = new XEO.Stage(scene, {
+   priority: 0
+});
+
+var geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box
+
+// Innermost object
+// Blue and opaque, in Layer with render order 0, renders first
+
+var layer1 = new XEO.Layer(scene, {
+   priority: 1
+});
+
+var material1 = new XEO.Material(scene, {
+   diffuse: [0, 0, 1],
+   opacity: 1.0
+});
+
+var scale1 = new XEO.Scale(scene, {
+   xyz: [0.3, 0.3, 0.3]
+});
+
+var object1 = new XEO.GameObject(scene, {
+   geometry: geometry,
+   stage: stage,
+   layer: layer1,
+   material: material1,
+   scale: scale1
+});
+
+// Middle object
+// Red and transparent, in Layer with render order 2, renders next
+
+var layer2 = new XEO.Layer(scene, {
+   priority: 2
+});
+
+var material2 = new XEO.Material(scene, {
+   diffuse: [0, 0, 1],
+   opacity: 1.0
+});
+
+var scale2 = new XEO.Scale(scene, {
+   xyz: [0.6, 0.6, 0.6]
+});
+
+var object2 = new XEO.GameObject(scene, {
+   geometry: geometry,
+   stage: stage,
+   layer: layer2,
+   material: material2,
+   scale: scale2
+});
+
+// Outermost object
+// Yellow and transparent, in Layer with render order 3, renders next
+
+var layer3 = new XEO.Layer(scene, {
+   priority: 3
+});
+
+var material3 = new XEO.Material(scene, {
+   diffuse: [1, 1, 0],
+   opacity: 1.0
+});
+
+var scale3 = new XEO.Scale(scene, {
+   xyz: [1.0, 1.0, 1.0]
+});
+
+var object3 = new XEO.GameObject(scene, {
+   geometry: geometry,
+   stage: stage,
+   layer: layer3,
+   material: material3,
+   scale: scale3
+});
 </code></pre>
 
 </div>
@@ -192,7 +269,7 @@ TODO
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_layer.js.html#l6"><code>src&#x2F;core&#x2F;layer.js:6</code></a>
+                <a href="../files/src_core_layer.js.html#l1"><code>src&#x2F;core&#x2F;layer.js:1</code></a>
                 </p>
         
         
@@ -1032,7 +1109,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_layer.js.html#l65"><code>src&#x2F;core&#x2F;layer.js:65</code></a>
+                            <a href="../files/src_core_layer.js.html#l141"><code>src&#x2F;core&#x2F;layer.js:141</code></a>
                             </p>
                     
                     
@@ -1146,7 +1223,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_layer.js.html#l84"><code>src&#x2F;core&#x2F;layer.js:84</code></a>
+                            <a href="../files/src_core_layer.js.html#l160"><code>src&#x2F;core&#x2F;layer.js:160</code></a>
                             </p>
                     
                     
