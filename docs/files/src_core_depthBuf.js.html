@@ -121,59 +121,63 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+ A **DepthMap** configures the WebGL depth buffer for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+
+ A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer, and is not to be confused
+ with {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}}, which holds the final pixel depths as a color-encoded image
+ so that they may be fed into depth {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.
+
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7104991/L.png&quot;&gt;&lt;/img&gt;
+
+ ## Example
+
+ In this example we&#x27;re configuring the WebGL depth buffer for a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
+
+ The scene contains:
+
+ &lt;ul&gt;
+    &lt;li&gt;a DepthBuf that configures the clear depth and depth comparison function,&lt;/li&gt;
+    &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape and
+    &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+var scene = new XEO.Scene();
+
+// Create a DepthBuf that configures the WebGL depth buffer to set pixels depths to 0.5
+// whenever it is cleared, and to use the &quot;less&quot; depth comparison function
+var depthBuf = new XEO.DepthBuf(scene, {
+    clearDepth: 0.5,
+    depthFunc: &quot;less&quot;
+});
+
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+// Create a GameObject that renders the Geometry to the depth buffer,
+// as configured by our DepthBuf
+var gameObject = new XEO.GameObject(scene, {
+    depthBuf: depthBuf,
+    geometry: geometry
+});
+&#x60;&#x60;&#x60;&#x60;
+
+ @class DepthBuf
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this DepthBuf
+ within the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} DepthBuf configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthBuf.
+ @param [cfg.clearDepth=1.0] {Number} The clear depth.
+ @param [cfg.depthFunc=&quot;less&quot;] {String} The depth function.
+ @extends Component
+ */
 (function () {
 
     &quot;use strict&quot;;
 
-    /**
-     A **DepthMap** configures the WebGL depth buffer for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-     A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer, and is not to be confused
-     with {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}}, which holds the final pixel depths as a color-encoded image
-     so that they may be fed into depth {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.
-
-     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7104991/L.png&quot;&gt;&lt;/img&gt;
-
-     ## Example
-
-     In this example we&#x27;re configuring the WebGL depth buffer for a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
-
-     The scene contains:
-
-     &lt;ul&gt;
-     &lt;li&gt;a DepthBuf that configures the clear depth and depth comparison function,&lt;/li&gt;
-     &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape and
-     &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
-     &lt;/ul&gt;
-
-     &#x60;&#x60;&#x60;&#x60;javascript
-     var scene = new XEO.Scene();
-
-     var depthBuf = new XEO.DepthBuf(scene, {
-        clearDepth: 0.5,
-        depthFunc: &quot;less&quot;
-     });
-
-     var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
-     var gameObject = new XEO.GameObject(scene, {
-        depthBuf: depthBuf,
-        geometry: geometry
-     });
-     &#x60;&#x60;&#x60;&#x60;
-
-     @class DepthBuf
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this DepthBuf
-     within the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} DepthBuf configuration
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthBuf.
-     @param [cfg.clearDepth=1.0] {Number} The clear depth.
-     @param [cfg.depthFunc=&quot;less&quot;] {String} The depth function.
-     @extends Component
-     */
     XEO.DepthBuf = XEO.Component.extend({
 
         className: &quot;XEO.DepthBuf&quot;,
@@ -259,7 +263,7 @@
                     this.fire(&quot;depthFunc&quot;, value);
                 },
 
-                get: function() {
+                get: function () {
                     return this._state.depthFuncName;
                 }
             }

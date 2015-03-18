@@ -127,7 +127,7 @@
 
 
     /**
-     A **ColorTarget** captures rendered pixel colors of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+     A **ColorTarget** captures the colors of the pixels that xeoEngine renders for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
      &lt;ul&gt;
      &lt;li&gt;A ColorTarget provides the pixel colors as a dynamic color image that may be fed into {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.&lt;/li&gt;
@@ -164,7 +164,9 @@
 
      var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-     var firstGameObject = new XEO.GameObject(scene, {
+     // First GameObject renders to the ColorTarget
+
+     var object1 = new XEO.GameObject(scene, {
         geometry: geometry,
         colorTarget: colorTarget
      });
@@ -178,6 +180,9 @@
            texture
         ]
      });
+
+     // Second GameObject is textured with the
+     // image of the first GameObject
 
      var object2 = new XEO.GameObject(scene, {
         geometry: geometry,  // Reuse our simple box geometry

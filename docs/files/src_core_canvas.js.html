@@ -127,11 +127,11 @@
 
 
     /**
-     Manages a {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s HTML canvas and its WebGL context.
+     A **Canvas** manages a {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s HTML canvas and its WebGL context.
 
      &lt;ul&gt;
 
-     &lt;li&gt;Each {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} provides a Canvas as a final property on itself.&lt;/li&gt;
+     &lt;li&gt;Each {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.&lt;/li&gt;
 
      &lt;li&gt;When a {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} is configured with the ID of
      a &lt;a href=&quot;http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element&quot;&gt;HTMLCanvasElement&lt;/a&gt; that already
@@ -190,8 +190,8 @@
      });
      &#x60;&#x60;&#x60;&#x60;
 
-     When we want to bind the Canvas to an existing HTML canvas element, pass the element&#x27;s ID into the
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} like this:
+     When we want to bind the Canvas to an existing HTML canvas element, configure the
+     {{#crossLink &quot;Scene&quot;}}{{/crossLink}} with the ID of the element, like this:
 
      &#x60;&#x60;&#x60;&#x60; javascript
      // Create a Scene, this time configuting it with the

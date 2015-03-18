@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_depthTarget.js.html#l5"><code>src&#x2F;core&#x2F;depthTarget.js:5</code></a>
+            Defined in: <a href="../files/src_core_depthTarget.js.html#l1"><code>src&#x2F;core&#x2F;depthTarget.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -134,24 +134,24 @@
 
 
 <div class="box intro">
-    <p>A <strong>DepthTarget</strong> captures the rendered pixel depths of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>DepthTarget</strong> captures the Z-depths of the pixels that xeoEngine renders for the attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <ul>
-<li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into <a href="../classes/Texture.html" class="crosslink">Textures</a>.</li>
-<li>DepthTarget is not to be confused with <a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a>, which configures <strong><em>how</em></strong> the pixel depths are written with respect to the WebGL depth buffer.</li>
-<li>Use <a href="../classes/Stage.html" class="crosslink">Stages</a> when you need to ensure that a DepthTarget is rendered before
+   <li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into <a href="../classes/Texture.html" class="crosslink">Textures</a>.</li>
+   <li>DepthTarget is not to be confused with <a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a>, which configures <strong><em>how</em></strong> the pixel depths are written with respect to the WebGL depth buffer.</li>
+   <li>Use <a href="../classes/Stage.html" class="crosslink">Stages</a> when you need to ensure that a DepthTarget is rendered before
 the <a href="../classes/Texture.html" class="crosslink">Textures</a> that consume it.</li>
-<li>For special effects, we often use DepthTargets and <a href="../classes/Texture.html" class="crosslink">Textures</a> in combination
+   <li>For special effects, we often use DepthTargets and <a href="../classes/Texture.html" class="crosslink">Textures</a> in combination
 with <a href="../classes/ColorTarget.html" class="crosslink">ColorTargets</a> and <a href="../classes/Shader.html" class="crosslink">Shaders</a>.</li>
 </ul>
 
 <p><img src="http://www.gliffy.com/go/publish/image/6895849/L.png"></img></p>
 <h2 id="example">Example</h2>
-<p>In this example we essentially have one <a href="../classes/GameObject.html" class="crosslink">GameObject</a>
-that renders its fragment depth values to a <a href="../classes/Texture.html" class="crosslink">Texture</a>, which is then applied
+<p>In the example below, we essentially have one <a href="../classes/GameObject.html" class="crosslink">GameObject</a>
+that renders its pixel Z-depth values to a <a href="../classes/Texture.html" class="crosslink">Texture</a>, which is then applied
 to a second <a href="../classes/GameObject.html" class="crosslink">GameObject</a>.</p>
 <p>The scene contains:</p>
 <ul>
-    <li>a DepthTarget,</li>
+   <li>a DepthTarget,</li>
    <li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape,
    <li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that renders the <a href="../classes/Geometry.html" class="crosslink">Geometry</a> fragment depth values to the DepthTarget,</li>
    <li>a <a href="../classes/Texture.html" class="crosslink">Texture</a> that sources its pixels from the DepthTarget,</li>
@@ -168,6 +168,7 @@ var geometry = new XEO.Geometry(scene); // Default to a 2x2x2 box.
 
 var depthTarget = new XEO.DepthTarget(scene);
 
+// First GameObject renders to our DepthTarget
 var object1 = new XEO.GameObject(scene, {
    depthTarget: depthTarget
 });
@@ -182,6 +183,8 @@ var material = new XEO.Material(scene, {
    ]
 });
 
+// Second GameObject is textured with the color-encoded
+// pixel depths of the first GameObject
 var object2 = new XEO.GameObject(scene, {
    geometry: geometry,  // Reuse our simple box geometry
    material: material
@@ -216,7 +219,7 @@ var object2 = new XEO.GameObject(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_depthTarget.js.html#l5"><code>src&#x2F;core&#x2F;depthTarget.js:5</code></a>
+                <a href="../files/src_core_depthTarget.js.html#l1"><code>src&#x2F;core&#x2F;depthTarget.js:1</code></a>
                 </p>
         
         
@@ -402,7 +405,7 @@ var object2 = new XEO.GameObject(scene, {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l599"><code>src&#x2F;core&#x2F;component.js:599</code></a>
+        <a href="../files/src_core_component.js.html#l606"><code>src&#x2F;core&#x2F;component.js:606</code></a>
         </p>
 
 
@@ -442,7 +445,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l444"><code>src&#x2F;core&#x2F;component.js:444</code></a>
+        <a href="../files/src_core_component.js.html#l451"><code>src&#x2F;core&#x2F;component.js:451</code></a>
         </p>
 
 
@@ -505,7 +508,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l327"><code>src&#x2F;core&#x2F;component.js:327</code></a>
+        <a href="../files/src_core_component.js.html#l334"><code>src&#x2F;core&#x2F;component.js:334</code></a>
         </p>
 
 
@@ -584,7 +587,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l427"><code>src&#x2F;core&#x2F;component.js:427</code></a>
+        <a href="../files/src_core_component.js.html#l434"><code>src&#x2F;core&#x2F;component.js:434</code></a>
         </p>
 
 
@@ -641,7 +644,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l387"><code>src&#x2F;core&#x2F;component.js:387</code></a>
+        <a href="../files/src_core_component.js.html#l394"><code>src&#x2F;core&#x2F;component.js:394</code></a>
         </p>
 
 
@@ -705,7 +708,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l354"><code>src&#x2F;core&#x2F;component.js:354</code></a>
+        <a href="../files/src_core_component.js.html#l361"><code>src&#x2F;core&#x2F;component.js:361</code></a>
         </p>
 
 
@@ -800,7 +803,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l406"><code>src&#x2F;core&#x2F;component.js:406</code></a>
+        <a href="../files/src_core_component.js.html#l413"><code>src&#x2F;core&#x2F;component.js:413</code></a>
         </p>
 
 
@@ -879,7 +882,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l461"><code>src&#x2F;core&#x2F;component.js:461</code></a>
+        <a href="../files/src_core_component.js.html#l468"><code>src&#x2F;core&#x2F;component.js:468</code></a>
         </p>
 
 
@@ -932,7 +935,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l305"><code>src&#x2F;core&#x2F;component.js:305</code></a>
+                            <a href="../files/src_core_component.js.html#l312"><code>src&#x2F;core&#x2F;component.js:312</code></a>
                             </p>
                     
                     
@@ -960,7 +963,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l256"><code>src&#x2F;core&#x2F;component.js:256</code></a>
+                            <a href="../files/src_core_component.js.html#l264"><code>src&#x2F;core&#x2F;component.js:264</code></a>
                             </p>
                     
                     
@@ -986,7 +989,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l247"><code>src&#x2F;core&#x2F;component.js:247</code></a>
+                            <a href="../files/src_core_component.js.html#l255"><code>src&#x2F;core&#x2F;component.js:255</code></a>
                             </p>
                     
                     
@@ -1011,7 +1014,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l237"><code>src&#x2F;core&#x2F;component.js:237</code></a>
+                            <a href="../files/src_core_component.js.html#l245"><code>src&#x2F;core&#x2F;component.js:245</code></a>
                             </p>
                     
                     
@@ -1038,7 +1041,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l198"><code>src&#x2F;core&#x2F;component.js:198</code></a>
+                            <a href="../files/src_core_component.js.html#l206"><code>src&#x2F;core&#x2F;component.js:206</code></a>
                             </p>
                     
                     
@@ -1065,7 +1068,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l293"><code>src&#x2F;core&#x2F;component.js:293</code></a>
+                            <a href="../files/src_core_component.js.html#l300"><code>src&#x2F;core&#x2F;component.js:300</code></a>
                             </p>
                     
                     
@@ -1097,7 +1100,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l626"><code>src&#x2F;core&#x2F;component.js:626</code></a>
+                            <a href="../files/src_core_component.js.html#l633"><code>src&#x2F;core&#x2F;component.js:633</code></a>
                             </p>
                     
                     

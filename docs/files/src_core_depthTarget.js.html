@@ -121,83 +121,85 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+ A **DepthTarget** captures the Z-depths of the pixels that xeoEngine renders for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+
+ &lt;ul&gt;
+    &lt;li&gt;A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.&lt;/li&gt;
+    &lt;li&gt;DepthTarget is not to be confused with {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.&lt;/li&gt;
+    &lt;li&gt;Use {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
+ the {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} that consume it.&lt;/li&gt;
+    &lt;li&gt;For special effects, we often use DepthTargets and {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in combination
+ with {{#crossLink &quot;ColorTarget&quot;}}ColorTargets{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/6895849/L.png&quot;&gt;&lt;/img&gt;
+
+ ## Example
+
+ In the example below, we essentially have one {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
+ that renders its pixel Z-depth values to a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, which is then applied
+ to a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
+
+ The scene contains:
+
+ &lt;ul&gt;
+    &lt;li&gt;a DepthTarget,&lt;/li&gt;
+    &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape,
+    &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} fragment depth values to the DepthTarget,&lt;/li&gt;
+    &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that sources its pixels from the DepthTarget,&lt;/li&gt;
+    &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that includes the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, and&lt;/li&gt;
+    &lt;li&gt;a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, with the {{#crossLink &quot;Material&quot;}}{{/crossLink}} applied to it.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ The pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second
+ {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} as a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}. In practice the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}
+ would carry the depth values into a custom {{#crossLink &quot;Shader&quot;}}{{/crossLink}}, which would then be applied to the second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
+
+&#x60;&#x60;&#x60;&#x60;javascript
+var scene = new XEO.Scene();
+
+var geometry = new XEO.Geometry(scene); // Default to a 2x2x2 box.
+
+var depthTarget = new XEO.DepthTarget(scene);
+
+ // First GameObject renders to our DepthTarget
+var object1 = new XEO.GameObject(scene, {
+    depthTarget: depthTarget
+});
+
+var texture = new XEO.Texture(scene, {
+    target: depthTarget
+});
+
+var material = new XEO.Material(scene, {
+    textures: [
+        texture
+    ]
+});
+
+// Second GameObject is textured with the color-encoded
+// pixel depths of the first GameObject
+var object2 = new XEO.GameObject(scene, {
+    geometry: geometry,  // Reuse our simple box geometry
+    material: material
+});
+ &#x60;&#x60;&#x60;&#x60;
+ @class DepthTarget
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this DepthTarget within the
+ default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} DepthTarget configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthTarget.
+
+ @extends Component
+ */
 (function () {
 
     &quot;use strict&quot;;
 
-    /**
-     A **DepthTarget** captures the rendered pixel depths of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-     &lt;ul&gt;
-     &lt;li&gt;A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.&lt;/li&gt;
-     &lt;li&gt;DepthTarget is not to be confused with {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.&lt;/li&gt;
-     &lt;li&gt;Use {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
-     the {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} that consume it.&lt;/li&gt;
-     &lt;li&gt;For special effects, we often use DepthTargets and {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in combination
-     with {{#crossLink &quot;ColorTarget&quot;}}ColorTargets{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.&lt;/li&gt;
-     &lt;/ul&gt;
-
-     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/6895849/L.png&quot;&gt;&lt;/img&gt;
-
-     ## Example
-
-     In this example we essentially have one {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
-     that renders its fragment depth values to a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, which is then applied
-     to a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
-
-
-     The scene contains:
-
-     &lt;ul&gt;
-         &lt;li&gt;a DepthTarget,&lt;/li&gt;
-        &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape,
-        &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} fragment depth values to the DepthTarget,&lt;/li&gt;
-        &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that sources its pixels from the DepthTarget,&lt;/li&gt;
-        &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that includes the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, and&lt;/li&gt;
-        &lt;li&gt;a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, with the {{#crossLink &quot;Material&quot;}}{{/crossLink}} applied to it.&lt;/li&gt;
-     &lt;/ul&gt;
-
-     The pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second
-     {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} as a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}. In practice the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}
-     would carry the depth values into a custom {{#crossLink &quot;Shader&quot;}}{{/crossLink}}, which would then be applied to the second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
-
-     &#x60;&#x60;&#x60;&#x60;javascript
-     var scene = new XEO.Scene();
-
-     var geometry = new XEO.Geometry(scene); // Default to a 2x2x2 box.
-
-     var depthTarget = new XEO.DepthTarget(scene);
-
-     var object1 = new XEO.GameObject(scene, {
-        depthTarget: depthTarget
-     });
-
-     var texture = new XEO.Texture(scene, {
-        target: depthTarget
-     });
-
-     var material = new XEO.Material(scene, {
-        textures: [
-            texture
-        ]
-     });
-
-     var object2 = new XEO.GameObject(scene, {
-        geometry: geometry,  // Reuse our simple box geometry
-        material: material
-     });
-     &#x60;&#x60;&#x60;&#x60;
-     @class DepthTarget
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this DepthTarget within the
-     default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} DepthTarget configuration
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthTarget.
-
-     @extends Component
-     */
     XEO.DepthTarget = XEO.Component.extend({
 
         className: &quot;XEO.DepthTarget&quot;,
