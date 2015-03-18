@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_frustum.js.html#l5"><code>src&#x2F;core&#x2F;frustum.js:5</code></a>
+            Defined in: <a href="../files/src_core_frustum.js.html#l1"><code>src&#x2F;core&#x2F;frustum.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -135,8 +135,11 @@
 
 <div class="box intro">
     <p>A <strong>Frustum</strong> defines a perspective projection as a frustum-shaped view volume.</p>
-<p><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
-<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+<ul>
+<li><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
+<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+</ul>
+
 <p><img src="http://www.gliffy.com/go/publish/image/7103657/L.png"></img></p>
 <h2 id="example">Example</h2>
 <p>In this example we have a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s attached to a
@@ -144,6 +147,7 @@
 projection transform.</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene(engine);
 
+// Create a Frustum with default values
 var frustum = new XEO.Frustum(scene, {
    left:       1.0,    // Position of the left plane on the View-space X-axis
    right:      1.0,    // Position of the right plane on the View-space X-axis
@@ -153,29 +157,35 @@ var frustum = new XEO.Frustum(scene, {
    far:        10000   // Position of the far plane on the positive View-space Z-axis.
 });
 
+// Camera the includes our Frustum and falls back on
+// the Scene&#39;s default view transform, which is a Lookat
 var camera = new XEO.Camera(scene, {
    project: frustum
 });
 
 var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
+// GameObject which uses the Camera to render the Geometry
 var object = new XEO.GameObject(scene, {
    camera: camera,
    geometry: geometry
 });
 
-// Subscribe to changes on a property of our Frustum component
+// Subscribe to changes to one of the properties of our Frustum
 frustum.on("near", function(value) {
    console.log("Frustum &#39;near&#39; updated: " + value);
 });
 
-// Set the value of a property on our Frustum component, which fires the event we just subscribed to
+// Set the value of a property on our Frustum component,
+// which fires the event we just subscribed to
 frustum.near = 45.0;
 
 // Get the value of a property on our Frustum component
 var value = frustum.near;
 
-// Destroy ths Frustum component, causing the camera to fall back on the scene&#39;s default projection transform
+// Destroy ths Frustum component, causing the Camera to
+// fall back on the Scene&#39;s default projection transform,
+// which is a Perspective
 frustum.destroy();
 </code></pre>
 
@@ -207,7 +217,7 @@ frustum.destroy();
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_frustum.js.html#l5"><code>src&#x2F;core&#x2F;frustum.js:5</code></a>
+                <a href="../files/src_core_frustum.js.html#l1"><code>src&#x2F;core&#x2F;frustum.js:1</code></a>
                 </p>
         
         
@@ -275,7 +285,7 @@ frustum.destroy();
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Position of the left plane on the View-space X-axis.</p>
+                                            <p>Position of the Frustum&#39;s left plane on the View-space X-axis.</p>
         
                                         </div>
         
@@ -286,7 +296,7 @@ frustum.destroy();
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Position of the right plane on the View-space X-axis.</p>
+                                            <p>Position of the Frustum&#39;s right plane on the View-space X-axis.</p>
         
                                         </div>
         
@@ -297,7 +307,7 @@ frustum.destroy();
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Position of the top plane on the View-space Y-axis.</p>
+                                            <p>Position of the Frustum&#39;s top plane on the View-space Y-axis.</p>
         
                                         </div>
         
@@ -308,7 +318,7 @@ frustum.destroy();
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Position of the bottom plane on the View-space Y-axis.</p>
+                                            <p>Position of the Frustum&#39;s bottom plane on the View-space Y-axis.</p>
         
                                         </div>
         
@@ -319,7 +329,7 @@ frustum.destroy();
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Position of the near plane on the View-space Z-axis.</p>
+                                            <p>Position of the Frustum&#39;s near plane on the View-space Z-axis.</p>
         
                                         </div>
         
@@ -330,7 +340,7 @@ frustum.destroy();
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Position of the far plane on the positive View-space Z-axis.</p>
+                                            <p>Position of the Frustum&#39;s far plane on the positive View-space Z-axis.</p>
         
                                         </div>
         
@@ -1032,7 +1042,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l208"><code>src&#x2F;core&#x2F;frustum.js:208</code></a>
+                            <a href="../files/src_core_frustum.js.html#l217"><code>src&#x2F;core&#x2F;frustum.js:217</code></a>
                             </p>
                     
                     
@@ -1113,7 +1123,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l264"><code>src&#x2F;core&#x2F;frustum.js:264</code></a>
+                            <a href="../files/src_core_frustum.js.html#l273"><code>src&#x2F;core&#x2F;frustum.js:273</code></a>
                             </p>
                     
                     
@@ -1166,7 +1176,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l123"><code>src&#x2F;core&#x2F;frustum.js:123</code></a>
+                            <a href="../files/src_core_frustum.js.html#l132"><code>src&#x2F;core&#x2F;frustum.js:132</code></a>
                             </p>
                     
                     
@@ -1219,7 +1229,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l236"><code>src&#x2F;core&#x2F;frustum.js:236</code></a>
+                            <a href="../files/src_core_frustum.js.html#l245"><code>src&#x2F;core&#x2F;frustum.js:245</code></a>
                             </p>
                     
                     
@@ -1246,7 +1256,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l153"><code>src&#x2F;core&#x2F;frustum.js:153</code></a>
+                            <a href="../files/src_core_frustum.js.html#l162"><code>src&#x2F;core&#x2F;frustum.js:162</code></a>
                             </p>
                     
                     
@@ -1299,7 +1309,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l180"><code>src&#x2F;core&#x2F;frustum.js:180</code></a>
+                            <a href="../files/src_core_frustum.js.html#l189"><code>src&#x2F;core&#x2F;frustum.js:189</code></a>
                             </p>
                     
                     
@@ -1360,7 +1370,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l223"><code>src&#x2F;core&#x2F;frustum.js:223</code></a>
+                            <a href="../files/src_core_frustum.js.html#l232"><code>src&#x2F;core&#x2F;frustum.js:232</code></a>
                             </p>
                     
                     
@@ -1427,7 +1437,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l279"><code>src&#x2F;core&#x2F;frustum.js:279</code></a>
+                            <a href="../files/src_core_frustum.js.html#l288"><code>src&#x2F;core&#x2F;frustum.js:288</code></a>
                             </p>
                     
                     
@@ -1469,7 +1479,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l140"><code>src&#x2F;core&#x2F;frustum.js:140</code></a>
+                            <a href="../files/src_core_frustum.js.html#l149"><code>src&#x2F;core&#x2F;frustum.js:149</code></a>
                             </p>
                     
                     
@@ -1511,7 +1521,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l251"><code>src&#x2F;core&#x2F;frustum.js:251</code></a>
+                            <a href="../files/src_core_frustum.js.html#l260"><code>src&#x2F;core&#x2F;frustum.js:260</code></a>
                             </p>
                     
                     
@@ -1553,7 +1563,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_frustum.js.html#l195"><code>src&#x2F;core&#x2F;frustum.js:195</code></a>
+                            <a href="../files/src_core_frustum.js.html#l204"><code>src&#x2F;core&#x2F;frustum.js:204</code></a>
                             </p>
                     
                     

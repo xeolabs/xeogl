@@ -159,26 +159,28 @@
 &#x60;&#x60;&#x60;&#x60;javascript
 var scene = new XEO.Scene();
 
-var geometry = new XEO.Geometry(scene); // Default to a 2x2x2 box.
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box.
 
 var depthTarget = new XEO.DepthTarget(scene);
 
- // First GameObject renders to our DepthTarget
+ // First GameObject renders its pixel depth values to our DepthTarget
 var object1 = new XEO.GameObject(scene, {
     depthTarget: depthTarget
 });
 
+ // Texture consumes our DepthTarget
 var texture = new XEO.Texture(scene, {
     target: depthTarget
 });
 
+ // Material contains our Texture
 var material = new XEO.Material(scene, {
     textures: [
         texture
     ]
 });
 
-// Second GameObject is textured with the color-encoded
+// Second GameObject is effectively textured with the color-encoded
 // pixel depths of the first GameObject
 var object2 = new XEO.GameObject(scene, {
     geometry: geometry,  // Reuse our simple box geometry

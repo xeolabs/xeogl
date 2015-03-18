@@ -141,6 +141,13 @@ attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.
 <li>PointLights are grouped, along with other light source types, within <a href="../classes/Lights.html" class="crosslink">Lights</a> components,
 which are attached to <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
 
+<li>PointLights have a position, but no direction.</li>
+
+<li>PointLights may be defined in either <strong>World</strong> or <strong>View</strong> coordinate space. When in World-space, their position
+is relative to the World coordinate system, and will appear to move as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
+When in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer&#39;s
+head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.</li>
+
 <li>Within xeoEngine&#39;s Phong lighting calculations, PointLight <a href="../classes/PointLight.html#property_diffuse" class="crosslink">diffuse</a> and
 <a href="../classes/PointLight.html#property_specular" class="crosslink">specular</a> are multiplied by <a href="../classes/Material.html" class="crosslink">Material</a>
 <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> and <a href="../classes/Material.html#property_specular" class="crosslink">specular</a>,
@@ -1115,7 +1122,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l214"><code>src&#x2F;core&#x2F;pointLight.js:214</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l221"><code>src&#x2F;core&#x2F;pointLight.js:221</code></a>
                             </p>
                     
                     
@@ -1167,7 +1174,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l156"><code>src&#x2F;core&#x2F;pointLight.js:156</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l163"><code>src&#x2F;core&#x2F;pointLight.js:163</code></a>
                             </p>
                     
                     
@@ -1220,7 +1227,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l244"><code>src&#x2F;core&#x2F;pointLight.js:244</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l251"><code>src&#x2F;core&#x2F;pointLight.js:251</code></a>
                             </p>
                     
                     
@@ -1273,7 +1280,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l125"><code>src&#x2F;core&#x2F;pointLight.js:125</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l132"><code>src&#x2F;core&#x2F;pointLight.js:132</code></a>
                             </p>
                     
                     
@@ -1301,7 +1308,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l274"><code>src&#x2F;core&#x2F;pointLight.js:274</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l281"><code>src&#x2F;core&#x2F;pointLight.js:281</code></a>
                             </p>
                     
                     
@@ -1354,7 +1361,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l304"><code>src&#x2F;core&#x2F;pointLight.js:304</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l311"><code>src&#x2F;core&#x2F;pointLight.js:311</code></a>
                             </p>
                     
                     
@@ -1387,7 +1394,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l185"><code>src&#x2F;core&#x2F;pointLight.js:185</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l192"><code>src&#x2F;core&#x2F;pointLight.js:192</code></a>
                             </p>
                     
                     
@@ -1448,7 +1455,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l230"><code>src&#x2F;core&#x2F;pointLight.js:230</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l237"><code>src&#x2F;core&#x2F;pointLight.js:237</code></a>
                             </p>
                     
                     
@@ -1515,7 +1522,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l172"><code>src&#x2F;core&#x2F;pointLight.js:172</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l179"><code>src&#x2F;core&#x2F;pointLight.js:179</code></a>
                             </p>
                     
                     
@@ -1557,7 +1564,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l260"><code>src&#x2F;core&#x2F;pointLight.js:260</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l267"><code>src&#x2F;core&#x2F;pointLight.js:267</code></a>
                             </p>
                     
                     
@@ -1599,7 +1606,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l143"><code>src&#x2F;core&#x2F;pointLight.js:143</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l150"><code>src&#x2F;core&#x2F;pointLight.js:150</code></a>
                             </p>
                     
                     
@@ -1641,7 +1648,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l290"><code>src&#x2F;core&#x2F;pointLight.js:290</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l297"><code>src&#x2F;core&#x2F;pointLight.js:297</code></a>
                             </p>
                     
                     
@@ -1683,7 +1690,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l330"><code>src&#x2F;core&#x2F;pointLight.js:330</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l337"><code>src&#x2F;core&#x2F;pointLight.js:337</code></a>
                             </p>
                     
                     
@@ -1725,7 +1732,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l201"><code>src&#x2F;core&#x2F;pointLight.js:201</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l208"><code>src&#x2F;core&#x2F;pointLight.js:208</code></a>
                             </p>
                     
                     

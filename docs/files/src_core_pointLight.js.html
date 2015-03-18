@@ -134,6 +134,13 @@
      &lt;li&gt;PointLights are grouped, along with other light source types, within {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components,
      which are attached to {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
+     &lt;li&gt;PointLights have a position, but no direction.&lt;/li&gt;
+
+     &lt;li&gt;PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their position
+     is relative to the World coordinate system, and will appear to move as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.
+     When in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer&#x27;s
+     head as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.&lt;/li&gt;
+
      &lt;li&gt;Within xeoEngine&#x27;s Phong lighting calculations, PointLight {{#crossLink &quot;PointLight/diffuse:property&quot;}}{{/crossLink}} and
      {{#crossLink &quot;PointLight/specular:property&quot;}}{{/crossLink}} are multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
      {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}},

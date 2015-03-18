@@ -121,107 +121,117 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-(function () {
+/**
+ A **DirLight** is a light source that illuminates all attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally
+ from a given direction.
 
-    &quot;use strict&quot;;
+ &lt;ul&gt;
+    &lt;li&gt;DirLights are grouped, along with other light source types, within {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components,
+ which are attached to {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+    &lt;li&gt;DirLights have a direction, but no position.&lt;/li&gt;
+    &lt;li&gt;DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
+ is relative to the World coordinate system, and will appear to move as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.
+ When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer&#x27;s
+ head as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.&lt;/li&gt;
+ &lt;li&gt;Within xeoEngine&#x27;s Phong lighting calculations, DirLight {{#crossLink &quot;DirLight/diffuse:property&quot;}}{{/crossLink}} and
+ {{#crossLink &quot;DirLight/specular:property&quot;}}{{/crossLink}} are multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
+ {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}},
+ respectively.&lt;/li&gt;
 
+    &lt;li&gt;Diffuse, specular and ambient lighting may also be enabled or disabled for specific {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
+ via {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}
+ and {{#crossLink &quot;Modes/ambient:property&quot;}}{{/crossLink}} flags on {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} components.&lt;/li&gt;
 
-    /**
-     A **DirLight** is a light source that illuminates all attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally
-     from a given direction.
+ &lt;/ul&gt;
 
-     &lt;ul&gt;
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7096639/L.png&quot;&gt;&lt;/img&gt;
 
-     &lt;li&gt;DirLights are grouped, along with other light source types, within {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components,
-     which are attached to {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ ## Example
 
-     &lt;li&gt;Within xeoEngine&#x27;s Phong lighting calculations, DirLight {{#crossLink &quot;DirLight/diffuse:property&quot;}}{{/crossLink}} and
-     {{#crossLink &quot;DirLight/specular:property&quot;}}{{/crossLink}} are multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
-     {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}},
-     respectively.&lt;/li&gt;
+ In this example we have a DirLight
 
-     &lt;li&gt;Diffuse, specular and ambient lighting may also be enabled or disabled for specific {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
-     via {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}
-     and {{#crossLink &quot;Modes/ambient:property&quot;}}{{/crossLink}} flags on {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} components.&lt;/li&gt;
+ &lt;ul&gt;
+ &lt;li&gt;a {{#crossLink &quot;material&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a DirLight that points along the negative diagonal of the View coordinate system,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing the DirLight,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
 
-     &lt;/ul&gt;
+ &#x60;&#x60;&#x60;&#x60; javascript
+var scene = new XEO.Scene();
 
-     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7096639/L.png&quot;&gt;&lt;/img&gt;
-
-     ## Example
-
-     In this example we have
-
-     &lt;ul&gt;
-     &lt;li&gt;a {{#crossLink &quot;material&quot;}}{{/crossLink}},&lt;/li&gt;
-     &lt;li&gt;a DirLight,&lt;/li&gt;
-     &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing the DirLight,&lt;/li&gt;
-     &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
-     &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
-     &lt;/ul&gt;
-
-     &#x60;&#x60;&#x60;&#x60; javascript
-     var scene = new XEO.Scene();
-
-     var material = new XEO.Material(scene, {
+// A shiny Material with quantities of reflected
+// ambient, diffuse and specular color
+var material = new XEO.Material(scene, {
     ambient:    [0.3, 0.3, 0.3],
     diffuse:    [0.7, 0.7, 0.7],
     specular:   [1. 1, 1],
     shininess:  30
- });
+});
 
-     var dirLight = new XEO.DirLight(scene, {
+// DirLight with diffuse and specular color, pointing along
+// the negative diagonal within the View coordinate system
+var dirLight = new XEO.DirLight(scene, {
     dir:        [-1, -1, -1],
     diffuse:    [0.5, 0.7, 0.5],
     specular:   [1.0, 1.0, 1.0],
-    space:      &quot;view&quot;
- });
+    space:      &quot;view&quot;  // Other option is &quot;world&quot;, for World-space
+});
 
-     var lights = new XEO.Lights(scene, {
+// Lights which contains our DirLight
+var lights = new XEO.Lights(scene, {
     lights: [
         dirLight
     ]
- });
+});
 
-     var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
-     var object = new XEO.GameObject(scene, {
+// GameObject which renders our Geometry, colored with
+// the Material and illuminated with the DirLight
+var object = new XEO.GameObject(scene, {
     lights: lights,
     material: material,
     geometry: geometry
- });
-     &#x60;&#x60;&#x60;&#x60;
+});
+ &#x60;&#x60;&#x60;&#x60;
 
-     As with all components, we can &lt;a href=&quot;XEO.Component.html#changeEvents&quot; class=&quot;crosslink&quot;&gt;observe and change properties&lt;/a&gt; on DirLights like so:
+ As with all components, we can observe and change properties on a DirLights, like so:
 
-     &#x60;&#x60;&#x60;&#x60;Javascript
+ &#x60;&#x60;&#x60;&#x60;Javascript
+// Attach a change listener to a property
+var handle = dirLight.on(&quot;diffuse&quot;,
+    function(value) {
+        // Property value has changed
+    });
 
-     // Attach a change listener to a property
-     var handle = dirLight.on(&quot;diffuse&quot;,
-        function(value) {
-            // Property value has changed
-        });
+// Set the property, which fires our change listener
+dirLight.diffuse = [0.0, 0.3, 0.3];
 
-     dirLight.diffuse = [0.0, 0.3, 0.3]; // Fires the change listener
+// Detach the change listener
+dirLight.off(handle);
+ &#x60;&#x60;&#x60;&#x60;
 
-     dirLight.off(handle); // Detach the change listener
-     &#x60;&#x60;&#x60;&#x60;
+ @class DirLight
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this DirLight within the
+ default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} The DirLight configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DirLight.
+ @param [cfg.dir=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.
+ @param [cfg.diffuse=[0.7, 0.7, 0.8 ]] {Array(Number)} The diffuse color of this DirLight.
+ @param [cfg.specular=[1.0, 1.0, 1.0 ]] {Array(Number)} The specular color of this DirLight.
+ @param [cfg.space=&quot;view&quot;] {String} The coordinate system the DirLight is defined in - &quot;view&quot; or &quot;space&quot;.
 
-     @class DirLight
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this DirLight within the
-     default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
-     @param [cfg] {*} The DirLight configuration
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DirLight.
-     @param [cfg.dir=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.
-     @param [cfg.diffuse=[0.7, 0.7, 0.8 ]] {Array(Number)} The diffuse color of this DirLight.
-     @param [cfg.specular=[1.0, 1.0, 1.0 ]] {Array(Number)} The specular color of this DirLight.
-     @param [cfg.space=&quot;view&quot;] {String} The coordinate system the DirLight is defined in - &quot;view&quot; or &quot;space&quot;.
+ @extends Component
+ */
+(function () {
 
-     @extends Component
-     */
+    &quot;use strict&quot;;
+
     XEO.DirLight = XEO.Component.extend({
 
         className: &quot;XEO.DirLight&quot;,
