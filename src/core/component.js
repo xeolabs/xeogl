@@ -1,206 +1,204 @@
+/**
+
+ **Component** is the base class for all xeoEngine components.
+
+ <hr>
+
+ *Contents*
+
+ <Ul>
+    <li><a href="#ids">Component IDs</a></li>
+    <li><a href="#componentProps">Properties</a></li>
+    <li><a href="#metadata">Metadata</a></li>
+    <li><a href="#logging">Logging</a></li>
+    <li><a href="#destruction">Destruction</a></li>
+ </ul>
+
+ <hr>
+
+ ## <a name="ids">Component IDs</a>
+
+ Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeoEngine generates
+ the IDs automatically by default, however you can also specify them yourself. Inthe example below, we're creating a
+ scene comprised of {{#crossLink "Scene"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}}, {{#crossLink "Geometry"}}{{/crossLink}} and
+ {{#crossLink "GameObject"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for
+ the {{#crossLink "Geometry"}}{{/crossLink}}:
+
+ ````javascript
+// The Scene is a Component too
+var scene = new XEO.Scene({
+    id: "myScene"
+});
+
+var material = new XEO.Material(scene, {
+    id: "myMaterial"
+});
+
+var geometry = new XEO.Geometry(scene, {
+    id: "myGeometry"
+});
+
+// Let xeoEngine automatically generated the ID for our GameObject
+var object = new XEO.GameObject(scene, {
+    material: material,
+    geometry: geometry
+});
+ ````
+
+We can then find those components like this:
+
+ ````javascript
+// Find the Scene
+var theScene = XEO.scenes["myScene"];
+
+// Find the Material
+var theMaterial = theScene.components["myMaterial"];
+ ````
+
+## <a name="componentProps">Properties</a>
+
+Almost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe
+ to the {{#crossLink "Material/diffuse:event"}}{{/crossLink}} event that a
+{{#crossLink "Material"}}{{/crossLink}} fires when its {{#crossLink "Material/diffuse:property"}}{{/crossLink}}
+property is updated, like so:
+
+ ````javascript
+// Bind a change callback to a property
+var handle = material.on("diffuse", function(diffuse) {
+    console.log("Material diffuse color has changed to: [" + diffuse[0] + ", " + diffuse[1] + "," + diffuse[2] + "]");
+});
+
+// Change the property value, which fires the callback
+material.diffuse = [ 0.0, 0.5, 0.5 ];
+
+// Unsubscribe from the property change event
+material.off(handle);
+ ````
+
+ We can also subscribe to changes in the way components are attached to each other, since components are properties
+ of other components. For example, we can subscribe to the '{{#crossLink "GameObject/material:event"}}{{/crossLink}}' event that a
+ {{#crossLink "GameObject"}}GameObject{{/crossLink}} fires when its {{#crossLink "GameObject/material:property"}}{{/crossLink}}
+ property is set to a different {{#crossLink "Material"}}Material{{/crossLink}}:
+
+ ```` javascript
+// Bind a change callback to the GameObject's Material
+object1.on("material", function(material) {
+    console.log("GameObject's Material has changed to: " + material.id);
+});
+
+// Now replace that Material with another
+object1.material = new XEO.Material({
+    id: "myOtherMaterial",
+    diffuse: [ 0.3, 0.3, 0.6 ]
+    //..
+});
+````
+
+## <a name="metadata">Metadata</a>
+
+ You can set optional **metadata** on your Components, which can be anything you like. These are intended
+ to help manage your components within your application code or content pipeline. You could use metadata to attach
+ authoring or version information, like this:
+
+ ````javascript
+// Scene with authoring metadata
+var scene = new XEO.Scene({
+    id: "myScene",
+    metadata: {
+        title: "My awesome 3D scene",
+        author: "@xeolabs",
+        date: "February 13 2015"
+    }
+});
+
+// Material with descriptive metadata
+var material = new XEO.Material(scene, {
+    id: "myMaterial",
+    diffuse: [1, 0, 0],
+    metadata: {
+        description: "Bright red color with no textures",
+        version: "0.1",
+        foo: "bar"
+    }
+});
+````
+
+As with all properties, you can subscribe and change the metadata like this:
+
+````javascript
+// Subscribe to changes to the Material's metadata
+ material.on("metadata", function(value) {
+    console.log("Metadata changed: " + JSON.stringify(value));
+});
+
+// Change the Material's metadata, firing our change handler
+material.metadata = {
+    description: "Bright red color with no textures",
+    version: "0.2",
+    foo: "baz"
+};
+ ````
+
+## <a name="logging">Logging</a>
+
+Components have methods to log ID-prefixed messages to the JavaScript console:
+
+````javascript
+material.log("Everything is fine, situation normal.");
+material.warn("Wait, whats that red light?");
+material.error("Aw, snap!");
+````
+
+The logged messages will look like this in the console:
+
+````text
+[LOG]   myMaterial: Everything is fine, situation normal.
+[WARN]  myMaterial: Wait, whats that red light..
+[ERROR] myMaterial: Aw, snap!
+````
+
+## <a name="destruction">Destruction</a>
+
+Get notification of destruction directly on the Components:
+
+````javascript
+material.on("destroyed", function() {
+    this.log("Component was destroyed: " + this.id);
+});
+````
+
+Or get notification of destruction of any Component within its {{#crossLink "Scene"}}{{/crossLink}}, indiscriminately:
+
+ ````javascript
+scene.on("componentDestroyed", function(component) {
+    this.log("Component was destroyed: " + component.id);
+});
+ ````
+
+Then destroy a component like this:
+
+````javascript
+material.destroy();
+````
+
+Other Components that are linked to it will fall back on a default of some sort. For example, any
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that were linked to our {{#crossLink "Material"}}{{/crossLink}}
+ will then automatically link to the {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/material:property"}}{{/crossLink}}.
+
+ @class Component
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Component
+ within the default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} DepthBuf configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Component.
+ @extends Object
+ */
 (function () {
 
     "use strict";
 
-    /**
-
-     The **Component** class is the base class for all xeoEngine components.
-
-     Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}.
-     <hr>
-     *Contents*
-
-     <Ul>
-     <li><a href="#ids">Component IDs</a></li>
-     <li><a href="#componentProps">Properties</a></li>
-     <li><a href="#metadata">Metadata</a></li>
-     <li><a href="#logging">Logging</a></li>
-     <li><a href="#destruction">Destruction</a></li>
-     </ul>
-     <hr>
-
-     <br>
-
-     ### <a name="ids">Component IDs</a>
-
-     Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}.
-
-     xeoEngine generates the IDs automatically by default, however you can also specify them yourself:
-
-     ````javascript
-     var scene = new XEO.Scene({
-       id: "myScene"
-  });
-
-     var material = new XEO.Material(scene, {
-        id: "myMaterial"
-   });
-
-     var geometry = new XEO.Geometry(scene, {
-        id: "myGeometry"
-  });
-
-     var object = new XEO.GameObject(scene, {
-        material: material,
-        geometry: geometry
-  });
-     ````
-
-     Then you can find your components like this:
-
-     ````javascript
-     var theScene = XEO.scenes["myScene"];
-
-     var theMaterial = theScene.components["myMaterial"];
-     ````
-
-     <br>
-
-     ### <a name="componentProps">Properties</a>
-
-     Almost every property on a xeoEngine Component fires a change event when you update it.
-
-     For example, we can subscribe to the {{#crossLink "Material/diffuse:event"}}diffuse{{/crossLink}} event that a
-     {{#crossLink "Material"}}Material{{/crossLink}} fires when its {{#crossLink "Material/diffuse:property"}}diffuse{{/crossLink}}
-     property is updated, like so:
-
-     ````javascript
-     // Bind a change callback to a property
-     var handle = material.on("diffuse", function(diffuse) {
-      console.log("Material diffuse color has changed to: [" + diffuse[0] + ", " + diffuse[1] + "," + diffuse[2] + "]");
-  });
-
-     // Change the property value, which fires the callback
-     material.diffuse = [ 0.0, 0.5, 0.5 ];
-
-     // Unsubscribe from the property change event
-     material.off(handle);
-     ````
-
-     We can also subscribe to changes in component structure, since components are properties of other components. For example, we can
-     subscribe to the '{{#crossLink "GameObject/material:event"}}material{{/crossLink}}' event that an
-     {{#crossLink "GameObject"}}GameObject{{/crossLink}} fires when its {{#crossLink "GameObject/material:property"}}material{{/crossLink}}
-     property is linked to a different {{#crossLink "Material"}}Material{{/crossLink}}, like so:
-
-     ```` javascript
-     // Bind a change callback to the GameObject's Material
-     object1.on("material", function(material) {
-      console.log("GameObject's Material has changed to: " + material.id);
-  });
-
-     // Now replace that Material with another
-     object1.material = new XEO.Material({
-       id: "myOtherMaterial",
-       diffuse: [ 0.3, 0.3, 0.6 ]
-       //..
-   });
-     ````
-
-     <br>
-
-     ### <a name="metadata">Metadata</a>
-
-     You can set optional ***metadata*** on your Components, which can be anything you like. These are intended
-     to help manage your components within your application code or content pipeline.
-
-     You could use metadata to attach authoring or version information, like this:
-
-     ````javascript
-     var scene = new XEO.Scene({
-        id: "myScene",
-        metadata: {
-            title: "My awesome 3D scene",
-            author: "@xeolabs",
-     date: "February 13 2015"
-     }
-     });
-
-     var material = new XEO.Material(scene, {
-        id: "myMaterial",
-        diffuse: [1, 0, 0],
-        metadata: {
-            description: "Bright red color with no textures",
-            version: "0.1",
-            foo: "bar"
-        }
-   });
-     ````
-
-     As with all properties, you can subscribe and change the metadata like this:
-
-     ````javascript
-     material.on("metadata", function(value) {
-        console.log("Metadata changed: " + JSON.stringify(value));
- });
-
-     material.metadata = {
-        description: "Bright red color with no textures",
-        version: "0.2",
-        foo: "baz"
- };
-     ````
-
-     <br>
-
-     ### <a name="logging">Logging</a>
-
-     Components have methods to log ID-prefixed messages to the JavaScript console:
-
-     ````javascript
-     material.log("Everything is fine, situation normal.");
-     material.warn("Wait, whats that red light?");
-     material.error("Aw, snap!");
-     ````
-
-     The logged messages will look like this:
-
-     ````text
-     [LOG]   myMaterial: Everything is fine, situation normal.
-     [WARN]  myMaterial: Wait, whats that red light..
-     [ERROR] myMaterial: Aw, snap!
-
-     ````
-
-     <br>
-
-     ### <a name="destruction">Destruction</a>
-
-     Get notification of destruction directly on the Components:
-
-     ````javascript
-     material.on("destroyed", function() {
-        this.log("Component was destroyed: " + this.id);
-      });
-     ````
-
-     Or get notification of destruction of any Component within its {{#crossLink "Scene"}}{{/crossLink}}, indiscriminately:
-
-     ````javascript
-     scene.on("componentDestroyed", function(component) {
-        this.log("Component was destroyed: " + component.id);
- });
-     ````
-
-     Then destroy a component like this:
-
-     ````javascript
-     material.destroy();
-     ````
-
-     Other Components that are linked to it will fall back on a default of some sort. For example, any
-     {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that were linked to our {{#crossLink "Material"}}{{/crossLink}}
-     will then automatically link to the {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/material:property"}}{{/crossLink}}.
-
-     @class Component
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Component
-     within the default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} DepthBuf configuration
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Component.
-     @extends Object
-     */
     XEO.Component = Class.extend({
 
         __init: function () {
@@ -299,7 +297,6 @@
         },
 
 
-
         /**
          Type code for this Component.
 
@@ -314,6 +311,9 @@
 
         /**
          JavaScript class name for this Component.
+
+         This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
+         representation of this Component, so that this class may be instantiated when loading it from the JSON representation.
 
          For example: "XEO.AmbientLight", "XEO.ColorTarget", "XEO.Lights" etc.
 
@@ -428,7 +428,7 @@
                     self.off(handle);
                     callback(value);
                 },
-            scope);
+                scope);
         },
 
         /**

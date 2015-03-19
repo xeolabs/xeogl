@@ -31,7 +31,7 @@
 
 
     /**
-     * Math functions.
+     * Math functions, used within xeoEngine, but also available for you to use in your application code.
      * @module XEO
      * @class math
      * @static

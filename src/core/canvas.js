@@ -4,11 +4,11 @@
 
 
     /**
-     Manages a {{#crossLink "Scene"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.
+     A **Canvas** manages a {{#crossLink "Scene"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.
 
      <ul>
 
-     <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a final property on itself.</li>
+     <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.</li>
 
      <li>When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
      a <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> that already
@@ -30,7 +30,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7103211/L.png"></img>
 
-     ### Example
+     ## Example
 
      In the example below, we're creating a {{#crossLink "Scene"}}Scene{{/crossLink}} without specifying an HTML canvas element
      for it. This causes the {{#crossLink "Scene"}}Scene{{/crossLink}}'s Canvas component to create its own default element
@@ -67,8 +67,8 @@
      });
      ````
 
-     When we want to bind the Canvas to an existing HTML canvas element, pass the element's ID into the
-     {{#crossLink "Scene"}}Scene{{/crossLink}} like this:
+     When we want to bind the Canvas to an existing HTML canvas element, configure the
+     {{#crossLink "Scene"}}{{/crossLink}} with the ID of the element, like this:
 
      ```` javascript
      // Create a Scene, this time configuting it with the

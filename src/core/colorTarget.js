@@ -4,7 +4,7 @@
 
 
     /**
-     A **ColorTarget** captures rendered pixel colors of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     A **ColorTarget** captures the colors of the pixels that xeoEngine renders for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      <ul>
      <li>A ColorTarget provides the pixel colors as a dynamic color image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
@@ -17,7 +17,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7096829/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we essentially have one {{#crossLink "GameObject"}}{{/crossLink}}
      that's rendered to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied to a second {{#crossLink "GameObject"}}{{/crossLink}}.
@@ -41,7 +41,9 @@
 
      var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-     var firstGameObject = new XEO.GameObject(scene, {
+     // First GameObject renders to the ColorTarget
+
+     var object1 = new XEO.GameObject(scene, {
         geometry: geometry,
         colorTarget: colorTarget
      });
@@ -55,6 +57,9 @@
            texture
         ]
      });
+
+     // Second GameObject is textured with the
+     // image of the first GameObject
 
      var object2 = new XEO.GameObject(scene, {
         geometry: geometry,  // Reuse our simple box geometry

@@ -4,7 +4,7 @@
 
 
     /**
-     A **Camera** component defines a viewpoint on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     A **Camera** defines a viewpoint on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
      <ul>
 
@@ -23,7 +23,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/6891059/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we have
 

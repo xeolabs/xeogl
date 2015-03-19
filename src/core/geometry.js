@@ -1,44 +1,100 @@
-(function () {
+/**
+ A **Geometry** defines the geometric shape of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-    "use strict";
+ <hr>
+ *Contents*
+ <Ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#defaultShape">Default box shape</a></li>
+    <li><a href="#sceneDefault">Scene's default Geometry</a></li>
+    <li><a href="#sharing">Sharing among GameObjects</a></li>
+    <li><a href="#triangles">Defining a triangle mesh</a></li>
+    <li><a href="#editing">Editing Geometry</a></li>
+ </ul>
 
+ <hr>
 
-    /**
-     A **Geometry** defines the geometric shape of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ ## <a name="overview">Overview</a>
 
-     <img src="http://www.gliffy.com/go/publish/image/7103669/L.png"></img>
+ <ul>
+ <li>Like everything in xeoEngine, all properties on a Geometry are dynamically editable.</li>
+ <li>A Geometry's {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} type can be 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' or 'triangle-fan'".</li>
+ <li>Depending on the {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} type, a Geometry can have {{#crossLink "Geometry/positions:property"}}vertex positions{{/crossLink}},
+ {{#crossLink "Geometry/colors:property"}}vertex colors{{/crossLink}}, {{#crossLink "Geometry/uv:property"}}UV coordinates{{/crossLink}},
+ {{#crossLink "Geometry/normals:property"}}normal vectors{{/crossLink}}, as well as {{#crossLink "Geometry/indices:property"}}{{/crossLink}},
+ which specify how the vertices connect together to form the primitives.</li>
+ <li>When no shape is specified (ie. no primitive type, vertex arrays and indices) for a Geometry, it will default to a 2x2x2 box
+ made of triangles, with UV coordinates, vertex colors and normals.</li>
+ <li>A {{#crossLink "Scene"}}{{/crossLink}} provides such a box as its default {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
+ for {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to fall back on, when they are not explicitly attached to a Geometry.</li>
+ </ul>
 
-     ### Example 1
+ <img src="http://www.gliffy.com/go/publish/image/7103669/L.png"></img>
 
-     If you create a Geometry with no specified shape, it will be a 2x2x2 box by default:
+ ## <a name="defaultShape">Default box shape</a>
 
-     ```` javascript
-     var geometry = new XEO.Geometry(scene); // 2x2x2 box
+ If you create a Geometry with no specified shape, it will be a 2x2x2 box by default:
 
-     var object2 = new XEO.GameObject(scene, {
-        geometry: geometry
-     });
-     ````
+ ```` javascript
+var geometry = new XEO.Geometry(scene); // 2x2x2 box
 
-     ### Example 2
+var object1 = new XEO.GameObject(scene, {
+    geometry: geometry
+});
+ ````
 
-     If you create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene{{/crossLink}}'s
-     default {{#crossLink "Scene/geometry:property"}}{{/crossLink}}, which is also a 2x2x2 box:
+ ## <a name="sceneDefault">Scene's default Geometry</a>
 
-     ```` javascript
-     var scene = new XEO.Scene();
+ If you create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene{{/crossLink}}'s
+ default {{#crossLink "Scene/geometry:property"}}{{/crossLink}}, which is also a 2x2x2 box:
 
-     var object1 = new XEO.GameObject(scene);
-     ````
+```` javascript
+var scene = new XEO.Scene();
 
-     ### Example 3
+var object1 = new XEO.GameObject(scene);
+````
 
-     Finally, we'll create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} with a Geometry that we have **explicitly**
-     configured to be a 2x2x2 box:
+ ## <a name="sharing">Sharing among GameObjects</a>
 
-     ```` javascript
-     // Create a 2x2x2 box centered at the World-space origin
-     var geometry2 = new XEO.Geometry(scene, {
+xeoEngine components can be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. For components like
+ Geometry and {{#crossLink "Texture"}}{{/crossLink}}, this can provide significant memory
+ and performance savings. To render the example below, xeoEngine will issue two draw WebGL calls, one for
+ each {{#crossLink "GameObject"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.
+
+ ```` javascript
+var scene = new XEO.Scene();
+
+var geometry = new XEO.Geometry(scene); // 2x2x2 box by default
+
+// Create two GameObjects which share our Geometry
+
+var object1 = new XEO.GameObject(scene, {
+    geometry: geometry
+});
+
+// Offset the second GameObject slightly on the World-space
+// X-axis using a Translate modelling transform
+
+var translate = new XEO.Translate(scene, {
+    xyz: [5, 0, 0
+});
+
+var object2 = new XEO.GameObject(scene, {
+    geometry: geometry,
+    transform: translate
+});
+````
+
+ ## <a name="triangles">Defining a triangle mesh</a>
+
+ Finally, we'll create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} with a Geometry that we've **explicitly**
+ configured as a 2x2x2 box:
+
+```` javascript
+var scene = new XEO.Scene();
+
+// Create a 2x2x2 box centered at the World-space origin
+var geometry = new XEO.Geometry(scene, {
 
         // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',
         // 'triangle-strip' and 'triangle-fan'.primitive: "triangles",
@@ -46,6 +102,7 @@
 
         // Vertex positions
         positions : [
+
             // Front face
             -1.0, -1.0, 1.0,
             1.0, -1.0, 1.0,
@@ -122,31 +179,54 @@
             16, 17, 18,     16, 18, 19,   // right
             20, 21, 22,     20, 22, 23    // left
         ]
-  });
+});
 
-     var object = new XEO.GameObject(myScene, {
-        geometry: geometry2
-  });
-     ````
+var object = new XEO.GameObject(myScene, {
+    geometry: geometry
+});
+ ````
+ ## <a name="editing">Editing Geometry</a>
 
-     @class Geometry
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Geometry in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Geometry.
-     @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
-     @param [cfg.positions] {Array of Number} Positions array.
-     @param [cfg.normals] {Array of Number} Normals array.
-     @param [cfg.uv] {Array of Number} UVs array.
-     @param [cfg.uv2] {Array of Number} Second UVs array, for a second UV level.
-     @param [cfg.colors] {Array of Number} Vertex colors.
-     @param [cfg.indices] {Array of Number} Indices array.
-     @extends Component
-     */
+ Recall that everything in xeoEngine is dynamically editable, including Geometry. Let's remove the front and back faces
+ from our triangle mesh Geometry by updating its **indices** array:
+
+````javascript
+geometry2.indices = [
+    8,  9,  10,     8,  10, 11,   // top
+    12, 13, 14,     12, 14, 15,   // bottom
+    16, 17, 18,     16, 18, 19,   // right
+    20, 21, 22,     20, 22, 23    // left
+];
+````
+
+Now let's make it wireframe by changing its primitive type from **faces** to **lines**:
+
+````javascript
+geometry2.primitive = "lines";
+````
+
+ @class Geometry
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Geometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Geometry.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.positions] {Array of Number} Positions array.
+ @param [cfg.normals] {Array of Number} Normals array.
+ @param [cfg.uv] {Array of Number} UVs array.
+ @param [cfg.uv2] {Array of Number} Second UVs array, for a second UV level.
+ @param [cfg.colors] {Array of Number} Vertex colors.
+ @param [cfg.indices] {Array of Number} Indices array.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
     XEO.Geometry = XEO.Component.extend({
 
         className: "XEO.Geometry",

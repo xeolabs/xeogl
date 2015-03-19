@@ -25,7 +25,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7092459/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we have a {{#crossLink "GameObject"}}{{/crossLink}} that has a {{#crossLink "Geometry"}}{{/crossLink}},
      a {{#crossLink "Material"}}{{/crossLink}} and a {{#crossLink "Lights"}}{{/crossLink}}. The {{#crossLink "Lights"}}{{/crossLink}}

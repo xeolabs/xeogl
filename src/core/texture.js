@@ -24,7 +24,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7092447/L.png"></img>
 
-     ### Example
+     ## Example
 
      This example creates
      <ul>

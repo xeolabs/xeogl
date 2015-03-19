@@ -17,7 +17,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7122941/L.png"></img>
 
-     ### Example
+     ## Example
 
      This example shows how to subscribe to the "numGeometries' statistic, which indicates
      how many {{#crossLink "Geometry"}}{{/crossLink}} components are in the parent {{#crossLink "Scene"}}{{/crossLink}}.

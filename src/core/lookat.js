@@ -14,7 +14,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/6895163/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we have a Lookat that positions the eye at -10 on the World-space Z-axis, while looking at the origin.
      Then we'll add that to a {{#crossLink "Camera"}}{{/crossLink}}. which we associate with a {{#crossLink "GameObject"}}{{/crossLink}}.

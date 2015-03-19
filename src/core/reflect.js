@@ -3,6 +3,11 @@
     "use strict";
 
     /**
+     A **Reflect** defines a reflection as a cubemap that is applied
+     to attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+     TODO
+
      @class Reflect
      @module XEO
      @constructor

@@ -3,20 +3,20 @@
     "use strict";
 
     /**
-     A **Clip** is an arbitrarily-aligned World-space clip plane.
+     A **Clip** is an arbitrarily-aligned World-space clipping plane.
 
      <ul>
 
      <li>These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
      {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
-     for a usage example.</li>
+     for more info.</li>
 
      <li>A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
      that emanates from the origin, offset at a distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector. </li>
 
      <li>You can move a Clip back and forth along its vector by varying {{#crossLink "Clip/dist:property"}}{{/crossLink}}.</li>
 
-     <li>Likewise, you can rotate a Clip about the origin by rotating {{#crossLink "Clip/dir:property"}}{{/crossLink}}.</li>
+     <li>Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.</li>
 
      <li>A Clip is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}},  which indicates whether it is disabled
      ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that
@@ -29,7 +29,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7096963/L.png"></img>
 
-     ### Example
+     ## Example
 
      <ul>
 

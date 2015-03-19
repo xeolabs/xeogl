@@ -1,9 +1,11 @@
 /**
- * The XeoEngine namespace
- * @class XEO
- * @main XEO
- * @static
- * @author xeolabs / http://xeolabs.com/
+ The xeoEngine namespace.
+
+
+ @class XEO
+ @main XEO
+ @static
+ @author xeolabs / http://xeolabs.com/
  */
 (function () {
 

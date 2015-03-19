@@ -13,7 +13,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7097089/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
      {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and an Ortho

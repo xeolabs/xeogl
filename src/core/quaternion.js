@@ -12,7 +12,7 @@
 
  <img src="http://www.gliffy.com/go/publish/image/7492985/L.png">
 
- ### Example
+ ## Example
 
  In this example we have two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
  Quaternion, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.

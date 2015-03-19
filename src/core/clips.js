@@ -16,7 +16,7 @@
      its {{#crossLink "Clip/dist:property"}}{{/crossLink}}.</li>
 
      <li>Likewise, you can rotate each {{#crossLink "Clip"}}Clip{{/crossLink}} about the origin by rotating
-     its {{#crossLink "Clip/dir:property"}}{{/crossLink}}.</li>
+     its {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.</li>
 
      <li>Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").</li>
 
@@ -27,7 +27,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/6890347/L.png"></img>
 
-     ### Example
+     ## Example
 
      <ul>
 

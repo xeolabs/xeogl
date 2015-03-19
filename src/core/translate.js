@@ -18,7 +18,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7430557/L.png">
 
-     ### Example
+     ## Example
 
      This example has two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
      {{#crossLink "Rotate"}}{{/crossLink}}, Translate and {{#crossLink "Scale"}}{{/crossLink}} transforms.

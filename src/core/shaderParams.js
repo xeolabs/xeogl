@@ -13,7 +13,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7105099/L.png"></img>
 
-     ### Example
+     ## Example
 
      This example shows the simplest way to use a {{#crossLink "Shader"}}Shader{{/crossLink}}, where we're just going to render a ripply water
      pattern to a screen-aligned quad. As with all our examples, we're just creating the

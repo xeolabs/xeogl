@@ -33,7 +33,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/6921713/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we have
 
@@ -62,7 +62,7 @@
         ambient:    [0.3, 0.3, 0.3],
         diffuse:    [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
         diffuseMap: diffuseMap,
-        specular:   [1. 1, 1],
+        specular:   [1, 1, 1],
         shininess:  30
      });
 

@@ -4,18 +4,23 @@
 
 
     /**
-     Publishes any key and mouse events that occur on the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+     Publishes key and mouse events that occur on the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
 
      <img src="http://www.gliffy.com/go/publish/image/7123123/L.png"></img>
 
-     ### Example
+     ## Example
+
+     In this example, we're subscribing to some mouse and key events that will occur on
+     a {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
 
      ````javascript
      var myScene = new XEO.Scene();
 
      var input = myScene.input;
 
-     input.on("mousedown", function(coords) {
+     // We'll save a handle to this subscription
+     // to show how to unsubscribe, further down
+     var handle = input.on("mousedown", function(coords) {
         console.log("Mouse down at: x=" + coords[0] + ", y=" + coords[1]);
      });
 
@@ -73,9 +78,19 @@
 
      // TODO: ALT and CTRL keys etc
      ````
+
+     ### Unsubscribing from Events
+
+     In the snippet above, we saved a handle to one of our event subscriptions.
+
+     We can then use that handle to unsubscribe again, like this:
+
+     ````javascript
+     input.off(handle);
+     ````
+
      @class Input
      @module XEO
-     @constructor
      @extends Component
      */
     XEO.Input = XEO.Component.extend({

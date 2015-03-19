@@ -16,30 +16,30 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7104987/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we're configuring the WebGL color buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
 
-     The scene contains:
+     This example scene contains:
 
      <ul>
      <li>a ColorBuf that enables blending and sets the color mask,</li>
-     <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape and
+     <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
      <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
      </ul>
 
      ````javascript
      var scene = new XEO.Scene();
 
-     var depthBuf = new XEO.ColorTarget(scene, {
-        clearDepth: 0.5,
-        depthFunc: "less"
+     var colorBuf = new XEO.ColorBuf(scene, {
+        blendEnabled: true,
+        colorMask: [true, true, true, true]
      });
 
      var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
      var gameObject = new XEO.GameObject(scene, {
-        depthBuf: depthBuf,
+        colorBuf: colorBuf,
         geometry: geometry
      });
      ````

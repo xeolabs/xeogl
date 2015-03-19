@@ -27,7 +27,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7105073/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
      {{#crossLink "Texture"}}Texture{{/crossLink}} components.

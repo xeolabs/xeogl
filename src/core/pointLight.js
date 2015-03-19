@@ -11,6 +11,13 @@
      <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
      which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
+     <li>PointLights have a position, but no direction.</li>
+
+     <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their position
+     is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
+     When in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer's
+     head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
+
      <li>Within xeoEngine's Phong lighting calculations, PointLight {{#crossLink "PointLight/diffuse:property"}}{{/crossLink}} and
      {{#crossLink "PointLight/specular:property"}}{{/crossLink}} are multiplied by {{#crossLink "Material"}}Material{{/crossLink}}
      {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and {{#crossLink "Material/specular:property"}}{{/crossLink}},
@@ -27,7 +34,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7096613/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we have
      <ul>

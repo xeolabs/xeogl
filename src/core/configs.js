@@ -1,68 +1,62 @@
+/**
+ A **Configs** holds configuration properties for the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+
+ <ul>
+    <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Configs on itself as a read-only property.</li>
+    <li>Config property values are set on a Configs using its {{#crossLink "Component/fire:method"}}{{/crossLink}} method,
+ and may be subscribed to with {{#crossLink "Component/on:method"}}{{/crossLink}}.</li>
+    <li>You can define your own properties in a Configs, but take care not to clobber those used by the
+ {{#crossLink "Scene"}}{{/crossLink}} (see table below).</li>
+ </ul>
+
+ <img src="http://www.gliffy.com/go/publish/image/7123181/L.png"></img>
+
+ ## xeoEngine native configurations
+
+ Don't use the following names for your own Configs properties, because these are already used by xeoEngine:
+
+ | Name  | Description  |
+ |---|---|
+ | TODO  | TODO  |
+ | TODO  | TODO  |
+
+
+ ## Example
+
+ In this example, we're subscribing to change events for a {{#crossLink "Scene"}}Scene's{{/crossLink}} "foo" configuration property, then updating that
+ that property, which fires the change event.
+
+ ````Javascript
+var scene = new XEO.Scene();
+
+var configs = scene.configs;
+
+// Subscribe to change of a Configs property.
+// The subscriber is also immediately notified of the current value via the callback.
+configs.on("foo", function(value) {
+    console.log("foo = " + value);
+});
+
+// Create and set a Configs property, firing our change handler:
+configs.set("foo", "Hello!");
+
+// Read the current value of a Configs property.
+// Normally we would asynchronously subscribe with #on though, to be sure that
+// we're getting the latest changes to the property.
+var bar = configs.props["bar"];
+ ````
+
+ @class Configs
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent scene - creates this component in the default scene when omitted.
+ @param {GameObject} [cfg]  Config values.
+ @extends Component
+ */
 (function () {
 
     "use strict";
 
-
-    /**
-     Holds configuration properties for the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
-
-     <ul>
-
-     <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Configs instance on itself.</li>
-
-     <li>A Configs is just a plain {{#crossLink "Component"}}{{/crossLink}} with no extras.</li>
-
-     <li>Config property values are set on a Configs using its {{#crossLink "Component/fire:method"}}{{/crossLink}} method,
-     and may be subscribed to with {{#crossLink "Component/on:method"}}{{/crossLink}}.</li>
-
-     <li>You can define your own properties in a Configs, but take care not to clobber those used by the
-     {{#crossLink "Scene"}}{{/crossLink}} (see table below).</li>
-
-     </ul>
-
-     <img src="http://www.gliffy.com/go/publish/image/7123181/L.png"></img>
-
-
-     ### Configurations used by the Scene
-
-     Don't use the following names for your own properties, because these are already used by xeoEngine:
-
-     | Name  | Description  |
-     |---|---|
-     | foo  | foo property  |
-     | bar  | bar property  |
-
-
-     ### Example
-
-     ````Javascript
-
-     var scene = new XEO.Scene();
-
-     var configs = scene.configs;
-
-     // Subscribe to change of a Config property.
-     // The subscriber is also immediately notified of the current value via the callback.
-     configs.on("foo", function(value) {
-        console.log("foo = " + value);
-     });
-
-     // Change a Configs property
-     configs.fire("foo", "Hello!");
-
-     // Read the current value of a Configs property.
-     // Normally we would asynchronously subscribe with #on though, to be sure that
-     // we're getting the latest changes to the property.
-     var bar = configs.props["bar"];
-     ````
-
-     @class Configs
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent scene - creates this component in the default scene when omitted.
-     @param {GameObject} [cfg]  Config values.
-     @extends Component
-     */
     XEO.Configs = XEO.Component.extend({
 
         className: "XEO.Configs",
@@ -82,7 +76,7 @@
          *
          * Fires an event with the same name as the property. Existing subscribers to the event will be
          * notified immediately of the property value. Like all events on a Component, this Configs will
-         * retain the event, to notify any subsequent subscribers.
+         * retain the event, to notify any subscribers that are attached subsequently.
          *
          * @method set
          * @param {String} name The property name

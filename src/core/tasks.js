@@ -18,7 +18,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7122907/L.png"></img>
 
-     ### Example
+     ## Example
 
      This example shows how to manage tasks and subscribe to their life cycles.
 

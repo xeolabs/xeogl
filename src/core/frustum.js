@@ -1,75 +1,84 @@
+/**
+ A **Frustum** defines a perspective projection as a frustum-shaped view volume.
+
+ <ul>
+ <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ </ul>
+
+ <img src="http://www.gliffy.com/go/publish/image/7103657/L.png"></img>
+
+ ## Example
+
+ In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
+ {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Frustum
+ projection transform.
+
+ ````Javascript
+var scene = new XEO.Scene(engine);
+
+// Create a Frustum with default values
+var frustum = new XEO.Frustum(scene, {
+    left:       1.0,    // Position of the left plane on the View-space X-axis
+    right:      1.0,    // Position of the right plane on the View-space X-axis
+    top:        1.0,    // Position of the top plane on the View-space Y-axis.
+    bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.
+    near:       0.1,    // Position of the near plane on the View-space Z-axis.
+    far:        10000   // Position of the far plane on the positive View-space Z-axis.
+});
+
+// Camera the includes our Frustum and falls back on
+// the Scene's default view transform, which is a Lookat
+var camera = new XEO.Camera(scene, {
+    project: frustum
+});
+
+var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+// GameObject which uses the Camera to render the Geometry
+var object = new XEO.GameObject(scene, {
+    camera: camera,
+    geometry: geometry
+});
+
+// Subscribe to changes to one of the properties of our Frustum
+frustum.on("near", function(value) {
+    console.log("Frustum 'near' updated: " + value);
+});
+
+// Set the value of a property on our Frustum component,
+// which fires the event we just subscribed to
+frustum.near = 45.0;
+
+// Get the value of a property on our Frustum component
+var value = frustum.near;
+
+// Destroy ths Frustum component, causing the Camera to
+// fall back on the Scene's default projection transform,
+// which is a Perspective
+frustum.destroy();
+ ````
+
+ @class Frustum
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Frustum within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Frustum.
+ @param [cfg.left=-1] {Number} Position of the Frustum's left plane on the View-space X-axis.
+ @param [cfg.right=1] {Number} Position of the Frustum's right plane on the View-space X-axis.
+ @param [cfg.top=1] {Number} Position of the Frustum's top plane on the View-space Y-axis.
+ @param [cfg.bottom=-1] {Number} Position of the Frustum's bottom plane on the View-space Y-axis.
+ @param [cfg.near=0.1] {Number} Position of the Frustum's near plane on the View-space Z-axis.
+ @param [cfg.far=1000] {Number} Position of the Frustum's far plane on the positive View-space Z-axis.
+ @extends Component
+ */
 (function () {
 
     "use strict";
 
-    /**
-     A **Frustum** defines a perspective projection as a frustum-shaped view volume.
-
-     {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
-     {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
-     <img src="http://www.gliffy.com/go/publish/image/7103657/L.png"></img>
-
-     ### Example
-
-     In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
-     {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Frustum
-     projection transform.
-
-     ````Javascript
-     var scene = new XEO.Scene(engine);
-
-     var frustum = new XEO.Frustum(scene, {
-        left:       1.0,    // Position of the left plane on the View-space X-axis
-        right:      1.0,    // Position of the right plane on the View-space X-axis
-        top:        1.0,    // Position of the top plane on the View-space Y-axis.
-        bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.
-        near:       0.1,    // Position of the near plane on the View-space Z-axis.
-        far:        10000   // Position of the far plane on the positive View-space Z-axis.
-     });
-
-     var camera = new XEO.Camera(scene, {
-        project: frustum
-     });
-
-     var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
-     var object = new XEO.GameObject(scene, {
-        camera: camera,
-        geometry: geometry
-     });
-
-     // Subscribe to changes on a property of our Frustum component
-     frustum.on("near", function(value) {
-        console.log("Frustum 'near' updated: " + value);
-     });
-
-     // Set the value of a property on our Frustum component, which fires the event we just subscribed to
-     frustum.near = 45.0;
-
-     // Get the value of a property on our Frustum component
-     var value = frustum.near;
-
-     // Destroy ths Frustum component, causing the camera to fall back on the scene's default projection transform
-     frustum.destroy();
-     ````
-
-     @class Frustum
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Frustum within the
-     default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Frustum.
-     @param [cfg.left=-1] {Number} Position of the left plane on the View-space X-axis.
-     @param [cfg.right=1] {Number} Position of the right plane on the View-space X-axis.
-     @param [cfg.top=1] {Number} Position of the top plane on the View-space Y-axis.
-     @param [cfg.bottom=-1] {Number} Position of the bottom plane on the View-space Y-axis.
-     @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
-     @param [cfg.far=1000] {Number} Position of the far plane on the positive View-space Z-axis.
-     @extends Component
-     */
     XEO.Frustum = XEO.Component.extend({
 
         className: "XEO.Frustum",

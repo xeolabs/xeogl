@@ -18,7 +18,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/7123073/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we have a Modes that toggles rendering modes for
      two {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. The properties of the Modes are initialised to their

@@ -15,7 +15,7 @@
 
      <img src="http://www.gliffy.com/go/publish/image/6895185/L.png"></img>
 
-     ### Example
+     ## Example
 
      In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
      {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Perspective
