@@ -121,72 +121,70 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+ A **Visibility** toggles the visibility of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+
+ &lt;ul&gt;
+ &lt;li&gt;A Visibility may be shared among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to toggle
+ their visibility as a group.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7103687/L.png&quot;&gt;&lt;/img&gt;
+
+ ## Example
+
+ This example creates a Visibility that toggles the visibility of
+ two {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+var scene = new XEO.Scene();
+
+// Create a Visibility
+var visibility = new XEO.Visibility(scene, {
+    visible: true
+});
+
+// Create two GameObjects whose visibility will be controlled by our Visibility
+
+var object1 = new XEO.GameObject(scene, {
+    visibility: visibility
+});
+
+var object2 = new XEO.GameObject(scene, {
+    visibility: visibility
+});
+
+// Subscribe to change on the Visibility&#x27;s &quot;visible&quot; property
+var handle = visibility.on(&quot;visible&quot;, function(value) {
+    //...
+});
+
+// Hide our GameObjects by flipping the Visibility&#x27;s &quot;visible&quot; property,
+// which will also call our handler
+visibility.visible = false;
+
+// Unsubscribe from the Visibility again
+visibility.off(handle);
+
+// When we destroy our Visibility, the GameObjects will fall back
+// on the Scene&#x27;s default Visibility instance
+visibility.destroy();
+ &#x60;&#x60;&#x60;&#x60;
+ @class Visibility
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Visibility in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Visibility.
+ @param [cfg.visible=true] {Boolean} Flag which controls visibility of the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
+ @extends Component
+ */
 (function () {
 
     &quot;use strict&quot;;
 
-
-    /**
-     A **Visibility** toggles the visibility of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-     &lt;ul&gt;
-     &lt;li&gt;A Visibility may be shared among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to toggle
-     their visibility as a group.&lt;/li&gt;
-     &lt;/ul&gt;
-
-     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7103687/L.png&quot;&gt;&lt;/img&gt;
-
-     ## Example
-
-     This example creates a Visibility that toggles the visibility of
-     two {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-     &#x60;&#x60;&#x60;&#x60;javascript
-     // Create a scene
-     var scene = new XEO.Scene();
-
-     // Create a Visibility
-     var visibility = new XEO.Visibility(scene, {
-      visible: true
-  });
-
-     // Create two GameObjects whose visibility will be controlled by our Visibility
-
-     var object1 = new XEO.GameObject(scene, {
-       visibility: visibility
-  });
-
-     var object2 = new XEO.GameObject(scene, {
-       visibility: visibility
-  });
-
-     // Subscribe to change on the Visibility&#x27;s &quot;visible&quot; property
-     var handle = visibility.on(&quot;visible&quot;, function(value) {
-       //...
-  });
-
-     // Hide our GameObjects by flipping the Visibility&#x27;s &quot;visible&quot; property,
-     // which will also call our handler
-     visibility.visible = false;
-
-     // Unsubscribe from the Visibility again
-     visibility.off(handle);
-
-     // When we destroy our Visibility, the GameObjects will fall back
-     // on the Scene&#x27;s default Visibility instance
-     visibility.destroy();
-     &#x60;&#x60;&#x60;&#x60;
-     @class Visibility
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Visibility in the default
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Visibility.
-     @param [cfg.visible=true] {Boolean} Flag which controls visibility of the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
-     @extends Component
-     */
     XEO.Visibility = XEO.Component.extend({
 
         className: &quot;XEO.Visibility&quot;,

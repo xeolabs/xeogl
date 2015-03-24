@@ -194,6 +194,17 @@ ambientLight.ambient = [0.6, 0.6, 0.6]; // Fires the change listener
 
 ambientLight.off(handle); // Detach the change listener
 </code></pre>
+<h3 id="toggling-ambient-lighting-on-and-off">Toggling ambient lighting on and off</h3>
+<p>Now we&#39;ll attach a <a href="../classes/Modes.html" class="crosslink">Modes</a> to the <a href="../classes/GameObject.html" class="crosslink">GameObject</a>, so that we can toggle
+ the effect of the <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> on it:</p>
+<pre class="code prettyprint"><code class="lang-javascript"> var modes = new XEO.Modes(scene, {
+    ambient: true
+ });
+object.modes = modes;
+// Disable ambient illumination, which is provided
+ // by the AmbientLight:
+ modes.ambient = false;
+</code></pre>
 
 </div>
 
@@ -961,7 +972,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ambientLight.js.html#l113"><code>src&#x2F;core&#x2F;ambientLight.js:113</code></a>
+                            <a href="../files/src_core_ambientLight.js.html#l129"><code>src&#x2F;core&#x2F;ambientLight.js:129</code></a>
                             </p>
                     
                     
@@ -1178,7 +1189,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ambientLight.js.html#l127"><code>src&#x2F;core&#x2F;ambientLight.js:127</code></a>
+                            <a href="../files/src_core_ambientLight.js.html#l143"><code>src&#x2F;core&#x2F;ambientLight.js:143</code></a>
                             </p>
                     
                     

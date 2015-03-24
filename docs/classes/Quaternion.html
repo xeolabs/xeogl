@@ -150,35 +150,35 @@
 <pre class="code prettyprint"><code class="lang-javascript"> var scene = new XEO.Scene();
 
 var quaternion = new XEO.Quaternion(scene, {
-        xyzw: [0, 0, 0, 1], // Unit quaternion
-     });
+    xyzw: [0, 0, 0, 1], // Unit quaternion
+ });
 
 var translate1 = new XEO.Translate(scene, {
-        parent: quaternion,
-        xyz: [-5, 0, 0] // Translate along -X axis
-     });
+    parent: quaternion,
+    xyz: [-5, 0, 0] // Translate along -X axis
+ });
 
 var translate2 = new XEO.Translate(scene, {
-        parent: quaternion,
-        xyz: [5, 0, 0] // Translate along +X axis
-     });
+    parent: quaternion,
+    xyz: [5, 0, 0] // Translate along +X axis
+ });
 
 var scale = new XEO.Scale(scene, {
-        parent: translate2,
-        xyz: [1, 2, 1] // Scale x2 on Y axis
-     });
+    parent: translate2,
+    xyz: [1, 2, 1] // Scale x2 on Y axis
+ });
 
 var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
 var gameObject1 = new XEO.GameObject(scene, {
-        transform: translate1,
-        geometry: geometry
-     });
+    transform: translate1,
+    geometry: geometry
+ });
 
 var gameObject2 = new XEO.GameObject(scene, {
-        transform: scale,
-        geometry: geometry
-     });
+    transform: scale,
+    geometry: geometry
+ });
 </code></pre>
 <p>Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.</p>
 <p>Let&#39;s insert a <a href="../classes/Scale.html" class="crosslink">Scale</a> between the first Translate and the first <a href="../classes/GameObject.html" class="crosslink">GameObject</a>:</p>
@@ -190,7 +190,7 @@ var gameObject2 = new XEO.GameObject(scene, {
 gameObject2.transform = scale2;
 </code></pre>
 <p>And just for fun, we&#39;ll start spinning the Quaternion:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> // Rotate 0.2 degrees about Y-axis on each frame
+<pre class="code prettyprint"><code class="lang-javascript">// Rotate 0.2 degrees about Y-axis on each frame
  scene.on("tick", function(e) {
     quaternion.rotate([0, 1, 0, 0.2]);
  });
@@ -926,7 +926,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_quaternion.js.html#l138"><code>src&#x2F;core&#x2F;quaternion.js:138</code></a>
+        <a href="../files/src_core_quaternion.js.html#l139"><code>src&#x2F;core&#x2F;quaternion.js:139</code></a>
         </p>
 
 
@@ -1246,7 +1246,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_quaternion.js.html#l110"><code>src&#x2F;core&#x2F;quaternion.js:110</code></a>
+                            <a href="../files/src_core_quaternion.js.html#l111"><code>src&#x2F;core&#x2F;quaternion.js:111</code></a>
                             </p>
                     
                     
@@ -1388,7 +1388,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_quaternion.js.html#l123"><code>src&#x2F;core&#x2F;quaternion.js:123</code></a>
+                            <a href="../files/src_core_quaternion.js.html#l124"><code>src&#x2F;core&#x2F;quaternion.js:124</code></a>
                             </p>
                     
                     

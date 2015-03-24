@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_lights.js.html#l6"><code>src&#x2F;core&#x2F;lights.js:6</code></a>
+            Defined in: <a href="../files/src_core_lights.js.html#l1"><code>src&#x2F;core&#x2F;lights.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -143,6 +143,9 @@ affect all the <a href="../classes/GameObject.html" class="crosslink">GameObject
 originates from a single point and spreads outward in all directions, and </li>
 <li><a href="../classes/DirLight.html" class="crosslink">DirLight</a>s, which illuminate all the
 <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> equally from a given direction</li>
+<li>Diffuse, specular and ambient lighting may also be enabled or disabled for specific <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>
+via <a href="../classes/Modes.html#property_diffuse" class="crosslink">diffuse</a>, <a href="../classes/Modes.html#property_diffuse" class="crosslink">diffuse</a>
+and <a href="../classes/Modes.html#property_ambient" class="crosslink">ambient</a> flags on <a href="../classes/Modes.html" class="crosslink">Modes</a> components.</li>
 </ul>
 
 <p>Within xeoEngine&#39;s <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model, the ambient,
@@ -161,7 +164,7 @@ var material = new XEO.Material(scene, {
    diffuse:    [0.7, 0.7, 0.7],
    specular:   [1. 1, 1],
    shininess:  30
-    });
+});
 
 // Within xeoEngine&#39;s lighting calculations, the AmbientLight&#39;s ambient color
 // will be multiplied by the Material&#39;s ambient color, while the DirLight and PointLight&#39;s
@@ -169,14 +172,14 @@ var material = new XEO.Material(scene, {
 
 var ambientLight = new XEO.AmbientLight(scene, {
    ambient: [0.7, 0.7, 0.7]
-    });
+});
 
 var dirLight = new XEO.DirLight(scene, {
    dir:        [-1, -1, -1],
    diffuse:    [0.5, 0.7, 0.5],
    specular:   [1.0, 1.0, 1.0],
    space:      "view"
-    });
+});
 
 var pointLight = new XEO.PointLight(scene, {
    pos: [0, 100, 100],
@@ -186,7 +189,7 @@ var pointLight = new XEO.PointLight(scene, {
    linearAttenuation: 0,
    quadraticAttenuation: 0,
    space: "view"
-    });
+});
 
 var lights = new XEO.Lights(scene, {
    lights: [
@@ -194,7 +197,7 @@ var lights = new XEO.Lights(scene, {
        dirLight,
        pointLight
    ]
-    });
+});
 
 var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
@@ -202,7 +205,33 @@ var object = new XEO.GameObject(scene, {
    lights: lights,
    material: material,
    geometry: geometry
-    });
+});
+</code></pre>
+<h3 id="toggling-lighting-on-and-off">Toggling lighting on and off</h3>
+<p>Now we&#39;ll attach a <a href="../classes/Modes.html" class="crosslink">Modes</a> to the <a href="../classes/GameObject.html" class="crosslink">GameObject</a>, so that we can toggle
+the effect of the different light sources on it:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var modes = new XEO.Modes(scene, {
+   ambient: true,
+   diffuse: true,
+   specular: true
+});
+
+object.modes = modes;
+
+// Disable ambient illumination, which is provided
+// by the AmbientLight:
+modes.ambient = false;
+
+// Disable diffuse illumination, which is provided
+// by the DirLight and PointLight:
+modes.diffuse = false;
+
+// Disable specular illumination, which is provided
+// by the DirLight and PointLight:
+modes.specular = false;
+
+// At this point, the GameObject would be in darkness,
+// unless the Material has an emissive property that is not [0,0,0].
 </code></pre>
 
 </div>
@@ -233,7 +262,7 @@ var object = new XEO.GameObject(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_lights.js.html#l6"><code>src&#x2F;core&#x2F;lights.js:6</code></a>
+                <a href="../files/src_core_lights.js.html#l1"><code>src&#x2F;core&#x2F;lights.js:1</code></a>
                 </p>
         
         

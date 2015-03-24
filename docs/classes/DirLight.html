@@ -216,6 +216,32 @@ dirLight.diffuse = [0.0, 0.3, 0.3];
 // Detach the change listener
 dirLight.off(handle);
 </code></pre>
+<h3 id="toggling-lighting-on-and-off">Toggling lighting on and off</h3>
+<p>Now we&#39;ll attach a <a href="../classes/Modes.html" class="crosslink">Modes</a> to the <a href="../classes/GameObject.html" class="crosslink">GameObject</a>, so that we can toggle
+the effect of the different light sources on it:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var modes = new XEO.Modes(scene, {
+   ambient: true,
+   diffuse: true,
+   specular: true
+});
+
+object.modes = modes;
+
+// Disable ambient illumination, which is provided
+// by the AmbientLight:
+modes.ambient = false;
+
+// Disable diffuse illumination, which is provided
+// by the DirLight and PointLight:
+modes.diffuse = false;
+
+// Disable specular illumination, which is provided
+// by the DirLight and PointLight:
+modes.specular = false;
+
+// At this point, the GameObject would be in darkness,
+// unless the Material has an emissive property that is not [0,0,0].
+</code></pre>
 
 </div>
 
@@ -1090,7 +1116,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l161"><code>src&#x2F;core&#x2F;dirLight.js:161</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l192"><code>src&#x2F;core&#x2F;dirLight.js:192</code></a>
                             </p>
                     
                     
@@ -1117,7 +1143,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l132"><code>src&#x2F;core&#x2F;dirLight.js:132</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l163"><code>src&#x2F;core&#x2F;dirLight.js:163</code></a>
                             </p>
                     
                     
@@ -1222,7 +1248,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l219"><code>src&#x2F;core&#x2F;dirLight.js:219</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l250"><code>src&#x2F;core&#x2F;dirLight.js:250</code></a>
                             </p>
                     
                     
@@ -1255,7 +1281,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l190"><code>src&#x2F;core&#x2F;dirLight.js:190</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l221"><code>src&#x2F;core&#x2F;dirLight.js:221</code></a>
                             </p>
                     
                     
@@ -1341,7 +1367,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l177"><code>src&#x2F;core&#x2F;dirLight.js:177</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l208"><code>src&#x2F;core&#x2F;dirLight.js:208</code></a>
                             </p>
                     
                     
@@ -1383,7 +1409,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l148"><code>src&#x2F;core&#x2F;dirLight.js:148</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l179"><code>src&#x2F;core&#x2F;dirLight.js:179</code></a>
                             </p>
                     
                     
@@ -1425,7 +1451,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l245"><code>src&#x2F;core&#x2F;dirLight.js:245</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l276"><code>src&#x2F;core&#x2F;dirLight.js:276</code></a>
                             </p>
                     
                     
@@ -1467,7 +1493,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l206"><code>src&#x2F;core&#x2F;dirLight.js:206</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l237"><code>src&#x2F;core&#x2F;dirLight.js:237</code></a>
                             </p>
                     
                     

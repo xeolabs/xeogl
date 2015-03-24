@@ -121,102 +121,137 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+ A **Lights** is a group of light sources to apply to attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+
+ A Lights may contain a virtually unlimited number of three types of light source:
+
+ &lt;ul&gt;
+ &lt;li&gt;{{#crossLink &quot;AmbientLight&quot;}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
+ affect all the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally,&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;PointLight&quot;}}PointLight{{/crossLink}}s, which emit light that
+ originates from a single point and spreads outward in all directions, and &lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;DirLight&quot;}}DirLight{{/crossLink}}s, which illuminate all the
+ {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally from a given direction&lt;/li&gt;
+ &lt;li&gt;Diffuse, specular and ambient lighting may also be enabled or disabled for specific {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
+ via {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}
+ and {{#crossLink &quot;Modes/ambient:property&quot;}}{{/crossLink}} flags on {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} components.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ Within xeoEngine&#x27;s &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; reflection model, the ambient,
+ diffuse and specular components of light sources are multiplied by the
+ {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and
+ {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}} properties on attached  {{#crossLink &quot;Material&quot;}}Materials{{/crossLink}}.
+
+
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7092459/L.png&quot;&gt;&lt;/img&gt;
+
+ ## Example
+
+ In this example we have a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}},
+ a {{#crossLink &quot;Material&quot;}}{{/crossLink}} and a {{#crossLink &quot;Lights&quot;}}{{/crossLink}}. The {{#crossLink &quot;Lights&quot;}}{{/crossLink}}
+ contains an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}}, a {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;PointLight&quot;}}{{/crossLink}}.
+
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ var scene = new XEO.Scene();
+
+ var material = new XEO.Material(scene, {
+    ambient:    [0.3, 0.3, 0.3],
+    diffuse:    [0.7, 0.7, 0.7],
+    specular:   [1. 1, 1],
+    shininess:  30
+});
+
+ // Within xeoEngine&#x27;s lighting calculations, the AmbientLight&#x27;s ambient color
+ // will be multiplied by the Material&#x27;s ambient color, while the DirLight and PointLight&#x27;s
+ // diffuse and specular colors will be multiplied by the Material&#x27;s diffuse and specular colors
+
+ var ambientLight = new XEO.AmbientLight(scene, {
+    ambient: [0.7, 0.7, 0.7]
+});
+
+ var dirLight = new XEO.DirLight(scene, {
+    dir:        [-1, -1, -1],
+    diffuse:    [0.5, 0.7, 0.5],
+    specular:   [1.0, 1.0, 1.0],
+    space:      &quot;view&quot;
+});
+
+ var pointLight = new XEO.PointLight(scene, {
+    pos: [0, 100, 100],
+    diffuse: [0.5, 0.7, 0.5],
+    specular: [1.0, 1.0, 1.0],
+    constantAttenuation: 0,
+    linearAttenuation: 0,
+    quadraticAttenuation: 0,
+    space: &quot;view&quot;
+});
+
+ var lights = new XEO.Lights(scene, {
+    lights: [
+        ambientLight,
+        dirLight,
+        pointLight
+    ]
+});
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ var object = new XEO.GameObject(scene, {
+    lights: lights,
+    material: material,
+    geometry: geometry
+});
+ &#x60;&#x60;&#x60;&#x60;
+
+ ### Toggling lighting on and off
+
+ Now we&#x27;ll attach a {{#crossLink &quot;Modes&quot;}}{{/crossLink}} to the {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}, so that we can toggle
+ the effect of the different light sources on it:
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ var modes = new XEO.Modes(scene, {
+    ambient: true,
+    diffuse: true,
+    specular: true
+ });
+
+ object.modes = modes;
+
+ // Disable ambient illumination, which is provided
+ // by the AmbientLight:
+ modes.ambient = false;
+
+ // Disable diffuse illumination, which is provided
+ // by the DirLight and PointLight:
+ modes.diffuse = false;
+
+ // Disable specular illumination, which is provided
+ // by the DirLight and PointLight:
+ modes.specular = false;
+
+ // At this point, the GameObject would be in darkness,
+ // unless the Material has an emissive property that is not [0,0,0].
+
+ &#x60;&#x60;&#x60;&#x60;
+
+
+
+ @class Lights
+ @constructor
+ @module XEO
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Lights in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
+ @extends Component
+ */
 (function () {
 
     &quot;use strict&quot;;
 
-
-    /**
-     A **Lights** is a group of light sources to apply to attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-     A Lights may contain a virtually unlimited number of three types of light source:
-
-     &lt;ul&gt;
-     &lt;li&gt;{{#crossLink &quot;AmbientLight&quot;}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
-     affect all the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally,&lt;/li&gt;
-     &lt;li&gt;{{#crossLink &quot;PointLight&quot;}}PointLight{{/crossLink}}s, which emit light that
-     originates from a single point and spreads outward in all directions, and &lt;/li&gt;
-     &lt;li&gt;{{#crossLink &quot;DirLight&quot;}}DirLight{{/crossLink}}s, which illuminate all the
-     {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally from a given direction&lt;/li&gt;
-     &lt;/ul&gt;
-
-     Within xeoEngine&#x27;s &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; reflection model, the ambient,
-     diffuse and specular components of light sources are multiplied by the
-     {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and
-     {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}} properties on attached  {{#crossLink &quot;Material&quot;}}Materials{{/crossLink}}.
-
-
-     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7092459/L.png&quot;&gt;&lt;/img&gt;
-
-     ## Example
-
-     In this example we have a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}},
-     a {{#crossLink &quot;Material&quot;}}{{/crossLink}} and a {{#crossLink &quot;Lights&quot;}}{{/crossLink}}. The {{#crossLink &quot;Lights&quot;}}{{/crossLink}}
-     contains an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}}, a {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;PointLight&quot;}}{{/crossLink}}.
-
-
-     &#x60;&#x60;&#x60;&#x60; javascript
-     var scene = new XEO.Scene();
-
-     var material = new XEO.Material(scene, {
-        ambient:    [0.3, 0.3, 0.3],
-        diffuse:    [0.7, 0.7, 0.7],
-        specular:   [1. 1, 1],
-        shininess:  30
-    });
-
-     // Within xeoEngine&#x27;s lighting calculations, the AmbientLight&#x27;s ambient color
-     // will be multiplied by the Material&#x27;s ambient color, while the DirLight and PointLight&#x27;s
-     // diffuse and specular colors will be multiplied by the Material&#x27;s diffuse and specular colors
-
-     var ambientLight = new XEO.AmbientLight(scene, {
-        ambient: [0.7, 0.7, 0.7]
-    });
-
-     var dirLight = new XEO.DirLight(scene, {
-        dir:        [-1, -1, -1],
-        diffuse:    [0.5, 0.7, 0.5],
-        specular:   [1.0, 1.0, 1.0],
-        space:      &quot;view&quot;
-    });
-
-     var pointLight = new XEO.PointLight(scene, {
-        pos: [0, 100, 100],
-        diffuse: [0.5, 0.7, 0.5],
-        specular: [1.0, 1.0, 1.0],
-        constantAttenuation: 0,
-        linearAttenuation: 0,
-        quadraticAttenuation: 0,
-        space: &quot;view&quot;
-    });
-
-     var lights = new XEO.Lights(scene, {
-        lights: [
-            ambientLight,
-            dirLight,
-            pointLight
-        ]
-    });
-
-     var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
-     var object = new XEO.GameObject(scene, {
-        lights: lights,
-        material: material,
-        geometry: geometry
-    });
-     &#x60;&#x60;&#x60;&#x60;
-
-     @class Lights
-     @constructor
-     @module XEO
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Lights in the default
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
-     @extends Component
-     */
     XEO.Lights = XEO.Component.extend({
 
         className: &quot;XEO.Lights&quot;,

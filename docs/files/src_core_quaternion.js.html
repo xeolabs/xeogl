@@ -146,41 +146,41 @@
 
 
  var quaternion = new XEO.Quaternion(scene, {
-        xyzw: [0, 0, 0, 1], // Unit quaternion
-     });
+    xyzw: [0, 0, 0, 1], // Unit quaternion
+ });
 
 
  var translate1 = new XEO.Translate(scene, {
-        parent: quaternion,
-        xyz: [-5, 0, 0] // Translate along -X axis
-     });
+    parent: quaternion,
+    xyz: [-5, 0, 0] // Translate along -X axis
+ });
 
 
  var translate2 = new XEO.Translate(scene, {
-        parent: quaternion,
-        xyz: [5, 0, 0] // Translate along +X axis
-     });
+    parent: quaternion,
+    xyz: [5, 0, 0] // Translate along +X axis
+ });
 
 
  var scale = new XEO.Scale(scene, {
-        parent: translate2,
-        xyz: [1, 2, 1] // Scale x2 on Y axis
-     });
+    parent: translate2,
+    xyz: [1, 2, 1] // Scale x2 on Y axis
+ });
 
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
 
  var gameObject1 = new XEO.GameObject(scene, {
-        transform: translate1,
-        geometry: geometry
-     });
+    transform: translate1,
+    geometry: geometry
+ });
 
 
  var gameObject2 = new XEO.GameObject(scene, {
-        transform: scale,
-        geometry: geometry
-     });
+    transform: scale,
+    geometry: geometry
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
@@ -189,8 +189,7 @@
  Let&#x27;s insert a {{#crossLink &quot;Scale&quot;}}{{/crossLink}} between the first Translate and the first {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
-
- var scale2 = new XEO.Scale(scene, {
+var scale2 = new XEO.Scale(scene, {
     parent: translate1,
     xyz: [1, 1, 2] // Scale x2 on Z axis
  });
@@ -202,12 +201,11 @@
  And just for fun, we&#x27;ll start spinning the Quaternion:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- // Rotate 0.2 degrees about Y-axis on each frame
+// Rotate 0.2 degrees about Y-axis on each frame
  scene.on(&quot;tick&quot;, function(e) {
     quaternion.rotate([0, 1, 0, 0.2]);
  });
  &#x60;&#x60;&#x60;&#x60;
-
  @class Quaternion
  @module XEO
  @constructor
@@ -219,61 +217,65 @@
  @param [cfg.xyzw=[0,0,0,1]] {Array(Number)} The initial Quaternion elements.
  @extends Transform
  */
-XEO.Quaternion = XEO.Transform.extend({
+(function () {
 
-    className: &quot;XEO.Quaternion&quot;,
+    &quot;use strict&quot;;
+    XEO.Quaternion = XEO.Transform.extend({
 
-    _init: function (cfg) {
-        this._super(cfg);
-        this.xyzw = cfg.xyzw;
-    },
+        className: &quot;XEO.Quaternion&quot;,
 
-    _props: {
+        _init: function (cfg) {
+            this._super(cfg);
+            this.xyzw = cfg.xyzw;
+        },
 
-        /**
-          The quaternion elements
-          Fires an {{#crossLink &quot;Quaternion/xyzw:event&quot;}}{{/crossLink}} event on change.
-          @property xyzw
-          @default [0,0,0,1]
-          @type {Array of Number}
-         */
-        xyzw: {
+        _props: {
 
-            set: function (value) {
-                this._xyzw = value || [0, 0, 0, 1];
+            /**
+             The quaternion elements
+             Fires an {{#crossLink &quot;Quaternion/xyzw:event&quot;}}{{/crossLink}} event on change.
+             @property xyzw
+             @default [0,0,0,1]
+             @type {Array of Number}
+             */
+            xyzw: {
+
+                set: function (value) {
+                    this._xyzw = value || [0, 0, 0, 1];
 //                this.matrix = XEO.math.scalingMat4v(this._xyzw);
 
-                /**
-                 Fired whenever this Quaternion&#x27;s {{#crossLink &quot;Quaternion/xyzw:property&quot;}}{{/crossLink}} property changes.
+                    /**
+                     Fired whenever this Quaternion&#x27;s {{#crossLink &quot;Quaternion/xyzw:property&quot;}}{{/crossLink}} property changes.
 
-                 @event xyzw
-                 @param value {Array of Number} The property&#x27;s new value
-                 */
-                this.fire(&quot;xyzw&quot;, this._xyzw);
-            },
+                     @event xyzw
+                     @param value {Array of Number} The property&#x27;s new value
+                     */
+                    this.fire(&quot;xyzw&quot;, this._xyzw);
+                },
 
-            get: function () {
-                return this._xyz;
+                get: function () {
+                    return this._xyz;
+                }
             }
+        },
+
+        /**
+         Rotates this Quaternion.
+         Fires an {{#crossLink &quot;Quaternion/xyzw:event&quot;}}{{/crossLink}} event to notify of update to the Quaternion elements.
+         @method rotate
+         @param {Array of Number} angleAxis Rotation in angle-axis form.
+         */
+        rotate: function (angleAxis) {
+            // TODO
+        },
+
+        _getJSON: function () {
+            return {
+                xyzw: this.xyzw
+            };
         }
-    },
-
-    /**
-     Rotates this Quaternion.
-     Fires an {{#crossLink &quot;Quaternion/xyzw:event&quot;}}{{/crossLink}} event to notify of update to the Quaternion elements.
-     @method rotate
-     @param {Array of Number} angleAxis Rotation in angle-axis form.
-     */
-    rotate: function(angleAxis) {
-        // TODO
-    },
-
-    _getJSON: function () {
-        return {
-            xyzw: this.xyzw
-        };
-    }
-});
+    });
+})();
     </pre>
 </div>
                     </div>

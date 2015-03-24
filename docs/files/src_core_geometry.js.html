@@ -133,6 +133,10 @@
     &lt;li&gt;&lt;a href=&quot;#sharing&quot;&gt;Sharing among GameObjects&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href=&quot;#triangles&quot;&gt;Defining a triangle mesh&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href=&quot;#editing&quot;&gt;Editing Geometry&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;#backfaces&quot;&gt;Toggling backfaces on or off&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;#frontfaces&quot;&gt;Setting frontface vertex winding&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;#bflighting&quot;&gt;Toggling lighting of backfaces&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;#bftexturing&quot;&gt;Toggling texturing of backfaces&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;hr&gt;
@@ -144,7 +148,7 @@
  &lt;li&gt;A Geometry&#x27;s {{#crossLink &quot;Geometry/primitive:property&quot;}}{{/crossLink}} type can be &#x27;points&#x27;, &#x27;lines&#x27;, &#x27;line-loop&#x27;, &#x27;line-strip&#x27;, &#x27;triangles&#x27;, &#x27;triangle-strip&#x27; or &#x27;triangle-fan&#x27;&quot;.&lt;/li&gt;
  &lt;li&gt;Depending on the {{#crossLink &quot;Geometry/primitive:property&quot;}}{{/crossLink}} type, a Geometry can have {{#crossLink &quot;Geometry/positions:property&quot;}}vertex positions{{/crossLink}},
  {{#crossLink &quot;Geometry/colors:property&quot;}}vertex colors{{/crossLink}}, {{#crossLink &quot;Geometry/uv:property&quot;}}UV coordinates{{/crossLink}},
- {{#crossLink &quot;Geometry/normals:property&quot;}}normal vectors{{/crossLink}}, as well as {{#crossLink &quot;Geometry/indices:property&quot;}}{{/crossLink}}
+ {{#crossLink &quot;Geometry/normals:property&quot;}}normal vectors{{/crossLink}}, as well as {{#crossLink &quot;Geometry/indices:property&quot;}}{{/crossLink}},
  which specify how the vertices connect together to form the primitives.&lt;/li&gt;
  &lt;li&gt;When no shape is specified (ie. no primitive type, vertex arrays and indices) for a Geometry, it will default to a 2x2x2 box
  made of triangles, with UV coordinates, vertex colors and normals.&lt;/li&gt;
@@ -311,7 +315,7 @@ var object = new XEO.GameObject(myScene, {
  ## &lt;a name=&quot;editing&quot;&gt;Editing Geometry&lt;/a&gt;
 
  Recall that everything in xeoEngine is dynamically editable, including Geometry. Let&#x27;s remove the front and back faces
- from the second Geometry by updating its **indices** array:
+ from our triangle mesh Geometry by updating its **indices** array:
 
 &#x60;&#x60;&#x60;&#x60;javascript
 geometry2.indices = [
@@ -327,6 +331,61 @@ Now let&#x27;s make it wireframe by changing its primitive type from **faces** t
 &#x60;&#x60;&#x60;&#x60;javascript
 geometry2.primitive = &quot;lines&quot;;
 &#x60;&#x60;&#x60;&#x60;
+
+ ## &lt;a name=&quot;backfaces&quot;&gt;Toggling backfaces on or off&lt;/a&gt;
+
+ Now we&#x27;ll attach a {{#crossLink &quot;Modes&quot;}}{{/crossLink}} to that last {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}, so that
+ we can show or hide its {{#crossLink &quot;Geometry&quot;}}Geometry&#x27;s{{/crossLink}} backfaces:
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ var modes = new XEO.Modes(scene);
+
+ object.modes = modes;
+
+ // Hide backfaces
+
+ modes.backfaces = false;
+
+ &#x60;&#x60;&#x60;&#x60;
+
+ ## &lt;a name=&quot;frontfaces&quot;&gt;Setting frontface vertex winding&lt;/a&gt;
+
+ The &lt;a href=&quot;https://www.opengl.org/wiki/Face_Culling&quot; target=&quot;other&quot;&gt;vertex winding order&lt;/a&gt; of each face determines
+ whether it&#x27;s a frontface or a backface.
+
+ By default, xeoEngine considers faces to be frontfaces if they have a counter-clockwise
+ winding order, but we can change that by setting the {{#crossLink &quot;Modes&quot;}}{{/crossLink}}
+ {{#crossLink &quot;Modes/frontface:property&quot;}}{{/crossLink}} property, like so:
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ // Set the winding order for frontfaces to clockwise
+ // Options are &quot;ccw&quot; for counter-clockwise or &quot;cw&quot; for clockwise
+
+ object.frontface = &quot;cw&quot;;
+ &#x60;&#x60;&#x60;&#x60;
+
+ ## &lt;a name=&quot;bflighting&quot;&gt;Toggling lighting of backfaces&lt;/a&gt;
+
+ Geometry backfaces are illuminated by default, but we can disable that for our {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
+ by flipping the {{#crossLink &quot;Modes/backfaceLighting:property&quot;}}{{/crossLink}} property on the {{#crossLink &quot;Modes&quot;}}{{/crossLink}}, like so:
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ // Set the winding order for frontfaces to clockwise
+ // Options are &quot;ccw&quot; for counter-clockwise or &quot;cw&quot; for clockwise
+
+ object.backfaceLighting = false;
+ &#x60;&#x60;&#x60;&#x60;
+
+ ## &lt;a name=&quot;bftexturing&quot;&gt;Toggling texturing of backfaces&lt;/a&gt;
+
+ Geometry backfaces are textured by default, but we can disable that for our {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
+ by flipping the {{#crossLink &quot;Modes/backfaceTexturing:property&quot;}}{{/crossLink}} property on the {{#crossLink &quot;Modes&quot;}}{{/crossLink}}, as shown below.
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ // Disable texturing of backfaces
+
+ object.backfaceTexturing = false;
+ &#x60;&#x60;&#x60;&#x60;
 
  @class Geometry
  @module XEO

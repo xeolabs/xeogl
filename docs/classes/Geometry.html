@@ -144,6 +144,10 @@
    <li><a href="#sharing">Sharing among GameObjects</a></li>
    <li><a href="#triangles">Defining a triangle mesh</a></li>
    <li><a href="#editing">Editing Geometry</a></li>
+   <li><a href="#backfaces">Toggling backfaces on or off</li>
+   <li><a href="#frontfaces">Setting frontface vertex winding</li>
+   <li><a href="#bflighting">Toggling lighting of backfaces</li>
+   <li><a href="#bftexturing">Toggling texturing of backfaces</li>
 </ul></p>
 <hr>
 
@@ -153,7 +157,7 @@
 <li>A Geometry&#39;s <a href="../classes/Geometry.html#property_primitive" class="crosslink">primitive</a> type can be &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; or &#39;triangle-fan&#39;".</li>
 <li>Depending on the <a href="../classes/Geometry.html#property_primitive" class="crosslink">primitive</a> type, a Geometry can have <a href="../classes/Geometry.html#property_positions" class="crosslink">vertex positions</a>,
 <a href="../classes/Geometry.html#property_colors" class="crosslink">vertex colors</a>, <a href="../classes/Geometry.html#property_uv" class="crosslink">UV coordinates</a>,
-<a href="../classes/Geometry.html#property_normals" class="crosslink">normal vectors</a>, as well as <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>
+<a href="../classes/Geometry.html#property_normals" class="crosslink">normal vectors</a>, as well as <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>,
 which specify how the vertices connect together to form the primitives.</li>
 <li>When no shape is specified (ie. no primitive type, vertex arrays and indices) for a Geometry, it will default to a 2x2x2 box
 made of triangles, with UV coordinates, vertex colors and normals.</li>
@@ -303,7 +307,7 @@ var object = new XEO.GameObject(myScene, {
 </code></pre>
 <h2 id="-a-name-editing-editing-geometry-a-"><a name="editing">Editing Geometry</a></h2>
 <p>Recall that everything in xeoEngine is dynamically editable, including Geometry. Let&#39;s remove the front and back faces
-from the second Geometry by updating its <strong>indices</strong> array:</p>
+from our triangle mesh Geometry by updating its <strong>indices</strong> array:</p>
 <pre class="code prettyprint"><code class="lang-javascript">geometry2.indices = [
    8,  9,  10,     8,  10, 11,   // top
    12, 13, 14,     12, 14, 15,   // bottom
@@ -313,6 +317,43 @@ from the second Geometry by updating its <strong>indices</strong> array:</p>
 </code></pre>
 <p>Now let&#39;s make it wireframe by changing its primitive type from <strong>faces</strong> to <strong>lines</strong>:</p>
 <pre class="code prettyprint"><code class="lang-javascript">geometry2.primitive = "lines";
+</code></pre>
+<h2 id="-a-name-backfaces-toggling-backfaces-on-or-off-a-"><a name="backfaces">Toggling backfaces on or off</a></h2>
+<p>Now we&#39;ll attach a <a href="../classes/Modes.html" class="crosslink">Modes</a> to that last <a href="../classes/GameObject.html" class="crosslink">GameObject</a>, so that
+we can show or hide its <a href="../classes/Geometry.html" class="crosslink">Geometry&#39;s</a> backfaces:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var modes = new XEO.Modes(scene);
+
+object.modes = modes;
+
+// Hide backfaces
+
+modes.backfaces = false;
+</code></pre>
+<h2 id="-a-name-frontfaces-setting-frontface-vertex-winding-a-"><a name="frontfaces">Setting frontface vertex winding</a></h2>
+<p>The <a href="https://www.opengl.org/wiki/Face_Culling" target="other">vertex winding order</a> of each face determines
+whether it&#39;s a frontface or a backface.</p>
+<p>By default, xeoEngine considers faces to be frontfaces if they have a counter-clockwise
+winding order, but we can change that by setting the <a href="../classes/Modes.html" class="crosslink">Modes</a>
+<a href="../classes/Modes.html#property_frontface" class="crosslink">frontface</a> property, like so:</p>
+<pre class="code prettyprint"><code class="lang-javascript">// Set the winding order for frontfaces to clockwise
+// Options are "ccw" for counter-clockwise or "cw" for clockwise
+
+object.frontface = "cw";
+</code></pre>
+<h2 id="-a-name-bflighting-toggling-lighting-of-backfaces-a-"><a name="bflighting">Toggling lighting of backfaces</a></h2>
+<p>Geometry backfaces are illuminated by default, but we can disable that for our <a href="../classes/GameObject.html" class="crosslink">GameObject</a>
+by flipping the <a href="../classes/Modes.html#property_backfaceLighting" class="crosslink">backfaceLighting</a> property on the <a href="../classes/Modes.html" class="crosslink">Modes</a>, like so:</p>
+<pre class="code prettyprint"><code class="lang-javascript">// Set the winding order for frontfaces to clockwise
+// Options are "ccw" for counter-clockwise or "cw" for clockwise
+
+object.backfaceLighting = false;
+</code></pre>
+<h2 id="-a-name-bftexturing-toggling-texturing-of-backfaces-a-"><a name="bftexturing">Toggling texturing of backfaces</a></h2>
+<p>Geometry backfaces are textured by default, but we can disable that for our <a href="../classes/GameObject.html" class="crosslink">GameObject</a>
+by flipping the <a href="../classes/Modes.html#property_backfaceTexturing" class="crosslink">backfaceTexturing</a> property on the <a href="../classes/Modes.html" class="crosslink">Modes</a>, as shown below.</p>
+<pre class="code prettyprint"><code class="lang-javascript">// Disable texturing of backfaces
+
+object.backfaceTexturing = false;
 </code></pre>
 
 </div>
@@ -1221,7 +1262,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l504"><code>src&#x2F;core&#x2F;geometry.js:504</code></a>
+                            <a href="../files/src_core_geometry.js.html#l563"><code>src&#x2F;core&#x2F;geometry.js:563</code></a>
                             </p>
                     
                     
@@ -1299,7 +1340,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l528"><code>src&#x2F;core&#x2F;geometry.js:528</code></a>
+                            <a href="../files/src_core_geometry.js.html#l587"><code>src&#x2F;core&#x2F;geometry.js:587</code></a>
                             </p>
                     
                     
@@ -1352,7 +1393,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l431"><code>src&#x2F;core&#x2F;geometry.js:431</code></a>
+                            <a href="../files/src_core_geometry.js.html#l490"><code>src&#x2F;core&#x2F;geometry.js:490</code></a>
                             </p>
                     
                     
@@ -1379,7 +1420,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l406"><code>src&#x2F;core&#x2F;geometry.js:406</code></a>
+                            <a href="../files/src_core_geometry.js.html#l465"><code>src&#x2F;core&#x2F;geometry.js:465</code></a>
                             </p>
                     
                     
@@ -1406,7 +1447,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l343"><code>src&#x2F;core&#x2F;geometry.js:343</code></a>
+                            <a href="../files/src_core_geometry.js.html#l402"><code>src&#x2F;core&#x2F;geometry.js:402</code></a>
                             </p>
                     
                     
@@ -1488,7 +1529,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l455"><code>src&#x2F;core&#x2F;geometry.js:455</code></a>
+                            <a href="../files/src_core_geometry.js.html#l514"><code>src&#x2F;core&#x2F;geometry.js:514</code></a>
                             </p>
                     
                     
@@ -1515,7 +1556,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l480"><code>src&#x2F;core&#x2F;geometry.js:480</code></a>
+                            <a href="../files/src_core_geometry.js.html#l539"><code>src&#x2F;core&#x2F;geometry.js:539</code></a>
                             </p>
                     
                     
@@ -1548,7 +1589,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l517"><code>src&#x2F;core&#x2F;geometry.js:517</code></a>
+                            <a href="../files/src_core_geometry.js.html#l576"><code>src&#x2F;core&#x2F;geometry.js:576</code></a>
                             </p>
                     
                     
@@ -1615,7 +1656,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l541"><code>src&#x2F;core&#x2F;geometry.js:541</code></a>
+                            <a href="../files/src_core_geometry.js.html#l600"><code>src&#x2F;core&#x2F;geometry.js:600</code></a>
                             </p>
                     
                     
@@ -1657,7 +1698,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l444"><code>src&#x2F;core&#x2F;geometry.js:444</code></a>
+                            <a href="../files/src_core_geometry.js.html#l503"><code>src&#x2F;core&#x2F;geometry.js:503</code></a>
                             </p>
                     
                     
@@ -1699,7 +1740,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l419"><code>src&#x2F;core&#x2F;geometry.js:419</code></a>
+                            <a href="../files/src_core_geometry.js.html#l478"><code>src&#x2F;core&#x2F;geometry.js:478</code></a>
                             </p>
                     
                     
@@ -1741,7 +1782,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l392"><code>src&#x2F;core&#x2F;geometry.js:392</code></a>
+                            <a href="../files/src_core_geometry.js.html#l451"><code>src&#x2F;core&#x2F;geometry.js:451</code></a>
                             </p>
                     
                     
@@ -1783,7 +1824,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l468"><code>src&#x2F;core&#x2F;geometry.js:468</code></a>
+                            <a href="../files/src_core_geometry.js.html#l527"><code>src&#x2F;core&#x2F;geometry.js:527</code></a>
                             </p>
                     
                     
@@ -1825,7 +1866,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_geometry.js.html#l493"><code>src&#x2F;core&#x2F;geometry.js:493</code></a>
+                            <a href="../files/src_core_geometry.js.html#l552"><code>src&#x2F;core&#x2F;geometry.js:552</code></a>
                             </p>
                     
                     

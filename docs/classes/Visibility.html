@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_visibility.js.html#l6"><code>src&#x2F;core&#x2F;visibility.js:6</code></a>
+            Defined in: <a href="../files/src_core_visibility.js.html#l1"><code>src&#x2F;core&#x2F;visibility.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -144,28 +144,27 @@ their visibility as a group.</li>
 <h2 id="example">Example</h2>
 <p>This example creates a Visibility that toggles the visibility of
 two <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
-<pre class="code prettyprint"><code class="lang-javascript">// Create a scene
-var scene = new XEO.Scene();
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
 // Create a Visibility
 var visibility = new XEO.Visibility(scene, {
- visible: true
-  });
+   visible: true
+});
 
 // Create two GameObjects whose visibility will be controlled by our Visibility
 
 var object1 = new XEO.GameObject(scene, {
-  visibility: visibility
-  });
+   visibility: visibility
+});
 
 var object2 = new XEO.GameObject(scene, {
-  visibility: visibility
-  });
+   visibility: visibility
+});
 
 // Subscribe to change on the Visibility&#39;s "visible" property
 var handle = visibility.on("visible", function(value) {
-  //...
-  });
+   //...
+});
 
 // Hide our GameObjects by flipping the Visibility&#39;s "visible" property,
 // which will also call our handler
@@ -207,7 +206,7 @@ visibility.destroy();
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_visibility.js.html#l6"><code>src&#x2F;core&#x2F;visibility.js:6</code></a>
+                <a href="../files/src_core_visibility.js.html#l1"><code>src&#x2F;core&#x2F;visibility.js:1</code></a>
                 </p>
         
         
@@ -1101,7 +1100,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_visibility.js.html#l79"><code>src&#x2F;core&#x2F;visibility.js:79</code></a>
+                            <a href="../files/src_core_visibility.js.html#l77"><code>src&#x2F;core&#x2F;visibility.js:77</code></a>
                             </p>
                     
                     
@@ -1159,7 +1158,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_visibility.js.html#l95"><code>src&#x2F;core&#x2F;visibility.js:95</code></a>
+                            <a href="../files/src_core_visibility.js.html#l93"><code>src&#x2F;core&#x2F;visibility.js:93</code></a>
                             </p>
                     
                     

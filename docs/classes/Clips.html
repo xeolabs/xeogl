@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_clips.js.html#l6"><code>src&#x2F;core&#x2F;clips.js:6</code></a>
+            Defined in: <a href="../files/src_core_clips.js.html#l1"><code>src&#x2F;core&#x2F;clips.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -152,6 +152,10 @@ its <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a> vector
 <li>You can update each <a href="../classes/Clip.html" class="crosslink">Clip</a>&#39;s <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a> to
 activate or deactivate it, or to switch which side it discards fragments from.</li>
 
+<li>Clipping may also be enabled or disabled for specific <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>
+via the <a href="../classes/Modes.html#property_clipping" class="crosslink">clipping</a> flag on <a href="../classes/Modes.html" class="crosslink">Modes</a> components
+attached to those <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+
 </ul>
 
 <p><img src="http://www.gliffy.com/go/publish/image/6890347/L.png"></img></p>
@@ -173,34 +177,46 @@ positive diagonal, while the second is on the negative diagonal.</li>
 
 // Clip plane on negative diagonal
 var clip1 = new XEO.Clip(scene, {
-   dir: [-1.0, -1.0, -1.0], // Direction of Clip from World space origin
-   dist: 2.0,               // Distance along direction vector
-   mode: "outside"          // Clip fragments that fall beyond the plane
-});
+       dir: [-1.0, -1.0, -1.0], // Direction of Clip from World space origin
+       dist: 2.0,               // Distance along direction vector
+       mode: "outside"          // Clip fragments that fall beyond the plane
+    });
 
 // Clip plane on positive diagonal
 var clip2 = new XEO.Clip(scene, {
-   dir: [1.0, 1.0, 1.0],
-   dist: 2.0,
-   mode: "outside"
-});
+       dir: [1.0, 1.0, 1.0],
+       dist: 2.0,
+       mode: "outside"
+    });
 
 // Group the planes in a Clips
 var clips = new XEO.Clip(scene, {
-   clips: [
-       clip1,
-       clip2
-   ]
-});
+       clips: [
+           clip1,
+           clip2
+       ]
+    });
 
 // Geometry defaults to a 2x2x2 box
 var geometry = new XEO.Geometry(scene);
 
 // Create an GameObject, which is a box sliced by our clip planes
 var object = new XEO.GameObject(scene, {
-   clips: clips,
-   geometry: geometry
+       clips: clips,
+       geometry: geometry
+    });
+</code></pre>
+<h3 id="toggling-clipping-on-and-off">Toggling clipping on and off</h3>
+<p>Now we&#39;ll attach a <a href="../classes/Modes.html" class="crosslink">Modes</a> to the <a href="../classes/GameObject.html" class="crosslink">GameObject</a>, so that we can
+enable or disable clipping of it:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var modes = new XEO.Modes(scene, {
+   clipping: true
 });
+
+object.modes = modes;
+
+// Disable clipping:
+modes.clipping = false;
 </code></pre>
 
 </div>
@@ -231,7 +247,7 @@ var object = new XEO.GameObject(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_clips.js.html#l6"><code>src&#x2F;core&#x2F;clips.js:6</code></a>
+                <a href="../files/src_core_clips.js.html#l1"><code>src&#x2F;core&#x2F;clips.js:1</code></a>
                 </p>
         
         
@@ -996,7 +1012,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_clips.js.html#l110"><code>src&#x2F;core&#x2F;clips.js:110</code></a>
+                            <a href="../files/src_core_clips.js.html#l129"><code>src&#x2F;core&#x2F;clips.js:129</code></a>
                             </p>
                     
                     
@@ -1160,7 +1176,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_clips.js.html#l189"><code>src&#x2F;core&#x2F;clips.js:189</code></a>
+                            <a href="../files/src_core_clips.js.html#l208"><code>src&#x2F;core&#x2F;clips.js:208</code></a>
                             </p>
                     
                     

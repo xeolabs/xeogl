@@ -201,6 +201,22 @@ var handle = ambientLight.on(&quot;ambient&quot;,
 
  ambientLight.off(handle); // Detach the change listener
  &#x60;&#x60;&#x60;&#x60;
+ ### Toggling ambient lighting on and off
+
+ Now we&#x27;ll attach a {{#crossLink &quot;Modes&quot;}}{{/crossLink}} to the {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}, so that we can toggle
+ the effect of the {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} on it:
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ var modes = new XEO.Modes(scene, {
+    ambient: true
+ });
+
+ object.modes = modes;
+
+ // Disable ambient illumination, which is provided
+ // by the AmbientLight:
+ modes.ambient = false;
+ &#x60;&#x60;&#x60;&#x60;
 
  @class AmbientLight
  @module XEO
