@@ -1,122 +1,121 @@
+/**
+ A **Material** defines the surface appearance of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ <ul>
+ <li>Materials interact with {{#crossLink "Lights"}}{{/crossLink}} using the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model.</li>
+
+ <li>Within xeoEngine's shading calculations, a Material's {{#crossLink "Material/ambient:property"}}{{/crossLink}}, {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and
+ {{#crossLink "Material/specular:property"}}{{/crossLink}} properties are multiplied by corresponding color properties on attached
+ {{#crossLink "PointLight"}}AmbientLights{{/crossLink}}, {{#crossLink "PointLight"}}PointLights{{/crossLink}} and {{#crossLink "DirLight"}}DirLights{{/crossLink}}.</li>
+
+ <li>These Material properties, along with {{#crossLink "Material/emissive:property"}}{{/crossLink}},
+ {{#crossLink "Material/opacity:property"}}{{/crossLink}} and {{#crossLink "Material/reflectivity:property"}}{{/crossLink}},
+ specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink "Geometry"}}Geometries{{/crossLink}}.</li>
+
+ <li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
+ assigning {{#crossLink "Texture"}}Textures{{/crossLink}} to the Material's
+ {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}}, {{#crossLink "Material/specularMap:property"}}{{/crossLink}},
+ {{#crossLink "Material/emissiveMap:property"}}{{/crossLink}}, {{#crossLink "Material/opacityMap:property"}}{{/crossLink}}
+ and  {{#crossLink "Material/reflectivityMap:property"}}{{/crossLink}} properties</li>
+
+ <li>For example, the value of {{#crossLink "Material/diffuse:property"}}{{/crossLink}} will be ignored if your
+ Material also has a {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}} set to a {{#crossLink "Texture"}}Texture{{/crossLink}}.
+ The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
+ {{#crossLink "Geometry"}}{{/crossLink}} surface, ie. they are not multiplied by
+ the {{#crossLink "Material/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>
+
+ </ul>
+
+ <img src="http://www.gliffy.com/go/publish/image/6921713/L.png"></img>
+
+ ## Example
+
+ In this example we have
+
+ <ul>
+ <li>a {{#crossLink "Texture"}}{{/crossLink}},</li>
+ <li>a {{#crossLink "Material"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map,</li>
+ <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
+
+ Note that the value for the {{#crossLink "Material"}}Material's{{/crossLink}} {{#crossLink "Material/diffuse:property"}}{{/crossLink}}
+ property is ignored and redundant, since we assign a {{#crossLink "Texture"}}{{/crossLink}} to the
+ {{#crossLink "Material"}}Material's{{/crossLink}} {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}} property.
+ The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
+ {{#crossLink "Geometry"}}{{/crossLink}} surface.
+
+ ```` javascript
+var scene = new XEO.Scene();
+
+ var diffuseMap = new XEO.Texture(scene, {
+    src: "diffuseMap.jpg"
+ });
+
+ var material = new XEO.Material(scene, {
+    ambient:    [0.3, 0.3, 0.3],
+    diffuse:    [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
+    diffuseMap: diffuseMap,
+    specular:   [1, 1, 1],
+    shininess:  30
+ });
+
+ var ambientLight = new XEO.AmbientLight(scene, {
+    ambient: [0.7, 0.7, 0.7]
+ });
+
+ var dirLight = new XEO.DirLight(scene, {
+    dir:        [-1, -1, -1],
+    diffuse:    [0.5, 0.7, 0.5],
+    specular:   [1.0, 1.0, 1.0],
+    space:      "view"
+ });
+
+ var lights = new XEO.Lights(scene, {
+    lights: [
+        ambientLight,
+        dirLight
+    ]
+ });
+
+ var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
+
+ var object = new XEO.GameObject(scene, {
+    lights: lights,
+    material: material,
+    geometry: geometry
+ });
+ ````
+
+ @class Material
+ @module XEO
+ @constructor
+ @extends Component
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Material within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} The Material configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta=null] {String:Object} Metadata to attach to this Material.
+ @param [cfg.ambient=[0.7, 0.7, 0.8 ]] {Array of Number} Material ambient color. Multiplied by {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}} {{#crossLink "AmbientLight/ambient:property"}}color{{/crossLink}}.
+ @param [cfg.diffuse=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material diffuse color. Multiplied by {{#crossLink "PointLight"}}PointLight{{/crossLink}} {{#crossLink "PointLight/diffuse:property"}}diffuse{{/crossLink}} and {{#crossLink "DirLight"}}DirLight{{/crossLink}} {{#crossLink "DirLight/diffuse:property"}}diffuse{{/crossLink}}
+ @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material specular color. Multiplied by {{#crossLink "PointLight"}}PointLight{{/crossLink}} {{#crossLink "PointLight/specular:property"}}specular{{/crossLink}} and {{#crossLink "DirLight"}}DirLight{{/crossLink}} {{#crossLink "DirLight/specular:property"}}specular{{/crossLink}}
+ @param [cfg.emissive=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material emissive color.
+ @param [cfg.opacity=1] {Number} Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.
+ Only applies while {{#crossLink "Modes"}}Modes{{/crossLink}} {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} equals ````true````.
+ @param [cfg.shininess=30] {Number} Scalar in range 0-70 that determines the size and sharpness of specular highlights.
+ @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
+ @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ @param [cfg.bumpMap=null] {Texture} A bump map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ @param [cfg.reflectivityMap=null] {Texture} A reflectivity control map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
+ */
 (function () {
 
     "use strict";
 
-
-    /**
-     A **Material** defines the surface appearance of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
-     <ul>
-     <li>Materials interact with {{#crossLink "Lights"}}{{/crossLink}} using the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model.</li>
-
-     <li>Within xeoEngine's shading calculations, a Material's {{#crossLink "Material/ambient:property"}}{{/crossLink}}, {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and
-     {{#crossLink "Material/specular:property"}}{{/crossLink}} properties are multiplied by corresponding color properties on attached
-     {{#crossLink "PointLight"}}AmbientLights{{/crossLink}}, {{#crossLink "PointLight"}}PointLights{{/crossLink}} and {{#crossLink "DirLight"}}DirLights{{/crossLink}}.</li>
-
-     <li>These Material properties, along with {{#crossLink "Material/emissive:property"}}{{/crossLink}},
-     {{#crossLink "Material/opacity:property"}}{{/crossLink}} and {{#crossLink "Material/reflectivity:property"}}{{/crossLink}},
-     specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink "Geometry"}}Geometries{{/crossLink}}.</li>
-
-     <li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
-     assigning {{#crossLink "Texture"}}Textures{{/crossLink}} to the Material's
-     {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}}, {{#crossLink "Material/specularMap:property"}}{{/crossLink}},
-     {{#crossLink "Material/emissiveMap:property"}}{{/crossLink}}, {{#crossLink "Material/opacityMap:property"}}{{/crossLink}}
-     and  {{#crossLink "Material/reflectivityMap:property"}}{{/crossLink}} properties</li>
-
-     <li>For example, the value of {{#crossLink "Material/diffuse:property"}}{{/crossLink}} will be ignored if your
-     Material also has a {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}} set to a {{#crossLink "Texture"}}Texture{{/crossLink}}.
-     The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
-     {{#crossLink "Geometry"}}{{/crossLink}} surface, ie. they are not multiplied by
-     the {{#crossLink "Material/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>
-
-     </ul>
-
-     <img src="http://www.gliffy.com/go/publish/image/6921713/L.png"></img>
-
-     ## Example
-
-     In this example we have
-
-     <ul>
-     <li>a {{#crossLink "Texture"}}{{/crossLink}},</li>
-     <li>a {{#crossLink "Material"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map,</li>
-     <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
-     <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
-     <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
-     </ul>
-
-     Note that the value for the {{#crossLink "Material"}}Material's{{/crossLink}} {{#crossLink "Material/diffuse:property"}}{{/crossLink}}
-     property is ignored and redundant, since we assign a {{#crossLink "Texture"}}{{/crossLink}} to the
-     {{#crossLink "Material"}}Material's{{/crossLink}} {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}} property.
-     The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
-     {{#crossLink "Geometry"}}{{/crossLink}} surface.
-
-     ```` javascript
-     var scene = new XEO.Scene();
-
-     var diffuseMap = new XEO.Texture(scene, {
-        src: "diffuseMap.jpg"
-     });
-
-     var material = new XEO.Material(scene, {
-        ambient:    [0.3, 0.3, 0.3],
-        diffuse:    [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
-        diffuseMap: diffuseMap,
-        specular:   [1, 1, 1],
-        shininess:  30
-     });
-
-     var ambientLight = new XEO.AmbientLight(scene, {
-        ambient: [0.7, 0.7, 0.7]
-     });
-
-     var dirLight = new XEO.DirLight(scene, {
-        dir:        [-1, -1, -1],
-        diffuse:    [0.5, 0.7, 0.5],
-        specular:   [1.0, 1.0, 1.0],
-        space:      "view"
-     });
-
-     var lights = new XEO.Lights(scene, {
-        lights: [
-            ambientLight,
-            dirLight
-        ]
-     });
-
-     var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
-
-     var object = new XEO.GameObject(scene, {
-        lights: lights,
-        material: material,
-        geometry: geometry
-     });
-     ````
-
-     @class Material
-     @module XEO
-     @constructor
-     @extends Component
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Material within the
-     default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
-     @param [cfg] {*} The Material configuration
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
-     @param [cfg.meta=null] {String:Object} Metadata to attach to this Material.
-     @param [cfg.ambient=[0.7, 0.7, 0.8 ]] {Array of Number} Material ambient color. Multiplied by {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}} {{#crossLink "AmbientLight/ambient:property"}}color{{/crossLink}}.
-     @param [cfg.diffuse=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material diffuse color. Multiplied by {{#crossLink "PointLight"}}PointLight{{/crossLink}} {{#crossLink "PointLight/diffuse:property"}}diffuse{{/crossLink}} and {{#crossLink "DirLight"}}DirLight{{/crossLink}} {{#crossLink "DirLight/diffuse:property"}}diffuse{{/crossLink}}
-     @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material specular color. Multiplied by {{#crossLink "PointLight"}}PointLight{{/crossLink}} {{#crossLink "PointLight/specular:property"}}specular{{/crossLink}} and {{#crossLink "DirLight"}}DirLight{{/crossLink}} {{#crossLink "DirLight/specular:property"}}specular{{/crossLink}}
-     @param [cfg.emissive=[ 1.0, 1.0, 1.0 ]] {Array of Number} Material emissive color.
-     @param [cfg.opacity=1] {Number} Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.
-     Only applies while {{#crossLink "Modes"}}Modes{{/crossLink}} {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} equals ````true````.
-     @param [cfg.shininess=30] {Number} Scalar in range 0-70 that determines the size and sharpness of specular highlights.
-     @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
-     @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
-     @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
-     @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
-     @param [cfg.bumpMap=null] {Texture} A bump map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
-     @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
-     @param [cfg.reflectivityMap=null] {Texture} A reflectivity control map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Material.
-     */
     XEO.Material = XEO.Component.extend({
 
 

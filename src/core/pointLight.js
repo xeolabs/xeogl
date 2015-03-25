@@ -1,61 +1,54 @@
-(function () {
+/**
+ A **PointLight** defines a light source that originates from a single point and spreads outward in all directions, to illuminate
+ attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-    "use strict";
+ <ul>
 
-    /**
-     A **PointLight** defines a light source that originates from a single point and spreads outward in all directions, to illuminate
-     attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
+ which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
-     <ul>
+ <li>PointLights have a position, but no direction.</li>
 
-     <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
-     which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their position
+ is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
+ When in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer's
+ head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
 
-     <li>PointLights have a position, but no direction.</li>
+ <li>Within xeoEngine's Phong lighting calculations, PointLight {{#crossLink "PointLight/diffuse:property"}}{{/crossLink}} and
+ {{#crossLink "PointLight/specular:property"}}{{/crossLink}} are multiplied by {{#crossLink "Material"}}Material{{/crossLink}}
+ {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and {{#crossLink "Material/specular:property"}}{{/crossLink}},
+ respectively.</li>
 
-     <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their position
-     is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
-     When in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer's
-     head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
+ <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
+ {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>
 
-     <li>Within xeoEngine's Phong lighting calculations, PointLight {{#crossLink "PointLight/diffuse:property"}}{{/crossLink}} and
-     {{#crossLink "PointLight/specular:property"}}{{/crossLink}} are multiplied by {{#crossLink "Material"}}Material{{/crossLink}}
-     {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and {{#crossLink "Material/specular:property"}}{{/crossLink}},
-     respectively.</li>
 
-     <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
-     {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>
+ </ul>
 
-     <li>Diffuse, specular and ambient lighting may also be enabled or disabled for specific {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
-     via {{#crossLink "Modes/diffuse:property"}}{{/crossLink}}, {{#crossLink "Modes/diffuse:property"}}{{/crossLink}}
-     and {{#crossLink "Modes/ambient:property"}}{{/crossLink}} flags on {{#crossLink "Modes"}}Modes{{/crossLink}} components.</li>
+ <img src="http://www.gliffy.com/go/publish/image/7096613/L.png"></img>
 
-     </ul>
+ ## Example
 
-     <img src="http://www.gliffy.com/go/publish/image/7096613/L.png"></img>
+ In this example we have
+ <ul>
+ <li>a {{#crossLink "Material"}}{{/crossLink}},</li>
+ <li>a PointLight,</li>
+ <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the PointLight,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
 
-     ## Example
+ ```` javascript
+ var scene = new XEO.Scene();
 
-     In this example we have
-     <ul>
-     <li>a {{#crossLink "Material"}}{{/crossLink}},</li>
-     <li>a PointLight,</li>
-     <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the PointLight,</li>
-     <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
-     <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
-     </ul>
-
-     ```` javascript
-     var scene = new XEO.Scene();
-
-     var material = new XEO.Material(scene, {
+ var material = new XEO.Material(scene, {
         diffuse: [1, 1, 1],
         specular: [1.1, 1]
  });
 
-     // Our PointLight's intensity does not attenuate over distance.
+ // Our PointLight's intensity does not attenuate over distance.
 
-     var pointLight = new XEO.PointLight(scene, {
+ var pointLight = new XEO.PointLight(scene, {
         pos: [0, 100, 100],
         diffuse: [0.5, 0.7, 0.5],
         specular: [1.0, 1.0, 1.0],
@@ -65,50 +58,55 @@
         space: "view"
  });
 
-     var lights = new XEO.Lights(scene, {
+ var lights = new XEO.Lights(scene, {
         lights: [
             pointLight
         ]
  });
 
-     var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
-     var object = new XEO.GameObject(scene, {
+ var object = new XEO.GameObject(scene, {
         lights: lights,
         material: material,
         geometry: geometry
   });
-     ````
+ ````
 
-     As with all components, we can <a href="XEO.Component.html#changeEvents" class="crosslink">observe and change properties</a> on PointLights like so:
+ As with all components, we can <a href="XEO.Component.html#changeEvents" class="crosslink">observe and change properties</a> on PointLights like so:
 
-     ````Javascript
-     var handle = pointLight.on("diffuse", // Attach a change listener to a property
-     function(value) {
+ ````Javascript
+ var handle = pointLight.on("diffuse", // Attach a change listener to a property
+ function(value) {
         // Property value has changed
     });
 
-     pointLight.diffuse = [0.4, 0.6, 0.4]; // Fires the change listener
+ pointLight.diffuse = [0.4, 0.6, 0.4]; // Fires the change listener
 
-     pointLight.off(handle); // Detach the change listener
-     ````
-     @class PointLight
-     @module XEO
-     @constructor
-     @extends Component
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this PointLight within the
-     default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
-     @param [cfg] {*} The PointLight configuration
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PointLight.
-     @param [cfg.pos=[ 1.0, 1.0, 1.0 ]] {Array(Number)} Position, in either World or View space, depending on the value of the **space** parameter.
-     @param [cfg.diffuse=[0.7, 0.7, 0.8 ]] {Array(Number)} Diffuse color of this PointLight.
-     @param [cfg.specular=[1.0, 1.0, 1.1 ]] {Array(Number)} Specular color of this PointLight.
-     @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
-     @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
-     @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
-     @param [cfg.space="view"] {String} The coordinate system this PointLight is defined in - "view" or "space".
-     */
+ pointLight.off(handle); // Detach the change listener
+ ````
+
+ @class PointLight
+ @module XEO
+ @constructor
+ @extends Component
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this PointLight within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} The PointLight configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PointLight.
+ @param [cfg.pos=[ 1.0, 1.0, 1.0 ]] {Array(Number)} Position, in either World or View space, depending on the value of the **space** parameter.
+ @param [cfg.diffuse=[0.7, 0.7, 0.8 ]] {Array(Number)} Diffuse color of this PointLight.
+ @param [cfg.specular=[1.0, 1.0, 1.1 ]] {Array(Number)} Specular color of this PointLight.
+ @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
+ @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
+ @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
+ @param [cfg.space="view"] {String} The coordinate system this PointLight is defined in - "view" or "space".
+ */
+(function () {
+
+    "use strict";
+
     XEO.PointLight = XEO.Component.extend({
 
         className: "XEO.PointLight",

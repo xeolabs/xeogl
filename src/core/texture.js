@@ -20,7 +20,6 @@
      property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
      <li>For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Shader"}}Stages{{/crossLink}}.</li>
-     </ul>
 
      <img src="http://www.gliffy.com/go/publish/image/7092447/L.png"></img>
 

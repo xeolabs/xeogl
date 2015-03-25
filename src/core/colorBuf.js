@@ -1,61 +1,62 @@
-(function () {
+/**
+ A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-    "use strict";
+ ## Overview
 
+ <ul>
 
-    /**
-     A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ <li>A ColorBuf configures **the way** that pixels are written to the WebGL color buffer.</li>
+ <li>ColorBuf is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
+ colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
 
-     <ul>
+ </ul>
 
-     <li>A ColorBuf configures **the way** that pixels are written to the WebGL color buffer, and is not to be confused
-     with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which holds the final pixel colors so that they may be
-     fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
+ <img src="http://www.gliffy.com/go/publish/image/7104987/L.png"></img>
 
-     </ul>
+ ## Example
 
-     <img src="http://www.gliffy.com/go/publish/image/7104987/L.png"></img>
+ In this example we're configuring the WebGL color buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
 
-     ## Example
+ This example scene contains:
 
-     In this example we're configuring the WebGL color buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
+ <ul>
+ <li>a ColorBuf that enables blending and sets the color mask,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
 
-     This example scene contains:
+ ````javascript
+ var scene = new XEO.Scene();
 
-     <ul>
-     <li>a ColorBuf that enables blending and sets the color mask,</li>
-     <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
-     <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
-     </ul>
-
-     ````javascript
-     var scene = new XEO.Scene();
-
-     var colorBuf = new XEO.ColorBuf(scene, {
+ var colorBuf = new XEO.ColorBuf(scene, {
         blendEnabled: true,
         colorMask: [true, true, true, true]
      });
 
-     var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-     var gameObject = new XEO.GameObject(scene, {
+ var gameObject = new XEO.GameObject(scene, {
         colorBuf: colorBuf,
         geometry: geometry
      });
-     ````
+ ````
 
-     @class ColorBuf
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this ColorBuf within the
-     default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} ColorBuf configuration
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorBuf.
-     @param [cfg.blendEnabled=true] {Boolean} Indicates if blending is enabled.
-     @param [cfg.colorMask=[true, true, true, true]] {Array of Boolean} The color mask,
-     @extends Component
-     */
+ @class ColorBuf
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this ColorBuf within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} ColorBuf configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorBuf.
+ @param [cfg.blendEnabled=true] {Boolean} Indicates if blending is enabled.
+ @param [cfg.colorMask=[true, true, true, true]] {Array of Boolean} The color mask,
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
     XEO.ColorBuf = XEO.Component.extend({
 
         className: "XEO.ColorBuf",

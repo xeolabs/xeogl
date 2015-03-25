@@ -133,9 +133,6 @@
  originates from a single point and spreads outward in all directions, and &lt;/li&gt;
  &lt;li&gt;{{#crossLink &quot;DirLight&quot;}}DirLight{{/crossLink}}s, which illuminate all the
  {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally from a given direction&lt;/li&gt;
- &lt;li&gt;Diffuse, specular and ambient lighting may also be enabled or disabled for specific {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
- via {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}}
- and {{#crossLink &quot;Modes/ambient:property&quot;}}{{/crossLink}} flags on {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} components.&lt;/li&gt;
  &lt;/ul&gt;
 
  Within xeoEngine&#x27;s &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; reflection model, the ambient,
@@ -204,38 +201,6 @@
     geometry: geometry
 });
  &#x60;&#x60;&#x60;&#x60;
-
- ### Toggling lighting on and off
-
- Now we&#x27;ll attach a {{#crossLink &quot;Modes&quot;}}{{/crossLink}} to the {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}, so that we can toggle
- the effect of the different light sources on it:
-
- &#x60;&#x60;&#x60;&#x60; javascript
- var modes = new XEO.Modes(scene, {
-    ambient: true,
-    diffuse: true,
-    specular: true
- });
-
- object.modes = modes;
-
- // Disable ambient illumination, which is provided
- // by the AmbientLight:
- modes.ambient = false;
-
- // Disable diffuse illumination, which is provided
- // by the DirLight and PointLight:
- modes.diffuse = false;
-
- // Disable specular illumination, which is provided
- // by the DirLight and PointLight:
- modes.specular = false;
-
- // At this point, the GameObject would be in darkness,
- // unless the Material has an emissive property that is not [0,0,0].
-
- &#x60;&#x60;&#x60;&#x60;
-
 
 
  @class Lights

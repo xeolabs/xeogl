@@ -1,97 +1,96 @@
-(function () {
+/**
+ A **Stage** partitions attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} into ordered render bins.
 
-    "use strict";
+ <ul>
+ <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
+ of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
 
+ <li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
 
-    /**
-     A **Stage** partitions attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} into ordered render bins.
+ <li>You can control the render order of the individual {{#crossLink "GameObject"}}GameObjects{{/crossLink}} ***within*** a Stage
+ by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
 
-     <ul>
-     <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
-     of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
+ <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within Stages.</li>
 
-     <li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
+ <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
+ attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
+ a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
 
-     <li>You can control the render order of the individual {{#crossLink "GameObject"}}GameObjects{{/crossLink}} ***within*** a Stage
-     by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
+ </ul>
 
-     <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
-     {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within Stages.</li>
+ <img src="http://www.gliffy.com/go/publish/image/7105073/L.png"></img>
 
-     <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
-     attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
-     {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
-     a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
+ ## Example
 
-     </ul>
+ In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
+ {{#crossLink "Texture"}}Texture{{/crossLink}} components.
 
-     <img src="http://www.gliffy.com/go/publish/image/7105073/L.png"></img>
+ Note how we use two prioritized Stages, to ensure that the {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} is
+ rendered ***before*** the {{#crossLink "Texture"}}Texture{{/crossLink}} that consumes it.
 
-     ## Example
+ ````javascript
+ var scene = new XEO.Scene();
 
-     In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
-     {{#crossLink "Texture"}}Texture{{/crossLink}} components.
+ // First stage: an GameObject that renders to a ColorTarget
 
-     Note how we use two prioritized Stages, to ensure that the {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} is
-     rendered ***before*** the {{#crossLink "Texture"}}Texture{{/crossLink}} that consumes it.
-
-     ````javascript
-     var scene = new XEO.Scene();
-
-     // First stage: an GameObject that renders to a ColorTarget
-
-     var stage1 = new XEO.Stage(scene, {
+ var stage1 = new XEO.Stage(scene, {
        priority: 0
   });
 
-     var geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box
 
-     var colorTarget = new XEO.ColorTarget(scene);
+ var colorTarget = new XEO.ColorTarget(scene);
 
-     var object1 = new XEO.GameObject(scene, {
+ var object1 = new XEO.GameObject(scene, {
        stage: stage1,
        geometry: geometry,
        colorTarget: colorTarget
   });
 
 
-     // Second stage: an GameObject with a Texture that sources from the ColorTarget
+ // Second stage: an GameObject with a Texture that sources from the ColorTarget
 
-     var stage2 = new XEO.Stage(scene, {
+ var stage2 = new XEO.Stage(scene, {
        priority: 1
   });
 
-     var texture = new XEO.Texture(scene, {
+ var texture = new XEO.Texture(scene, {
        target: colorTarget
   });
 
-     var material = new XEO.Material(scene, {
+ var material = new XEO.Material(scene, {
        textures: [
            texture
        ]
   });
 
-     var geometry2 = new XEO.Geometry(scene);
+ var geometry2 = new XEO.Geometry(scene);
 
-     var object2 = new XEO.GameObject(scene, {
+ var object2 = new XEO.GameObject(scene, {
        stage: stage2,
        material: material,
        geometry: geometry2
   });
-     ````
+ ````
 
-     @class Stage
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stage in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
-     @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-     @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable.
-     @extends Component
-     */
+ @class Stage
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stage in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
+ @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
     XEO.Stage = XEO.Component.extend({
 
         className: "XEO.Stage",

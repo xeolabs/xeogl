@@ -192,12 +192,14 @@ var scale2 = new XEO.Scale(scene, {
 gameObject2.transform = scale2;
  &#x60;&#x60;&#x60;&#x60;
 
- And just for fun, we&#x27;ll start spinning the {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}:
+ And just for fun, we&#x27;ll start updating the second {{#crossLink &quot;Translate&quot;}}{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
 // Rotate 0.2 degrees on each frame
 scene.on(&quot;tick&quot;, function(e) {
-    rotate.angle += 0.2;
+    var xyz = translate2.xyz;
+    xyz[0] += 0.2;
+    translate2.xyz = xyz;
 });
  &#x60;&#x60;&#x60;&#x60;
 

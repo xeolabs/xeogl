@@ -10,6 +10,8 @@
     <li><a href="#sharing">Sharing among GameObjects</a></li>
     <li><a href="#triangles">Defining a triangle mesh</a></li>
     <li><a href="#editing">Editing Geometry</a></li>
+    <li><a href="#backfaces">Toggling backfaces on or off</li>
+    <li><a href="#frontfaces">Setting frontface vertex winding</li>
  </ul>
 
  <hr>
@@ -204,6 +206,39 @@ Now let's make it wireframe by changing its primitive type from **faces** to **l
 ````javascript
 geometry2.primitive = "lines";
 ````
+
+ ## <a name="backfaces">Toggling backfaces on or off</a>
+
+ Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "GameObject"}}{{/crossLink}}, so that
+ we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} backfaces:
+
+ ```` javascript
+ var modes = new XEO.Modes(scene);
+
+ object.modes = modes;
+
+ // Hide backfaces
+
+ modes.backfaces = false;
+
+ ````
+
+ ## <a name="frontfaces">Setting frontface vertex winding</a>
+
+ The <a href="https://www.opengl.org/wiki/Face_Culling" target="other">vertex winding order</a> of each face determines
+ whether it's a frontface or a backface.
+
+ By default, xeoEngine considers faces to be frontfaces if they have a counter-clockwise
+ winding order, but we can change that by setting the {{#crossLink "Modes"}}{{/crossLink}}
+ {{#crossLink "Modes/frontface:property"}}{{/crossLink}} property, like so:
+
+ ```` javascript
+ // Set the winding order for frontfaces to clockwise
+ // Options are "ccw" for counter-clockwise or "cw" for clockwise
+
+ object.frontface = "cw";
+ ````
+
 
  @class Geometry
  @module XEO

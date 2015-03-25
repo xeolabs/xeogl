@@ -1,73 +1,73 @@
+/**
+ A **Lookat** defines a viewing transform as an {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}} position, a
+ {{#crossLink "Lookat/look:property"}}look{{/crossLink}} position and an {{#crossLink "Lookat/up:property"}}up{{/crossLink}}
+ vector.
+
+ <ul>
+ <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
+ {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ </ul>
+
+ <img src="http://www.gliffy.com/go/publish/image/6895163/L.png"></img>
+
+ ## Example
+
+ In this example we have a Lookat that positions the eye at -10 on the World-space Z-axis, while looking at the origin.
+ Then we'll add that to a {{#crossLink "Camera"}}{{/crossLink}}. which we associate with a {{#crossLink "GameObject"}}{{/crossLink}}.
+
+ ````Javascript
+var scene = new XEO.Scene();
+
+var myLookat = new XEO.Lookat(scene, {
+    eye: [0,0,-10],
+    look: [0,0,0],
+    up: [0,1,0]
+ });
+
+ var camera = new XEO.Camera(scene, {
+    view: myLookat
+ });
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ var object = new XEO.GameObject(scene, {
+    camera: camera,
+    geometry: geometry
+ });
+
+ // Subscribe to changes on a camera property
+ lookat.on("eye", function(value) {
+    console.log("eye updated: " + value[0] + ", " + value[1] + ", " + value[2]);
+ });
+
+ // Set the value of a camera property, which fires the event we just subscribed to
+ lookat.eye = [-5, 0, -10];
+
+ // Get the value of a camera property
+ var value = lookat.eye;
+
+ // Destroy ths lookat, causing the camera to fall back on the scene's default viewing transform
+ lookat.destroy();
+ ````
+
+ @class Lookat
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Lookat in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lookat.
+ @param [cfg.eye=[0,0,-10]] {Array of Number} Eye position.
+ @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
+ @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
+ @extends Component
+ @author xeolabs / http://xeolabs.com/
+ */
 (function () {
 
     "use strict";
 
-    /**
-     A **Lookat** defines a viewing transform as an {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}} position, a
-     {{#crossLink "Lookat/look:property"}}look{{/crossLink}} position and an {{#crossLink "Lookat/up:property"}}up{{/crossLink}}
-     vector.
-
-     <ul>
-     <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
-     {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
-     </ul>
-
-     <img src="http://www.gliffy.com/go/publish/image/6895163/L.png"></img>
-
-     ## Example
-
-     In this example we have a Lookat that positions the eye at -10 on the World-space Z-axis, while looking at the origin.
-     Then we'll add that to a {{#crossLink "Camera"}}{{/crossLink}}. which we associate with a {{#crossLink "GameObject"}}{{/crossLink}}.
-
-     ````Javascript
-     var scene = new XEO.Scene();
-
-     var myLookat = new XEO.Lookat(scene, {
-        eye: [0,0,-10],
-        look: [0,0,0],
-        up: [0,1,0]
-    });
-
-     var camera = new XEO.Camera(scene, {
-        view: myLookat
-    });
-
-     var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
-     var object = new XEO.GameObject(scene, {
-        camera: camera,
-        geometry: geometry
-    });
-
-     // Subscribe to changes on a camera property
-     lookat.on("eye", function(value) {
-        console.log("eye updated: " + value[0] + ", " + value[1] + ", " + value[2]);
-    });
-
-     // Set the value of a camera property, which fires the event we just subscribed to
-     lookat.eye = [-5, 0, -10];
-
-     // Get the value of a camera property
-     var value = lookat.eye;
-
-     // Destroy ths lookat, causing the camera to fall back on the scene's default viewing transform
-     lookat.destroy();
-     ````
-
-     @class Lookat
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Lookat in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lookat.
-     @param [cfg.eye=[0,0,-10]] {Array of Number} Eye position.
-     @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
-     @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
-     @extends Component
-     @author xeolabs / http://xeolabs.com/
-     */
     XEO.Lookat = XEO.Component.extend({
 
         className: "XEO.Lookat",
@@ -80,7 +80,7 @@
 
             // Renderer state
 
-            this._state = this._renderer.createState("lookat", function() {
+            this._state = this._renderer.createState("lookat", function () {
 
                 /**
                  * Fired whenever this Lookat's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.

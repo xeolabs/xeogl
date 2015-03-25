@@ -135,8 +135,6 @@
     &lt;li&gt;&lt;a href=&quot;#editing&quot;&gt;Editing Geometry&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href=&quot;#backfaces&quot;&gt;Toggling backfaces on or off&lt;/li&gt;
     &lt;li&gt;&lt;a href=&quot;#frontfaces&quot;&gt;Setting frontface vertex winding&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#bflighting&quot;&gt;Toggling lighting of backfaces&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#bftexturing&quot;&gt;Toggling texturing of backfaces&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;hr&gt;
@@ -364,28 +362,6 @@ geometry2.primitive = &quot;lines&quot;;
  object.frontface = &quot;cw&quot;;
  &#x60;&#x60;&#x60;&#x60;
 
- ## &lt;a name=&quot;bflighting&quot;&gt;Toggling lighting of backfaces&lt;/a&gt;
-
- Geometry backfaces are illuminated by default, but we can disable that for our {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
- by flipping the {{#crossLink &quot;Modes/backfaceLighting:property&quot;}}{{/crossLink}} property on the {{#crossLink &quot;Modes&quot;}}{{/crossLink}}, like so:
-
- &#x60;&#x60;&#x60;&#x60; javascript
- // Set the winding order for frontfaces to clockwise
- // Options are &quot;ccw&quot; for counter-clockwise or &quot;cw&quot; for clockwise
-
- object.backfaceLighting = false;
- &#x60;&#x60;&#x60;&#x60;
-
- ## &lt;a name=&quot;bftexturing&quot;&gt;Toggling texturing of backfaces&lt;/a&gt;
-
- Geometry backfaces are textured by default, but we can disable that for our {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
- by flipping the {{#crossLink &quot;Modes/backfaceTexturing:property&quot;}}{{/crossLink}} property on the {{#crossLink &quot;Modes&quot;}}{{/crossLink}}, as shown below.
-
- &#x60;&#x60;&#x60;&#x60; javascript
- // Disable texturing of backfaces
-
- object.backfaceTexturing = false;
- &#x60;&#x60;&#x60;&#x60;
 
  @class Geometry
  @module XEO

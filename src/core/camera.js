@@ -1,87 +1,88 @@
-(function () {
+/**
+ A **Camera** defines a viewpoint on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-    "use strict";
+ ## Overview
 
+ <ul>
 
-    /**
-     A **Camera** defines a viewpoint on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ <li> A Camera is composed of a viewing transform and a projection transform.</li>
 
-     <ul>
+ <li>The viewing transform may be a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.</li>
 
-     <li> A Camera is composed of a viewing transform and a projection transform.</li>
+ <li>The projection transform may be an {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}}
+ or {{#crossLink "Perspective"}}Perspective{{/crossLink}}.</li>
 
-     <li>The viewing transform may be a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.</li>
+ <li> By default, each Camera gets its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}},
+ which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}, and default
+ {{#crossLink "Scene/project:property"}}{{/crossLink}}, which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
+ You would override those with your own transform components as necessary.</li>
+ </ul>
 
-     <li>The projection transform may be an {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}}
-     or {{#crossLink "Perspective"}}Perspective{{/crossLink}}.</li>
+ <img src="http://www.gliffy.com/go/publish/image/6891059/L.png"></img>
 
-     <li> By default, each Camera gets its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}},
-     which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}, and default
-     {{#crossLink "Scene/project:property"}}{{/crossLink}}, which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
-     You would override those with your own transform components as necessary.</li>
-     </ul>
+ ## Example
 
-     <img src="http://www.gliffy.com/go/publish/image/6891059/L.png"></img>
+ In this example we have
 
-     ## Example
-
-     In this example we have
-
-     <ul>
-     <li>a {{#crossLink "Lookat"}}{{/crossLink}} view transform,</li>
-     <li>a {{#crossLink "Perspective"}}{{/crossLink}} projection transform,</li>
-     <li>a Camera attached to the {{#crossLink "Lookat"}}{{/crossLink}} and {{#crossLink "Perspective"}}{{/crossLink}},</li>
-     <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
-     <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
-     </ul>
+ <ul>
+ <li>a {{#crossLink "Lookat"}}{{/crossLink}} view transform,</li>
+ <li>a {{#crossLink "Perspective"}}{{/crossLink}} projection transform,</li>
+ <li>a Camera attached to the {{#crossLink "Lookat"}}{{/crossLink}} and {{#crossLink "Perspective"}}{{/crossLink}},</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
 
 
-     ```` javascript
-     var scene = new XEO.Scene();
+ ```` javascript
+ var scene = new XEO.Scene();
 
-     var lookat = new XEO.Lookat(scene, {
+ var lookat = new XEO.Lookat(scene, {
         eye: [0,0,-10],
         look: [0,0,0],
         up: [0,1,0]
      });
 
-     var perspective = new XEO.Lookat(scene, {
+ var perspective = new XEO.Lookat(scene, {
         fovy: 60,
         near: 0.1,
         far: 1000
      });
 
-     var camera = new XEO.Camera(scene, {
+ var camera = new XEO.Camera(scene, {
         view: lookat,
         project: perspective
      });
 
-     var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
-     var object = new XEO.GameObject(scene, {
+ var object = new XEO.GameObject(scene, {
         camera: camera,
         geometry: geometry
      });
 
-     ````
-     @class Camera
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Camera within the
-     default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
-     You only need to supply an ID if you need to be able to find the Camera by ID within its parent {{#crossLink "Scene"}}Scene{{/crossLink}} later.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Camera.
-     @param [cfg.view] {String|XEO.Lookat} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
-     parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}},
-     which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
-     @param [cfg.project] {String|XEO.Perspective|XEO.Ortho|XEO.Frustum} ID or instance of a projection transform
-     within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the parent
-     {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/project:property"}}{{/crossLink}},
-     which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
-     @extends Component
-     */
+ ````
+ @class Camera
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Camera within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ You only need to supply an ID if you need to be able to find the Camera by ID within its parent {{#crossLink "Scene"}}Scene{{/crossLink}} later.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Camera.
+ @param [cfg.view] {String|XEO.Lookat} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}},
+ which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
+ @param [cfg.project] {String|XEO.Perspective|XEO.Ortho|XEO.Frustum} ID or instance of a projection transform
+ within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the parent
+ {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/project:property"}}{{/crossLink}},
+ which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
     XEO.Camera = XEO.Component.extend({
 
         className: "XEO.Camera",

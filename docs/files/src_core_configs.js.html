@@ -124,17 +124,19 @@
 /**
  A **Configs** holds configuration properties for the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
 
+ ## Overview
+
  &lt;ul&gt;
     &lt;li&gt;Each {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} provides a Configs on itself as a read-only property.&lt;/li&gt;
-    &lt;li&gt;Config property values are set on a Configs using its {{#crossLink &quot;Component/fire:method&quot;}}{{/crossLink}} method,
- and may be subscribed to with {{#crossLink &quot;Component/on:method&quot;}}{{/crossLink}}.&lt;/li&gt;
-    &lt;li&gt;You can define your own properties in a Configs, but take care not to clobber those used by the
- {{#crossLink &quot;Scene&quot;}}{{/crossLink}} (see table below).&lt;/li&gt;
+    &lt;li&gt;Config property values are set on a Configs using its {{#crossLink &quot;Configs/set:method&quot;}}{{/crossLink}} method,
+ and changes to properties may be subscribed to using {{#crossLink &quot;Component/on:method&quot;}}{{/crossLink}}.&lt;/li&gt;
+    &lt;li&gt;You can define your own properties in a Configs, but take care not to clobber the native properties used by
+ xeoEngine (see table below).&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7123181/L.png&quot;&gt;&lt;/img&gt;
 
- ## xeoEngine native configurations
+ ## Native xeoEngine config properties
 
  Don&#x27;t use the following names for your own Configs properties, because these are already used by xeoEngine:
 

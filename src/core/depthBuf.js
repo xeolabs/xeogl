@@ -1,9 +1,13 @@
 /**
  A **DepthMap** configures the WebGL depth buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
- A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer, and is not to be confused
- with {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}, which holds the final pixel depths as a color-encoded image
- so that they may be fed into depth {{#crossLink "Texture"}}Textures{{/crossLink}}.
+ ## Overview
+
+ <ul>
+ <li>A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer</li>
+ <li>DepthBuf is not to be confused with {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}, which stores rendered pixel
+ depths for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
+ </ul>
 
  <img src="http://www.gliffy.com/go/publish/image/7104991/L.png"></img>
 

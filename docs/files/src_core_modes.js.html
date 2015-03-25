@@ -151,13 +151,7 @@ var scene = new XEO.Scene();
     clipping true,              // Enable effect of XEO.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces
-    frontface : &quot;ccw&quot;,          // Frontfaces have counter-clockwise vertex
-    backfaceLighting : true,    // Enable backface lighting
-    backfaceTexturing : true,   // Enable backfaces texturing
-    diffuse : true,             // Enable diffuse lighting
-    specular : true,            // Enable specular lighting
-    ambient : true,             // Enable ambient lighting
-    reflection : true           // Enable reflections
+    frontface : &quot;ccw&quot;
  });
 
  // Create two GameObjects whose rendering modes will be controlled by our Modes
@@ -170,14 +164,14 @@ var scene = new XEO.Scene();
        modes: modes
  });
 
- // Subscribe to change on the Modes&#x27; &quot;specular&quot; property
- var handle = modes.on(&quot;specular&quot;, function(value) {
+ // Subscribe to change on the Modes&#x27; &quot;backfaces&quot; property
+ var handle = modes.on(&quot;backfaces&quot;, function(value) {
        //...
  });
 
- // Disable specular lighting on our GameObjects by flipping the Modes&#x27; &quot;specular&quot; property,
+ // Hide backfaces on our GameObjects by flipping the Modes&#x27; &quot;backfaces&quot; property,
  // which will also call our handler
- modes.specular = false;
+ modes.backfaces = false;
 
  // Unsubscribe from the Modes again
  modes.off(handle);
@@ -204,12 +198,6 @@ var scene = new XEO.Scene();
  (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
  @param [cfg.backfaces=true] {Boolean} Whether to render {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface=&quot;ccw&quot;] {Boolean} The winding order for {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} front faces - &quot;cw&quot; for clockwise, or &quot;ccw&quot; for counter-clockwise.
- @param [cfg.backfaceLighting=true] {Boolean} Whether to apply {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} to {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} backfaces
- @param [cfg.backfaceTexturing=true] {Boolean} Whether to apply {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} to {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} backfaces
- @param [cfg.diffuse=true] {Boolean} Whether to enable diffuse contributions from {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}}
- @param [cfg.specular=true] {Boolean} Whether to enable specular contributions from {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}}
- @param [cfg.ambient=true] {Boolean} Whether to enable ambient contributions from {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}}
- @param [cfg.reflection=true] {Boolean} Whether to enable reflections created by {{#crossLink &quot;Reflection&quot;}}{{/crossLink}}s
  @extends Component
  */
 (function () {
@@ -229,12 +217,6 @@ var scene = new XEO.Scene();
             this.transparent = cfg.transparent;
             this.backfaces = cfg.backfaces;
             this.frontface = cfg.frontface;
-            this.backfaceLighting = cfg.backfaceLighting;
-            this.backfaceTexturing = cfg.backfaceTexturing;
-            this.diffuse = cfg.diffuse;
-            this.specular = cfg.specular;
-            this.ambient = cfg.ambient;
-            this.reflection = cfg.reflection;
         },
 
         _props: {
@@ -397,198 +379,6 @@ var scene = new XEO.Scene();
                 get: function () {
                     return this._state.frontface;
                 }
-            },
-
-            /**
-             Whether this Modes enables lighting on the backfaces of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             The lights and geometry will be defined by {{#crossLink &quot;Lights&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} components
-             that are also attached to the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             Fires a {{#crossLink &quot;Modes/backfaceLighting:event&quot;}}{{/crossLink}} event on change.
-
-             @property backfaceLighting
-             @default true
-             @type Boolean
-             */
-            backfaceLighting: {
-
-                set: function (value) {
-                    value = value !== false;
-                    this._state.backfaceLighting = value;
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/backfaceLighting:property&quot;}}{{/crossLink}} property changes.
-                     @event backfaceLighting
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;backfaceLighting&quot;, value);
-                },
-
-                get: function () {
-                    return this._state.backfaceLighting;
-                }
-            },
-
-            /**
-             Whether this Modes enables textures to be applied to the backfaces of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             The textures and geometry will be defined by {{#crossLink &quot;Texture&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} components
-             that are also attached to the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             Fires a {{#crossLink &quot;Modes/backfaceTexturing:event&quot;}}{{/crossLink}} event on change.
-
-             @property backfaceTexturing
-             @default true
-             @type Boolean
-             */
-            backfaceTexturing: {
-
-                set: function (value) {
-                    value = value !== false;
-                    this._state.backfaceTexturing = value;
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/backfaceTexturing:property&quot;}}{{/crossLink}} property changes.
-                     @event backfaceTexturing
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;backfaceTexturing&quot;, value);
-                },
-
-                get: function () {
-                    return this._state.backfaceTexturing;
-                }
-            },
-
-            /**
-             Whether this Modes enables diffuse lighting of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             Lighting will be defined by {{#crossLink &quot;Lights&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} components
-             that are also attached to the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             Fires a {{#crossLink &quot;Modes/diffuse:event&quot;}}{{/crossLink}} event on change.
-
-             @property diffuse
-             @default true
-             @type Boolean
-             */
-            diffuse: {
-
-                set: function (value) {
-                    value = value !== false;
-                    this._state.diffuse = value;
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/diffuse:property&quot;}}{{/crossLink}} property changes.
-                     @event diffuse
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;diffuse&quot;, value);
-                },
-
-                get: function () {
-                    return this._state.diffuse;
-                }
-            },
-
-            /**
-             Whether this Modes enables specular lighting of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             Lighting will be defined by {{#crossLink &quot;Lights&quot;}}{{/crossLink}} components that are also attached to
-             the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             Fires a {{#crossLink &quot;Modes/specular:event&quot;}}{{/crossLink}} event on change.
-
-             @property specular
-             @default true
-             @type Boolean
-             */
-            specular: {
-
-                set: function (value) {
-                    value = value !== false;
-                    this._state.specular = value;
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/specular:property&quot;}}{{/crossLink}} property changes.
-                     @event specular
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;specular&quot;, value);
-                },
-
-                get: function () {
-                    return this._state.specular;
-                }
-            },
-
-            /**
-             Whether this Modes enables ambient lighting of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             The ambient lighting will be provided by {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} components that are also
-             attached to the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             Fires a {{#crossLink &quot;Modes/ambient:event&quot;}}{{/crossLink}} event on change.
-
-             @property ambient
-             @default true
-             @type Boolean
-             */
-            ambient: {
-
-                set: function (value) {
-                    value = value !== false;
-                    this._state.ambient = value;
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/ambient:property&quot;}}{{/crossLink}} property changes.
-                     @event ambient
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;ambient&quot;, value);
-                },
-
-                get: function () {
-                    return this._state.ambient;
-                }
-            },
-
-            /**
-             Whether this Modes enables reflections on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             The reflections will be defined by {{#crossLink &quot;CubeMap&quot;}}{{/crossLink}} components that are also attached
-             to the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-             Fires a {{#crossLink &quot;Modes/reflection:event&quot;}}{{/crossLink}} event on change.
-
-             @property reflection
-             @default true
-             @type Boolean
-             */
-            reflection: {
-
-                set: function (value) {
-                    value = value !== false;
-                    this._state.reflection = value;
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/reflection:property&quot;}}{{/crossLink}} property changes.
-                     @event reflection
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;reflection&quot;, value);
-                },
-
-                get: function () {
-                    return this._state.reflection;
-                }
             }
         },
 
@@ -608,13 +398,7 @@ var scene = new XEO.Scene();
                 clipping: this.clipping,
                 transparent: this.transparent,
                 backfaces: this.backfaces,
-                frontface: this.frontface,
-                backfaceLighting: this.backfaceLighting,
-                backfaceTexturing: this.backfaceTexturing,
-                diffuse: this.diffuse,
-                specular: this.specular,
-                ambient: this.ambient,
-                reflection: this.reflection
+                frontface: this.frontface
             };
         }
     });

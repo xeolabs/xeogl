@@ -2,9 +2,7 @@
 
  **Component** is the base class for all xeoEngine components.
 
- <hr>
-
- *Contents*
+ ## Contents
 
  <Ul>
     <li><a href="#ids">Component IDs</a></li>
@@ -14,12 +12,10 @@
     <li><a href="#destruction">Destruction</a></li>
  </ul>
 
- <hr>
-
  ## <a name="ids">Component IDs</a>
 
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeoEngine generates
- the IDs automatically by default, however you can also specify them yourself. Inthe example below, we're creating a
+ the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
  scene comprised of {{#crossLink "Scene"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}}, {{#crossLink "Geometry"}}{{/crossLink}} and
  {{#crossLink "GameObject"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for
  the {{#crossLink "Geometry"}}{{/crossLink}}:
@@ -339,7 +335,7 @@ Other Components that are linked to it will fall back on a default of some sort.
          *
          * @method fire
          * @param {String} event The event type name
-         * @param {GameObject} value The event
+         * @param {Object} value The event
          * @param {Boolean} [forget=false] When true, does not retain for subsequent subscribers
          */
         fire: function (event, value, forget) {
@@ -360,9 +356,6 @@ Other Components that are linked to it will fall back on a default of some sort.
 
         /**
          * Subscribes to an event on this component.
-         *
-         * This is the primary way to read data from SceneHub. Your callback will be triggered for
-         * the initial data and again whenever the data changes. Use {@link #off} to stop receiving updates.</p>
          *
          * The callback is be called with this component as scope.
          *

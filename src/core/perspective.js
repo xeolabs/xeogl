@@ -1,61 +1,59 @@
+/**
+ A **Perspective** component defines a perspective projection transform.
+
+ <ul>
+
+ <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+
+ </ul>
+
+ <img src="http://www.gliffy.com/go/publish/image/6895185/L.png"></img>
+
+ ## Example
+
+ In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
+ {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Perspective
+ projection transform.
+
+ ````Javascript
+var scene = new XEO.Scene();
+
+ var perspective = new XEO.Perspective(scene, {
+    fovy: 60,
+    near: 0.1,
+    far: 1000
+ });
+
+ var camera = new XEO.Camera(scene, {
+    project: perspective
+ });
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ var object = new XEO.GameObject(scene, {
+    camera: camera,
+    geometry: geometry
+ });
+ ````
+ @class Perspective
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Perspective within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
+ @param [cfg.fovy=60.0] {Number} Field-of-view angle on Y-axis.
+ @param [cfg.aspect=1.0] {Number} Aspect ratio.
+ @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
+ @param [cfg.far=10000] {Number} Position of the far plane on the positive View-space Z-axis.
+ @extends Component
+ */
 (function () {
 
     "use strict";
 
-
-    /**
-     A **Perspective** component defines a perspective projection transform.
-
-     <ul>
-
-     <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
-     {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
-
-     </ul>
-
-     <img src="http://www.gliffy.com/go/publish/image/6895185/L.png"></img>
-
-     ## Example
-
-     In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
-     {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Perspective
-     projection transform.
-
-     ````Javascript
-     var scene = new XEO.Scene();
-
-     var perspective = new XEO.Perspective(scene, {
-       fovy: 60,
-       near: 0.1,
-       far: 1000
-   });
-
-     var camera = new XEO.Camera(scene, {
-       project: perspective
-   });
-
-     var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
-     var object = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry
- });
-     ````
-
-     @class Perspective
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Perspective within the
-     default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
-     @param [cfg.fovy=60.0] {Number} Field-of-view angle on Y-axis.
-     @param [cfg.aspect=1.0] {Number} Aspect ratio.
-     @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
-     @param [cfg.far=10000] {Number} Position of the far plane on the positive View-space Z-axis.
-     @extends Component
-     */
     XEO.Perspective = XEO.Component.extend({
 
         className: "XEO.Perspective",

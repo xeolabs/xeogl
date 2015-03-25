@@ -1,99 +1,122 @@
-(function () {
+/**
+ A **Clip** is an arbitrarily-aligned World-space clipping plane, which is used to create
+ cross-sectional views of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-    "use strict";
+ ## Overview
 
-    /**
-     A **Clip** is an arbitrarily-aligned World-space clipping plane.
+ <ul>
 
-     <ul>
+ <li>These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
+ for more info.</li>
 
-     <li>These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
-     {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
-     for more info.</li>
+ <li>A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
+ that emanates from the origin, offset at a distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector. </li>
 
-     <li>A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
-     that emanates from the origin, offset at a distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector. </li>
+ <li>You can move a Clip back and forth along its vector by varying {{#crossLink "Clip/dist:property"}}{{/crossLink}}.</li>
 
-     <li>You can move a Clip back and forth along its vector by varying {{#crossLink "Clip/dist:property"}}{{/crossLink}}.</li>
+ <li>Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.</li>
 
-     <li>Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.</li>
+ <li>A Clip is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}},  which indicates whether it is disabled
+ ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that
+ fall on the other side of the plane from the origin ("outside").</li>
 
-     <li>A Clip is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}},  which indicates whether it is disabled
-     ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that
-     fall on the other side of the plane from the origin ("outside").</li>
+ <li>You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
+ switch which side it discards fragments from.</li>
 
-     <li>You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
-     switch which side it discards fragments from.</li>
+ <li>Clipping may also be enabled or disabled for specific {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
+ attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
 
-     </ul>
+ </ul>
 
-     <img src="http://www.gliffy.com/go/publish/image/7096963/L.png"></img>
+ <img src="http://www.gliffy.com/go/publish/image/7096963/L.png"></img>
 
-     ## Example
+ ## Example
 
-     <ul>
+ <ul>
 
-     <li>In this example we have a {{#crossLink "GameObject"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
-     that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.</li>
+ <li>In this example we have a {{#crossLink "GameObject"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
+ that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.</li>
 
-     <li>The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
-     positive diagonal, while the second is on the negative diagonal.</li>
+ <li>The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
+ positive diagonal, while the second is on the negative diagonal.</li>
 
-     <li>The {{#crossLink "GameObject"}}GameObject's{{/crossLink}}
-     {{#crossLink "Geometry"}}{{/crossLink}} is the default 2x2x2 box, and the planes will clip off two of the box's corners.</li>
+ <li>The {{#crossLink "GameObject"}}GameObject's{{/crossLink}}
+ {{#crossLink "Geometry"}}{{/crossLink}} is the default 2x2x2 box, and the planes will clip off two of the box's corners.</li>
 
-     </ul>
+ </ul>
 
-     ````javascript
-     var scene = new XEO.Scene();
+ ````javascript
+ var scene = new XEO.Scene();
 
-     // Clip plane on negative diagonal
-     var clip1 = new XEO.Clip(scene, {
+ // Clip plane on negative diagonal
+ var clip1 = new XEO.Clip(scene, {
         dir: [-1.0, -1.0, -1.0], // Direction of Clip from World space origin
         dist: 2.0,               // Distance along direction vector
         mode: "outside"          // Clip fragments that fall beyond the plane
      });
 
-     // Clip plane on positive diagonal
-     var clip2 = new XEO.Clip(scene, {
+ // Clip plane on positive diagonal
+ var clip2 = new XEO.Clip(scene, {
         dir: [1.0, 1.0, 1.0],
         dist: 2.0,
         mode: "outside"
      });
 
-     // Group the planes in a Clips
-     var clips = new XEO.Clip(scene, {
+ // Group the planes in a Clips
+ var clips = new XEO.Clip(scene, {
         clips: [
             clip1,
             clip2
         ]
      });
 
-     // Geometry defaults to a 2x2x2 box
-     var geometry = new XEO.Geometry(scene);
+ // Geometry defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene);
 
-     // Create an GameObject, which is a box sliced by our clip planes
-     var object = new XEO.GameObject(scene, {
+ // Create an GameObject, which is a box sliced by our clip planes
+ var object = new XEO.GameObject(scene, {
         clips: clips,
         geometry: geometry
      });
-     ````
+ ````
 
-     @class Clip
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Clip in the
-     default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Clip configuration
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
-     You only need to supply an ID if you need to be able to find the Clip by ID within the {{#crossLink "Scene"}}Scene{{/crossLink}}.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Clip.
-     @param [cfg.mode="disabled"] {String} Clipping mode - "disabled" to clip nothing, "inside" to reject points inside the plane, "outside" to reject points outside the plane.
-     @param [dir= [1, 0, 0]] {Array of Number} The direction of the clipping plane from the World-space origin.
-     @param [dist=1.0] {Number} Distance to the clipping plane along the direction vector.
+ ### Toggling clipping on and off
 
-     @extends Component
-     */
+ Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to the {{#crossLink "GameObject"}}{{/crossLink}}, so that we can
+ enable or disable clipping of it:
+
+ ```` javascript
+ var modes = new XEO.Modes(scene, {
+    clipping: true
+ });
+
+ object.modes = modes;
+
+ // Disable clipping:
+ modes.clipping = false;
+ ````
+
+ @class Clip
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Clip in the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Clip configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ You only need to supply an ID if you need to be able to find the Clip by ID within the {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Clip.
+ @param [cfg.mode="disabled"] {String} Clipping mode - "disabled" to clip nothing, "inside" to reject points inside the plane, "outside" to reject points outside the plane.
+ @param [dir= [1, 0, 0]] {Array of Number} The direction of the clipping plane from the World-space origin.
+ @param [dist=1.0] {Number} Distance to the clipping plane along the direction vector.
+
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
     XEO.Clip = XEO.Component.extend({
 
         className: "XEO.Clip",

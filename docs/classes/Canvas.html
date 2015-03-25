@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_canvas.js.html#l6"><code>src&#x2F;core&#x2F;canvas.js:6</code></a>
+            Defined in: <a href="../files/src_core_canvas.js.html#l1"><code>src&#x2F;core&#x2F;canvas.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -135,13 +135,14 @@
 
 <div class="box intro">
     <p>A <strong>Canvas</strong> manages a <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s HTML canvas and its WebGL context.</p>
+<h2 id="overview">Overview</h2>
 <ul>
 
 <li>Each <a href="../classes/Scene.html" class="crosslink">Scene</a> provides a Canvas as a read-only property on itself.</li>
 
 <li>When a <a href="../classes/Scene.html" class="crosslink">Scene</a> is configured with the ID of
-a <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> that already
-exists in the document, then the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
+an existing <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>, then
+the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
 
 <li>A Canvas will fire a <a href="../classes/Canvas.html#event_resized" class="crosslink">resized</a> event whenever
 the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.</li>
@@ -174,30 +175,30 @@ var gl = canvas.gl;
 
 // Subscribe to Canvas resize events
 canvas.on("resize", function(e) {
-   var width = e.width;
-   var height = e.height;
-   var aspect = e.aspect;
-   //...
-});
+       var width = e.width;
+       var height = e.height;
+       var aspect = e.aspect;
+       //...
+    });
 
 // Subscribe to WebGL context loss events on the Canvas
 canvas.on("webglContextLost", function() {
-   //...
-});
+       //...
+    });
 
 // Subscribe to WebGL context restored events on the Canvas
 canvas.on("webglContextRestored", function(gl) {
-   var newContext = gl;
-   //...
-});
+       var newContext = gl;
+       //...
+    });
 </code></pre>
 <p>When we want to bind the Canvas to an existing HTML canvas element, configure the
 <a href="../classes/Scene.html" class="crosslink">Scene</a> with the ID of the element, like this:</p>
 <pre class="code prettyprint"><code class="lang-javascript">// Create a Scene, this time configuting it with the
 // ID of an existing DOM canvas element
 var scene = new XEO.Scene({
-     canvasId: "myCanvas"
-});
+         canvasId: "myCanvas"
+    });
 
 // ..and the rest of this example can be the same as the previous example.
 </code></pre>
@@ -351,7 +352,7 @@ var scene = new XEO.Scene({
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l606"><code>src&#x2F;core&#x2F;component.js:606</code></a>
+        <a href="../files/src_core_component.js.html#l599"><code>src&#x2F;core&#x2F;component.js:599</code></a>
         </p>
 
 
@@ -391,7 +392,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l451"><code>src&#x2F;core&#x2F;component.js:451</code></a>
+        <a href="../files/src_core_component.js.html#l444"><code>src&#x2F;core&#x2F;component.js:444</code></a>
         </p>
 
 
@@ -454,7 +455,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l334"><code>src&#x2F;core&#x2F;component.js:334</code></a>
+        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
         </p>
 
 
@@ -485,7 +486,7 @@ any subsequent notifications on that location as they are made.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">value</code>
-                        <span class="type"><a href="../classes/GameObject.html" class="crosslink">GameObject</a></span>
+                        <span class="type">Object</span>
 
 
                     <div class="param-description">
@@ -533,7 +534,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l434"><code>src&#x2F;core&#x2F;component.js:434</code></a>
+        <a href="../files/src_core_component.js.html#l427"><code>src&#x2F;core&#x2F;component.js:427</code></a>
         </p>
 
 
@@ -590,7 +591,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l394"><code>src&#x2F;core&#x2F;component.js:394</code></a>
+        <a href="../files/src_core_component.js.html#l387"><code>src&#x2F;core&#x2F;component.js:387</code></a>
         </p>
 
 
@@ -654,7 +655,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l361"><code>src&#x2F;core&#x2F;component.js:361</code></a>
+        <a href="../files/src_core_component.js.html#l357"><code>src&#x2F;core&#x2F;component.js:357</code></a>
         </p>
 
 
@@ -663,8 +664,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
     <div class="description">
         <p>Subscribes to an event on this component.</p>
-<p>This is the primary way to read data from SceneHub. Your callback will be triggered for
-the initial data and again whenever the data changes. Use {@link #off} to stop receiving updates.</p></p>
 <p>The callback is be called with this component as scope.</p>
 
     </div>
@@ -749,7 +748,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l413"><code>src&#x2F;core&#x2F;component.js:413</code></a>
+        <a href="../files/src_core_component.js.html#l406"><code>src&#x2F;core&#x2F;component.js:406</code></a>
         </p>
 
 
@@ -834,7 +833,7 @@ the initial data and again whenever the data changes. Use {@link #off} to stop r
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_canvas.js.html#l234"><code>src&#x2F;core&#x2F;canvas.js:234</code></a>
+        <a href="../files/src_core_canvas.js.html#l235"><code>src&#x2F;core&#x2F;canvas.js:235</code></a>
         </p>
 
 
@@ -930,7 +929,7 @@ a separate <a href="../classes/GameObject.html#event_picked" class="crosslink">p
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l468"><code>src&#x2F;core&#x2F;component.js:468</code></a>
+        <a href="../files/src_core_component.js.html#l461"><code>src&#x2F;core&#x2F;component.js:461</code></a>
         </p>
 
 
@@ -983,7 +982,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_canvas.js.html#l108"><code>src&#x2F;core&#x2F;canvas.js:108</code></a>
+                            <a href="../files/src_core_canvas.js.html#l109"><code>src&#x2F;core&#x2F;canvas.js:109</code></a>
                             </p>
                     
                     
@@ -1011,7 +1010,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l312"><code>src&#x2F;core&#x2F;component.js:312</code></a>
+                            <a href="../files/src_core_component.js.html#l308"><code>src&#x2F;core&#x2F;component.js:308</code></a>
                             </p>
                     
                     
@@ -1039,7 +1038,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l264"><code>src&#x2F;core&#x2F;component.js:264</code></a>
+                            <a href="../files/src_core_component.js.html#l260"><code>src&#x2F;core&#x2F;component.js:260</code></a>
                             </p>
                     
                     
@@ -1065,7 +1064,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_canvas.js.html#l118"><code>src&#x2F;core&#x2F;canvas.js:118</code></a>
+                            <a href="../files/src_core_canvas.js.html#l119"><code>src&#x2F;core&#x2F;canvas.js:119</code></a>
                             </p>
                     
                     
@@ -1091,7 +1090,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l255"><code>src&#x2F;core&#x2F;component.js:255</code></a>
+                            <a href="../files/src_core_component.js.html#l251"><code>src&#x2F;core&#x2F;component.js:251</code></a>
                             </p>
                     
                     
@@ -1116,7 +1115,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l245"><code>src&#x2F;core&#x2F;component.js:245</code></a>
+                            <a href="../files/src_core_component.js.html#l241"><code>src&#x2F;core&#x2F;component.js:241</code></a>
                             </p>
                     
                     
@@ -1143,7 +1142,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l206"><code>src&#x2F;core&#x2F;component.js:206</code></a>
+                            <a href="../files/src_core_component.js.html#l202"><code>src&#x2F;core&#x2F;component.js:202</code></a>
                             </p>
                     
                     
@@ -1170,7 +1169,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l300"><code>src&#x2F;core&#x2F;component.js:300</code></a>
+                            <a href="../files/src_core_component.js.html#l296"><code>src&#x2F;core&#x2F;component.js:296</code></a>
                             </p>
                     
                     
@@ -1202,7 +1201,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l633"><code>src&#x2F;core&#x2F;component.js:633</code></a>
+                            <a href="../files/src_core_component.js.html#l626"><code>src&#x2F;core&#x2F;component.js:626</code></a>
                             </p>
                     
                     
@@ -1227,7 +1226,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_canvas.js.html#l253"><code>src&#x2F;core&#x2F;canvas.js:253</code></a>
+                            <a href="../files/src_core_canvas.js.html#l254"><code>src&#x2F;core&#x2F;canvas.js:254</code></a>
                             </p>
                     
                     
@@ -1292,7 +1291,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_canvas.js.html#l218"><code>src&#x2F;core&#x2F;canvas.js:218</code></a>
+                            <a href="../files/src_core_canvas.js.html#l219"><code>src&#x2F;core&#x2F;canvas.js:219</code></a>
                             </p>
                     
                     
@@ -1356,7 +1355,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_canvas.js.html#l299"><code>src&#x2F;core&#x2F;canvas.js:299</code></a>
+                            <a href="../files/src_core_canvas.js.html#l300"><code>src&#x2F;core&#x2F;canvas.js:300</code></a>
                             </p>
                     
                     
@@ -1382,7 +1381,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_canvas.js.html#l184"><code>src&#x2F;core&#x2F;canvas.js:184</code></a>
+                            <a href="../files/src_core_canvas.js.html#l185"><code>src&#x2F;core&#x2F;canvas.js:185</code></a>
                             </p>
                     
                     
@@ -1407,7 +1406,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_canvas.js.html#l197"><code>src&#x2F;core&#x2F;canvas.js:197</code></a>
+                            <a href="../files/src_core_canvas.js.html#l198"><code>src&#x2F;core&#x2F;canvas.js:198</code></a>
                             </p>
                     
                     

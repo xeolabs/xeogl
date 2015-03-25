@@ -125,9 +125,7 @@
 
  **Component** is the base class for all xeoEngine components.
 
- &lt;hr&gt;
-
- *Contents*
+ ## Contents
 
  &lt;Ul&gt;
     &lt;li&gt;&lt;a href=&quot;#ids&quot;&gt;Component IDs&lt;/a&gt;&lt;/li&gt;
@@ -137,12 +135,10 @@
     &lt;li&gt;&lt;a href=&quot;#destruction&quot;&gt;Destruction&lt;/a&gt;&lt;/li&gt;
  &lt;/ul&gt;
 
- &lt;hr&gt;
-
  ## &lt;a name=&quot;ids&quot;&gt;Component IDs&lt;/a&gt;
 
  Every Component has an ID that&#x27;s unique within the parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}. xeoEngine generates
- the IDs automatically by default, however you can also specify them yourself. Inthe example below, we&#x27;re creating a
+ the IDs automatically by default, however you can also specify them yourself. In the example below, we&#x27;re creating a
  scene comprised of {{#crossLink &quot;Scene&quot;}}{{/crossLink}}, {{#crossLink &quot;Material&quot;}}{{/crossLink}}, {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} and
  {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} components, while letting xeoEngine generate its own ID for
  the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}:
@@ -462,7 +458,7 @@ Other Components that are linked to it will fall back on a default of some sort.
          *
          * @method fire
          * @param {String} event The event type name
-         * @param {GameObject} value The event
+         * @param {Object} value The event
          * @param {Boolean} [forget=false] When true, does not retain for subsequent subscribers
          */
         fire: function (event, value, forget) {
@@ -483,9 +479,6 @@ Other Components that are linked to it will fall back on a default of some sort.
 
         /**
          * Subscribes to an event on this component.
-         *
-         * This is the primary way to read data from SceneHub. Your callback will be triggered for
-         * the initial data and again whenever the data changes. Use {@link #off} to stop receiving updates.&lt;/p&gt;
          *
          * The callback is be called with this component as scope.
          *

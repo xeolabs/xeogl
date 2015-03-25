@@ -1,5 +1,9 @@
 /**
- A **DepthTarget** captures the Z-depths of the pixels that xeoEngine renders for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **DepthTarget** captures the Z-depths of the pixels that xeoEngine renders for the attached
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. These provide a virtual, software-based
+ <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a> that is typically used when performing *render-to-texture*.
+
+ ## Overview
 
  <ul>
     <li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>

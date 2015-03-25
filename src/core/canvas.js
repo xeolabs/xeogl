@@ -1,91 +1,92 @@
-(function () {
+/**
+ A **Canvas** manages a {{#crossLink "Scene"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.
 
-    "use strict";
+ ## Overview
 
+ <ul>
 
-    /**
-     A **Canvas** manages a {{#crossLink "Scene"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.
+ <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.</li>
 
-     <ul>
+ <li>When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
+ an existing <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>, then
+ the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
 
-     <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.</li>
+ <li>A Canvas will fire a {{#crossLink "Canvas/resized:event"}}{{/crossLink}} event whenever
+ the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.</li>
 
-     <li>When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
-     a <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> that already
-     exists in the document, then the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
+ <li>A Canvas is responsible for obtaining a WebGL context from
+ the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.</li>
 
-     <li>A Canvas will fire a {{#crossLink "Canvas/resized:event"}}{{/crossLink}} event whenever
-     the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.</li>
+ <li>A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
+ lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.</li>
 
-     <li>A Canvas is responsible for obtaining a WebGL context from
-     the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.</li>
+ <li>The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
+ the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.</li>
 
-     <li>A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
-     lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.</li>
+ </ul>
 
-     <li>The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
-     the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.</li>
+ <img src="http://www.gliffy.com/go/publish/image/7103211/L.png"></img>
 
-     </ul>
+ ## Example
 
-     <img src="http://www.gliffy.com/go/publish/image/7103211/L.png"></img>
+ In the example below, we're creating a {{#crossLink "Scene"}}Scene{{/crossLink}} without specifying an HTML canvas element
+ for it. This causes the {{#crossLink "Scene"}}Scene{{/crossLink}}'s Canvas component to create its own default element
+ within the page. Then we subscribe to various events fired by that Canvas component.
 
-     ## Example
+ ```` javascript
+ var scene = new XEO.Scene();
 
-     In the example below, we're creating a {{#crossLink "Scene"}}Scene{{/crossLink}} without specifying an HTML canvas element
-     for it. This causes the {{#crossLink "Scene"}}Scene{{/crossLink}}'s Canvas component to create its own default element
-     within the page. Then we subscribe to various events fired by that Canvas component.
+ // Get the Canvas off the Scene
+ // Since we did not configure the Scene with the ID of a DOM canvas element,
+ // the Canvas will create its own canvas element in the DOM
+ var canvas = scene.canvas;
 
-     ```` javascript
-     var scene = new XEO.Scene();
+ // Get the WebGL context off the Canvas
+ var gl = canvas.gl;
 
-     // Get the Canvas off the Scene
-     // Since we did not configure the Scene with the ID of a DOM canvas element,
-     // the Canvas will create its own canvas element in the DOM
-     var canvas = scene.canvas;
-
-     // Get the WebGL context off the Canvas
-     var gl = canvas.gl;
-
-     // Subscribe to Canvas resize events
-     canvas.on("resize", function(e) {
+ // Subscribe to Canvas resize events
+ canvas.on("resize", function(e) {
         var width = e.width;
         var height = e.height;
         var aspect = e.aspect;
         //...
      });
 
-     // Subscribe to WebGL context loss events on the Canvas
-     canvas.on("webglContextLost", function() {
+ // Subscribe to WebGL context loss events on the Canvas
+ canvas.on("webglContextLost", function() {
         //...
      });
 
-     // Subscribe to WebGL context restored events on the Canvas
-     canvas.on("webglContextRestored", function(gl) {
+ // Subscribe to WebGL context restored events on the Canvas
+ canvas.on("webglContextRestored", function(gl) {
         var newContext = gl;
         //...
      });
-     ````
+ ````
 
-     When we want to bind the Canvas to an existing HTML canvas element, configure the
-     {{#crossLink "Scene"}}{{/crossLink}} with the ID of the element, like this:
+ When we want to bind the Canvas to an existing HTML canvas element, configure the
+ {{#crossLink "Scene"}}{{/crossLink}} with the ID of the element, like this:
 
-     ```` javascript
-     // Create a Scene, this time configuting it with the
-     // ID of an existing DOM canvas element
-     var scene = new XEO.Scene({
+ ```` javascript
+ // Create a Scene, this time configuting it with the
+ // ID of an existing DOM canvas element
+ var scene = new XEO.Scene({
           canvasId: "myCanvas"
      });
 
-     // ..and the rest of this example can be the same as the previous example.
+ // ..and the rest of this example can be the same as the previous example.
 
-     ````
-     @class Canvas
-     @module XEO
-     @static
-     @param {Scene} scene Parent scene
-     @extends Component
-     */
+ ````
+ @class Canvas
+ @module XEO
+ @static
+ @param {Scene} scene Parent scene
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
     XEO.Canvas = XEO.Component.extend({
 
         className: "XEO.Canvas",

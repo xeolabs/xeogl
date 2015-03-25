@@ -28,56 +28,83 @@
 
  ## Example
 
+ In this example we'll use Layers to perform <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency sorting</a>,
+ which ensures that transparent objects are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.
+
+ We want to render the three nested boxes shown below, in which the innermost box is opaque and blue,
+ the box enclosing that is transparent and yellow, and the outermost box is transparent and green. We need the boxes to
+ render in order innermost-to-outermost, in order to blend transparencies correctly.
+
+ <img src="../../assets/images/transparencySort.jpg"></img>
+
+ Our scene has one {{#crossLink "Stage"}}{{/crossLink}}, just for completeness. As mentioned earlier, you don't have to
+ create this because the {{#crossLink "Scene"}}{{/crossLink}} will provide its default. Then, within that {{#crossLink "Stage"}}{{/crossLink}},
+ we create a {{#crossLink "GameObject"}}{{/crossLink}} for each box, each assigned to a different prioritised {{#crossLink "Layer"}}{{/crossLink}} to ensure that they are rendered in the right order.
+
  ````javascript
 var scene = new XEO.Scene();
 
+// View transform
+var lookat = new XEO.Lookat(scene, {
+    eye: [0,0,10]
+});
+
+// Camera, using Scene's default projection transform
+var camera = new XEO.Camera(scene, {
+    view: lookat
+});
+
+// A Stage, just for completeness
+// We could instead just implicitly use the Scene's default Stage
 var stage = new XEO.Stage(scene, {
     priority: 0
 });
 
-var geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box
+// Geometry with no parameters defaults to a 2x2x2 box
+var geometry = new XEO.Geometry(scene);
 
-// Innermost object
+//-----------------------------------------------------------------------------
+// Innermost box
 // Blue and opaque, in Layer with render order 0, renders first
+ //-----------------------------------------------------------------------------
  
 var layer1 = new XEO.Layer(scene, {
     priority: 1
 });
 
 var material1 = new XEO.Material(scene, {
-    diffuse: [0, 0, 1],
+    diffuse: [0.2, 0.2, 1.0],
     opacity: 1.0
-});
- 
-var scale1 = new XEO.Scale(scene, {
-    xyz: [0.3, 0.3, 0.3]
 });
     
 var object1 = new XEO.GameObject(scene, {
+    camera: camera,
     geometry: geometry,
     stage: stage,
     layer: layer1,
-    material: material1,
-    scale: scale1
+    material: material1
 });
 
-// Middle object
+//-----------------------------------------------------------------------------
+// Middle box
 // Red and transparent, in Layer with render order 2, renders next
+ //-----------------------------------------------------------------------------
 
 var layer2 = new XEO.Layer(scene, {
     priority: 2
 });
 
 var material2 = new XEO.Material(scene, {
-    diffuse: [0, 0, 1],
-    opacity: 1.0
+    diffuse: [1, 0.2, 0.2],
+    opacity: 0.2
 });
 
 var scale2 = new XEO.Scale(scene, {
-    xyz: [0.6, 0.6, 0.6]
+    xyz: [6, 6, 6]
 });
 
 var object2 = new XEO.GameObject(scene, {
+    camera: camera,
     geometry: geometry,
     stage: stage,
     layer: layer2,
@@ -85,23 +112,26 @@ var object2 = new XEO.GameObject(scene, {
     scale: scale2
 });
 
-// Outermost object
-// Yellow and transparent, in Layer with render order 3, renders next
+//-----------------------------------------------------------------------------
+// Outermost box
+// Green and transparent, in Layer with render order 3, renders last
+//-----------------------------------------------------------------------------
 
 var layer3 = new XEO.Layer(scene, {
     priority: 3
 });
 
 var material3 = new XEO.Material(scene, {
-    diffuse: [1, 1, 0],
-    opacity: 1.0
+    diffuse: [0.2, 1, 0.2],
+    opacity: 0.2
 });
 
 var scale3 = new XEO.Scale(scene, {
-    xyz: [1.0, 1.0, 1.0]
+    xyz: [9, 9, 9]
 });
 
 var object3 = new XEO.GameObject(scene, {
+    camera: camera,
     geometry: geometry,
     stage: stage,
     layer: layer3,

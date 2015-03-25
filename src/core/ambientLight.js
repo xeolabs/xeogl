@@ -1,15 +1,15 @@
 /**
 
- An **AmbientLight** defines a light source of fixed intensity and color that affects all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
  equally.
+
+ ## Overview
 
  <ul>
  <li>AmbientLights are grouped, along with other light source types, within
  {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
  <li>Within xeoEngine's Phong shading calculations, AmbientLight {{#crossLink "AmbientLight/ambient:property"}}ambient{{/crossLink}} is
  multiplied by {{#crossLink "Material"}}Material{{/crossLink}} {{#crossLink "Material/ambient:property"}}{{/crossLink}}.</li>
- <li>Ambient lighting may be toggled for specific {{#crossLink "GameObject"}}GameObjects{{/crossLink}} via
- the {{#crossLink "Modes/ambient:property"}}{{/crossLink}} property on attached {{#crossLink "Modes"}}{{/crossLink}} components.</li>
  </ul>
 
  <img src="http://www.gliffy.com/go/publish/image/7092465/L.png"></img>

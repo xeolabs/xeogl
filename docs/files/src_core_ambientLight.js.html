@@ -123,16 +123,16 @@
     <pre class="code prettyprint linenums">
 /**
 
- An **AmbientLight** defines a light source of fixed intensity and color that affects all attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
+ An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}
  equally.
+
+ ## Overview
 
  &lt;ul&gt;
  &lt;li&gt;AmbientLights are grouped, along with other light source types, within
  {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components, which are attached to {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
  &lt;li&gt;Within xeoEngine&#x27;s Phong shading calculations, AmbientLight {{#crossLink &quot;AmbientLight/ambient:property&quot;}}ambient{{/crossLink}} is
  multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}}.&lt;/li&gt;
- &lt;li&gt;Ambient lighting may be toggled for specific {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} via
- the {{#crossLink &quot;Modes/ambient:property&quot;}}{{/crossLink}} property on attached {{#crossLink &quot;Modes&quot;}}{{/crossLink}} components.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7092465/L.png&quot;&gt;&lt;/img&gt;
@@ -200,22 +200,6 @@ var handle = ambientLight.on(&quot;ambient&quot;,
 
 
  ambientLight.off(handle); // Detach the change listener
- &#x60;&#x60;&#x60;&#x60;
- ### Toggling ambient lighting on and off
-
- Now we&#x27;ll attach a {{#crossLink &quot;Modes&quot;}}{{/crossLink}} to the {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}, so that we can toggle
- the effect of the {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} on it:
-
- &#x60;&#x60;&#x60;&#x60; javascript
- var modes = new XEO.Modes(scene, {
-    ambient: true
- });
-
- object.modes = modes;
-
- // Disable ambient illumination, which is provided
- // by the AmbientLight:
- modes.ambient = false;
  &#x60;&#x60;&#x60;&#x60;
 
  @class AmbientLight

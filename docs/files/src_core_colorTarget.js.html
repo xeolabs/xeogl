@@ -121,85 +121,87 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-(function () {
+/**
+ A **ColorTarget** captures the colors of the pixels that xeoEngine renders for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ These provide a virtual, software-based &lt;a href=&quot;http://en.wikipedia.org/wiki/Render_Target&quot; target=&quot;other&quot;&gt;render target&lt;/a&gt; that is typically used when performing *render-to-texture*.
 
-    &quot;use strict&quot;;
+ ## Overview
 
+ &lt;ul&gt;
+ &lt;li&gt;A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;ColorTarget is not to be confused with {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.&lt;/li&gt;
+ &lt;li&gt;Use {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
+ the {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} that consume it.&lt;/li&gt;
+ &lt;li&gt;For special effects, we often use ColorTargets and {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in combination
+ with {{#crossLink &quot;DepthTarget&quot;}}DepthTargets{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.&lt;/li&gt;
+ &lt;/ul&gt;
 
-    /**
-     A **ColorTarget** captures the colors of the pixels that xeoEngine renders for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7096829/L.png&quot;&gt;&lt;/img&gt;
 
-     &lt;ul&gt;
-     &lt;li&gt;A ColorTarget provides the pixel colors as a dynamic color image that may be fed into {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.&lt;/li&gt;
-     &lt;li&gt;ColorTarget is not to be confused with {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.&lt;/li&gt;
-     &lt;li&gt;Use {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
-     the {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} that consume it.&lt;/li&gt;
-     &lt;li&gt;For special effects, we often use ColorTargets and {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in combination
-     with {{#crossLink &quot;DepthTarget&quot;}}DepthTargets{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.&lt;/li&gt;
-     &lt;/ul&gt;
+ ## Example
 
-     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7096829/L.png&quot;&gt;&lt;/img&gt;
+ In this example we essentially have one {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
+ that&#x27;s rendered to a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, which is then applied to a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
 
-     ## Example
+ The scene contains:
 
-     In this example we essentially have one {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
-     that&#x27;s rendered to a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, which is then applied to a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
-
-     The scene contains:
-
-     &lt;ul&gt;
-     &lt;li&gt;a ColorTarget,&lt;/li&gt;
-     &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape,
-     &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} pixel color values to the ColorTarget,&lt;/li&gt;
-     &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that sources its pixels from the ColorTarget,&lt;/li&gt;
-     &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that includes the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, and&lt;/li&gt;
-     &lt;li&gt;a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, with the {{#crossLink &quot;Material&quot;}}{{/crossLink}} applied to it.&lt;/li&gt;
-     &lt;/ul&gt;
+ &lt;ul&gt;
+ &lt;li&gt;a ColorTarget,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape,
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} pixel color values to the ColorTarget,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that sources its pixels from the ColorTarget,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that includes the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, and&lt;/li&gt;
+ &lt;li&gt;a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, with the {{#crossLink &quot;Material&quot;}}{{/crossLink}} applied to it.&lt;/li&gt;
+ &lt;/ul&gt;
 
 
-     &#x60;&#x60;&#x60;&#x60;javascript
-     var scene = new XEO.Scene();
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var scene = new XEO.Scene();
 
-     var colorTarget = new XEO.ColorTarget(scene);
+ var colorTarget = new XEO.ColorTarget(scene);
 
-     var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-     // First GameObject renders to the ColorTarget
+ // First GameObject renders to the ColorTarget
 
-     var object1 = new XEO.GameObject(scene, {
+ var object1 = new XEO.GameObject(scene, {
         geometry: geometry,
         colorTarget: colorTarget
      });
 
-     var texture = new XEO.Texture(scene, {
+ var texture = new XEO.Texture(scene, {
         target: colorTarget
      });
 
-     var material = new XEO.Material(scene, {
+ var material = new XEO.Material(scene, {
         textures: [
            texture
         ]
      });
 
-     // Second GameObject is textured with the
-     // image of the first GameObject
+ // Second GameObject is textured with the
+ // image of the first GameObject
 
-     var object2 = new XEO.GameObject(scene, {
+ var object2 = new XEO.GameObject(scene, {
         geometry: geometry,  // Reuse our simple box geometry
         material: material
      });
-     &#x60;&#x60;&#x60;&#x60;
+ &#x60;&#x60;&#x60;&#x60;
 
-     @class ColorTarget
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this ColorTarget within the
-     default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} ColorTarget configuration
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
-     @extends Component
-     */
+ @class ColorTarget
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this ColorTarget within the
+ default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} ColorTarget configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
+ @extends Component
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
     XEO.ColorTarget = XEO.Component.extend({
 
         className: &quot;XEO.ColorTarget&quot;,

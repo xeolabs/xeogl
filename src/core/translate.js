@@ -1,108 +1,100 @@
+/**
+
+ A **Translate** applies a translation transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ <ul>
+
+ <li>A sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
+ <li>Can be connected into hierarchies with other {{#crossLink "Transform"}}Transforms{{/crossLink}} and sub-classes</li>
+ <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} are connected to leaf {{#crossLink "Transform"}}Transforms{{/crossLink}}
+ in the hierarchy, and will be transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the
+ root, in that order.</li>
+
+ </ul>
+
+ <img src="http://www.gliffy.com/go/publish/image/7430557/L.png">
+
+ ## Example
+
+ This example has two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
+ {{#crossLink "Rotate"}}{{/crossLink}}, Translate and {{#crossLink "Scale"}}{{/crossLink}} transforms.
+ The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
+
+ ````javascript
+var scene = new XEO.Scene();
+
+var rotate = new XEO.Rotate(scene, {
+    xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
+    angle: 30
+});
+
+var translate1 = new XEO.Translate(scene, {
+    parent: rotate,
+    xyz: [-5, 0, 0] // Translate along -X axis
+});
+
+var translate2 = new XEO.Translate(scene, {
+    parent: rotate,
+    xyz: [5, 0, 0] // Translate along +X axis
+});
+
+var scale = new XEO.Scale(scene, {
+    parent: translate2,
+    xyz: [1, 2, 1] // Scale x2 on Y axis
+});
+
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+var gameObject1 = new XEO.GameObject(scene, {
+    transform: translate1,
+    geometry: geometry
+});
+
+var gameObject2 = new XEO.GameObject(scene, {
+    transform: scale,
+    geometry: geometry
+});
+ ````
+
+Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+
+Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
+
+ ````javascript
+var scale2 = new XEO.Scale(scene, {
+    parent: translate1,
+    xyz: [1, 1, 2] // Scale x2 on Z axis
+});
+
+gameObject2.transform = scale2;
+ ````
+
+ And just for fun, we'll start updating the second {{#crossLink "Translate"}}{{/crossLink}}:
+
+ ````javascript
+// Rotate 0.2 degrees on each frame
+scene.on("tick", function(e) {
+    var xyz = translate2.xyz;
+    xyz[0] += 0.2;
+    translate2.xyz = xyz;
+});
+ ````
+
+ @class Translate
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Translate in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Translate.
+ @param [cfg.xyzw=[0,0,0]] {Array(Number)} The translation vector
+ @extends Transform
+ */
 (function () {
 
     "use strict";
 
-    /**
-
-     A **Translate** applies a translation transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
-     <ul>
-
-     <li>A sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
-     <li>Can be connected into hierarchies with other {{#crossLink "Transform"}}Transforms{{/crossLink}} and sub-classes</li>
-     <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} are connected to leaf {{#crossLink "Transform"}}Transforms{{/crossLink}}
-     in the hierarchy, and will be transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the
-     root, in that order.</li>
-
-     </ul>
-
-     <img src="http://www.gliffy.com/go/publish/image/7430557/L.png">
-
-     ## Example
-
-     This example has two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
-     {{#crossLink "Rotate"}}{{/crossLink}}, Translate and {{#crossLink "Scale"}}{{/crossLink}} transforms.
-     The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
-
-     ````javascript
-var scene = new XEO.Scene();
-
-
-     var rotate = new XEO.Rotate(scene, {
-        xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
-        angle: 30
-     });
-
-
-     var translate1 = new XEO.Translate(scene, {
-        parent: rotate,
-        xyz: [-5, 0, 0] // Translate along -X axis
-     });
-
-
-     var translate2 = new XEO.Translate(scene, {
-        parent: rotate,
-        xyz: [5, 0, 0] // Translate along +X axis
-     });
-
-
-     var scale = new XEO.Scale(scene, {
-        parent: translate2,
-        xyz: [1, 2, 1] // Scale x2 on Y axis
-     });
-
-
-     var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
-
-     var gameObject1 = new XEO.GameObject(scene, {
-        transform: translate1,
-        geometry: geometry
-     });
-
-
-     var gameObject2 = new XEO.GameObject(scene, {
-        transform: scale,
-        geometry: geometry
-     });
-     ````
-
-     Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
-
-
-     Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
-
-     ````javascript
-
-     var scale2 = new XEO.Scale(scene, {
-    parent: translate1,
-    xyz: [1, 1, 2] // Scale x2 on Z axis
- });
-
-
-     gameObject2.transform = scale2;
-     ````
-
-     And just for fun, we'll start spinning the {{#crossLink "Rotate"}}{{/crossLink}}:
-
-     ````javascript
-     // Rotate 0.2 degrees on each frame
-     scene.on("tick", function(e) {
-    rotate.angle += 0.2;
- });
-     ````
-
-     @class Translate
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Translate in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Translate.
-     @param [cfg.xyzw=[0,0,0]] {Array(Number)} The translation vector
-     @extends Transform
-     */
     XEO.Translate = XEO.Transform.extend({
 
         className: "XEO.Translate",

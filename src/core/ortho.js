@@ -1,28 +1,23 @@
-(function () {
+/**
+ An **Ortho** component defines an orthographic projection transform.
 
-    "use strict";
+ <ul>
+ <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ </ul>
 
+ <img src="http://www.gliffy.com/go/publish/image/7097089/L.png"></img>
 
-    /**
-     An **Ortho** component defines an orthographic projection transform.
+ ## Example
 
-     <ul>
-     <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
-     {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
-     </ul>
+ In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
+ {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and an Ortho
+ projection transform.
 
-     <img src="http://www.gliffy.com/go/publish/image/7097089/L.png"></img>
+ ````Javascript
+ var scene = new XEO.Scene();
 
-     ## Example
-
-     In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
-     {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and an Ortho
-     projection transform.
-
-     ````Javascript
-     var scene = new XEO.Scene();
-
-     var ortho = new XEO.Ortho(scene, {
+ var ortho = new XEO.Ortho(scene, {
     left:       1.0,    // Position of the left plane on the View-space X-axis
     right:      1.0,    // Position of the right plane on the View-space X-axis
     top:        1.0,    // Position of the top plane on the View-space Y-axis.
@@ -31,34 +26,38 @@
     far:        10000   // Position of the far plane on the positive View-space Z-axis.
  });
 
-     var camera = new XEO.Camera(scene, {
+ var camera = new XEO.Camera(scene, {
        project: ortho
  });
 
-     var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
-     var object = new XEO.GameObject(scene, {
+ var object = new XEO.GameObject(scene, {
     camera: camera,
     geometry: geometry
  });
-     ````
+ ````
 
-     @class Ortho
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Ortho within the
-     default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Ortho.
-     @param [cfg.left=-1.0] {Number} Position of the left plane on the View-space X-axis.
-     @param [cfg.right=1.0] {Number} Position of the right plane on the View-space X-axis.
-     @param [cfg.top=1.0] {Number} Position of the top plane on the View-space Y-axis.
-     @param [cfg.bottom=-1.0] {Number} Position of the bottom plane on the View-space Y-axis.
-     @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
-     @param [cfg.far=10000] {Number} Position of the far plane on the positive View-space Z-axis.
-     @extends Component
-     */
+ @class Ortho
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Ortho within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Ortho.
+ @param [cfg.left=-1.0] {Number} Position of the left plane on the View-space X-axis.
+ @param [cfg.right=1.0] {Number} Position of the right plane on the View-space X-axis.
+ @param [cfg.top=1.0] {Number} Position of the top plane on the View-space Y-axis.
+ @param [cfg.bottom=-1.0] {Number} Position of the bottom plane on the View-space Y-axis.
+ @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
+ @param [cfg.far=10000] {Number} Position of the far plane on the positive View-space Z-axis.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
     XEO.Ortho = XEO.Component.extend({
 
         className: "XEO.Ortho",
