@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_stats.js.html#l6"><code>src&#x2F;core&#x2F;stats.js:6</code></a>
+            Defined in: <a href="../files/src_core_stats.js.html#l1"><code>src&#x2F;core&#x2F;stats.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -135,21 +135,18 @@
 
 <div class="box intro">
     <p>A <strong>Stats</strong> provides statistics on the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<h2 id="overview">Overview</h2>
 <ul>
-
 <li>Each <a href="../classes/Scene.html" class="crosslink">Scene</a> provides a Stats instance on itself.</li>
-
 <li>You can manage your own statistics properties in a Stats, but take care not to clobber the properties that are
 provided by the <a href="../classes/Scene.html" class="crosslink">Scene</a> (see table below).</li>
-
 </ul>
 
 <p><img src="http://www.gliffy.com/go/publish/image/7122941/L.png"></img></p>
 <h2 id="example">Example</h2>
 <p>This example shows how to subscribe to the "numGeometries&#39; statistic, which indicates
 how many <a href="../classes/Geometry.html" class="crosslink">Geometry</a> components are in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<pre class="code prettyprint"><code class="lang-Javascript">
-var scene = new XEO.Scene();
+<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
 
 // Get the statistics for a Scene
 var stats = scene.stats;
@@ -157,8 +154,8 @@ var stats = scene.stats;
 // Subscribe to change of a statistic
 // The subscriber is also immediately notified of the current value via the callback.
 var handle = configs.on("numGeometries", function(value) {
-  console.log("Number of Geometry components in the Scene is now " + value);
-  });
+    console.log("Number of Geometry components in the Scene is now " + value);
+});
 
 // Unsubscribe
 configs.off(handle);
@@ -169,8 +166,7 @@ configs.off(handle);
 var numGeometries = configs.props["numGeometries"];
 </code></pre>
 <p>As mentioned, we can manage our own statistics as well (perhaps if we&#39;re extending xeoEngine):</p>
-<pre class="code prettyprint"><code class="lang-Javascript">
-// Create a statistic
+<pre class="code prettyprint"><code class="lang-Javascript">// Create a statistic
 configs.zero("myStatistic");
 
 // Increment our statistic
@@ -181,8 +177,8 @@ configs.dec("myStatistic");
 
 // Subscribe to change of our statistic
 handle2 = configs.on("myStatistic", function(value) {
-  console.log("Value of myStatistic is now " + value);
-  });
+   console.log("Value of myStatistic is now " + value);
+});
 
 // Unsubscribe
 configs.off(handle2);
@@ -190,8 +186,7 @@ configs.off(handle2);
 // Read the current value of our statistic
 var myStatistic = configs.props["myStatistic"];
 </code></pre>
-<p><br></p>
-<h3 id="scene-statistics">Scene Statistics</h3>
+<h2 id="native-xeoengine-statistics">Native xeoEngine statistics</h2>
 <p>Listed below are are the statistics provided by the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>Don&#39;t use these names for your own custom statistics properties.</p>
 <table>
@@ -236,7 +231,7 @@ var myStatistic = configs.props["myStatistic"];
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_stats.js.html#l6"><code>src&#x2F;core&#x2F;stats.js:6</code></a>
+                <a href="../files/src_core_stats.js.html#l1"><code>src&#x2F;core&#x2F;stats.js:1</code></a>
                 </p>
         
         
@@ -385,7 +380,7 @@ var myStatistic = configs.props["myStatistic"];
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_stats.js.html#l120"><code>src&#x2F;core&#x2F;stats.js:120</code></a>
+        <a href="../files/src_core_stats.js.html#l115"><code>src&#x2F;core&#x2F;stats.js:115</code></a>
         </p>
 
 
@@ -616,7 +611,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_stats.js.html#l108"><code>src&#x2F;core&#x2F;stats.js:108</code></a>
+        <a href="../files/src_core_stats.js.html#l103"><code>src&#x2F;core&#x2F;stats.js:103</code></a>
         </p>
 
 
@@ -1021,7 +1016,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_stats.js.html#l132"><code>src&#x2F;core&#x2F;stats.js:132</code></a>
+        <a href="../files/src_core_stats.js.html#l127"><code>src&#x2F;core&#x2F;stats.js:127</code></a>
         </p>
 
 

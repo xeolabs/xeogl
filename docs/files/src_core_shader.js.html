@@ -121,60 +121,43 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-(function () {
+/**
+ A **Shader** specifies a custom GLSL shader to draw attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
-    &quot;use strict&quot;;
+## Overview
 
+ &lt;ul&gt;
+ &lt;li&gt;You can use xeoEngine&#x27;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#x27;s set by other
+ components on the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;Use Shaders in combination with {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} components when you need to share
+ the same Shaders among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} while setting the Shaders&#x27; uniforms
+ differently for each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;Use {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}}, {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}}
+ and {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.&lt;/li&gt;
+ &lt;/ul&gt;
 
-    /**
-     A **Shader** specifies a custom GLSL shader to draw attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105141/L.png&quot;&gt;&lt;/img&gt;
 
-     &lt;hr&gt;
-     *Contents*
-     &lt;Ul&gt;
-     &lt;li&gt;&lt;a href=&quot;#overview&quot;&gt;Overview&lt;/a&gt;&lt;/li&gt;
-     &lt;li&gt;&lt;a href=&quot;#shaderInputs&quot;&gt;Shader Inputs&lt;/a&gt;&lt;/li&gt;
-     &lt;li&gt;&lt;a href=&quot;#example&quot;&gt;Example&lt;/a&gt;&lt;/li&gt;
-     &lt;/ul&gt;
-     &lt;hr&gt;
+ ## Example
 
-     ## Overview
+ This example shows the simplest way to use a Shader, where we&#x27;re just going to render a ripply water
+ pattern to a screen-aligned quad.
 
-     &lt;ul&gt;
-     &lt;li&gt;You can use xeoEngine&#x27;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#x27;s set by other
-     components on the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;img src=&quot;../../assets/images/shaderExample1.png&quot;&gt;&lt;/img&gt;
 
-     &lt;li&gt;Use Shaders in combination with {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} components when you need to share
-     the same Shaders among multiple {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} while setting the Shaders&#x27; uniforms
-     differently for each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.&lt;/li&gt;
+ In our scene definition, we have an  {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} that is our
+ screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
+ Finally, we animate the rippling by periodically updating the Shader&#x27;s &quot;time&quot; uniform.
 
-     &lt;li&gt;Use {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}}, {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}}
-     and {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.&lt;/li&gt;
+ &#x60;&#x60;&#x60;&#x60;javascript
 
-     &lt;/ul&gt;
+ var scene = new XEO.Scene();
 
-     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105141/L.png&quot;&gt;&lt;/img&gt;
+ // Shader that&#x27;s used by our GameObject. Note the &#x27;XEO_aPosition&#x27; and &#x27;XEO_aUV attributes&#x27;,
+ // which will receive the positions and UVs from the Geometry. Also note the &#x27;time&#x27;
+ // uniform, which we&#x27;ll be animating via Shader#setParams.
 
-     ## Example
-
-     This example shows the simplest way to use a Shader, where we&#x27;re just going to render a ripply water
-     pattern to a screen-aligned quad.
-
-     &lt;img src=&quot;../../assets/images/shaderExample1.png&quot;&gt;&lt;/img&gt;
-
-     In our scene definition, we have an  {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} that is our
-     screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
-     Finally, we animate the rippling by periodically updating the Shader&#x27;s &quot;time&quot; uniform.
-
-     &#x60;&#x60;&#x60;&#x60;javascript
-
-     var scene = new XEO.Scene();
-
-     // Shader that&#x27;s used by our GameObject. Note the &#x27;XEO_aPosition&#x27; and &#x27;XEO_aUV attributes&#x27;,
-     // which will receive the positions and UVs from the Geometry. Also note the &#x27;time&#x27;
-     // uniform, which we&#x27;ll be animating via Shader#setParams.
-
-     var shader = new XEO.Shader(scene, {
+ var shader = new XEO.Shader(scene, {
 
        // Vertex shading stage
        vertex: [
@@ -217,8 +200,8 @@
        }
   });
 
-     // A screen-aligned quad
-     var quad = new XEO.Geometry(scene, {
+ // A screen-aligned quad
+ var quad = new XEO.Geometry(scene, {
        primitive:&quot;triangles&quot;,
        positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
@@ -226,81 +209,85 @@
        indices:[ 0, 1, 2, 0, 2, 3 ]
   });
 
-     var object = new XEO.GameObject(scene, {
+ var object = new XEO.GameObject(scene, {
        shader: shader,
        geometry: quad
   });
 
-     &#x60;&#x60;&#x60;&#x60;
-     Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, to make the water ripple:
+ &#x60;&#x60;&#x60;&#x60;
+ Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, to make the water ripple:
 
-     &#x60;&#x60;&#x60;&#x60; javascript
-     scene.on(&quot;tick&quot;, function(params) {
+ &#x60;&#x60;&#x60;&#x60; javascript
+ scene.on(&quot;tick&quot;, function(params) {
             shader.setParams({
                 time: params.timeElapsed
             });
         });
-     &#x60;&#x60;&#x60;&#x60;
+ &#x60;&#x60;&#x60;&#x60;
 
-     ## Shader Inputs
+ ## Shader Inputs
 
-     xeoEngine provides various inputs for your shaders (TODO)
+ xeoEngine provides various inputs for your shaders (TODO)
 
-     #### Attributes
+ #### Attributes
 
-     *Attributes are used in vertex shaders*
+ *Attributes are used in vertex shaders*
 
-     | Attribute  | Description | Depends on  |
-     |---|---|
-     | attribute vec3   XEO_aPosition   | Vertex positions | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} |
-     | attribute vec2   XEO_aUV         | UV coordinates | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
-     | attribute vec3   XEO_aNormal     | Normal vectors | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}}  |
-     | attribute vec4   XEO_aVertexColor  | Vertex colors  | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/colors:property&quot;}}{{/crossLink}}  |
-     | attribute vec4 XEO_aTangent    | Tangent vectors for normal mapping | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
+ | Attribute  | Description | Depends on  |
+ |---|---|
+ | attribute vec3   XEO_aPosition   | Vertex positions | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} |
+ | attribute vec2   XEO_aUV         | UV coordinates | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
+ | attribute vec3   XEO_aNormal     | Normal vectors | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}}  |
+ | attribute vec4   XEO_aVertexColor  | Vertex colors  | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/colors:property&quot;}}{{/crossLink}}  |
+ | attribute vec4 XEO_aTangent    | Tangent vectors for normal mapping | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
 
-     #### Uniforms
+ #### Uniforms
 
-     *Uniforms are used in vertex and fragment shaders*
+ *Uniforms are used in vertex and fragment shaders*
 
-     | Uniform  | Description | Depends on  |
-     |---|---|
-     | uniform mat4  XEO_uMNMatrix               | Modelling normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Transform&quot;}}{{/crossLink}} |
-     | uniform mat4  XEO_uVMatrix                | View matrix | {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
-     | uniform mat4  XEO_uVNMatrix               | View normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
-     | uniform mat4  XEO_uPMatrix                | Projection matrix | {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
-     | uniform mat4  XEO_uPNMatrix               | Projection normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
-     | uniform float XEO_uZNear                  | Near clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
-     | uniform float XEO_uZFar                   | Far clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
-     | uniform vec3  XEO_uAmbientColor | Ambient light color | {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} |
-     | uniform vec3 XEO_uLightDir&amp;lt;N&amp;gt; | Direction of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} at index N in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} |
-
-
+ | Uniform  | Description | Depends on  |
+ |---|---|
+ | uniform mat4  XEO_uMNMatrix               | Modelling normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Transform&quot;}}{{/crossLink}} |
+ | uniform mat4  XEO_uVMatrix                | View matrix | {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
+ | uniform mat4  XEO_uVNMatrix               | View normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
+ | uniform mat4  XEO_uPMatrix                | Projection matrix | {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+ | uniform mat4  XEO_uPNMatrix               | Projection normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+ | uniform float XEO_uZNear                  | Near clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+ | uniform float XEO_uZFar                   | Far clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+ | uniform vec3  XEO_uAmbientColor | Ambient light color | {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} |
+ | uniform vec3 XEO_uLightDir&amp;lt;N&amp;gt; | Direction of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} at index N in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} |
 
 
-     #### Varying
-
-     *Varying types are used in fragment shaders*
-
-     | Varying | Description | Depends on  |
-     |---|---|
-     | varying vec4 XEO_vWorldVertex | |
-     | varying vec4 XEO_vViewVertex | |
-     | varying vec4 XEO_vColor | |
 
 
-     @class Shader
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Shader in the default
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
-     @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
-     @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
-     @param [cfg.params={}] {GameObject} Values for uniforms defined in the vertex and/or fragment stages.
-     @extends Component
-     */
+ #### Varying
+
+ *Varying types are used in fragment shaders*
+
+ | Varying | Description | Depends on  |
+ |---|---|
+ | varying vec4 XEO_vWorldVertex | |
+ | varying vec4 XEO_vViewVertex | |
+ | varying vec4 XEO_vColor | |
+
+
+ @class Shader
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Shader in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
+ @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
+ @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
+ @param [cfg.params={}] {GameObject} Values for uniforms defined in the vertex and/or fragment stages.
+ @extends Component
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
     XEO.Shader = XEO.Component.extend({
 
         className: &quot;XEO.Shader&quot;,

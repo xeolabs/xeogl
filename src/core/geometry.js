@@ -1,8 +1,8 @@
 /**
  A **Geometry** defines the geometric shape of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
- <hr>
- *Contents*
+ ## Contents
+
  <Ul>
     <li><a href="#overview">Overview</a></li>
     <li><a href="#defaultShape">Default box shape</a></li>
@@ -13,8 +13,6 @@
     <li><a href="#backfaces">Toggling backfaces on or off</li>
     <li><a href="#frontfaces">Setting frontface vertex winding</li>
  </ul>
-
- <hr>
 
  ## <a name="overview">Overview</a>
 

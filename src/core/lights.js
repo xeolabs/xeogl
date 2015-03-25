@@ -1,6 +1,8 @@
 /**
  A **Lights** is a group of light sources to apply to attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
+ ## Overview
+
  A Lights may contain a virtually unlimited number of three types of light source:
 
  <ul>

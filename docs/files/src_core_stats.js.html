@@ -121,95 +121,90 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+ A **Stats** provides statistics on the parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
+
+ ## Overview
+
+ &lt;ul&gt;
+ &lt;li&gt;Each {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} provides a Stats instance on itself.&lt;/li&gt;
+ &lt;li&gt;You can manage your own statistics properties in a Stats, but take care not to clobber the properties that are
+ provided by the {{#crossLink &quot;Scene&quot;}}{{/crossLink}} (see table below).&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7122941/L.png&quot;&gt;&lt;/img&gt;
+
+ ## Example
+
+ This example shows how to subscribe to the &quot;numGeometries&#x27; statistic, which indicates
+ how many {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} components are in the parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
+
+&#x60;&#x60;&#x60;&#x60;Javascript
+var scene = new XEO.Scene();
+
+// Get the statistics for a Scene
+var stats = scene.stats;
+
+// Subscribe to change of a statistic
+// The subscriber is also immediately notified of the current value via the callback.
+var handle = configs.on(&quot;numGeometries&quot;, function(value) {
+     console.log(&quot;Number of Geometry components in the Scene is now &quot; + value);
+});
+
+// Unsubscribe
+configs.off(handle);
+
+// Read the current value of a statistic
+// Normally we would asynchronously subscribe with #on though, to be sure that
+// we&#x27;re getting the latest changes to the statistic.
+var numGeometries = configs.props[&quot;numGeometries&quot;];
+ &#x60;&#x60;&#x60;&#x60;
+
+As mentioned, we can manage our own statistics as well (perhaps if we&#x27;re extending xeoEngine):
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+// Create a statistic
+configs.zero(&quot;myStatistic&quot;);
+
+// Increment our statistic
+configs.inc(&quot;myStatistic&quot;);
+
+// Decrement our statistic
+configs.dec(&quot;myStatistic&quot;);
+
+// Subscribe to change of our statistic
+handle2 = configs.on(&quot;myStatistic&quot;, function(value) {
+    console.log(&quot;Value of myStatistic is now &quot; + value);
+});
+
+// Unsubscribe
+configs.off(handle2);
+
+// Read the current value of our statistic
+var myStatistic = configs.props[&quot;myStatistic&quot;];
+ &#x60;&#x60;&#x60;&#x60;
+
+ ## Native xeoEngine statistics
+
+Listed below are are the statistics provided by the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+
+Don&#x27;t use these names for your own custom statistics properties.
+
+ | Name  | Description|
+ |---|---|
+ | &quot;numGeometries&quot; | Number of {{#crossLink &quot;Geometry&quot;}}Geometrys{{/crossLink}} in the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} |
+ | &quot;numTextures&quot;  | Number of {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}  |
+ | &quot;numGameObjects&quot;  | Number of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}  |
+
+ @class Stats
+ @module XEO
+ @constructor
+ @extends Component
+ */
 (function () {
 
     &quot;use strict&quot;;
 
-
-    /**
-     A **Stats** provides statistics on the parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
-
-     &lt;ul&gt;
-
-     &lt;li&gt;Each {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} provides a Stats instance on itself.&lt;/li&gt;
-
-     &lt;li&gt;You can manage your own statistics properties in a Stats, but take care not to clobber the properties that are
-     provided by the {{#crossLink &quot;Scene&quot;}}{{/crossLink}} (see table below).&lt;/li&gt;
-
-     &lt;/ul&gt;
-
-     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7122941/L.png&quot;&gt;&lt;/img&gt;
-
-     ## Example
-
-     This example shows how to subscribe to the &quot;numGeometries&#x27; statistic, which indicates
-     how many {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} components are in the parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
-
-     &#x60;&#x60;&#x60;&#x60;Javascript
-
-     var scene = new XEO.Scene();
-
-     // Get the statistics for a Scene
-     var stats = scene.stats;
-
-     // Subscribe to change of a statistic
-     // The subscriber is also immediately notified of the current value via the callback.
-     var handle = configs.on(&quot;numGeometries&quot;, function(value) {
-       console.log(&quot;Number of Geometry components in the Scene is now &quot; + value);
-  });
-
-     // Unsubscribe
-     configs.off(handle);
-
-     // Read the current value of a statistic
-     // Normally we would asynchronously subscribe with #on though, to be sure that
-     // we&#x27;re getting the latest changes to the statistic.
-     var numGeometries = configs.props[&quot;numGeometries&quot;];
-     &#x60;&#x60;&#x60;&#x60;
-
-     As mentioned, we can manage our own statistics as well (perhaps if we&#x27;re extending xeoEngine):
-
-     &#x60;&#x60;&#x60;&#x60;Javascript
-
-     // Create a statistic
-     configs.zero(&quot;myStatistic&quot;);
-
-     // Increment our statistic
-     configs.inc(&quot;myStatistic&quot;);
-
-     // Decrement our statistic
-     configs.dec(&quot;myStatistic&quot;);
-
-     // Subscribe to change of our statistic
-     handle2 = configs.on(&quot;myStatistic&quot;, function(value) {
-       console.log(&quot;Value of myStatistic is now &quot; + value);
-  });
-
-     // Unsubscribe
-     configs.off(handle2);
-
-     // Read the current value of our statistic
-     var myStatistic = configs.props[&quot;myStatistic&quot;];
-     &#x60;&#x60;&#x60;&#x60;
-
-     &lt;br&gt;
-     ### Scene Statistics
-
-     Listed below are are the statistics provided by the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
-
-     Don&#x27;t use these names for your own custom statistics properties.
-
-     | Name  | Description|
-     |---|---|
-     | &quot;numGeometries&quot; | Number of {{#crossLink &quot;Geometry&quot;}}Geometrys{{/crossLink}} in the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} |
-     | &quot;numTextures&quot;  | Number of {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}  |
-     | &quot;numGameObjects&quot;  | Number of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}  |
-
-     @class Stats
-     @module XEO
-     @constructor
-     @extends Component
-     */
     XEO.Stats = XEO.Component.extend({
 
         className: &quot;XEO.Stats&quot;,

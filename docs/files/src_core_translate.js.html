@@ -125,9 +125,11 @@
 
  A **Translate** applies a translation transformation to associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
+ ## Overview
+
  &lt;ul&gt;
 
- &lt;li&gt;A sub-class of {{#crossLink &quot;Transform&quot;}}{{/crossLink}}&lt;/li&gt;
+ &lt;li&gt;Translate is a sub-class of {{#crossLink &quot;Transform&quot;}}{{/crossLink}}&lt;/li&gt;
  &lt;li&gt;Can be connected into hierarchies with other {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}} and sub-classes&lt;/li&gt;
  &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are connected to leaf {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}}
  in the hierarchy, and will be transformed by each {{#crossLink &quot;Transform&quot;}}{{/crossLink}} on the path up to the
@@ -143,7 +145,7 @@
  {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}, Translate and {{#crossLink &quot;Scale&quot;}}{{/crossLink}} transforms.
  The GameObjects share the same {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, which is the default 2x2x2 cube.&lt;br&gt;
 
- &#x60;&#x60;&#x60;&#x60;javascript
+&#x60;&#x60;&#x60;&#x60;javascript
 var scene = new XEO.Scene();
 
 var rotate = new XEO.Rotate(scene, {

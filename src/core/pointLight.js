@@ -2,6 +2,8 @@
  A **PointLight** defines a light source that originates from a single point and spreads outward in all directions, to illuminate
  attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
+ ## Overview
+
  <ul>
 
  <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,

@@ -1,39 +1,36 @@
-(function () {
+/**
+ A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-    "use strict";
+ ## Overview
 
+ <ul>
+ <li>Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
+ while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
+ </ul>
 
-    /**
-     A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ <img src="http://www.gliffy.com/go/publish/image/7105099/L.png"></img>
 
-     <ul>
-     <li>Use these when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
-     while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
-     </ul>
+ ## Example
 
-     <img src="http://www.gliffy.com/go/publish/image/7105099/L.png"></img>
+ This example shows the simplest way to use a {{#crossLink "Shader"}}Shader{{/crossLink}}, where we're just going to render a ripply water
+ pattern to a screen-aligned quad. As with all our examples, we're just creating the
+ essential components while falling back on the <a href="XEO.Scene.html#defaults" class="crosslink">Scene's default components</a>
+ for everything else.
 
-     ## Example
+ <img src="../../assets/images/shaderParamsExample1.png"></img>
 
-     This example shows the simplest way to use a {{#crossLink "Shader"}}Shader{{/crossLink}}, where we're just going to render a ripply water
-     pattern to a screen-aligned quad. As with all our examples, we're just creating the
-     essential components while falling back on the <a href="XEO.Scene.html#defaults" class="crosslink">Scene's default components</a>
-     for everything else.
+ In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
+ screen-aligned quad, plus a {{#crossLink "Shader"}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
+ Finally, we animate the rippling by periodically updating the {{#crossLink "Shader"}}Shader{{/crossLink}}'s "time" uniform.
 
-     <img src="../../assets/images/shaderParamsExample1.png"></img>
+ ````javascript
+ var scene = new XEO.Scene();
 
-     In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
-     screen-aligned quad, plus a {{#crossLink "Shader"}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
-     Finally, we animate the rippling by periodically updating the {{#crossLink "Shader"}}Shader{{/crossLink}}'s "time" uniform.
+ // Shader that's shared by both our GameObjects. Note the 'XEO_aPosition' and 'XEO_aUV attributes',
+ // which will receive the positions and UVs from the Geometry components. Also note the 'time'
+ // uniform, which we'll be animating via the ShaderParams components.
 
-     ````javascript
-     var scene = new XEO.Scene();
-
-     // Shader that's shared by both our GameObjects. Note the 'XEO_aPosition' and 'XEO_aUV attributes',
-     // which will receive the positions and UVs from the Geometry components. Also note the 'time'
-     // uniform, which we'll be animating via the ShaderParams components.
-
-     var shader = new XEO.Shader(scene, {
+ var shader = new XEO.Shader(scene, {
 
        // Vertex shading stage
        vertex: [
@@ -76,10 +73,10 @@
        }
   });
 
-     // First GameObject using our Shader, with a quad covering the left half of the canvas,
-     // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
+ // First GameObject using our Shader, with a quad covering the left half of the canvas,
+ // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
 
-     var quad1 = new XEO.Geometry(scene, {
+ var quad1 = new XEO.Geometry(scene, {
        primitive:"triangles",
        positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
@@ -87,22 +84,22 @@
        indices:[ 0, 1, 2, 0, 2, 3 ]
   });
 
-     var shaderParams1 = new XEO.ShaderParams(scene, {
+ var shaderParams1 = new XEO.ShaderParams(scene, {
        params: {
            time: 0.0
        }
   });
 
-     var object1 = new XEO.GameObject(scene, {
+ var object1 = new XEO.GameObject(scene, {
        shader: shader,
        geometry: quad1,
        shaderParams1: shaderParams1
   });
 
-     // Second GameObject using the Shader, with a quad covering the right half of the canvas,
-     // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
+ // Second GameObject using the Shader, with a quad covering the right half of the canvas,
+ // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
 
-     var quad2 = new XEO.Geometry(scene, {
+ var quad2 = new XEO.Geometry(scene, {
        primitive:"triangles",
        positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
@@ -110,23 +107,23 @@
        indices:[ 0, 1, 2, 0, 2, 3 ]
   });
 
-     var shaderParams2 = new XEO.ShaderParams(scene, {
+ var shaderParams2 = new XEO.ShaderParams(scene, {
        params: {
            time: 0.0
        }
   });
 
-     var object2 = new XEO.GameObject(scene, {
+ var object2 = new XEO.GameObject(scene, {
        shader: shader,
        geometry2: quad2,
        shaderParams2: shaderParams2
   });
 
-     ````
-     Now let's animate the "time" parameter on the Shader, for each GameObject independently:
+ ````
+ Now let's animate the "time" parameter on the Shader, for each GameObject independently:
 
-     ```` javascript
-     scene.on("tick", function(params) {
+ ```` javascript
+ scene.on("tick", function(params) {
 
             shaderParams1.setParams({
                 time: params.timeElapsed
@@ -136,18 +133,22 @@
                 time: params.timeElapsed  * 0.5
             });
         });
-     ````
-     @class ShaderParams
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ShaderParams in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
-     @param [cfg.params={}] {GameObject} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
-     @extends Component
-     */
+ ````
+ @class ShaderParams
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ShaderParams in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
+ @param [cfg.params={}] {GameObject} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
     XEO.ShaderParams = XEO.Component.extend({
 
         className: "XEO.ShaderParams",

@@ -1,6 +1,8 @@
 /**
  A **Material** defines the surface appearance of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
+ ## Overview
+
  <ul>
  <li>Materials interact with {{#crossLink "Lights"}}{{/crossLink}} using the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model.</li>
 

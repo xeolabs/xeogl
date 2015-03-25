@@ -1,86 +1,86 @@
+/**
+ A **Tasks** tracks general asynchronous tasks running within a {{#crossLink "Scene"}}Scene{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+ <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} has a Tasks component, available via the
+ {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Scene/tasks:property"}}tasks{{/crossLink}} property,
+ within which it will create and destroy {{#crossLink "Task"}}Task{{/crossLink}} components to indicate what processes
+ it's running internally.</li>
+
+ <li>You can also manage your own {{#crossLink "Task"}}Task{{/crossLink}} components within that, to indicate what
+ application-level processes you are running.</li>
+ </ul>
+
+ <img src="http://www.gliffy.com/go/publish/image/7122907/L.png"></img>
+
+ ## Example
+
+ This example shows how to manage tasks and subscribe to their life cycles.
+
+ ````Javascript
+// Create a Scene
+var scene = new XEO.Scene();
+
+// Get the Tasks tracker
+var tasks = scene.tasks;
+
+// Subscribe to all task creations
+tasks.on("started", function(task) {
+     console.log("Task started: " + task.id +", " + task.description);
+});
+
+// Subscribe to all task completions
+tasks.on("completed", function(task) {
+      console.log("Task completed: " + task.id +", " + task.description);
+});
+
+ // Subscribe to all task failures
+tasks.on("failed", function(task) {
+     console.log("Task failed: " + task.id +", " + task.description);
+});
+
+// Create and start Task "foo"
+var taskFoo = tasks.create({
+     id: "foo", // Optional, unique ID generated automatically when omitted
+     description: "Loading something"
+});
+
+// Create and start Task "bar"
+var taskBar = tasks.create({
+     id: "bar",
+     description: "Loading something else"
+});
+
+// Subscribe to completion of Task "foo"
+taskFoo.on("completed", function(task) {
+     console.log("Task completed: " + task.id +", " + task.description);
+});
+
+// Subscribe to failure of a specific task
+taskFoo.on("failed", function(task) {
+     console.log("Task failed: " + task.id +", " + task.description);
+});
+
+// Set Task "foo" as completed, via the Tasks
+// Fires the "completed" handler we registered above, also fires "completed" on the Task itself
+tasks.setCompleted("foo");
+
+// Set Task "bar" as failed, this time directly on the Task in question
+myTask2.setFailed();
+
+````
+ @class Tasks
+ @module XEO
+ @constructor
+ @extends Component
+ */
 (function () {
 
     "use strict";
 
 
-    /**
-     A **Tasks** tracks general asynchronous tasks running within a {{#crossLink "Scene"}}Scene{{/crossLink}}.
-
-     <ul>
-     <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} has a Tasks component, available via the
-     {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Scene/tasks:property"}}tasks{{/crossLink}} property,
-     within which it will create and destroy {{#crossLink "Task"}}Task{{/crossLink}} components to indicate what processes
-     it's running internally.</li>
-
-     <li>You can also manage your own {{#crossLink "Task"}}Task{{/crossLink}} components within that, to indicate what
-     application-level processes you are running.</li>
-     </ul>
-
-     <img src="http://www.gliffy.com/go/publish/image/7122907/L.png"></img>
-
-     ## Example
-
-     This example shows how to manage tasks and subscribe to their life cycles.
-
-     ````Javascript
-
-     // Create a Scene
-     var scene = new XEO.Scene();
-
-     // Get the Tasks tracker
-     var tasks = scene.tasks;
-
-     // Subscribe to all task creations
-     tasks.on("started", function(task) {
-       console.log("Task started: " + task.id +", " + task.description);
-  });
-
-     // Subscribe to all task completions
-     tasks.on("completed", function(task) {
-       console.log("Task completed: " + task.id +", " + task.description);
-  });
-
-     // Subscribe to all task failures
-     tasks.on("failed", function(task) {
-       console.log("Task failed: " + task.id +", " + task.description);
-  });
-
-     // Create and start Task "foo"
-     var taskFoo = tasks.create({
-       id: "foo", // Optional, unique ID generated automatically when omitted
-       description: "Loading something"
-  });
-
-     // Create and start Task "bar"
-     var taskBar = tasks.create({
-       id: "bar",
-       description: "Loading something else"
-  });
-
-     // Subscribe to completion of Task "foo"
-     taskFoo.on("completed", function(task) {
-       console.log("Task completed: " + task.id +", " + task.description);
-  });
-
-     // Subscribe to failure of a specific task
-     taskFoo.on("failed", function(task) {
-       console.log("Task failed: " + task.id +", " + task.description);
-  });
-
-     // Set Task "foo" as completed, via the Tasks
-     // Fires the "completed" handler we registered above, also fires "completed" on the Task itself
-     tasks.setCompleted("foo");
-
-     // Set Task "bar" as failed, this time directly on the Task in question
-     myTask2.setFailed();
-
-     ````
-
-     @class Tasks
-     @module XEO
-     @constructor
-     @extends Component
-     */
     XEO.Tasks = XEO.Component.extend({
 
         _init: function (cfg) {

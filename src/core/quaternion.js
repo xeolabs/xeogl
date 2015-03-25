@@ -2,6 +2,8 @@
 
  A **Quaternion** applies a rotation transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
+ ## Overview
+
  <ul>
  <li>A sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
  <li>Can be connected into hierarchies with other {{#crossLink "Transform"}}Transforms{{/crossLink}} and sub-classes</li>
@@ -19,70 +21,61 @@
  The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
 
  ````javascript
- var scene = new XEO.Scene();
+var scene = new XEO.Scene();
 
-
- var quaternion = new XEO.Quaternion(scene, {
+var quaternion = new XEO.Quaternion(scene, {
     xyzw: [0, 0, 0, 1], // Unit quaternion
- });
+});
 
+var translate1 = new XEO.Translate(scene, {
+   parent: quaternion,
+   xyz: [-5, 0, 0] // Translate along -X axis
+});
 
- var translate1 = new XEO.Translate(scene, {
-    parent: quaternion,
-    xyz: [-5, 0, 0] // Translate along -X axis
- });
+var translate2 = new XEO.Translate(scene, {
+   parent: quaternion,
+   xyz: [5, 0, 0] // Translate along +X axis
+});
 
+var scale = new XEO.Scale(scene, {
+   parent: translate2,
+   xyz: [1, 2, 1] // Scale x2 on Y axis
+});
 
- var translate2 = new XEO.Translate(scene, {
-    parent: quaternion,
-    xyz: [5, 0, 0] // Translate along +X axis
- });
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
+var gameObject1 = new XEO.GameObject(scene, {
+   transform: translate1,
+   geometry: geometry
+});
 
- var scale = new XEO.Scale(scene, {
-    parent: translate2,
-    xyz: [1, 2, 1] // Scale x2 on Y axis
- });
-
-
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
-
- var gameObject1 = new XEO.GameObject(scene, {
-    transform: translate1,
-    geometry: geometry
- });
-
-
- var gameObject2 = new XEO.GameObject(scene, {
-    transform: scale,
-    geometry: geometry
- });
+var gameObject2 = new XEO.GameObject(scene, {
+   transform: scale,
+   geometry: geometry
+});
  ````
 
- Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
+Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
 
- Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
-
- ````javascript
+````javascript
 var scale2 = new XEO.Scale(scene, {
-    parent: translate1,
-    xyz: [1, 1, 2] // Scale x2 on Z axis
- });
+   parent: translate1,
+   xyz: [1, 1, 2] // Scale x2 on Z axis
+});
 
-
- gameObject2.transform = scale2;
+gameObject2.transform = scale2;
  ````
 
- And just for fun, we'll start spinning the Quaternion:
+And just for fun, we'll start spinning the Quaternion:
 
- ````javascript
+````javascript
 // Rotate 0.2 degrees about Y-axis on each frame
- scene.on("tick", function(e) {
+scene.on("tick", function(e) {
     quaternion.rotate([0, 1, 0, 0.2]);
- });
- ````
+});
+````
  @class Quaternion
  @module XEO
  @constructor

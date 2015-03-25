@@ -122,10 +122,9 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Scene** is a xeoEngine scene graph.
+ A **Scene** models a 3D scene as a fully-editable and serializable &lt;a href=&quot;http://gameprogrammingpatterns.com/component.html&quot; target=&quot;_other&quot;&gt;component-object&lt;/a&gt; graph.
 
- &lt;hr&gt;
- *Contents*
+ ## Contents
 
  &lt;Ul&gt;
     &lt;li&gt;&lt;a href=&quot;#sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;&lt;/li&gt;
@@ -135,11 +134,7 @@
     &lt;li&gt;&lt;a href=&quot;#savingAndLoading&quot;&gt;Saving and Loading Scenes&lt;/a&gt;&lt;/li&gt;
  &lt;/ul&gt;
 
- &lt;hr&gt;
-
  ## &lt;a name=&quot;sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;
-
- A Scene is a type of &lt;a href=&quot;http://gameprogrammingpatterns.com/component.html&quot; target=&quot;_other&quot;&gt;component-object&lt;/a&gt; graph.
 
  A Scene contains a soup of instances of various {{#crossLink &quot;Component&quot;}}Component{{/crossLink}} subtypes, such as
  {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}, {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}, {{#crossLink &quot;Material&quot;}}Material{{/crossLink}},

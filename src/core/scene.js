@@ -1,8 +1,7 @@
 /**
- A **Scene** is a xeoEngine scene graph.
+ A **Scene** defines a 3D scene as a <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-object</a> graph.
 
- <hr>
- *Contents*
+ ## Contents
 
  <Ul>
     <li><a href="#sceneStructure">Scene Structure</a></li>
@@ -12,11 +11,7 @@
     <li><a href="#savingAndLoading">Saving and Loading Scenes</a></li>
  </ul>
 
- <hr>
-
  ## <a name="sceneStructure">Scene Structure</a>
-
- A Scene is a type of <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-object</a> graph.
 
  A Scene contains a soup of instances of various {{#crossLink "Component"}}Component{{/crossLink}} subtypes, such as
  {{#crossLink "GameObject"}}GameObject{{/crossLink}}, {{#crossLink "Camera"}}Camera{{/crossLink}}, {{#crossLink "Material"}}Material{{/crossLink}},

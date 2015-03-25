@@ -121,45 +121,42 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-(function () {
+/**
+ Publishes key and mouse events that occur on the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
 
-    &quot;use strict&quot;;
+ ## Overview
 
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7123123/L.png&quot;&gt;&lt;/img&gt;
 
-    /**
-     Publishes key and mouse events that occur on the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
+ ## Example
 
-     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7123123/L.png&quot;&gt;&lt;/img&gt;
+ In this example, we&#x27;re subscribing to some mouse and key events that will occur on
+ a {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
 
-     ## Example
+ &#x60;&#x60;&#x60;&#x60;javascript
+var myScene = new XEO.Scene();
 
-     In this example, we&#x27;re subscribing to some mouse and key events that will occur on
-     a {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
+ var input = myScene.input;
 
-     &#x60;&#x60;&#x60;&#x60;javascript
-     var myScene = new XEO.Scene();
+ // We&#x27;ll save a handle to this subscription
+ // to show how to unsubscribe, further down
+ var handle = input.on(&quot;mousedown&quot;, function(coords) {
+       console.log(&quot;Mouse down at: x=&quot; + coords[0] + &quot;, y=&quot; + coords[1]);
+ });
 
-     var input = myScene.input;
-
-     // We&#x27;ll save a handle to this subscription
-     // to show how to unsubscribe, further down
-     var handle = input.on(&quot;mousedown&quot;, function(coords) {
-        console.log(&quot;Mouse down at: x=&quot; + coords[0] + &quot;, y=&quot; + coords[1]);
-     });
-
-     input.on(&quot;mouseup&quot;, function(coords) {
+ input.on(&quot;mouseup&quot;, function(coords) {
        console.log(&quot;Mouse up at: x=&quot; + coords[0] + &quot;, y=&quot; + coords[1]);
-     });
+ });
 
-     input.on(&quot;mouseclicked&quot;, function(coords) {
-       console.log(&quot;Mouse clicked at: x=&quot; + coords[0] + &quot;, y=&quot; + coords[1]);
-     });
+ input.on(&quot;mouseclicked&quot;, function(coords) {
+      console.log(&quot;Mouse clicked at: x=&quot; + coords[0] + &quot;, y=&quot; + coords[1]);
+ });
 
-     input.on(&quot;dblclick&quot;, function(coords) {
+ input.on(&quot;dblclick&quot;, function(coords) {
        console.log(&quot;Double-click at: x=&quot; + coords[0] + &quot;, y=&quot; + coords[1]);
-     });
+ });
 
-     input.on(&quot;keydown&quot;, function(keyCode) {
+ input.on(&quot;keydown&quot;, function(keyCode) {
         switch (keyCode) {
 
             case this.KEY_A:
@@ -179,7 +176,7 @@
        }
      });
 
-     input.on(&quot;keyup&quot;, function(keyCode) {
+ input.on(&quot;keyup&quot;, function(keyCode) {
         switch (keyCode) {
 
             case this.KEY_A:
@@ -199,23 +196,27 @@
         }
      });
 
-     // TODO: ALT and CTRL keys etc
-     &#x60;&#x60;&#x60;&#x60;
+ // TODO: ALT and CTRL keys etc
+ &#x60;&#x60;&#x60;&#x60;
 
-     ### Unsubscribing from Events
+ ### Unsubscribing from Events
 
-     In the snippet above, we saved a handle to one of our event subscriptions.
+ In the snippet above, we saved a handle to one of our event subscriptions.
 
-     We can then use that handle to unsubscribe again, like this:
+ We can then use that handle to unsubscribe again, like this:
 
-     &#x60;&#x60;&#x60;&#x60;javascript
-     input.off(handle);
-     &#x60;&#x60;&#x60;&#x60;
+ &#x60;&#x60;&#x60;&#x60;javascript
+ input.off(handle);
+ &#x60;&#x60;&#x60;&#x60;
 
-     @class Input
-     @module XEO
-     @extends Component
-     */
+ @class Input
+ @module XEO
+ @extends Component
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
     XEO.Input = XEO.Component.extend({
 
         className: &quot;XEO.Input&quot;,

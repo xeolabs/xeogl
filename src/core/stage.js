@@ -1,5 +1,6 @@
 /**
  A **Stage** partitions attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} into ordered render bins.
+ ## Overview
 
  <ul>
  <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin

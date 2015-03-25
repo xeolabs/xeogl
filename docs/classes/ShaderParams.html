@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_shaderParams.js.html#l6"><code>src&#x2F;core&#x2F;shaderParams.js:6</code></a>
+            Defined in: <a href="../files/src_core_shaderParams.js.html#l1"><code>src&#x2F;core&#x2F;shaderParams.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -135,8 +135,9 @@
 
 <div class="box intro">
     <p>A <strong>ShaderParams</strong> sets uniform values for <a href="../classes/Shader.html" class="crosslink">Shaders</a> on attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+<h2 id="overview">Overview</h2>
 <ul>
-<li>Use these when you need to share the same <a href="../classes/Shader.html" class="crosslink">Shaders</a> among multiple <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>,
+<li>Use ShaderParams components when you need to share the same <a href="../classes/Shader.html" class="crosslink">Shaders</a> among multiple <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>,
 while setting the <a href="../classes/Shader.html" class="crosslink">Shaders</a>&#39; uniforms differently for each <a href="../classes/GameObject.html" class="crosslink">GameObject</a>.</li>
 </ul>
 
@@ -158,104 +159,104 @@ Finally, we animate the rippling by periodically updating the <a href="../classe
 
 var shader = new XEO.Shader(scene, {
 
-  // Vertex shading stage
-  vertex: [
-      "attribute vec3 XEO_aPosition;",
-      "attribute vec2 XEO_aUV;",
-      "varying vec2 vUv;",
-      "void main () {",
-      "    gl_Position = vec4(XEO_aPosition, 1.0);",
-      "    vUv = XEO_aUV;",
-      "}"
-  ],
+      // Vertex shading stage
+      vertex: [
+          "attribute vec3 XEO_aPosition;",
+          "attribute vec2 XEO_aUV;",
+          "varying vec2 vUv;",
+          "void main () {",
+          "    gl_Position = vec4(XEO_aPosition, 1.0);",
+          "    vUv = XEO_aUV;",
+          "}"
+      ],
 
-  // Fragment shading stage
-  fragment: [
-      "precision mediump float;",
+      // Fragment shading stage
+      fragment: [
+          "precision mediump float;",
 
-      "uniform float time;",
-      "varying vec2 vUv;",
+          "uniform float time;",
+          "varying vec2 vUv;",
 
-      "void main( void ) {",
-      "    vec2 sp = vUv;",
-      "    vec2 p = sp*5.0 - vec2(10.0);",
-      "    vec2 i = p;",
-      "    float c = 1.0;",
-      "    float inten = 0.10;",
-      "    for (int n = 0; n &lt; 10; n++) {",
-      "        float t = time * (1.0 - (3.0 / float(n+1)));",
-      "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
-      "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
-      "    }",
-      "    c /= float(10);",
-      "    c = 1.5-sqrt(c);",
-      "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
-      "}"
-  ],
+          "void main( void ) {",
+          "    vec2 sp = vUv;",
+          "    vec2 p = sp*5.0 - vec2(10.0);",
+          "    vec2 i = p;",
+          "    float c = 1.0;",
+          "    float inten = 0.10;",
+          "    for (int n = 0; n &lt; 10; n++) {",
+          "        float t = time * (1.0 - (3.0 / float(n+1)));",
+          "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
+          "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
+          "    }",
+          "    c /= float(10);",
+          "    c = 1.5-sqrt(c);",
+          "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
+          "}"
+      ],
 
-  // Initial values for the &#39;time&#39; uniform in the fragment stage.
-  params: {
-      time: 0.0
-  }
-  });
+      // Initial values for the &#39;time&#39; uniform in the fragment stage.
+      params: {
+          time: 0.0
+      }
+ });
 
 // First GameObject using our Shader, with a quad covering the left half of the canvas,
 // along with its own ShaderParams to independently set its own values for the Shader&#39;s uniforms.
 
 var quad1 = new XEO.Geometry(scene, {
-  primitive:"triangles",
-  positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-  normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-  uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-  indices:[ 0, 1, 2, 0, 2, 3 ]
-  });
+      primitive:"triangles",
+      positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
+      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+      indices:[ 0, 1, 2, 0, 2, 3 ]
+ });
 
 var shaderParams1 = new XEO.ShaderParams(scene, {
-  params: {
-      time: 0.0
-  }
-  });
+      params: {
+          time: 0.0
+      }
+ });
 
 var object1 = new XEO.GameObject(scene, {
-  shader: shader,
-  geometry: quad1,
-  shaderParams1: shaderParams1
-  });
+      shader: shader,
+      geometry: quad1,
+      shaderParams1: shaderParams1
+ });
 
 // Second GameObject using the Shader, with a quad covering the right half of the canvas,
 // along with its own ShaderParams to independently set its own values for the Shader&#39;s uniforms.
 
 var quad2 = new XEO.Geometry(scene, {
-  primitive:"triangles",
-  positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-  normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-  uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-  indices:[ 0, 1, 2, 0, 2, 3 ]
-  });
+      primitive:"triangles",
+      positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
+      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+      indices:[ 0, 1, 2, 0, 2, 3 ]
+ });
 
 var shaderParams2 = new XEO.ShaderParams(scene, {
-  params: {
-      time: 0.0
-  }
-  });
+      params: {
+          time: 0.0
+      }
+ });
 
 var object2 = new XEO.GameObject(scene, {
-  shader: shader,
-  geometry2: quad2,
-  shaderParams2: shaderParams2
-  });
+      shader: shader,
+      geometry2: quad2,
+      shaderParams2: shaderParams2
+ });
 </code></pre>
 <p>Now let&#39;s animate the "time" parameter on the Shader, for each GameObject independently:</p>
 <pre class="code prettyprint"><code class="lang-javascript">scene.on("tick", function(params) {
 
-       shaderParams1.setParams({
-           time: params.timeElapsed
-       });
+           shaderParams1.setParams({
+               time: params.timeElapsed
+           });
 
-       shaderParams2.setParams({
-           time: params.timeElapsed  * 0.5
+           shaderParams2.setParams({
+               time: params.timeElapsed  * 0.5
+           });
        });
-   });
 </code></pre>
 
 </div>
@@ -286,7 +287,7 @@ var object2 = new XEO.GameObject(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_shaderParams.js.html#l6"><code>src&#x2F;core&#x2F;shaderParams.js:6</code></a>
+                <a href="../files/src_core_shaderParams.js.html#l1"><code>src&#x2F;core&#x2F;shaderParams.js:1</code></a>
                 </p>
         
         
@@ -970,7 +971,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_shaderParams.js.html#l180"><code>src&#x2F;core&#x2F;shaderParams.js:180</code></a>
+        <a href="../files/src_core_shaderParams.js.html#l181"><code>src&#x2F;core&#x2F;shaderParams.js:181</code></a>
         </p>
 
 
@@ -1187,7 +1188,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shaderParams.js.html#l163"><code>src&#x2F;core&#x2F;shaderParams.js:163</code></a>
+                            <a href="../files/src_core_shaderParams.js.html#l164"><code>src&#x2F;core&#x2F;shaderParams.js:164</code></a>
                             </p>
                     
                     
@@ -1300,7 +1301,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shaderParams.js.html#l201"><code>src&#x2F;core&#x2F;shaderParams.js:201</code></a>
+                            <a href="../files/src_core_shaderParams.js.html#l202"><code>src&#x2F;core&#x2F;shaderParams.js:202</code></a>
                             </p>
                     
                     

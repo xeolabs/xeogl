@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_tasks.js.html#l6"><code>src&#x2F;core&#x2F;tasks.js:6</code></a>
+            Defined in: <a href="../files/src_core_tasks.js.html#l1"><code>src&#x2F;core&#x2F;tasks.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -135,6 +135,7 @@
 
 <div class="box intro">
     <p>A <strong>Tasks</strong> tracks general asynchronous tasks running within a <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<h2 id="overview">Overview</h2>
 <ul>
 <li>Each <a href="../classes/Scene.html" class="crosslink">Scene</a> has a Tasks component, available via the
 <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Scene.html#property_tasks" class="crosslink">tasks</a> property,
@@ -148,8 +149,7 @@ application-level processes you are running.</li>
 <p><img src="http://www.gliffy.com/go/publish/image/7122907/L.png"></img></p>
 <h2 id="example">Example</h2>
 <p>This example shows how to manage tasks and subscribe to their life cycles.</p>
-<pre class="code prettyprint"><code class="lang-Javascript">
-// Create a Scene
+<pre class="code prettyprint"><code class="lang-Javascript">// Create a Scene
 var scene = new XEO.Scene();
 
 // Get the Tasks tracker
@@ -157,40 +157,40 @@ var tasks = scene.tasks;
 
 // Subscribe to all task creations
 tasks.on("started", function(task) {
-  console.log("Task started: " + task.id +", " + task.description);
-  });
+    console.log("Task started: " + task.id +", " + task.description);
+});
 
 // Subscribe to all task completions
 tasks.on("completed", function(task) {
-  console.log("Task completed: " + task.id +", " + task.description);
-  });
+     console.log("Task completed: " + task.id +", " + task.description);
+});
 
 // Subscribe to all task failures
 tasks.on("failed", function(task) {
-  console.log("Task failed: " + task.id +", " + task.description);
-  });
+    console.log("Task failed: " + task.id +", " + task.description);
+});
 
 // Create and start Task "foo"
 var taskFoo = tasks.create({
-  id: "foo", // Optional, unique ID generated automatically when omitted
-  description: "Loading something"
-  });
+    id: "foo", // Optional, unique ID generated automatically when omitted
+    description: "Loading something"
+});
 
 // Create and start Task "bar"
 var taskBar = tasks.create({
-  id: "bar",
-  description: "Loading something else"
-  });
+    id: "bar",
+    description: "Loading something else"
+});
 
 // Subscribe to completion of Task "foo"
 taskFoo.on("completed", function(task) {
-  console.log("Task completed: " + task.id +", " + task.description);
-  });
+    console.log("Task completed: " + task.id +", " + task.description);
+});
 
 // Subscribe to failure of a specific task
 taskFoo.on("failed", function(task) {
-  console.log("Task failed: " + task.id +", " + task.description);
-  });
+    console.log("Task failed: " + task.id +", " + task.description);
+});
 
 // Set Task "foo" as completed, via the Tasks
 // Fires the "completed" handler we registered above, also fires "completed" on the Task itself
@@ -219,7 +219,7 @@ myTask2.setFailed();
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_tasks.js.html#l6"><code>src&#x2F;core&#x2F;tasks.js:6</code></a>
+                <a href="../files/src_core_tasks.js.html#l1"><code>src&#x2F;core&#x2F;tasks.js:1</code></a>
                 </p>
         
         

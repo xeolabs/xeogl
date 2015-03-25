@@ -1,6 +1,8 @@
 /**
  A **Modes** toggles xeoEngine's rendering modes for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
+ ## Overview
+
  <ul>
 
  <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "GameObject"}}GameObjects{{/crossLink}},

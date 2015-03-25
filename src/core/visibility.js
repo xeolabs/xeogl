@@ -1,6 +1,8 @@
 /**
  A **Visibility** toggles the visibility of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
+ ## Overview
+
  <ul>
  <li>A Visibility may be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to toggle
  their visibility as a group.</li>

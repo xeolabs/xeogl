@@ -1,55 +1,49 @@
-(function () {
+/**
+ A **Texture** specifies a texture map.
 
-    "use strict";
+ ## Overview
 
-    /**
-     A **Texture** specifies a texture map.
+ <ul>
+ <li>Textures are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>To create a Texture from an image file, setting the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
+ property to the image file path.</li>
+ <li>To render color images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>Similarly, to render depth images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Shader"}}Stages{{/crossLink}}.</li>
+ </ul>
 
-     <ul>
+ <img src="http://www.gliffy.com/go/publish/image/7092447/L.png"></img>
 
-     <li>Textures are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
-     {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ ## Example
 
-     <li>To create a Texture from an image file, setting the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
-     property to the image file path.</li>
+ This example creates
+ <ul>
+ <li>three {{#crossLink "Texture"}}{{/crossLink}}s,</li>
+ <li>a {{#crossLink "Material"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>
+ <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
 
-     <li>To render color images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
-     property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+```` javascript
+var scene = new XEO.Scene();
 
-     <li>Similarly, to render depth images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
-     property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
-
-     <li>For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Shader"}}Stages{{/crossLink}}.</li>
-
-     <img src="http://www.gliffy.com/go/publish/image/7092447/L.png"></img>
-
-     ## Example
-
-     This example creates
-     <ul>
-     <li>three {{#crossLink "Texture"}}{{/crossLink}}s,</li>
-     <li>a {{#crossLink "Material"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>
-     <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
-     <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
-     <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
-     </ul>
-
-     ```` javascript
-     var scene = new XEO.Scene();
-
-     var diffuseMap = new XEO.Texture(scene, {
+var diffuseMap = new XEO.Texture(scene, {
     src: "diffuseMap.jpg"
 });
 
-     var bumpMap = new XEO.Texture(scene, {
+var bumpMap = new XEO.Texture(scene, {
     src: "bumpMap.jpg"
 });
 
-     var specularMap = new XEO.Texture(scene, {
+var specularMap = new XEO.Texture(scene, {
     src: "specularMap.jpg"
 });
 
-     var material = new XEO.Material(scene, {
+var material = new XEO.Material(scene, {
     ambient: [0.3, 0.3, 0.3],
     shininess: 30,
     diffuseMap: diffuseMap,
@@ -57,58 +51,61 @@
     specularMap: specularMap
 });
 
-     var light1 = new XEO.PointLight(scene, {
+var light1 = new XEO.PointLight(scene, {
     pos: [0, 100, 100],
     diffuse: [0.5, 0.7, 0.5],
     specular: [1.0, 1.0, 1.0]
 });
 
-     var light2 = new XEO.AmbientLight(scene, {
+var light2 = new XEO.AmbientLight(scene, {
     ambient: [0.5, 0.7, 0.5]
 });
 
-     var lights = new XEO.Lights(scene, {
+var lights = new XEO.Lights(scene, {
     lights: [
         light1,
         light2
     ]
 });
 
-     var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
+var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
 
-     var object = new XEO.GameObject(scene, {
+var object = new XEO.GameObject(scene, {
     lights: lights,
     material: material,
     geometry: geometry
 });
-     ````
+ ````
+ @class Texture
+ @module XEO
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Texture in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Texture.
+ @param [cfg.minFilter]
+ @param [cfg.magFilter]
+ @param [cfg.wrapS]
+ @param [cfg.wrapT]
+ @param [cfg.isDepth]
+ @param [cfg.depthMode]
+ @param [cfg.depthCompareMode]
+ @param [cfg.flipY]
+ @param [cfg.width]
+ @param [cfg.height]
+ @param [cfg.internalFormat]
+ @param [cfg.sourceFormat]
+ @param [cfg.sourceType]
+ @param [cfg.translate]
+ @param [cfg.scale]
+ @param [cfg.rotate]
+ @extends Component
+ */
+(function () {
 
-     @class Texture
-     @module XEO
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Texture in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Texture.
-     @param [cfg.minFilter]
-     @param [cfg.magFilter]
-     @param [cfg.wrapS]
-     @param [cfg.wrapT]
-     @param [cfg.isDepth]
-     @param [cfg.depthMode]
-     @param [cfg.depthCompareMode]
-     @param [cfg.flipY]
-     @param [cfg.width]
-     @param [cfg.height]
-     @param [cfg.internalFormat]
-     @param [cfg.sourceFormat]
-     @param [cfg.sourceType]
-     @param [cfg.translate]
-     @param [cfg.scale]
-     @param [cfg.rotate]
-     @extends Component
-     */
+    "use strict";
+
     XEO.Texture = XEO.Component.extend({
 
         className: "XEO.Texture",

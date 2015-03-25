@@ -1,16 +1,20 @@
+/**
+ A **Task** represents an asynchronously-running process within a {{#crossLink "Tasks"}}Tasks{{/crossLink}}.
+
+ ## Overview
+
+ See the {{#crossLink "Tasks"}}{{/crossLink}} documentation for more information.</li>
+
+ <img src="http://www.gliffy.com/go/publish/image/7123427/L.png"></img>
+
+ @class Task
+ @module XEO
+ @extends Component
+ */
 (function () {
 
     "use strict";
 
-    /**
-     A **Task** represents an asynchronously-running process within a {{#crossLink "Tasks"}}Tasks{{/crossLink}}.
-
-     <img src="http://www.gliffy.com/go/publish/image/7123427/L.png"></img>
-
-     @class Task
-     @module XEO
-     @extends Component
-     */
     XEO.Task = XEO.Component.extend({
 
         _init: function (cfg) {

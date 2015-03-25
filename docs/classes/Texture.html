@@ -125,7 +125,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_texture.js.html#l5"><code>src&#x2F;core&#x2F;texture.js:5</code></a>
+            Defined in: <a href="../files/src_core_texture.js.html#l1"><code>src&#x2F;core&#x2F;texture.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -135,27 +135,22 @@
 
 <div class="box intro">
     <p>A <strong>Texture</strong> specifies a texture map.</p>
+<h2 id="overview">Overview</h2>
 <ul>
-
 <li>Textures are grouped within <a href="../classes/Material.html" class="crosslink">Material</a>s, which are attached to
 <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
-
 <li>To create a Texture from an image file, setting the Texture&#39;s <a href="../classes/Texture.html#property_src" class="crosslink">src</a>
 property to the image file path.</li>
-
 <li>To render color images of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to a Texture, set the Texture&#39;s <a href="../classes/Texture.html#property_target" class="crosslink">target</a>
 property to a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> that is attached to those <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
-
 <li>Similarly, to render depth images of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to a Texture, set the Texture&#39;s <a href="../classes/Texture.html#property_target" class="crosslink">target</a>
 property to a <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> that is attached to those <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
-
 <li>For special effects, we often use rendered Textures in combination with <a href="../classes/Shader.html" class="crosslink">Shaders</a> and <a href="../classes/Shader.html" class="crosslink">Stages</a>.</li>
+</ul>
 
-<img src="http://www.gliffy.com/go/publish/image/7092447/L.png"></img>
-
-## Example
-
-This example creates
+<p><img src="http://www.gliffy.com/go/publish/image/7092447/L.png"></img></p>
+<h2 id="example">Example</h2>
+<p>This example creates</p>
 <ul>
 <li>three <a href="../classes/Texture.html" class="crosslink">Texture</a>s,</li>
 <li>a <a href="../classes/Material.html" class="crosslink">Material</a> which applies the <a href="../classes/Texture.html" class="crosslink">Texture</a>s as diffuse, bump and specular maps,</li>
@@ -167,48 +162,48 @@ This example creates
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
 var diffuseMap = new XEO.Texture(scene, {
-    src: "diffuseMap.jpg"
+   src: "diffuseMap.jpg"
 });
 
 var bumpMap = new XEO.Texture(scene, {
-    src: "bumpMap.jpg"
+   src: "bumpMap.jpg"
 });
 
 var specularMap = new XEO.Texture(scene, {
-    src: "specularMap.jpg"
+   src: "specularMap.jpg"
 });
 
 var material = new XEO.Material(scene, {
-    ambient: [0.3, 0.3, 0.3],
-    shininess: 30,
-    diffuseMap: diffuseMap,
-    bumpMap: bumpMap,
-    specularMap: specularMap
+   ambient: [0.3, 0.3, 0.3],
+   shininess: 30,
+   diffuseMap: diffuseMap,
+   bumpMap: bumpMap,
+   specularMap: specularMap
 });
 
 var light1 = new XEO.PointLight(scene, {
-    pos: [0, 100, 100],
-    diffuse: [0.5, 0.7, 0.5],
-    specular: [1.0, 1.0, 1.0]
+   pos: [0, 100, 100],
+   diffuse: [0.5, 0.7, 0.5],
+   specular: [1.0, 1.0, 1.0]
 });
 
 var light2 = new XEO.AmbientLight(scene, {
-    ambient: [0.5, 0.7, 0.5]
+   ambient: [0.5, 0.7, 0.5]
 });
 
 var lights = new XEO.Lights(scene, {
-    lights: [
-   light1,
-   light2
-    ]
+   lights: [
+       light1,
+       light2
+   ]
 });
 
 var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
 
 var object = new XEO.GameObject(scene, {
-    lights: lights,
-    material: material,
-    geometry: geometry
+   lights: lights,
+   material: material,
+   geometry: geometry
 });
 </code></pre>
 
@@ -240,7 +235,7 @@ var object = new XEO.GameObject(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_texture.js.html#l5"><code>src&#x2F;core&#x2F;texture.js:5</code></a>
+                <a href="../files/src_core_texture.js.html#l1"><code>src&#x2F;core&#x2F;texture.js:1</code></a>
                 </p>
         
         
@@ -1302,7 +1297,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l587"><code>src&#x2F;core&#x2F;texture.js:587</code></a>
+                            <a href="../files/src_core_texture.js.html#l584"><code>src&#x2F;core&#x2F;texture.js:584</code></a>
                             </p>
                     
                     
@@ -1329,7 +1324,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l557"><code>src&#x2F;core&#x2F;texture.js:557</code></a>
+                            <a href="../files/src_core_texture.js.html#l554"><code>src&#x2F;core&#x2F;texture.js:554</code></a>
                             </p>
                     
                     
@@ -1356,7 +1351,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l527"><code>src&#x2F;core&#x2F;texture.js:527</code></a>
+                            <a href="../files/src_core_texture.js.html#l524"><code>src&#x2F;core&#x2F;texture.js:524</code></a>
                             </p>
                     
                     
@@ -1408,7 +1403,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l617"><code>src&#x2F;core&#x2F;texture.js:617</code></a>
+                            <a href="../files/src_core_texture.js.html#l614"><code>src&#x2F;core&#x2F;texture.js:614</code></a>
                             </p>
                     
                     
@@ -1435,7 +1430,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l677"><code>src&#x2F;core&#x2F;texture.js:677</code></a>
+                            <a href="../files/src_core_texture.js.html#l674"><code>src&#x2F;core&#x2F;texture.js:674</code></a>
                             </p>
                     
                     
@@ -1488,7 +1483,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l797"><code>src&#x2F;core&#x2F;texture.js:797</code></a>
+                            <a href="../files/src_core_texture.js.html#l794"><code>src&#x2F;core&#x2F;texture.js:794</code></a>
                             </p>
                     
                     
@@ -1515,7 +1510,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l707"><code>src&#x2F;core&#x2F;texture.js:707</code></a>
+                            <a href="../files/src_core_texture.js.html#l704"><code>src&#x2F;core&#x2F;texture.js:704</code></a>
                             </p>
                     
                     
@@ -1542,7 +1537,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l497"><code>src&#x2F;core&#x2F;texture.js:497</code></a>
+                            <a href="../files/src_core_texture.js.html#l494"><code>src&#x2F;core&#x2F;texture.js:494</code></a>
                             </p>
                     
                     
@@ -1569,7 +1564,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l407"><code>src&#x2F;core&#x2F;texture.js:407</code></a>
+                            <a href="../files/src_core_texture.js.html#l404"><code>src&#x2F;core&#x2F;texture.js:404</code></a>
                             </p>
                     
                     
@@ -1622,7 +1617,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l379"><code>src&#x2F;core&#x2F;texture.js:379</code></a>
+                            <a href="../files/src_core_texture.js.html#l376"><code>src&#x2F;core&#x2F;texture.js:376</code></a>
                             </p>
                     
                     
@@ -1649,7 +1644,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l349"><code>src&#x2F;core&#x2F;texture.js:349</code></a>
+                            <a href="../files/src_core_texture.js.html#l346"><code>src&#x2F;core&#x2F;texture.js:346</code></a>
                             </p>
                     
                     
@@ -1676,7 +1671,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l319"><code>src&#x2F;core&#x2F;texture.js:319</code></a>
+                            <a href="../files/src_core_texture.js.html#l316"><code>src&#x2F;core&#x2F;texture.js:316</code></a>
                             </p>
                     
                     
@@ -1729,7 +1724,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l737"><code>src&#x2F;core&#x2F;texture.js:737</code></a>
+                            <a href="../files/src_core_texture.js.html#l734"><code>src&#x2F;core&#x2F;texture.js:734</code></a>
                             </p>
                     
                     
@@ -1756,7 +1751,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l767"><code>src&#x2F;core&#x2F;texture.js:767</code></a>
+                            <a href="../files/src_core_texture.js.html#l764"><code>src&#x2F;core&#x2F;texture.js:764</code></a>
                             </p>
                     
                     
@@ -1783,7 +1778,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l215"><code>src&#x2F;core&#x2F;texture.js:215</code></a>
+                            <a href="../files/src_core_texture.js.html#l212"><code>src&#x2F;core&#x2F;texture.js:212</code></a>
                             </p>
                     
                     
@@ -1812,7 +1807,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l253"><code>src&#x2F;core&#x2F;texture.js:253</code></a>
+                            <a href="../files/src_core_texture.js.html#l250"><code>src&#x2F;core&#x2F;texture.js:250</code></a>
                             </p>
                     
                     
@@ -1842,7 +1837,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l290"><code>src&#x2F;core&#x2F;texture.js:290</code></a>
+                            <a href="../files/src_core_texture.js.html#l287"><code>src&#x2F;core&#x2F;texture.js:287</code></a>
                             </p>
                     
                     
@@ -1897,7 +1892,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l647"><code>src&#x2F;core&#x2F;texture.js:647</code></a>
+                            <a href="../files/src_core_texture.js.html#l644"><code>src&#x2F;core&#x2F;texture.js:644</code></a>
                             </p>
                     
                     
@@ -1924,7 +1919,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l437"><code>src&#x2F;core&#x2F;texture.js:437</code></a>
+                            <a href="../files/src_core_texture.js.html#l434"><code>src&#x2F;core&#x2F;texture.js:434</code></a>
                             </p>
                     
                     
@@ -1951,7 +1946,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l467"><code>src&#x2F;core&#x2F;texture.js:467</code></a>
+                            <a href="../files/src_core_texture.js.html#l464"><code>src&#x2F;core&#x2F;texture.js:464</code></a>
                             </p>
                     
                     
@@ -1984,7 +1979,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l604"><code>src&#x2F;core&#x2F;texture.js:604</code></a>
+                            <a href="../files/src_core_texture.js.html#l601"><code>src&#x2F;core&#x2F;texture.js:601</code></a>
                             </p>
                     
                     
@@ -2026,7 +2021,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l574"><code>src&#x2F;core&#x2F;texture.js:574</code></a>
+                            <a href="../files/src_core_texture.js.html#l571"><code>src&#x2F;core&#x2F;texture.js:571</code></a>
                             </p>
                     
                     
@@ -2068,7 +2063,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l544"><code>src&#x2F;core&#x2F;texture.js:544</code></a>
+                            <a href="../files/src_core_texture.js.html#l541"><code>src&#x2F;core&#x2F;texture.js:541</code></a>
                             </p>
                     
                     
@@ -2135,7 +2130,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l634"><code>src&#x2F;core&#x2F;texture.js:634</code></a>
+                            <a href="../files/src_core_texture.js.html#l631"><code>src&#x2F;core&#x2F;texture.js:631</code></a>
                             </p>
                     
                     
@@ -2177,7 +2172,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l694"><code>src&#x2F;core&#x2F;texture.js:694</code></a>
+                            <a href="../files/src_core_texture.js.html#l691"><code>src&#x2F;core&#x2F;texture.js:691</code></a>
                             </p>
                     
                     
@@ -2219,7 +2214,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l810"><code>src&#x2F;core&#x2F;texture.js:810</code></a>
+                            <a href="../files/src_core_texture.js.html#l807"><code>src&#x2F;core&#x2F;texture.js:807</code></a>
                             </p>
                     
                     
@@ -2261,7 +2256,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l724"><code>src&#x2F;core&#x2F;texture.js:724</code></a>
+                            <a href="../files/src_core_texture.js.html#l721"><code>src&#x2F;core&#x2F;texture.js:721</code></a>
                             </p>
                     
                     
@@ -2303,7 +2298,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l514"><code>src&#x2F;core&#x2F;texture.js:514</code></a>
+                            <a href="../files/src_core_texture.js.html#l511"><code>src&#x2F;core&#x2F;texture.js:511</code></a>
                             </p>
                     
                     
@@ -2345,7 +2340,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l424"><code>src&#x2F;core&#x2F;texture.js:424</code></a>
+                            <a href="../files/src_core_texture.js.html#l421"><code>src&#x2F;core&#x2F;texture.js:421</code></a>
                             </p>
                     
                     
@@ -2387,7 +2382,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l394"><code>src&#x2F;core&#x2F;texture.js:394</code></a>
+                            <a href="../files/src_core_texture.js.html#l391"><code>src&#x2F;core&#x2F;texture.js:391</code></a>
                             </p>
                     
                     
@@ -2429,7 +2424,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l366"><code>src&#x2F;core&#x2F;texture.js:366</code></a>
+                            <a href="../files/src_core_texture.js.html#l363"><code>src&#x2F;core&#x2F;texture.js:363</code></a>
                             </p>
                     
                     
@@ -2471,7 +2466,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l336"><code>src&#x2F;core&#x2F;texture.js:336</code></a>
+                            <a href="../files/src_core_texture.js.html#l333"><code>src&#x2F;core&#x2F;texture.js:333</code></a>
                             </p>
                     
                     
@@ -2513,7 +2508,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l754"><code>src&#x2F;core&#x2F;texture.js:754</code></a>
+                            <a href="../files/src_core_texture.js.html#l751"><code>src&#x2F;core&#x2F;texture.js:751</code></a>
                             </p>
                     
                     
@@ -2555,7 +2550,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l784"><code>src&#x2F;core&#x2F;texture.js:784</code></a>
+                            <a href="../files/src_core_texture.js.html#l781"><code>src&#x2F;core&#x2F;texture.js:781</code></a>
                             </p>
                     
                     
@@ -2597,7 +2592,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l239"><code>src&#x2F;core&#x2F;texture.js:239</code></a>
+                            <a href="../files/src_core_texture.js.html#l236"><code>src&#x2F;core&#x2F;texture.js:236</code></a>
                             </p>
                     
                     
@@ -2639,7 +2634,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l276"><code>src&#x2F;core&#x2F;texture.js:276</code></a>
+                            <a href="../files/src_core_texture.js.html#l273"><code>src&#x2F;core&#x2F;texture.js:273</code></a>
                             </p>
                     
                     
@@ -2681,7 +2676,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l306"><code>src&#x2F;core&#x2F;texture.js:306</code></a>
+                            <a href="../files/src_core_texture.js.html#l303"><code>src&#x2F;core&#x2F;texture.js:303</code></a>
                             </p>
                     
                     
@@ -2723,7 +2718,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l664"><code>src&#x2F;core&#x2F;texture.js:664</code></a>
+                            <a href="../files/src_core_texture.js.html#l661"><code>src&#x2F;core&#x2F;texture.js:661</code></a>
                             </p>
                     
                     
@@ -2765,7 +2760,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l454"><code>src&#x2F;core&#x2F;texture.js:454</code></a>
+                            <a href="../files/src_core_texture.js.html#l451"><code>src&#x2F;core&#x2F;texture.js:451</code></a>
                             </p>
                     
                     
@@ -2807,7 +2802,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l484"><code>src&#x2F;core&#x2F;texture.js:484</code></a>
+                            <a href="../files/src_core_texture.js.html#l481"><code>src&#x2F;core&#x2F;texture.js:481</code></a>
                             </p>
                     
                     

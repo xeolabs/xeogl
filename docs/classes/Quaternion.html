@@ -135,6 +135,7 @@
 
 <div class="box intro">
     <p>A <strong>Quaternion</strong> applies a rotation transformation to associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+<h2 id="overview">Overview</h2>
 <p><ul>
  <li>A sub-class of <a href="../classes/Transform.html" class="crosslink">Transform</a></li>
  <li>Can be connected into hierarchies with other <a href="../classes/Transform.html" class="crosslink">Transforms</a> and sub-classes</li>
@@ -147,53 +148,53 @@
 <p>In this example we have two <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> that are transformed by a hierarchy that contains
  Quaternion, <a href="../classes/Translate.html" class="crosslink">Translate</a> and <a href="../classes/Scale.html" class="crosslink">Scale</a> transforms.
  The GameObjects share the same <a href="../classes/Geometry.html" class="crosslink">Geometry</a>, which is the default 2x2x2 cube.<br></p>
-<pre class="code prettyprint"><code class="lang-javascript"> var scene = new XEO.Scene();
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
 var quaternion = new XEO.Quaternion(scene, {
     xyzw: [0, 0, 0, 1], // Unit quaternion
- });
+});
 
 var translate1 = new XEO.Translate(scene, {
-    parent: quaternion,
-    xyz: [-5, 0, 0] // Translate along -X axis
- });
+   parent: quaternion,
+   xyz: [-5, 0, 0] // Translate along -X axis
+});
 
 var translate2 = new XEO.Translate(scene, {
-    parent: quaternion,
-    xyz: [5, 0, 0] // Translate along +X axis
- });
+   parent: quaternion,
+   xyz: [5, 0, 0] // Translate along +X axis
+});
 
 var scale = new XEO.Scale(scene, {
-    parent: translate2,
-    xyz: [1, 2, 1] // Scale x2 on Y axis
- });
+   parent: translate2,
+   xyz: [1, 2, 1] // Scale x2 on Y axis
+});
 
 var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
 var gameObject1 = new XEO.GameObject(scene, {
-    transform: translate1,
-    geometry: geometry
- });
+   transform: translate1,
+   geometry: geometry
+});
 
 var gameObject2 = new XEO.GameObject(scene, {
-    transform: scale,
-    geometry: geometry
- });
+   transform: scale,
+   geometry: geometry
+});
 </code></pre>
 <p>Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.</p>
 <p>Let&#39;s insert a <a href="../classes/Scale.html" class="crosslink">Scale</a> between the first Translate and the first <a href="../classes/GameObject.html" class="crosslink">GameObject</a>:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var scale2 = new XEO.Scale(scene, {
-    parent: translate1,
-    xyz: [1, 1, 2] // Scale x2 on Z axis
- });
+   parent: translate1,
+   xyz: [1, 1, 2] // Scale x2 on Z axis
+});
 
 gameObject2.transform = scale2;
 </code></pre>
 <p>And just for fun, we&#39;ll start spinning the Quaternion:</p>
 <pre class="code prettyprint"><code class="lang-javascript">// Rotate 0.2 degrees about Y-axis on each frame
- scene.on("tick", function(e) {
+scene.on("tick", function(e) {
     quaternion.rotate([0, 1, 0, 0.2]);
- });
+});
 </code></pre>
 
 </div>
@@ -924,7 +925,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_quaternion.js.html#l139"><code>src&#x2F;core&#x2F;quaternion.js:139</code></a>
+        <a href="../files/src_core_quaternion.js.html#l132"><code>src&#x2F;core&#x2F;quaternion.js:132</code></a>
         </p>
 
 
@@ -1111,7 +1112,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#property_matrix">Transform</a>:
-                            <a href="../files/src_core_transform.js.html#l75"><code>src&#x2F;core&#x2F;transform.js:75</code></a>
+                            <a href="../files/src_core_transform.js.html#l79"><code>src&#x2F;core&#x2F;transform.js:79</code></a>
                             </p>
                     
                     
@@ -1164,7 +1165,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#property_parent">Transform</a>:
-                            <a href="../files/src_core_transform.js.html#l48"><code>src&#x2F;core&#x2F;transform.js:48</code></a>
+                            <a href="../files/src_core_transform.js.html#l52"><code>src&#x2F;core&#x2F;transform.js:52</code></a>
                             </p>
                     
                     
@@ -1244,7 +1245,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_quaternion.js.html#l111"><code>src&#x2F;core&#x2F;quaternion.js:111</code></a>
+                            <a href="../files/src_core_quaternion.js.html#l104"><code>src&#x2F;core&#x2F;quaternion.js:104</code></a>
                             </p>
                     
                     
@@ -1302,7 +1303,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_matrix">Transform</a>:
-                            <a href="../files/src_core_transform.js.html#l92"><code>src&#x2F;core&#x2F;transform.js:92</code></a>
+                            <a href="../files/src_core_transform.js.html#l96"><code>src&#x2F;core&#x2F;transform.js:96</code></a>
                             </p>
                     
                     
@@ -1344,7 +1345,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_parent">Transform</a>:
-                            <a href="../files/src_core_transform.js.html#l62"><code>src&#x2F;core&#x2F;transform.js:62</code></a>
+                            <a href="../files/src_core_transform.js.html#l66"><code>src&#x2F;core&#x2F;transform.js:66</code></a>
                             </p>
                     
                     
@@ -1386,7 +1387,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_quaternion.js.html#l124"><code>src&#x2F;core&#x2F;quaternion.js:124</code></a>
+                            <a href="../files/src_core_quaternion.js.html#l117"><code>src&#x2F;core&#x2F;quaternion.js:117</code></a>
                             </p>
                     
                     

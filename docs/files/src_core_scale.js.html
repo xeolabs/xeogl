@@ -125,11 +125,13 @@
 
  A **Scale** applies a scaling transformation to associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
+ ## Overview
+
  &lt;ul&gt;
- &lt;li&gt;A sub-class of {{#crossLink &quot;Transform&quot;}}{{/crossLink}}&lt;/li&gt;
+ &lt;li&gt;Scale is a sub-class of {{#crossLink &quot;Transform&quot;}}{{/crossLink}}&lt;/li&gt;
  &lt;li&gt;Can be connected into hierarchies with other {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}} and sub-classes&lt;/li&gt;
  &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are connected to leaf {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}}
- in the hierarchy, and will be transformed by each {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}} on the path up to the
+ in the hierarchy, and will be transformed by each {{#crossLink &quot;Transform&quot;}}Transform{{/crossLink}} on the path up to the
  root, in that order.&lt;/li&gt;
  &lt;/ul&gt;
 
@@ -144,70 +146,61 @@
  &#x60;&#x60;&#x60;&#x60;javascript
 var scene = new XEO.Scene();
 
+var rotate = new XEO.Rotate(scene, {
+    xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
+    angle: 30
+});
 
- var rotate = new XEO.Rotate(scene, {
-        xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
-        angle: 30
-     });
+var translate1 = new XEO.Translate(scene, {
+    parent: rotate,
+    xyz: [-5, 0, 0] // Translate along -X axis
+});
 
+var translate2 = new XEO.Translate(scene, {
+    parent: rotate,
+    xyz: [5, 0, 0] // Translate along +X axis
+});
 
- var translate1 = new XEO.Translate(scene, {
-        parent: rotate,
-        xyz: [-5, 0, 0] // Translate along -X axis
-     });
+var scale = new XEO.Scale(scene, {
+    parent: translate2,
+    xyz: [1, 2, 1] // Scale x2 on Y axis
+});
 
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var translate2 = new XEO.Translate(scene, {
-        parent: rotate,
-        xyz: [5, 0, 0] // Translate along +X axis
-     });
+var gameObject1 = new XEO.GameObject(scene, {
+    transform: translate1,
+    geometry: geometry
+});
 
-
- var scale = new XEO.Scale(scene, {
-        parent: translate2,
-        xyz: [1, 2, 1] // Scale x2 on Y axis
-     });
-
-
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
-
- var gameObject1 = new XEO.GameObject(scene, {
-        transform: translate1,
-        geometry: geometry
-     });
-
-
- var gameObject2 = new XEO.GameObject(scene, {
-        transform: scale,
-        geometry: geometry
-     });
+var gameObject2 = new XEO.GameObject(scene, {
+    transform: scale,
+    geometry: geometry
+});
  &#x60;&#x60;&#x60;&#x60;
 
- Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
+Let&#x27;s insert a {{#crossLink &quot;Scale&quot;}}{{/crossLink}} between the first Translate and the first {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}:
 
- Let&#x27;s insert a {{#crossLink &quot;Scale&quot;}}{{/crossLink}} between the first Translate and the first {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}:
+&#x60;&#x60;&#x60;&#x60;javascript
 
- &#x60;&#x60;&#x60;&#x60;javascript
-
- var scale2 = new XEO.Scale(scene, {
+var scale2 = new XEO.Scale(scene, {
     parent: translate1,
     xyz: [1, 1, 2] // Scale x2 on Z axis
- });
+});
 
-
- gameObject2.transform = scale2;
- &#x60;&#x60;&#x60;&#x60;
+gameObject2.transform = scale2;
+&#x60;&#x60;&#x60;&#x60;
 
  And just for fun, we&#x27;ll start spinning the {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}:
 
- &#x60;&#x60;&#x60;&#x60;javascript
- // Rotate 0.2 degrees on each frame
- scene.on(&quot;tick&quot;, function(e) {
+&#x60;&#x60;&#x60;&#x60;javascript
+// Rotate 0.2 degrees on each frame
+scene.on(&quot;tick&quot;, function(e) {
     rotate.angle += 0.2;
- });
- &#x60;&#x60;&#x60;&#x60;
+});
+&#x60;&#x60;&#x60;&#x60;
  @class Scale
  @module XEO
  @extends Transform

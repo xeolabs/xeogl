@@ -1,6 +1,8 @@
 /**
  A **GameObject** is an entity within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
+ ## Overview
+
  See the {{#crossLink "Scene"}}Scene{{/crossLink}} class documentation for more information on GameObjects.</li>
 
  <img src="http://www.gliffy.com/go/publish/image/7122967/L.png"></img>

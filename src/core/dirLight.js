@@ -1,6 +1,8 @@
 /**
- A **DirLight** is a light source that illuminates all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally
+ A **DirLight** is a directional light source that illuminates all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally
  from a given direction.
+
+ ## Overview
 
  <ul>
     <li>DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,

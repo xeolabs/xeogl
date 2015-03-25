@@ -121,89 +121,89 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+ A **Tasks** tracks general asynchronous tasks running within a {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+
+ ## Overview
+
+ &lt;ul&gt;
+ &lt;li&gt;Each {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} has a Tasks component, available via the
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Scene/tasks:property&quot;}}tasks{{/crossLink}} property,
+ within which it will create and destroy {{#crossLink &quot;Task&quot;}}Task{{/crossLink}} components to indicate what processes
+ it&#x27;s running internally.&lt;/li&gt;
+
+ &lt;li&gt;You can also manage your own {{#crossLink &quot;Task&quot;}}Task{{/crossLink}} components within that, to indicate what
+ application-level processes you are running.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7122907/L.png&quot;&gt;&lt;/img&gt;
+
+ ## Example
+
+ This example shows how to manage tasks and subscribe to their life cycles.
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+// Create a Scene
+var scene = new XEO.Scene();
+
+// Get the Tasks tracker
+var tasks = scene.tasks;
+
+// Subscribe to all task creations
+tasks.on(&quot;started&quot;, function(task) {
+     console.log(&quot;Task started: &quot; + task.id +&quot;, &quot; + task.description);
+});
+
+// Subscribe to all task completions
+tasks.on(&quot;completed&quot;, function(task) {
+      console.log(&quot;Task completed: &quot; + task.id +&quot;, &quot; + task.description);
+});
+
+ // Subscribe to all task failures
+tasks.on(&quot;failed&quot;, function(task) {
+     console.log(&quot;Task failed: &quot; + task.id +&quot;, &quot; + task.description);
+});
+
+// Create and start Task &quot;foo&quot;
+var taskFoo = tasks.create({
+     id: &quot;foo&quot;, // Optional, unique ID generated automatically when omitted
+     description: &quot;Loading something&quot;
+});
+
+// Create and start Task &quot;bar&quot;
+var taskBar = tasks.create({
+     id: &quot;bar&quot;,
+     description: &quot;Loading something else&quot;
+});
+
+// Subscribe to completion of Task &quot;foo&quot;
+taskFoo.on(&quot;completed&quot;, function(task) {
+     console.log(&quot;Task completed: &quot; + task.id +&quot;, &quot; + task.description);
+});
+
+// Subscribe to failure of a specific task
+taskFoo.on(&quot;failed&quot;, function(task) {
+     console.log(&quot;Task failed: &quot; + task.id +&quot;, &quot; + task.description);
+});
+
+// Set Task &quot;foo&quot; as completed, via the Tasks
+// Fires the &quot;completed&quot; handler we registered above, also fires &quot;completed&quot; on the Task itself
+tasks.setCompleted(&quot;foo&quot;);
+
+// Set Task &quot;bar&quot; as failed, this time directly on the Task in question
+myTask2.setFailed();
+
+&#x60;&#x60;&#x60;&#x60;
+ @class Tasks
+ @module XEO
+ @constructor
+ @extends Component
+ */
 (function () {
 
     &quot;use strict&quot;;
 
 
-    /**
-     A **Tasks** tracks general asynchronous tasks running within a {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
-
-     &lt;ul&gt;
-     &lt;li&gt;Each {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} has a Tasks component, available via the
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Scene/tasks:property&quot;}}tasks{{/crossLink}} property,
-     within which it will create and destroy {{#crossLink &quot;Task&quot;}}Task{{/crossLink}} components to indicate what processes
-     it&#x27;s running internally.&lt;/li&gt;
-
-     &lt;li&gt;You can also manage your own {{#crossLink &quot;Task&quot;}}Task{{/crossLink}} components within that, to indicate what
-     application-level processes you are running.&lt;/li&gt;
-     &lt;/ul&gt;
-
-     &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7122907/L.png&quot;&gt;&lt;/img&gt;
-
-     ## Example
-
-     This example shows how to manage tasks and subscribe to their life cycles.
-
-     &#x60;&#x60;&#x60;&#x60;Javascript
-
-     // Create a Scene
-     var scene = new XEO.Scene();
-
-     // Get the Tasks tracker
-     var tasks = scene.tasks;
-
-     // Subscribe to all task creations
-     tasks.on(&quot;started&quot;, function(task) {
-       console.log(&quot;Task started: &quot; + task.id +&quot;, &quot; + task.description);
-  });
-
-     // Subscribe to all task completions
-     tasks.on(&quot;completed&quot;, function(task) {
-       console.log(&quot;Task completed: &quot; + task.id +&quot;, &quot; + task.description);
-  });
-
-     // Subscribe to all task failures
-     tasks.on(&quot;failed&quot;, function(task) {
-       console.log(&quot;Task failed: &quot; + task.id +&quot;, &quot; + task.description);
-  });
-
-     // Create and start Task &quot;foo&quot;
-     var taskFoo = tasks.create({
-       id: &quot;foo&quot;, // Optional, unique ID generated automatically when omitted
-       description: &quot;Loading something&quot;
-  });
-
-     // Create and start Task &quot;bar&quot;
-     var taskBar = tasks.create({
-       id: &quot;bar&quot;,
-       description: &quot;Loading something else&quot;
-  });
-
-     // Subscribe to completion of Task &quot;foo&quot;
-     taskFoo.on(&quot;completed&quot;, function(task) {
-       console.log(&quot;Task completed: &quot; + task.id +&quot;, &quot; + task.description);
-  });
-
-     // Subscribe to failure of a specific task
-     taskFoo.on(&quot;failed&quot;, function(task) {
-       console.log(&quot;Task failed: &quot; + task.id +&quot;, &quot; + task.description);
-  });
-
-     // Set Task &quot;foo&quot; as completed, via the Tasks
-     // Fires the &quot;completed&quot; handler we registered above, also fires &quot;completed&quot; on the Task itself
-     tasks.setCompleted(&quot;foo&quot;);
-
-     // Set Task &quot;bar&quot; as failed, this time directly on the Task in question
-     myTask2.setFailed();
-
-     &#x60;&#x60;&#x60;&#x60;
-
-     @class Tasks
-     @module XEO
-     @constructor
-     @extends Component
-     */
     XEO.Tasks = XEO.Component.extend({
 
         _init: function (cfg) {
