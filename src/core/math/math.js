@@ -31,7 +31,8 @@
 
 
     /**
-     * Math functions, used within xeoEngine, but also available for you to use in your application code.
+     * This utility object provides math functions that are used within xeoEngine. These functions are also part xeoEngine's
+     * public API and are therefore available for you to use within your application code.
      * @module XEO
      * @class math
      * @static
@@ -69,8 +70,10 @@
 
         /**
          * Floating-point modulus
-         * @param a
-         * @param b
+         * @method fmod
+         * @static
+         * @param {Number} a
+         * @param {Number} b
          * @returns {*}
          */
         fmod: function (a, b) {
@@ -87,6 +90,7 @@
         /**
          * Negates a four-element vector.
          * @method negateVec4
+         * @static
          * @param {Array(Number)} v Vector to negate
          * @param  {Array(Number)} [dest] Destination vector
          * @return {Array(Number)} dest if specified, v otherwise
@@ -105,6 +109,7 @@
         /**
          * Adds one four-element vector to another.
          * @method addVec4
+         * @static
          * @param {Array(Number)} u First vector
          * @param {Array(Number)} v Second vector
          * @param  {Array(Number)} [dest] Destination vector
@@ -124,6 +129,7 @@
         /**
          * Adds a scalar value to each element of a four-element vector.
          * @method addVec4Scalar
+         * @static
          * @param {Array(Number)} v The vector
          * @param {Number} s The scalar
          * @param  {Array(Number)} [dest] Destination vector
@@ -143,6 +149,7 @@
         /**
          * Adds one three-element vector to another.
          * @method addVec3
+         * @static
          * @param {Array(Number)} u First vector
          * @param {Array(Number)} v Second vector
          * @param  {Array(Number)} [dest] Destination vector
@@ -161,6 +168,7 @@
         /**
          * Adds a scalar value to each element of a three-element vector.
          * @method addVec4Scalar
+         * @static
          * @param {Array(Number)} v The vector
          * @param {Number} s The scalar
          * @param  {Array(Number)} [dest] Destination vector
@@ -179,6 +187,7 @@
         /**
          * Subtracts one four-element vector from another.
          * @method subVec4
+         * @static
          * @param {Array(Number)} u First vector
          * @param {Array(Number)} v Vector to subtract
          * @param  {Array(Number)} [dest] Destination vector
@@ -198,6 +207,7 @@
         /**
          * Subtracts one three-element vector from another.
          * @method subVec3
+         * @static
          * @param {Array(Number)} u First vector
          * @param {Array(Number)} v Vector to subtract
          * @param  {Array(Number)} [dest] Destination vector
@@ -216,6 +226,7 @@
         /**
          * Subtracts one two-element vector from another.
          * @method subVec2
+         * @static
          * @param {Array(Number)} u First vector
          * @param {Array(Number)} v Vector to subtract
          * @param  {Array(Number)} [dest] Destination vector
@@ -233,6 +244,7 @@
         /**
          * Subtracts a scalar value from each element of a four-element vector.
          * @method subVec4Scalar
+         * @static
          * @param {Array(Number)} v The vector
          * @param {Number} s The scalar
          * @param  {Array(Number)} [dest] Destination vector
@@ -252,6 +264,7 @@
         /**
          * Sets each element of a 4-element vector to a scalar value minus the value of that element.
          * @method subScalarVec4
+         * @static
          * @param {Array(Number)} v The vector
          * @param {Number} s The scalar
          * @param  {Array(Number)} [dest] Destination vector
@@ -271,6 +284,7 @@
         /**
          * Multiplies one three-element vector by another.
          * @method mulVec3
+         * @static
          * @param {Array(Number)} u First vector
          * @param {Array(Number)} v Second vector
          * @param  {Array(Number)} [dest] Destination vector
@@ -290,6 +304,7 @@
         /**
          * Multiplies each element of a four-element vector by a scalar.
          * @method mulVec34calar
+         * @static
          * @param {Array(Number)} v The vector
          * @param {Number} s The scalar
          * @param  {Array(Number)} [dest] Destination vector
@@ -309,6 +324,7 @@
         /**
          * Multiplies each element of a three-element vector by a scalar.
          * @method mulVec3Scalar
+         * @static
          * @param {Array(Number)} v The vector
          * @param {Number} s The scalar
          * @param  {Array(Number)} [dest] Destination vector
@@ -327,6 +343,7 @@
         /**
          * Multiplies each element of a two-element vector by a scalar.
          * @method mulVec2Scalar
+         * @static
          * @param {Array(Number)} v The vector
          * @param {Number} s The scalar
          * @param  {Array(Number)} [dest] Destination vector
@@ -381,11 +398,13 @@
         },
 
         /**
+         * Divides a scalar by a three-element vector, returning a new vector.
+         * @method divScalarVec3
+         * @static
          * @param v vec3
          * @param s scalar
          * @param dest vec3 - optional destination
          * @return [] dest if specified, v otherwise
-         *
          */
         divScalarVec3: function (s, v, dest) {
             if (!dest) {
@@ -398,11 +417,13 @@
         },
 
         /**
+         * Divides a three-element vector by a scalar.
+         * @method divVec3Scalar
+         * @static
          * @param v vec3
          * @param s scalar
          * @param dest vec3 - optional destination
          * @return [] dest if specified, v otherwise
-         *
          */
         divVec3Scalar: function (v, s, dest) {
             if (!dest) {
@@ -415,11 +436,13 @@
         },
 
         /**
+         * Divides a four-element vector by a scalar.
+         * @method divVec4Scalar
+         * @static
          * @param v vec4
          * @param s scalar
          * @param dest vec4 - optional destination
          * @return [] dest if specified, v otherwise
-         *
          */
         divVec4Scalar: function (v, s, dest) {
             if (!dest) {
@@ -434,11 +457,13 @@
 
 
         /**
+         * Divides a scalar by a four-element vector, returning a new vector.
+         * @method divScalarVec4
+         * @static
          * @param s scalar
          * @param v vec4
          * @param dest vec4 - optional destination
          * @return [] dest if specified, v otherwise
-
          */
         divScalarVec4: function (s, v, dest) {
             if (!dest) {
@@ -451,12 +476,26 @@
             return dest;
         },
 
-
+        /**
+         * Returns the dot product of two four-element vectors.
+         * @method dotVec4
+         * @static
+         * @param {Array(Number)} u First vector
+         * @param {Array(Number)} v Second vector
+         * @return The dot product
+         */
         dotVec4: function (u, v) {
             return (u[0] * v[0] + u[1] * v[1] + u[2] * v[2] + u[3] * v[3]);
         },
 
-
+        /**
+         * Returns the cross product of two four-element vectors.
+         * @method cross3Vec4
+         * @static
+         * @param {Array(Number)} u First vector
+         * @param {Array(Number)} v Second vector
+         * @return The cross product
+         */
         cross3Vec4: function (u, v) {
             var u0 = u[0], u1 = u[1], u2 = u[2];
             var v0 = v[0], v1 = v[1], v2 = v[2];
@@ -468,11 +507,12 @@
         },
 
         /**
-         * @param u vec3
-         * @param v vec3
-         * @param dest vec3 - optional destination
-         * @return [] dest if specified, u otherwise
-         *
+         * Returns the cross product of two three-element vectors.
+         * @method cross3Vec3
+         * @static
+         * @param {Array(Number)} u First vector
+         * @param {Array(Number)} v Second vector
+         * @return The cross product
          */
         cross3Vec3: function (u, v, dest) {
             if (!dest) {
@@ -486,47 +526,81 @@
             return dest;
         },
 
-        /**  */
-        sqLenVec4: function (v) {
+
+        sqLenVec4: function (v) { // TODO
             return XEO.math.dotVec4(v, v);
         },
 
-        /**  */
+        /**
+         * Returns the length of a four-element vector.
+         * @method lenVec4
+         * @static
+         * @param {Array(Number)} v The vector
+         * @return The length
+         */
         lenVec4: function (v) {
             return Math.sqrt(XEO.math.sqLenVec4(v));
         },
 
-        /**  */
+        /**
+         * Returns the dot product of two three-element vectors.
+         * @method dotVec4
+         * @static
+         * @param {Array(Number)} u First vector
+         * @param {Array(Number)} v Second vector
+         * @return The dot product
+         */
         dotVec3: function (u, v) {
             return (u[0] * v[0] + u[1] * v[1] + u[2] * v[2]);
         },
 
-        /**  */
+        /**
+         * Returns the dot product of two two-element vectors.
+         * @method dotVec4
+         * @static
+         * @param {Array(Number)} u First vector
+         * @param {Array(Number)} v Second vector
+         * @return The dot product
+         */
         dotVec2: function (u, v) {
             return (u[0] * v[0] + u[1] * v[1]);
         },
 
-        /**  */
+
         sqLenVec3: function (v) {
             return XEO.math.dotVec3(v, v);
         },
 
-        /**  */
+
         sqLenVec2: function (v) {
             return XEO.math.dotVec2(v, v);
         },
 
-        /**  */
+        /**
+         * Returns the length of a three-element vector.
+         * @method lenVec3
+         * @static
+         * @param {Array(Number)} v The vector
+         * @return The length
+         */
         lenVec3: function (v) {
             return Math.sqrt(XEO.math.sqLenVec3(v));
         },
 
-        /**  */
+        /**
+         * Returns the length of a two-element vector.
+         * @method lenVec2
+         * @static
+         * @param {Array(Number)} v The vector
+         * @return The length
+         */
         lenVec2: function (v) {
             return Math.sqrt(XEO.math.sqLenVec2(v));
         },
 
         /**
+         * @method @rcpVec3
+         * @static
          * @param v vec3
          * @param dest vec3 - optional destination
          * @return [] dest if specified, v otherwise
@@ -537,6 +611,9 @@
         },
 
         /**
+         * Normalizes a four-element vector
+         * @method normalizeVec4
+         * @static
          * @param v vec4
          * @param dest vec4 - optional destination
          * @return [] dest if specified, v otherwise
@@ -547,29 +624,49 @@
             return XEO.math.mulVec4Scalar(v, f, dest);
         },
 
-        /**  */
+        /**
+         * Normalizes a three-element vector
+         * @method normalizeVec4
+         * @static
+         */
         normalizeVec3: function (v, dest) {
             var f = 1.0 / XEO.math.lenVec3(v);
             return XEO.math.mulVec3Scalar(v, f, dest);
         },
 
-// 
+        /**
+         * Normalizes a two-element vector
+         * @method normalizeVec2
+         * @static
+         */
         normalizeVec2: function (v, dest) {
             var f = 1.0 / XEO.math.lenVec2(v);
             return XEO.math.mulVec2Scalar(v, f, dest);
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 identity matrix.
+         * @method mat4
+         * @static
+         */
         mat4: function () {
             return new Array(16);
         },
 
-        /**  */
+        /**
+         * Duplicates a 4x4 identity matrix.
+         * @method dupMat4
+         * @static
+         */
         dupMat4: function (m) {
             return m.slice(0, 16);
         },
 
-        /**  */
+        /**
+         * Extracts a 3x3 matrix from a 4x4 matrix.
+         * @method mat4To3
+         * @static
+         */
         mat4To3: function (m) {
             return [
                 m[0], m[1], m[2],
@@ -578,7 +675,11 @@
             ];
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 matrix with each element set to the given scalar value.
+         * @method m4s
+         * @static
+         */
         m4s: function (s) {
             return [
                 s, s, s, s,
@@ -588,17 +689,29 @@
             ];
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 matrix with each element set to zero.
+         * @method setMat4ToZeroes
+         * @static
+         */
         setMat4ToZeroes: function () {
             return XEO.math.m4s(0.0);
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 matrix with each element set to 1.0.
+         * @method setMat4ToOnes
+         * @static
+         */
         setMat4ToOnes: function () {
             return XEO.math.m4s(1.0);
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 matrix with each element set to 1.0.
+         * @method setMat4ToOnes
+         * @static
+         */
         diagonalMat4v: function (v) {
             return [
                 v[0], 0.0, 0.0, 0.0,
@@ -608,22 +721,38 @@
             ];
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 matrix with diagonal elements set to the given vector.
+         * @method diagonalMat4c
+         * @static
+         */
         diagonalMat4c: function (x, y, z, w) {
             return XEO.math.diagonalMat4v([x, y, z, w]);
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 matrix with diagonal elements set to the given scalar.
+         * @method diagonalMat4s
+         * @static
+         */
         diagonalMat4s: function (s) {
             return XEO.math.diagonalMat4c(s, s, s, s);
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 identity matrix.
+         * @method identityMat4
+         * @static
+         */
         identityMat4: function () {
             return XEO.math.diagonalMat4v([1.0, 1.0, 1.0, 1.0]);
         },
 
-        /**  */
+        /**
+         * Tests if the given 4x4 matrix is the identity matrix.
+         * @method isIdentityMat4
+         * @static
+         */
         isIdentityMat4: function (m) {
             if (m[0] !== 1.0 || m[1] !== 0.0 || m[2] !== 0.0 || m[3] !== 0.0 ||
                 m[4] !== 0.0 || m[5] !== 1.0 || m[6] !== 0.0 || m[7] !== 0.0 ||
@@ -635,10 +764,9 @@
         },
 
         /**
-         * @param m mat4
-         * @param dest mat4 - optional destination
-         * @return {mat4} dest if specified, m otherwise
-         *
+         * Negates the given 4x4 matrix.
+         * @method negateMat4
+         * @static
          */
         negateMat4: function (m, dest) {
             if (!dest) {
@@ -664,11 +792,9 @@
         },
 
         /**
-         * @param a mat4
-         * @param b mat4
-         * @param dest mat4 - optional destination
-         * @return {mat4} dest if specified, a otherwise
-         *
+         * Adds the given 4x4 matrices together.
+         * @method addMat4
+         * @static
          */
         addMat4: function (a, b, dest) {
             if (!dest) {
@@ -694,11 +820,9 @@
         },
 
         /**
-         * @param m mat4
-         * @param s scalar
-         * @param dest mat4 - optional destination
-         * @return {mat4} dest if specified, m otherwise
-         *
+         * Adds the given scalar to each element of the given 4x4 matrix.
+         * @method addMat4Scalar
+         * @static
          */
         addMat4Scalar: function (m, s, dest) {
             if (!dest) {
@@ -723,17 +847,19 @@
             return dest;
         },
 
-        /**  */
+        /**
+         * Adds the given scalar to each element of the given 4x4 matrix.
+         * @method addScalarMat4
+         * @static
+         */
         addScalarMat4: function (s, m, dest) {
             return XEO.math.addMat4Scalar(m, s, dest);
         },
 
         /**
-         * @param a mat4
-         * @param b mat4
-         * @param dest mat4 - optional destination
-         * @return {mat4} dest if specified, a otherwise
-         *
+         * Subtracts the second 4x4 matrix from the first.
+         * @method subMat4
+         * @static
          */
         subMat4: function (a, b, dest) {
             if (!dest) {
@@ -759,11 +885,9 @@
         },
 
         /**
-         * @param m mat4
-         * @param s scalar
-         * @param dest mat4 - optional destination
-         * @return {mat4} dest if specified, m otherwise
-         *
+         * Subtracts the given scalar from each element of the given 4x4 matrix.
+         * @method subMat4Scalar
+         * @static
          */
         subMat4Scalar: function (m, s, dest) {
             if (!dest) {
@@ -789,11 +913,9 @@
         },
 
         /**
-         * @param s scalar
-         * @param m mat4
-         * @param dest mat4 - optional destination
-         * @return {mat4} dest if specified, m otherwise
-         *
+         * Subtracts the given scalar from each element of the given 4x4 matrix.
+         * @method subScalarMat4
+         * @static
          */
         subScalarMat4: function (s, m, dest) {
             if (!dest) {
@@ -819,11 +941,9 @@
         },
 
         /**
-         * @param a mat4
-         * @param b mat4
-         * @param dest mat4 - optional destination
-         * @return {mat4} dest if specified, a otherwise
-         *
+         * Multiplies the two given 4x4 matrix by each other.
+         * @method mulMat4
+         * @static
          */
         mulMat4: function (a, b, dest) {
             if (!dest) {
@@ -862,11 +982,9 @@
         },
 
         /**
-         * @param m mat4
-         * @param s scalar
-         * @param dest mat4 - optional destination
-         * @return {mat4} dest if specified, m otherwise
-         *
+         * Multiplies each element of the given 4x4 matrix by the given scalar.
+         * @method mulMat4Scalar
+         * @static
          */
         mulMat4Scalar: function (m, s, dest) {
             if (!dest) {
@@ -892,10 +1010,9 @@
         },
 
         /**
-         * @param m mat4
-         * @param v vec4
-         * @return []
-         *
+         * Multiplies the given 4x4 matrix by the given four-element vector.
+         * @method mulMat4v4
+         * @static
          */
         mulMat4v4: function (m, v) {
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
@@ -908,10 +1025,9 @@
         },
 
         /**
-         * @param mat mat4
-         * @param dest mat4 - optional destination
-         * @return {mat4} dest if specified, mat otherwise
-         *
+         * Transposes the given 4x4 matrix.
+         * @method transposeMat4
+         * @static
          */
         transposeMat4: function (mat, dest) {
             // If we are transposing ourselves we can skip a few steps but have to cache some values
@@ -954,7 +1070,11 @@
             return dest;
         },
 
-        /**  */
+        /**
+         * Returns the determinant of the given 4x4 matrix.
+         * @method determinantMat4
+         * @static
+         */
         determinantMat4: function (mat) {
             // Cache the matrix values (makes for huge speed increases!)
             var a00 = mat[0], a01 = mat[1], a02 = mat[2], a03 = mat[3];
@@ -970,10 +1090,9 @@
         },
 
         /**
-         * @param mat mat4
-         * @param dest mat4 - optional destination
-         * @return {mat4} dest if specified, mat otherwise
-         *
+         * Returns the inverse of the given 4x4 matrix.
+         * @method inverseMat4
+         * @static
          */
         inverseMat4: function (mat, dest) {
             if (!dest) {
@@ -1020,12 +1139,20 @@
             return dest;
         },
 
-        /**  */
+        /**
+         * Returns the trace of the given 4x4 matrix.
+         * @method traceMat4
+         * @static
+         */
         traceMat4: function (m) {
             return (m[0] + m[5] + m[10] + m[15]);
         },
 
-        /**  */
+        /**
+         * Returns 4x4 translation matrix.
+         * @method translationMat4
+         * @static
+         */
         translationMat4v: function (v) {
             var m = XEO.math.identityMat4();
             m[12] = v[0];
@@ -1034,17 +1161,29 @@
             return m;
         },
 
-        /**  */
+        /**
+         * Returns 4x4 translation matrix.
+         * @method translationMat4c
+         * @static
+         */
         translationMat4c: function (x, y, z) {
             return XEO.math.translationMat4v([x, y, z]);
         },
 
-        /**  */
+        /**
+         * Returns 4x4 translation matrix.
+         * @method translationMat4s
+         * @static
+         */
         translationMat4s: function (s) {
             return XEO.math.translationMat4c(s, s, s);
         },
 
-        /**  */
+        /**
+         * Returns 4x4 rotation matrix.
+         * @method rotationMat4v
+         * @static
+         */
         rotationMat4v: function (anglerad, axis) {
             var ax = XEO.math.normalizeVec4([axis[0], axis[1], axis[2], 0.0], []);
             var s = Math.sin(anglerad);
@@ -1092,12 +1231,20 @@
             return m;
         },
 
-        /**  */
+        /**
+         * Returns 4x4 rotation matrix.
+         * @method rotationMat4c
+         * @static
+         */
         rotationMat4c: function (anglerad, x, y, z) {
             return XEO.math.rotationMat4v(anglerad, [x, y, z]);
         },
 
-        /**  */
+        /**
+         * Returns 4x4 scale matrix.
+         * @method scalingMat4v
+         * @static
+         */
         scalingMat4v: function (v) {
             var m = XEO.math.identityMat4();
             m[0] = v[0];
@@ -1106,17 +1253,27 @@
             return m;
         },
 
-        /**  */
+        /**
+         * Returns 4x4 scale matrix.
+         * @method scalingMat4c
+         * @static
+         */
         scalingMat4c: function (x, y, z) {
             return XEO.math.scalingMat4v([x, y, z]);
         },
 
-        /**  */
+        /**
+         * Returns 4x4 scale matrix.
+         * @method scalingMat4s
+         * @static
+         */
         scalingMat4s: function (s) {
             return XEO.math.scalingMat4c(s, s, s);
         },
 
         /**
+         * Returns a 4x4 'lookat' viewing transform matrix.
+         * @method lookAtMat4v
          * @param pos vec3 position of the viewer
          * @param target vec3 point the viewer is looking at
          * @param up vec3 pointing "up"
@@ -1209,12 +1366,18 @@
             return dest;
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 'lookat' viewing transform matrix.
+         * @method lookAtMat4c
+         */
         lookAtMat4c: function (posx, posy, posz, targetx, targety, targetz, upx, upy, upz) {
             return XEO.math.lookAtMat4v([posx, posy, posz], [targetx, targety, targetz], [upx, upy, upz], []);
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 orthographic projection matrix.
+         * @method orthoMat4c
+         */
         orthoMat4c: function (left, right, bottom, top, near, far, dest) {
             if (!dest) {
                 dest = XEO.math.mat4();
@@ -1246,7 +1409,10 @@
             return dest;
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 perspective projection matrix.
+         * @method frustumMat4v
+         */
         frustumMat4v: function (fmin, fmax) {
             var fmin4 = [fmin[0], fmin[1], fmin[2], 0.0];
             var fmax4 = [fmax[0], fmax[1], fmax[2], 0.0];
@@ -1282,7 +1448,10 @@
             return m;
         },
 
-        /**  */
+        /**
+         * Returns a 4x4 perspective projection matrix.
+         * @method frustumMatrix4v
+         */
         frustumMatrix4: function (left, right, bottom, top, near, far, dest) {
             if (!dest) {
                 dest = XEO.math.mat4();
@@ -1309,8 +1478,10 @@
             return dest;
         },
 
-
-        /**  */
+        /**
+         * Returns a 4x4 perspective projection matrix.
+         * @method perspectiveMatrix4v
+         */
         perspectiveMatrix4: function (fovyrad, aspectratio, znear, zfar) {
             var pmin = [];
             var pmax = [];
@@ -1327,7 +1498,10 @@
             return XEO.math.frustumMat4v(pmin, pmax);
         },
 
-        /**  */
+        /**
+         * Transforms a three-element position by a 4x4 matrix.
+         * @method transformPoint3
+         */
         transformPoint3: function (m, p) {
             var p0 = p[0], p1 = p[1], p2 = p[2];
             return [
@@ -1339,7 +1513,10 @@
         },
 
 
-        /**  */
+        /**
+         * Transforms an array of three-element positions by a 4x4 matrix.
+         * @method transformPoints3
+         */
         transformPoints3: function (m, points) {
             var result = new Array(points.length);
             var len = points.length;
@@ -1370,7 +1547,10 @@
             return result;
         },
 
-        /**  */
+        /**
+         * Transforms a three-element vector by a 4x4 matrix.
+         * @method transformVec3
+         */
         transformVec3: function (m, v) {
             var v0 = v[0], v1 = v[1], v2 = v[2];
             return [
@@ -1380,6 +1560,10 @@
             ];
         },
 
+        /**
+         * Transforms a four-element vector by a 4x4 matrix.
+         * @method transformVec4
+         */
         transformVec4: function (m, v) {
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
             return [
@@ -1390,7 +1574,10 @@
             ];
         },
 
-        /**  */
+        /**
+         * Transforms a four-element vector by a 4x4 projection matrix.
+         * @method projectVec4
+         */
         projectVec4: function (v) {
             var f = 1.0 / v[3];
             return [v[0] * f, v[1] * f, v[2] * f, 1.0];

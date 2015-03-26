@@ -122,11 +122,12 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Shader** specifies a custom GLSL shader to draw attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
 ## Overview
 
  &lt;ul&gt;
+ &lt;li&gt;Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.&lt;/li&gt;
  &lt;li&gt;You can use xeoEngine&#x27;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#x27;s set by other
  components on the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
  &lt;li&gt;Use Shaders in combination with {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} components when you need to share
@@ -227,7 +228,9 @@
 
  ## Shader Inputs
 
- xeoEngine provides various inputs for your shaders (TODO)
+ xeoEngine provides the following inputs for your shaders.
+
+ **TODO - this section is under construction**
 
  #### Attributes
 

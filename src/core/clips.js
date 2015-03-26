@@ -1,5 +1,5 @@
 /**
- A **Clips** is a group of arbitrarily-aligned World-space {{#crossLink "Clip"}}Clip{{/crossLink}} planes, which are used to create
+ A **Clips** is a group of arbitrarily-aligned World-space {{#crossLink "Clip"}}Clip{{/crossLink}} planes, which may be used to create
  cross-sectional views of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
@@ -85,13 +85,15 @@
  enable or disable clipping of it:
 
  ```` javascript
+ // Create the Modes
  var modes = new XEO.Modes(scene, {
     clipping: true
  });
 
+ // Attach our GameObject to the Modes
  object.modes = modes;
 
- // Disable clipping:
+ // Disable clipping for the GameObject
  modes.clipping = false;
  ````
 

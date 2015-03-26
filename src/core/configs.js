@@ -26,7 +26,7 @@
  ## Example
 
  In this example, we're subscribing to change events for a {{#crossLink "Scene"}}Scene's{{/crossLink}} "foo" configuration property, then updating that
- that property, which fires the change event.
+ property, which fires a change event.
 
  ````Javascript
 var scene = new XEO.Scene();

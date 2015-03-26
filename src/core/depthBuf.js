@@ -1,5 +1,5 @@
 /**
- A **DepthMap** configures the WebGL depth buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **DepthBuf** configures the WebGL depth buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
 

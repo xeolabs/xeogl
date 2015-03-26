@@ -40,8 +40,9 @@
  <img src="../../assets/images/transparencySort.jpg"></img>
 
  Our scene has one {{#crossLink "Stage"}}{{/crossLink}}, just for completeness. As mentioned earlier, you don't have to
- create this because the {{#crossLink "Scene"}}{{/crossLink}} will provide its default. Then, within that {{#crossLink "Stage"}}{{/crossLink}},
- we create a {{#crossLink "GameObject"}}{{/crossLink}} for each box, each assigned to a different prioritised {{#crossLink "Layer"}}{{/crossLink}} to ensure that they are rendered in the right order.
+ create this because the {{#crossLink "Scene"}}{{/crossLink}} will provide its default {{#crossLink "Stage"}}{{/crossLink}}.
+ Then, within that {{#crossLink "Stage"}}{{/crossLink}}, we create a {{#crossLink "GameObject"}}{{/crossLink}} for each box,
+ each assigned to a different prioritised {{#crossLink "Layer"}}{{/crossLink}} to ensure that they are rendered in the right order.
 
  ````javascript
 var scene = new XEO.Scene();

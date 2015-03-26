@@ -1,5 +1,5 @@
 /**
- A **Clip** is an arbitrarily-aligned World-space clipping plane, which is used to create
+ A **Clip** is an arbitrarily-aligned World-space clipping plane, which may be used to create
  cross-sectional views of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
@@ -88,13 +88,15 @@
  enable or disable clipping of it:
 
  ```` javascript
+// Create the Modes
  var modes = new XEO.Modes(scene, {
     clipping: true
  });
 
+ // Attach our GameObject to the Modes
  object.modes = modes;
 
- // Disable clipping:
+ // Disable clipping for the GameObject
  modes.clipping = false;
  ````
 

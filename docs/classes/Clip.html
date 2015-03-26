@@ -134,7 +134,7 @@
 
 
 <div class="box intro">
-    <p>A <strong>Clip</strong> is an arbitrarily-aligned World-space clipping plane, which is used to create
+    <p>A <strong>Clip</strong> is an arbitrarily-aligned World-space clipping plane, which may be used to create
 cross-sectional views of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <h2 id="overview">Overview</h2>
 <ul>
@@ -214,13 +214,15 @@ var object = new XEO.GameObject(scene, {
 <h3 id="toggling-clipping-on-and-off">Toggling clipping on and off</h3>
 <p>Now we&#39;ll attach a <a href="../classes/Modes.html" class="crosslink">Modes</a> to the <a href="../classes/GameObject.html" class="crosslink">GameObject</a>, so that we can
 enable or disable clipping of it:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var modes = new XEO.Modes(scene, {
+<pre class="code prettyprint"><code class="lang-javascript">// Create the Modes
+var modes = new XEO.Modes(scene, {
    clipping: true
 });
 
+// Attach our GameObject to the Modes
 object.modes = modes;
 
-// Disable clipping:
+// Disable clipping for the GameObject
 modes.clipping = false;
 </code></pre>
 
@@ -1085,7 +1087,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_clip.js.html#l172"><code>src&#x2F;core&#x2F;clip.js:172</code></a>
+                            <a href="../files/src_core_clip.js.html#l174"><code>src&#x2F;core&#x2F;clip.js:174</code></a>
                             </p>
                     
                     
@@ -1113,7 +1115,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_clip.js.html#l204"><code>src&#x2F;core&#x2F;clip.js:204</code></a>
+                            <a href="../files/src_core_clip.js.html#l206"><code>src&#x2F;core&#x2F;clip.js:206</code></a>
                             </p>
                     
                     
@@ -1193,7 +1195,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_clip.js.html#l134"><code>src&#x2F;core&#x2F;clip.js:134</code></a>
+                            <a href="../files/src_core_clip.js.html#l136"><code>src&#x2F;core&#x2F;clip.js:136</code></a>
                             </p>
                     
                     
@@ -1312,7 +1314,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_clip.js.html#l190"><code>src&#x2F;core&#x2F;clip.js:190</code></a>
+                            <a href="../files/src_core_clip.js.html#l192"><code>src&#x2F;core&#x2F;clip.js:192</code></a>
                             </p>
                     
                     
@@ -1354,7 +1356,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_clip.js.html#l222"><code>src&#x2F;core&#x2F;clip.js:222</code></a>
+                            <a href="../files/src_core_clip.js.html#l224"><code>src&#x2F;core&#x2F;clip.js:224</code></a>
                             </p>
                     
                     
@@ -1396,7 +1398,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_clip.js.html#l158"><code>src&#x2F;core&#x2F;clip.js:158</code></a>
+                            <a href="../files/src_core_clip.js.html#l160"><code>src&#x2F;core&#x2F;clip.js:160</code></a>
                             </p>
                     
                     

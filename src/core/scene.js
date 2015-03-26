@@ -1,5 +1,5 @@
 /**
- A **Scene** defines a 3D scene as a <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-object</a> graph.
+ A **Scene** models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-object</a> graph.
 
  ## Contents
 

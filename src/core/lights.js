@@ -1,5 +1,5 @@
 /**
- A **Lights** is a group of light sources to apply to attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Lights** defines a group of light sources that illuminate attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
 

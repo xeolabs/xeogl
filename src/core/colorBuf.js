@@ -26,19 +26,19 @@
  </ul>
 
  ````javascript
- var scene = new XEO.Scene();
+var scene = new XEO.Scene();
 
- var colorBuf = new XEO.ColorBuf(scene, {
-        blendEnabled: true,
-        colorMask: [true, true, true, true]
-     });
+var colorBuf = new XEO.ColorBuf(scene, {
+    blendEnabled: true,
+    colorMask: [true, true, true, true]
+});
 
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var gameObject = new XEO.GameObject(scene, {
-        colorBuf: colorBuf,
-        geometry: geometry
-     });
+var gameObject = new XEO.GameObject(scene, {
+    colorBuf: colorBuf,
+    geometry: geometry
+});
  ````
 
  @class ColorBuf

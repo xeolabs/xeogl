@@ -3,6 +3,10 @@
 
  ## Overview
 
+ <ul>
+ <li>Each {{#crossLink "Scene"}}{{/crossLink}} provides an Input on itself as a read-only property.</li>
+ </ul>
+
  <img src="http://www.gliffy.com/go/publish/image/7123123/L.png"></img>
 
  ## Example

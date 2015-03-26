@@ -33,36 +33,36 @@
 
 
  ````javascript
- var scene = new XEO.Scene();
+var scene = new XEO.Scene();
 
- var colorTarget = new XEO.ColorTarget(scene);
+var colorTarget = new XEO.ColorTarget(scene);
 
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- // First GameObject renders to the ColorTarget
+// First GameObject renders to the ColorTarget
 
- var object1 = new XEO.GameObject(scene, {
-        geometry: geometry,
-        colorTarget: colorTarget
-     });
+var object1 = new XEO.GameObject(scene, {
+    geometry: geometry,
+    colorTarget: colorTarget
+});
 
- var texture = new XEO.Texture(scene, {
-        target: colorTarget
-     });
+var texture = new XEO.Texture(scene, {
+    target: colorTarget
+});
 
- var material = new XEO.Material(scene, {
-        textures: [
-           texture
-        ]
-     });
+var material = new XEO.Material(scene, {
+    textures: [
+        texture
+    ]
+});
 
- // Second GameObject is textured with the
- // image of the first GameObject
+// Second GameObject is textured with the
+// image of the first GameObject
 
- var object2 = new XEO.GameObject(scene, {
-        geometry: geometry,  // Reuse our simple box geometry
-        material: material
-     });
+var object2 = new XEO.GameObject(scene, {
+    geometry: geometry,  // Reuse our simple box geometry
+    material: material
+});
  ````
 
  @class ColorTarget

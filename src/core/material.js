@@ -18,7 +18,7 @@
  assigning {{#crossLink "Texture"}}Textures{{/crossLink}} to the Material's
  {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}}, {{#crossLink "Material/specularMap:property"}}{{/crossLink}},
  {{#crossLink "Material/emissiveMap:property"}}{{/crossLink}}, {{#crossLink "Material/opacityMap:property"}}{{/crossLink}}
- and  {{#crossLink "Material/reflectivityMap:property"}}{{/crossLink}} properties</li>
+ and  {{#crossLink "Material/reflectivityMap:property"}}{{/crossLink}} properties.</li>
 
  <li>For example, the value of {{#crossLink "Material/diffuse:property"}}{{/crossLink}} will be ignored if your
  Material also has a {{#crossLink "Material/diffuseMap:property"}}{{/crossLink}} set to a {{#crossLink "Texture"}}Texture{{/crossLink}}.

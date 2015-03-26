@@ -154,15 +154,15 @@
 <a href="../classes/Geometry.html#property_colors" class="crosslink">vertex colors</a>, <a href="../classes/Geometry.html#property_uv" class="crosslink">UV coordinates</a>,
 <a href="../classes/Geometry.html#property_normals" class="crosslink">normal vectors</a>, as well as <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>,
 which specify how the vertices connect together to form the primitives.</li>
-<li>When no shape is specified (ie. no primitive type, vertex arrays and indices) for a Geometry, it will default to a 2x2x2 box
-made of triangles, with UV coordinates, vertex colors and normals.</li>
+<li>When no shape is specified (ie. no primitive type, vertex arrays and indices), a Geometry will default to a 2x2x2 box
+made of triangles, with UV coordinates, vertex colors and normals. This default is used for most of the examples in this documentation.</li>
 <li>A <a href="../classes/Scene.html" class="crosslink">Scene</a> provides such a box as its default <a href="../classes/Scene.html#property_geometry" class="crosslink">geometry</a>,
 for <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to fall back on, when they are not explicitly attached to a Geometry.</li>
 </ul>
 
 <p><img src="http://www.gliffy.com/go/publish/image/7103669/L.png"></img></p>
 <h2 id="-a-name-defaultshape-default-box-shape-a-"><a name="defaultShape">Default box shape</a></h2>
-<p>If you create a Geometry with no specified shape, it will be a 2x2x2 box by default:</p>
+<p>If you create a Geometry with no specified shape, it will default to a 2x2x2 box defined as a triangle mesh.</p>
 <pre class="code prettyprint"><code class="lang-javascript">var geometry = new XEO.Geometry(scene); // 2x2x2 box
 
 var object1 = new XEO.GameObject(scene, {

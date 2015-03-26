@@ -23,8 +23,8 @@
  {{#crossLink "Geometry/colors:property"}}vertex colors{{/crossLink}}, {{#crossLink "Geometry/uv:property"}}UV coordinates{{/crossLink}},
  {{#crossLink "Geometry/normals:property"}}normal vectors{{/crossLink}}, as well as {{#crossLink "Geometry/indices:property"}}{{/crossLink}},
  which specify how the vertices connect together to form the primitives.</li>
- <li>When no shape is specified (ie. no primitive type, vertex arrays and indices) for a Geometry, it will default to a 2x2x2 box
- made of triangles, with UV coordinates, vertex colors and normals.</li>
+ <li>When no shape is specified (ie. no primitive type, vertex arrays and indices), a Geometry will default to a 2x2x2 box
+ made of triangles, with UV coordinates, vertex colors and normals. This default is used for most of the examples in this documentation.</li>
  <li>A {{#crossLink "Scene"}}{{/crossLink}} provides such a box as its default {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
  for {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to fall back on, when they are not explicitly attached to a Geometry.</li>
  </ul>
@@ -33,7 +33,7 @@
 
  ## <a name="defaultShape">Default box shape</a>
 
- If you create a Geometry with no specified shape, it will be a 2x2x2 box by default:
+ If you create a Geometry with no specified shape, it will default to a 2x2x2 box defined as a triangle mesh.
 
  ```` javascript
 var geometry = new XEO.Geometry(scene); // 2x2x2 box

@@ -1,9 +1,10 @@
 /**
- A **Shader** specifies a custom GLSL shader to draw attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
 ## Overview
 
  <ul>
+ <li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
  <li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
  components on the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
  <li>Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
@@ -104,7 +105,9 @@
 
  ## Shader Inputs
 
- xeoEngine provides various inputs for your shaders (TODO)
+ xeoEngine provides the following inputs for your shaders.
+
+ **TODO - this section is under construction**
 
  #### Attributes
 
