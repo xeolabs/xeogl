@@ -47,7 +47,9 @@
     <section id="main_content" class="inner">
         <h3>About</h3>
 
-        <strong>xeoEngine</strong> is another WebGL-based 3D engine from <a href="https://twitter.com/xeolabs">@xeoLabs</a>
+        <strong>xeoEngine</strong> is WebGL-based 3D engine from <a href="https://twitter.com/xeolabs">@xeoLabs</a>
+
+        <p style="color: darkred;"><strong>It's current unreleased, while the API is being reviewed.</strong></p>
 
         <h3>Features</h3>
 
@@ -66,12 +68,12 @@
 
             <li>Exports and imports scenes as JSON</li>
 
-            <li>Has complete <a href="./docs/">API docs!</a></li>
+            <li>Has complete <a href="./docs/">API docs</a></li>
         </ul>
 
         <h3>Usage</h3>
 
-        <p>Simply include <a href="build/xeoengine.min.js">xeoengine.min.js</a> in your project to begin creating 3D
+        <p>Simply include <a href="." onclick="javascript:alert('Not released yet!')">xeoengine.min.js</a> in your project to begin creating 3D
             worlds.</p>
         <pre>&lt;script src="http://xeoengine.org/build/xeoengine.min.js"&gt;&lt;/script&gt;</pre>
         <h3>
@@ -132,8 +134,8 @@ var object = new XEO.GameObject(scene, {
             components, or set any component property.</p>
 
 <pre class="prettyprint lang-javascript">var texture = new XEO.Texture(scene, {
-      src: "myTexture.jpg"
-  });
+    src: "myTexture.jpg"
+});
 
 material.diffuseMap = texture;</pre>
 
