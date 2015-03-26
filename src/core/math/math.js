@@ -599,7 +599,7 @@
         },
 
         /**
-         * @method @rcpVec3
+         * @method rcpVec3
          * @static
          * @param v vec3
          * @param dest vec3 - optional destination

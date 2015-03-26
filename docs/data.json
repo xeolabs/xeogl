@@ -3681,7 +3681,7 @@
             "file": "src/core/math/math.js",
             "line": 601,
             "itemtype": "method",
-            "name": "@rcpVec3",
+            "name": "rcpVec3",
             "static": 1,
             "params": [
                 {
