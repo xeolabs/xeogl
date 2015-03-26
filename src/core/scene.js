@@ -57,7 +57,7 @@
  ## Example
 
  Here's the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink "GameObject"}}GameObjects{{/crossLink}} when we need to
- override the default components that the Scene would have provided them, and that same component instances may be shared among multiple GameObjects.
+ override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple GameObjects.
 
  ```` javascript
  var scene = new XEO.Scene({
