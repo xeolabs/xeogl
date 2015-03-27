@@ -49,9 +49,8 @@
 
         <strong>xeoEngine</strong> is WebGL-based 3D engine from <a href="https://twitter.com/xeolabs">@xeoLabs</a>
 
-        <p><strong style="color:red;">STATUS:</strong> It's currently unreleased, while the API is being reviewed. Got some comments
-            or questions about the API? I'd love to have them - email me at:</p>
-        <p><strong>lindsay.kay AT xeolabs DOT com</strong></p>
+        <p>This is a pre-release glimpse of the API under development.</p>
+        <p>Your feedback is super valuable, please send to: <code>lindsay.kay AT xeolabs DOT com</code></p>
 
         <h3>Features</h3>
 
@@ -67,7 +66,7 @@
 
             <li>Exports and imports scenes as JSON</li>
 
-            <li>Has complete <a href="./docs/">API docs</a></li>
+
         </ul>
 
         <h3>Usage</h3>
@@ -76,6 +75,7 @@
             project to begin creating 3D
             worlds.</p>
         <pre>&lt;script src="http://xeoengine.org/build/xeoengine.min.js"&gt;&lt;/script&gt;</pre>
+        <p>Find out more in the <a href="./docs/">API docs</a></p>
         <h3>
             <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span
                     class="octicon octicon-link"></span></a>Concept</h3>
@@ -108,8 +108,8 @@ var material = new XEO.Material(scene, {
 var geometry = new XEO.Geometry(scene);
 
 var object = new XEO.GameObject(scene, {
-    material: myMaterial,
-    geometry: myGeometry
+    material: material,
+    geometry: geometry
 });
 </pre>
 
@@ -124,8 +124,8 @@ var object = new XEO.GameObject(scene, {
             console.log("Value of material diffuse is now: " + value);
      });
 
- // This is going to fire our change listener above
- material.diffuse = [0.9, 0.9, 0.6];</pre>
+// This is going to fire our change listener above
+material.diffuse = [0.9, 0.9, 0.6];</pre>
         <p>Likewise, you can set properties on your scene's default flyweight components:</p>
         <pre class="prettyprint lang-javascript">scene.lights.lights[0].diffuse = [0.5, 1.0, 0.5];</pre>
 
@@ -147,7 +147,8 @@ material.diffuseMap = texture;</pre>
  <pre class="prettyprint lang-javascript">var json = scene.json;
 
 var scene2 = new XEO.Scene({ json: json });</pre>
-
+<br>
+        <p>Find more examples in the <a href="./docs/">API docs</a>.</p>
 
     </section>
 </div>
