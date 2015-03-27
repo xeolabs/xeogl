@@ -7,155 +7,55 @@
      */
     XEO.renderer.ProgramSourceFactory = new (function () {
 
-        var sourceCache = {}; // Source codes are shared across all scenes
+        var cache = {}; // Caches source code against hashes
 
+        var src = ""; // Accumulates source code as it's being built
+
+        var states; // Cache rendering state
+        var texturing; // True when rendering state contains textures
+        var normals; // True when rendering state contains normals
+        var tangents; // True when rendering state contains tangents
+        var clipping; // True when rendering state contains clip planes
+        var morphing; // True when rendering state contains morph targets
+        var reflection; // True when rendering state contains reflections
+        var depthTarget; // True when rendering state contains a depth target
 
         /**
-         * Get sourcecode for a program to render the given states
+         * Get source code for a program to render the given states.
+         * Attempts to reuse cached source code for the given hash.
          */
-        this.getSource = function (hash, states) {
+        this.getSource = function (hash, _states) {
 
-            var source = sourceCache[hash];
+            var source = cache[hash];
+
             if (source) {
                 source.useCount++;
                 return source;
             }
 
-            return sourceCache[hash] = new XEO.renderer.ProgramSource(
+            states = _states;
+            texturing = isTexturing();
+            normals = hasNormals();
+            tangents = hasTangents();
+            clipping = states.clips.clips.length > 0;
+            morphing = !!states.MorphTargets.targets;
+            reflection = hasReflection();
+            depthTarget = hasDepthTarget();
+
+            source = new XEO.renderer.ProgramSource(
                 hash,
-
-                this._composePickingVertexShader(states), // pickVertex
-                this._composePickingFragmentShader(states), // pickFragment
-                this._composeRenderingVertexShader(states), // drawVertex
-                this._composeRenderingFragmentShader(states)  // drawFragment
+                composePickingVertexShader(),
+                composePickingFragmentShader(),
+                composeRenderingVertexShader(),
+                composeRenderingFragmentShader()
             );
+
+            cache[hash] = source;
+
+            return source;
         };
 
-        /**
-         * Releases program source code
-         */
-        this.putSource = function (hash) {
-            var source = sourceCache[hash];
-            if (source) {
-                if (--source.useCount === 0) {
-                    sourceCache[source.hash] = null;
-                }
-            }
-        };
-
-        this._composePickingVertexShader = function (states) {
-            var morphing = !!states.MorphTargets.targets;
-            var src = [
-
-                "precision mediump float;",
-
-                "attribute vec3 XEO_aPosition;",
-                "uniform mat4 XEO_uMMatrix;",
-                "uniform mat4 XEO_uVMatrix;",
-                "uniform mat4 XEO_uVNMatrix;",
-                "uniform mat4 XEO_uPMatrix;"
-            ];
-
-            src.push("varying vec4 XEO_vWorldVertex;");
-            src.push("varying vec4 XEO_vViewVertex;");
-
-            if (morphing) {
-                src.push("uniform float XEO_uMorphFactor;");       // LERP factor for morph
-                if (states.MorphTargets.targets[0].vertexBuf) {      // target2 has these arrays also
-                    src.push("attribute vec3 XEO_aMorphVertex;");
-                }
-            }
-
-            src.push("void main(void) {");
-
-            src.push("   vec4 tmpVertex=vec4(XEO_aPosition, 1.0); ");
-            if (morphing) {
-                if (states.MorphTargets.targets[0].vertexBuf) {
-                    src.push("  tmpVertex = vec4(mix(tmpVertex.xyz, XEO_aMorphVertex, XEO_uMorphFactor), 1.0); ");
-                }
-            }
-            src.push("  XEO_vWorldVertex = XEO_uMMatrix * tmpVertex; ");
-
-            src.push("  XEO_vViewVertex = XEO_uVMatrix * XEO_vWorldVertex;");
-
-            src.push("  gl_Position =  XEO_uPMatrix * XEO_vViewVertex;");
-            src.push("}");
-
-            return src.join("\n");
-        };
-
-        /**
-         * Composes a fragment shader script for rendering mode in current scene state
-         * @private
-         */
-        this._composePickingFragmentShader = function (states) {
-
-            var clipping = states.clips.clips.length > 0;
-
-            var src = [
-                "precision mediump float;"
-            ];
-
-            src.push("varying vec4 XEO_vWorldVertex;");
-            src.push("varying vec4  XEO_vViewVertex;");                  // View-space vertex
-
-            src.push("uniform bool  XEO_uRayPickMode;");                   // Z-pick mode when true else colour-pick
-            src.push("uniform vec3  XEO_uPickColor;");                   // Used in colour-pick mode
-            src.push("uniform float XEO_uZNear;");                      // Used in Z-pick mode
-            src.push("uniform float XEO_uZFar;");                       // Used in Z-pick mode
-            src.push("uniform bool  XEO_uClipping;");
-
-            if (clipping) {
-
-                // World-space clipping planes
-                for (var i = 0; i < states.clips.clips.length; i++) {
-                    src.push("uniform float XEO_uClipMode" + i + ";");
-                    src.push("uniform vec4  XEO_uClipNormalAndDist" + i + ";");
-                }
-            }
-
-            // Pack depth function for ray-pick
-            src.push("vec4 packDepth(const in float depth) {");
-            src.push("  const vec4 bitShift = vec4(256.0*256.0*256.0, 256.0*256.0, 256.0, 1.0);");
-            src.push("  const vec4 bitMask  = vec4(0.0, 1.0/256.0, 1.0/256.0, 1.0/256.0);");
-            src.push("  vec4 res = fract(depth * bitShift);");
-            src.push("  res -= res.xxyz * bitMask;");
-            src.push("  return res;");
-            src.push("}");
-
-            src.push("void main(void) {");
-
-            if (clipping) {
-
-                src.push("if (XEO_uClipping) {");
-                src.push("  float   dist;");
-                for (var i = 0; i < states.clips.clips.length; i++) {
-                    src.push("    if (XEO_uClipMode" + i + " != 0.0) {");
-                    src.push("        dist = dot(XEO_vWorldVertex.xyz, XEO_uClipNormalAndDist" + i + ".xyz) - XEO_uClipNormalAndDist" + i + ".w;");
-                    src.push("        if (XEO_uClipMode" + i + " == 1.0) {");
-                    src.push("            if (dist > 0.0) { discard; }");
-                    src.push("        }");
-                    src.push("        if (XEO_uClipMode" + i + " == 2.0) {");
-                    src.push("            if (dist > 0.0) { discard; }");
-                    src.push("        }");
-                    src.push("    }");
-                }
-                src.push("}");
-            }
-
-            src.push("    if (XEO_uRayPickMode) {");
-            src.push("          float zNormalizedDepth = abs((XEO_uZNear + XEO_vViewVertex.z) / (XEO_uZFar - XEO_uZNear));");
-            src.push("          gl_FragColor = packDepth(zNormalizedDepth); ");
-            src.push("    } else {");
-            src.push("          gl_FragColor = vec4(XEO_uPickColor.rgb, 1.0);  ");
-            src.push("    }");
-
-            src.push("}");
-
-            return src.join("\n");
-        };
-
-        this._isTexturing = function (states) {
+        function isTexturing() {
             if (states.texture.layers && states.texture.layers.length > 0) {
                 if (states.geometry.uvBuf || states.geometry.uvBuf2) {
                     return true;
@@ -165,13 +65,13 @@
                 }
             }
             return false;
-        };
+        }
 
-        this._isCubeMapping = function (states) {
+        function hasReflection(states) {
             return (states.cubemap.layers && states.cubemap.layers.length > 0 && states.geometry.normalBuf);
-        };
+        }
 
-        this._hasNormals = function (states) {
+        function hasNormals() {
             if (states.geometry.normalBuf) {
                 return true;
             }
@@ -179,9 +79,9 @@
                 return true;
             }
             return false;
-        };
+        }
 
-        this._hasTangents = function (states) {
+        function hasTangents() {
             if (states.texture) {
                 var layers = states.texture.layers;
                 if (!layers) {
@@ -194,56 +94,197 @@
                 }
             }
             return false;
+        }
+
+        function hasDepthTarget() {
+            if (states.renderTarget && states.renderTarget.targets) {
+                var targets = states.renderTarget.targets;
+                for (var i = 0, len = targets.length; i < len; i++) {
+                    if (targets[i].bufType === "depth") {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function begin() {
+            src = "";
+        }
+
+        function add(txt) {
+            src.push(txt);
+        }
+
+        function end() {
+            return src.join("\n");
+        }
+
+        /**
+         * Releases program source code
+         */
+        this.putSource = function (hash) {
+            var source = cache[hash];
+            if (source) {
+                if (--source.useCount === 0) {
+                    cache[source.hash] = null;
+                }
+            }
         };
 
-        this._composeRenderingVertexShader = function (states) {
+        function composePickingVertexShader() {
 
-            var customShaders = states.shader.shaders || {};
+            begin();
 
-            // Do a full custom shader replacement if code supplied without hooks
-            if (customShaders.vertex
-                && customShaders.vertex.code
-                && customShaders.vertex.code !== ""
-                && SceneJS._isEmpty(customShaders.vertex.hooks)) {
-                return [customShaders.vertex.code];
+            add("precision mediump float;");
+
+            add("attribute vec3 XEO_aPosition;");
+
+            add("uniform mat4 XEO_uMMatrix;");
+            add("uniform mat4 XEO_uVMatrix;");
+            add("uniform mat4 XEO_uVNMatrix;");
+            add("uniform mat4 XEO_uPMatrix;");
+
+            add("varying vec4 XEO_vWorldVertex;");
+            add("varying vec4 XEO_vViewVertex;");
+
+            if (morphing) {
+                add("uniform float XEO_uMorphFactor;");       // LERP factor for morph
+                if (states.MorphTargets.targets[0].vertexBuf) {      // target2 has these arrays also
+                    add("attribute vec3 XEO_aMorphVertex;");
+                }
             }
 
-            var customVertexShader = customShaders.vertex || {};
-            var vertexHooks = customVertexShader.hooks || {};
+            add("void main(void) {");
 
-            var customFragmentShader = customShaders.fragment || {};
-            var fragmentHooks = customFragmentShader.hooks || {};
+            add("vec4 tmpVertex=vec4(XEO_aPosition, 1.0); ");
+            if (morphing) {
+                if (states.MorphTargets.targets[0].vertexBuf) {
+                    add("  tmpVertex = vec4(mix(tmpVertex.xyz, XEO_aMorphVertex, XEO_uMorphFactor), 1.0); ");
+                }
+            }
 
-            var texturing = this._isTexturing(states);
-            var normals = this._hasNormals(states);
-            var tangents = this._hasTangents(states);
-            var clipping = states.clips.clips.length > 0;
-            var morphing = !!states.MorphTargets.targets;
+            add("XEO_vWorldVertex = XEO_uMMatrix * tmpVertex; ");
+            add("XEO_vViewVertex = XEO_uVMatrix * XEO_vWorldVertex;");
 
-            var src = [
-                "precision mediump float;"
-            ];
+            add("gl_Position = XEO_uPMatrix * XEO_vViewVertex;");
+            add("}");
 
-            src.push("uniform mat4 XEO_uMMatrix;");             // Model matrix
-            src.push("uniform mat4 XEO_uVMatrix;");             // View matrix
-            src.push("uniform mat4 XEO_uPMatrix;");             // Projection matrix
+            return end();
+        }
 
-            src.push("attribute vec3 XEO_aPosition;");            // Model coordinates
 
-            src.push("uniform vec3 XEO_uWorldEye;");            // World-space eye position
+        function composePickingFragmentShader() {
 
-            src.push("varying vec3 XEO_vViewEyeVec;");          // View-space vector from origin to eye
+            begin();
+
+            add("precision mediump float;");
+
+            // varyings
+
+            add("varying vec4 XEO_vWorldVertex;");
+            add("varying vec4  XEO_vViewVertex;");                  // View-space vertex
+
+            // uniforms
+
+            add("uniform bool  XEO_uRayPickMode;");                   // Z-pick mode when true else colour-pick
+            add("uniform vec3  XEO_uPickColor;");                   // Used in colour-pick mode
+            add("uniform float XEO_uZNear;");                      // Used in Z-pick mode
+            add("uniform float XEO_uZFar;");                       // Used in Z-pick mode
+            add("uniform bool  XEO_uClipping;");
+
+            // Clipping uniforms
+
+            if (clipping) {
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("uniform float XEO_uClipMode" + i + ";");
+                    add("uniform vec4  XEO_uClipNormalAndDist" + i + ";");
+                }
+            }
+
+            // Pack depth function for ray-pick
+
+            add("vec4 packDepth(const in float depth) {");
+            add("  const vec4 bitShift = vec4(256.0*256.0*256.0, 256.0*256.0, 256.0, 1.0);");
+            add("  const vec4 bitMask  = vec4(0.0, 1.0/256.0, 1.0/256.0, 1.0/256.0);");
+            add("  vec4 res = fract(depth * bitShift);");
+            add("  res -= res.xxyz * bitMask;");
+            add("  return res;");
+            add("}");
+
+            // main
+
+            add("void main(void) {");
+
+            // Clipping logic
+
+            if (clipping) {
+                add("if (SCENEJS_uClipping) {");
+                add("float dist = 0.0;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("if (XEO_uClipMode" + i + " != 0.0) {");
+                    add("dist += clamp(dot(XEO_vWorldVertex.xyz, XEO_uClipNormalAndDist" + i + ".xyz) - XEO_uClipNormalAndDist" + i + ".w, 0.0, 1000.0);");
+                    add("}");
+                }
+                add("if (dist > 0.0) { discard; }");
+                add("}");
+            }
+
+            // Output a color
+
+            add("if (XEO_uRayPickMode) {");
+
+            // Output color-encoded depth value for ray-pick
+
+            add("float zNormalizedDepth = abs((XEO_uZNear + XEO_vViewVertex.z) / (XEO_uZFar - XEO_uZNear));");
+            add("gl_FragColor = packDepth(zNormalizedDepth); ");
+            add("} else {");
+
+            // Output indexed color value for normal pick
+
+            add("gl_FragColor = vec4(XEO_uPickColor.rgb, 1.0);  ");
+            add("}");
+
+            add("}");
+
+            return end();
+        }
+
+
+        function composeRenderingVertexShader() {
+
+            var customShaders = states.shader.shaders || {};
+            if (customShaders.vertex && customShaders.vertex.code && customShaders.vertex.code !== "") {
+                return customShaders.vertex.code;
+            }
+
+            begin();
+
+            // uniforms
+
+            add("uniform mat4 XEO_uMMatrix;");             // Model matrix
+            add("uniform mat4 XEO_uVMatrix;");             // View matrix
+            add("uniform mat4 XEO_uPMatrix;");             // Projection matrix
+            add("uniform vec3 XEO_uWorldEye;");            // World-space eye position
+
+            // attributes
+
+            add("attribute vec3 XEO_aPosition;");            // Model coordinates
+
+            // varyings
+
+            add("varying vec3 XEO_vViewEyeVec;");          // View-space vector from origin to eye
 
             if (normals) {
 
-                src.push("attribute vec3 XEO_aNormal;");        // Normal vectors
-                src.push("uniform   mat4 XEO_uMNMatrix;");      // Model normal matrix
-                src.push("uniform   mat4 XEO_uVNMatrix;");      // View normal matrix
+                add("attribute vec3 XEO_aNormal;");        // Normal vectors
+                add("uniform   mat4 XEO_uMNMatrix;");      // Model normal matrix
+                add("uniform   mat4 XEO_uVNMatrix;");      // View normal matrix
 
-                src.push("varying   vec3 XEO_vViewNormal;");    // Output view-space vertex normal
+                add("varying   vec3 XEO_vViewNormal;");    // Output view-space vertex normal
 
                 if (tangents) {
-                    src.push("attribute vec4 XEO_aTangent;");
+                    add("attribute vec4 XEO_aTangent;");
                 }
 
                 for (var i = 0; i < states.lights.lights.length; i++) {
@@ -255,133 +296,115 @@
                     }
 
                     if (light.mode === "dir") {
-                        src.push("uniform vec3 XEO_uLightDir" + i + ";");
+                        add("uniform vec3 XEO_uLightDir" + i + ";");
                     }
 
                     if (light.mode === "point") {
-                        src.push("uniform vec3 XEO_uLightPos" + i + ";");
+                        add("uniform vec3 XEO_uLightPos" + i + ";");
                     }
 
                     if (light.mode === "spot") {
-                        src.push("uniform vec3 XEO_uLightPos" + i + ";");
+                        add("uniform vec3 XEO_uLightPos" + i + ";");
                     }
 
                     // Vector from vertex to light, packaged with the pre-computed length of that vector
-                    src.push("varying vec4 XEO_vViewLightVecAndDist" + i + ";");
+                    add("varying vec4 XEO_vViewLightVecAndDist" + i + ";");
                 }
             }
 
             if (texturing) {
 
                 if (states.geometry.uvBuf) {
-                    src.push("attribute vec2 XEO_aUV;");      // UV coords
+                    add("attribute vec2 XEO_aUV;");      // UV coords
                 }
 
                 if (states.geometry.uvBuf2) {
-                    src.push("attribute vec2 XEO_aUV2;");     // UV2 coords
+                    add("attribute vec2 XEO_aUV2;");     // UV2 coords
                 }
             }
 
             if (states.geometry.colorBuf) {
-                src.push("attribute vec4 XEO_aVertexColor;");       // UV2 coords
-                src.push("varying vec4 XEO_vColor;");               // Varying for fragment texturing
+                add("attribute vec4 XEO_aVertexColor;");       // UV2 coords
+                add("varying vec4 XEO_vColor;");               // Varying for fragment texturing
             }
 
             if (clipping) {
-                src.push("varying vec4 XEO_vWorldVertex;");         // Varying for fragment clip or world pos hook
+                add("varying vec4 XEO_vWorldVertex;");         // Varying for fragment clip or world pos hook
             }
 
-            src.push("varying vec4 XEO_vViewVertex;");              // Varying for fragment view clip hook
+            add("varying vec4 XEO_vViewVertex;");              // Varying for fragment view clip hook
 
             if (texturing) {                                            // Varyings for fragment texturing
 
                 if (states.geometry.uvBuf) {
-                    src.push("varying vec2 XEO_vUVCoord;");
+                    add("varying vec2 XEO_vUVCoord;");
                 }
 
                 if (states.geometry.uvBuf2) {
-                    src.push("varying vec2 XEO_vUVCoord2;");
+                    add("varying vec2 XEO_vUVCoord2;");
                 }
             }
 
             if (morphing) {
-                src.push("uniform float XEO_uMorphFactor;");       // LERP factor for morph
-                if (states.MorphTargets.targets[0].vertexBuf) {      // target2 has these arrays also
-                    src.push("attribute vec3 XEO_aMorphVertex;");
+                add("uniform float XEO_uMorphFactor;");// LERP factor for morph
+                if (states.MorphTargets.targets[0].vertexBuf) {  // target2 has these arrays also
+                    add("attribute vec3 XEO_aMorphVertex;");
                 }
                 if (normals) {
                     if (states.MorphTargets.targets[0].normalBuf) {
-                        src.push("attribute vec3 XEO_aMorphNormal;");
+                        add("attribute vec3 XEO_aMorphNormal;");
                     }
                 }
             }
 
-            if (customVertexShader.code) {
-                src.push("\n" + customVertexShader.code + "\n");
-            }
+            add("void main(void) {");
 
-            src.push("void main(void) {");
+            add("vec4 tmpVertex=vec4(XEO_aPosition, 1.0); ");
+            add("vec4 modelVertex = tmpVertex; ");
 
-            src.push("  vec4 tmpVertex=vec4(XEO_aPosition, 1.0); ");
-
-            src.push("  vec4 modelVertex = tmpVertex; ");
             if (normals) {
-                src.push("  vec4 modelNormal = vec4(XEO_aNormal, 0.0); ");
+                add("vec4 modelNormal = vec4(XEO_aNormal, 0.0); ");
             }
 
-            // Morphing - morph targets are in same model space as the geometry
             if (morphing) {
                 if (states.MorphTargets.targets[0].vertexBuf) {
-                    src.push("  vec4 vMorphVertex = vec4(XEO_aMorphVertex, 1.0); ");
-                    src.push("  modelVertex = vec4(mix(modelVertex.xyz, vMorphVertex.xyz, XEO_uMorphFactor), 1.0); ");
+                    add("vec4 vMorphVertex = vec4(XEO_aMorphVertex, 1.0); ");
+                    add("modelVertex = vec4(mix(modelVertex.xyz, vMorphVertex.xyz, XEO_uMorphFactor), 1.0); ");
                 }
                 if (normals) {
                     if (states.MorphTargets.targets[0].normalBuf) {
-                        src.push("  vec4 vMorphNormal = vec4(XEO_aMorphNormal, 1.0); ");
-                        src.push("  modelNormal = vec4( mix(modelNormal.xyz, vMorphNormal.xyz, XEO_uMorphFactor), 1.0); ");
+                        add("vec4 vMorphNormal = vec4(XEO_aMorphNormal, 1.0); ");
+                        add("modelNormal = vec4( mix(modelNormal.xyz, vMorphNormal.xyz, XEO_uMorphFactor), 1.0); ");
                     }
                 }
             }
 
-            src.push("  vec4 worldVertex = XEO_uMMatrix * modelVertex;");
-
-            if (vertexHooks.viewMatrix) {
-                src.push("vec4 viewVertex = " + vertexHooks.viewMatrix + "(XEO_uVMatrix) * worldVertex;");
-            } else {
-                src.push("vec4 viewVertex  = XEO_uVMatrix * worldVertex; ");
-            }
-
-            if (vertexHooks.viewPos) {
-                src.push("viewVertex=" + vertexHooks.viewPos + "(viewVertex);");    // Vertex hook function
-            }
+            add("vec4 worldVertex = XEO_uMMatrix * modelVertex;");
+            add("vec4 viewVertex  = XEO_uVMatrix * worldVertex; ");
 
             if (normals) {
-                src.push("  vec3 worldNormal = (XEO_uMNMatrix * modelNormal).xyz; ");
-                src.push("  XEO_vViewNormal = (XEO_uVNMatrix * vec4(worldNormal, 1.0)).xyz;");
+                add("vec3 worldNormal = (XEO_uMNMatrix * modelNormal).xyz; ");
+                add("XEO_vViewNormal = (XEO_uVNMatrix * vec4(worldNormal, 1.0)).xyz;");
             }
 
-            if (clipping || fragmentHooks.worldPos) {
-                src.push("  XEO_vWorldVertex = worldVertex;");                  // Varying for fragment world clip or hooks
+            if (clipping) {
+                add("  XEO_vWorldVertex = worldVertex;");
             }
 
-            src.push("  XEO_vViewVertex = viewVertex;");                    // Varying for fragment hooks
+            add("XEO_vViewVertex = viewVertex;");
 
-            if (vertexHooks.projMatrix) {
-                src.push("gl_Position = " + vertexHooks.projMatrix + "(XEO_uPMatrix) * viewVertex;");
-            } else {
-                src.push("  gl_Position = XEO_uPMatrix * viewVertex;");
-            }
+            add("gl_Position = XEO_uPMatrix * viewVertex;");
 
             if (tangents) {
 
                 // Compute tangent-bitangent-normal matrix
 
-                src.push("vec3 tangent = normalize((XEO_uVNMatrix * XEO_uMNMatrix * XEO_aTangent).xyz);");
-                src.push("vec3 bitangent = cross(XEO_vViewNormal, tangent);");
-                src.push("mat3 TBM = mat3(tangent, bitangent, XEO_vViewNormal);");
+                add("vec3 tangent = normalize((XEO_uVNMatrix * XEO_uMNMatrix * XEO_aTangent).xyz);");
+                add("vec3 bitangent = cross(XEO_vViewNormal, tangent);");
+                add("mat3 TBM = mat3(tangent, bitangent, XEO_vViewNormal);");
             }
 
-            src.push("  vec3 tmpVec3;");
+            add("  vec3 tmpVec3;");
 
             if (normals) {
 
@@ -401,32 +424,32 @@
 
                             // World space light
 
-                            src.push("tmpVec3 = normalize(XEO_uLightDir" + i + ");");
+                            add("tmpVec3 = normalize(XEO_uLightDir" + i + ");");
 
                             // Transform to View space
-                            src.push("tmpVec3 = vec3(XEO_uVMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            add("tmpVec3 = vec3(XEO_uVMatrix * vec4(tmpVec3, 0.0)).xyz;");
 
                             if (tangents) {
 
                                 // Transform to Tangent space
-                                src.push("tmpVec3 *= TBM;");
+                                add("tmpVec3 *= TBM;");
                             }
 
                         } else {
 
                             // View space light
 
-                            src.push("tmpVec3 = normalize(XEO_uLightDir" + i + ");");
+                            add("tmpVec3 = normalize(XEO_uLightDir" + i + ");");
 
                             if (tangents) {
 
                                 // Transform to Tangent space
-                                src.push("tmpVec3 *= TBM;");
+                                add("tmpVec3 *= TBM;");
                             }
                         }
 
                         // Output
-                        src.push("XEO_vViewLightVecAndDist" + i + " = vec4(-tmpVec3, 0.0);");
+                        add("XEO_vViewLightVecAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                     }
 
                     if (light.mode === "point") {
@@ -437,180 +460,137 @@
 
                             // World space
 
-                            src.push("tmpVec3 = XEO_uLightPos" + i + " - worldVertex.xyz;"); // Vector from World coordinate to light pos
+                            add("tmpVec3 = XEO_uLightPos" + i + " - worldVertex.xyz;"); // Vector from World coordinate to light pos
 
                             // Transform to View space
-                            src.push("tmpVec3 = vec3(XEO_uVMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            add("tmpVec3 = vec3(XEO_uVMatrix * vec4(tmpVec3, 0.0)).xyz;");
 
                             if (tangents) {
 
                                 // Transform to Tangent space
-                                src.push("tmpVec3 *= TBM;");
+                                add("tmpVec3 *= TBM;");
                             }
 
                         } else {
 
                             // View space
 
-                            src.push("tmpVec3 = XEO_uLightPos" + i + ".xyz - viewVertex.xyz;"); // Vector from View coordinate to light pos
+                            add("tmpVec3 = XEO_uLightPos" + i + ".xyz - viewVertex.xyz;"); // Vector from View coordinate to light pos
 
                             if (tangents) {
 
                                 // Transform to tangent space
-                                src.push("tmpVec3 *= TBM;");
+                                add("tmpVec3 *= TBM;");
                             }
                         }
 
                         // Output
-                        src.push("XEO_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length( XEO_uLightPos" + i + " - worldVertex.xyz));");
+                        add("XEO_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length( XEO_uLightPos" + i + " - worldVertex.xyz));");
                     }
                 }
             }
 
-            src.push("XEO_vViewEyeVec = ((XEO_uVMatrix * vec4(XEO_uWorldEye, 0.0)).xyz  - viewVertex.xyz);");
+            add("XEO_vViewEyeVec = ((XEO_uVMatrix * vec4(XEO_uWorldEye, 0.0)).xyz  - viewVertex.xyz);");
 
             if (tangents) {
 
-                src.push("XEO_vViewEyeVec *= TBM;");
+                add("XEO_vViewEyeVec *= TBM;");
             }
 
             if (texturing) {
 
                 if (states.geometry.uvBuf) {
-                    src.push("XEO_vUVCoord = XEO_aUV;");
+                    add("XEO_vUVCoord = XEO_aUV;");
                 }
 
                 if (states.geometry.uvBuf2) {
-                    src.push("XEO_vUVCoord2 = XEO_aUV2;");
+                    add("XEO_vUVCoord2 = XEO_aUV2;");
                 }
             }
 
             if (states.geometry.colorBuf) {
-                src.push("XEO_vColor = XEO_aVertexColor;");
+                add("XEO_vColor = XEO_aVertexColor;");
             }
-            src.push("}");
 
-            return src.join("\n");
-        };
+            add("}");
+
+            return end();
+        }
 
 
-        /*-----------------------------------------------------------------------------------------------------------------
-         * Rendering Fragment shader
-         *---------------------------------------------------------------------------------------------------------------*/
-
-        this._composeRenderingFragmentShader = function (states) {
+        function composeRenderingFragmentShader() {
 
             var customShaders = states.shader.shaders || {};
-
-            // Do a full custom shader replacement if code supplied without hooks
-            if (customShaders.fragment
-                && customShaders.fragment.code
-                && customShaders.fragment.code !== ""
-                && SceneJS._isEmpty(customShaders.fragment.hooks)) {
+            if (customShaders.fragment && customShaders.fragment.code && customShaders.fragment.code !== "") {
                 return [customShaders.fragment.code];
             }
 
-            var customFragmentShader = customShaders.fragment || {};
-            var fragmentHooks = customFragmentShader.hooks || {};
+            begin();
 
-            var texturing = this._isTexturing(states);
-            var cubeMapping = this._isCubeMapping(states);
-            var normals = this._hasNormals(states);
-            var tangents = this._hasTangents(states);
-            var clipping = states.clips.clips.length > 0;
+            add("precision mediump float;");
 
-            var src = ["\n"];
+            add("varying vec4 XEO_vViewVertex;");
 
-            src.push("precision mediump float;");
-
+            add("uniform float XEO_uZNear;");
+            add("uniform float XEO_uZFar;");
 
             if (clipping) {
-                src.push("varying vec4 XEO_vWorldVertex;");             // World-space vertex
-            }
-
-            //  if (fragmentHooks.viewPos) {
-            src.push("varying vec4 XEO_vViewVertex;");              // View-space vertex
-            //  }
-
-            src.push("uniform float XEO_uZNear;");                      // Used in Z-pick mode
-            src.push("uniform float XEO_uZFar;");                       // Used in Z-pick mode
-
-
-            /*-----------------------------------------------------------------------------------
-             * Variables
-             *----------------------------------------------------------------------------------*/
-
-            if (clipping) {
+                add("varying vec4 XEO_vWorldVertex;");
                 for (var i = 0; i < states.clips.clips.length; i++) {
-                    src.push("uniform float XEO_uClipMode" + i + ";");
-                    src.push("uniform vec4  XEO_uClipNormalAndDist" + i + ";");
+                    add("uniform float XEO_uClipMode" + i + ";");
+                    add("uniform vec4  XEO_uClipNormalAndDist" + i + ";");
                 }
             }
 
             if (texturing) {
                 if (states.geometry.uvBuf) {
-                    src.push("varying vec2 XEO_vUVCoord;");
+                    add("varying vec2 XEO_vUVCoord;");
                 }
                 if (states.geometry.uvBuf2) {
-                    src.push("varying vec2 XEO_vUVCoord2;");
+                    add("varying vec2 XEO_vUVCoord2;");
                 }
                 var layer;
                 for (var i = 0, len = states.texture.layers.length; i < len; i++) {
                     layer = states.texture.layers[i];
-                    src.push("uniform sampler2D XEO_uSampler" + i + ";");
+                    add("uniform sampler2D XEO_uSampler" + i + ";");
                     if (layer.matrix) {
-                        src.push("uniform mat4 XEO_uLayer" + i + "Matrix;");
+                        add("uniform mat4 XEO_uLayer" + i + "Matrix;");
                     }
-                    src.push("uniform float XEO_uLayer" + i + "BlendFactor;");
+                    add("uniform float XEO_uLayer" + i + "BlendFactor;");
                 }
             }
 
-            if (normals && cubeMapping) {
+            if (normals && reflection) {
                 var layer;
                 for (var i = 0, len = states.cubemap.layers.length; i < len; i++) {
                     layer = states.cubemap.layers[i];
-                    src.push("uniform samplerCube XEO_uCubeMapSampler" + i + ";");
-                    src.push("uniform float XEO_uCubeMapIntensity" + i + ";");
+                    add("uniform samplerCube XEO_uCubeMapSampler" + i + ";");
+                    add("uniform float XEO_uCubeMapIntensity" + i + ";");
                 }
             }
 
-            /* True when lighting
-             */
-            src.push("uniform bool  XEO_uBackfaceTexturing;");
-            src.push("uniform bool  XEO_uBackfaceLighting;");
-            src.push("uniform bool  XEO_uSpecularLighting;");
-            src.push("uniform bool  XEO_uClipping;");
-            src.push("uniform bool  XEO_uAmbient;");
-            src.push("uniform bool  XEO_uDiffuse;");
-            src.push("uniform bool  XEO_uReflection;");
+            add("uniform bool  XEO_uClipping;");
 
-            // Added in v4.0 to support depth targets
-            src.push("uniform bool  XEO_uDepthMode;");
+            add("uniform bool  XEO_uDepthMode;");
 
-            /* True when rendering transparency
-             */
-            src.push("uniform bool  XEO_uTransparent;");
-
-            /* Vertex color variable
-             */
             if (states.geometry.colorBuf) {
-                src.push("varying vec4 XEO_vColor;");
+                add("varying vec4 XEO_vColor;");
             }
 
-            src.push("uniform vec3  XEO_uAmbientColor;");                         // Scene ambient colour - taken from clear colour
+            add("uniform vec3  XEO_uAmbientColor;");                         // Scene ambient colour - taken from clear colour
 
-            src.push("uniform vec3  XEO_uMaterialColor;");
-            src.push("uniform float XEO_uMaterialAlpha;");
-            src.push("uniform float XEO_uMaterialEmit;");
-            src.push("uniform vec3  XEO_uMaterialSpecularColor;");
-            src.push("uniform float XEO_uMaterialSpecular;");
-            src.push("uniform float XEO_uMaterialShine;");
+            add("uniform vec3  XEO_uMaterialColor;");
+            add("uniform float XEO_uMaterialAlpha;");
+            add("uniform float XEO_uMaterialEmit;");
+            add("uniform vec3  XEO_uMaterialSpecularColor;");
+            add("uniform float XEO_uMaterialSpecular;");
+            add("uniform float XEO_uMaterialShine;");
 
-            src.push("varying vec3 XEO_vViewEyeVec;");                          // Direction of world-space vertex from eye
+            add("varying vec3 XEO_vViewEyeVec;");                          // Direction of world-space vertex from eye
 
             if (normals) {
 
-                src.push("varying vec3 XEO_vViewNormal;");                   // View-space normal
+                add("varying vec3 XEO_vViewNormal;");                   // View-space normal
 
                 var light;
                 for (var i = 0; i < states.lights.lights.length; i++) {
@@ -618,222 +598,145 @@
                     if (light.mode === "ambient") {
                         continue;
                     }
-                    src.push("uniform vec3  XEO_uLightColor" + i + ";");
+                    add("uniform vec3 XEO_uLightColor" + i + ";");
                     if (light.mode === "point") {
-                        src.push("uniform vec3  XEO_uLightAttenuation" + i + ";");
+                        add("uniform vec3 XEO_uLightAttenuation" + i + ";");
                     }
-                    src.push("varying vec4  XEO_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
+                    add("varying vec4 XEO_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
                 }
             }
 
-            if (customFragmentShader.code) {
-                src.push("\n" + customFragmentShader.code + "\n");
-            }
-
-            src.push("void main(void) {");
-
-            // World-space arbitrary clipping planes
+            add("void main(void) {");
 
             if (clipping) {
-                src.push("if (XEO_uClipping) {");
-                src.push("  float   dist;");
+                add("if (SCENEJS_uClipping) {");
+                add("float dist = 0.0;");
                 for (var i = 0; i < states.clips.clips.length; i++) {
-                    src.push("    if (XEO_uClipMode" + i + " != 0.0) {");
-                    src.push("        dist = dot(XEO_vWorldVertex.xyz, XEO_uClipNormalAndDist" + i + ".xyz) - XEO_uClipNormalAndDist" + i + ".w;");
-                    src.push("        if (XEO_uClipMode" + i + " == 1.0) {");
-                    src.push("            if (dist > 0.0) { discard; }");
-                    src.push("        }");
-                    src.push("        if (XEO_uClipMode" + i + " == 2.0) {");
-                    src.push("            if (dist > 0.0) { discard; }");
-                    src.push("        }");
-                    src.push("    }");
+                    add("if (XEO_uClipMode" + i + " != 0.0) {");
+                    add("dist += clamp(dot(XEO_vWorldVertex.xyz, XEO_uClipNormalAndDist" + i + ".xyz) - XEO_uClipNormalAndDist" + i + ".w, 0.0, 1000.0);");
+                    add("}");
                 }
-                src.push("}");
+                add("if (dist > 0.0) { discard; }");
+                add("}");
             }
 
-            src.push("  vec3 ambient= XEO_uAmbient ? XEO_uAmbientColor : vec3(0.0, 0.0, 0.0);");
-
-            if (texturing && states.geometry.uvBuf && fragmentHooks.texturePos) {
-                src.push(fragmentHooks.texturePos + "(XEO_vUVCoord);");
-            }
-
-            if (fragmentHooks.viewPos) {
-                src.push(fragmentHooks.viewPos + "(XEO_vViewVertex);");
-            }
-
-            if (normals && fragmentHooks.viewNormal) {
-                src.push(fragmentHooks.viewNormal + "(XEO_vViewNormal);");
-            }
+            add("vec3 ambient = XEO_uAmbient ? XEO_uAmbientColor : vec3(0.0, 0.0, 0.0);");
 
             if (states.geometry.colorBuf) {
-                src.push("  vec3    color   = XEO_vColor.rgb;");
+                add("vec3 color = XEO_vColor.rgb;");
             } else {
-                src.push("  vec3    color   = XEO_uMaterialColor;")
+                add("vec3 color = XEO_uMaterialColor;")
             }
 
-            src.push("  float alpha         = XEO_uMaterialAlpha;");
-            src.push("  float emit          = XEO_uMaterialEmit;");
-            src.push("  float specular      = XEO_uMaterialSpecular;");
-            src.push("  vec3  specularColor = XEO_uMaterialSpecularColor;");
-            src.push("  float shininess         = XEO_uMaterialShine;");
-
-            if (fragmentHooks.materialBaseColor) {
-                src.push("color=" + fragmentHooks.materialBaseColor + "(color);");
-            }
-            if (fragmentHooks.materialAlpha) {
-                src.push("alpha=" + fragmentHooks.materialAlpha + "(alpha);");
-            }
-            if (fragmentHooks.materialEmit) {
-                src.push("emit=" + fragmentHooks.materialEmit + "(emit);");
-            }
-            if (fragmentHooks.materialSpecular) {
-                src.push("specular=" + fragmentHooks.materialSpecular + "(specular);");
-            }
-            if (fragmentHooks.materialSpecularColor) {
-                src.push("specularColor=" + fragmentHooks.materialSpecularColor + "(specularColor);");
-            }
-            if (fragmentHooks.materialShine) {
-                src.push("shininess=" + fragmentHooks.materialShine + "(shininess);");
-            }
+            add("float alpha = XEO_uMaterialAlpha;");
+            add("float emit = XEO_uMaterialEmit;");
+            add("float specular = XEO_uMaterialSpecular;");
+            add("vec3  specularColor = XEO_uMaterialSpecularColor;");
+            add("float shininess  = XEO_uMaterialShine;");
 
             if (normals) {
-                src.push("  float   attenuation = 1.0;");
+                add("float attenuation = 1.0;");
                 if (tangents) {
-                    src.push("  vec3    viewNormalVec = vec3(0.0, 1.0, 0.0);");
+                    add("vec3 viewNormalVec = vec3(0.0, 1.0, 0.0);");
                 } else {
 
                     // Normalize the interpolated normals in the per-fragment-fragment-shader,
                     // because if we linear interpolated two nonparallel normalized vectors, the resulting vector won’t be of length 1
-                    src.push("  vec3    viewNormalVec = normalize(XEO_vViewNormal);");
+                    add("vec3 viewNormalVec = normalize(XEO_vViewNormal);");
                 }
             }
 
-            var layer;
             if (texturing) {
 
-                if (normals) {
-                    src.push("if (XEO_uBackfaceTexturing || dot(XEO_vViewNormal, XEO_vViewEyeVec) > 0.0) {");
-                }
-
-                src.push("  vec4    texturePos;");
-                src.push("  vec2    textureCoord=vec2(0.0,0.0);");
+                add("  vec4    texturePos;");
+                add("  vec2    textureCoord=vec2(0.0,0.0);");
 
                 for (var i = 0, len = states.texture.layers.length; i < len; i++) {
-                    layer = states.texture.layers[i];
 
-                    /* Texture input
-                     */
-                    if (layer.applyFrom === "normal" && normals) {
-                        if (states.geometry.normalBuf) {
-                            src.push("texturePos=vec4(viewNormalVec.xyz, 1.0);");
-                        } else {
-                            SceneJS.log.warn("Texture layer applyFrom='normal' but geo has no normal vectors");
-                            continue;
-                        }
+                    var layer = states.texture.layers[i];
+
+                    if (normals && layer.applyFrom === "normal" && states.geometry.normalBuf) {
+                        add("texturePos=vec4(viewNormalVec.xyz, 1.0);");
                     }
-                    if (layer.applyFrom === "uv") {
-                        if (states.geometry.uvBuf) {
-                            src.push("texturePos = vec4(XEO_vUVCoord.s, XEO_vUVCoord.t, 1.0, 1.0);");
-                        } else {
-                            SceneJS.log.warn("Texture layer applyTo='uv' but geometry has no UV coordinates");
-                            continue;
-                        }
+                    if (layer.applyFrom === "uv" && states.geometry.uvBuf) {
+                        add("texturePos = vec4(XEO_vUVCoord.s, XEO_vUVCoord.t, 1.0, 1.0);");
                     }
-                    if (layer.applyFrom === "uv2") {
-                        if (states.geometry.uvBuf2) {
-                            src.push("texturePos = vec4(XEO_vUVCoord2.s, XEO_vUVCoord2.t, 1.0, 1.0);");
-                        } else {
-                            SceneJS.log.warn("Texture layer applyTo='uv2' but geometry has no UV2 coordinates");
-                            continue;
-                        }
+                    if (layer.applyFrom === "uv2" && states.geometry.uvBuf2) {
+                        add("texturePos = vec4(XEO_vUVCoord2.s, XEO_vUVCoord2.t, 1.0, 1.0);");
                     }
 
-                    /* Texture matrix
-                     */
                     if (layer.matrix) {
-                        src.push("textureCoord=(XEO_uLayer" + i + "Matrix * texturePos).xy;");
+                        add("textureCoord=(XEO_uLayer" + i + "Matrix * texturePos).xy;");
                     } else {
-                        src.push("textureCoord=texturePos.xy;");
+                        add("textureCoord=texturePos.xy;");
                     }
 
-                    /* Alpha from Texture
-                     */
                     if (layer.applyTo === "alpha") {
                         if (layer.blendMode === "multiply") {
-                            src.push("alpha = alpha * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).b);");
+                            add("alpha = alpha * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).b);");
                         } else if (layer.blendMode === "add") {
-                            src.push("alpha = ((1.0 - XEO_uLayer" + i + "BlendFactor) * alpha) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).b);");
+                            add("alpha = ((1.0 - XEO_uLayer" + i + "BlendFactor) * alpha) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).b);");
                         }
                     }
 
-                    /* Texture output
-                     */
                     if (layer.applyTo === "baseColor") {
                         if (layer.blendMode === "multiply") {
-                            src.push("color = color * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).rgb);");
+                            add("color = color * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).rgb);");
                         } else {
-                            src.push("color = ((1.0 - XEO_uLayer" + i + "BlendFactor) * color) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).rgb);");
+                            add("color = ((1.0 - XEO_uLayer" + i + "BlendFactor) * color) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).rgb);");
                         }
                     }
 
                     if (layer.applyTo === "emit") {
                         if (layer.blendMode === "multiply") {
-                            src.push("emit  = emit * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            add("emit  = emit * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         } else {
-                            src.push("emit = ((1.0 - XEO_uLayer" + i + "BlendFactor) * emit) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            add("emit = ((1.0 - XEO_uLayer" + i + "BlendFactor) * emit) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         }
                     }
 
                     if (layer.applyTo === "specular" && normals) {
                         if (layer.blendMode === "multiply") {
-                            src.push("specular  = specular * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            add("specular  = specular * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         } else {
-                            src.push("specular = ((1.0 - XEO_uLayer" + i + "BlendFactor) * specular) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            add("specular = ((1.0 - XEO_uLayer" + i + "BlendFactor) * specular) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         }
                     }
 
                     if (layer.applyTo === "shininess") {
                         if (layer.blendMode === "multiply") {
-                            src.push("shininess  = shininess * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            add("shininess  = shininess * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         } else {
-                            src.push("shininess = ((1.0 - XEO_uLayer" + i + "BlendFactor) * shininess) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            add("shininess = ((1.0 - XEO_uLayer" + i + "BlendFactor) * shininess) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         }
                     }
 
                     if (layer.applyTo === "normals" && normals) {
-                        src.push("viewNormalVec = normalize(texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, -textureCoord.y)).xyz * 2.0 - 1.0);");
+                        add("viewNormalVec = normalize(texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, -textureCoord.y)).xyz * 2.0 - 1.0);");
                     }
-
-                }
-                if (normals) {
-                    src.push("}");
                 }
             }
 
-            if (normals && cubeMapping) {
-                src.push("if (XEO_uReflection) {"); // Flag which can enable/disable reflection
-                src.push("vec3 envLookup = reflect(XEO_vViewEyeVec, viewNormalVec);");
-                src.push("envLookup.y = envLookup.y * -1.0;"); // Need to flip textures on Y-axis for some reason
-                src.push("vec4 envColor;");
+            if (normals && reflection) {
+                add("vec3 envLookup = reflect(XEO_vViewEyeVec, viewNormalVec);");
+                add("envLookup.y = envLookup.y * -1.0;"); // Need to flip textures on Y-axis for some reason
+                add("vec4 envColor;");
                 for (var i = 0, len = states.cubemap.layers.length; i < len; i++) {
                     layer = states.cubemap.layers[i];
-                    src.push("envColor = textureCube(XEO_uCubeMapSampler" + i + ", envLookup);");
-                    src.push("color = mix(color, envColor.rgb, specular * XEO_uCubeMapIntensity" + i + ");");
+                    add("envColor = textureCube(XEO_uCubeMapSampler" + i + ", envLookup);");
+                    add("color = mix(color, envColor.rgb, specular * XEO_uCubeMapIntensity" + i + ");");
                 }
-                src.push("}");
             }
 
-            src.push("  vec4    fragColor;");
+            add("vec4 fragColor;");
 
             if (normals) {
 
-                src.push("if (XEO_uBackfaceLighting || dot(viewNormalVec, XEO_vViewEyeVec) > 0.0) {");
-
-                src.push("  vec3    lightValue      = vec3(0.0, 0.0, 0.0);");
-                src.push("  vec3    specularValue   = vec3(0.0, 0.0, 0.0);");
-                src.push("  vec3    viewLightVec;");
-                src.push("  float   dotN;");
-                src.push("  float   lightDist;");
+                add("vec3  lightValue = vec3(0.0, 0.0, 0.0);");
+                add("vec3  specularValue = vec3(0.0, 0.0, 0.0);");
+                add("vec3  viewLightVec;");
+                add("float dotN;");
+                add("float lightDist;");
 
                 var light;
 
@@ -844,89 +747,69 @@
                         continue;
                     }
 
-                    src.push("viewLightVec = XEO_vViewLightVecAndDist" + i + ".xyz;");
+                    add("viewLightVec = XEO_vViewLightVecAndDist" + i + ".xyz;");
 
                     if (light.mode === "point") {
 
-                        src.push("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
+                        add("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
 
-                        //src.push("if (dotN > 0.0) {");
+                        add("lightDist = XEO_vViewLightVecAndDist" + i + ".w;");
 
-                        src.push("lightDist = XEO_vViewLightVecAndDist" + i + ".w;");
-
-                        src.push("attenuation = 1.0 - (" +
+                        add("attenuation = 1.0 - (" +
                             "  XEO_uLightAttenuation" + i + "[0] + " +
                             "  XEO_uLightAttenuation" + i + "[1] * lightDist + " +
                             "  XEO_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
 
                         if (light.diffuse) {
-                            src.push("if (XEO_uDiffuse) {");
-                            src.push("      lightValue += dotN * XEO_uLightColor" + i + " * attenuation;");
-                            src.push("}");
+                            add("lightValue += dotN * XEO_uLightColor" + i + " * attenuation;");
                         }
 
                         if (light.specular) {
-                            src.push("if (XEO_uSpecularLighting) {");
-                            src.push("    specularValue += specularColor * XEO_uLightColor" + i +
+                            add("specularValue += specularColor * XEO_uLightColor" + i +
                                 " * specular * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-XEO_vViewVertex.xyz)), 0.0), shininess) * attenuation;");
-                            src.push("}");
                         }
                     }
 
                     if (light.mode === "dir") {
 
-                        src.push("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
+                        add("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
 
                         if (light.diffuse) {
-                            src.push("if (XEO_uDiffuse) {");
-                            src.push("      lightValue += dotN * XEO_uLightColor" + i + ";");
-                            src.push("}");
+                            add("lightValue += dotN * XEO_uLightColor" + i + ";");
                         }
 
                         if (light.specular) {
-                            src.push("if (XEO_uSpecularLighting) {");
-                            src.push("    specularValue += specularColor * XEO_uLightColor" + i +
+                            add("specularValue += specularColor * XEO_uLightColor" + i +
                                 " * specular * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-XEO_vViewVertex.xyz)), 0.0), shininess);");
-                            src.push("}");
                         }
                     }
                 }
 
-                src.push("      fragColor = vec4((specularValue.rgb + color.rgb * (lightValue.rgb + ambient.rgb)) + (emit * color.rgb), alpha);");
-                src.push("   } else {");
-                src.push("      fragColor = vec4((color.rgb + (emit * color.rgb)) *  (vec3(1.0, 1.0, 1.0) + ambient.rgb), alpha);");
-                src.push("   }");
+                add("fragColor = vec4((specularValue.rgb + color.rgb * (lightValue.rgb + ambient.rgb)) + (emit * color.rgb), alpha);");
 
             } else { // No normals
-                src.push("fragColor = vec4((color.rgb + (emit * color.rgb)) *  (vec3(1.0, 1.0, 1.0) + ambient.rgb), alpha);");
+                add("fragColor = vec4((color.rgb + (emit * color.rgb)) *  (vec3(1.0, 1.0, 1.0) + ambient.rgb), alpha);");
             }
 
-            if (fragmentHooks.pixelColor) {
-                src.push("fragColor=" + fragmentHooks.pixelColor + "(fragColor);");
+            if (depthTarget) {
+                add("if (XEO_uDepthMode) {");
+                add("  float depth = length(XEO_vViewVertex) / (XEO_uZFar - XEO_uZNear);");
+                add("  const vec4 bias = vec4(1.0 / 255.0, 1.0 / 255.0, 1.0 / 255.0, 0.0);");
+                add("  float r = depth;");
+                add("  float g = fract(r * 255.0);");
+                add("  float b = fract(g * 255.0);");
+                add("  float a = fract(b * 255.0);");
+                add("  vec4 colour = vec4(r, g, b, a);");
+                add("  gl_FragColor = colour - (colour.yzww * bias);");
+                add("} else {");
+                add("  gl_FragColor = fragColor;");
+                add("};");
             }
-            if (false && debugCfg.whitewash === true) {
-                src.push("    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);");
-            } else {
-                src.push("    if (XEO_uDepthMode) {");
-                src.push("          float depth = length(XEO_vViewVertex) / (XEO_uZFar - XEO_uZNear);");
-                src.push("          const vec4 bias = vec4(1.0 / 255.0,");
-                src.push("          1.0 / 255.0,");
-                src.push("          1.0 / 255.0,");
-                src.push("          0.0);");
-                src.push("          float r = depth;");
-                src.push("          float g = fract(r * 255.0);");
-                src.push("          float b = fract(g * 255.0);");
-                src.push("          float a = fract(b * 255.0);");
-                src.push("          vec4 colour = vec4(r, g, b, a);");
-                src.push("          gl_FragColor = colour - (colour.yzww * bias);");
-                src.push("    } else {");
-                src.push("          gl_FragColor = fragColor;");
-                src.push("    };");
-            }
-            src.push("}");
 
-            return src.join("\n");
-        };
+            add("}");
+
+            return end();
+        }
 
     })();
 
