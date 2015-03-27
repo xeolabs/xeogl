@@ -92,7 +92,7 @@ module.exports = function (grunt) {
                     outdir: './docs/',
                     "exclude" : "renderer, utils, webgl"
                 },
-                logo: '../files/logo.png'
+                logo: '../assets/images/logo.png'
             }
 
         },

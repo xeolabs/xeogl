@@ -4,7 +4,7 @@
         "description": "A WebGL-based 3D engine from xeoLabs",
         "version": "0.0.1",
         "url": "http://xeoengine.org/",
-        "logo": "../files/logo.png"
+        "logo": "../assets/images/logo.png"
     },
     "files": {
         "src/core/math/math.js": {
