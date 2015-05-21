@@ -136,7 +136,7 @@
 
  &lt;/ul&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7123073/L.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/Modes.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
@@ -145,7 +145,7 @@
  default values.
 
  &#x60;&#x60;&#x60;&#x60;javascript
-var scene = new XEO.Scene();
+ var scene = new XEO.Scene();
 
  // Create a Modes with default properties
  var modes = new XEO.Modes(scene, {
@@ -214,6 +214,14 @@ var scene = new XEO.Scene();
 
         _init: function (cfg) {
 
+            this._state = this._renderer.createState({
+                picking: true,
+                clipping: true,
+                transparent: false,
+                backfaces: false,
+                frontface: &quot;ccw&quot;
+            });
+
             this.picking = cfg.picking;
             this.clipping = cfg.clipping;
             this.transparent = cfg.transparent;
@@ -226,9 +234,10 @@ var scene = new XEO.Scene();
             /**
              Whether this Modes enables picking of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
-             Picking is performed via calls to {{#crossLink &quot;Canvas/pick:method&quot;}}Canvas pick{{/crossLink}}.
+             Picking is performed via calls to {{#crossLink &quot;Canvas/pick:method&quot;}}Canvas#pick{{/crossLink}}.
 
              Fires a {{#crossLink &quot;Modes/picking:event&quot;}}{{/crossLink}} event on change.
+
              @property picking
              @default true
              @type Boolean
@@ -236,16 +245,20 @@ var scene = new XEO.Scene();
             picking: {
 
                 set: function (value) {
+
                     value = value !== false;
+
                     this._state.picking = value;
+
                     this._renderer.drawListDirty = true;
 
                     /**
-                     * Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/picking:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this Modes&#x27; {{#crossLink &quot;Modes/picking:property&quot;}}{{/crossLink}} property changes.
+                     *
                      * @event picking
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;picking&quot;, value);
+                    this.fire(&quot;picking&quot;, this._state.picking);
                 },
 
                 get: function () {
@@ -268,16 +281,20 @@ var scene = new XEO.Scene();
             clipping: {
 
                 set: function (value) {
+
                     value = value !== false;
+
                     this._state.clipping = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/clipping:property&quot;}}{{/crossLink}} property changes.
+                     Fired whenever this Modes&#x27; {{#crossLink &quot;Modes/clipping:property&quot;}}{{/crossLink}} property changes.
+
                      @event clipping
                      @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;clipping&quot;, value);
+                    this.fire(&quot;clipping&quot;, this._state.clipping);
                 },
 
                 get: function () {
@@ -286,7 +303,7 @@ var scene = new XEO.Scene();
             },
 
             /**
-             Whether attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are transparent.
+             Whether this Modes sets attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} transparent.
 
              When true. this property will set attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
              transparency pass with blending enabled etc), while
@@ -302,16 +319,20 @@ var scene = new XEO.Scene();
             transparent: {
 
                 set: function (value) {
+
                     value = !!value;
+
                     this._state.transparent = value;
+
                     this._renderer.stateOrderDirty = true;
 
                     /**
-                     Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/transparent:property&quot;}}{{/crossLink}} property changes.
+                     Fired whenever this Modes&#x27; {{#crossLink &quot;Modes/transparent:property&quot;}}{{/crossLink}} property changes.
+
                      @event transparent
                      @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;transparent&quot;, value);
+                    this.fire(&quot;transparent&quot;, this._state.transparent);
                 },
 
                 get: function () {
@@ -334,16 +355,20 @@ var scene = new XEO.Scene();
             backfaces: {
 
                 set: function (value) {
+
                     value = value !== false;
+
                     this._state.backfaces = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/backfaces:property&quot;}}{{/crossLink}} property changes.
+                     Fired whenever this Modes&#x27; {{#crossLink &quot;Modes/backfaces:property&quot;}}{{/crossLink}} property changes.
+
                      @event backfaces
                      @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;backfaces&quot;, value);
+                    this.fire(&quot;backfaces&quot;, this._state.backfaces);
                 },
 
                 get: function () {
@@ -366,16 +391,20 @@ var scene = new XEO.Scene();
             frontface: {
 
                 set: function (value) {
+
                     value = value || &quot;ccw&quot;;
+
                     this._state.frontface = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Modes&#x27;&#x27; {{#crossLink &quot;Modes/frontface:property&quot;}}{{/crossLink}} property changes.
+                     Fired whenever this Modes&#x27; {{#crossLink &quot;Modes/frontface:property&quot;}}{{/crossLink}} property changes.
+
                      @event frontface
                      @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;frontface&quot;, value);
+                    this.fire(&quot;frontface&quot;, this._state.frontface);
                 },
 
                 get: function () {
@@ -388,12 +417,6 @@ var scene = new XEO.Scene();
             this._renderer.flags = this._state;
         },
 
-        /**
-         * JSON representation of this component
-         * @property json
-         * @type GameObject
-         */
-
         _getJSON: function () {
             return {
                 picking: this.picking,
@@ -402,6 +425,10 @@ var scene = new XEO.Scene();
                 backfaces: this.backfaces,
                 frontface: this.frontface
             };
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
 

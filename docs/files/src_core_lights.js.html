@@ -137,13 +137,14 @@
  {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally from a given direction&lt;/li&gt;
  &lt;/ul&gt;
 
- Within xeoEngine&#x27;s &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; reflection model, the ambient,
- diffuse and specular components of light sources are multiplied by the
- {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and
- {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}} properties on attached  {{#crossLink &quot;Material&quot;}}Materials{{/crossLink}}.
+ Within xeoEngine&#x27;s &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; reflection model, ambient,
+ diffuse and specular light sources are multiplied by the {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}},
+ {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}}
+ properties, respectively, on the {{#crossLink &quot;Material&quot;}}Materials{{/crossLink}} attached to
+ the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7092459/L.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/Lights.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
@@ -213,6 +214,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
+ @param [cfg.lights] {{Array of String|GameObject}} Array of light source IDs or instances.
  @extends Component
  */
 (function () {
@@ -227,6 +229,12 @@
 
         _init: function (cfg) {
 
+            this._state = this._renderer.createState({
+                lights: [],
+                numLights: 0,
+                hash: &quot;&quot;
+            });
+
             this._lights = [];
             this._dirtySubs = [];
             this._destroyedSubs = [];
@@ -236,6 +244,15 @@
 
         _props: {
 
+            /**
+             The light sources in this Lights.
+
+             Fires a {{#crossLink &quot;Lights/lights:event&quot;}}{{/crossLink}} event on change.
+
+             @property lights
+             @default []
+             @type {{Array of AmbientLight, PointLight and DirLight}}
+             */
             lights: {
 
                 set: function (value) {
@@ -285,7 +302,7 @@
                             // ID given for light - find the light component
 
                             var id = light;
-                            light = this.components[id];
+                            light = this.viewer.components[id];
                             if (!light) {
                                 this.error(&quot;Component with this ID not found: &#x27;&quot; + id + &quot;&#x27;&quot;);
                                 continue;
@@ -317,49 +334,67 @@
         },
 
         _compile: function () {
-            var lights = [];
-            for (var i = 0, len = this._lights.length; i &lt; len; i++) {
-                lights.push(this._lights[i]._state);
+
+            var state = this._state;
+            var lights = state.lights;
+            var numLights = this._lights.length;
+
+            state.numLights = numLights;
+
+            for (var i = 0; i &lt; numLights; i++) {
+                lights[i] = this._lights[i]._state;
             }
-            var state = {
-                type: &quot;lights&quot;,
-                lights: lights,
-                hash: this._makeHash(lights)
-            };
-            this._renderer.lights = state;
+
+            this._state.hash = this._makeHash(lights, numLights);
+
+            this._renderer.lights = this._state;
         },
 
-        _makeHash: function (lights) {
-            if (lights.length === 0) {
+        _makeHash: function (lights, numLights) {
+
+            if (numLights === 0) {
                 return &quot;&quot;;
             }
+
             var parts = [];
             var light;
-            for (var i = 0, len = lights.length; i &lt; len; i++) {
+
+            for (var i = 0; i &lt; numLights; i++) {
+
                 light = lights[i];
                 parts.push(light.mode);
+
                 if (light.specular) {
                     parts.push(&quot;s&quot;);
                 }
+
                 if (light.diffuse) {
                     parts.push(&quot;d&quot;);
                 }
+
                 parts.push((light.space === &quot;world&quot;) ? &quot;w&quot; : &quot;v&quot;);
             }
+
             return parts.join(&quot;&quot;);
         },
 
         _getJSON: function () {
+
             var lightIds = [];
+
             for (var i = 0, len = this._lights.length; i &lt; len; i++) {
                 lightIds.push(this._lights[i].id);
             }
+
             return {
                 lights: lightIds
             };
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
-
 })();
     </pre>
 </div>

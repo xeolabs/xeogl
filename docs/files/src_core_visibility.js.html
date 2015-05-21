@@ -131,7 +131,7 @@
  their visibility as a group.&lt;/li&gt;
  &lt;/ul&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7103687/L.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/Visibility.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
@@ -194,13 +194,18 @@ visibility.destroy();
         type: &quot;enable&quot;,
 
         _init: function (cfg) {
+
+            this._state = this._renderer.createState({
+                visible: true
+            });
+
             this.visible = cfg.visible;
         },
 
         _props: {
 
             /**
-             Indicates whether attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are visible or not.
+             Indicates whether this Visibility makes attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} visible or not.
 
              Fires a {{#crossLink &quot;Visibility/visible:event&quot;}}{{/crossLink}} event on change.
 
@@ -211,17 +216,18 @@ visibility.destroy();
             visible: {
 
                 set: function (value) {
-                    value = value !== false;
-                    this._state.visible = value;
+
+                    this._state.visible =  value !== false;
+
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Visibility&#x27;s  {{#crossLink &quot;Visibility/visible:property&quot;}}{{/crossLink}} property changes.
+                     Fired whenever this Visibility&#x27;s {{#crossLink &quot;Visibility/visible:property&quot;}}{{/crossLink}} property changes.
 
                      @event visible
                      @param value {Boolean} The property&#x27;s new value
                      */
-                    this.fire(&quot;visible&quot;, value);
+                    this.fire(&quot;visible&quot;,  this._state.visible);
                 },
 
                 get: function () {
@@ -231,13 +237,17 @@ visibility.destroy();
         },
 
         _compile: function () {
-            this._renderer.enable = this._state;
+            this._renderer.visibility = this._state;
         },
 
         _getJSON: function () {
             return {
                 visible: this.visible
             };
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
 

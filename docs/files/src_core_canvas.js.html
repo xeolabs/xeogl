@@ -148,7 +148,7 @@
 
  &lt;/ul&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7103211/L.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/Canvas.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
@@ -216,9 +216,7 @@
 
         type: &quot;canvas&quot;,
 
-        /**
-         * Names of recognised WebGL contexts
-         */
+        // Names of recognised WebGL contexts
         _WEBGL_CONTEXT_NAMES: [
             &quot;webgl&quot;,
             &quot;experimental-webgl&quot;,
@@ -230,9 +228,10 @@
         _init: function (cfg) {
 
             /**
-             * The HTML canvas. When this XEO.Canvas was configured with the ID of an existing canvas within the DOM,
-             * this property will be that element, otherwise it will be a full-page canvas that this Canvas has
+             * The HTML canvas. When the {{#crossLink &quot;Viewer&quot;}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,
+             * then this property will be that element, otherwise it will be a full-page canvas that this Canvas has
              * created by default.
+             *
              * @property canvas
              * @type {HTMLCanvasElement}
              * @final
@@ -241,6 +240,7 @@
 
             /**
              * The WebGL rendering context, obtained by this Canvas from the HTML 5 canvas.
+             *
              * @property gl
              * @type {WebGLRenderingContext}
              * @final
@@ -332,10 +332,14 @@
 
             var lastWidth = this.canvas.width;
             var lastHeight = this.canvas.height;
+
             this._tick = this.scene.on(&quot;tick&quot;,
                 function () {
+
                     var canvas = self.canvas;
+
                     if (canvas.width !== lastWidth || canvas.height !== lastHeight) {
+
                         lastWidth = canvas.width;
                         lastHeight = canvas.height;
 
@@ -364,7 +368,7 @@
          * set *false* or a {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} with {{#crossLink &quot;Modes/picking:property&quot;}}picking{{/crossLink}} set *false*.
          *
          * On success, will fire a {{#crossLink &quot;Canvas/picked:event&quot;}}{{/crossLink}} event on this Canvas, along with
-         * a separate {{#crossLink &quot;GameObject/picked:event&quot;}}{{/crossLink}} event on the target {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.
+         * a separate {{#crossLink &quot;Object/picked:event&quot;}}{{/crossLink}} event on the target {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.
          *
          * @method pick
          * @param {Number} canvasX X-axis Canvas coordinate.
@@ -411,13 +415,16 @@
          * Initialises the WebGL context
          */
         _initWebGL: function () {
+
             for (var i = 0; !this.gl &amp;&amp; i &lt; this._WEBGL_CONTEXT_NAMES.length; i++) {
                 try {
                     this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
                 } catch (e) { // Try with next context name
                 }
             }
+
             if (!this.gl) {
+
                 this.error(&#x27;Failed to get a WebGL context&#x27;);
 
                 /**

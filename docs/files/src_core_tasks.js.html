@@ -136,7 +136,7 @@
  application-level processes you are running.&lt;/li&gt;
  &lt;/ul&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7122907/L.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/Tasks.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
@@ -247,7 +247,8 @@ myTask2.setFailed();
             var self = this;
 
             /**
-             * Fired whenever a task has successfully completed.
+             * Fired whenever a Task within this Tasks has successfully completed.
+             *
              * @event completed
              * @param {Task} value The task that has completed
              */
@@ -259,7 +260,8 @@ myTask2.setFailed();
                 });
 
             /**
-             * Fired whenever a task has failed
+             * Fired whenever a Task within this Tasks has failed.
+             *
              * @event failed
              * @param {Task} value The task that has failed
              */
@@ -270,11 +272,6 @@ myTask2.setFailed();
                     self.fire(&quot;failed&quot;, task, true);
                 });
 
-            /**
-             * Fired whenever a task has started
-             * @event started
-             * @param {Task} value The task that has started
-             */
             self.fire(&quot;started&quot;, task, true);
 
             return task;
@@ -292,11 +289,14 @@ myTask2.setFailed();
          * @param {String} id ID of the {{#crossLink &quot;Task&quot;}}Task{{/crossLink}} to complete.
          */
         setCompleted: function (id) {
+
             var task = this.tasks[id];
+
             if (!task) {
                 this.error(&quot;Task not found:&quot; + id);
                 return;
             }
+
             task.fire(&quot;completed&quot;, task, true);
         },
 
@@ -312,11 +312,14 @@ myTask2.setFailed();
          * @param {String} id ID of the {{#crossLink &quot;Task&quot;}}Task{{/crossLink}} to fail.
          */
         setFailed: function (id) {
+
             var task = this.tasks[id];
+
             if (!task) {
                 this.error(&quot;Task not found:&quot; + id);
                 return;
             }
+
             task.fire(&quot;failed&quot;, task, true);
         },
 

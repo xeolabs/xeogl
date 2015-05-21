@@ -162,7 +162,7 @@ var geometry = new XEO.Geometry(scene, {
     id: "myGeometry"
 });
 
-// Let xeoEngine automatically generated the ID for our GameObject
+// Let xeoEngine automatically generated the ID for our Object
 var object = new XEO.GameObject(scene, {
     material: material,
     geometry: geometry
@@ -192,12 +192,12 @@ material.diffuse = [ 0.0, 0.5, 0.5 ];
 material.off(handle);
 </code></pre>
 <p>We can also subscribe to changes in the way components are attached to each other, since components are properties
- of other components. For example, we can subscribe to the &#39;<a href="../classes/GameObject.html#event_material" class="crosslink">material</a>&#39; event that a
- <a href="../classes/GameObject.html" class="crosslink">GameObject</a> fires when its <a href="../classes/GameObject.html#property_material" class="crosslink">material</a>
+ of other components. For example, we can subscribe to the &#39;Object/material:event&#39; event that a
+ <a href="../classes/GameObject.html" class="crosslink">GameObject</a> fires when its Object/material:property
  property is set to a different <a href="../classes/Material.html" class="crosslink">Material</a>:</p>
-<pre class="code prettyprint"><code class="lang-javascript">// Bind a change callback to the GameObject&#39;s Material
+<pre class="code prettyprint"><code class="lang-javascript">// Bind a change callback to the Object&#39;s Material
 object1.on("material", function(material) {
-    console.log("GameObject&#39;s Material has changed to: " + material.id);
+    console.log("Object&#39;s Material has changed to: " + material.id);
 });
 
 // Now replace that Material with another
@@ -488,7 +488,7 @@ material.error("Aw, snap!");
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l599"><code>src&#x2F;core&#x2F;component.js:599</code></a>
+        <a href="../files/src_core_component.js.html#l606"><code>src&#x2F;core&#x2F;component.js:606</code></a>
         </p>
 
 
@@ -528,7 +528,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l444"><code>src&#x2F;core&#x2F;component.js:444</code></a>
+        <a href="../files/src_core_component.js.html#l449"><code>src&#x2F;core&#x2F;component.js:449</code></a>
         </p>
 
 
@@ -591,7 +591,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        <a href="../files/src_core_component.js.html#l335"><code>src&#x2F;core&#x2F;component.js:335</code></a>
         </p>
 
 
@@ -670,7 +670,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l427"><code>src&#x2F;core&#x2F;component.js:427</code></a>
+        <a href="../files/src_core_component.js.html#l432"><code>src&#x2F;core&#x2F;component.js:432</code></a>
         </p>
 
 
@@ -727,7 +727,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l387"><code>src&#x2F;core&#x2F;component.js:387</code></a>
+        <a href="../files/src_core_component.js.html#l392"><code>src&#x2F;core&#x2F;component.js:392</code></a>
         </p>
 
 
@@ -791,7 +791,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l357"><code>src&#x2F;core&#x2F;component.js:357</code></a>
+        <a href="../files/src_core_component.js.html#l362"><code>src&#x2F;core&#x2F;component.js:362</code></a>
         </p>
 
 
@@ -814,7 +814,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Publication event</p>
+                        <p>The event</p>
 
                     </div>
 
@@ -825,7 +825,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Called when fresh data is available at the event</p>
+                        <p>Called fired on the event</p>
 
                     </div>
 
@@ -884,7 +884,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l406"><code>src&#x2F;core&#x2F;component.js:406</code></a>
+        <a href="../files/src_core_component.js.html#l411"><code>src&#x2F;core&#x2F;component.js:411</code></a>
         </p>
 
 
@@ -963,7 +963,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l461"><code>src&#x2F;core&#x2F;component.js:461</code></a>
+        <a href="../files/src_core_component.js.html#l466"><code>src&#x2F;core&#x2F;component.js:466</code></a>
         </p>
 
 
@@ -1016,7 +1016,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l308"><code>src&#x2F;core&#x2F;component.js:308</code></a>
+                            <a href="../files/src_core_component.js.html#l313"><code>src&#x2F;core&#x2F;component.js:313</code></a>
                             </p>
                     
                     
@@ -1044,7 +1044,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l260"><code>src&#x2F;core&#x2F;component.js:260</code></a>
+                            <a href="../files/src_core_component.js.html#l267"><code>src&#x2F;core&#x2F;component.js:267</code></a>
                             </p>
                     
                     
@@ -1070,7 +1070,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l251"><code>src&#x2F;core&#x2F;component.js:251</code></a>
+                            <a href="../files/src_core_component.js.html#l258"><code>src&#x2F;core&#x2F;component.js:258</code></a>
                             </p>
                     
                     
@@ -1095,15 +1095,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l241"><code>src&#x2F;core&#x2F;component.js:241</code></a>
+                            <a href="../files/src_core_component.js.html#l250"><code>src&#x2F;core&#x2F;component.js:250</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Metadata on this component.</p>
-                    <p>Fires a Component/metadata:event event on this Component when changed.</p>
+                            <p>Arbitrary, user-defined metadata on this component.</p>
                     
                         </div>
                     
@@ -1122,7 +1121,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l202"><code>src&#x2F;core&#x2F;component.js:202</code></a>
+                            <a href="../files/src_core_component.js.html#l209"><code>src&#x2F;core&#x2F;component.js:209</code></a>
                             </p>
                     
                     
@@ -1149,7 +1148,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l296"><code>src&#x2F;core&#x2F;component.js:296</code></a>
+                            <a href="../files/src_core_component.js.html#l303"><code>src&#x2F;core&#x2F;component.js:303</code></a>
                             </p>
                     
                     
@@ -1157,7 +1156,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Type code for this Component.</p>
-                    <p>For example: &quot;ambientLight&quot;, &quot;colorTarget&quot;, &quot;lights&quot; etc.</p>
                     
                         </div>
                     
@@ -1181,7 +1179,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l626"><code>src&#x2F;core&#x2F;component.js:626</code></a>
+                            <a href="../files/src_core_component.js.html#l633"><code>src&#x2F;core&#x2F;component.js:633</code></a>
                             </p>
                     
                     

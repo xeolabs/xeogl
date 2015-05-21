@@ -163,6 +163,56 @@
     XEO.math = {
 
         /**
+         * Returns a new, uninitialized two-element vector.
+         * @method vec2
+         * @static
+         * @returns {Float64Array}
+         */
+        vec2: function () {
+            return new Float64Array(2);
+        },
+
+        /**
+         * Returns a new, uninitialized three-element vector.
+         * @method vec3
+         * @static
+         * @returns {Float64Array}
+         */
+        vec3: function () {
+            return new Float64Array(3);
+        },
+
+        /**
+         * Returns a new, uninitialized four-element vector.
+         * @method vec4
+         * @static
+         * @returns {Float64Array}
+         */
+        vec4: function () {
+            return new Float64Array(4);
+        },
+
+        /**
+         * Returns a new, uninitialized 3x3 matrix.
+         * @method mat3
+         * @static
+         * @returns {Float64Array}
+         */
+        mat3: function () {
+            return new Float64Array(9);
+        },
+
+        /**
+         * Returns a new, uninitialized 4x4 matrix.
+         * @method mat4
+         * @static
+         * @returns {Float64Array}
+         */
+        mat4: function () {
+            return new Float64Array(16);
+        },
+
+        /**
          * Returns a new UUID.
          * @method createUUID
          * @static
@@ -768,15 +818,6 @@
         },
 
         /**
-         * Returns a 4x4 identity matrix.
-         * @method mat4
-         * @static
-         */
-        mat4: function () {
-            return new Array(16);
-        },
-
-        /**
          * Duplicates a 4x4 identity matrix.
          * @method dupMat4
          * @static
@@ -1276,8 +1317,8 @@
          * @method translationMat4
          * @static
          */
-        translationMat4v: function (v) {
-            var m = XEO.math.identityMat4();
+        translationMat4v: function (v, temp) {
+            var m = temp || XEO.math.identityMat4();
             m[12] = v[0];
             m[13] = v[1];
             m[14] = v[2];
@@ -1573,9 +1614,9 @@
 
         /**
          * Returns a 4x4 perspective projection matrix.
-         * @method frustumMatrix4v
+         * @method frustumMat4v
          */
-        frustumMatrix4: function (left, right, bottom, top, near, far, dest) {
+        frustumMat4: function (left, right, bottom, top, near, far, dest) {
             if (!dest) {
                 dest = XEO.math.mat4();
             }
@@ -1641,7 +1682,7 @@
          * @method transformPoints3
          */
         transformPoints3: function (m, points) {
-            var result = new Array(points.length);
+            var result = new Float64Array(points.length);
             var len = points.length;
             var p0, p1, p2;
             var pi;

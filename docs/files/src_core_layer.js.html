@@ -149,7 +149,7 @@
  {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}. which has a {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
  &lt;/ul&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105071/L.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/Layer.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
@@ -289,15 +289,20 @@ var object3 = new XEO.GameObject(scene, {
         type: &quot;layer&quot;,
 
         _init: function (cfg) {
+
+            this._state = this._renderer.createState({
+                priority: 0
+            });
+
             this.priority = cfg.priority;
         },
 
         _props: {
 
             /**
-             * Indicates a *layer* rendering priority for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+             * Indicates this Layer&#x27;s rendering priority for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
              *
-             * Each GameObject is also attached to a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}, which sets a *stage* rendering
+             * Each {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} is also attached to a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}, which sets a *stage* rendering
              * priority via its {{#crossLink &quot;Stage/priority:property&quot;}}priority{{/crossLink}} property.
              *
              * Fires a {{#crossLink &quot;Layer/priority:event&quot;}}{{/crossLink}} event on change.
@@ -309,12 +314,16 @@ var object3 = new XEO.GameObject(scene, {
             priority: {
 
                 set: function (value) {
+
                     value = value || 0;
+
                     this._state.priority = value;
+
                     this._renderer.stateOrderDirty = true;
 
                     /**
                      * Fired whenever this Layer&#x27;s  {{#crossLink &quot;Layer/priority:property&quot;}}{{/crossLink}} property changes.
+                     *
                      * @event priority
                      * @param value The property&#x27;s new value
                      */
@@ -335,6 +344,10 @@ var object3 = new XEO.GameObject(scene, {
             return {
                 priority: this.priority
             };
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
 

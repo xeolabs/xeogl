@@ -124,7 +124,7 @@
 /**
  A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
-## Overview
+ ## Overview
 
  &lt;ul&gt;
  &lt;li&gt;Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.&lt;/li&gt;
@@ -137,7 +137,7 @@
  and {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.&lt;/li&gt;
  &lt;/ul&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/7105141/L.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/Shader.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
@@ -154,7 +154,7 @@
 
  var scene = new XEO.Scene();
 
- // Shader that&#x27;s used by our GameObject. Note the &#x27;XEO_aPosition&#x27; and &#x27;XEO_aUV attributes&#x27;,
+ // Shader that&#x27;s used by our Object. Note the &#x27;XEO_aPosition&#x27; and &#x27;XEO_aUV attributes&#x27;,
  // which will receive the positions and UVs from the Geometry. Also note the &#x27;time&#x27;
  // uniform, which we&#x27;ll be animating via Shader#setParams.
 
@@ -284,7 +284,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
  @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
  @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
- @param [cfg.params={}] {GameObject} Values for uniforms defined in the vertex and/or fragment stages.
+ @param [cfg.params={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
  @extends Component
  */
 (function () {
@@ -298,16 +298,25 @@
         type: &quot;shader&quot;,
 
         _init: function (cfg) {
-            this._state.shaders = {};
+
+            this._state = this._renderer.createState({
+
+                shaders: {},
+
+                params: {}
+            });
+
             this.vertex = cfg.vertex;
+
             this.fragment = cfg.fragment;
+
             this.setParams(cfg.params);
         },
 
         _props: {
 
             /**
-             * GLSL source code for the vertex stage of this shader.
+             * GLSL source code for this Shader&#x27;s vertex stage.
              *
              * Fires a {{#crossLink &quot;Shader/vertex:event&quot;}}{{/crossLink}} event on change.
              *
@@ -318,6 +327,7 @@
             vertex: {
 
                 set: function (value) {
+
                     this._state.shaders.vertex = value;
 
                     // Trigger recompile
@@ -325,10 +335,11 @@
 
                     /**
                      * Fired whenever this Shader&#x27;s {{#crossLink &quot;Shader/vertex:property&quot;}}{{/crossLink}} property changes.
+                     *
                      * @event vertex
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;vertex&quot;, value);
+                    this.fire(&quot;vertex&quot;,  this._state.shaders.vertex);
                 },
 
                 get: function () {
@@ -337,7 +348,7 @@
             },
 
             /**
-             * GLSL source code for the fragment stage of this shader.
+             * GLSL source code for this Shader&#x27;s fragment stage.
              *
              * Fires a {{#crossLink &quot;Shader/fragment:event&quot;}}{{/crossLink}} event on change.
              *
@@ -348,6 +359,7 @@
             fragment: {
 
                 set: function (value) {
+
                     this._state.shaders.fragment = value;
 
                     // Trigger recompile
@@ -355,10 +367,11 @@
 
                     /**
                      * Fired whenever this Shader&#x27;s {{#crossLink &quot;Shader/fragment:property&quot;}}{{/crossLink}} property changes.
+                     *
                      * @event fragment
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;fragment&quot;, value);
+                    this.fire(&quot;fragment&quot;,  this._state.shaders.fragment);
                 },
 
                 get: function () {
@@ -367,7 +380,7 @@
             },
 
             /**
-             * Params for this shader.
+             * Params for this Shader.
              *
              * Fires a {{#crossLink &quot;Shader/params:event&quot;}}{{/crossLink}} event on change.
              *
@@ -376,6 +389,7 @@
              * @type {}
              */
             params: {
+
                 get: function () {
                     return this._state.params;
                 }
@@ -394,12 +408,13 @@
          * @param {} [params={}] Values for params to set on this Shader, keyed to their names.
          */
         setParams: function (params) {
-            this._state.params = this._state.params || {};
+
             for (var name in params) {
                 if (params.hasOwnProperty(name)) {
                     this._state.params[name] = params[name];
                 }
             }
+
             this._renderer.imageDirty = true;
 
             /**
@@ -409,7 +424,6 @@
              */
             this.fire(&quot;params&quot;, this._state.params);
         },
-
 
         _compile: function () {
             this._renderer.shader = this._state;

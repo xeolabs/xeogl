@@ -139,8 +139,10 @@
 <ul>
 <li>Textures are grouped within <a href="../classes/Material.html" class="crosslink">Material</a>s, which are attached to
 <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
-<li>To create a Texture from an image file, setting the Texture&#39;s <a href="../classes/Texture.html#property_src" class="crosslink">src</a>
+<li>To create a Texture from an image file, set the Texture&#39;s <a href="../classes/Texture.html#property_src" class="crosslink">src</a>
 property to the image file path.</li>
+<li>To create a Texture from an HTML DOM Image object, set the Texture&#39;s <a href="../classes/Texture.html#property_image" class="crosslink">image</a>
+property to the object.</li>
 <li>To render color images of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to a Texture, set the Texture&#39;s <a href="../classes/Texture.html#property_target" class="crosslink">target</a>
 property to a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> that is attached to those <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
 <li>Similarly, to render depth images of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to a Texture, set the Texture&#39;s <a href="../classes/Texture.html#property_target" class="crosslink">target</a>
@@ -148,37 +150,37 @@ property to a <a href="../classes/DepthTarget.html" class="crosslink">DepthTarge
 <li>For special effects, we often use rendered Textures in combination with <a href="../classes/Shader.html" class="crosslink">Shaders</a> and <a href="../classes/Stage.html" class="crosslink">Stages</a>.</li>
 </ul>
 
-<p><img src="http://www.gliffy.com/go/publish/image/7092447/L.png"></img></p>
+<p><img src="../../../assets/images/Texture.png"></img></p>
 <h2 id="example">Example</h2>
-<p>This example creates</p>
+<p>The example below has:</p>
 <ul>
-<li>three <a href="../classes/Texture.html" class="crosslink">Texture</a>s,</li>
+<li>three Textures,</li>
 <li>a <a href="../classes/Material.html" class="crosslink">Material</a> which applies the <a href="../classes/Texture.html" class="crosslink">Texture</a>s as diffuse, bump and specular maps,</li>
 <li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> and a <a href="../classes/PointLight.html" class="crosslink">PointLight</a>,</li>
-<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
+<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that has the default box shape, and
 <li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
 </ul>
 
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
-var diffuseMap = new XEO.Texture(scene, {
+var texture1 = new XEO.Texture(scene, {
    src: "diffuseMap.jpg"
 });
 
-var bumpMap = new XEO.Texture(scene, {
+var texture2 = new XEO.Texture(scene, {
    src: "bumpMap.jpg"
 });
 
-var specularMap = new XEO.Texture(scene, {
+var texture3 = new XEO.Texture(scene, {
    src: "specularMap.jpg"
 });
 
 var material = new XEO.Material(scene, {
    ambient: [0.3, 0.3, 0.3],
    shininess: 30,
-   diffuseMap: diffuseMap,
-   bumpMap: bumpMap,
-   specularMap: specularMap
+   diffuseMap: texture1,
+   bumpMap: texture2,
+   specularMap: texture3
 });
 
 var light1 = new XEO.PointLight(scene, {
@@ -198,7 +200,8 @@ var lights = new XEO.Lights(scene, {
    ]
 });
 
-var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
+// Geometry without parameters will default to a 2x2x2 box.
+var geometry = new XEO.Geometry(scene);
 
 var object = new XEO.GameObject(scene, {
    lights: lights,
@@ -281,7 +284,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent scene, generated automatically when omitted.</p>
+                                            <p>Optional ID for this Texture, unique among all components in the parent scene, generated automatically when omitted.</p>
         
                                         </div>
         
@@ -298,162 +301,124 @@ var object = new XEO.GameObject(scene, {
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[minFilter]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[src=null]</code>
+                                            <span class="type">String</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>Path to image file to load into this Texture. See the <a href="../classes/Texture.html#property_src" class="crosslink">src</a> property for more info.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[magFilter]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[image=null]</code>
+                                            <span class="type">HTMLImageElement</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>HTML Image object to load into this Texture. See the <a href="../classes/Texture.html#property_image" class="crosslink">image</a> property for more info.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[wrapS]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[target=null]</code>
+                                            <span class="type">String | XEO.ColorTarget | XEO.DepthTarget</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>Instance or ID of a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> or
+        <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> to source this Texture from. See the <a href="../classes/Texture.html#property_target" class="crosslink">target</a> property for more info.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[wrapT]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[minFilter=&quot;linearMipmapLinear&quot;]</code>
+                                            <span class="type">String</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>How the texture is sampled when a texel covers less than one pixel. See the <a href="../classes/Texture.html#property_minFilter" class="crosslink">minFilter</a> property for more info.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[isDepth]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[magFilter=&quot;linear&quot;]</code>
+                                            <span class="type">String</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>How the texture is sampled when a texel covers more than one pixel. See the <a href="../classes/Texture.html#property_magFilter" class="crosslink">magFilter</a> property for more info.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[depthMode]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[wrapS=&quot;repeat&quot;]</code>
+                                            <span class="type">String</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>Wrap parameter for texture coordinate <em>S</em>. See the <a href="../classes/Texture.html#property_wrapS" class="crosslink">wrapS</a> property for more info.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[depthCompareMode]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[wrapT=&quot;repeat&quot;]</code>
+                                            <span class="type">String</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>Wrap parameter for texture coordinate <em>S</em>. See the <a href="../classes/Texture.html#property_wrapT" class="crosslink">wrapT</a> property for more info.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[flipY]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[flipY=true]</code>
+                                            <span class="type">Boolean</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>Flips the image&#39;s Y axis to match the WebGL texture coordinate space. See the <a href="../classes/Texture.html#property_flipY" class="crosslink">flipY</a> property for more info.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[width]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[translate=[0,0]]</code>
+                                            <span class="type">Array of Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>2D translation vector that will be added to texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[height]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[scale=[1,1]]</code>
+                                            <span class="type">Array of Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>2D scaling vector that will be applied to texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[internalFormat]</code>
-                                            <span class="type"></span>
+                                            <code class="param-name optional">[rotate=0]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
-                                        </div>
+                                            <p>Rotation, in degrees, that will be applied to texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
         
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[sourceFormat]</code>
-                                            <span class="type"></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[sourceType]</code>
-                                            <span class="type"></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[translate]</code>
-                                            <span class="type"></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[scale]</code>
-                                            <span class="type"></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[rotate]</code>
-                                            <span class="type"></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
                                         </div>
         
                                     </li>
@@ -527,18 +492,6 @@ var object = new XEO.GameObject(scene, {
                                 <a href="#property_className">className</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_depthCompareFunc">depthCompareFunc</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_depthCompareMode">depthCompareMode</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_depthMode">depthMode</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
@@ -547,24 +500,12 @@ var object = new XEO.GameObject(scene, {
                                 <a href="#property_flipY">flipY</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_height">height</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_image">image</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_internalFormat">internalFormat</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_isDepth">isDepth</a>
 
                             </li>
                             <li class="index-item property">
@@ -592,14 +533,6 @@ var object = new XEO.GameObject(scene, {
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_sourceFormat">sourceFormat</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_sourceType">sourceType</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_src">src</a>
 
                             </li>
@@ -613,10 +546,6 @@ var object = new XEO.GameObject(scene, {
                             </li>
                             <li class="index-item property public inherited">
                                 <a href="#property_type">type</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_width">width</a>
 
                             </li>
                             <li class="index-item property">
@@ -635,18 +564,6 @@ var object = new XEO.GameObject(scene, {
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
-                            <li class="index-item event">
-                                <a href="#event_depthCompareFunc">depthCompareFunc</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_depthCompareMode">depthCompareMode</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_depthMode">depthMode</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
@@ -656,19 +573,11 @@ var object = new XEO.GameObject(scene, {
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_height">height</a>
-
-                            </li>
-                            <li class="index-item event">
                                 <a href="#event_image">image</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_internalFormat">internalFormat</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_isDepth">isDepth</a>
+                                <a href="#event_image">image</a>
 
                             </li>
                             <li class="index-item event">
@@ -688,14 +597,6 @@ var object = new XEO.GameObject(scene, {
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_sourceFormat">sourceFormat</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_sourceType">sourceType</a>
-
-                            </li>
-                            <li class="index-item event">
                                 <a href="#event_src">src</a>
 
                             </li>
@@ -705,10 +606,6 @@ var object = new XEO.GameObject(scene, {
                             </li>
                             <li class="index-item event">
                                 <a href="#event_translate">translate</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_width">width</a>
 
                             </li>
                             <li class="index-item event">
@@ -741,7 +638,7 @@ var object = new XEO.GameObject(scene, {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l599"><code>src&#x2F;core&#x2F;component.js:599</code></a>
+        <a href="../files/src_core_component.js.html#l606"><code>src&#x2F;core&#x2F;component.js:606</code></a>
         </p>
 
 
@@ -781,7 +678,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l444"><code>src&#x2F;core&#x2F;component.js:444</code></a>
+        <a href="../files/src_core_component.js.html#l449"><code>src&#x2F;core&#x2F;component.js:449</code></a>
         </p>
 
 
@@ -844,7 +741,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        <a href="../files/src_core_component.js.html#l335"><code>src&#x2F;core&#x2F;component.js:335</code></a>
         </p>
 
 
@@ -923,7 +820,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l427"><code>src&#x2F;core&#x2F;component.js:427</code></a>
+        <a href="../files/src_core_component.js.html#l432"><code>src&#x2F;core&#x2F;component.js:432</code></a>
         </p>
 
 
@@ -980,7 +877,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l387"><code>src&#x2F;core&#x2F;component.js:387</code></a>
+        <a href="../files/src_core_component.js.html#l392"><code>src&#x2F;core&#x2F;component.js:392</code></a>
         </p>
 
 
@@ -1044,7 +941,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l357"><code>src&#x2F;core&#x2F;component.js:357</code></a>
+        <a href="../files/src_core_component.js.html#l362"><code>src&#x2F;core&#x2F;component.js:362</code></a>
         </p>
 
 
@@ -1067,7 +964,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Publication event</p>
+                        <p>The event</p>
 
                     </div>
 
@@ -1078,7 +975,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Called when fresh data is available at the event</p>
+                        <p>Called fired on the event</p>
 
                     </div>
 
@@ -1137,7 +1034,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l406"><code>src&#x2F;core&#x2F;component.js:406</code></a>
+        <a href="../files/src_core_component.js.html#l411"><code>src&#x2F;core&#x2F;component.js:411</code></a>
         </p>
 
 
@@ -1216,7 +1113,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l461"><code>src&#x2F;core&#x2F;component.js:461</code></a>
+        <a href="../files/src_core_component.js.html#l466"><code>src&#x2F;core&#x2F;component.js:466</code></a>
         </p>
 
 
@@ -1269,7 +1166,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l308"><code>src&#x2F;core&#x2F;component.js:308</code></a>
+                            <a href="../files/src_core_component.js.html#l313"><code>src&#x2F;core&#x2F;component.js:313</code></a>
                             </p>
                     
                     
@@ -1286,87 +1183,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_depthCompareFunc" class="property item">
-                        <h3 class="name"><code>depthCompareFunc</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l584"><code>src&#x2F;core&#x2F;texture.js:584</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>TODO</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_depthCompareFunc" class="crosslink">depthCompareFunc</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> &quot;lequal&quot;</p>
-                    
-                    
-                    </div>
-                    <div id="property_depthCompareMode" class="property item">
-                        <h3 class="name"><code>depthCompareMode</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l554"><code>src&#x2F;core&#x2F;texture.js:554</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>TODO</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_depthMode" class="crosslink">depthMode</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> &quot;compareRToTexture&quot;</p>
-                    
-                    
-                    </div>
-                    <div id="property_depthMode" class="property item">
-                        <h3 class="name"><code>depthMode</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l524"><code>src&#x2F;core&#x2F;texture.js:524</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>TODO</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_depthMode" class="crosslink">depthMode</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> &quot;luminance&quot;</p>
-                    
-                    
-                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1378,7 +1194,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l260"><code>src&#x2F;core&#x2F;component.js:260</code></a>
+                            <a href="../files/src_core_component.js.html#l267"><code>src&#x2F;core&#x2F;component.js:267</code></a>
                             </p>
                     
                     
@@ -1403,46 +1219,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l614"><code>src&#x2F;core&#x2F;texture.js:614</code></a>
+                            <a href="../files/src_core_texture.js.html#l775"><code>src&#x2F;core&#x2F;texture.js:775</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>TODO</p>
+                            <p>Flips this Texture&#39;s Y axis to match the WebGL texture coordinate space.</p>
                     <p>Fires a <a href="../classes/Texture.html#event_flipY" class="crosslink">flipY</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> false</p>
-                    
-                    
-                    </div>
-                    <div id="property_height" class="property item">
-                        <h3 class="name"><code>height</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l674"><code>src&#x2F;core&#x2F;texture.js:674</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>TODO</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_height" class="crosslink">height</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
+                            <p><strong>Default:</strong> true</p>
                     
                     
                     </div>
@@ -1458,7 +1247,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l251"><code>src&#x2F;core&#x2F;component.js:251</code></a>
+                            <a href="../files/src_core_component.js.html#l258"><code>src&#x2F;core&#x2F;component.js:258</code></a>
                             </p>
                     
                     
@@ -1474,7 +1263,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_image" class="property item">
                         <h3 class="name"><code>image</code></h3>
-                        <span class="type">HTML Image</span>
+                        <span class="type">HTMLImageElement</span>
                     
                     
                     
@@ -1483,73 +1272,23 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l794"><code>src&#x2F;core&#x2F;texture.js:794</code></a>
+                            <a href="../files/src_core_texture.js.html#l351"><code>src&#x2F;core&#x2F;texture.js:351</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>TODO</p>
+                            <p>Indicates an HTML DOM Image object to source this Texture from.</p>
+                    <p>Alternatively, you could indicate the source via either of properties
+                    <a href="../classes/Texture.html#property_src" class="crosslink">src</a> or <a href="../classes/Texture.html#property_target" class="crosslink">target</a>.</p>
                     <p>Fires an <a href="../classes/Texture.html#event_image" class="crosslink">image</a> event on change.</p>
+                    <p>Sets the <a href="../classes/Texture.html#property_src" class="crosslink">src</a> and
+                    <a href="../classes/Texture.html#property_target" class="crosslink">target</a> properties to null.</p>
                     
                         </div>
                     
                             <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
-                    <div id="property_internalFormat" class="property item">
-                        <h3 class="name"><code>internalFormat</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l704"><code>src&#x2F;core&#x2F;texture.js:704</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>TODO</p>
-                    <p>Fires an <a href="../classes/Texture.html#event_internalFormat" class="crosslink">internalFormat</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> &quot;alpha&quot;</p>
-                    
-                    
-                    </div>
-                    <div id="property_isDepth" class="property item">
-                        <h3 class="name"><code>isDepth</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l494"><code>src&#x2F;core&#x2F;texture.js:494</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>TODO</p>
-                    <p>Fires an <a href="../classes/Texture.html#event_isDepth" class="crosslink">isDepth</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
                     
                     
                     </div>
@@ -1564,14 +1303,22 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l404"><code>src&#x2F;core&#x2F;texture.js:404</code></a>
+                            <a href="../files/src_core_texture.js.html#l644"><code>src&#x2F;core&#x2F;texture.js:644</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>TODO</p>
+                            <p>How this Texture is sampled when a texel covers more than one pixel.</p>
+                    <p>Options are:</p>
+                    <ul>
+                        <li><strong>"nearest"</strong> - Uses the value of the texture element that is nearest
+                        (in Manhattan distance) to the center of the pixel being textured.</li>
+                        <li><strong>"linear"</strong> - <strong>(default)</strong> - Uses the weighted average of the four texture elements that are
+                        closest to the center of the pixel being textured.</li>
+                    </ul>
+                    
                     <p>Fires a <a href="../classes/Texture.html#event_magFilter" class="crosslink">magFilter</a> event on change.</p>
                     
                         </div>
@@ -1591,15 +1338,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l241"><code>src&#x2F;core&#x2F;component.js:241</code></a>
+                            <a href="../files/src_core_component.js.html#l250"><code>src&#x2F;core&#x2F;component.js:250</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Metadata on this component.</p>
-                    <p>Fires a Component/metadata:event event on this Component when changed.</p>
+                            <p>Arbitrary, user-defined metadata on this component.</p>
                     
                         </div>
                     
@@ -1617,19 +1363,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l376"><code>src&#x2F;core&#x2F;texture.js:376</code></a>
+                            <a href="../files/src_core_texture.js.html#l580"><code>src&#x2F;core&#x2F;texture.js:580</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>TODO</p>
+                            <p>How this Texture is sampled when a texel covers less than one pixel.</p>
+                    <p>Options are:</p>
+                    <ul>
+                        <li><strong>"nearest"</strong> - Uses the value of the texture element that is nearest
+                        (in Manhattan distance) to the center of the pixel being textured.</li>
+                    
+                        <li><strong>"linear"</strong> - Uses the weighted average of the four texture elements that are
+                        closest to the center of the pixel being textured.</li>
+                    
+                        <li><strong>"nearestMipmapNearest"</strong> - Chooses the mipmap that most closely matches the
+                        size of the pixel being textured and uses the "nearest" criterion (the texture
+                        element nearest to the center of the pixel) to produce a texture value.</li>
+                    
+                        <li><strong>"linearMipmapNearest"</strong> - Chooses the mipmap that most closely matches the size of
+                        the pixel being textured and uses the "linear" criterion (a weighted average of the
+                        four texture elements that are closest to the center of the pixel) to produce a
+                        texture value.</li>
+                    
+                        <li><strong>"nearestMipmapLinear"</strong> - Chooses the two mipmaps that most closely
+                        match the size of the pixel being textured and uses the "nearest" criterion
+                        (the texture element nearest to the center of the pixel) to produce a texture
+                        value from each mipmap. The final texture value is a weighted average of those two
+                        values.</li>
+                    
+                        <li><strong>"linearMipmapLinear"</strong> - <strong>(default)</strong> - Chooses the two mipmaps that most closely match the size
+                        of the pixel being textured and uses the "linear" criterion (a weighted average
+                        of the four texture elements that are closest to the center of the pixel) to
+                        produce a texture value from each mipmap. The final texture value is a weighted
+                        average of those two values.</li>
+                    </ul>
+                    
                     <p>Fires a <a href="../classes/Texture.html#event_minFilter" class="crosslink">minFilter</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> &quot;linearMipMapNearest&quot;</p>
+                            <p><strong>Default:</strong> &quot;linearMipMapLinear&quot;</p>
                     
                     
                     </div>
@@ -1644,14 +1420,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l346"><code>src&#x2F;core&#x2F;texture.js:346</code></a>
+                            <a href="../files/src_core_texture.js.html#l547"><code>src&#x2F;core&#x2F;texture.js:547</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>TODO</p>
+                            <p>Rotation, in degrees, that will be applied to this Texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
                     <p>Fires a <a href="../classes/Texture.html#event_rotate" class="crosslink">rotate</a> event on change.</p>
                     
                         </div>
@@ -1671,19 +1447,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l316"><code>src&#x2F;core&#x2F;texture.js:316</code></a>
+                            <a href="../files/src_core_texture.js.html#l514"><code>src&#x2F;core&#x2F;texture.js:514</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>TODO</p>
+                            <p>2D scaling vector that will be applied to this Texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
                     <p>Fires a <a href="../classes/Texture.html#event_scale" class="crosslink">scale</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> [0, 0, 0]</p>
+                            <p><strong>Default:</strong> [1, 1]</p>
                     
                     
                     </div>
@@ -1699,7 +1475,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l202"><code>src&#x2F;core&#x2F;component.js:202</code></a>
+                            <a href="../files/src_core_component.js.html#l209"><code>src&#x2F;core&#x2F;component.js:209</code></a>
                             </p>
                     
                     
@@ -1710,60 +1486,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_sourceFormat" class="property item">
-                        <h3 class="name"><code>sourceFormat</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l734"><code>src&#x2F;core&#x2F;texture.js:734</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>TODO</p>
-                    <p>Fires an <a href="../classes/Texture.html#event_sourceFormat" class="crosslink">sourceFormat</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> &quot;alpha&quot;</p>
-                    
-                    
-                    </div>
-                    <div id="property_sourceType" class="property item">
-                        <h3 class="name"><code>sourceType</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l764"><code>src&#x2F;core&#x2F;texture.js:764</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>TODO</p>
-                    <p>Fires an <a href="../classes/Texture.html#event_sourceType" class="crosslink">sourceType</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> &quot;unsignedByte&quot;</p>
                     
                     
                     </div>
@@ -1778,17 +1500,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l212"><code>src&#x2F;core&#x2F;texture.js:212</code></a>
+                            <a href="../files/src_core_texture.js.html#l393"><code>src&#x2F;core&#x2F;texture.js:393</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Path to an image file to source this texture from.</p>
-                    <p>Sets the <a href="../classes/Texture.html#property_target" class="crosslink">target</a> and
-                    <a href="../classes/Texture.html#property_image" class="crosslink">image</a> properties to null.</p>
+                            <p>Indicates a path to an image file to source this Texture from.</p>
+                    <p>Alternatively, you could indicate the source via either of properties
+                    <a href="../classes/Texture.html#property_image" class="crosslink">image</a> or <a href="../classes/Texture.html#property_target" class="crosslink">target</a>.</p>
                     <p>Fires a <a href="../classes/Texture.html#event_src" class="crosslink">src</a> event on change.</p>
+                    <p>Sets the <a href="../classes/Texture.html#property_image" class="crosslink">image</a> and
+                    <a href="../classes/Texture.html#property_target" class="crosslink">target</a> properties to null.</p>
                     
                         </div>
                     
@@ -1807,7 +1531,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l250"><code>src&#x2F;core&#x2F;texture.js:250</code></a>
+                            <a href="../files/src_core_texture.js.html#l436"><code>src&#x2F;core&#x2F;texture.js:436</code></a>
                             </p>
                     
                     
@@ -1815,10 +1539,12 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Instance or ID of a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> or
-                    <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> to source this texture from.</p>
+                    <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> to source this Texture from.</p>
+                    <p>Alternatively, you could indicate the source via either of properties
+                    <a href="../classes/Texture.html#property_src" class="crosslink">src</a> or <a href="../classes/Texture.html#property_image" class="crosslink">image</a>.</p>
+                    <p>Fires a <a href="../classes/Texture.html#event_target" class="crosslink">target</a> event on change.</p>
                     <p>Sets the <a href="../classes/Texture.html#property_src" class="crosslink">src</a> and
                     <a href="../classes/Texture.html#property_image" class="crosslink">image</a> properties to null.</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_target" class="crosslink">target</a> event on change.</p>
                     
                         </div>
                     
@@ -1837,19 +1563,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l287"><code>src&#x2F;core&#x2F;texture.js:287</code></a>
+                            <a href="../files/src_core_texture.js.html#l480"><code>src&#x2F;core&#x2F;texture.js:480</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>TODO</p>
+                            <p>2D translation vector that will be added to this Texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
                     <p>Fires a <a href="../classes/Texture.html#event_translate" class="crosslink">translate</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> [0, 0, 0]</p>
+                            <p><strong>Default:</strong> [0, 0]</p>
                     
                     
                     </div>
@@ -1866,7 +1592,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l296"><code>src&#x2F;core&#x2F;component.js:296</code></a>
+                            <a href="../files/src_core_component.js.html#l303"><code>src&#x2F;core&#x2F;component.js:303</code></a>
                             </p>
                     
                     
@@ -1874,37 +1600,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Type code for this Component.</p>
-                    <p>For example: &quot;ambientLight&quot;, &quot;colorTarget&quot;, &quot;lights&quot; etc.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_width" class="property item">
-                        <h3 class="name"><code>width</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l644"><code>src&#x2F;core&#x2F;texture.js:644</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>TODO</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_width" class="crosslink">width</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
                     
                     
                     </div>
@@ -1919,14 +1617,24 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l434"><code>src&#x2F;core&#x2F;texture.js:434</code></a>
+                            <a href="../files/src_core_texture.js.html#l686"><code>src&#x2F;core&#x2F;texture.js:686</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>TODO</p>
+                            <p>Wrap parameter for this Texture&#39;s <em>S</em> coordinate.</p>
+                    <p>Options are:</p>
+                    <ul>
+                        <li><strong>"clampToEdge"</strong> -  causes <em>S</em> coordinates to be clamped to the size of the texture.</li>
+                        <li><strong>"mirroredRepeat"</strong> - causes the <em>S</em> coordinate to be set to the fractional part of the texture coordinate
+                        if the integer part of <em>S</em> is even; if the integer part of <em>S</em> is odd, then the <em>S</em> texture coordinate is
+                        set to <em>1 - frac ⁡ S</em> , where <em>frac ⁡ S</em> represents the fractional part of <em>S</em>.</li>
+                        <li><strong>"repeat"</strong> - <strong>(default)</strong> - causes the integer part of the <em>S</em> coordinate to be ignored; XEOEngine uses only the
+                        fractional part, thereby creating a repeating pattern.</li>
+                    </ul>
+                    
                     <p>Fires a <a href="../classes/Texture.html#event_wrapS" class="crosslink">wrapS</a> event on change.</p>
                     
                         </div>
@@ -1946,14 +1654,24 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l464"><code>src&#x2F;core&#x2F;texture.js:464</code></a>
+                            <a href="../files/src_core_texture.js.html#l730"><code>src&#x2F;core&#x2F;texture.js:730</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>TODO</p>
+                            <p>Wrap parameter for this Texture&#39;s <em>T</em> coordinate.</p>
+                    <p>Options are:</p>
+                    <ul>
+                        <li><strong>"clampToEdge"</strong> -  Causes <em>T</em> coordinates to be clamped to the size of the texture.</li>
+                        <li><strong>"mirroredRepeat"</strong> - Causes the <em>T</em> coordinate to be set to the fractional part of the texture coordinate
+                        if the integer part of <em>T</em> is even; if the integer part of <em>T</em> is odd, then the <em>T</em> texture coordinate is
+                        set to <em>1 - frac ⁡ S</em> , where <em>frac ⁡ S</em> represents the fractional part of <em>T</em>.</li>
+                        <li><strong>"repeat"</strong> - <strong>(default)</strong> - Causes the integer part of the <em>T</em> coordinate to be ignored; XEOEngine uses only the
+                        fractional part, thereby creating a repeating pattern.</li>
+                    </ul>
+                    
                     <p>Fires a <a href="../classes/Texture.html#event_wrapT" class="crosslink">wrapT</a> event on change.</p>
                     
                         </div>
@@ -1968,132 +1686,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_depthCompareFunc" class="events item">
-                        <h3 class="name"><code>depthCompareFunc</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l601"><code>src&#x2F;core&#x2F;texture.js:601</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_depthCompareFunc" class="crosslink">depthCompareFunc</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_depthCompareMode" class="events item">
-                        <h3 class="name"><code>depthCompareMode</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l571"><code>src&#x2F;core&#x2F;texture.js:571</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_depthCompareMode" class="crosslink">depthCompareMode</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_depthMode" class="events item">
-                        <h3 class="name"><code>depthMode</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l541"><code>src&#x2F;core&#x2F;texture.js:541</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_depthMode" class="crosslink">depthMode</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -2105,7 +1697,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l626"><code>src&#x2F;core&#x2F;component.js:626</code></a>
+                            <a href="../files/src_core_component.js.html#l633"><code>src&#x2F;core&#x2F;component.js:633</code></a>
                             </p>
                     
                     
@@ -2130,7 +1722,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l631"><code>src&#x2F;core&#x2F;texture.js:631</code></a>
+                            <a href="../files/src_core_texture.js.html#l795"><code>src&#x2F;core&#x2F;texture.js:795</code></a>
                             </p>
                     
                     
@@ -2161,48 +1753,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_height" class="events item">
-                        <h3 class="name"><code>height</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l691"><code>src&#x2F;core&#x2F;texture.js:691</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_height" class="crosslink">height</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Number</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_image" class="events item">
                         <h3 class="name"><code>image</code></h3>
                         <span class="type"></span>
@@ -2214,7 +1764,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l807"><code>src&#x2F;core&#x2F;texture.js:807</code></a>
+                            <a href="../files/src_core_texture.js.html#l319"><code>src&#x2F;core&#x2F;texture.js:319</code></a>
                             </p>
                     
                     
@@ -2245,8 +1795,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_internalFormat" class="events item">
-                        <h3 class="name"><code>internalFormat</code></h3>
+                    <div id="event_image" class="events item">
+                        <h3 class="name"><code>image</code></h3>
                         <span class="type"></span>
                     
                     
@@ -2256,14 +1806,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l721"><code>src&#x2F;core&#x2F;texture.js:721</code></a>
+                            <a href="../files/src_core_texture.js.html#l380"><code>src&#x2F;core&#x2F;texture.js:380</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_internalFormat" class="crosslink">internalFormat</a> property changes.</p>
+                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_image" class="crosslink">image</a> property changes.</p>
                     
                         </div>
                     
@@ -2273,49 +1823,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_isDepth" class="events item">
-                        <h3 class="name"><code>isDepth</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l511"><code>src&#x2F;core&#x2F;texture.js:511</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_isDepth" class="crosslink">isDepth</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Boolean</span>
+                                            <span class="type">HTML Image</span>
                     
                     
                                         <div class="param-description">
@@ -2340,7 +1848,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l421"><code>src&#x2F;core&#x2F;texture.js:421</code></a>
+                            <a href="../files/src_core_texture.js.html#l673"><code>src&#x2F;core&#x2F;texture.js:673</code></a>
                             </p>
                     
                     
@@ -2382,7 +1890,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l391"><code>src&#x2F;core&#x2F;texture.js:391</code></a>
+                            <a href="../files/src_core_texture.js.html#l631"><code>src&#x2F;core&#x2F;texture.js:631</code></a>
                             </p>
                     
                     
@@ -2424,7 +1932,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l363"><code>src&#x2F;core&#x2F;texture.js:363</code></a>
+                            <a href="../files/src_core_texture.js.html#l567"><code>src&#x2F;core&#x2F;texture.js:567</code></a>
                             </p>
                     
                     
@@ -2466,7 +1974,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l333"><code>src&#x2F;core&#x2F;texture.js:333</code></a>
+                            <a href="../files/src_core_texture.js.html#l534"><code>src&#x2F;core&#x2F;texture.js:534</code></a>
                             </p>
                     
                     
@@ -2497,90 +2005,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_sourceFormat" class="events item">
-                        <h3 class="name"><code>sourceFormat</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l751"><code>src&#x2F;core&#x2F;texture.js:751</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_sourceFormat" class="crosslink">sourceFormat</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_sourceType" class="events item">
-                        <h3 class="name"><code>sourceType</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l781"><code>src&#x2F;core&#x2F;texture.js:781</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_sourceType" class="crosslink">sourceType</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_src" class="events item">
                         <h3 class="name"><code>src</code></h3>
                         <span class="type">String</span>
@@ -2592,7 +2016,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l236"><code>src&#x2F;core&#x2F;texture.js:236</code></a>
+                            <a href="../files/src_core_texture.js.html#l422"><code>src&#x2F;core&#x2F;texture.js:422</code></a>
                             </p>
                     
                     
@@ -2634,7 +2058,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l273"><code>src&#x2F;core&#x2F;texture.js:273</code></a>
+                            <a href="../files/src_core_texture.js.html#l466"><code>src&#x2F;core&#x2F;texture.js:466</code></a>
                             </p>
                     
                     
@@ -2676,7 +2100,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l303"><code>src&#x2F;core&#x2F;texture.js:303</code></a>
+                            <a href="../files/src_core_texture.js.html#l501"><code>src&#x2F;core&#x2F;texture.js:501</code></a>
                             </p>
                     
                     
@@ -2707,48 +2131,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_width" class="events item">
-                        <h3 class="name"><code>width</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_texture.js.html#l661"><code>src&#x2F;core&#x2F;texture.js:661</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_width" class="crosslink">width</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Number</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_wrapS" class="events item">
                         <h3 class="name"><code>wrapS</code></h3>
                         <span class="type"></span>
@@ -2760,7 +2142,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l451"><code>src&#x2F;core&#x2F;texture.js:451</code></a>
+                            <a href="../files/src_core_texture.js.html#l717"><code>src&#x2F;core&#x2F;texture.js:717</code></a>
                             </p>
                     
                     
@@ -2802,7 +2184,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_texture.js.html#l481"><code>src&#x2F;core&#x2F;texture.js:481</code></a>
+                            <a href="../files/src_core_texture.js.html#l761"><code>src&#x2F;core&#x2F;texture.js:761</code></a>
                             </p>
                     
                     

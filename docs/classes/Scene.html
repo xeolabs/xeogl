@@ -136,12 +136,12 @@
 <div class="box intro">
     <p>A <strong>Scene</strong> models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-object</a> graph.</p>
 <h2 id="contents">Contents</h2>
-<p><Ul>
-   <li><a href="#sceneStructure">Scene Structure</a></li>
-   <li><a href="#sceneCanvas">The Scene Canvas</a></li>
-   <li><a href="#findingByID">Finding Scenes and Components by ID</a></li>
-   <li><a href="#defaults">The Default Scene</a></li>
-   <li><a href="#savingAndLoading">Saving and Loading Scenes</a></li>
+<p><Ul></p>
+<p><li><a href="#sceneStructure">Scene Structure</a></li></p>
+<p><li><a href="#sceneCanvas">The Scene Canvas</a></li></p>
+<p><li><a href="#findingByID">Finding Scenes and Components by ID</a></li></p>
+<p><li><a href="#defaults">The Default Scene</a></li></p>
+<p><li><a href="#savingAndLoading">Saving and Loading Scenes</a></li>
 </ul></p>
 <h2 id="-a-name-scenestructure-scene-structure-a-"><a name="sceneStructure">Scene Structure</a></h2>
 <p>A Scene contains a soup of instances of various <a href="../classes/Component.html" class="crosslink">Component</a> subtypes, such as
@@ -151,7 +151,7 @@ and the same component instances can be shared among many <a href="../classes/Ga
 <p><strong><em> Under the hood:</em></strong> Within xeoEngine, each <a href="../classes/GameObject.html" class="crosslink">GameObject</a> represents a draw call,
 while its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses
 the graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).</p>
-<p><img src="http://www.gliffy.com/go/publish/image/7103731/L.png"></img></p>
+<p><img src="../../../assets/images/Scene.png"></img></p>
 <h4 id="default-components">Default Components</h4>
 <p>A Scene provides its own default <em>flyweight</em> instance of each component type
 (except for <a href="../classes/GameObject.html" class="crosslink">GameObject</a>). Each <a href="../classes/GameObject.html" class="crosslink">GameObject</a> you create
@@ -179,7 +179,7 @@ component instances. In many Scenes, for example, you might not even bother to c
 let all your <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> fall back on the default one.</p>
 <h2 id="example">Example</h2>
 <p>Here&#39;s the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> when we need to
-override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple GameObjects.</p>
+override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple Objects.</p>
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene({
       id: "myScene"   // ID is optional on all components
  });
@@ -360,7 +360,7 @@ if those arrays are huge.</p>
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[components]</code>
-                                            <span class="type">Array(GameObject)</span>
+                                            <span class="type">Array(Object)</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -617,7 +617,7 @@ if those arrays are huge.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l599"><code>src&#x2F;core&#x2F;component.js:599</code></a>
+        <a href="../files/src_core_component.js.html#l606"><code>src&#x2F;core&#x2F;component.js:606</code></a>
         </p>
 
 
@@ -657,7 +657,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l444"><code>src&#x2F;core&#x2F;component.js:444</code></a>
+        <a href="../files/src_core_component.js.html#l449"><code>src&#x2F;core&#x2F;component.js:449</code></a>
         </p>
 
 
@@ -720,7 +720,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        <a href="../files/src_core_component.js.html#l335"><code>src&#x2F;core&#x2F;component.js:335</code></a>
         </p>
 
 
@@ -799,7 +799,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l427"><code>src&#x2F;core&#x2F;component.js:427</code></a>
+        <a href="../files/src_core_component.js.html#l432"><code>src&#x2F;core&#x2F;component.js:432</code></a>
         </p>
 
 
@@ -856,7 +856,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l387"><code>src&#x2F;core&#x2F;component.js:387</code></a>
+        <a href="../files/src_core_component.js.html#l392"><code>src&#x2F;core&#x2F;component.js:392</code></a>
         </p>
 
 
@@ -920,7 +920,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l357"><code>src&#x2F;core&#x2F;component.js:357</code></a>
+        <a href="../files/src_core_component.js.html#l362"><code>src&#x2F;core&#x2F;component.js:362</code></a>
         </p>
 
 
@@ -943,7 +943,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Publication event</p>
+                        <p>The event</p>
 
                     </div>
 
@@ -954,7 +954,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Called when fresh data is available at the event</p>
+                        <p>Called fired on the event</p>
 
                     </div>
 
@@ -1013,7 +1013,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l406"><code>src&#x2F;core&#x2F;component.js:406</code></a>
+        <a href="../files/src_core_component.js.html#l411"><code>src&#x2F;core&#x2F;component.js:411</code></a>
         </p>
 
 
@@ -1092,7 +1092,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l461"><code>src&#x2F;core&#x2F;component.js:461</code></a>
+        <a href="../files/src_core_component.js.html#l466"><code>src&#x2F;core&#x2F;component.js:466</code></a>
         </p>
 
 
@@ -1201,7 +1201,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l308"><code>src&#x2F;core&#x2F;component.js:308</code></a>
+                            <a href="../files/src_core_component.js.html#l313"><code>src&#x2F;core&#x2F;component.js:313</code></a>
                             </p>
                     
                     
@@ -1240,7 +1240,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/Clips.html" class="crosslink">Clips</a> provided by this Scene.</p>
                     <p>This <a href="../classes/Clips.html" class="crosslink">Clips</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.clips",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/Clips.html" class="crosslink">Clips</a> by default.</p>
                     
                         </div>
@@ -1270,7 +1270,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/ColorBuf.html" class="crosslink">ColorBuf</a> provided by this Scene.</p>
                     <p>This <a href="../classes/ColorBuf.html" class="crosslink">ColorBuf</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.colorBuf",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/ColorBuf.html" class="crosslink">ColorBuf</a> by default.</p>
                     
                         </div>
@@ -1300,7 +1300,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> provided by this Scene.</p>
                     <p>This <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.colorTarget",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> by default.</p>
                     
                         </div>
@@ -1382,7 +1382,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a> provided by this Scene.</p>
                     <p>This <a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.depthBuf",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a> by default.</p>
                     
                         </div>
@@ -1412,7 +1412,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> provided by this Scene.</p>
                     <p>This <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.depthTarget",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> by default.</p>
                     
                         </div>
@@ -1431,7 +1431,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l260"><code>src&#x2F;core&#x2F;component.js:260</code></a>
+                            <a href="../files/src_core_component.js.html#l267"><code>src&#x2F;core&#x2F;component.js:267</code></a>
                             </p>
                     
                     
@@ -1466,7 +1466,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>The default <a href="../classes/Geometry.html" class="crosslink">Geometry</a> provided by this Scene, which is a 2x2x2 box centered at the World-space origin.</p>
                     <p>This <a href="../classes/Geometry.html" class="crosslink">Geometry</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.geometry".</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this <a href="../classes/Geometry.html" class="crosslink">Geometry</a> by default.</p>
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
+                    <a href="../classes/Geometry.html" class="crosslink">Geometry</a> by default.</p>
                     
                         </div>
                     
@@ -1485,7 +1486,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l251"><code>src&#x2F;core&#x2F;component.js:251</code></a>
+                            <a href="../files/src_core_component.js.html#l258"><code>src&#x2F;core&#x2F;component.js:258</code></a>
                             </p>
                     
                     
@@ -1537,7 +1538,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l669"><code>src&#x2F;core&#x2F;scene.js:669</code></a>
+                            <a href="../files/src_core_scene.js.html#l670"><code>src&#x2F;core&#x2F;scene.js:670</code></a>
                             </p>
                     
                     
@@ -1547,7 +1548,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/Layer.html" class="crosslink">Layer</a> provided by this Scene.</p>
                     <p>This <a href="../classes/Layer.html" class="crosslink">Layer</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.layer",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/Layer.html" class="crosslink">Layer</a> by default.</p>
                     
                         </div>
@@ -1567,7 +1568,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l691"><code>src&#x2F;core&#x2F;scene.js:691</code></a>
+                            <a href="../files/src_core_scene.js.html#l692"><code>src&#x2F;core&#x2F;scene.js:692</code></a>
                             </p>
                     
                     
@@ -1577,7 +1578,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/Lights.html" class="crosslink">Lights</a> provided by this Scene.</p>
                     <p>This <a href="../classes/Lights.html" class="crosslink">Lights</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to <em><code>"default.lights"</code></em>,
                     with all other properties initialised to their default values (ie. the default set of light sources for a <a href="../classes/Lights.html" class="crosslink">Lights</a>).</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/Lights.html" class="crosslink">Lights</a> by default.</p>
                     
                         </div>
@@ -1597,7 +1598,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l740"><code>src&#x2F;core&#x2F;scene.js:740</code></a>
+                            <a href="../files/src_core_scene.js.html#l741"><code>src&#x2F;core&#x2F;scene.js:741</code></a>
                             </p>
                     
                     
@@ -1608,7 +1609,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>This <a href="../classes/Material.html" class="crosslink">Material</a> has
                     an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.material", with all
                     other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/Material.html" class="crosslink">Material</a> by default.</p>
                     
                         </div>
@@ -1627,15 +1628,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l241"><code>src&#x2F;core&#x2F;component.js:241</code></a>
+                            <a href="../files/src_core_component.js.html#l250"><code>src&#x2F;core&#x2F;component.js:250</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Metadata on this component.</p>
-                    <p>Fires a Component/metadata:event event on this Component when changed.</p>
+                            <p>Arbitrary, user-defined metadata on this component.</p>
                     
                         </div>
                     
@@ -1664,7 +1664,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/Modes.html" class="crosslink">Modes</a> provided by this Scene.</p>
                     <p>This <a href="../classes/Modes.html" class="crosslink">Modes</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.modes",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/Modes.html" class="crosslink">Modes</a> by default.</p>
                     
                         </div>
@@ -1684,7 +1684,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l762"><code>src&#x2F;core&#x2F;scene.js:762</code></a>
+                            <a href="../files/src_core_scene.js.html#l763"><code>src&#x2F;core&#x2F;scene.js:763</code></a>
                             </p>
                     
                     
@@ -1694,7 +1694,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/MorphTargets.html" class="crosslink">MorphTargets</a> provided by this Scene.</p>
                     <p>This <a href="../classes/MorphTargets.html" class="crosslink">MorphTargets</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.morphTargets",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/MorphTargets.html" class="crosslink">MorphTargets</a> by default.</p>
                     
                         </div>
@@ -1745,7 +1745,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l783"><code>src&#x2F;core&#x2F;scene.js:783</code></a>
+                            <a href="../files/src_core_scene.js.html#l784"><code>src&#x2F;core&#x2F;scene.js:784</code></a>
                             </p>
                     
                     
@@ -1756,7 +1756,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     (which is a neutral <a href="../classes/Reflect.html" class="crosslink">Reflect</a> that has no effect).</p>
                     <p>This <a href="../classes/Reflect.html" class="crosslink">Reflect</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.reflect",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/Reflect.html" class="crosslink">Reflect</a> by default.</p>
                     
                         </div>
@@ -1776,7 +1776,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l202"><code>src&#x2F;core&#x2F;component.js:202</code></a>
+                            <a href="../files/src_core_component.js.html#l209"><code>src&#x2F;core&#x2F;component.js:209</code></a>
                             </p>
                     
                     
@@ -1802,7 +1802,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l805"><code>src&#x2F;core&#x2F;scene.js:805</code></a>
+                            <a href="../files/src_core_scene.js.html#l806"><code>src&#x2F;core&#x2F;scene.js:806</code></a>
                             </p>
                     
                     
@@ -1813,7 +1813,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     (which is a neutral <a href="../classes/Shader.html" class="crosslink">Shader</a> that has no effect).</p>
                     <p>This <a href="../classes/Shader.html" class="crosslink">Shader</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.shader",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/Shader.html" class="crosslink">Shader</a> by default.</p>
                     
                         </div>
@@ -1833,7 +1833,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l827"><code>src&#x2F;core&#x2F;scene.js:827</code></a>
+                            <a href="../files/src_core_scene.js.html#l828"><code>src&#x2F;core&#x2F;scene.js:828</code></a>
                             </p>
                     
                     
@@ -1843,8 +1843,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> provided by this Scene.</p>
                     <p>This <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.shaderParams",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
-                    <a href="../classes/ShaderParams.html" class="crosslink">Shader</a> by default.</p>
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
+                    <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> by default.</p>
                     
                         </div>
                     
@@ -1863,7 +1863,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_scene.js.html#l848"><code>src&#x2F;core&#x2F;scene.js:848</code></a>
+                            <a href="../files/src_core_scene.js.html#l849"><code>src&#x2F;core&#x2F;scene.js:849</code></a>
                             </p>
                     
                     
@@ -1874,7 +1874,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>This <a href="../classes/Stage.html" class="crosslink">Stage</a> has
                     an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.stage" and
                     a <a href="../classes/Stage.html#property_priority" class="crosslink">priority</a> equal to <code>0</code>.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/Stage.html" class="crosslink">Stage</a> by default.</p>
                     
                         </div>
@@ -1953,10 +1953,10 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>The default modelling transform provided by this Scene.</p>
+                            <p>The default modelling <a href="../classes/Transform.html" class="crosslink">Transform</a> provided by this Scene.</p>
                     <p>This <a href="../classes/Transform.html" class="crosslink">Transform</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.transform",
                     with all other properties initialised to their default values (ie. an identity matrix).</p>
-                    <p>GameObjectss within this Scene are attached to
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to
                     this <a href="../classes/Transform.html" class="crosslink">Transform</a> by default.</p>
                     
                         </div>
@@ -1977,7 +1977,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l296"><code>src&#x2F;core&#x2F;component.js:296</code></a>
+                            <a href="../files/src_core_component.js.html#l303"><code>src&#x2F;core&#x2F;component.js:303</code></a>
                             </p>
                     
                     
@@ -1985,7 +1985,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Type code for this Component.</p>
-                    <p>For example: &quot;ambientLight&quot;, &quot;colorTarget&quot;, &quot;lights&quot; etc.</p>
                     
                         </div>
                     
@@ -2044,7 +2043,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The default <a href="../classes/Visibility.html" class="crosslink">Visibility</a> provided by this Scene.</p>
                     <p>This <a href="../classes/Visibility.html" class="crosslink">Visibility</a> has an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.visibility",
                     with all other properties initialised to their default values.</p>
-                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> created within this Scene will get this
+                    <p><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> within this Scene are attached to this
                     <a href="../classes/Visibility.html" class="crosslink">Visibility</a> by default.</p>
                     
                         </div>
@@ -2153,7 +2152,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l626"><code>src&#x2F;core&#x2F;component.js:626</code></a>
+                            <a href="../files/src_core_component.js.html#l633"><code>src&#x2F;core&#x2F;component.js:633</code></a>
                             </p>
                     
                     

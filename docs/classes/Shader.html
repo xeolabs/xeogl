@@ -147,7 +147,7 @@ differently for each <a href="../classes/GameObject.html" class="crosslink">Game
 and <a href="../classes/Texture.html" class="crosslink">Texture</a> components to connect the output of one Shader as input into another Shader.</li>
 </ul>
 
-<p><img src="http://www.gliffy.com/go/publish/image/7105141/L.png"></img></p>
+<p><img src="../../../assets/images/Shader.png"></img></p>
 <h2 id="example">Example</h2>
 <p>This example shows the simplest way to use a Shader, where we&#39;re just going to render a ripply water
 pattern to a screen-aligned quad.</p>
@@ -158,7 +158,7 @@ Finally, we animate the rippling by periodically updating the Shader&#39;s "time
 <pre class="code prettyprint"><code class="lang-javascript">
 var scene = new XEO.Scene();
 
-// Shader that&#39;s used by our GameObject. Note the &#39;XEO_aPosition&#39; and &#39;XEO_aUV attributes&#39;,
+// Shader that&#39;s used by our Object. Note the &#39;XEO_aPosition&#39; and &#39;XEO_aUV attributes&#39;,
 // which will receive the positions and UVs from the Geometry. Also note the &#39;time&#39;
 // uniform, which we&#39;ll be animating via Shader#setParams.
 
@@ -469,7 +469,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>{GameObject} Values for uniforms defined in the vertex and/or fragment stages.</p>
+                                            <p>{Object} Values for uniforms defined in the vertex and/or fragment stages.</p>
         
                                         </div>
         
@@ -626,7 +626,7 @@ var object = new XEO.GameObject(scene, {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l599"><code>src&#x2F;core&#x2F;component.js:599</code></a>
+        <a href="../files/src_core_component.js.html#l606"><code>src&#x2F;core&#x2F;component.js:606</code></a>
         </p>
 
 
@@ -666,7 +666,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l444"><code>src&#x2F;core&#x2F;component.js:444</code></a>
+        <a href="../files/src_core_component.js.html#l449"><code>src&#x2F;core&#x2F;component.js:449</code></a>
         </p>
 
 
@@ -729,7 +729,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        <a href="../files/src_core_component.js.html#l335"><code>src&#x2F;core&#x2F;component.js:335</code></a>
         </p>
 
 
@@ -808,7 +808,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l427"><code>src&#x2F;core&#x2F;component.js:427</code></a>
+        <a href="../files/src_core_component.js.html#l432"><code>src&#x2F;core&#x2F;component.js:432</code></a>
         </p>
 
 
@@ -865,7 +865,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l387"><code>src&#x2F;core&#x2F;component.js:387</code></a>
+        <a href="../files/src_core_component.js.html#l392"><code>src&#x2F;core&#x2F;component.js:392</code></a>
         </p>
 
 
@@ -929,7 +929,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l357"><code>src&#x2F;core&#x2F;component.js:357</code></a>
+        <a href="../files/src_core_component.js.html#l362"><code>src&#x2F;core&#x2F;component.js:362</code></a>
         </p>
 
 
@@ -952,7 +952,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Publication event</p>
+                        <p>The event</p>
 
                     </div>
 
@@ -963,7 +963,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Called when fresh data is available at the event</p>
+                        <p>Called fired on the event</p>
 
                     </div>
 
@@ -1022,7 +1022,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l406"><code>src&#x2F;core&#x2F;component.js:406</code></a>
+        <a href="../files/src_core_component.js.html#l411"><code>src&#x2F;core&#x2F;component.js:411</code></a>
         </p>
 
 
@@ -1101,7 +1101,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_shader.js.html#l262"><code>src&#x2F;core&#x2F;shader.js:262</code></a>
+        <a href="../files/src_core_shader.js.html#l276"><code>src&#x2F;core&#x2F;shader.js:276</code></a>
         </p>
 
 
@@ -1159,7 +1159,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l461"><code>src&#x2F;core&#x2F;component.js:461</code></a>
+        <a href="../files/src_core_component.js.html#l466"><code>src&#x2F;core&#x2F;component.js:466</code></a>
         </p>
 
 
@@ -1212,7 +1212,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l308"><code>src&#x2F;core&#x2F;component.js:308</code></a>
+                            <a href="../files/src_core_component.js.html#l313"><code>src&#x2F;core&#x2F;component.js:313</code></a>
                             </p>
                     
                     
@@ -1240,7 +1240,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l260"><code>src&#x2F;core&#x2F;component.js:260</code></a>
+                            <a href="../files/src_core_component.js.html#l267"><code>src&#x2F;core&#x2F;component.js:267</code></a>
                             </p>
                     
                     
@@ -1265,14 +1265,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l216"><code>src&#x2F;core&#x2F;shader.js:216</code></a>
+                            <a href="../files/src_core_shader.js.html#l227"><code>src&#x2F;core&#x2F;shader.js:227</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>GLSL source code for the fragment stage of this shader.</p>
+                            <p>GLSL source code for this Shader&#39;s fragment stage.</p>
                     <p>Fires a <a href="../classes/Shader.html#event_fragment" class="crosslink">fragment</a> event on change.</p>
                     
                         </div>
@@ -1293,7 +1293,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l251"><code>src&#x2F;core&#x2F;component.js:251</code></a>
+                            <a href="../files/src_core_component.js.html#l258"><code>src&#x2F;core&#x2F;component.js:258</code></a>
                             </p>
                     
                     
@@ -1318,15 +1318,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l241"><code>src&#x2F;core&#x2F;component.js:241</code></a>
+                            <a href="../files/src_core_component.js.html#l250"><code>src&#x2F;core&#x2F;component.js:250</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Metadata on this component.</p>
-                    <p>Fires a Component/metadata:event event on this Component when changed.</p>
+                            <p>Arbitrary, user-defined metadata on this component.</p>
                     
                         </div>
                     
@@ -1344,14 +1343,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l246"><code>src&#x2F;core&#x2F;shader.js:246</code></a>
+                            <a href="../files/src_core_shader.js.html#l259"><code>src&#x2F;core&#x2F;shader.js:259</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Params for this shader.</p>
+                            <p>Params for this Shader.</p>
                     <p>Fires a <a href="../classes/Shader.html#event_params" class="crosslink">params</a> event on change.</p>
                     
                         </div>
@@ -1372,7 +1371,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l202"><code>src&#x2F;core&#x2F;component.js:202</code></a>
+                            <a href="../files/src_core_component.js.html#l209"><code>src&#x2F;core&#x2F;component.js:209</code></a>
                             </p>
                     
                     
@@ -1399,7 +1398,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l296"><code>src&#x2F;core&#x2F;component.js:296</code></a>
+                            <a href="../files/src_core_component.js.html#l303"><code>src&#x2F;core&#x2F;component.js:303</code></a>
                             </p>
                     
                     
@@ -1407,7 +1406,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Type code for this Component.</p>
-                    <p>For example: &quot;ambientLight&quot;, &quot;colorTarget&quot;, &quot;lights&quot; etc.</p>
                     
                         </div>
                     
@@ -1425,14 +1423,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l186"><code>src&#x2F;core&#x2F;shader.js:186</code></a>
+                            <a href="../files/src_core_shader.js.html#l195"><code>src&#x2F;core&#x2F;shader.js:195</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>GLSL source code for the vertex stage of this shader.</p>
+                            <p>GLSL source code for this Shader&#39;s vertex stage.</p>
                     <p>Fires a <a href="../classes/Shader.html#event_vertex" class="crosslink">vertex</a> event on change.</p>
                     
                         </div>
@@ -1458,7 +1456,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l626"><code>src&#x2F;core&#x2F;component.js:626</code></a>
+                            <a href="../files/src_core_component.js.html#l633"><code>src&#x2F;core&#x2F;component.js:633</code></a>
                             </p>
                     
                     
@@ -1483,7 +1481,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l233"><code>src&#x2F;core&#x2F;shader.js:233</code></a>
+                            <a href="../files/src_core_shader.js.html#l245"><code>src&#x2F;core&#x2F;shader.js:245</code></a>
                             </p>
                     
                     
@@ -1525,7 +1523,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l282"><code>src&#x2F;core&#x2F;shader.js:282</code></a>
+                            <a href="../files/src_core_shader.js.html#l297"><code>src&#x2F;core&#x2F;shader.js:297</code></a>
                             </p>
                     
                     
@@ -1567,7 +1565,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l203"><code>src&#x2F;core&#x2F;shader.js:203</code></a>
+                            <a href="../files/src_core_shader.js.html#l213"><code>src&#x2F;core&#x2F;shader.js:213</code></a>
                             </p>
                     
                     

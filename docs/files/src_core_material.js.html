@@ -151,7 +151,7 @@
 
  &lt;/ul&gt;
 
- &lt;img src=&quot;http://www.gliffy.com/go/publish/image/6921713/L.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/Material.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
@@ -172,7 +172,7 @@
  {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} surface.
 
  &#x60;&#x60;&#x60;&#x60; javascript
-var scene = new XEO.Scene();
+ var scene = new XEO.Scene();
 
  var diffuseMap = new XEO.Texture(scene, {
     src: &quot;diffuseMap.jpg&quot;
@@ -243,12 +243,21 @@ var scene = new XEO.Scene();
 
     XEO.Material = XEO.Component.extend({
 
-
         className: &quot;XEO.Material&quot;,
 
         type: &quot;material&quot;,
 
         _init: function (cfg) {
+
+            this._state = this._renderer.createState({
+                ambient: [0.7, 0.7, 0.8],
+                diffuse: [1.0, 1.0, 1.0],
+                specular: [1.0, 1.0, 1.0],
+                emissive: [1.0, 1.0, 1.0],
+                opacity: 1.0,
+                shininess: 30.0,
+                reflectivity: 1.0
+            });
 
             this._textures = [];
             this._dirtyTextureSubs = [];
@@ -292,6 +301,7 @@ var scene = new XEO.Scene();
 
                     /**
                      * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}} property changes.
+                     *
                      * @event ambient
                      * @param value {Array(Number)} The property&#x27;s new value
                      */
@@ -323,6 +333,7 @@ var scene = new XEO.Scene();
 
                     /**
                      * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} property changes.
+                     *
                      * @event diffuse
                      * @param value {Array(Number)} The property&#x27;s new value
                      */
@@ -354,6 +365,7 @@ var scene = new XEO.Scene();
 
                     /**
                      Fired whenever this Material&#x27;s {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}} property changes.
+
                      @event specular
                      @param value {Array(Number)} The property&#x27;s new value
                      */
@@ -385,6 +397,7 @@ var scene = new XEO.Scene();
 
                     /**
                      Fired whenever this Material&#x27;s {{#crossLink &quot;Material/emissive:property&quot;}}{{/crossLink}} property changes.
+
                      @event emissive
                      @param value {Array(Number)} The property&#x27;s new value
                      */
@@ -422,6 +435,7 @@ var scene = new XEO.Scene();
 
                     /**
                      * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/opacity:property&quot;}}{{/crossLink}} property changes.
+                     *
                      * @event opacity
                      * @param value {Number} The property&#x27;s new value
                      */
@@ -455,6 +469,7 @@ var scene = new XEO.Scene();
 
                     /**
                      Fired whenever this Material&#x27;s {{#crossLink &quot;Material/shininess:property&quot;}}{{/crossLink}} property changes.
+
                      @event shininess
                      @param value Number The property&#x27;s new value
                      */
@@ -488,6 +503,7 @@ var scene = new XEO.Scene();
 
                     /**
                      Fired whenever this Material&#x27;s {{#crossLink &quot;Material/reflectivity:property&quot;}}{{/crossLink}} property changes.
+
                      @event reflectivity
                      @param value Number The property&#x27;s new value
                      */
@@ -513,13 +529,14 @@ var scene = new XEO.Scene();
             diffuseMap: {
 
                 set: function (texture) {
-                    this._attachTexture(&quot;diffuseMap&quot;, texture);
 
                     /**
                      Fired whenever this Material&#x27;s {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} property changes.
+
                      @event diffuseMap
                      @param value Number The property&#x27;s new value
                      */
+                    this._attachTexture(&quot;diffuseMap&quot;, texture);
                 },
 
                 get: function () {
@@ -541,13 +558,14 @@ var scene = new XEO.Scene();
             specularMap: {
 
                 set: function (texture) {
-                    this._attachTexture(&quot;specularMap&quot;, texture);
 
                     /**
                      Fired whenever this Material&#x27;s {{#crossLink &quot;Material/specularMap:property&quot;}}{{/crossLink}} property changes.
+
                      @event specularMap
                      @param value Number The property&#x27;s new value
                      */
+                    this._attachTexture(&quot;specularMap&quot;, texture);
                 },
 
                 get: function () {
@@ -569,13 +587,14 @@ var scene = new XEO.Scene();
             emissiveMap: {
 
                 set: function (texture) {
-                    this._attachTexture(&quot;emissiveMap&quot;, texture);
 
                     /**
                      Fired whenever this Material&#x27;s {{#crossLink &quot;Material/emissiveMap:property&quot;}}{{/crossLink}} property changes.
+
                      @event emissiveMap
                      @param value Number The property&#x27;s new value
                      */
+                    this._attachTexture(&quot;emissiveMap&quot;, texture);
                 },
 
                 get: function () {
@@ -597,13 +616,14 @@ var scene = new XEO.Scene();
             opacityMap: {
 
                 set: function (texture) {
-                    this._attachTexture(&quot;opacityMap&quot;, texture);
 
                     /**
                      Fired whenever this Material&#x27;s {{#crossLink &quot;Material/opacityMap:property&quot;}}{{/crossLink}} property changes.
+
                      @event opacityMap
                      @param value Number The property&#x27;s new value
                      */
+                    this._attachTexture(&quot;opacityMap&quot;, texture);
                 },
 
                 get: function () {
@@ -625,13 +645,14 @@ var scene = new XEO.Scene();
             reflectivityMap: {
 
                 set: function (texture) {
-                    this._attachTexture(&quot;reflectivityMap&quot;, texture);
 
                     /**
                      Fired whenever this Material&#x27;s {{#crossLink &quot;Material/reflectivityMap:property&quot;}}{{/crossLink}} property changes.
+
                      @event reflectivityMap
                      @param value Number The property&#x27;s new value
                      */
+                    this._attachTexture(&quot;reflectivityMap&quot;, texture);
                 },
 
                 get: function () {
@@ -695,13 +716,16 @@ var scene = new XEO.Scene();
         },
 
         _compile: function () {
+
             // Set material state on renderer
             this._renderer.material = this._state;
+
             // Set texture state on renderer
             var layers = [];
             for (var i = 0, len = this._textures.length; i &lt; len; i++) {
                 layers.push(this._textures[i]._state);
             }
+
             var state = {
                 type: &quot;texture&quot;,
                 bumpMap: this.bumpMap ? this.bumpMap._state : null,
@@ -798,6 +822,10 @@ var scene = new XEO.Scene();
             }
 
             return json;
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
 

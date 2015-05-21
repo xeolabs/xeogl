@@ -138,10 +138,10 @@
 from a given direction.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-   <li>DirLights are grouped, along with other light source types, within <a href="../classes/Lights.html" class="crosslink">Lights</a> components,
+<li>DirLights are grouped, along with other light source types, within <a href="../classes/Lights.html" class="crosslink">Lights</a> components,
 which are attached to <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
-   <li>DirLights have a direction, but no position.</li>
-   <li>DirLights may be defined in either <strong>World</strong> or <strong>View</strong> coordinate space. When in World-space, their direction
+<li>DirLights have a direction, but no position.</li>
+<li>DirLights may be defined in either <strong>World</strong> or <strong>View</strong> coordinate space. When in World-space, their direction
 is relative to the World coordinate system, and will appear to move as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
 When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer&#39;s
 head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.</li>
@@ -151,7 +151,7 @@ head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
 respectively.</li>
 </ul>
 
-<p><img src="http://www.gliffy.com/go/publish/image/7096639/L.png"></img></p>
+<p><img src="../../../assets/images/DirLight.png"></img></p>
 <h2 id="example">Example</h2>
 <p>In this example we have a DirLight</p>
 <ul>
@@ -161,6 +161,8 @@ respectively.</li>
 <li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
 <li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
 </ul>
+
+<iframe style="width: 600px; height: 400px" src="../../examples/light_DirLight.html"></iframe>
 
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
@@ -191,7 +193,7 @@ var lights = new XEO.Lights(scene, {
 
 var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
-// GameObject which renders our Geometry, colored with
+// Object which renders our Geometry, colored with
 // the Material and illuminated with the DirLight
 var object = new XEO.GameObject(scene, {
    lights: lights,
@@ -202,7 +204,7 @@ var object = new XEO.GameObject(scene, {
 <p>As with all components, we can observe and change properties on a DirLights, like so:</p>
 <pre class="code prettyprint"><code class="lang-Javascript">// Attach a change listener to a property
 var handle = dirLight.on("diffuse",
-   function(value) {
+function(value) {
        // Property value has changed
    });
 
@@ -503,7 +505,7 @@ dirLight.off(handle);
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l599"><code>src&#x2F;core&#x2F;component.js:599</code></a>
+        <a href="../files/src_core_component.js.html#l606"><code>src&#x2F;core&#x2F;component.js:606</code></a>
         </p>
 
 
@@ -543,7 +545,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l444"><code>src&#x2F;core&#x2F;component.js:444</code></a>
+        <a href="../files/src_core_component.js.html#l449"><code>src&#x2F;core&#x2F;component.js:449</code></a>
         </p>
 
 
@@ -606,7 +608,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        <a href="../files/src_core_component.js.html#l335"><code>src&#x2F;core&#x2F;component.js:335</code></a>
         </p>
 
 
@@ -685,7 +687,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l427"><code>src&#x2F;core&#x2F;component.js:427</code></a>
+        <a href="../files/src_core_component.js.html#l432"><code>src&#x2F;core&#x2F;component.js:432</code></a>
         </p>
 
 
@@ -742,7 +744,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l387"><code>src&#x2F;core&#x2F;component.js:387</code></a>
+        <a href="../files/src_core_component.js.html#l392"><code>src&#x2F;core&#x2F;component.js:392</code></a>
         </p>
 
 
@@ -806,7 +808,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l357"><code>src&#x2F;core&#x2F;component.js:357</code></a>
+        <a href="../files/src_core_component.js.html#l362"><code>src&#x2F;core&#x2F;component.js:362</code></a>
         </p>
 
 
@@ -829,7 +831,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Publication event</p>
+                        <p>The event</p>
 
                     </div>
 
@@ -840,7 +842,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Called when fresh data is available at the event</p>
+                        <p>Called fired on the event</p>
 
                     </div>
 
@@ -899,7 +901,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l406"><code>src&#x2F;core&#x2F;component.js:406</code></a>
+        <a href="../files/src_core_component.js.html#l411"><code>src&#x2F;core&#x2F;component.js:411</code></a>
         </p>
 
 
@@ -978,7 +980,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l461"><code>src&#x2F;core&#x2F;component.js:461</code></a>
+        <a href="../files/src_core_component.js.html#l466"><code>src&#x2F;core&#x2F;component.js:466</code></a>
         </p>
 
 
@@ -1031,7 +1033,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l308"><code>src&#x2F;core&#x2F;component.js:308</code></a>
+                            <a href="../files/src_core_component.js.html#l313"><code>src&#x2F;core&#x2F;component.js:313</code></a>
                             </p>
                     
                     
@@ -1059,7 +1061,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l260"><code>src&#x2F;core&#x2F;component.js:260</code></a>
+                            <a href="../files/src_core_component.js.html#l267"><code>src&#x2F;core&#x2F;component.js:267</code></a>
                             </p>
                     
                     
@@ -1084,7 +1086,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l158"><code>src&#x2F;core&#x2F;dirLight.js:158</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l170"><code>src&#x2F;core&#x2F;dirLight.js:170</code></a>
                             </p>
                     
                     
@@ -1111,7 +1113,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l129"><code>src&#x2F;core&#x2F;dirLight.js:129</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l134"><code>src&#x2F;core&#x2F;dirLight.js:134</code></a>
                             </p>
                     
                     
@@ -1139,7 +1141,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l251"><code>src&#x2F;core&#x2F;component.js:251</code></a>
+                            <a href="../files/src_core_component.js.html#l258"><code>src&#x2F;core&#x2F;component.js:258</code></a>
                             </p>
                     
                     
@@ -1164,15 +1166,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l241"><code>src&#x2F;core&#x2F;component.js:241</code></a>
+                            <a href="../files/src_core_component.js.html#l250"><code>src&#x2F;core&#x2F;component.js:250</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Metadata on this component.</p>
-                    <p>Fires a Component/metadata:event event on this Component when changed.</p>
+                            <p>Arbitrary, user-defined metadata on this component.</p>
                     
                         </div>
                     
@@ -1191,7 +1192,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l202"><code>src&#x2F;core&#x2F;component.js:202</code></a>
+                            <a href="../files/src_core_component.js.html#l209"><code>src&#x2F;core&#x2F;component.js:209</code></a>
                             </p>
                     
                     
@@ -1216,7 +1217,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l216"><code>src&#x2F;core&#x2F;dirLight.js:216</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l242"><code>src&#x2F;core&#x2F;dirLight.js:242</code></a>
                             </p>
                     
                     
@@ -1249,7 +1250,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l187"><code>src&#x2F;core&#x2F;dirLight.js:187</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l206"><code>src&#x2F;core&#x2F;dirLight.js:206</code></a>
                             </p>
                     
                     
@@ -1278,7 +1279,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l296"><code>src&#x2F;core&#x2F;component.js:296</code></a>
+                            <a href="../files/src_core_component.js.html#l303"><code>src&#x2F;core&#x2F;component.js:303</code></a>
                             </p>
                     
                     
@@ -1286,7 +1287,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Type code for this Component.</p>
-                    <p>For example: &quot;ambientLight&quot;, &quot;colorTarget&quot;, &quot;lights&quot; etc.</p>
                     
                         </div>
                     
@@ -1310,7 +1310,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l626"><code>src&#x2F;core&#x2F;component.js:626</code></a>
+                            <a href="../files/src_core_component.js.html#l633"><code>src&#x2F;core&#x2F;component.js:633</code></a>
                             </p>
                     
                     
@@ -1335,7 +1335,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l174"><code>src&#x2F;core&#x2F;dirLight.js:174</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l193"><code>src&#x2F;core&#x2F;dirLight.js:193</code></a>
                             </p>
                     
                     
@@ -1377,7 +1377,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l145"><code>src&#x2F;core&#x2F;dirLight.js:145</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l157"><code>src&#x2F;core&#x2F;dirLight.js:157</code></a>
                             </p>
                     
                     
@@ -1419,7 +1419,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l242"><code>src&#x2F;core&#x2F;dirLight.js:242</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l268"><code>src&#x2F;core&#x2F;dirLight.js:268</code></a>
                             </p>
                     
                     
@@ -1461,7 +1461,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l203"><code>src&#x2F;core&#x2F;dirLight.js:203</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l229"><code>src&#x2F;core&#x2F;dirLight.js:229</code></a>
                             </p>
                     
                     

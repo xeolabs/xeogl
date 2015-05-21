@@ -140,10 +140,11 @@
 
 <li><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
 <a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints on attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+<li>Alternatively, use <a href="../classes/Ortho.html" class="crosslink">Ortho</a> if you need a orthographic projection.</li>
 
 </ul>
 
-<p><img src="http://www.gliffy.com/go/publish/image/6895185/L.png"></img></p>
+<p><img src="../../../assets/images/Perspective.png"></img></p>
 <h2 id="example">Example</h2>
 <p>In this example we have a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s attached to a
 <a href="../classes/Camera.html" class="crosslink">Camera</a> that has a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform and a Perspective
@@ -264,7 +265,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Field-of-view angle on Y-axis.</p>
+                                            <p>Field-of-view angle, in degrees, on Y-axis.</p>
         
                                         </div>
         
@@ -297,7 +298,7 @@ var object = new XEO.GameObject(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Position of the far plane on the positive View-space Z-axis.</p>
+                                            <p>Position of the far plane on the View-space Z-axis.</p>
         
                                         </div>
         
@@ -392,6 +393,10 @@ var object = new XEO.GameObject(scene, {
                                 <a href="#property_id">id</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_matrix">matrix</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
 
@@ -433,6 +438,10 @@ var object = new XEO.GameObject(scene, {
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_matrix">matrix</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_near">near</a>
 
                             </li>
@@ -458,7 +467,7 @@ var object = new XEO.GameObject(scene, {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l599"><code>src&#x2F;core&#x2F;component.js:599</code></a>
+        <a href="../files/src_core_component.js.html#l606"><code>src&#x2F;core&#x2F;component.js:606</code></a>
         </p>
 
 
@@ -498,7 +507,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l444"><code>src&#x2F;core&#x2F;component.js:444</code></a>
+        <a href="../files/src_core_component.js.html#l449"><code>src&#x2F;core&#x2F;component.js:449</code></a>
         </p>
 
 
@@ -561,7 +570,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l330"><code>src&#x2F;core&#x2F;component.js:330</code></a>
+        <a href="../files/src_core_component.js.html#l335"><code>src&#x2F;core&#x2F;component.js:335</code></a>
         </p>
 
 
@@ -640,7 +649,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l427"><code>src&#x2F;core&#x2F;component.js:427</code></a>
+        <a href="../files/src_core_component.js.html#l432"><code>src&#x2F;core&#x2F;component.js:432</code></a>
         </p>
 
 
@@ -697,7 +706,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l387"><code>src&#x2F;core&#x2F;component.js:387</code></a>
+        <a href="../files/src_core_component.js.html#l392"><code>src&#x2F;core&#x2F;component.js:392</code></a>
         </p>
 
 
@@ -761,7 +770,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l357"><code>src&#x2F;core&#x2F;component.js:357</code></a>
+        <a href="../files/src_core_component.js.html#l362"><code>src&#x2F;core&#x2F;component.js:362</code></a>
         </p>
 
 
@@ -784,7 +793,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Publication event</p>
+                        <p>The event</p>
 
                     </div>
 
@@ -795,7 +804,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>Called when fresh data is available at the event</p>
+                        <p>Called fired on the event</p>
 
                     </div>
 
@@ -854,7 +863,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l406"><code>src&#x2F;core&#x2F;component.js:406</code></a>
+        <a href="../files/src_core_component.js.html#l411"><code>src&#x2F;core&#x2F;component.js:411</code></a>
         </p>
 
 
@@ -933,7 +942,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l461"><code>src&#x2F;core&#x2F;component.js:461</code></a>
+        <a href="../files/src_core_component.js.html#l466"><code>src&#x2F;core&#x2F;component.js:466</code></a>
         </p>
 
 
@@ -985,15 +994,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l142"><code>src&#x2F;core&#x2F;perspective.js:142</code></a>
+                            <a href="../files/src_core_perspective.js.html#l155"><code>src&#x2F;core&#x2F;perspective.js:155</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Aspect ratio of the perspective frustum. This is effectively the height of the frustum divided by the width.
-                    Fires an <a href="../classes/Perspective.html#property_aspect" class="crosslink">aspect</a> event on change.</p>
+                            <p>Aspect ratio of this Perspective frustum. This is effectively the height of the frustum divided by the width.</p>
+                    <p>Fires an <a href="../classes/Perspective.html#property_aspect" class="crosslink">aspect</a> event on change.</p>
                     
                         </div>
                     
@@ -1013,7 +1022,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l308"><code>src&#x2F;core&#x2F;component.js:308</code></a>
+                            <a href="../files/src_core_component.js.html#l313"><code>src&#x2F;core&#x2F;component.js:313</code></a>
                             </p>
                     
                     
@@ -1041,7 +1050,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l260"><code>src&#x2F;core&#x2F;component.js:260</code></a>
+                            <a href="../files/src_core_component.js.html#l267"><code>src&#x2F;core&#x2F;component.js:267</code></a>
                             </p>
                     
                     
@@ -1066,15 +1075,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l198"><code>src&#x2F;core&#x2F;perspective.js:198</code></a>
+                            <a href="../files/src_core_perspective.js.html#l222"><code>src&#x2F;core&#x2F;perspective.js:222</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Position of the far plane on the positive View-space Z-axis.
-                    Fires a <a href="../classes/Perspective.html#event_far" class="crosslink">far</a> event on change.</p>
+                            <p>Position of this Perspective&#39;s far plane on the positive View-space Z-axis.</p>
+                    <p>Fires a <a href="../classes/Perspective.html#event_far" class="crosslink">far</a> event on change.</p>
                     
                         </div>
                     
@@ -1093,15 +1102,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l114"><code>src&#x2F;core&#x2F;perspective.js:114</code></a>
+                            <a href="../files/src_core_perspective.js.html#l121"><code>src&#x2F;core&#x2F;perspective.js:121</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Field-of-view angle on Y-axis, in degrees.
-                    Fires a <a href="../classes/Perspective.html#event_fovy" class="crosslink">fovy</a> event on change.</p>
+                            <p>The angle, in degrees on the Y-axis, of this Perspective&#39;s field-of-view.</p>
+                    <p>Fires a <a href="../classes/Perspective.html#event_fovy" class="crosslink">fovy</a> event on change.</p>
                     
                         </div>
                     
@@ -1121,7 +1130,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l251"><code>src&#x2F;core&#x2F;component.js:251</code></a>
+                            <a href="../files/src_core_component.js.html#l258"><code>src&#x2F;core&#x2F;component.js:258</code></a>
                             </p>
                     
                     
@@ -1129,6 +1138,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_matrix" class="property item">
+                        <h3 class="name"><code>matrix</code></h3>
+                        <span class="type">Float64Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_perspective.js.html#l256"><code>src&#x2F;core&#x2F;perspective.js:256</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The elements of this Perspective&#39;s projection transform matrix.</p>
+                    <p>Fires a <a href="../classes/Perspective.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
                     
                         </div>
                     
@@ -1146,15 +1181,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l241"><code>src&#x2F;core&#x2F;component.js:241</code></a>
+                            <a href="../files/src_core_component.js.html#l250"><code>src&#x2F;core&#x2F;component.js:250</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Metadata on this component.</p>
-                    <p>Fires a Component/metadata:event event on this Component when changed.</p>
+                            <p>Arbitrary, user-defined metadata on this component.</p>
                     
                         </div>
                     
@@ -1172,15 +1206,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l170"><code>src&#x2F;core&#x2F;perspective.js:170</code></a>
+                            <a href="../files/src_core_perspective.js.html#l189"><code>src&#x2F;core&#x2F;perspective.js:189</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Position of the near plane on the positive View-space Z-axis.
-                    Fires a <a href="../classes/Perspective.html#event_near" class="crosslink">near</a> event on change.</p>
+                            <p>Position of this Perspective&#39;s near plane on the positive View-space Z-axis.</p>
+                    <p>Fires a <a href="../classes/Perspective.html#event_near" class="crosslink">near</a> event on change.</p>
                     
                         </div>
                     
@@ -1200,7 +1234,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_core_component.js.html#l202"><code>src&#x2F;core&#x2F;component.js:202</code></a>
+                            <a href="../files/src_core_component.js.html#l209"><code>src&#x2F;core&#x2F;component.js:209</code></a>
                             </p>
                     
                     
@@ -1227,7 +1261,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l296"><code>src&#x2F;core&#x2F;component.js:296</code></a>
+                            <a href="../files/src_core_component.js.html#l303"><code>src&#x2F;core&#x2F;component.js:303</code></a>
                             </p>
                     
                     
@@ -1235,7 +1269,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Type code for this Component.</p>
-                    <p>For example: &quot;ambientLight&quot;, &quot;colorTarget&quot;, &quot;lights&quot; etc.</p>
                     
                         </div>
                     
@@ -1259,14 +1292,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l157"><code>src&#x2F;core&#x2F;perspective.js:157</code></a>
+                            <a href="../files/src_core_perspective.js.html#l175"><code>src&#x2F;core&#x2F;perspective.js:175</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Perspective&#39;s   <a href="../classes/Perspective.html#property_aspect" class="crosslink">aspect</a> property changes.</p>
+                            <p>Fired whenever this Perspective&#39;s <a href="../classes/Perspective.html#property_aspect" class="crosslink">aspect</a> property changes.</p>
                     
                         </div>
                     
@@ -1301,7 +1334,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l626"><code>src&#x2F;core&#x2F;component.js:626</code></a>
+                            <a href="../files/src_core_component.js.html#l633"><code>src&#x2F;core&#x2F;component.js:633</code></a>
                             </p>
                     
                     
@@ -1326,7 +1359,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l213"><code>src&#x2F;core&#x2F;perspective.js:213</code></a>
+                            <a href="../files/src_core_perspective.js.html#l242"><code>src&#x2F;core&#x2F;perspective.js:242</code></a>
                             </p>
                     
                     
@@ -1368,14 +1401,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l129"><code>src&#x2F;core&#x2F;perspective.js:129</code></a>
+                            <a href="../files/src_core_perspective.js.html#l141"><code>src&#x2F;core&#x2F;perspective.js:141</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Perspective&#39;s   <a href="../classes/Perspective.html#property_fovy" class="crosslink">fovy</a> property changes.</p>
+                            <p>Fired whenever this Perspective&#39;s <a href="../classes/Perspective.html#property_fovy" class="crosslink">fovy</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_matrix" class="events item">
+                        <h3 class="name"><code>matrix</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_perspective.js.html#l87"><code>src&#x2F;core&#x2F;perspective.js:87</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Perspective&#39;s <a href="../classes/Perspective.html#property_matrix" class="crosslink">matrix</a> property changes.</p>
                     
                         </div>
                     
@@ -1410,7 +1485,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_perspective.js.html#l185"><code>src&#x2F;core&#x2F;perspective.js:185</code></a>
+                            <a href="../files/src_core_perspective.js.html#l209"><code>src&#x2F;core&#x2F;perspective.js:209</code></a>
                             </p>
                     
                     
