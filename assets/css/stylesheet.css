@@ -446,3 +446,8 @@ Small Device Styles
     }
 
 }
+
+
+.emphasis {
+    font-style: italic;
+}
