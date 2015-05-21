@@ -47,7 +47,8 @@
     <section id="main_content" class="inner">
         <h3>About</h3>
 
-        <strong>xeoEngine</strong> is a WebGL-based 3D engine under development at <a href="https://twitter.com/xeolabs">@xeoLabs</a>
+        <strong>xeoEngine</strong> is a WebGL-based 3D engine under development at <a
+            href="https://twitter.com/xeolabs">@xeoLabs</a>
 
         <h3>Features</h3>
 
@@ -68,7 +69,8 @@
 
         <h3>Usage</h3>
 
-        <p>To start with, simply include <a href="." onclick="javascript:alert('Not released yet!')">xeoengine.min.js</a> in your
+        <p>To start with, simply include <a href="."
+                                            onclick="javascript:alert('Not released yet!')">xeoengine.min.js</a> in your
             HTML page:</p>
         <pre>&lt;script src="http://xeoengine.org/build/xeoengine.min.js"&gt;&lt;/script&gt;</pre>
 
@@ -76,7 +78,7 @@
         <h5>Defining a 3D scene</h5>
 
         <p>Next, define a <a href="./docs/classes/Scene.html">scene</a> as a component-object graph, like the example
-            shown below.<br>A scene is
+            below.<br>A scene is
             essentially a soup of <a href="./docs/classes/Component.html">components</a> that are tied together into
             enties by <a href="./docs/classes/GameObject.html">game objects</a>.</p>
 
@@ -84,13 +86,16 @@
             <img src="http://www.gliffy.com/go/publish/image/7304207/L.png">
         </div>
 
-        <p>Note that since xeoEngine provides defaults for everything, we only need to specify what we need to override, in this case the
-            <a href="./docs/classes/Material.html">material</a> and <a href="./docs/classes/Geometry.html">geometry</a>
+        <p>Since xeoEngine provides defaults for <span class="emphasis">everything</span>, we only need to specify what
+            we need to override,
+            in this case the <a href="./docs/classes/Material.html">material</a> and <a
+                    href="./docs/classes/Geometry.html">geometry</a>
             for
             our game object. The game object will fall back on the scene's
             default flyweight components
             (eg. <a href="./docs/classes/Camera.html">camera</a>, <a href="./docs/classes/Lights.html">lights</a> etc)
-            for everything else.</p>
+            for everything else. As you can see, this keeps the code compact, while flattening the learning curve and
+            making harder to accidentally make scenes that don't render anything.</p>
 
 <pre class="prettyprint lang-javascript">
 var scene = new XEO.Scene();
@@ -111,8 +116,11 @@ var object = new XEO.GameObject(scene, {
         <br>
 
         <h5>Animating</h5>
-        <p>Animate scene state by updating component properties. All properties in xeoEngine fire change events which
-            you can subscribe to.</p>
+
+        <p>Animate scene state by setting the values of component properties. Almost everything in xeoEngine fires change
+            events which
+            you can subscribe to. This is cool for scripting the engine, while also making it easier to write a UI
+            layer for a graphical scene editor, which is one of the future goals of xeoEngine.</p>
 
 <pre class="prettyprint lang-javascript">material.on("diffuse",
      function(value) {
@@ -122,14 +130,20 @@ var object = new XEO.GameObject(scene, {
 // This is going to fire our change listener above
 material.diffuse = [0.9, 0.9, 0.6];</pre>
         <br>
-        <p>Likewise, you can update properties on any of the scene's default flyweight components, such as the default camera:</p>
+
+        <p>Likewise, you can update properties on any of the scene's default flyweight components, such as the default
+            camera:</p>
         <pre class="prettyprint lang-javascript">scene.camera.view.eye = [3.0, 2.0, -10.0];</pre>
 
         <br>
 
         <h5>Editing</h5>
-        <p>Edit anything in your scene dynamically, at runtime. Create, destroy, link and unlink
-            components, or update any component property. Let's add a diffuse <a href="./docs/classes/Texture.html">texture</a> map to our material, for example:</p>
+
+        <p>You can edit <span class="emphasis">everything</span> in your scene dynamically, at runtime. Create and
+            destroy components, link or unlink
+            them to each other, update their properties, and so on. Let's add a diffuse <a
+                    href="./docs/classes/Texture.html">texture</a> map to our material, which will immediately appear on
+            our box:</p>
 
 <pre class="prettyprint lang-javascript">var texture = new XEO.Texture(scene, {
     src: "myTexture.jpg"
@@ -140,12 +154,15 @@ material.diffuseMap = texture;</pre>
         <br>
 
         <h5>Saving and loading</h5>
-        <p>Save or load a JSON snapshot of your scene at any time:</p>
+
+        <p>You can save or load a JSON snapshot of your scene at any time. This snippet will dump the whole state of
+            our scene to JSON, then load that JSON again to create a second identical scene:</p>
 
  <pre class="prettyprint lang-javascript">var json = scene.json;
 
 var scene2 = new XEO.Scene({ json: json });</pre>
-<br>
+        <br>
+
         <p>Find more examples in the <a href="./docs/">API docs</a>.</p>
 
     </section>
