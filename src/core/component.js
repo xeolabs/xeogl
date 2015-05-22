@@ -34,7 +34,7 @@ var geometry = new XEO.Geometry(scene, {
     id: "myGeometry"
 });
 
-// Let xeoEngine automatically generated the ID for our GameObject
+// Let xeoEngine automatically generated the ID for our Object
 var object = new XEO.GameObject(scene, {
     material: material,
     geometry: geometry
@@ -72,14 +72,14 @@ material.off(handle);
  ````
 
  We can also subscribe to changes in the way components are attached to each other, since components are properties
- of other components. For example, we can subscribe to the '{{#crossLink "GameObject/material:event"}}{{/crossLink}}' event that a
- {{#crossLink "GameObject"}}GameObject{{/crossLink}} fires when its {{#crossLink "GameObject/material:property"}}{{/crossLink}}
+ of other components. For example, we can subscribe to the '{{#crossLink "Object/material:event"}}{{/crossLink}}' event that a
+ {{#crossLink "GameObject"}}GameObject{{/crossLink}} fires when its {{#crossLink "Object/material:property"}}{{/crossLink}}
  property is set to a different {{#crossLink "Material"}}Material{{/crossLink}}:
 
  ```` javascript
-// Bind a change callback to the GameObject's Material
+// Bind a change callback to the Object's Material
 object1.on("material", function(material) {
-    console.log("GameObject's Material has changed to: " + material.id);
+    console.log("Object's Material has changed to: " + material.id);
 });
 
 // Now replace that Material with another
@@ -199,6 +199,13 @@ Other Components that are linked to it will fall back on a default of some sort.
 
         __init: function () {
 
+
+            var cfg = {};
+
+            var arg1 = arguments[0];
+            var arg2 = arguments[1];
+
+
             /**
              The parent {{#crossLink "Scene"}}{{/crossLink}} that contains this Component.
 
@@ -208,40 +215,40 @@ Other Components that are linked to it will fall back on a default of some sort.
              */
             this.scene = null;
 
-            var cfg = {};
 
-            var arg1 = arguments[0];
-            var arg2 = arguments[1];
+            if (this.className === "XEO.Scene") {
 
-            if (!arg1 && !arg2) {
+                this.scene = this;
 
-//                    this.scene = XEO.scene; // Default Scene
-//                    this._renderer = this.scene._renderer;
-
-            } else if (arg1 && !arg2) {
-
-                if (arg1.type === "scene") {
-                    this.scene = arg1;
-                    this._renderer = this.scene._renderer;
-
-                } else {
-                    //   this.scene = XEO.scene; // Default Scene
-                    //  this._renderer = this.scene._renderer;
+                if (arg1) {
                     cfg = arg1;
                 }
 
-            } else if (arg1 && arg2) {
+            } else {
 
-                this.scene = arg1;
-                cfg = arg2;
+                if (arg1) {
+
+                    if (arg1.className === "XEO.Scene") {
+
+                        this.scene = arg1;
+
+                        if (arg2) {
+                            cfg = arg2;
+                        }
+
+                    } else {
+
+                        this.scene = XEO.scene;
+
+                        cfg = arg1;
+                    }
+                }
+
+                this._renderer = this.scene._renderer;
             }
 
-            this._renderer = {};
-
             /**
-             Metadata on this component.
-
-             Fires a {{#crossLink "Component/metadata:event"}}{{/crossLink}} event on this Component when changed.
+             Arbitrary, user-defined metadata on this component.
 
              @property metadata
              @type Object
@@ -276,7 +283,7 @@ Other Components that are linked to it will fall back on a default of some sort.
 
             // Pub/sub
             this._handleMap = new XEO.utils.Map(); // Subscription handle pool
-            this._locSubs = {}; // A [handle -> callback] map for each location name
+            this._eventSubs = {}; // A [handle -> callback] map for each location name
             this._handleLocs = {}; // Maps handles to loc names
             this.props = {}; // Maps locations to publications
 
@@ -295,8 +302,6 @@ Other Components that are linked to it will fall back on a default of some sort.
 
         /**
          Type code for this Component.
-
-         For example: "ambientLight", "colorTarget", "lights" etc.
 
          @property type
          @type String
@@ -342,12 +347,12 @@ Other Components that are linked to it will fall back on a default of some sort.
             if (forget !== true) {
                 this.props[event] = value; // Save notification
             }
-            var subsForLoc = this._locSubs[event];
+            var subs = this._eventSubs[event];
             var sub;
-            if (subsForLoc) { // Notify subscriptions
-                for (var handle in subsForLoc) {
-                    if (subsForLoc.hasOwnProperty(handle)) {
-                        sub = subsForLoc[handle];
+            if (subs) { // Notify subscriptions
+                for (var handle in subs) {
+                    if (subs.hasOwnProperty(handle)) {
+                        sub = subs[handle];
                         sub.callback.call(sub.scope, value);
                     }
                 }
@@ -360,19 +365,19 @@ Other Components that are linked to it will fall back on a default of some sort.
          * The callback is be called with this component as scope.
          *
          * @method on
-         * @param {String} event Publication event
-         * @param {Function} callback Called when fresh data is available at the event
+         * @param {String} event The event
+         * @param {Function} callback Called fired on the event 
          * @param {Object} [scope=this] Scope for the callback
          * @return {String} Handle to the subscription, which may be used to unsubscribe with {@link #off}.
          */
         on: function (event, callback, scope) {
-            var subsForLoc = this._locSubs[event];
-            if (!subsForLoc) {
-                subsForLoc = {};
-                this._locSubs[event] = subsForLoc;
+            var subs = this._eventSubs[event];
+            if (!subs) {
+                subs = {};
+                this._eventSubs[event] = subs;
             }
             var handle = this._handleMap.addItem(); // Create unique handle
-            subsForLoc[handle] = {
+            subs[handle] = {
                 scope: scope || this,
                 callback: callback
             };
@@ -395,7 +400,7 @@ Other Components that are linked to it will fall back on a default of some sort.
             var event = this._handleLocs[handle];
             if (event) {
                 delete this._handleLocs[handle];
-                var locSubs = this._locSubs[event];
+                var locSubs = this._eventSubs[event];
                 if (locSubs) {
                     delete locSubs[handle];
                 }
@@ -572,6 +577,8 @@ Other Components that are linked to it will fall back on a default of some sort.
             this.fire("dirty", true);
 
             this.fire(type, child);
+
+            return child;
         },
 
 

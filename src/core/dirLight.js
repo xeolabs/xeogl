@@ -5,10 +5,10 @@
  ## Overview
 
  <ul>
-    <li>DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
+ <li>DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
  which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
-    <li>DirLights have a direction, but no position.</li>
-    <li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
+ <li>DirLights have a direction, but no position.</li>
+ <li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
  is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
@@ -18,7 +18,7 @@
  respectively.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7096639/L.png"></img>
+ <img src="../../../assets/images/DirLight.png"></img>
 
  ## Example
 
@@ -32,39 +32,41 @@
  <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
- ```` javascript
-var scene = new XEO.Scene();
+ <iframe style="width: 600px; height: 400px" src="../../examples/light_DirLight.html"></iframe>
 
-// A shiny Material with quantities of reflected
-// ambient, diffuse and specular color
-var material = new XEO.Material(scene, {
+ ```` javascript
+ var scene = new XEO.Scene();
+
+ // A shiny Material with quantities of reflected
+ // ambient, diffuse and specular color
+ var material = new XEO.Material(scene, {
     ambient:    [0.3, 0.3, 0.3],
     diffuse:    [0.7, 0.7, 0.7],
     specular:   [1. 1, 1],
     shininess:  30
 });
 
-// DirLight with diffuse and specular color, pointing along
-// the negative diagonal within the View coordinate system
-var dirLight = new XEO.DirLight(scene, {
+ // DirLight with diffuse and specular color, pointing along
+ // the negative diagonal within the View coordinate system
+ var dirLight = new XEO.DirLight(scene, {
     dir:        [-1, -1, -1],
     diffuse:    [0.5, 0.7, 0.5],
     specular:   [1.0, 1.0, 1.0],
     space:      "view"  // Other option is "world", for World-space
 });
 
-// Lights which contains our DirLight
-var lights = new XEO.Lights(scene, {
+ // Lights which contains our DirLight
+ var lights = new XEO.Lights(scene, {
     lights: [
         dirLight
     ]
 });
 
-var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
-// GameObject which renders our Geometry, colored with
-// the Material and illuminated with the DirLight
-var object = new XEO.GameObject(scene, {
+ // Object which renders our Geometry, colored with
+ // the Material and illuminated with the DirLight
+ var object = new XEO.GameObject(scene, {
     lights: lights,
     material: material,
     geometry: geometry
@@ -74,17 +76,17 @@ var object = new XEO.GameObject(scene, {
  As with all components, we can observe and change properties on a DirLights, like so:
 
  ````Javascript
-// Attach a change listener to a property
-var handle = dirLight.on("diffuse",
-    function(value) {
+ // Attach a change listener to a property
+ var handle = dirLight.on("diffuse",
+ function(value) {
         // Property value has changed
     });
 
-// Set the property, which fires our change listener
-dirLight.diffuse = [0.0, 0.3, 0.3];
+ // Set the property, which fires our change listener
+ dirLight.diffuse = [0.0, 0.3, 0.3];
 
-// Detach the change listener
-dirLight.off(handle);
+ // Detach the change listener
+ dirLight.off(handle);
  ````
 
  @class DirLight
@@ -114,9 +116,12 @@ dirLight.off(handle);
 
         _init: function (cfg) {
 
-            this.mode = "dir";
-
-            this._state.mode = this.mode;
+            this._state = {
+                mode: "dir",
+                diffuse: [0.7, 0.7, 0.8],
+                specular: [1.0, 1.0, 1.0],
+                space: "view"
+            };
 
             this.dir = cfg.dir;
             this.diffuse = cfg.diffuse;
@@ -138,8 +143,15 @@ dirLight.off(handle);
             dir: {
 
                 set: function (value) {
-                    value = value || [1.0, 1.0, 1.0 ];
-                    this._state.dir = value;
+
+                    value = value || [ 1.0, 1.0, 1.0 ];
+
+                    var dir = this._state.dir;
+
+                    dir[0] = value[0];
+                    dir[1] = value[1];
+                    dir[2] = value[2];
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -147,7 +159,7 @@ dirLight.off(handle);
                      * @event dir
                      * @param value The property's new value
                      */
-                    this.fire("dir", value);
+                    this.fire("dir", dir);
                 },
 
                 get: function () {
@@ -167,8 +179,15 @@ dirLight.off(handle);
             diffuse: {
 
                 set: function (value) {
+
                     value = value || [0.7, 0.7, 0.8 ];
-                    this._state.diffuse = value;
+
+                    var diffuse = this._state.diffuse;
+
+                    diffuse[0] = value[0];
+                    diffuse[1] = value[1];
+                    diffuse[2] = value[2];
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -176,7 +195,7 @@ dirLight.off(handle);
                      * @event diffuse
                      * @param value The property's new value
                      */
-                    this.fire("diffuse", value);
+                    this.fire("diffuse", diffuse);
                 },
 
                 get: function () {
@@ -196,8 +215,15 @@ dirLight.off(handle);
             specular: {
 
                 set: function (value) {
+
                     value = value || [1.0, 1.0, 1.0 ];
-                    this._state.specular = value;
+
+                    var specular = this._state.specular;
+
+                    specular[0] = value[0];
+                    specular[1] = value[1];
+                    specular[2] = value[2];
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -205,7 +231,7 @@ dirLight.off(handle);
                      * @event specular
                      * @param value The property's new value
                      */
-                    this.fire("specular", value);
+                    this.fire("specular", specular);
                 },
 
                 get: function () {
@@ -232,11 +258,11 @@ dirLight.off(handle);
             space: {
 
                 set: function (value) {
+
                     value = value || "view";
-                    if (value === this._state.space) {
-                        return;
-                    }
+
                     this._state.space = value;
+
                     this.fire("dirty", true); // Need to rebuild shader
 
                     /**

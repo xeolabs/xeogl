@@ -14,7 +14,7 @@
 
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7430557/L.png">
+ <img src="../../../assets/images/Translate.png"></img>
 
  ## Example
 

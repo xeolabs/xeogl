@@ -9,7 +9,7 @@
  depths for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7104991/L.png"></img>
+ <img src="../../../assets/images/DepthBuf.png"></img>
 
  ## Example
 
@@ -18,30 +18,30 @@
  The scene contains:
 
  <ul>
-    <li>a DepthBuf that configures the clear depth and depth comparison function,</li>
-    <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape and
-    <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>a DepthBuf that configures the clear depth and depth comparison function,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ````javascript
-var scene = new XEO.Scene();
+ var scene = new XEO.Scene();
 
-// Create a DepthBuf that configures the WebGL depth buffer to set pixels depths to 0.5
-// whenever it is cleared, and to use the "less" depth comparison function
-var depthBuf = new XEO.DepthBuf(scene, {
+ // Create a DepthBuf that configures the WebGL depth buffer to set pixels depths to 0.5
+ // whenever it is cleared, and to use the "less" depth comparison function
+ var depthBuf = new XEO.DepthBuf(scene, {
     clearDepth: 0.5,
     depthFunc: "less"
 });
 
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-// Create a GameObject that renders the Geometry to the depth buffer,
-// as configured by our DepthBuf
-var gameObject = new XEO.GameObject(scene, {
+ // Create a Object that renders the Geometry to the depth buffer,
+ // as configured by our DepthBuf
+ var gameObject = new XEO.GameObject(scene, {
     depthBuf: depthBuf,
     geometry: geometry
 });
-````
+ ````
 
  @class DepthBuf
  @module XEO
@@ -66,6 +66,12 @@ var gameObject = new XEO.GameObject(scene, {
         type: "DepthBuf",
 
         _init: function (cfg) {
+
+            this._state = this._renderer.createState({
+                clearDepth: 1.0,
+                depthFunc: "less"
+            });
+
             this.clearDepth = cfg.clearDepth;
             this.depthFunc = cfg.depthFunc;
         },
@@ -84,8 +90,9 @@ var gameObject = new XEO.GameObject(scene, {
             clearDepth: {
 
                 set: function (value) {
-                    value = value !== undefined ? value : 1.0;
-                    this._state.clearDepth = value;
+
+                    this._state.clearDepth = value !== undefined ? value : 1.0;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -94,7 +101,7 @@ var gameObject = new XEO.GameObject(scene, {
                      @event clearDepth
                      @param value {Number} The property's new value
                      */
-                    this.fire("clearDepth", value);
+                    this.fire("clearDepth",  this._state.clearDepth);
                 },
 
                 get: function () {
@@ -125,15 +132,19 @@ var gameObject = new XEO.GameObject(scene, {
             depthFunc: {
 
                 set: function (value) {
+
                     value = value || "less";
+
                     var enumName = this._depthFuncNames[value];
                     if (enumName === undefined) {
                         this.error("unsupported value for 'clearFunc' attribute on depthBuf component: '" + value +
                             "' - supported values are 'less', 'equal', 'lequal', 'greater', 'notequal' and 'gequal'");
                         return;
                     }
+
                     this._state.depthFunc = this.scene.canvas.gl[enumName];
                     this._state.depthFuncName = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -141,7 +152,7 @@ var gameObject = new XEO.GameObject(scene, {
                      @event depthFunc
                      @param value {String} The property's new value
                      */
-                    this.fire("depthFunc", value);
+                    this.fire("depthFunc", this._state.depthFuncName);
                 },
 
                 get: function () {
@@ -169,9 +180,13 @@ var gameObject = new XEO.GameObject(scene, {
 
         _getJSON: function () {
             return {
-                clearDepth: this.clearDepth,
-                depthFunc: this.depthFunc
+                clearDepth: this._state.clearDepth,
+                depthFunc: this._state.depthFuncName
             };
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
 

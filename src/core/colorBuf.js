@@ -11,7 +11,7 @@
 
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7104987/L.png"></img>
+ <img src="../../../assets/images/ColorBuf.png"></img>
 
  ## Example
 
@@ -26,16 +26,16 @@
  </ul>
 
  ````javascript
-var scene = new XEO.Scene();
+ var scene = new XEO.Scene();
 
-var colorBuf = new XEO.ColorBuf(scene, {
+ var colorBuf = new XEO.ColorBuf(scene, {
     blendEnabled: true,
     colorMask: [true, true, true, true]
 });
 
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-var gameObject = new XEO.GameObject(scene, {
+ var gameObject = new XEO.GameObject(scene, {
     colorBuf: colorBuf,
     geometry: geometry
 });
@@ -64,6 +64,12 @@ var gameObject = new XEO.GameObject(scene, {
         type: "colorbuf",
 
         _init: function (cfg) {
+
+            this._state = this._renderer.createState({
+                blendEnabled: true,
+                colorMask: [true, true, true, true]
+            });
+
             this.blendEnabled = cfg.blendEnabled;
             this.colorMask = cfg.colorMask;
         },
@@ -82,8 +88,9 @@ var gameObject = new XEO.GameObject(scene, {
             blendEnabled: {
 
                 set: function (value) {
-                    value = value !== false;
-                    this._state.blendEnabled = value;
+
+                    this._state.blendEnabled = value !== false;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -92,7 +99,7 @@ var gameObject = new XEO.GameObject(scene, {
                      @event blendEnabled
                      @param value {Boolean} The property's new value
                      */
-                    this.fire("blendEnabled", value);
+                    this.fire("blendEnabled", this._state.blendEnabled);
                 },
 
                 get: function () {
@@ -112,8 +119,9 @@ var gameObject = new XEO.GameObject(scene, {
             colorMask: {
 
                 set: function (value) {
-                    value = value || [true, true, true, true];
-                    this._state.colorMask = value;
+
+                    this._state.colorMask = value || [true, true, true, true];
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -122,7 +130,7 @@ var gameObject = new XEO.GameObject(scene, {
                      @event colorMask
                      @param value {Four element array of Boolean} The property's new value
                      */
-                    this.fire("colorMask", value);
+                    this.fire("colorMask", this._state.colorMask);
                 },
 
                 get: function () {
@@ -140,6 +148,10 @@ var gameObject = new XEO.GameObject(scene, {
                 blendEnabled: this.blendEnabled,
                 colorMask: this.colorMask
             };
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
 

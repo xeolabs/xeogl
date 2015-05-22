@@ -28,7 +28,7 @@
 
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/6921713/L.png"></img>
+ <img src="../../../assets/images/Material.png"></img>
 
  ## Example
 
@@ -49,7 +49,7 @@
  {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
  ```` javascript
-var scene = new XEO.Scene();
+ var scene = new XEO.Scene();
 
  var diffuseMap = new XEO.Texture(scene, {
     src: "diffuseMap.jpg"
@@ -120,12 +120,21 @@ var scene = new XEO.Scene();
 
     XEO.Material = XEO.Component.extend({
 
-
         className: "XEO.Material",
 
         type: "material",
 
         _init: function (cfg) {
+
+            this._state = this._renderer.createState({
+                ambient: [0.7, 0.7, 0.8],
+                diffuse: [1.0, 1.0, 1.0],
+                specular: [1.0, 1.0, 1.0],
+                emissive: [1.0, 1.0, 1.0],
+                opacity: 1.0,
+                shininess: 30.0,
+                reflectivity: 1.0
+            });
 
             this._textures = [];
             this._dirtyTextureSubs = [];
@@ -163,16 +172,18 @@ var scene = new XEO.Scene();
             ambient: {
 
                 set: function (value) {
-                    value = value || [ 1.0, 1.0, 1.0 ];
-                    this._state.ambient = value;
+
+                    this._state.ambient = value || [ 1.0, 1.0, 1.0 ];
+
                     this._renderer.imageDirty = true;
 
                     /**
                      * Fired whenever this Material's {{#crossLink "Material/ambient:property"}}{{/crossLink}} property changes.
+                     *
                      * @event ambient
                      * @param value {Array(Number)} The property's new value
                      */
-                    this.fire("ambient", value);
+                    this.fire("ambient", this._state.ambient);
                 },
 
                 get: function () {
@@ -194,16 +205,18 @@ var scene = new XEO.Scene();
             diffuse: {
 
                 set: function (value) {
-                    value = value || [ 1.0, 1.0, 1.0 ];
-                    this._state.diffuse = value;
+
+                    this._state.diffuse = value || [ 1.0, 1.0, 1.0 ];
+
                     this._renderer.imageDirty = true;
 
                     /**
                      * Fired whenever this Material's {{#crossLink "Material/diffuse:property"}}{{/crossLink}} property changes.
+                     *
                      * @event diffuse
                      * @param value {Array(Number)} The property's new value
                      */
-                    this.fire("diffuse", value);
+                    this.fire("diffuse", this._state.diffuse);
                 },
 
                 get: function () {
@@ -225,16 +238,18 @@ var scene = new XEO.Scene();
             specular: {
 
                 set: function (value) {
-                    value = value || [ 0.3, 0.3, 0.3 ];
-                    this._state.specular = value;
+
+                    this._state.specular = value || [ 0.3, 0.3, 0.3 ];
+
                     this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Material's {{#crossLink "Material/specular:property"}}{{/crossLink}} property changes.
+
                      @event specular
                      @param value {Array(Number)} The property's new value
                      */
-                    this.fire("specular", value);
+                    this.fire("specular", this._state.specular);
                 },
 
                 get: function () {
@@ -256,16 +271,18 @@ var scene = new XEO.Scene();
             emissive: {
 
                 set: function (value) {
-                    value = value || [ 1.0, 1.0, 1.0 ];
-                    this._state.emissive = value;
+
+                    this._state.emissive = value || [ 1.0, 1.0, 1.0 ];
+
                     this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Material's {{#crossLink "Material/emissive:property"}}{{/crossLink}} property changes.
+
                      @event emissive
                      @param value {Array(Number)} The property's new value
                      */
-                    this.fire("emissive", value);
+                    this.fire("emissive", this._state.emissive);
                 },
 
                 get: function () {
@@ -293,16 +310,18 @@ var scene = new XEO.Scene();
             opacity: {
 
                 set: function (value) {
-                    value = value !== undefined ? value : 1;
-                    this._state.opacity = value;
+
+                    this._state.opacity = (value !== undefined || value !== null) ? value : 1.0;
+
                     this._renderer.imageDirty = true;
 
                     /**
                      * Fired whenever this Material's {{#crossLink "Material/opacity:property"}}{{/crossLink}} property changes.
+                     *
                      * @event opacity
                      * @param value {Number} The property's new value
                      */
-                    this.fire("opacity", value);
+                    this.fire("opacity", this._state.opacity);
                 },
 
                 get: function () {
@@ -326,16 +345,18 @@ var scene = new XEO.Scene();
             shininess: {
 
                 set: function (value) {
-                    value = value !== undefined ? value : 30;
-                    this._state.shininess = value;
+
+                    this._state.shininess = value !== undefined ? value : 30;
+
                     this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Material's {{#crossLink "Material/shininess:property"}}{{/crossLink}} property changes.
+
                      @event shininess
                      @param value Number The property's new value
                      */
-                    this.fire("shininess", value);
+                    this.fire("shininess", this._state.shininess);
                 },
 
                 get: function () {
@@ -359,16 +380,18 @@ var scene = new XEO.Scene();
             reflectivity: {
 
                 set: function (value) {
-                    value = value !== undefined ? value : 1.0;
-                    this._state.reflectivity = value;
+
+                    this._state.reflectivity = value !== undefined ? value : 1.0;
+
                     this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Material's {{#crossLink "Material/reflectivity:property"}}{{/crossLink}} property changes.
+
                      @event reflectivity
                      @param value Number The property's new value
                      */
-                    this.fire("reflectivity", value);
+                    this.fire("reflectivity", this._state.reflectivity);
                 },
 
                 get: function () {
@@ -390,13 +413,14 @@ var scene = new XEO.Scene();
             diffuseMap: {
 
                 set: function (texture) {
-                    this._attachTexture("diffuseMap", texture);
 
                     /**
                      Fired whenever this Material's {{#crossLink "Material/diffuse:property"}}{{/crossLink}} property changes.
+
                      @event diffuseMap
                      @param value Number The property's new value
                      */
+                    this._attachTexture("diffuseMap", texture);
                 },
 
                 get: function () {
@@ -418,13 +442,14 @@ var scene = new XEO.Scene();
             specularMap: {
 
                 set: function (texture) {
-                    this._attachTexture("specularMap", texture);
 
                     /**
                      Fired whenever this Material's {{#crossLink "Material/specularMap:property"}}{{/crossLink}} property changes.
+
                      @event specularMap
                      @param value Number The property's new value
                      */
+                    this._attachTexture("specularMap", texture);
                 },
 
                 get: function () {
@@ -446,13 +471,14 @@ var scene = new XEO.Scene();
             emissiveMap: {
 
                 set: function (texture) {
-                    this._attachTexture("emissiveMap", texture);
 
                     /**
                      Fired whenever this Material's {{#crossLink "Material/emissiveMap:property"}}{{/crossLink}} property changes.
+
                      @event emissiveMap
                      @param value Number The property's new value
                      */
+                    this._attachTexture("emissiveMap", texture);
                 },
 
                 get: function () {
@@ -474,13 +500,14 @@ var scene = new XEO.Scene();
             opacityMap: {
 
                 set: function (texture) {
-                    this._attachTexture("opacityMap", texture);
 
                     /**
                      Fired whenever this Material's {{#crossLink "Material/opacityMap:property"}}{{/crossLink}} property changes.
+
                      @event opacityMap
                      @param value Number The property's new value
                      */
+                    this._attachTexture("opacityMap", texture);
                 },
 
                 get: function () {
@@ -502,13 +529,14 @@ var scene = new XEO.Scene();
             reflectivityMap: {
 
                 set: function (texture) {
-                    this._attachTexture("reflectivityMap", texture);
 
                     /**
                      Fired whenever this Material's {{#crossLink "Material/reflectivityMap:property"}}{{/crossLink}} property changes.
+
                      @event reflectivityMap
                      @param value Number The property's new value
                      */
+                    this._attachTexture("reflectivityMap", texture);
                 },
 
                 get: function () {
@@ -572,13 +600,16 @@ var scene = new XEO.Scene();
         },
 
         _compile: function () {
+
             // Set material state on renderer
             this._renderer.material = this._state;
+
             // Set texture state on renderer
             var layers = [];
             for (var i = 0, len = this._textures.length; i < len; i++) {
                 layers.push(this._textures[i]._state);
             }
+
             var state = {
                 type: "texture",
                 bumpMap: this.bumpMap ? this.bumpMap._state : null,
@@ -595,43 +626,51 @@ var scene = new XEO.Scene();
 
         // Texture hash helps reuse pooled shaders
         _makeTexturesHash: function (layers) {
+
             var hash = [];
+
             if (this.bumpMap) {
                 hash.push("/b");
                 if (this.bumpMap.matrix) {
                     hash.push("/anim");
                 }
             }
+
             if (this.diffuseMap) {
                 hash.push("/d");
                 if (this.bumpMap.matrix) {
                     hash.push("/anim");
                 }
             }
+
             if (this.specularMap) {
                 hash.push("/s");
                 if (this.bumpMap.matrix) {
                     hash.push("/anim");
                 }
             }
+
             if (this.emissiveMap) {
                 hash.push("/e");
                 if (this.bumpMap.matrix) {
                     hash.push("/anim");
                 }
             }
+
             if (this.opacityMap) {
                 hash.push("/o");
                 if (this.bumpMap.matrix) {
                     hash.push("/anim");
                 }
             }
+
             if (this.reflectivityMap) {
                 hash.push("/r");
                 if (this.bumpMap.matrix) {
                     hash.push("/anim");
                 }
             }
+
             return  hash.join("");
         },
 
@@ -658,23 +697,32 @@ var scene = new XEO.Scene();
             if (this.bumpMap) {
                 json.bumpMap = this.bumpMap.id;
             }
+
             if (this.diffuseMap) {
                 json.diffuseMap = this.diffuseMap.id;
             }
+
             if (this.specularMap) {
                 json.specularMap = this.specularMap.id;
             }
+
             if (this.emissiveMap) {
                 json.emissiveMap = this.emissiveMap.id;
             }
+
             if (this.opacityMap) {
                 json.opacityMap = this.opacityMap.id;
             }
+
             if (this.reflectivityMap) {
                 json.reflectivityMap = this.reflectivityMap.id;
             }
 
             return json;
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
 

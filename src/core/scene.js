@@ -22,7 +22,7 @@
  while its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses
  the graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).
 
- <img src="http://www.gliffy.com/go/publish/image/7103731/L.png"></img>
+ <img src="../../../assets/images/Scene.png"></img>
 
  #### Default Components
 
@@ -57,7 +57,7 @@
  ## Example
 
  Here's the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink "GameObject"}}GameObjects{{/crossLink}} when we need to
- override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple GameObjects.
+ override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple Objects.
 
  ```` javascript
  var scene = new XEO.Scene({
@@ -186,7 +186,7 @@
  @param [cfg.id] {String} Optional ID, unique among all Scenes in xeoEngine, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scene.
  @param [cfg.canvasId] {String} ID of existing HTML5 canvas in the DOM - creates a full-page canvas automatically if this is omitted
- @param [cfg.components] {Array(GameObject)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
+ @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
  @extends Component
  */
 (function () {
@@ -231,7 +231,7 @@
              */
             this.components = {};
 
-            this._dirtyGameObjects = {};
+            this._dirtyObjects = {};
 
             /**
              * Configurations for this Scene. Set whatever properties on here that will be
@@ -369,7 +369,7 @@
 
                     if (isGameObject) {
                         self.stats.dec("objects");
-                        delete self._dirtyGameObjects[c.id];
+                        delete self._dirtyObjects[c.id];
                         self.fire("dirty", true);
                     }
 
@@ -387,8 +387,8 @@
 
                 c.on("dirty",
                     function () {
-                        if (!self._dirtyGameObjects[c.id]) {
-                            self._dirtyGameObjects[c.id] = object;
+                        if (!self._dirtyObjects[c.id]) {
+                            self._dirtyObjects[c.id] = object;
                         }
                         self.fire("dirty", true);
                     });
@@ -474,13 +474,13 @@
             },
 
             /**
-             * The default modelling transform provided by this Scene.
+             * The default modelling {{#crossLink "Transform"}}{{/crossLink}} provided by this Scene.
              *
-             * This {{#crossLink "Transform"}}Transform{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.transform",
+             * This {{#crossLink "Transform"}}{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.transform",
              * with all other properties initialised to their default values (ie. an identity matrix).
              *
-             * {{#crossLink "GameObjects"}}GameObjects{{/crossLink}}s within this Scene are attached to
-             * this {{#crossLink "Transform"}}Transform{{/crossLink}} by default.
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to
+             * this {{#crossLink "Transform"}}{{/crossLink}} by default.
              *
              * @property transform
              * @final
@@ -502,7 +502,7 @@
              * This {{#crossLink "Clips"}}Clips{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.clips",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Clips"}}Clips{{/crossLink}} by default.
              * @property clips
              * @final
@@ -524,7 +524,7 @@
              * This {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.colorBuf",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} by default.
              * @property colorBuf
              * @final
@@ -546,7 +546,7 @@
              * This {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.colorTarget",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} by default.
              * @property colorTarget
              * @final
@@ -567,7 +567,7 @@
              * This {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthBuf",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} by default.
              *
              * @property depthBuf
@@ -589,7 +589,7 @@
              * This {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} by default.
              * @property depthTarget
              * @final
@@ -610,7 +610,7 @@
              * This {{#crossLink "Visibility"}}Visibility{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.visibility",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Visibility"}}Visibility{{/crossLink}} by default.
              * @property visibility
              * @final
@@ -632,7 +632,7 @@
              * This {{#crossLink "Modes"}}Modes{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.modes",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Modes"}}Modes{{/crossLink}} by default.
              * @property modes
              * @final
@@ -652,7 +652,8 @@
              *
              * This {{#crossLink "Geometry"}}Geometry{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.geometry".
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this {{#crossLink "Geometry"}}Geometry{{/crossLink}} by default.
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Geometry"}}Geometry{{/crossLink}} by default.
              * @property geometry
              * @final
              * @type Geometry
@@ -672,7 +673,7 @@
              * This {{#crossLink "Layer"}}Layer{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.layer",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Layer"}}Layer{{/crossLink}} by default.
              * @property layer
              * @final
@@ -694,7 +695,7 @@
              * This {{#crossLink "Lights"}}Lights{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to *````"default.lights"````*,
              * with all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink "Lights"}}Lights{{/crossLink}}).
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Lights"}}Lights{{/crossLink}} by default.
              * @property lights
              * @final
@@ -744,7 +745,7 @@
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.material", with all
              * other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Material"}}Material{{/crossLink}} by default.
              * @property material
              * @final
@@ -765,7 +766,7 @@
              * This {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.morphTargets",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} by default.
              * @property morphTargets
              * @final
@@ -787,7 +788,7 @@
              * This {{#crossLink "Reflect"}}Reflect{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.reflect",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Reflect"}}Reflect{{/crossLink}} by default.
              * @property reflect
              * @final
@@ -809,7 +810,7 @@
              * This {{#crossLink "Shader"}}Shader{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.shader",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Shader"}}Shader{{/crossLink}} by default.
              * @property shader
              * @final
@@ -830,8 +831,8 @@
              * This {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.shaderParams",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
-             * {{#crossLink "ShaderParams"}}Shader{{/crossLink}} by default.
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "ShaderParams"}}{{/crossLink}} by default.
              * @property shaderParams
              * @final
              * @type ShaderParams
@@ -852,7 +853,7 @@
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stage" and
              * a {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} equal to ````0````.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} created within this Scene will get this
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Stage"}}Stage{{/crossLink}} by default.
              * @property stage
              * @final
@@ -866,71 +867,71 @@
                             priority: 0
                         });
                 }
-            },
-
-            /**
-             * Destroys all components in this Scene
-             */
-            clear: function () {
-                var component;
-                for (var id in this.components) {
-                    if (this.components.hasOwnProperty(id)) {
-                        component = this.components[id];
-                        if (!component.id !== this.id) { // This Scene is also in the component map
-                            component.destroy();
-                        }
-                    }
-                }
-                this._dirtyGameObjects = {};
-            },
-
-            /**
-             * Compiles and renders this Scene
-             * @private
-             */
-            _compile: function () {
-
-                // Compile dirty objects, if any
-
-                for (var id in this._dirtyGameObjects) {
-                    if (this._dirtyGameObjects.hasOwnProperty(id)) {
-                        this._dirtyGameObjects[i]._compile();
-                    }
-                }
-
-                this._dirtyGameObjects = {};
-
-                this._renderer.render({
-                    clear: i === 0
-                });
-
-            },
-
-            _getJSON: function () {
-
-                // Get list of component JSONs, in ascending order of component creation
-                var components = [];
-                var priorities = [];
-                for (var id in this.components) {
-                    if (this.components.hasOwnProperty(id)) {
-                        components.push(this.components[id]);
-                    }
-                }
-                components.sort(function (a, b) {
-                    return a._componentOrder - b._componentOrder
-                });
-                var componentJSONs = [];
-                for (var i = 0, len = components.length; i < len; i++) {
-                    componentJSONs.push(components[i].json);
-                }
-                return {
-                    components: componentJSONs
-                };
-            },
-
-            _destroy: function () {
-                this.clear();
             }
+        },
+
+        /**
+         * Destroys all components in this Scene
+         */
+        clear: function () {
+            var component;
+            for (var id in this.components) {
+                if (this.components.hasOwnProperty(id)) {
+                    component = this.components[id];
+                    if (!component.id !== this.id) { // This Scene is also in the component map
+                        component.destroy();
+                    }
+                }
+            }
+            this._dirtyObjects = {};
+        },
+
+        /**
+         * Compiles and renders this Scene
+         * @private
+         */
+        _compile: function () {
+
+            // Compile dirty objects, if any
+
+            for (var id in this._dirtyObjects) {
+                if (this._dirtyObjects.hasOwnProperty(id)) {
+                    this._dirtyObjects[i]._compile();
+                }
+            }
+
+            this._dirtyObjects = {};
+
+            this._renderer.render({
+                clear: i === 0
+            });
+
+        },
+
+        _getJSON: function () {
+
+            // Get list of component JSONs, in ascending order of component creation
+            var components = [];
+            var priorities = [];
+            for (var id in this.components) {
+                if (this.components.hasOwnProperty(id)) {
+                    components.push(this.components[id]);
+                }
+            }
+            components.sort(function (a, b) {
+                return a._componentOrder - b._componentOrder
+            });
+            var componentJSONs = [];
+            for (var i = 0, len = components.length; i < len; i++) {
+                componentJSONs.push(components[i].json);
+            }
+            return {
+                components: componentJSONs
+            };
+        },
+
+        _destroy: function () {
+            this.clear();
         }
     });
 

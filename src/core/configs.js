@@ -11,7 +11,7 @@
  xeoEngine (see table below).</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7123181/L.png"></img>
+ <img src="../../../assets/images/Configs.png"></img>
 
  ## Native xeoEngine config properties
 
@@ -52,7 +52,7 @@ var bar = configs.props["bar"];
  @module XEO
  @constructor
  @param [scene] {Scene} Parent scene - creates this component in the default scene when omitted.
- @param {GameObject} [cfg]  Config values.
+ @param {Object} [cfg]  Config values.
  @extends Component
  */
 (function () {
@@ -82,7 +82,7 @@ var bar = configs.props["bar"];
          *
          * @method set
          * @param {String} name The property name
-         * @param {GameObject} value The property value
+         * @param {Object} value The property value
          * @param {Boolean} [forget=false] When true, does not retain for subsequent subscribers
          */
         set: function(name, value) {

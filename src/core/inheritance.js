@@ -40,7 +40,7 @@
             }
 
             // Check if we're overwriting an existing function
-            prototype[name] = typeof prop[name] == "function" && typeof _super[name] == "function" && fnTest.test(prop[name]) ?
+            prototype[name] = typeof prop[name] === "function" && typeof _super[name] === "function" && fnTest.test(prop[name]) ?
                 (function (name, fn) {
                     return function () {
                         var tmp = this._super;

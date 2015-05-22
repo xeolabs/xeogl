@@ -27,7 +27,7 @@
 
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7096613/L.png"></img>
+ <img src="../../../assets/images/PointLight.png"></img>
 
  ## Example
 
@@ -39,6 +39,8 @@
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
  <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
+
+ <iframe style="width: 600px; height: 400px" src="../../examples/light_PointLight.html"></iframe>
 
  ```` javascript
  var scene = new XEO.Scene();
@@ -116,8 +118,18 @@
         type: "light",
 
         _init: function (cfg) {
-            this.mode = "point";
-            this._state.mode = this.mode;
+
+            this._state = {
+                mode: "point",
+                pos: [1.0, 1.0, 1.0],
+                diffuse: [0.7, 0.7, 0.8],
+                specular: [1.0, 1.0, 1.0],
+                constantAttenuation: 0.0,
+                linearAttenuation: 0.0,
+                quadraticAttenuation: 0.0,
+                space: "view"
+            };
+
             this.pos = cfg.pos;
             this.diffuse = cfg.diffuse;
             this.specular = cfg.specular;
@@ -143,8 +155,11 @@
             pos: {
 
                 set: function (value) {
+
                     value = value || [ 1.0, 1.0, 1.0 ];
+
                     this._state.pos = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -152,7 +167,7 @@
                      @event pos
                      @param value The property's new value
                      */
-                    this.fire("pos", value);
+                    this.fire("pos", this._state.pos);
                 },
 
                 get: function () {
@@ -172,8 +187,11 @@
             diffuse: {
 
                 set: function (value) {
+
                     value = value || [0.7, 0.7, 0.8 ];
+
                     this._state.diffuse = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -181,7 +199,7 @@
                      @event diffuse
                      @param value The property's new value
                      */
-                    this.fire("diffuse", value);
+                    this.fire("diffuse", this._state.diffuse);
                 },
 
                 get: function () {
@@ -201,8 +219,11 @@
             specular: {
 
                 set: function (value) {
+
                     value = value || [0.7, 0.7, 0.8 ];
+
                     this._state.specular = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -210,7 +231,7 @@
                      * @event specular
                      * @param value The property's new value
                      */
-                    this.fire("specular", value);
+                    this.fire("specular", this._state.specular);
                 },
 
                 get: function () {
@@ -230,8 +251,11 @@
             constantAttenuation: {
 
                 set: function (value) {
+
                     value = value || 0.0;
+
                     this._state.constantAttenuation = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -240,7 +264,7 @@
                      @event constantAttenuation
                      @param value The property's new value
                      */
-                    this.fire("constantAttenuation", value);
+                    this.fire("constantAttenuation", this._state.constantAttenuation);
                 },
 
                 get: function () {
@@ -260,8 +284,11 @@
             linearAttenuation: {
 
                 set: function (value) {
+
                     value = value || 0.0;
+
                     this._state.linearAttenuation = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -270,7 +297,7 @@
                      @event linearAttenuation
                      @param value The property's new value
                      */
-                    this.fire("linearAttenuation", value);
+                    this.fire("linearAttenuation", this._state.linearAttenuation);
                 },
 
                 get: function () {
@@ -290,17 +317,20 @@
             quadraticAttenuation: {
 
                 set: function (value) {
+
                     value = value || 0.0;
+
                     this._state.quadraticAttenuation = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this PointLight's  {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PointLight's {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} property changes.
 
                      @event quadraticAttenuation
                      @param value The property's new value
                      */
-                    this.fire("quadraticAttenuation", value);
+                    this.fire("quadraticAttenuation", this._state.quadraticAttenuation);
                 },
 
                 get: function () {
@@ -327,11 +357,11 @@
             space: {
 
                 set: function (value) {
+
                     value = value || "view";
-                    if (value === this._state.space) {
-                        return;
-                    }
+
                     this._state.space = value;
+
                     this.fire("dirty", true); // Need to rebuild shader
 
                     /**
@@ -340,7 +370,7 @@
                      @event space
                      @param value The property's new value
                      */
-                    this.fire("space", value);
+                    this.fire("space", this._state.space);
                 },
 
                 get: function () {

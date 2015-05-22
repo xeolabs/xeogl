@@ -21,7 +21,7 @@
 
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7105073/L.png"></img>
+ <img src="../../../assets/images/Stage.png"></img>
 
  ## Example
 
@@ -34,7 +34,7 @@
  ````javascript
  var scene = new XEO.Scene();
 
- // First stage: an GameObject that renders to a ColorTarget
+ // First stage: an Object that renders to a ColorTarget
 
  var stage1 = new XEO.Stage(scene, {
        priority: 0
@@ -51,7 +51,7 @@
   });
 
 
- // Second stage: an GameObject with a Texture that sources from the ColorTarget
+ // Second stage: an Object with a Texture that sources from the ColorTarget
 
  var stage2 = new XEO.Stage(scene, {
        priority: 1
@@ -99,6 +99,12 @@
         type: "stage",
 
         _init: function (cfg) {
+
+            this._state = this._renderer.createState({
+                priority: 0,
+                pickable: true
+            });
+
             this.priority = cfg.priority;
             this.pickable = cfg.pickable;
         },
@@ -117,8 +123,11 @@
                  * @type Number
                  */
                 set: function (value) {
+
                     value = value || 0;
+
                     this._state.priority = value;
+
                     this._renderer.stateOrderDirty = true;
 
                     /**
@@ -126,7 +135,7 @@
                      * @event priority
                      * @param value The property's new value
                      */
-                    this.fire("priority", value);
+                    this.fire("priority", this._state.priority);
                 },
 
                 get: function () {
@@ -145,8 +154,11 @@
             pickable: {
 
                 set: function (value) {
+
                     value = value !== false; // Default is true
+
                     this._state.pickable = value;
+
                     this._renderer.drawListDirty = true;
 
                     /**
@@ -154,7 +166,7 @@
                      * @event pickable
                      * @param value The property's new value
                      */
-                    this.fire("pickable", value);
+                    this.fire("pickable", this._state.pickable);
                 },
 
                 get: function () {
@@ -172,6 +184,10 @@
                 priority: this.priority,
                 pickable: this.pickable
             };
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
 

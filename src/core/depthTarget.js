@@ -7,15 +7,15 @@
  ## Overview
 
  <ul>
-    <li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
-    <li>DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.</li>
-    <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
+ <li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
+ <li>DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.</li>
+ <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
  the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
-    <li>For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
+ <li>For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
  with {{#crossLink "ColorTarget"}}ColorTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/6895849/L.png"></img>
+ <img src="../../../assets/images/DepthTarget.png"></img>
 
  ## Example
 
@@ -26,45 +26,45 @@
  The scene contains:
 
  <ul>
-    <li>a DepthTarget,</li>
-    <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
-    <li>a {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} fragment depth values to the DepthTarget,</li>
-    <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the DepthTarget,</li>
-    <li>a {{#crossLink "Material"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
-    <li>a second {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
+ <li>a DepthTarget,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} fragment depth values to the DepthTarget,</li>
+ <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the DepthTarget,</li>
+ <li>a {{#crossLink "Material"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
+ <li>a second {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
  </ul>
 
  The pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second
  {{#crossLink "GameObject"}}{{/crossLink}} as a {{#crossLink "Texture"}}{{/crossLink}}. In practice the {{#crossLink "Texture"}}{{/crossLink}}
  would carry the depth values into a custom {{#crossLink "Shader"}}{{/crossLink}}, which would then be applied to the second {{#crossLink "GameObject"}}{{/crossLink}}.
 
-````javascript
-var scene = new XEO.Scene();
+ ````javascript
+ var scene = new XEO.Scene();
 
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box.
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box.
 
-var depthTarget = new XEO.DepthTarget(scene);
+ var depthTarget = new XEO.DepthTarget(scene);
 
- // First GameObject renders its pixel depth values to our DepthTarget
-var object1 = new XEO.GameObject(scene, {
+ // First Object renders its pixel depth values to our DepthTarget
+ var object1 = new XEO.GameObject(scene, {
     depthTarget: depthTarget
 });
 
  // Texture consumes our DepthTarget
-var texture = new XEO.Texture(scene, {
+ var texture = new XEO.Texture(scene, {
     target: depthTarget
 });
 
  // Material contains our Texture
-var material = new XEO.Material(scene, {
+ var material = new XEO.Material(scene, {
     textures: [
         texture
     ]
 });
 
-// Second GameObject is effectively textured with the color-encoded
-// pixel depths of the first GameObject
-var object2 = new XEO.GameObject(scene, {
+ // Second Object is effectively textured with the color-encoded
+ // pixel depths of the first Object
+ var object2 = new XEO.GameObject(scene, {
     geometry: geometry,  // Reuse our simple box geometry
     material: material
 });
@@ -90,14 +90,21 @@ var object2 = new XEO.GameObject(scene, {
 
         type: "renderBuf",
 
-        // Map of  components to cores, for reallocation on WebGL context restore
-        _componentCoreMap: {},
-
         _init: function () {
 
-            this._state.bufType = "depth";
-            this._componentCoreMap[this._state.coreId] = this._state;
-            this._state.renderBuf = new XEO.webgl.RenderBuffer({ canvas: this.scene.canvas });
+            this._state = this._renderer.createState({
+                bufType: "depth",
+                renderBuf: new XEO.webgl.RenderBuffer({
+                    canvas: this.scene.canvas
+                })
+            });
+
+            var self = this;
+
+            this._webglContextRestored = this.scene.canvas.on("webglContextRestored",
+                function () {
+                    self._state.renderBuf.webglRestored();
+                });
         },
 
         _compile: function () {
@@ -105,12 +112,12 @@ var object2 = new XEO.GameObject(scene, {
         },
 
         _destroy: function () {
-            if (this._state) {
-                if (this._state.renderBuf) {
-                    this._state.renderBuf.destroy();
-                }
-                delete this._componentCoreMap[this._state.coreId];
-            }
+
+            this.scene.canvas.off(this._webglContextRestored);
+
+            this._state.renderBuf.destroy();
+
+            this._renderer.destroyState(this._state);
         }
     });
 

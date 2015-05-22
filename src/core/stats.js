@@ -9,7 +9,7 @@
  provided by the {{#crossLink "Scene"}}{{/crossLink}} (see table below).</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7122941/L.png"></img>
+ <img src="../../../assets/images/Stats.png"></img>
 
  ## Example
 
@@ -101,7 +101,7 @@ Don't use these names for your own custom statistics properties.
         },
 
         /**
-         Increments the value of a statistic property.
+         Increments the value of a statistic property within this Stats.
 
          Publishes the new value as an event with the same name as the property.
 
@@ -113,7 +113,7 @@ Don't use these names for your own custom statistics properties.
         },
 
         /**
-         Decrements the value of a statistic property.
+         Decrements the value of a statistic property within this Stats.
 
          Publishes the new value as an event with the same name as the property.
 
@@ -125,7 +125,7 @@ Don't use these names for your own custom statistics properties.
         },
 
         /**
-         Zeroes the value of a statistic property.
+         Zeroes the value of a statistic property within this Stats.
 
          Publishes the new value as an event with the same name as the property.
 

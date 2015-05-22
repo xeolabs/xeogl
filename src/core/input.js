@@ -7,7 +7,7 @@
  <li>Each {{#crossLink "Scene"}}{{/crossLink}} provides an Input on itself as a read-only property.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7123123/L.png"></img>
+ <img src="../../../assets/images/Input.png"></img>
 
  ## Example
 
@@ -151,14 +151,19 @@ var myScene = new XEO.Scene();
 
             document.addEventListener("keydown",
                 this._keyDownListener = function (e) {
+
                     if (!self.enabled) {
                         return;
                     }
+
                     if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+
                         if (e.ctrlKey) {
                             self.ctrlDown = true;
+
                         } else if (e.altKey) {
                             self.altDown = true;
+
                         } else {
                             self.keyDown[e.keyCode] = true;
 
@@ -176,14 +181,19 @@ var myScene = new XEO.Scene();
 
             document.addEventListener("keyup",
                 this._keyUpListener = function (e) {
+
                     if (!self.enabled) {
                         return;
                     }
+
                     if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+
                         if (e.ctrlKey) {
                             self.ctrlDown = false;
+
                         } else if (e.altKey) {
                             self.altDown = false;
+
                         } else {
                             self.keyDown[e.keyCode] = false;
 
@@ -200,22 +210,29 @@ var myScene = new XEO.Scene();
 
             cfg.canvas.addEventListener("mousedown",
                 this._mouseDownListener = function (e) {
+
                     if (!self.enabled) {
                         return;
                     }
+
                     switch (e.which) {
+
                         case 1:// Left button
                             self.mouseDownLeft = true;
                             break;
+
                         case 2:// Middle/both buttons
                             self.mouseDownMiddle = true;
                             break;
+
                         case 3:// Right button
                             self.mouseDownRight = true;
                             break;
+
                         default:
                             break;
                     }
+
                     var coords = self._getClickCoordsWithinElement(e);
 
                     /**
@@ -229,22 +246,29 @@ var myScene = new XEO.Scene();
 
             cfg.canvas.addEventListener("mouseup",
                 this._mouseUpListener = function (e) {
+
                     if (!self.enabled) {
                         return;
                     }
+
                     switch (e.which) {
+
                         case 1:// Left button
                             self.mouseDownLeft = false;
                             break;
+
                         case 2:// Middle/both buttons
                             self.mouseDownMiddle = false;
                             break;
+
                         case 3:// Right button
                             self.mouseDownRight = false;
                             break;
+
                         default:
                             break;
                     }
+
                     var coords = self._getClickCoordsWithinElement(e);
 
                     /**
@@ -258,24 +282,31 @@ var myScene = new XEO.Scene();
 
             cfg.canvas.addEventListener("dblclick",
                 this._dblClickListener = function (e) {
+
                     if (!self.enabled) {
                         return;
                     }
+
                     switch (e.which) {
+
                         case 1:// Left button
                             self.mouseDownLeft = false;
                             self.mouseDownRight = false;
                             break;
+
                         case 2:// Middle/both buttons
                             self.mouseDownMiddle = false;
                             break;
+
                         case 3:// Right button
                             self.mouseDownLeft = false;
                             self.mouseDownRight = false;
                             break;
+
                         default:
                             break;
                     }
+
                     var coords = self._getClickCoordsWithinElement(e);
 
                     /**
@@ -289,9 +320,11 @@ var myScene = new XEO.Scene();
 
             cfg.canvas.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
+
                     if (!self.enabled) {
                         return;
                     }
+
                     var coords = self._getClickCoordsWithinElement(e);
 
                     /**
@@ -305,6 +338,7 @@ var myScene = new XEO.Scene();
 
             cfg.canvas.addEventListener("mousewheel",
                 this._mouseWheelListener = function (event, d) {
+
                     if (!self.enabled) {
                         return;
                     }
@@ -322,8 +356,10 @@ var myScene = new XEO.Scene();
             // mouseclicked
 
             (function () {
+
                 var downX;
                 var downY;
+
                 self.on("mousedown",
                     function (params) {
                         downX = params.x;
@@ -332,6 +368,7 @@ var myScene = new XEO.Scene();
 
                 self.on("mouseup",
                     function (params) {
+
                         if (downX === params.x && downY === params.y) {
 
                             /**
@@ -347,13 +384,18 @@ var myScene = new XEO.Scene();
         },
 
         _getClickCoordsWithinElement: function (event) {
+
             var coords = { x: 0, y: 0 };
+
             if (!event) {
+
                 event = window.event;
+
                 coords.x = event.x;
                 coords.y = event.y;
-            }
-            else {
+
+            } else {
+
                 var element = event.target;
                 var totalOffsetLeft = 0;
                 var totalOffsetTop = 0;
@@ -363,9 +405,11 @@ var myScene = new XEO.Scene();
                     totalOffsetTop += element.offsetTop;
                     element = element.offsetParent;
                 }
+
                 coords.x = event.pageX - totalOffsetLeft;
                 coords.y = event.pageY - totalOffsetTop;
             }
+
             return coords;
         },
 

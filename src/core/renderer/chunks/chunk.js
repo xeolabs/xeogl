@@ -7,7 +7,7 @@
      *
      * <p>Instances of this class are created and recycled by a {@link XEO.ChunkFactory}.</p>
      *
-     * <p>Each {@link XEO.renderer.GameObject} has a list of chunks to render it's {@link SceneJS_Core}s</p>
+     * <p>Each {@link XEO.renderer.Object} has a list of chunks to render it's {@link SceneJS_Core}s</p>
      *
      * @private
      */

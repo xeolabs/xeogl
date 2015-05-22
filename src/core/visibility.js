@@ -8,7 +8,7 @@
  their visibility as a group.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7103687/L.png"></img>
+ <img src="../../../assets/images/Visibility.png"></img>
 
  ## Example
 
@@ -71,13 +71,18 @@ visibility.destroy();
         type: "enable",
 
         _init: function (cfg) {
+
+            this._state = this._renderer.createState({
+                visible: true
+            });
+
             this.visible = cfg.visible;
         },
 
         _props: {
 
             /**
-             Indicates whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are visible or not.
+             Indicates whether this Visibility makes attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} visible or not.
 
              Fires a {{#crossLink "Visibility/visible:event"}}{{/crossLink}} event on change.
 
@@ -88,17 +93,18 @@ visibility.destroy();
             visible: {
 
                 set: function (value) {
-                    value = value !== false;
-                    this._state.visible = value;
+
+                    this._state.visible =  value !== false;
+
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Visibility's  {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Visibility's {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property changes.
 
                      @event visible
                      @param value {Boolean} The property's new value
                      */
-                    this.fire("visible", value);
+                    this.fire("visible",  this._state.visible);
                 },
 
                 get: function () {
@@ -108,13 +114,17 @@ visibility.destroy();
         },
 
         _compile: function () {
-            this._renderer.enable = this._state;
+            this._renderer.visibility = this._state;
         },
 
         _getJSON: function () {
             return {
                 visible: this.visible
             };
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
 

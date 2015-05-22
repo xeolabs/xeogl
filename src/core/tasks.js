@@ -13,7 +13,7 @@
  application-level processes you are running.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7122907/L.png"></img>
+ <img src="../../../assets/images/Tasks.png"></img>
 
  ## Example
 
@@ -124,7 +124,8 @@ myTask2.setFailed();
             var self = this;
 
             /**
-             * Fired whenever a task has successfully completed.
+             * Fired whenever a Task within this Tasks has successfully completed.
+             *
              * @event completed
              * @param {Task} value The task that has completed
              */
@@ -136,7 +137,8 @@ myTask2.setFailed();
                 });
 
             /**
-             * Fired whenever a task has failed
+             * Fired whenever a Task within this Tasks has failed.
+             *
              * @event failed
              * @param {Task} value The task that has failed
              */
@@ -147,11 +149,6 @@ myTask2.setFailed();
                     self.fire("failed", task, true);
                 });
 
-            /**
-             * Fired whenever a task has started
-             * @event started
-             * @param {Task} value The task that has started
-             */
             self.fire("started", task, true);
 
             return task;
@@ -169,11 +166,14 @@ myTask2.setFailed();
          * @param {String} id ID of the {{#crossLink "Task"}}Task{{/crossLink}} to complete.
          */
         setCompleted: function (id) {
+
             var task = this.tasks[id];
+
             if (!task) {
                 this.error("Task not found:" + id);
                 return;
             }
+
             task.fire("completed", task, true);
         },
 
@@ -189,11 +189,14 @@ myTask2.setFailed();
          * @param {String} id ID of the {{#crossLink "Task"}}Task{{/crossLink}} to fail.
          */
         setFailed: function (id) {
+
             var task = this.tasks[id];
+
             if (!task) {
                 this.error("Task not found:" + id);
                 return;
             }
+
             task.fire("failed", task, true);
         },
 

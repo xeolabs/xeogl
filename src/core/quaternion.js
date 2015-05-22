@@ -12,7 +12,7 @@
  root, in that order.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7492985/L.png">
+ <img src="../../../assets/images/Quaternion.png"></img>
 
  ## Example
 

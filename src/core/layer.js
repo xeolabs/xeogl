@@ -26,7 +26,7 @@
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7105071/L.png"></img>
+ <img src="../../../assets/images/Layer.png"></img>
 
  ## Example
 
@@ -166,15 +166,20 @@ var object3 = new XEO.GameObject(scene, {
         type: "layer",
 
         _init: function (cfg) {
+
+            this._state = this._renderer.createState({
+                priority: 0
+            });
+
             this.priority = cfg.priority;
         },
 
         _props: {
 
             /**
-             * Indicates a *layer* rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             * Indicates this Layer's rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
              *
-             * Each GameObject is also attached to a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
+             * Each {{#crossLink "GameObject"}}{{/crossLink}} is also attached to a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
              * priority via its {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} property.
              *
              * Fires a {{#crossLink "Layer/priority:event"}}{{/crossLink}} event on change.
@@ -186,12 +191,16 @@ var object3 = new XEO.GameObject(scene, {
             priority: {
 
                 set: function (value) {
+
                     value = value || 0;
+
                     this._state.priority = value;
+
                     this._renderer.stateOrderDirty = true;
 
                     /**
                      * Fired whenever this Layer's  {{#crossLink "Layer/priority:property"}}{{/crossLink}} property changes.
+                     *
                      * @event priority
                      * @param value The property's new value
                      */
@@ -212,6 +221,10 @@ var object3 = new XEO.GameObject(scene, {
             return {
                 priority: this.priority
             };
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
 

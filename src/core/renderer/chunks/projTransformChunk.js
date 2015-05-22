@@ -4,7 +4,7 @@
 
     XEO.ChunkFactory.createChunkType({
 
-        type: "camera",
+        type: "projTransform",
 
         build: function () {
 
@@ -29,13 +29,13 @@
                 gl.uniformMatrix4fv(this._uPMatrixDraw, gl.FALSE, this.state.mat);
             }
 
-            if (this._uZNearDraw) {
-                gl.uniform1f(this._uZNearDraw, this.state.optics.near);
-            }
-
-            if (this._uZFarDraw) {
-                gl.uniform1f(this._uZFarDraw, this.state.optics.far);
-            }
+//            if (this._uZNearDraw) {
+//                gl.uniform1f(this._uZNearDraw, this.state.optics.near);
+//            }
+//
+//            if (this._uZFarDraw) {
+//                gl.uniform1f(this._uZFarDraw, this.state.optics.far);
+//            }
 
             frameCtx.cameraMat = this.state.mat; // Query only in draw pass
         },

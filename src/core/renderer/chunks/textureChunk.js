@@ -51,10 +51,6 @@
 
                         draw.bindTexture(this._uTexSampler[i], layer.texture, frameCtx.textureUnit++);
 
-                        if (layer._matrixDirty && layer.buildMatrix) {
-                            layer.buildMatrix.call(layer);
-                        }
-
                         if (this._uTexMatrix[i]) {
                             this._uTexMatrix[i].setValue(layer.matrixAsArray);
                         }

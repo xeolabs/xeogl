@@ -12,13 +12,13 @@
  <li>The projection transform may be an {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}}
  or {{#crossLink "Perspective"}}Perspective{{/crossLink}}.</li>
 
- <li> By default, each Camera gets its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}},
- which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}, and default
- {{#crossLink "Scene/project:property"}}{{/crossLink}}, which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
+ <li> By default, each Camera is composed of its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
+ (which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}) and default
+ {{#crossLink "Scene/project:property"}}{{/crossLink}} transform (which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}).
  You would override those with your own transform components as necessary.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/6891059/L.png"></img>
+ <img src="../../../assets/images/Camera.png"></img>
 
  ## Example
 
@@ -71,11 +71,11 @@
  You only need to supply an ID if you need to be able to find the Camera by ID within its parent {{#crossLink "Scene"}}Scene{{/crossLink}} later.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Camera.
  @param [cfg.view] {String|XEO.Lookat} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}},
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
  @param [cfg.project] {String|XEO.Perspective|XEO.Ortho|XEO.Frustum} ID or instance of a projection transform
  within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the parent
- {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/project:property"}}{{/crossLink}},
+ {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/project:property"}}{{/crossLink}} transform,
  which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
  @extends Component
  */
@@ -97,7 +97,7 @@
         _props: {
 
             /**
-             * The projection transform for this Camera.
+             * The projection transform component for this Camera.
              *
              * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
              * default {{#crossLink "Scene/project:property"}}project{{/crossLink}}, which is
@@ -126,7 +126,7 @@
             },
 
             /**
-             * The viewing transform for this Camera.
+             * The viewing transform component for this Camera.
              *
              * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
              * default {{#crossLink "Scene/view:property"}}view{{/crossLink}}, which is

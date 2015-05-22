@@ -25,7 +25,7 @@
 
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7103211/L.png"></img>
+ <img src="../../../assets/images/Canvas.png"></img>
 
  ## Example
 
@@ -93,9 +93,7 @@
 
         type: "canvas",
 
-        /**
-         * Names of recognised WebGL contexts
-         */
+        // Names of recognised WebGL contexts
         _WEBGL_CONTEXT_NAMES: [
             "webgl",
             "experimental-webgl",
@@ -107,9 +105,10 @@
         _init: function (cfg) {
 
             /**
-             * The HTML canvas. When this XEO.Canvas was configured with the ID of an existing canvas within the DOM,
-             * this property will be that element, otherwise it will be a full-page canvas that this Canvas has
+             * The HTML canvas. When the {{#crossLink "Viewer"}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,
+             * then this property will be that element, otherwise it will be a full-page canvas that this Canvas has
              * created by default.
+             *
              * @property canvas
              * @type {HTMLCanvasElement}
              * @final
@@ -118,6 +117,7 @@
 
             /**
              * The WebGL rendering context, obtained by this Canvas from the HTML 5 canvas.
+             *
              * @property gl
              * @type {WebGLRenderingContext}
              * @final
@@ -209,10 +209,14 @@
 
             var lastWidth = this.canvas.width;
             var lastHeight = this.canvas.height;
+
             this._tick = this.scene.on("tick",
                 function () {
+
                     var canvas = self.canvas;
+
                     if (canvas.width !== lastWidth || canvas.height !== lastHeight) {
+
                         lastWidth = canvas.width;
                         lastHeight = canvas.height;
 
@@ -241,7 +245,7 @@
          * set *false* or a {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/picking:property"}}picking{{/crossLink}} set *false*.
          *
          * On success, will fire a {{#crossLink "Canvas/picked:event"}}{{/crossLink}} event on this Canvas, along with
-         * a separate {{#crossLink "GameObject/picked:event"}}{{/crossLink}} event on the target {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
+         * a separate {{#crossLink "Object/picked:event"}}{{/crossLink}} event on the target {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
          *
          * @method pick
          * @param {Number} canvasX X-axis Canvas coordinate.
@@ -288,13 +292,16 @@
          * Initialises the WebGL context
          */
         _initWebGL: function () {
+
             for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
                 try {
                     this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
                 } catch (e) { // Try with next context name
                 }
             }
+
             if (!this.gl) {
+
                 this.error('Failed to get a WebGL context');
 
                 /**

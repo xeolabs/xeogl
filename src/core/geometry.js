@@ -4,14 +4,14 @@
  ## Contents
 
  <Ul>
-    <li><a href="#overview">Overview</a></li>
-    <li><a href="#defaultShape">Default box shape</a></li>
-    <li><a href="#sceneDefault">Scene's default Geometry</a></li>
-    <li><a href="#sharing">Sharing among GameObjects</a></li>
-    <li><a href="#triangles">Defining a triangle mesh</a></li>
-    <li><a href="#editing">Editing Geometry</a></li>
-    <li><a href="#backfaces">Toggling backfaces on or off</li>
-    <li><a href="#frontfaces">Setting frontface vertex winding</li>
+ <li><a href="#overview">Overview</a></li>
+ <li><a href="#defaultShape">Default box shape</a></li>
+ <li><a href="#sceneDefault">Scene's default Geometry</a></li>
+ <li><a href="#sharing">Sharing among GameObjects</a></li>
+ <li><a href="#triangles">Defining a triangle mesh</a></li>
+ <li><a href="#editing">Editing Geometry</a></li>
+ <li><a href="#backfaces">Toggling backfaces on or off</li>
+ <li><a href="#frontfaces">Setting frontface vertex winding</li>
  </ul>
 
  ## <a name="overview">Overview</a>
@@ -29,16 +29,16 @@
  for {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to fall back on, when they are not explicitly attached to a Geometry.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7103669/L.png"></img>
+ <img src="../../../assets/images/Geometry.png"></img>
 
  ## <a name="defaultShape">Default box shape</a>
 
  If you create a Geometry with no specified shape, it will default to a 2x2x2 box defined as a triangle mesh.
 
  ```` javascript
-var geometry = new XEO.Geometry(scene); // 2x2x2 box
+ var geometry = new XEO.Geometry(scene); // 2x2x2 box
 
-var object1 = new XEO.GameObject(scene, {
+ var object1 = new XEO.GameObject(scene, {
     geometry: geometry
 });
  ````
@@ -48,53 +48,53 @@ var object1 = new XEO.GameObject(scene, {
  If you create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene{{/crossLink}}'s
  default {{#crossLink "Scene/geometry:property"}}{{/crossLink}}, which is also a 2x2x2 box:
 
-```` javascript
-var scene = new XEO.Scene();
+ ```` javascript
+ var scene = new XEO.Scene();
 
-var object1 = new XEO.GameObject(scene);
-````
+ var object1 = new XEO.GameObject(scene);
+ ````
 
  ## <a name="sharing">Sharing among GameObjects</a>
 
-xeoEngine components can be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. For components like
+ xeoEngine components can be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. For components like
  Geometry and {{#crossLink "Texture"}}{{/crossLink}}, this can provide significant memory
  and performance savings. To render the example below, xeoEngine will issue two draw WebGL calls, one for
  each {{#crossLink "GameObject"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.
 
  ```` javascript
-var scene = new XEO.Scene();
+ var scene = new XEO.Scene();
 
-var geometry = new XEO.Geometry(scene); // 2x2x2 box by default
+ var geometry = new XEO.Geometry(scene); // 2x2x2 box by default
 
-// Create two GameObjects which share our Geometry
+ // Create two GameObjects which share our Geometry
 
-var object1 = new XEO.GameObject(scene, {
+ var object1 = new XEO.GameObject(scene, {
     geometry: geometry
 });
 
-// Offset the second GameObject slightly on the World-space
-// X-axis using a Translate modelling transform
+ // Offset the second Object slightly on the World-space
+ // X-axis using a Translate modelling transform
 
-var translate = new XEO.Translate(scene, {
+ var translate = new XEO.Translate(scene, {
     xyz: [5, 0, 0
 });
 
-var object2 = new XEO.GameObject(scene, {
+ var object2 = new XEO.GameObject(scene, {
     geometry: geometry,
     transform: translate
 });
-````
+ ````
 
  ## <a name="triangles">Defining a triangle mesh</a>
 
  Finally, we'll create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} with a Geometry that we've **explicitly**
  configured as a 2x2x2 box:
 
-```` javascript
-var scene = new XEO.Scene();
+ ```` javascript
+ var scene = new XEO.Scene();
 
-// Create a 2x2x2 box centered at the World-space origin
-var geometry = new XEO.Geometry(scene, {
+ // Create a 2x2x2 box centered at the World-space origin
+ var geometry = new XEO.Geometry(scene, {
 
         // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',
         // 'triangle-strip' and 'triangle-fan'.primitive: "triangles",
@@ -181,7 +181,7 @@ var geometry = new XEO.Geometry(scene, {
         ]
 });
 
-var object = new XEO.GameObject(myScene, {
+ var object = new XEO.GameObject(myScene, {
     geometry: geometry
 });
  ````
@@ -190,20 +190,20 @@ var object = new XEO.GameObject(myScene, {
  Recall that everything in xeoEngine is dynamically editable, including Geometry. Let's remove the front and back faces
  from our triangle mesh Geometry by updating its **indices** array:
 
-````javascript
-geometry2.indices = [
-    8,  9,  10,     8,  10, 11,   // top
-    12, 13, 14,     12, 14, 15,   // bottom
-    16, 17, 18,     16, 18, 19,   // right
-    20, 21, 22,     20, 22, 23    // left
-];
-````
+ ````javascript
+ geometry2.indices = [
+ 8,  9,  10,     8,  10, 11,   // top
+ 12, 13, 14,     12, 14, 15,   // bottom
+ 16, 17, 18,     16, 18, 19,   // right
+ 20, 21, 22,     20, 22, 23    // left
+ ];
+ ````
 
-Now let's make it wireframe by changing its primitive type from **faces** to **lines**:
+ Now let's make it wireframe by changing its primitive type from **faces** to **lines**:
 
-````javascript
-geometry2.primitive = "lines";
-````
+ ````javascript
+ geometry2.primitive = "lines";
+ ````
 
  ## <a name="backfaces">Toggling backfaces on or off</a>
 
@@ -251,7 +251,6 @@ geometry2.primitive = "lines";
  @param [cfg.positions] {Array of Number} Positions array.
  @param [cfg.normals] {Array of Number} Normals array.
  @param [cfg.uv] {Array of Number} UVs array.
- @param [cfg.uv2] {Array of Number} Second UVs array, for a second UV level.
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.indices] {Array of Number} Indices array.
  @extends Component
@@ -268,53 +267,49 @@ geometry2.primitive = "lines";
 
         _init: function (cfg) {
 
-            if (!cfg.positions && !cfg.normals && !cfg.uv && cfg.uv2 && !cfg.indices) {
+            this._state = this._renderer.createState({
+                primitive: null, // WebGL enum
+                positions: null, // VBOs
+                colors: null,
+                normals: null,
+                uv: null,
+                tangents: null,
+                indices: null
+            });
 
-                // Default cube
+            this._primitive = null;  // String
+            this._positions = null; // Typed data arrays
+            this._colors = null;
+            this._normals = null;
+            this._uv = null;
+            this._tangents = null;
+            this._indices = null;
 
-                cfg.primitive = "triangles";
+            this._dirty = true;
+            this._positionsDirty = true;
+            this._colorsDirty = true;
+            this._normalsDirty = true;
+            this._uvDirty = true;
+            this._tangentsDirty = true;
+            this._indicesDirty = true;
 
-                cfg.positions = [
 
-                    // Front face
-                    -1.0, -1.0, 1.0,
-                    1.0, -1.0, 1.0,
-                    1.0, 1.0, 1.0,
-                    -1.0, 1.0, 1.0,
+            var defaultGeometry = (!cfg.positions && !cfg.normals && !cfg.uv && cfg.uv2 && !cfg.indices);
 
-                    // Back face
-                    -1.0, -1.0, -1.0,
-                    -1.0, 1.0, -1.0,
-                    1.0, 1.0, -1.0,
-                    1.0, -1.0, -1.0,
+            if (defaultGeometry) {
 
-                    // Top face
-                    -1.0, 1.0, -1.0,
-                    -1.0, 1.0, 1.0,
-                    1.0, 1.0, 1.0,
-                    1.0, 1.0, -1.0,
+                this.primitive = "triangles";
 
-                    // Bottom face
-                    -1.0, -1.0, -1.0,
-                    1.0, -1.0, -1.0,
-                    1.0, -1.0, 1.0,
-                    -1.0, -1.0, 1.0,
-
-                    // Right face
-                    1.0, -1.0, -1.0,
-                    1.0, 1.0, -1.0,
-                    1.0, 1.0, 1.0,
-                    1.0, -1.0, 1.0,
-
-                    // Left face
-                    -1.0, -1.0, -1.0,
-                    -1.0, -1.0, 1.0,
-                    -1.0, 1.0, 1.0,
-                    -1.0, 1.0, -1.0
+                this.positions = [
+                    -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, // Front face
+                    -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, // Back face
+                    -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, // Top face
+                    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, // Bottom face
+                    1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, // Right face
+                    -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0 // Left face
                 ];
 
-                // Vertex colors
-                cfg.colors = [
+                this.colors = [
                     1.0, 1.0, 1.0, 1.0,    // Front face: white
                     1.0, 0.0, 0.0, 1.0,    // Back face: red
                     0.0, 1.0, 0.0, 1.0,    // Top face: green
@@ -323,8 +318,7 @@ geometry2.primitive = "lines";
                     1.0, 0.0, 1.0, 1.0     // Left face: purple
                 ];
 
-                // Vertex normals
-                cfg.normals = [
+                this.normals = [
                     0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
                     1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
                     0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
@@ -333,8 +327,7 @@ geometry2.primitive = "lines";
                     0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
                 ];
 
-                // UV coordinates
-                cfg.uv = [
+                this.uv = [
                     1, 1, 0, 1, 0, 0, 1, 0,
                     0, 1, 0, 0, 1, 0, 1, 1,
                     1, 0, 1, 1, 0, 1, 0, 0,
@@ -343,8 +336,12 @@ geometry2.primitive = "lines";
                     0, 0, 1, 0, 1, 1, 0, 1
                 ];
 
-                // Triangle indices
-                cfg.indices = [
+                // Tangents are lazy-computed from normals and UVs
+                // for Normal mapping once we know we have texture
+
+                this.tangents = null;
+
+                this.indices = [
                     0, 1, 2, 0, 2, 3,    // front
                     4, 5, 6, 4, 6, 7,    // back
                     8, 9, 10, 8, 10, 11,   // top
@@ -352,23 +349,131 @@ geometry2.primitive = "lines";
                     16, 17, 18, 16, 18, 19,   // right
                     20, 21, 22, 20, 22, 23    // left
                 ];
+
+            } else {
+
+                // Custom geometry
+
+                this.primitive = cfg.primitive;
+                this.positions = cfg.positions;
+                this.colors = cfg.colors;
+                this.normals = cfg.normals;
+                this.uv = cfg.uv;
+                this.tangents = cfg.tangents;
+                this.indices = cfg.indices;
             }
 
-            this.primitive = cfg.primitive;
-            this.positions = cfg.positions;
-            this.normals = cfg.normals;
-            this.uv = cfg.uv;
-            this.uv2 = cfg.uv2;
-            this.colors = cfg.colors;
-            this.indices = cfg.indices;
+            var self = this;
 
             this._webglContextRestored = this.scene.canvas.on(
                 "webglContextRestored",
-                function (gl) {
-
+                function () {
+                    self._scheduleBuild();
                 });
 
             this.scene.stats.inc("geometries");
+        },
+
+        _scheduleBuild: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                var self = this;
+                this.scene.once("tick",
+                    function () {
+                        self._build();
+                    });
+            }
+        },
+
+        _build: function () {
+
+            var gl = this.scene.canvas.gl;
+
+            switch (this._primitive) {
+
+                case "points":
+                    this._state.primitive = gl.POINTS;
+                    break;
+
+                case "lines":
+                    this._state.primitive = gl.LINES;
+                    break;
+
+                case "line-loop":
+                    this._state.primitive = gl.LINE_LOOP;
+                    break;
+
+                case "line-strip":
+                    this._state.primitive = gl.LINE_STRIP;
+                    break;
+
+                case "triangles":
+                    this._state.primitive = gl.TRIANGLES;
+                    break;
+
+                case "triangle-strip":
+                    this._state.primitive = gl.TRIANGLE_STRIP;
+                    break;
+
+                case "triangle-fan":
+                    this._state.primitive = gl.TRIANGLE_FAN;
+                    break;
+
+                default:
+                    this._state.primitive = gl.TRIANGLES;
+            }
+
+            var usage = gl.STATIC_DRAW;
+
+            if (this._positionsDirty) {
+                if (this._state.positions) {
+                    this._state.positions.destroy();
+                }
+                this._state.positions = this._positions ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, usage) : null;
+                this._positionsDirty = false;
+            }
+
+            if (this._colorsDirty) {
+                if (this._state.colors) {
+                    this._state.colors.destroy();
+                }
+                this._state.colors = this._colors ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, usage) : null;
+                this._colorsDirty = false;
+            }
+
+            if (this._normalsDirty) {
+                if (this._state.normals) {
+                    this._state.normals.destroy();
+                }
+                this._state.normals = this._normals ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, usage) : null;
+                this._normalsDirty = false;
+            }
+
+            if (this._uvDirty) {
+                if (this._state.uv) {
+                    this._state.uv.destroy();
+                }
+                this._state.uv = this._uv ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uv, this._uv.length, 2, usage) : null;
+                this._uv = false;
+            }
+
+            if (this._tangentsDirty) {
+                if (this._state.tangents) {
+                    this._state.tangents.destroy();
+                }
+                this._state.tangents = this._tangents ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangents, this._tangents.length, 4, usage) : null;
+                this._tangentsDirty = false;
+            }
+
+            if (this._indicesDirty) {
+                if (this._state.indices) {
+                    this._state.indices.destroy();
+                }
+                this._state.indices = this._indices ? new XEO.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, usage) : null;
+                this._indicesDirty = false;
+            }
+
+            this._dirty = false;
         },
 
         _props: {
@@ -387,39 +492,27 @@ geometry2.primitive = "lines";
             primitive: {
 
                 set: function (value) {
+
                     value = value || "triangles";
-                    var gl = this.scene.canvas.gl;
-                    var type;
-                    switch (value) {
-                        case "points":
-                            type = gl.POINTS;
-                            break;
-                        case "lines":
-                            type = gl.LINES;
-                            break;
-                        case "line-loop":
-                            type = gl.LINE_LOOP;
-                            break;
-                        case "line-strip":
-                            type = gl.LINE_STRIP;
-                            break;
-                        case "triangles":
-                            type = gl.TRIANGLES;
-                            break;
-                        case "triangle-strip":
-                            type = gl.TRIANGLE_STRIP;
-                            break;
-                        case "triangle-fan":
-                            type = gl.TRIANGLE_FAN;
-                            break;
-                        default:
-                            this.error("XEO.Geometry 'primitive' value is unsupported - should be either " +
-                                "'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan' (defaulting to 'triangles')");
-                            value = "triangles";
-                            type = gl.TRIANGLES;
+
+                    if (value !== "points" &&
+                        value !== "lines" &&
+                        value !== "line-loop" &&
+                        value !== "line-strip" &&
+                        value !== "triangles" &&
+                        value !== "triangle-strip" &&
+                        value !== "triangle-fan") {
+
+                        this.error("XEO.Geometry 'primitive' value is unsupported - supported values are: " +
+                            "'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and " +
+                            "'triangle-fan' (defaulting to 'triangles')");
+
+                        value = "triangles";
                     }
-                    this._state.primitive = value;
-                    this._state.primitiveEnum = type;
+
+                    this._primitive = value;
+                    this._dirty = true;
+
                     this.fire("dirty", true);
 
                     /**
@@ -428,11 +521,13 @@ geometry2.primitive = "lines";
                      * @type String
                      * @param value The property's new value
                      */
-                    this.fire("primitive", type);
+                    this.fire("primitive", this._primitive);
+
+                    this._scheduleBuild();
                 },
 
                 get: function () {
-                    return this._state.primitive;
+                    return this._primitive;
                 }
             },
 
@@ -449,15 +544,24 @@ geometry2.primitive = "lines";
 
                 set: function (value) {
 
+                    this._positions = value;
+                    this._positionsDirty = value;
+                    this._dirty = true;
+
+                    this._scheduleBuild();
+
+                    this.fire("dirty", true);
+
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/positions:property"}}{{/crossLink}} property changes.
                      * @event positions
                      * @param value The property's new value
                      */
-                    this.fire("positions", value);
+                    this.fire("positions", this._positions);
                 },
 
                 get: function () {
+                    return this._positions;
                 }
             },
 
@@ -474,14 +578,24 @@ geometry2.primitive = "lines";
 
                 set: function (value) {
 
+                    this._normals = value;
+                    this._normalsDirty = value;
+                    this._dirty = true;
+
+                    this._scheduleBuild();
+
+                    this.fire("dirty", true);
+
                     /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/normals:property"}}{{/crossLink}} property changes.
-                     * @event normals
+                     * Fired whenever this Geometry's {{#crossLink "Geometry/ normals:property"}}{{/crossLink}} property changes.
+                     * @event  normals
                      * @param value The property's new value
                      */
+                    this.fire(" normals", this._normals);
                 },
 
                 get: function () {
+                    return this._normals;
                 }
             },
 
@@ -498,39 +612,24 @@ geometry2.primitive = "lines";
 
                 set: function (value) {
 
+                    this._uv = value;
+                    this._uvBufDirty = value;
+                    this._dirty = true;
+
+                    this._scheduleBuild();
+
+                    this.fire("dirty", true);
+
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/uv:property"}}{{/crossLink}} property changes.
                      * @event uv
                      * @param value The property's new value
                      */
+                    this.fire("uv", this._uv);
                 },
 
                 get: function () {
-
-                }
-            },
-
-            /**
-             * The Geometry's second UV coordinate array.
-             *
-             * Fires a {{#crossLink "Geometry/uv2:event"}}{{/crossLink}} event on change.
-             *
-             * @property uv2
-             * @default null
-             * @type {Array of Number}
-             */
-            uv2: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/uv2:property"}}{{/crossLink}} property changes.
-                     * @event uv2
-                     * @param value The property's new value
-                     */
-                },
-
-                get: function () {
+                    return this._uv;
                 }
             },
 
@@ -547,14 +646,24 @@ geometry2.primitive = "lines";
 
                 set: function (value) {
 
+                    this._colors = value;
+                    this._colorsDirty = value;
+                    this._dirty = true;
+
+                    this._scheduleBuild();
+
+                    this.fire("dirty", true);
+
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/colors:property"}}{{/crossLink}} property changes.
                      * @event colors
                      * @param value The property's new value
                      */
+                    this.fire("colors", this._colors);
                 },
 
                 get: function () {
+                    return this._colors;
                 }
             },
 
@@ -571,14 +680,24 @@ geometry2.primitive = "lines";
 
                 set: function (value) {
 
+                    this._indices = value;
+                    this._indicesDirty = value;
+                    this._dirty = true;
+
+                    this._scheduleBuild();
+
+                    this.fire("dirty", true);
+
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/indices:property"}}{{/crossLink}} property changes.
                      * @event indices
                      * @param value The property's new value
                      */
+                    this.fire("indices", this._indices);
                 },
 
                 get: function () {
+                    return this._indices;
                 }
             },
 
@@ -604,174 +723,62 @@ geometry2.primitive = "lines";
 
         _compile: function () {
 
-        },
-
-        /** Builds normal vectors from positions and indices
-         * @private
-         */
-        _buildNormals: function (data) {
-
-            var positions = data.positions;
-            var indices = data.indices;
-            var nvecs = new Array(positions.length / 3);
-            var j0;
-            var j1;
-            var j2;
-            var v1;
-            var v2;
-            var v3;
-
-            for (var i = 0, len = indices.length - 3; i < len; i += 3) {
-                j0 = indices[i + 0];
-                j1 = indices[i + 1];
-                j2 = indices[i + 2];
-
-                v1 = [positions[j0 * 3 + 0], positions[j0 * 3 + 1], positions[j0 * 3 + 2]];
-                v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
-                v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
-
-                v2 = XEO.math.subVec4(v2, v1, [0, 0, 0, 0]);
-                v3 = XEO.math.subVec4(v3, v1, [0, 0, 0, 0]);
-
-                var n = XEO.math.normalizeVec4(XEO.math.cross3Vec4(v2, v3, [0, 0, 0, 0]), [0, 0, 0, 0]);
-
-                if (!nvecs[j0]) nvecs[j0] = [];
-                if (!nvecs[j1]) nvecs[j1] = [];
-                if (!nvecs[j2]) nvecs[j2] = [];
-
-                nvecs[j0].push(n);
-                nvecs[j1].push(n);
-                nvecs[j2].push(n);
+            if (this._dirty) {
+                this._build();
             }
 
-            var normals = new Array(positions.length);
-
-            // now go through and average out everything
-            for (var i = 0, len = nvecs.length; i < len; i++) {
-                var count = nvecs[i].length;
-                var x = 0;
-                var y = 0;
-                var z = 0;
-                for (var j = 0; j < count; j++) {
-                    x += nvecs[i][j][0];
-                    y += nvecs[i][j][1];
-                    z += nvecs[i][j][2];
-                }
-                normals[i * 3 + 0] = (x / count);
-                normals[i * 3 + 1] = (y / count);
-                normals[i * 3 + 2] = (z / count);
-            }
-
-            data.normals = normals;
-        },
-
-
-        /**
-         * Builds vertex tangent vectors from positions, UVs and indices
-         *
-         * Based on code by @rollokb, in his fork of webgl-obj-loader:
-         * https://github.com/rollokb/webgl-obj-loader
-         *
-         * @private
-         **/
-        _buildTangents: function (arrays) {
-
-            var positions = arrays.positions;
-            var indices = arrays.indices;
-            var uv = arrays.uv;
-
-            var tangents = [];
-
-            // The vertex arrays needs to be calculated
-            // before the calculation of the tangents
-
-            for (var location = 0; location < indices.length; location += 3) {
-
-                // Recontructing each vertex and UV coordinate into the respective vectors
-
-                var index = indices[location];
-
-                var v0 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
-                var uv0 = [uv[index * 2], uv[(index * 2) + 1]];
-
-                index = indices[location + 1];
-
-                var v1 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
-                var uv1 = [uv[index * 2], uv[(index * 2) + 1]];
-
-                index = indices[location + 2];
-
-                var v2 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
-                var uv2 = [uv[index * 2], uv[(index * 2) + 1]];
-
-                var deltaPos1 = XEO.math.subVec3(v1, v0, []);
-                var deltaPos2 = XEO.math.subVec3(v2, v0, []);
-
-                var deltaUV1 = XEO.math.subVec2(uv1, uv0, []);
-                var deltaUV2 = XEO.math.subVec2(uv2, uv0, []);
-
-                var r = 1.0 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
-
-                var tangent = XEO.math.mulVec3Scalar(
-                    XEO.math.subVec3(
-                        XEO.math.mulVec3Scalar(deltaPos1, deltaUV2[1], []),
-                        XEO.math.mulVec3Scalar(deltaPos2, deltaUV1[1], []),
-                        []
-                    ),
-                    r,
-                    []
-                );
-
-                // Average the value of the vectors outs
-                for (var v = 0; v < 3; v++) {
-                    var addTo = indices[location + v];
-                    if (typeof tangents[addTo] !== "undefined") {
-                        tangents[addTo] = XEO.math.addVec3(tangents[addTo], tangent, []);
-                    } else {
-                        tangents[addTo] = tangent;
-                    }
-                }
-            }
-
-            // Deconstruct the vectors back into 1D arrays for WebGL
-
-            var tangents2 = [];
-
-            for (var i = 0; i < tangents.length; i++) {
-                tangents2 = tangents2.concat(tangents[i]);
-            }
-
-            return tangents2;
+            this._renderer.geometry = this._state;
         },
 
         _getJSON: function () {
-            var json = {
-                primitive: this.primitive
-            };
-            if (this._state.positions) {
-                json.positions = this.positions;
-            }
-            if (this._state.normals) {
-                json.normals = this.normals;
-            }
-            if (this._state.uv) {
-                json.uv = this.uv;
-            }
-            if (this._state.uv2) {
-                json.uv2 = this.uv2;
-            }
-            if (this._state.colors) {
-                json.colors = this.colors;
-            }
-            if (this._state.indices) {
-                json.indices = this.indices;
-            }
-            return json;
+
+            return XEO._apply2({
+                primitive: this._primitive,
+                positions: this._positions,
+                normals: this._normals,
+                uv: this._uv,
+                colors: this._colors,
+                indices: this._indices
+            });
         },
 
         _destroy: function () {
-            this.scene.stats.dec("geometries");
+
             this.scene.canvas.off(this._webglContextRestored);
+
+            // Destroy VBOs
+
+            if (this._state.positions) {
+                this._state.positions.destroy();
+            }
+
+            if (this._state.colors) {
+                this._state.colors.destroy();
+            }
+
+            if (this._state.normals) {
+                this._state.normals.destroy();
+            }
+
+            if (this._state.uv) {
+                this._state.uv.destroy();
+            }
+
+            if (this._state.tangents) {
+                this._state.tangents.destroy();
+            }
+
+            if (this._state.indices) {
+                this._state.indices.destroy();
+            }
+
+            // Destroy state
+
+            this._renderer.destroyState(this._state);
+
+            // Decrement geometry statistic
+
+            this.scene.stats.dec("geometries");
         }
     });
 

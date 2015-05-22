@@ -5,10 +5,11 @@
 
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>Alternatively, use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7097089/L.png"></img>
+ <img src="../../../assets/images/Ortho.png"></img>
 
  ## Example
 
@@ -68,50 +69,63 @@
 
         _init: function (cfg) {
 
-            this.mode = "ortho";
+            // Rendering state
+            this._state = this._renderer.createState({
+                matrix: null
+            });
 
+            // Ortho view volume
+            this._dirty = false;
+            this._left = -1.0;
+            this._right = 1.0;
+            this._top = 1.0;
+            this._bottom = -1.0;
+            this._near = 0.1;
+            this._far = 10000.0;
+
+            // Set properties on this component
             this.left = cfg.left;
             this.right = cfg.right;
             this.top = cfg.top;
             this.bottom = cfg.bottom;
             this.near = cfg.near;
             this.far = cfg.far;
-
-            var self = this;
-
-            // Lazy-rebuild matrix on each scene tick
-            this._onTick = this.scene.on("tick",
-                function (c) {
-                    if (self._dirty) {
-                        self._rebuild();
-                    }
-                });
         },
 
-        _rebuild: function () {
-
-            var state = this._state;
-
-            // Build matrix values
-            state.matrix = XEO.math.orthoMat4c(state.left, state.right, state.bottom, state.top, state.near, state.far, []);
-
-            // Build typed array, avoid reallocating
-            if (!state.mat) {
-                state.mat = new Float32Array(state.matrix);
-            } else {
-                state.mat.set(state.matrix);
+        // Schedules a call to #_build on the next "tick"
+        _scheduleBuild: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                var self = this;
+                this.scene.once("tick",
+                    function () {
+                        self._build();
+                    });
             }
+        },
 
-            this.fire("matrix", state.matrix);
+        // Rebuilds the rendering state from this component
+        _build: function () {
+
+            this._state.matrix = XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
 
             this._dirty = false;
+
+            /**
+             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
+             * @event matrix
+             * @param value The property's new value
+             */
+            this.fire("matrix", this._state.matrix);
         },
 
         _props: {
 
             /**
-             * Position of the left plane on the View-space X-axis.
+             * Position of this Ortho's left plane on the View-space X-axis.
+             *
              * Fires a {{#crossLink "Ortho/left:event"}}{{/crossLink}} event on change.
+             *
              * @property left
              * @default -1.0
              * @type Number
@@ -119,27 +133,32 @@
             left: {
 
                 set: function (value) {
-                    value = value || -1.0;
-                    this._state.left = value;
-                    this._dirty = true;
+
+                    this._left = (value !== undefined && value !== null) ? value : -1.0;
+
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/left:property"}}{{/crossLink}} property changes.
+                     *
                      * @event left
                      * @param value The property's new value
                      */
-                    this.fire("left", value);
+                    this.fire("left", this._left);
                 },
 
                 get: function () {
-                    return this._state.left;
+                    return this._left;
                 }
             },
 
             /**
-             * Position of the right plane on the View-space X-axis.
+             * Position of this Ortho's right plane on the View-space X-axis.
+             *
              * Fires a {{#crossLink "Ortho/right:event"}}{{/crossLink}} event on change.
+             *
              * @property right
              * @default 1.0
              * @type Number
@@ -147,27 +166,32 @@
             right: {
 
                 set: function (value) {
-                    value = value || 1.0;
-                    this._state.right = value;
-                    this._dirty = true;
+
+                    this._right = (value !== undefined && value !== null) ? value : 1.0;
+
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/right:property"}}{{/crossLink}} property changes.
+                     *
                      * @event right
                      * @param value The property's new value
                      */
-                    this.fire("right", value);
+                    this.fire("right", this._right);
                 },
 
                 get: function () {
-                    return this._state.right;
+                    return this._right;
                 }
             },
 
             /**
-             * Position of the top plane on the View-space Y-axis.
+             * Position of this Ortho's top plane on the View-space Y-axis.
+             *
              * Fires a {{#crossLink "Ortho/top:event"}}{{/crossLink}} event on change.
+             *
              * @property top
              * @default 1.0
              * @type Number
@@ -175,27 +199,32 @@
             top: {
 
                 set: function (value) {
-                    value = value || 1.0;
-                    this._state.top = value;
-                    this._dirty = true;
+
+                    this._top = (value !== undefined && value !== null) ? value : 1.0;
+
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/top:property"}}{{/crossLink}} property changes.
+                     *
                      * @event top
                      * @param value The property's new value
                      */
-                    this.fire("top", value);
+                    this.fire("top", this._top);
                 },
 
                 get: function () {
-                    return this._state.top;
+                    return this._top;
                 }
             },
 
             /**
-             * Position of the bottom plane on the View-space Y-axis.
+             * Position of this Ortho's bottom plane on the View-space Y-axis.
+             *
              * Fires a {{#crossLink "Ortho/bottom:event"}}{{/crossLink}} event on change.
+             *
              * @property bottom
              * @default -1.0
              * @type Number
@@ -203,27 +232,32 @@
             bottom: {
 
                 set: function (value) {
-                    value = value || -1.0;
-                    this._state.bottom = value;
-                    this._dirty = true;
+
+                    this._bottom = (value !== undefined && value !== null) ? value : -1.0;
+
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/bottom:property"}}{{/crossLink}} property changes.
+                     *
                      * @event bottom
                      * @param value The property's new value
                      */
-                    this.fire("bottom", value);
+                    this.fire("bottom", this._bottom);
                 },
 
                 get: function () {
-                    return this._state.bottom;
+                    return this._bottom;
                 }
             },
 
             /**
-             * Position of the near plane on the positive View-space Z-axis.
+             * Position of this Ortho's near plane on the positive View-space Z-axis.
+             *
              * Fires a {{#crossLink "Ortho/near:event"}}{{/crossLink}} event on change.
+             *
              * @property near
              * @default 0.1
              * @type Number
@@ -231,27 +265,32 @@
             near: {
 
                 set: function (value) {
-                    value = value || 0.1;
-                    this._state.near = value;
-                    this._dirty = true;
+
+                    this._near = (value !== undefined && value !== null) ? value :  0.1;
+
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
+                     *
                      * @event near
                      * @param value The property's new value
                      */
-                    this.fire("near", value);
+                    this.fire("near", this._near);
                 },
 
                 get: function () {
-                    return this._state.near;
+                    return this._near;
                 }
             },
 
             /**
-             * Position of the far plane on the positive View-space Z-axis.
+             * Position of this Ortho's far plane on the positive View-space Z-axis.
+             *
              * Fires a {{#crossLink "Ortho/far:event"}}{{/crossLink}} event on change.
+             *
              * @property far
              * @default 10000.0
              * @type Number
@@ -259,52 +298,65 @@
             far: {
 
                 set: function (value) {
-                    value = value || 10000.0;
-                    this._state.far = value;
-                    this._dirty = true;
+
+                    this._far = (value !== undefined && value !== null) ? value :  10000.0;
+
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.
+                     *
                      * @event far
                      * @param value The property's new value
                      */
-                    this.fire("far", value);
+                    this.fire("far", this._far);
                 },
 
                 get: function () {
-                    return this._state.far;
+                    return this._far;
                 }
             },
 
+            /**
+             * The elements of this Ortho's projection transform matrix.
+             *
+             * Fires a {{#crossLink "Ortho/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property matrix
+             * @type {Float64Array}
+             */
             matrix: {
 
                 get: function () {
+
                     if (this._dirty) {
-                        this._state.rebuild();
+                        this._build();
                     }
+
                     return this._state.matrix.slice(0);
                 }
             }
         },
 
         _compile: function () {
-            this._renderer.cameraMat = this._state;
+            this._renderer.projectTransform = this._state;
         },
 
         _getJSON: function () {
             return {
-                left: this.left,
-                right: this.right,
-                top: this.top,
-                bottom: this.bottom,
-                near: this.near,
-                far: this.far
+                left: this._left,
+                right: this._right,
+                top: this._top,
+                bottom: this._bottom,
+                near: this._near,
+                far: this._far
             };
         },
 
         _destroy: function () {
-            this.scene.off(this._onTick);
+            this._renderer.destroyState(this._state);
         }
     });
 

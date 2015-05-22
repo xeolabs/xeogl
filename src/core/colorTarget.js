@@ -13,7 +13,7 @@
  with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7096829/L.png"></img>
+ <img src="../../../assets/images/ColorTarget.png"></img>
 
  ## Example
 
@@ -33,33 +33,33 @@
 
 
  ````javascript
-var scene = new XEO.Scene();
+ var scene = new XEO.Scene();
 
-var colorTarget = new XEO.ColorTarget(scene);
+ var colorTarget = new XEO.ColorTarget(scene);
 
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-// First GameObject renders to the ColorTarget
+ // First Object renders to the ColorTarget
 
-var object1 = new XEO.GameObject(scene, {
+ var object1 = new XEO.GameObject(scene, {
     geometry: geometry,
     colorTarget: colorTarget
 });
 
-var texture = new XEO.Texture(scene, {
+ var texture = new XEO.Texture(scene, {
     target: colorTarget
 });
 
-var material = new XEO.Material(scene, {
+ var material = new XEO.Material(scene, {
     textures: [
         texture
     ]
 });
 
-// Second GameObject is textured with the
-// image of the first GameObject
+ // Second Object is textured with the
+ // image of the first Object
 
-var object2 = new XEO.GameObject(scene, {
+ var object2 = new XEO.GameObject(scene, {
     geometry: geometry,  // Reuse our simple box geometry
     material: material
 });
@@ -85,13 +85,21 @@ var object2 = new XEO.GameObject(scene, {
 
         type: "renderBuf",
 
-        // Map of  components to cores, for reallocation on WebGL context restore
-        _componentCoreMap: {},
-
         _init: function () {
-            this._state.bufType = "color";
-            this._componentCoreMap[this._state.id] = this._state;
-            this._state.renderBuf = new XEO.webgl.RenderBuffer({ canvas: this.scene.canvas });
+
+            this._state = this._renderer.createState({
+                bufType: "color",
+                renderBuf: new XEO.webgl.RenderBuffer({
+                    canvas: this.scene.canvas
+                })
+            });
+
+            var self = this;
+
+            this._webglContextRestored = this.scene.canvas.on("webglContextRestored",
+                function () {
+                    self._state.renderBuf.webglRestored();
+                });
         },
 
         _compile: function () {
@@ -99,12 +107,12 @@ var object2 = new XEO.GameObject(scene, {
         },
 
         _destroy: function () {
-            if (this._state) {
-                if (this._state.renderBuf) {
-                    this._state.renderBuf.destroy();
-                }
-                delete this._componentCoreMap[this._state.id];
-            }
+
+            this.scene.canvas.off(this._webglContextRestored);
+
+            this._state.renderBuf.destroy();
+
+            this._renderer.destroyState(this._state);
         }
     });
 

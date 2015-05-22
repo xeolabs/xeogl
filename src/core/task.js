@@ -5,7 +5,7 @@
 
  See the {{#crossLink "Tasks"}}{{/crossLink}} documentation for more information.</li>
 
- <img src="http://www.gliffy.com/go/publish/image/7123427/L.png"></img>
+ <img src="../../../assets/images/Task.png"></img>
 
  @class Task
  @module XEO
@@ -19,8 +19,6 @@
 
         _init: function (cfg) {
 
-            this.id = cfg.id;
-
             this.description = cfg.description || "";
 
             this.failed = false;
@@ -29,7 +27,7 @@
         },
 
         /**
-         * Sets this task as successfully completed.
+         * Sets this Task as successfully completed.
          *
          * Fires a  {{#crossLink "Task/completed:event"}}{{/crossLink}} event on this task, as well as
          * a {{#crossLink "Tasks/completed:event"}}{{/crossLink}} event on the parent  {{#crossLink "Tasks"}}Task{{/crossLink}}.
@@ -39,14 +37,15 @@
         setCompleted: function () {
 
             /**
-             * Fired when this task has successfully completed.
+             * Fired when this Task has successfully completed.
+             *
              * @event completed
              */
             this.fire("completed", this.completed = true);
         },
 
         /**
-         * Sets this task as failed.
+         * Sets this Task as having failed.
          *
          * Fires a  {{#crossLink "Task/failed:event"}}{{/crossLink}} event on this task, as well as
          * a {{#crossLink "Tasks/failed:event"}}{{/crossLink}} event on the parent  {{#crossLink "Tasks"}}Tasks{{/crossLink}}.
@@ -56,7 +55,8 @@
         setFailed: function () {
 
             /**
-             * Fired when this task has failed
+             * Fired when this Task has failed to complete successfully.
+             *
              * @event failed
              */
             this.fire("failed", this.failed = true);

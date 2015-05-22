@@ -14,13 +14,14 @@
  {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally from a given direction</li>
  </ul>
 
- Within xeoEngine's <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model, the ambient,
- diffuse and specular components of light sources are multiplied by the
- {{#crossLink "Material/ambient:property"}}{{/crossLink}}, {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and
- {{#crossLink "Material/specular:property"}}{{/crossLink}} properties on attached  {{#crossLink "Material"}}Materials{{/crossLink}}.
+ Within xeoEngine's <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model, ambient,
+ diffuse and specular light sources are multiplied by the {{#crossLink "Material/ambient:property"}}{{/crossLink}},
+ {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and {{#crossLink "Material/specular:property"}}{{/crossLink}}
+ properties, respectively, on the {{#crossLink "Material"}}Materials{{/crossLink}} attached to
+ the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
 
- <img src="http://www.gliffy.com/go/publish/image/7092459/L.png"></img>
+ <img src="../../../assets/images/Lights.png"></img>
 
  ## Example
 
@@ -90,6 +91,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
+ @param [cfg.lights] {{Array of String|GameObject}} Array of light source IDs or instances.
  @extends Component
  */
 (function () {
@@ -104,6 +106,12 @@
 
         _init: function (cfg) {
 
+            this._state = this._renderer.createState({
+                lights: [],
+                numLights: 0,
+                hash: ""
+            });
+
             this._lights = [];
             this._dirtySubs = [];
             this._destroyedSubs = [];
@@ -113,6 +121,15 @@
 
         _props: {
 
+            /**
+             The light sources in this Lights.
+
+             Fires a {{#crossLink "Lights/lights:event"}}{{/crossLink}} event on change.
+
+             @property lights
+             @default []
+             @type {{Array of AmbientLight, PointLight and DirLight}}
+             */
             lights: {
 
                 set: function (value) {
@@ -162,7 +179,7 @@
                             // ID given for light - find the light component
 
                             var id = light;
-                            light = this.components[id];
+                            light = this.viewer.components[id];
                             if (!light) {
                                 this.error("Component with this ID not found: '" + id + "'");
                                 continue;
@@ -194,47 +211,65 @@
         },
 
         _compile: function () {
-            var lights = [];
-            for (var i = 0, len = this._lights.length; i < len; i++) {
-                lights.push(this._lights[i]._state);
+
+            var state = this._state;
+            var lights = state.lights;
+            var numLights = this._lights.length;
+
+            state.numLights = numLights;
+
+            for (var i = 0; i < numLights; i++) {
+                lights[i] = this._lights[i]._state;
             }
-            var state = {
-                type: "lights",
-                lights: lights,
-                hash: this._makeHash(lights)
-            };
-            this._renderer.lights = state;
+
+            this._state.hash = this._makeHash(lights, numLights);
+
+            this._renderer.lights = this._state;
         },
 
-        _makeHash: function (lights) {
-            if (lights.length === 0) {
+        _makeHash: function (lights, numLights) {
+
+            if (numLights === 0) {
                 return "";
             }
+
             var parts = [];
             var light;
-            for (var i = 0, len = lights.length; i < len; i++) {
+
+            for (var i = 0; i < numLights; i++) {
+
                 light = lights[i];
                 parts.push(light.mode);
+
                 if (light.specular) {
                     parts.push("s");
                 }
+
                 if (light.diffuse) {
                     parts.push("d");
                 }
+
                 parts.push((light.space === "world") ? "w" : "v");
             }
+
             return parts.join("");
         },
 
         _getJSON: function () {
+
             var lightIds = [];
+
             for (var i = 0, len = this._lights.length; i < len; i++) {
                 lightIds.push(this._lights[i].id);
             }
+
             return {
                 lights: lightIds
             };
+        },
+
+        _destroy: function () {
+            this._renderer.destroyState(this._state);
         }
     });
-
 })();

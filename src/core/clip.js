@@ -30,7 +30,7 @@
 
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7096963/L.png"></img>
+ <img src="../../../assets/images/Clip.png"></img>
 
  ## Example
 
@@ -75,7 +75,7 @@
  // Geometry defaults to a 2x2x2 box
  var geometry = new XEO.Geometry(scene);
 
- // Create an GameObject, which is a box sliced by our clip planes
+ // Create an Object, which is a box sliced by our clip planes
  var object = new XEO.GameObject(scene, {
         clips: clips,
         geometry: geometry
@@ -93,10 +93,10 @@
     clipping: true
  });
 
- // Attach our GameObject to the Modes
+ // Attach our Object to the Modes
  object.modes = modes;
 
- // Disable clipping for the GameObject
+ // Disable clipping for the Object
  modes.clipping = false;
  ````
 

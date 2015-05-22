@@ -12,7 +12,7 @@
  multiplied by {{#crossLink "Material"}}Material{{/crossLink}} {{#crossLink "Material/ambient:property"}}{{/crossLink}}.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7092465/L.png"></img>
+ <img src="../../../assets/images/AmbientLight.png"></img>
 
  ## Example
 
@@ -25,8 +25,10 @@
  <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
+ <iframe style="width: 600px; height: 400px" src="../../examples/light_AmbientLight.html"></iframe>
+
  ```` javascript
-var scene = new XEO.Scene();
+ var scene = new XEO.Scene();
 
 
  var material = new XEO.Material(scene, {
@@ -66,9 +68,9 @@ var scene = new XEO.Scene();
  As with all components, we can observe and change properties on AmbientLights like so:
 
  ````Javascript
-// Attach a change listener to a property
-var handle = ambientLight.on("ambient",
-    function(value) {
+ // Attach a change listener to a property
+ var handle = ambientLight.on("ambient",
+ function(value) {
             // Property value has changed
     });
 
@@ -101,27 +103,32 @@ var handle = ambientLight.on("ambient",
         type: "light",
 
         _init: function (cfg) {
-            this.mode = "ambient";
+
+            this._state = {
+                mode: "ambient",
+                ambient: [0.7, 0.7, 0.7]
+            };
+
             this.ambient = cfg.ambient;
         },
 
         _props: {
 
+            /**
+             The color of this AmbientLight.
+
+             Fires an {{#crossLink "AmbientLight/ambient:event"}}{{/crossLink}} event on change.
+
+             @property ambient
+             @default [0.7, 0.7, 0.8]
+             @type Array(Number)
+             */
             ambient: {
 
-
-                /**
-                 The color of this AmbientLight.
-
-                 Fires an {{#crossLink "AmbientLight/ambient:event"}}{{/crossLink}} event on change.
-
-                 @property ambient
-                 @default [0.7, 0.7, 0.8]
-                 @type Array(Number)
-                 */
                 set: function (value) {
-                    value = value || [ 0.7, 0.7, 0.8 ];
-                    this._state.ambient = value;
+
+                    this._state.ambient = value || [ 0.7, 0.7, 0.8 ];
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -130,7 +137,7 @@ var handle = ambientLight.on("ambient",
                      @event ambient
                      @param value The property's new value
                      */
-                    this.fire("ambient", value);
+                    this.fire("ambient", this._state.ambient);
                 },
 
                 get: function () {
@@ -141,7 +148,7 @@ var handle = ambientLight.on("ambient",
 
         _getJSON: function () {
             return {
-                color: this.color
+                ambient: this.ambient
             };
         }
     });

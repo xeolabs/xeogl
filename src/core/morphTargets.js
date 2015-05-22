@@ -7,7 +7,7 @@
      A **MorphTargets** defines interpolation targets for morphing {{#crossLink "Geometry"}}Geometry{{/crossLink}}s on
      attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
-     <img src="http://www.gliffy.com/go/publish/image/7123401/L.png"></img>
+     <img src="../../../assets/images/MorphTargets.png"></img>
 
      ## Example
 
@@ -101,7 +101,7 @@
         /**
          * JSON representation of this component
          * @property json
-         * @type GameObject
+         * @type Object
          */
 
         _getJSON: function () {

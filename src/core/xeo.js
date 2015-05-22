@@ -156,6 +156,21 @@
         },
 
         /**
+         * Add non-null/defined properties of o to o2
+         * @private
+         */
+        _apply2: function (o, o2) {
+            for (var name in o) {
+                if (o.hasOwnProperty(name)) {
+                    if (o[name] === undefined || o[name] === null) {
+                        o2[name] = o[name];
+                    }
+                }
+            }
+            return o2;
+        },
+
+        /**
          * Add properties of o to o2 where undefined or null on o2
          * @private
          */

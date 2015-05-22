@@ -5,7 +5,7 @@
 
  See the {{#crossLink "Scene"}}Scene{{/crossLink}} class documentation for more information on GameObjects.</li>
 
- <img src="http://www.gliffy.com/go/publish/image/7122967/L.png"></img>
+ <img src="../../../assets/images/GameObject.png"></img>
 
  @class GameObject
  @module XEO
@@ -93,7 +93,6 @@
 
         _props: {
 
-
             /**
              * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this GameObject.
              *
@@ -102,6 +101,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/camera:event"}}{{/crossLink}} event on change.
+             *
              * @property camera
              * @type Camera
              */
@@ -111,6 +111,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/camera:property"}}{{/crossLink}} property changes.
+                     *
                      * @event camera
                      * @param value The property's new value
                      */
@@ -130,6 +131,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/clips:event"}}{{/crossLink}} event on change.
+             *
              * @property clips
              * @type Clips
              */
@@ -158,6 +160,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/colorTarget:event"}}{{/crossLink}} event on change.
+             *
              * @property colorTarget
              * @type ColorTarget
              */
@@ -186,6 +189,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/colorBuf:event"}}{{/crossLink}} event on change.
+             *
              * @property colorBuf
              * @type ColorBuf
              */
@@ -195,6 +199,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/colorBuf:property"}}{{/crossLink}} property changes.
+                     *
                      * @event colorBuf
                      * @param value The property's new value
                      */
@@ -214,6 +219,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/depthTarget:event"}}{{/crossLink}} event on change.
+             *
              * @property depthTarget
              * @type DepthTarget
              */
@@ -223,6 +229,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/depthTarget:property"}}{{/crossLink}} property changes.
+                     *
                      * @event depthTarget
                      * @param value The property's new value
                      */
@@ -242,6 +249,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/depthBuf:event"}}{{/crossLink}} event on change.
+             *
              * @property depthBuf
              * @type DepthBuf
              */
@@ -251,6 +259,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/depthBuf:property"}}{{/crossLink}} property changes.
+                     *
                      * @event depthBuf
                      * @param value The property's new value
                      */
@@ -270,6 +279,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/visibility:event"}}{{/crossLink}} event on change.
+             *
              * @property visibility
              * @type Visibility
              */
@@ -279,6 +289,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/visibility:property"}}{{/crossLink}} property changes.
+                     *
                      * @event visibility
                      * @param value The property's new value
                      */
@@ -298,6 +309,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/modes:event"}}{{/crossLink}} event on change.
+             *
              * @property modes
              * @type Modes
              */
@@ -307,6 +319,7 @@
 
                     /**
                      * Fired whenever this GameObject's {{#crossLink "GameObject/modes:property"}}{{/crossLink}} property changes.
+                     *
                      * @event modes
                      * @param value The property's new value
                      */
@@ -326,6 +339,7 @@
              * (a simple box) when set to a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/geometry:event"}}{{/crossLink}} event on change.
+             *
              * @property geometry
              * @type Geometry
              */
@@ -335,7 +349,8 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/geometry:property"}}{{/crossLink}} property changes.
-                     * @event visibility
+                     *
+                     * @event geometry
                      * @param value The property's new value
                      */
                     this._setChild("geometry", value);
@@ -354,6 +369,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/layer:event"}}{{/crossLink}} event on change.
+             *
              * @property layer
              * @type Layer
              */
@@ -363,6 +379,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/layer:property"}}{{/crossLink}} property changes.
+                     *
                      * @event layer
                      * @param value The property's new value
                      */
@@ -382,6 +399,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/lights:event"}}{{/crossLink}} event on change.
+             *
              * @property lights
              * @type Lights
              */
@@ -391,6 +409,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/lights:property"}}{{/crossLink}} property changes.
+                     *
                      * @event lights
                      * @param value The property's new value
                      */
@@ -410,6 +429,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/material:event"}}{{/crossLink}} event on change.
+             *
              * @property material
              * @type Material
              */
@@ -419,6 +439,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/material:property"}}{{/crossLink}} property changes.
+                     *
                      * @event material
                      * @param value The property's new value
                      */
@@ -438,6 +459,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/morphTargets:event"}}{{/crossLink}} event on change.
+             *
              * @property morphTargets
              * @type MorphTargets
              */
@@ -466,6 +488,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/reflect:event"}}{{/crossLink}} event on change.
+             *
              * @property reflect
              * @type Reflect
              */
@@ -475,6 +498,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/reflect:property"}}{{/crossLink}} property changes.
+                     *
                      * @event reflect
                      * @param value The property's new value
                      */
@@ -494,6 +518,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/shader:event"}}{{/crossLink}} event on change.
+             *
              * @property shader
              * @type Shader
              */
@@ -522,6 +547,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/shaderParams:event"}}{{/crossLink}} event on change.
+             *
              * @property shaderParams
              * @type ShaderParams
              */
@@ -531,6 +557,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/shaderParams:property"}}{{/crossLink}} property changes.
+                     *
                      * @event shaderParams
                      * @param value The property's new value
                      */
@@ -550,6 +577,7 @@
              * a null or undefined value.
              *
              * Fires a {{#crossLink "GameObject/stage:event"}}{{/crossLink}} event on change.
+             *
              * @property stage
              * @type Stage
              */
@@ -559,6 +587,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/stage:property"}}{{/crossLink}} property changes.
+                     *
                      * @event stage
                      * @param value The property's new value
                      */
@@ -588,6 +617,7 @@
 
                     /**
                      * Fired whenever this GameObject's  {{#crossLink "GameObject/transform:property"}}{{/crossLink}} property changes.
+                     *
                      * @event transform
                      * @param value The property's new value
                      */
@@ -601,8 +631,6 @@
         },
 
         _compile: function () {
-
-            // Set states attached to this GameObject on the renderer
 
             var children = this._children;
 

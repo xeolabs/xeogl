@@ -8,7 +8,7 @@
  while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
  </ul>
 
- <img src="http://www.gliffy.com/go/publish/image/7105099/L.png"></img>
+ <img src="../../../assets/images/ShaderParams.png"></img>
 
  ## Example
 
@@ -73,7 +73,7 @@
        }
   });
 
- // First GameObject using our Shader, with a quad covering the left half of the canvas,
+ // First Object using our Shader, with a quad covering the left half of the canvas,
  // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
 
  var quad1 = new XEO.Geometry(scene, {
@@ -96,7 +96,7 @@
        shaderParams1: shaderParams1
   });
 
- // Second GameObject using the Shader, with a quad covering the right half of the canvas,
+ // Second Object using the Shader, with a quad covering the right half of the canvas,
  // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
 
  var quad2 = new XEO.Geometry(scene, {
@@ -120,7 +120,7 @@
   });
 
  ````
- Now let's animate the "time" parameter on the Shader, for each GameObject independently:
+ Now let's animate the "time" parameter on the Shader, for each Object independently:
 
  ```` javascript
  scene.on("tick", function(params) {
@@ -142,7 +142,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
- @param [cfg.params={}] {GameObject} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
+ @param [cfg.params={}] {Object} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
  @extends Component
  */
 (function () {
@@ -156,6 +156,11 @@
         type: "shaderParams",
 
         _init: function (cfg) {
+
+            this._state = this._renderer.createState({
+                params: {}
+            });
+
             this.setParams(cfg.params);
         },
 
@@ -172,6 +177,7 @@
              * @type {}
              */
             params: {
+
                 get: function () {
                     return this._state.params;
                 }
@@ -191,12 +197,13 @@
          * @param {} [params={}] Values for params to set on the {{#crossLink "Shader"}}Shaders{{/crossLink}}, keyed to their names.
          */
         setParams: function (params) {
-            this._state.params = this._state.params || {};
+
             for (var name in params) {
                 if (params.hasOwnProperty(name)) {
                     this._state.params[name] = params[name];
                 }
             }
+
             this._renderer.imageDirty = true;
 
             /**
@@ -208,7 +215,7 @@
         },
 
         _compile: function () {
-            this._renderer.shader = this._state;
+            this._renderer.shaderParams = this._state;
         },
 
         _getJSON: function () {

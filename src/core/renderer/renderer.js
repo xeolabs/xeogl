@@ -5,21 +5,21 @@
     XEO.renderer = XEO.renderer || {};
 
     /**
-     * @class Display compiled from a {@link SceneJS.Scene}, providing methods to render and pick.
+     * @class Renderer compiled from a {@link SceneJS.Scene}, providing methods to render and pick.
      *
-     * <p>A Display is a container of {@link XEO.renderer.GameObject}s which are created (or updated) by a depth-first
+     * <p>A Renderer is a container of {@link XEO.renderer.Object}s which are created (or updated) by a depth-first
      * <b>compilation traversal</b> of a {@link SceneJS.Scene}.</b>
      *
      * <h2>Rendering Pipeline</h2>
      *
-     * <p>Conceptually, a Display implements a pipeline with the following stages:</p>
+     * <p>Conceptually, a Renderer implements a pipeline with the following stages:</p>
      *
      * <ol>
-     * <li>Create or update {@link XEO.renderer.GameObject}s during scene compilation</li>
-     * <li>Organise the {@link XEO.renderer.GameObject} into an <b>object list</b></li>
+     * <li>Create or update {@link XEO.renderer.Object}s during scene compilation</li>
+     * <li>Organise the {@link XEO.renderer.Object} into an <b>object list</b></li>
      * <li>Determine the GL state sort order for the object list</li>
      * <li>State sort the object list</li>
-     * <li>Create a <b>draw list</b> containing {@link XEO.Chunk}s belonging to the {@link XEO.renderer.GameObject}s in the object list</li>
+     * <li>Create a <b>draw list</b> containing {@link XEO.Chunk}s belonging to the {@link XEO.renderer.Object}s in the object list</li>
      * <li>Render the draw list to draw the image</li>
      * </ol>
      *
@@ -36,30 +36,30 @@
      *<li>when the colour of an object changes, or maybe when the viewpoint changes, we simplt redo stage 6</li>
      * </ul>
      *
-     * <h2>GameObject Creation</h2>
+     * <h2>Object Creation</h2>
      * <p>The object soup (stage 1) is constructed by a depth-first traversal of the scene graph, which we think of as
-     * "compiling" the scene graph into the Display. As traversal visits each scene component, the component's state core is
-     * set on the Display (such as {@link #flags}, {@link #layer}, {@link #renderer} etc), which we think of as the
+     * "compiling" the scene graph into the Renderer. As traversal visits each scene component, the component's state core is
+     * set on the Renderer (such as {@link #flags}, {@link #layer}, {@link #renderer} etc), which we think of as the
      * cores that are active at that instant during compilation. Each of the scene's leaf components is always
-     * a {@link SceneJS.Geometry}, and when traversal visits one of those it calls {@link #buildGameObject} to create an
+     * a {@link SceneJS.Geometry}, and when traversal visits one of those it calls {@link #buildObject} to create an
      * object in the soup. For each of the currently active cores, the object is given a {@link XEO.Chunk}
      * containing the WebGL calls for rendering it.</p>
      *
      * <p>The object also gets a shader (implemented by {@link XEO.renderer.Program}), taylored to render those state cores.</p>
      *
      * <p>Limited re-compilation may also be done on portions of a scene that have been added or sufficiently modified. When
-     * traversal visits a {@link SceneJS.Geometry} for which an object already exists in the display, {@link #buildGameObject}
+     * traversal visits a {@link SceneJS.Geometry} for which an object already exists in the display, {@link #buildObject}
      * may update the {@link XEO.Chunk}s on the object as required for any changes in the core soup since the
-     * last time the object was built. If differences among the cores require it, then {@link #buildGameObject} may also replace
+     * last time the object was built. If differences among the cores require it, then {@link #buildObject} may also replace
      * the object's {@link XEO.renderer.Program} in order to render the new core soup configuration.</p>
      *
-     * <p>So in summary, to each {@link XEO.renderer.GameObject} it builds, {@link #buildGameObject} creates a list of
+     * <p>So in summary, to each {@link XEO.renderer.Object} it builds, {@link #buildObject} creates a list of
      * {@link XEO.Chunk}s to render the set of component state cores that are currently set on the {@link XEO.Renderer}.
-     * When {@link #buildGameObject} is re-building an existing object, it may replace one or more {@link XEO.Chunk}s
+     * When {@link #buildObject} is re-building an existing object, it may replace one or more {@link XEO.Chunk}s
      * for state cores that have changed from the last time the object was built or re-built.</p>
 
-     * <h2>GameObject Destruction</h2>
-     * <p>Destruction of a scene graph branch simply involves a call to {@link #removeGameObject} for each {@link SceneJS.Geometry}
+     * <h2>Object Destruction</h2>
+     * <p>Destruction of a scene graph branch simply involves a call to {@link #removeObject} for each {@link SceneJS.Geometry}
      * in the branch.</p>
      *
      * <h2>Draw List</h2>
@@ -74,7 +74,7 @@
 
         this._stateIDMap = new XEO.utils.Map({});
 
-        // Display is bound to the lifetime of an HTML5 canvas
+        // Renderer is bound to the lifetime of an HTML5 canvas
         this._canvas = cfg.canvas;
 
         // Factory which creates and recycles {@link XEO.renderer.Program} instances
@@ -92,150 +92,115 @@
         this.transparent = cfg.transparent === true;
 
         /**
-         * Component state core for the last {@link SceneJS.Enable} visited during scene graph compilation traversal
-         * @type GameObject
+         * State from the last {@link XEO.Visibility} visited during scene graph compilation traversal
          */
-        this.enable = null;
+        this.visibility = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Flags} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Modes} visited during scene graph compilation traversal
          */
-        this.flags = null;
+        this.modes = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Layer} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Layer} visited during scene graph compilation traversal
          */
         this.layer = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Stage} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Stage} visited during scene graph compilation traversal
          */
         this.stage = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Renderer} visited during scene graph compilation traversal
-         * @type GameObject
-         */
-        this.renderer = null;
-
-        /**
-         * Component state core for the last {@link SceneJS.DepthBuf} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.DepthBuf} visited during scene graph compilation traversal
          */
         this.depthBuf = null;
 
         /**
-         * Component state core for the last {@link SceneJS.ColorBuf} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.ColorBuf} visited during scene graph compilation traversal
          */
         this.colorBuf = null;
 
         /**
-         * Component state core for the last {@link SceneJS.View} visited during scene graph compilation traversal
-         * @type GameObject
-         */
-        this.view = null;
-
-        /**
-         * Component state core for the last {@link SceneJS.Lights} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Lights} visited during scene graph compilation traversal
+         * @type Object
          */
         this.lights = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Material} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Material} visited during scene graph compilation traversal
+         * @type Object
          */
         this.material = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Texture} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Texture} visited during scene graph compilation traversal
+         * @type Object
          */
         this.texture = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Reflect} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Reflect} visited during scene graph compilation traversal
+         * @type Object
          */
-        this.cubemap = null;
+        this.reflect = null;
 
         /**
-         * Component state core for the last {@link SceneJS.XForm} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.XForm} visited during scene graph compilation traversal
+         * @type Object
          */
         this.modelTransform = null;
 
         /**
-         * Component state core for the last {@link SceneJS.LookAt} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.LookAt} visited during scene graph compilation traversal
+         * @type Object
          */
         this.viewTransform = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Camera} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Camera} visited during scene graph compilation traversal
+         * @type Object
          */
         this.projTransform = null;
 
         /**
-         * Component state core for the last {@link SceneJS.ColorTarget} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.ColorTarget} visited during scene graph compilation traversal
+         * @type Object
          */
         this.renderTarget = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Clips} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Clips} visited during scene graph compilation traversal
+         * @type Object
          */
         this.clips = null;
 
         /**
-         * Component state core for the last {@link SceneJS.MorphTargets} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.MorphTargets} visited during scene graph compilation traversal
+         * @type Object
          */
-        this.MorphTargets = null;
+        this.morphTargets = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Name} visited during scene graph compilation traversal
-         * @type GameObject
-         */
-        this.name = null;
-
-        /**
-         * Component state core for the last {@link SceneJS.Tag} visited during scene graph compilation traversal
-         * @type GameObject
-         */
-        this.tag = null;
-
-        /**
-         * Component state core for the last {@link SceneJS.Shader} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Shader} visited during scene graph compilation traversal
+         * @type Object
          */
         this.shader = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Uniforms} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Uniforms} visited during scene graph compilation traversal
+         * @type Object
          */
-        this.uniforms = null;
+        this.shaderParams = null;
 
         /**
-         * Component state core for the last {@link SceneJS.Style} visited during scene graph compilation traversal
-         * @type GameObject
-         */
-        this.style = null;
-
-        /**
-         * Component state core for the last {@link SceneJS.Geometry} visited during scene graph compilation traversal
-         * @type GameObject
+         * Rendering state from the last {@link XEO.Geometry} visited during scene graph compilation traversal
+         * @type Object
          */
         this.geometry = null;
 
-        /* Factory which creates and recycles {@link XEO.renderer.GameObject} instances
+
+        /* Factory which creates and recycles {@link XEO.renderer.Object} instances
          */
         this._objectFactory = new XEO.renderer.ObjectFactory();
 
@@ -266,8 +231,6 @@
         this._pickDrawList = [];            // State chunk list to render scene to pick buffer
         this._pickDrawListLen = 0;
 
-        this._targetList = [];
-        this._targetListLen = 0;
 
         /* The frame context holds state shared across a single render of the draw list, along with any results of
          * the render, such as pick hits
@@ -279,7 +242,7 @@
         };
 
         /*-------------------------------------------------------------------------------------
-         * Flags which schedule what the display is to do when #render is next called.
+         * modes which schedule what the display is to do when #render is next called.
          *------------------------------------------------------------------------------------*/
 
         /**
@@ -333,18 +296,18 @@
     /**
      * Create a new state object
      */
-    XEO.renderer.renderer.createState = function (cfg) {
+    XEO.renderer.Renderer.prototype.createState = function (cfg) {
 
         // Generate state ID
-        var stateId = this._stateIDMap.addItem({});
+        var id = this._stateIDMap.addItem({});
 
-        return new (function () {
+        var state =  new (function () {
 
             // Unique state ID
-            this.stateId = stateId;
+            this.id = id;
 
             // Unique state hash
-            this.hash = cfg.hash || "" + this.stateId; // Initial state hash
+            this.hash = cfg.hash || "" + this.id; // Initial state hash
 
             // Create caller props
 
@@ -354,13 +317,20 @@
                 }
             }
         })();
+
+        if (state.build) {
+            // Needed?
+            //state.build();
+        }
+
+        return state;
     };
 
     /**
      * Destroys a state object
      */
-    XEO.renderer.renderer.destroyState = function (state) {
-        this._stateIDMap.removeItem(state.stateId); // Recycle state ID
+    XEO.renderer.Renderer.prototype.destroyState = function (state) {
+        this._stateIDMap.removeItem(state.id); // Recycle state ID
     };
 
     /**
@@ -380,18 +350,18 @@
     };
 
     /**
-     * Internally creates (or updates) a {@link XEO.renderer.GameObject} of the given ID from whatever component state cores are currently set
+     * Internally creates (or updates) a {@link XEO.renderer.Object} of the given ID from whatever component state cores are currently set
      * on this {@link XEO.Renderer}. The object is created if it does not already exist in the display, otherwise it is
      * updated with the current state cores, possibly replacing cores already referenced by the object.
      *
      * @param {String} objectId ID of object to create or update
      */
-    XEO.renderer.Renderer.prototype.buildGameObject = function (objectId) {
+    XEO.renderer.Renderer.prototype.buildObject = function (objectId) {
 
         var object = this._objects[objectId];
 
         if (!object) { // Create object
-            object = this._objects[objectId] = this._objectFactory.getGameObject(objectId);
+            object = this._objects[objectId] = this._objectFactory.getObject(objectId);
             this.objectListDirty = true;
         }
 
@@ -399,11 +369,10 @@
         object.layer = this.layer;
         object.renderTarget = this.renderTarget;
         object.texture = this.texture;
-        object.cubemap = this.cubemap;
+        object.reflect = this.reflect;
         object.geometry = this.geometry;
-        object.enable = this.enable;
-        object.flags = this.flags;
-        object.tag = this.tag;
+        object.visibility = this.visibility;
+        object.modes = this.modes;
 
         //if (!object.hash) {
 
@@ -411,9 +380,9 @@
             this.geometry.hash,
             this.shader.hash,
             this.clips.hash,
-            this.MorphTargets.hash,
+            this.morphTargets.hash,
             this.texture.hash,
-            this.cubemap.hash,
+            this.reflect.hash,
             this.lights.hash
         ]).join(";");
 
@@ -433,23 +402,20 @@
         this._setChunk(object, 1, "xform", this.modelTransform);
         this._setChunk(object, 2, "lookAt", this.viewTransform);
         this._setChunk(object, 3, "camera", this.projTransform);
-        this._setChunk(object, 4, "flags", this.flags);
+        this._setChunk(object, 4, "modes", this.modes);
         this._setChunk(object, 5, "shader", this.shader);
-        this._setChunk(object, 6, "uniforms", this.uniforms);
-        this._setChunk(object, 7, "style", this.style);
-        this._setChunk(object, 8, "depthBuf", this.depthBuf);
-        this._setChunk(object, 9, "colorBuf", this.colorBuf);
-        this._setChunk(object, 10, "view", this.view);
-        this._setChunk(object, 11, "name", this.name);
-        this._setChunk(object, 12, "lights", this.lights);
-        this._setChunk(object, 13, "material", this.material);
-        this._setChunk(object, 14, "texture", this.texture);
-        this._setChunk(object, 15, "cubemap", this.cubemap);
-        this._setChunk(object, 16, "clips", this.clips);
-        this._setChunk(object, 17, "renderer", this.renderer);
-        this._setChunk(object, 18, "geometry", this.MorphTargets, this.geometry);
-        this._setChunk(object, 19, "draw", this.geometry); // Must be last
+        this._setChunk(object, 6, "shaderParams", this.shaderParams);
+        this._setChunk(object, 7, "depthBuf", this.depthBuf);
+        this._setChunk(object, 8, "colorBuf", this.colorBuf);
+        this._setChunk(object, 9, "lights", this.lights);
+        this._setChunk(object, 10, "material", this.material);
+        this._setChunk(object, 11, "texture", this.texture);
+        this._setChunk(object, 12, "reflect", this.reflect);
+        this._setChunk(object, 13, "clips", this.clips);
+        this._setChunk(object, 14, "geometry", this.morphTargets, this.geometry);
+        this._setChunk(object, 15, "draw", this.geometry); // Must be last
     };
+
 
     XEO.renderer.Renderer.prototype._setChunk = function (object, order, chunkType, state, core2) {
 
@@ -468,15 +434,15 @@
                 return;
             }
 
-            // Note that state.stateId can be either a number or a string, that's why we make
+            // Note that state.id can be either a number or a string, that's why we make
             // chunkId a string here.
             // TODO: Would it be better if all were numbers?
             chunkId = chunkClass.prototype.programGlobal
-                ? '_' + state.stateId
-                : 'p' + object.program.id + '_' + state.stateId;
+                ? '_' + state.id
+                : 'p' + object.program.id + '_' + state.id;
 
             if (core2) {
-                chunkId += '__' + core2.stateId;
+                chunkId += '__' + core2.id;
             }
 
         } else {
@@ -509,6 +475,7 @@
         }
     };
 
+
     XEO.renderer.Renderer.prototype._setAmbient = function (state) {
         var lights = state.lights;
         var light;
@@ -522,12 +489,13 @@
         }
     };
 
+
     /**
-     * Removes an object from this display
+     * Removes an object from this Renderer
      *
      * @param {String} objectId ID of object to remove
      */
-    XEO.renderer.Renderer.prototype.removeGameObject = function (objectId) {
+    XEO.renderer.Renderer.prototype.removeObject = function (objectId) {
         var object = this._objects[objectId];
         if (!object) {
             return;
@@ -535,71 +503,73 @@
         this._programFactory.putProgram(object.program);
         object.program = null;
         object.hash = null;
-        this._objectFactory.putGameObject(object);
+        this._objectFactory.putObject(object);
         delete this._objects[objectId];
         this.objectListDirty = true;
     };
 
-    /**
-     * Set a tag selector to selectively activate objects that have matching SceneJS.Tag components
-     */
-    XEO.renderer.Renderer.prototype.selectTags = function (tagSelector) {
-        this._tagSelector = tagSelector;
-        this.drawListDirty = true;
-    };
 
     /**
-     * Render this display. What actually happens in the method depends on what flags are set.
-     *
+    *
      */
     XEO.renderer.Renderer.prototype.render = function (params) {
 
         params = params || {};
 
         if (this.objectListDirty) {
-            this._buildGameObjectList();          // Build object render bin
+            this._buildObjectList();    // Build the scene object list
             this.objectListDirty = false;
-            this.stateOrderDirty = true;        // Now needs state ordering
+            this.stateOrderDirty = true;    // Now needs state ordering
         }
 
         if (this.stateOrderDirty) {
-            this._makeStateSortKeys();       // Compute state sort order
+            this._makeStateSortKeys();      // Determine the state sort order
             this.stateOrderDirty = false;
             this.stateSortDirty = true;     // Now needs state sorting
         }
 
         if (this.stateSortDirty) {
-            this._stateSort();              // State sort the object render bin
+            this._stateSort();              // State sort the scene object list
             this.stateSortDirty = false;
-            this.drawListDirty = true;      // Now needs new visible object bin
-            //this._logGameObjectList();
+            this.drawListDirty = true;      // Now need to build object draw list
         }
 
-        if (this.drawListDirty) {           // Render visible list while building transparent list
+        if (this.drawListDirty) {           // Build draw list from object list
             this._buildDrawList();
-            this.imageDirty = true;
-            //this._logDrawList();
-            //this._logPickList();
+            this.imageDirty = true;         // Now need to render the draw list
         }
 
         if (this.imageDirty || params.force) {
-            this._doDrawList({ // Render, no pick
-                clear: (params.clear !== false) // Clear buffers by default
+
+            // Render the object draw list
+
+            this._doDrawList({
+                clear: (params.clear !== false)     // Clear buffers by default
             });
+
             this.imageDirty = false;
-            this.pickBufDirty = true;       // Pick buff will now need rendering on next pick
+            this.pickBufDirty = true;       // Pick buffer now needs redraw on next pick
         }
     };
 
-    XEO.renderer.Renderer.prototype._buildGameObjectList = function () {
+    /**
+     * (Re)builds the object list from the object soup.
+     */
+    XEO.renderer.Renderer.prototype._buildObjectList = function () {
+
         this._objectListLen = 0;
+
         for (var objectId in this._objects) {
             if (this._objects.hasOwnProperty(objectId)) {
+
                 this._objectList[this._objectListLen++] = this._objects[objectId];
             }
         }
     };
 
+    /**
+     * (Re)generates each object's state sort key from it's states.
+     */
     XEO.renderer.Renderer.prototype._makeStateSortKeys = function () {
         //  console.log("--------------------------------------------------------------------------------------------------");
         // console.log("XEO.Renderer_makeSortKeys");
@@ -612,25 +582,31 @@
             } else {
                 object.sortKey =
                     ((object.stage.priority + 1) * 1000000000000)
-                    + ((object.flags.transparent ? 2 : 1) * 1000000000)
+                    + ((object.modes.transparent ? 2 : 1) * 1000000000)
                     + ((object.layer.priority + 1) * 1000000)
                     + ((object.program.id + 1) * 1000)
-                    + object.texture.stateId;
+                    + object.texture.id;
             }
         }
         //  console.log("--------------------------------------------------------------------------------------------------");
     };
 
+    /**
+     * State-sorts the object list in ascending order of the object's state sort keys.
+     */
     XEO.renderer.Renderer.prototype._stateSort = function () {
+
         this._objectList.length = this._objectListLen;
-        this._objectList.sort(this._stateSortGameObjects);
+
+        this._objectList.sort(function (a, b) {
+            return a.sortKey - b.sortKey;
+        });
     };
 
-    XEO.renderer.Renderer.prototype._stateSortGameObjects = function (a, b) {
-        return a.sortKey - b.sortKey;
-    };
-
-    XEO.renderer.Renderer.prototype._logGameObjectList = function () {
+    /**
+     * Logs the object to the console for debugging
+     */
+    XEO.renderer.Renderer.prototype._logObjectList = function () {
         console.log("--------------------------------------------------------------------------------------------------");
         console.log(this._objectListLen + " objects");
         for (var i = 0, len = this._objectListLen; i < len; i++) {
@@ -640,12 +616,17 @@
         console.log("--------------------------------------------------------------------------------------------------");
     };
 
+    /**
+     * Builds the draw list, which is the list of draw state-chunks to apply to WebGL
+     * to render the visible objects in the object list for the next frame.
+     * Preserves the state sort order of the object list among the draw chunks.
+     */
     XEO.renderer.Renderer.prototype._buildDrawList = function () {
 
         this._lastStateId = this._lastStateId || [];
         this._lastPickStateId = this._lastPickStateId || [];
 
-        for (var i = 0; i < 23; i++) {
+        for (var i = 0; i < 20; i++) {
             this._lastStateId[i] = null;
             this._lastPickStateId[i] = null;
         }
@@ -654,7 +635,7 @@
         this._pickDrawListLen = 0;
 
         // For each render target, a list of objects to render to that target
-        var targetGameObjectLists = {};
+        var targetObjectLists = {};
 
         // A list of all the render target object lists
         var targetListList = [];
@@ -663,15 +644,10 @@
         var targetList = [];
 
         var object;
-        var tagMask;
-        var tagRegex;
-        var tagCore;
-        var flags;
+        var targets;
+        var target;
+        var list;
 
-        if (this._tagSelector) {
-            tagMask = this._tagSelector.mask;
-            tagRegex = this._tagSelector.regex;
-        }
 
         this._objectDrawList = this._objectDrawList || [];
         this._objectDrawListLen = 0;
@@ -681,66 +657,46 @@
             object = this._objectList[i];
 
             // Cull invisible objects
-            if (object.enable.enabled === false) {
+
+            if (object.visibility.visible === false) {
                 continue;
-            }
-
-            flags = object.flags;
-
-            // Cull invisible objects
-            if (flags.enabled === false) {
-                continue;
-            }
-
-            // Cull objects in disabled layers
-            if (!object.layer.enabled) {
-                continue;
-            }
-
-            // Cull objects with unmatched tags
-            if (tagMask) {
-                tagCore = object.tag;
-                if (tagCore.tag) {
-                    if (tagCore.mask !== tagMask) { // Scene tag mask was updated since last render
-                        tagCore.mask = tagMask;
-                        tagCore.matches = tagRegex.test(tagCore.tag);
-                    }
-                    if (!tagCore.matches) {
-                        continue;
-                    }
-                }
             }
 
             // Put objects with render targets into a bin for each target
+
             if (object.renderTarget.targets) {
-                var targets = object.renderTarget.targets;
-                var target;
-                var coreId;
-                var list;
+
+                targets = object.renderTarget.targets;
+
                 for (var j = 0, lenj = targets.length; j < lenj; j++) {
+
                     target = targets[j];
-                    coreId = target.coreId;
-                    list = targetGameObjectLists[coreId];
+                    list = targetObjectLists[target.id];
+
                     if (!list) {
+
                         list = [];
-                        targetGameObjectLists[coreId] = list;
+
+                        targetObjectLists[target.id] = list;
+
                         targetListList.push(list);
-                        targetList.push(this._chunkFactory.getChunk(target.stateId, "renderTarget", object.program, target));
+
+                        targetList.push(this._chunkFactory.getChunk(target.id, "renderTarget", object.program, target));
                     }
+
                     list.push(object);
                 }
+
             } else {
 
-                //
+                // Put objects without render targets into their own list
+
                 this._objectDrawList[this._objectDrawListLen++] = object;
             }
         }
 
         // Append chunks for objects within render targets first
 
-        var list;
-        var target;
-        var object;
         var pickable;
 
         for (var i = 0, len = targetListList.length; i < len; i++) {
@@ -751,24 +707,34 @@
             this._appendRenderTargetChunk(target);
 
             for (var j = 0, lenj = list.length; j < lenj; j++) {
+
                 object = list[j];
+
                 pickable = object.stage && object.stage.pickable; // We'll only pick objects in pickable stages
-                this._appendGameObjectToDrawLists(object, pickable);
+
+                this._appendObjectToDrawLists(object, pickable);
             }
         }
 
         if (object) {
 
             // Unbinds any render target bound previously
+
             this._appendRenderTargetChunk(this._chunkFactory.getChunk(-1, "renderTarget", object.program, {}));
         }
 
         // Append chunks for objects not in render targets
+
         for (var i = 0, len = this._objectDrawListLen; i < len; i++) {
+
             object = this._objectDrawList[i];
+
             pickable = !object.stage || (object.stage && object.stage.pickable); // We'll only pick objects in pickable stages
-            this._appendGameObjectToDrawLists(object, pickable);
+
+            this._appendObjectToDrawLists(object, pickable);
         }
+
+        // Draw list is now up to date.
 
         this.drawListDirty = false;
     };
@@ -784,9 +750,9 @@
      * @param pickable
      * @private
      */
-    XEO.renderer.Renderer.prototype._appendGameObjectToDrawLists = function (object, pickable) {
+    XEO.renderer.Renderer.prototype._appendObjectToDrawLists = function (object, pickable) {
         var chunks = object.chunks;
-        var picking = object.flags.picking;
+        var picking = object.modes.picking;
         var chunk;
         for (var i = 0, len = chunks.length; i < len; i++) {
             chunk = chunks[i];
@@ -798,7 +764,7 @@
                 // drawElements calls which render the objects.
 
                 if (chunk.draw) {
-                    if (chunk.unique || this._lastStateId[i] !== chunk.id) { // Don't reapply repeated states
+                    if (chunk.unique || this._lastId[i] !== chunk.id) { // Don't reapply repeated states
                         this._drawList[this._drawListLen++] = chunk;
                         this._lastStateId[i] = chunk.id;
                     }
@@ -903,8 +869,8 @@
         // convert to an index into the pick name list
 
         var pix = pickBuf.read(canvasX, canvasY);                                       // Read pick buffer
-        var pickedGameObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
-        var pickIndex = (pickedGameObjectIndex >= 1) ? pickedGameObjectIndex - 1 : -1;
+        var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
+        var pickIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
         pickBuf.unbind();                                                               // Unbind pick buffer
 
         // Look up pick name from index

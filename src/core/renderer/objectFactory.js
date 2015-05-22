@@ -16,7 +16,7 @@
                 object.id = id;
                 return object;
             }
-            return new XEO.renderer.GameObject(id);
+            return new XEO.renderer.Object(id);
         };
 
         this.putGameObject = function (object) {
