@@ -131,7 +131,7 @@
  &lt;li&gt;{{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
  &lt;li&gt;Alternatively, use {{#crossLink &quot;Ortho&quot;}}{{/crossLink}} if you need a orthographic projection.&lt;/li&gt;
-
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Perspective components create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/Perspective.png&quot;&gt;&lt;/img&gt;
@@ -188,55 +188,57 @@
 
         _init: function (cfg) {
 
-            var self = this;
-
-            this._state = this._renderer.createState({
-
-                mode: &quot;perspective&quot;,
-
-                fovy: 60.0,
-                aspect: 1.0,
-                near: 0.1,
-                far: 10000.0,
-
-                dirty: true,
-
-                build: function () {
-
-                    this.matrix = XEO.math.perspectiveMatrix4(this.fovy * Math.PI / 180.0, this.aspect, this.near, this.far);
-
-                    this.dirty = false;
-
-                    /**
-                     * Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/matrix:property&quot;}}{{/crossLink}} property changes.
-                     *
-                     * @event matrix
-                     * @param value The property&#x27;s new value
-                     */
-                    self.fire(&quot;matrix&quot;, this.matrix);
-                }
+            this._state = new XEO.renderer.ProjTransform({
+                matrix: null
             });
 
+            this._dirty = false;
+            this._fovy = 60.0;
+            this._aspect = 1.0;
+            this._near = 0.1;
+            this._far = 10000.0;
+
+            var self = this;
             var canvas = this.scene.canvas;
+
+            // Recompute aspect from change in canvas size
+            this._canvasResized = canvas.on(&quot;resized&quot;,
+                function () {
+                    self._aspect = canvas.width / canvas.height;
+                });
 
             this.fovy = cfg.fovy;
             this.aspect = canvas.width / canvas.height;
             this.near = cfg.near;
             this.far = cfg.far;
+        },
 
-            // Recompute aspect from change in canvas size
-            this._canvasResized = this.scene.canvas.on(&quot;resized&quot;,
-                function () {
-                    self.aspect = canvas.width / canvas.height;
-                });
+        // Schedules a call to #_build on the next &quot;tick&quot;
+        _scheduleBuild: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                var self = this;
+                this.scene.once(&quot;tick&quot;,
+                    function () {
+                        self._build();
+                    });
+            }
+        },
 
-            // Lazy-rebuild matrix on each scene tick
-            this._tick = this.scene.on(&quot;tick&quot;,
-                function (c) {
-                    if (self._state.dirty) {
-                        self._state.build();
-                    }
-                });
+        // Rebuilds renderer state from component state
+        _build: function () {
+
+            this._state.matrix = XEO.math.perspectiveMatrix4(this._fovy * Math.PI / 180.0, this._aspect, this._near, this._far);
+
+            this._dirty = false;
+
+            /**
+             * Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/matrix:property&quot;}}{{/crossLink}} property changes.
+             *
+             * @event matrix
+             * @param value The property&#x27;s new value
+             */
+            this.fire(&quot;matrix&quot;, this._state.matrix);
         },
 
         _props: {
@@ -254,12 +256,11 @@
 
                 set: function (value) {
 
-                    value = value || 60.0;
-
-                    this._state.fovy = value;
-                    this._state.dirty = true;
+                    this._fovy = (value !== undefined &amp;&amp; value !== null) ? value : 60.0;
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/fovy:property&quot;}}{{/crossLink}} property changes.
@@ -267,11 +268,11 @@
                      * @event fovy
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;fovy&quot;, this._state.fovy);
+                    this.fire(&quot;fovy&quot;, this._fovy);
                 },
 
                 get: function () {
-                    return this._state.fovy;
+                    return this._fovy;
                 }
             },
 
@@ -288,12 +289,11 @@
 
                 set: function (value) {
 
-                    value = value || 1.0;
-
-                    this._state.aspect = value;
-                    this._state.dirty = true;
+                    this._aspect = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/aspect:property&quot;}}{{/crossLink}} property changes.
@@ -301,11 +301,11 @@
                      * @event aspect
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;aspect&quot;,  this._state.aspect );
+                    this.fire(&quot;aspect&quot;, this._aspect);
                 },
 
                 get: function () {
-                    return this._state.aspect;
+                    return this._aspect;
                 }
             },
 
@@ -322,23 +322,22 @@
 
                 set: function (value) {
 
-                    value = value || 0.1;
-
-                    this._state.near = value;
-                    this._state.dirty = true;
+                    this._near = (value !== undefined &amp;&amp; value !== null) ? value : 0.1;
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Perspective&#x27;s   {{#crossLink &quot;Perspective/near:property&quot;}}{{/crossLink}} property changes.
                      * @event near
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;near&quot;,  this._state.near);
+                    this.fire(&quot;near&quot;, this._near);
                 },
 
                 get: function () {
-                    return this._state.near;
+                    return this._near;
                 }
             },
 
@@ -355,12 +354,11 @@
 
                 set: function (value) {
 
-                    value = value || 10000.0;
-
-                    this._state.far = value;
-                    this._state.dirty = true;
+                    this._far = this._near = (value !== undefined &amp;&amp; value !== null) ? value : 10000;
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Perspective&#x27;s  {{#crossLink &quot;Perspective/far:property&quot;}}{{/crossLink}} property changes.
@@ -368,11 +366,11 @@
                      * @event far
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;far&quot;, this._state.far );
+                    this.fire(&quot;far&quot;, this._far);
                 },
 
                 get: function () {
-                    return this._state.far;
+                    return this._far;
                 }
             },
 
@@ -388,8 +386,8 @@
 
                 get: function () {
 
-                    if (this._state.dirty) {
-                        this._state.build();
+                    if (this._dirty) {
+                        this._build();
                     }
 
                     return this._state.matrix.slice(0);
@@ -398,15 +396,15 @@
         },
 
         _compile: function () {
-            this._renderer.project = this._state;
+            this._renderer.projectTransform = this._state;
         },
 
         _getJSON: function () {
             return {
-                fovy: this.fovy,
-                aspect: this.aspect,
-                near: this.near,
-                far: this.far
+                fovy: this._fovy,
+                aspect: this._aspect,
+                near: this._near,
+                far: this._far
             };
         },
 
@@ -414,9 +412,7 @@
 
             this.scene.canvas.off(this._canvasResized);
 
-            this.scene.off(this._tick);
-
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

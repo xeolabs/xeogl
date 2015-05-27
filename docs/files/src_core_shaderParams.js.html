@@ -149,7 +149,7 @@
  &#x60;&#x60;&#x60;&#x60;javascript
  var scene = new XEO.Scene();
 
- // Shader that&#x27;s shared by both our GameObjects. Note the &#x27;XEO_aPosition&#x27; and &#x27;XEO_aUV attributes&#x27;,
+ // Shader that&#x27;s shared by both our GameObjects. Note the &#x27;XEO_aGeometryPosition&#x27; and &#x27;XEO_aGeometryUV attributes&#x27;,
  // which will receive the positions and UVs from the Geometry components. Also note the &#x27;time&#x27;
  // uniform, which we&#x27;ll be animating via the ShaderParams components.
 
@@ -157,12 +157,12 @@
 
        // Vertex shading stage
        vertex: [
-           &quot;attribute vec3 XEO_aPosition;&quot;,
-           &quot;attribute vec2 XEO_aUV;&quot;,
+           &quot;attribute vec3 XEO_aGeometryPosition;&quot;,
+           &quot;attribute vec2 XEO_aGeometryUV;&quot;,
            &quot;varying vec2 vUv;&quot;,
            &quot;void main () {&quot;,
-           &quot;    gl_Position = vec4(XEO_aPosition, 1.0);&quot;,
-           &quot;    vUv = XEO_aUV;&quot;,
+           &quot;    gl_Position = vec4(XEO_aGeometryPosition, 1.0);&quot;,
+           &quot;    vUv = XEO_aGeometryUV;&quot;,
            &quot;}&quot;
        ],
 
@@ -280,7 +280,7 @@
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
+            this._state = new XEO.renderer.ShaderParams({
                 params: {}
             });
 

@@ -190,7 +190,7 @@
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
+            this._state = new XEO.renderer.DepthBuf({
                 clearDepth: 1.0,
                 depthFunc: &quot;less&quot;
             });
@@ -303,13 +303,13 @@
 
         _getJSON: function () {
             return {
-                clearDepth: this.clearDepth,
-                depthFunc: this.depthFunc
+                clearDepth: this._state.clearDepth,
+                depthFunc: this._state.depthFuncName
             };
         },
 
         _destroy: function () {
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

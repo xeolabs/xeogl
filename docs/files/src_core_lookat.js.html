@@ -131,6 +131,7 @@
  &lt;ul&gt;
  &lt;li&gt;{{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with projection transforms such as
  {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Lookat components create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/Lookat.png&quot;&gt;&lt;/img&gt;
@@ -201,48 +202,52 @@
 
         _init: function (cfg) {
 
-            var self = this;
-
-            this._state = this._renderer.createState({
-
+            this._state = new XEO.renderer.ViewTransform({
+                matrix: null,
+                normalMatrix: null,
                 eye: [0, 0, 10.0],
                 look: [0, 0, 0.0 ],
-                up: [0, 1, 0.0 ],
-
-                dirty: true,
-
-                build: function () {
-
-                    this.matrix = XEO.math.lookAtMat4c(
-                        this.eye[0], this.eye[1], this.eye[2],
-                        this.look[1], this.look[1], this.look[2],
-                        this.up[0], this.up[1], this.up[2], this.matrix);
-
-                    this.normalMat = XEO.math.transposeMat4(XEO.math.inverseMat4(this.matrix, this.normalMat));
-
-                    this.dirty = false;
-
-                    /**
-                     * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/matrix:property&quot;}}{{/crossLink}} property is updated.
-                     *
-                     * @event matrix
-                     * @param value The property&#x27;s new value
-                     */
-                    self.fire(&quot;matrix&quot;, this.matrix);
-                }
+                up: [0, 1, 0.0 ]
             });
 
             this.eye = cfg.eye;
             this.look = cfg.look;
             this.up = cfg.up;
+        },
 
-            // Lazy-rebuild matrix on each scene tick
-            this._onTick = this.scene.on(&quot;tick&quot;,
-                function (c) {
-                    if (self._state.dirty) {
-                        self._state.build();
-                    }
-                });
+        _dirty: false,
+
+        // Schedules a call to #_build on the next &quot;tick&quot;
+        _scheduleBuild: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                var self = this;
+                this.scene.once(&quot;tick&quot;,
+                    function () {
+                        self._build();
+                    });
+            }
+        },
+
+        // Rebuilds rendering state
+        _build: function () {
+
+            this._state.matrix = XEO.math.lookAtMat4c(
+                this._state.eye[0], this._state.eye[1], this._state.eye[2],
+                this._state.look[1], this._state.look[1], this._state.look[2],
+                this._state.up[0], this._state.up[1], this._state.up[2], this._state.matrix);
+
+            this._state.normalMat = XEO.math.transposeMat4(XEO.math.inverseMat4(this._state.matrix, this._state.normalMat));
+
+            this._dirty = false;
+
+            /**
+             * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/matrix:property&quot;}}{{/crossLink}} property is updated.
+             *
+             * @event matrix
+             * @param value The property&#x27;s new value
+             */
+            this.fire(&quot;matrix&quot;, this._state.matrix);
         },
 
         _props: {
@@ -260,12 +265,11 @@
 
                 set: function (value) {
 
-                    value = value || [0, 0, -10];
-
-                    this._state.eye = value;
-                    this._state.dirty = true;
+                    this._state.eye = value || [0, 0, -10];
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/eye:property&quot;}}{{/crossLink}} property changes.
@@ -294,12 +298,11 @@
 
                 set: function (value) {
 
-                    value = value || [0, 0, 0];
-
-                    this._state.look = value;
-                    this._state.dirty = true;
+                    this._state.look = value || [0, 0, 0];
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/look:property&quot;}}{{/crossLink}} property changes.
@@ -326,12 +329,11 @@
 
                 set: function (value) {
 
-                    value = value || [0, 1, 0];
-
-                    this._state.up = value;
-                    this._state.dirty = true;
+                    this._state.up = value || [0, 1, 0];
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/up:property&quot;}}{{/crossLink}} property changes.
@@ -381,10 +383,7 @@
         },
 
         _destroy: function () {
-
-            this.scene.off(this._onTick);
-
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

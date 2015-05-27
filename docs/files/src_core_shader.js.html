@@ -154,7 +154,7 @@
 
  var scene = new XEO.Scene();
 
- // Shader that&#x27;s used by our Object. Note the &#x27;XEO_aPosition&#x27; and &#x27;XEO_aUV attributes&#x27;,
+ // Shader that&#x27;s used by our Object. Note the &#x27;XEO_aGeometryPosition&#x27; and &#x27;XEO_aGeometryUV attributes&#x27;,
  // which will receive the positions and UVs from the Geometry. Also note the &#x27;time&#x27;
  // uniform, which we&#x27;ll be animating via Shader#setParams.
 
@@ -162,12 +162,12 @@
 
        // Vertex shading stage
        vertex: [
-           &quot;attribute vec3 XEO_aPosition;&quot;,
-           &quot;attribute vec2 XEO_aUV;&quot;,
+           &quot;attribute vec3 XEO_aGeometryPosition;&quot;,
+           &quot;attribute vec2 XEO_aGeometryUV;&quot;,
            &quot;varying vec2 vUv;&quot;,
            &quot;void main () {&quot;,
-           &quot;    gl_Position = vec4(XEO_aPosition, 1.0);&quot;,
-           &quot;    vUv = XEO_aUV;&quot;,
+           &quot;    gl_Position = vec4(XEO_aGeometryPosition, 1.0);&quot;,
+           &quot;    vUv = XEO_aGeometryUV;&quot;,
            &quot;}&quot;
        ],
 
@@ -226,7 +226,7 @@
         });
  &#x60;&#x60;&#x60;&#x60;
 
- ## Shader Inputs
+ ## &lt;a name=&quot;inputs&quot;&gt;Shader Inputs&lt;/a&gt;
 
  xeoEngine provides the following inputs for your shaders.
 
@@ -234,15 +234,15 @@
 
  #### Attributes
 
- *Attributes are used in vertex shaders*
+ *Attributes are used only in vertex shaders*
 
  | Attribute  | Description | Depends on  |
  |---|---|
- | attribute vec3   XEO_aPosition   | Vertex positions | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} |
- | attribute vec2   XEO_aUV         | UV coordinates | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
- | attribute vec3   XEO_aNormal     | Normal vectors | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}}  |
- | attribute vec4   XEO_aVertexColor  | Vertex colors  | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/colors:property&quot;}}{{/crossLink}}  |
- | attribute vec4 XEO_aTangent    | Tangent vectors for normal mapping | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
+ | attribute vec3 XEO_aGeometryPosition   | Geometry vertex positions | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} |
+ | attribute vec2 XEO_aGeometryUV         | Geometry vertex UV coordinates | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
+ | attribute vec3 XEO_aGeometryNormal     | Geometry vertex normals | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}}  |
+ | attribute vec4 XEO_aGeometryColor      | Geometry vertex colors  | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/colors:property&quot;}}{{/crossLink}}  |
+ | attribute vec4 XEO_aGeometryTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
 
  #### Uniforms
 
@@ -250,18 +250,21 @@
 
  | Uniform  | Description | Depends on  |
  |---|---|
- | uniform mat4  XEO_uMNMatrix               | Modelling normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Transform&quot;}}{{/crossLink}} |
- | uniform mat4  XEO_uVMatrix                | View matrix | {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
- | uniform mat4  XEO_uVNMatrix               | View normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
- | uniform mat4  XEO_uPMatrix                | Projection matrix | {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
- | uniform mat4  XEO_uPNMatrix               | Projection normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
- | uniform float XEO_uZNear                  | Near clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
- | uniform float XEO_uZFar                   | Far clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
- | uniform vec3  XEO_uAmbientColor | Ambient light color | {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} |
- | uniform vec3 XEO_uLightDir&amp;lt;N&amp;gt; | Direction of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} at index N in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} |
-
-
-
+ | uniform mat4  XEO_uModelMatrix                                   | Modelling transform matrix | {{#crossLink &quot;Transform&quot;}}{{/crossLink}} |
+ | uniform mat4  XEO_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Transform&quot;}}{{/crossLink}} |
+ | uniform mat4  XEO_uViewMatrix                                    | View transform matrix | {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
+ | uniform mat4  XEO_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
+ | uniform mat4  XEO_uProjMatrix                                    | Projection transform matrix | {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+ | uniform float XEO_uZNear                                         | Near clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+ | uniform float XEO_uZFar                                          | Far clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
+ | uniform vec3  XEO_uLightAmbient                                  | Ambient color of first {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} in {{#crossLink &quot;Lights&quot;}}{{/crossLink}}| {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} |
+ | uniform vec3 XEO_uLightDiffuse&amp;lt;***N***&amp;gt;                    | Diffuse color of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} or {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} or {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} |
+ | uniform vec3 XEO_uLightSpecular&amp;lt;***N***&amp;gt;                   | Specular color of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} or {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} or {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} |
+ | uniform vec3 XEO_uLightDir&amp;lt;***N***&amp;gt;                        | Direction of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} |
+ | uniform vec3 XEO_uLightPos&amp;lt;***N***&amp;gt;                        | Position of {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} |
+ | uniform vec3 XEO_uLightConstantAttenuation&amp;lt;***N***&amp;gt;        | Constant attenuation factor for {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} |
+ | uniform vec3 XEO_uLightLinearAttenuation&amp;lt;***N***&amp;gt;          | Linear attenuation factor for {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} |
+ | uniform vec3 XEO_uLightQuadraticAttenuation&amp;lt;***N***&amp;gt;       | Quadratic attenuation factor for {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} |
 
  #### Varying
 
@@ -299,10 +302,8 @@
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
-
+            this._state = new XEO.renderer.Shader({
                 shaders: {},
-
                 params: {}
             });
 
@@ -339,7 +340,7 @@
                      * @event vertex
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;vertex&quot;,  this._state.shaders.vertex);
+                    this.fire(&quot;vertex&quot;, this._state.shaders.vertex);
                 },
 
                 get: function () {
@@ -371,7 +372,7 @@
                      * @event fragment
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;fragment&quot;,  this._state.shaders.fragment);
+                    this.fire(&quot;fragment&quot;, this._state.shaders.fragment);
                 },
 
                 get: function () {

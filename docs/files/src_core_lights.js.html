@@ -229,16 +229,23 @@
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
+            // Renderer state contains the states of the child light source components
+            this._state = new XEO.renderer.Lights({
                 lights: [],
-                numLights: 0,
-                hash: &quot;&quot;
+                hash: &quot;&quot;,
+                dirty: true
             });
 
+            // Array of child light source components
             this._lights = [];
+
+            // Subscriptions to &quot;dirty&quot; events from child light source components
             this._dirtySubs = [];
+
+            // Subscriptions to &quot;destroyed&quot; events from child light source components
             this._destroyedSubs = [];
 
+            // Add initial light source components
             this.lights = cfg.lights;
         },
 
@@ -269,6 +276,7 @@
                     }
 
                     this._lights = [];
+
                     this._dirtySubs = [];
                     this._destroyedSubs = [];
 
@@ -280,14 +288,22 @@
                     }
 
                     function lightDestroyed() {
+
                         var id = this.id; // Light ID
+
                         for (var i = 0, len = self._lights.length; i &lt; len; i++) {
+
                             if (self._lights[i].id === id) {
+
                                 self._lights = self._lights.slice(i, i + 1);
                                 self._dirtySubs = self._dirtySubs.slice(i, i + 1);
                                 self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
+
+                                self._state.dirty = true;
+
                                 self.fire(&quot;dirty&quot;, true);
                                 self.fire(&quot;lights&quot;, self._lights);
+
                                 return;
                             }
                         }
@@ -323,6 +339,8 @@
                         lights.push(light);
                     }
 
+                    this._state.dirty = true;
+
                     this.fire(&quot;dirty&quot;, true);
                     this.fire(&quot;lights&quot;, this._lights);
                 },
@@ -336,46 +354,54 @@
         _compile: function () {
 
             var state = this._state;
-            var lights = state.lights;
-            var numLights = this._lights.length;
 
-            state.numLights = numLights;
+            if (state.dirty) {
 
-            for (var i = 0; i &lt; numLights; i++) {
-                lights[i] = this._lights[i]._state;
+                state.lights = [];
+
+                for (var i = 0, len = this._lights.length; i &lt; len; i++) {
+                    state.lights.push(this._lights[i]._state);
+                }
+
+                this._makeHash();
+
+                state.dirty = false;
             }
 
-            this._state.hash = this._makeHash(lights, numLights);
-
-            this._renderer.lights = this._state;
+            this._renderer.lights = state;
         },
 
-        _makeHash: function (lights, numLights) {
+        _makeHash: function () {
 
-            if (numLights === 0) {
-                return &quot;&quot;;
+            var state = this._state;
+            var lights = this._state.lights;
+
+            if (lights.length === 0) {
+                return &quot;;&quot;;
             }
 
-            var parts = [];
+            var hash = [];
             var light;
 
-            for (var i = 0; i &lt; numLights; i++) {
+            for (var i = 0, len = lights.length; i &lt; len; i++) {
 
                 light = lights[i];
-                parts.push(light.mode);
+                hash.push(light.mode);
 
                 if (light.specular) {
-                    parts.push(&quot;s&quot;);
+                    hash.push(&quot;s&quot;);
                 }
 
                 if (light.diffuse) {
-                    parts.push(&quot;d&quot;);
+                    hash.push(&quot;d&quot;);
                 }
 
-                parts.push((light.space === &quot;world&quot;) ? &quot;w&quot; : &quot;v&quot;);
+                hash.push((light.space === &quot;world&quot;) ? &quot;w&quot; : &quot;v&quot;);
             }
 
-            return parts.join(&quot;&quot;);
+            hash.push(&quot;;&quot;);
+
+            state.hash = hash.join(&quot;&quot;);
         },
 
         _getJSON: function () {
@@ -392,7 +418,7 @@
         },
 
         _destroy: function () {
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 })();

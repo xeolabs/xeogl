@@ -124,18 +124,18 @@
 /**
  A **Geometry** defines the geometric shape of attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
-## Contents
+ ## Contents
 
-&lt;Ul&gt;
-    &lt;li&gt;&lt;a href=&quot;#overview&quot;&gt;Overview&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#defaultShape&quot;&gt;Default box shape&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#sceneDefault&quot;&gt;Scene&#x27;s default Geometry&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#sharing&quot;&gt;Sharing among GameObjects&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#triangles&quot;&gt;Defining a triangle mesh&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#editing&quot;&gt;Editing Geometry&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#backfaces&quot;&gt;Toggling backfaces on or off&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#frontfaces&quot;&gt;Setting frontface vertex winding&lt;/li&gt;
-&lt;/ul&gt;
+ &lt;Ul&gt;
+ &lt;li&gt;&lt;a href=&quot;#overview&quot;&gt;Overview&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#defaultShape&quot;&gt;Default box shape&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#sceneDefault&quot;&gt;Scene&#x27;s default Geometry&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#sharing&quot;&gt;Sharing among GameObjects&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#triangles&quot;&gt;Defining a triangle mesh&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#editing&quot;&gt;Editing Geometry&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#backfaces&quot;&gt;Toggling backfaces on or off&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#frontfaces&quot;&gt;Setting frontface vertex winding&lt;/li&gt;
+ &lt;/ul&gt;
 
  ## &lt;a name=&quot;overview&quot;&gt;Overview&lt;/a&gt;
 
@@ -150,6 +150,7 @@
  made of triangles, with UV coordinates, vertex colors and normals. This default is used for most of the examples in this documentation.&lt;/li&gt;
  &lt;li&gt;A {{#crossLink &quot;Scene&quot;}}{{/crossLink}} provides such a box as its default {{#crossLink &quot;Scene/geometry:property&quot;}}{{/crossLink}},
  for {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to fall back on, when they are not explicitly attached to a Geometry.&lt;/li&gt;
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Geometries create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/Geometry.png&quot;&gt;&lt;/img&gt;
@@ -390,139 +391,36 @@
 
         _init: function (cfg) {
 
-            var defaultGeometry = (!cfg.positions &amp;&amp; !cfg.normals &amp;&amp; !cfg.uv &amp;&amp; cfg.uv2 &amp;&amp; !cfg.indices);
-
-            var self = this;
-
-            this._state = this._renderer.createState({
-
-                primitive: &quot;triangles&quot;,
-
-                // Data arrays
-
-                positions: null,
+            this._state = new XEO.renderer.Geometry({
+                primitive: null, // WebGL enum
+                positions: null, // VBOs
                 colors: null,
                 normals: null,
                 uv: null,
                 tangents: null,
-                indices: null,
-
-                // WebGL 
-
-                primitiveEnum: null,
-
-                positionsBuf: null,
-                colorsBuf: null,
-                normalsBuf: null,
-                uvBuf: null,
-                tangentsBuf: null,
-                indicesBuf: null,
-
-                dirty: true,
-                positionsBufDirty: true,
-                colorsBufDirty: true,
-                normalsBufDirty: true,
-                uvBufDirty: true,
-                tangentsBufDirty: true,
-                indicesBufDirty: true,
-
-                // Rebuilds WebGL-bound resources for this geometry state
-
-                build: function () {
-
-                    var gl = self.scene.canvas.gl;
-
-                    switch (this.primitive) {
-
-                        case &quot;points&quot;:
-                            this.primitiveEnum = gl.POINTS;
-                            break;
-
-                        case &quot;lines&quot;:
-                            this.primitiveEnum = gl.LINES;
-                            break;
-
-                        case &quot;line-loop&quot;:
-                            this.primitiveEnum = gl.LINE_LOOP;
-                            break;
-
-                        case &quot;line-strip&quot;:
-                            this.primitiveEnum = gl.LINE_STRIP;
-                            break;
-
-                        case &quot;triangles&quot;:
-                            this.primitiveEnum = gl.TRIANGLES;
-                            break;
-
-                        case &quot;triangle-strip&quot;:
-                            this.primitiveEnum = gl.TRIANGLE_STRIP;
-                            break;
-
-                        case &quot;triangle-fan&quot;:
-                            this.primitiveEnum = gl.TRIANGLE_FAN;
-                            break;
-
-                        default:
-                            this.primitiveEnum = gl.TRIANGLES;
-                    }
-
-                    var usage = gl.STATIC_DRAW;
-
-                    if (this.positionsBufDirty) {
-                        if (this.positionsBuf) {
-                            this.positionsBuf.destroy();
-                        }
-                        this.positionsBuf = this.positions ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this.positions, this.positions.length, 3, usage) : null;
-                        this.positionsBufDirty = false;
-                    }
-
-                    if (this.colorsBufDirty) {
-                        if (this.colorsBuf) {
-                            this.colorsBuf.destroy();
-                        }
-                        this.colorsBuf = this.colors ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this.colors, this.colors.length, 4, usage) : null;
-                        this.colorsBufDirty = false;
-                    }
-
-                    if (this.normalsBufDirty) {
-                        if (this.normalsBuf) {
-                            this.normalsBuf.destroy();
-                        }
-                        this.normalsBuf = this.normals ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this.normals, this.normals.length, 3, usage) : null;
-                        this.normalsBufDirty = false;
-                    }
-
-                    if (this.uvBufDirty) {
-                        if (this.uvBuf) {
-                            this.uvBuf.destroy();
-                        }
-                        this.uvBuf = this.uv ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this.uv, this.uv.length, 2, usage) : null;
-                        this.uvBufDirty = false;
-                    }
-
-                    if (this.tangentsBufDirty) {
-                        if (this.tangentsBuf) {
-                            this.tangentsBuf.destroy();
-                        }
-                        this.tangentsBuf = this.tangents ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this.tangents, this.tangents.length, 4, usage) : null;
-                        this.tangentsBufDirty = false;
-                    }
-
-                    if (this.indicesBufDirty) {
-                        if (this.indicesBuf) {
-                            this.indicesBuf.destroy();
-                        }
-                        this.indicesBuf = this.indices ? new XEO.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, arrays.indices, arrays.indices.length, 1, usage) : null;
-                        this.indicesBufDirty = false;
-                    }
-
-                    this.dirty = false;
-                }
+                indices: null
             });
 
-            if (!cfg.positions &amp;&amp; !cfg.normals &amp;&amp; !cfg.uv &amp;&amp; cfg.uv2 &amp;&amp; !cfg.indices) {
+            this._primitive = null;  // String
+            this._positions = null; // Typed data arrays
+            this._colors = null;
+            this._normals = null;
+            this._uv = null;
+            this._tangents = null;
+            this._indices = null;
 
-                // Default cube
+            this._dirty = true;
+            this._positionsDirty = true;
+            this._colorsDirty = true;
+            this._normalsDirty = true;
+            this._uvDirty = true;
+            this._tangentsDirty = true;
+            this._indicesDirty = true;
+
+
+            var defaultGeometry = (!cfg.positions &amp;&amp; !cfg.normals &amp;&amp; !cfg.uv &amp;&amp; cfg.uv2 &amp;&amp; !cfg.indices);
+
+            if (defaultGeometry) {
 
                 this.primitive = &quot;triangles&quot;;
 
@@ -578,6 +476,8 @@
 
             } else {
 
+                // Custom geometry
+
                 this.primitive = cfg.primitive;
                 this.positions = cfg.positions;
                 this.colors = cfg.colors;
@@ -587,13 +487,117 @@
                 this.indices = cfg.indices;
             }
 
+            var self = this;
+
             this._webglContextRestored = this.scene.canvas.on(
                 &quot;webglContextRestored&quot;,
                 function () {
-                    self._state.build();
+                    self._scheduleBuild();
                 });
 
             this.scene.stats.inc(&quot;geometries&quot;);
+        },
+
+        _scheduleBuild: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                var self = this;
+                this.scene.once(&quot;tick&quot;,
+                    function () {
+                        self._build();
+                    });
+            }
+        },
+
+        _build: function () {
+
+            var gl = this.scene.canvas.gl;
+
+            switch (this._primitive) {
+
+                case &quot;points&quot;:
+                    this._state.primitive = gl.POINTS;
+                    break;
+
+                case &quot;lines&quot;:
+                    this._state.primitive = gl.LINES;
+                    break;
+
+                case &quot;line-loop&quot;:
+                    this._state.primitive = gl.LINE_LOOP;
+                    break;
+
+                case &quot;line-strip&quot;:
+                    this._state.primitive = gl.LINE_STRIP;
+                    break;
+
+                case &quot;triangles&quot;:
+                    this._state.primitive = gl.TRIANGLES;
+                    break;
+
+                case &quot;triangle-strip&quot;:
+                    this._state.primitive = gl.TRIANGLE_STRIP;
+                    break;
+
+                case &quot;triangle-fan&quot;:
+                    this._state.primitive = gl.TRIANGLE_FAN;
+                    break;
+
+                default:
+                    this._state.primitive = gl.TRIANGLES;
+            }
+
+            var usage = gl.STATIC_DRAW;
+
+            if (this._positionsDirty) {
+                if (this._state.positions) {
+                    this._state.positions.destroy();
+                }
+                this._state.positions = this._positions ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, usage) : null;
+                this._positionsDirty = false;
+            }
+
+            if (this._colorsDirty) {
+                if (this._state.colors) {
+                    this._state.colors.destroy();
+                }
+                this._state.colors = this._colors ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, usage) : null;
+                this._colorsDirty = false;
+            }
+
+            if (this._normalsDirty) {
+                if (this._state.normals) {
+                    this._state.normals.destroy();
+                }
+                this._state.normals = this._normals ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, usage) : null;
+                this._normalsDirty = false;
+            }
+
+            if (this._uvDirty) {
+                if (this._state.uv) {
+                    this._state.uv.destroy();
+                }
+                this._state.uv = this._uv ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uv, this._uv.length, 2, usage) : null;
+                this._uv = false;
+            }
+
+            if (this._tangentsDirty) {
+                if (this._state.tangents) {
+                    this._state.tangents.destroy();
+                }
+                this._state.tangents = this._tangents ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangents, this._tangents.length, 4, usage) : null;
+                this._tangentsDirty = false;
+            }
+
+            if (this._indicesDirty) {
+                if (this._state.indices) {
+                    this._state.indices.destroy();
+                }
+                this._state.indices = this._indices ? new XEO.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, usage) : null;
+                this._indicesDirty = false;
+            }
+
+            this._dirty = false;
         },
 
         _props: {
@@ -630,8 +634,8 @@
                         value = &quot;triangles&quot;;
                     }
 
-                    this._state.primitive = value;
-                    this._state.dirty = true;
+                    this._primitive = value;
+                    this._dirty = true;
 
                     this.fire(&quot;dirty&quot;, true);
 
@@ -641,11 +645,13 @@
                      * @type String
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;primitive&quot;, this._state.primitive);
+                    this.fire(&quot;primitive&quot;, this._primitive);
+
+                    this._scheduleBuild();
                 },
 
                 get: function () {
-                    return this._state.primitive;
+                    return this._primitive;
                 }
             },
 
@@ -662,9 +668,11 @@
 
                 set: function (value) {
 
-                    this._state.positions = value;
-                    this._state.positionsBufDirty = value;
-                    this._state.dirty = true;
+                    this._positions = value;
+                    this._positionsDirty = value;
+                    this._dirty = true;
+
+                    this._scheduleBuild();
 
                     this.fire(&quot;dirty&quot;, true);
 
@@ -673,11 +681,11 @@
                      * @event positions
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;positions&quot;, this._state.positions);
+                    this.fire(&quot;positions&quot;, this._positions);
                 },
 
                 get: function () {
-                    return this._state.positions;
+                    return this._positions;
                 }
             },
 
@@ -694,9 +702,11 @@
 
                 set: function (value) {
 
-                    this._state.normals = value;
-                    this._state.normalsBufDirty = value;
-                    this._state.dirty = true;
+                    this._normals = value;
+                    this._normalsDirty = value;
+                    this._dirty = true;
+
+                    this._scheduleBuild();
 
                     this.fire(&quot;dirty&quot;, true);
 
@@ -705,11 +715,11 @@
                      * @event  normals
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot; normals&quot;, this._state.normals);
+                    this.fire(&quot; normals&quot;, this._normals);
                 },
 
                 get: function () {
-                    return this._state.normals;
+                    return this._normals;
                 }
             },
 
@@ -726,9 +736,11 @@
 
                 set: function (value) {
 
-                    this._state.uv = value;
-                    this._state.uvBufDirty = value;
-                    this._state.dirty = true;
+                    this._uv = value;
+                    this._uvBufDirty = value;
+                    this._dirty = true;
+
+                    this._scheduleBuild();
 
                     this.fire(&quot;dirty&quot;, true);
 
@@ -737,11 +749,11 @@
                      * @event uv
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;uv&quot;, this._state.uv);
+                    this.fire(&quot;uv&quot;, this._uv);
                 },
 
                 get: function () {
-                    return this._state.uv;
+                    return this._uv;
                 }
             },
 
@@ -758,9 +770,11 @@
 
                 set: function (value) {
 
-                    this._state.colors = value;
-                    this._state.colorsBufDirty = value;
-                    this._state.dirty = true;
+                    this._colors = value;
+                    this._colorsDirty = value;
+                    this._dirty = true;
+
+                    this._scheduleBuild();
 
                     this.fire(&quot;dirty&quot;, true);
 
@@ -769,11 +783,11 @@
                      * @event colors
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;colors&quot;, this._state.colors);
+                    this.fire(&quot;colors&quot;, this._colors);
                 },
 
                 get: function () {
-                    return this._state.colors;
+                    return this._colors;
                 }
             },
 
@@ -790,9 +804,11 @@
 
                 set: function (value) {
 
-                    this._state.indices = value;
-                    this._state.indicesBufDirty = value;
-                    this._state.dirty = true;
+                    this._indices = value;
+                    this._indicesDirty = value;
+                    this._dirty = true;
+
+                    this._scheduleBuild();
 
                     this.fire(&quot;dirty&quot;, true);
 
@@ -801,11 +817,11 @@
                      * @event indices
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;indices&quot;, this._state.indices);
+                    this.fire(&quot;indices&quot;, this._indices);
                 },
 
                 get: function () {
-                    return this._state.indices;
+                    return this._indices;
                 }
             },
 
@@ -831,8 +847,8 @@
 
         _compile: function () {
 
-            if (this._state.dirty) {
-                this._state.build();
+            if (this._dirty) {
+                this._build();
             }
 
             this._renderer.geometry = this._state;
@@ -841,12 +857,12 @@
         _getJSON: function () {
 
             return XEO._apply2({
-                primitive: this._state.primitive,
-                positions: this._state.positions,
-                normals: this._state.normals,
-                uv: this._state.uv,
-                colors: this._state.colors,
-                indices: this._state.indices
+                primitive: this._primitive,
+                positions: this._positions,
+                normals: this._normals,
+                uv: this._uv,
+                colors: this._colors,
+                indices: this._indices
             });
         },
 
@@ -856,33 +872,33 @@
 
             // Destroy VBOs
 
-            if (this._state.positionsBuf) {
-                this._state.positionsBuf.destroy();
+            if (this._state.positions) {
+                this._state.positions.destroy();
             }
 
-            if (this._state.colorsBuf) {
-                this._state.colorsBuf.destroy();
+            if (this._state.colors) {
+                this._state.colors.destroy();
             }
 
-            if (this._state.normalsBuf) {
-                this._state.normalsBuf.destroy();
+            if (this._state.normals) {
+                this._state.normals.destroy();
             }
 
-            if (this._state.uvBuf) {
-                this._state.uvBuf.destroy();
+            if (this._state.uv) {
+                this._state.uv.destroy();
             }
 
-            if (this._state.tangentsBuf) {
-                this._state.tangentsBuf.destroy();
+            if (this._state.tangents) {
+                this._state.tangents.destroy();
             }
 
-            if (this._state.indicesBuf) {
-                this._state.indicesBuf.destroy();
+            if (this._state.indices) {
+                this._state.indices.destroy();
             }
 
             // Destroy state
 
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
 
             // Decrement geometry statistic
 

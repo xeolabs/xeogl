@@ -138,6 +138,7 @@
  &lt;li&gt;Similarly, to render depth images of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
  property to a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
  &lt;li&gt;For special effects, we often use rendered Textures in combination with {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} and {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Textures create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/Texture.png&quot;&gt;&lt;/img&gt;
@@ -237,8 +238,8 @@
         _init: function (cfg) {
 
             // Rendering state
-            
-            this._state = this._renderer.createState({
+
+            this._state = new XEO.renderer.Texture({
                 texture: null,
                 matrix: null
             });
@@ -327,6 +328,7 @@
             this.scene.stats.inc(&quot;textures&quot;);
         },
 
+        // Schedules a call to #_build for the next &quot;tick&quot;
         _scheduleBuild: function () {
 
             if (!this._dirty) {

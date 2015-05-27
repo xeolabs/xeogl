@@ -127,6 +127,7 @@
  ## Overview
 
  &lt;ul&gt;
+
  &lt;li&gt;Materials interact with {{#crossLink &quot;Lights&quot;}}{{/crossLink}} using the &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; reflection model.&lt;/li&gt;
 
  &lt;li&gt;Within xeoEngine&#x27;s shading calculations, a Material&#x27;s {{#crossLink &quot;Material/ambient:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and
@@ -148,6 +149,8 @@
  The {{#crossLink &quot;Texture&quot;}}Texture&#x27;s{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
  {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} surface, ie. they are not multiplied by
  the {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} for each pixel, as is done in many shading systems.&lt;/li&gt;
+
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Materials create within xeoEngine&#x27;s shaders.&lt;/li&gt;
 
  &lt;/ul&gt;
 
@@ -249,19 +252,32 @@
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
+            this._state = new XEO.renderer.Material({
+
                 ambient: [0.7, 0.7, 0.8],
                 diffuse: [1.0, 1.0, 1.0],
                 specular: [1.0, 1.0, 1.0],
                 emissive: [1.0, 1.0, 1.0],
+
                 opacity: 1.0,
                 shininess: 30.0,
-                reflectivity: 1.0
+                reflectivity: 1.0,
+
+                bumpMap: null,
+                diffuseMap: null,
+                specularMap: null,
+                emissiveMap: null,
+                opacityMap: null,
+                reflectivityMap: null,
+
+                dirty: true
             });
+
 
             this._textures = [];
             this._dirtyTextureSubs = [];
             this._destroyedTextureSubs = [];
+
 
             this.ambient = cfg.ambient;
             this.diffuse = cfg.diffuse;
@@ -295,8 +311,9 @@
             ambient: {
 
                 set: function (value) {
-                    value = value || [ 1.0, 1.0, 1.0 ];
-                    this._state.ambient = value;
+
+                    this._state.ambient = value || [ 1.0, 1.0, 1.0 ];
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -305,7 +322,7 @@
                      * @event ambient
                      * @param value {Array(Number)} The property&#x27;s new value
                      */
-                    this.fire(&quot;ambient&quot;, value);
+                    this.fire(&quot;ambient&quot;, this._state.ambient);
                 },
 
                 get: function () {
@@ -327,8 +344,9 @@
             diffuse: {
 
                 set: function (value) {
-                    value = value || [ 1.0, 1.0, 1.0 ];
-                    this._state.diffuse = value;
+
+                    this._state.diffuse = value || [ 1.0, 1.0, 1.0 ];
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -337,7 +355,7 @@
                      * @event diffuse
                      * @param value {Array(Number)} The property&#x27;s new value
                      */
-                    this.fire(&quot;diffuse&quot;, value);
+                    this.fire(&quot;diffuse&quot;, this._state.diffuse);
                 },
 
                 get: function () {
@@ -359,8 +377,9 @@
             specular: {
 
                 set: function (value) {
-                    value = value || [ 0.3, 0.3, 0.3 ];
-                    this._state.specular = value;
+
+                    this._state.specular = value || [ 0.3, 0.3, 0.3 ];
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -369,7 +388,7 @@
                      @event specular
                      @param value {Array(Number)} The property&#x27;s new value
                      */
-                    this.fire(&quot;specular&quot;, value);
+                    this.fire(&quot;specular&quot;, this._state.specular);
                 },
 
                 get: function () {
@@ -391,8 +410,9 @@
             emissive: {
 
                 set: function (value) {
-                    value = value || [ 1.0, 1.0, 1.0 ];
-                    this._state.emissive = value;
+
+                    this._state.emissive = value || [ 1.0, 1.0, 1.0 ];
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -401,7 +421,7 @@
                      @event emissive
                      @param value {Array(Number)} The property&#x27;s new value
                      */
-                    this.fire(&quot;emissive&quot;, value);
+                    this.fire(&quot;emissive&quot;, this._state.emissive);
                 },
 
                 get: function () {
@@ -429,8 +449,9 @@
             opacity: {
 
                 set: function (value) {
-                    value = value !== undefined ? value : 1;
-                    this._state.opacity = value;
+
+                    this._state.opacity = (value !== undefined || value !== null) ? value : 1.0;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -439,7 +460,7 @@
                      * @event opacity
                      * @param value {Number} The property&#x27;s new value
                      */
-                    this.fire(&quot;opacity&quot;, value);
+                    this.fire(&quot;opacity&quot;, this._state.opacity);
                 },
 
                 get: function () {
@@ -463,8 +484,9 @@
             shininess: {
 
                 set: function (value) {
-                    value = value !== undefined ? value : 30;
-                    this._state.shininess = value;
+
+                    this._state.shininess = value !== undefined ? value : 30;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -473,7 +495,7 @@
                      @event shininess
                      @param value Number The property&#x27;s new value
                      */
-                    this.fire(&quot;shininess&quot;, value);
+                    this.fire(&quot;shininess&quot;, this._state.shininess);
                 },
 
                 get: function () {
@@ -497,8 +519,9 @@
             reflectivity: {
 
                 set: function (value) {
-                    value = value !== undefined ? value : 1.0;
-                    this._state.reflectivity = value;
+
+                    this._state.reflectivity = value !== undefined ? value : 1.0;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -507,7 +530,7 @@
                      @event reflectivity
                      @param value Number The property&#x27;s new value
                      */
-                    this.fire(&quot;reflectivity&quot;, value);
+                    this.fire(&quot;reflectivity&quot;, this._state.reflectivity);
                 },
 
                 get: function () {
@@ -703,8 +726,12 @@
 
                 this._destroyedTextureSubs[type] = texture.on(&quot;destroyed&quot;,
                     function () {
+
                         delete self._dirtyTextureSubs[type];
                         delete self._destroyedTextureSubs[type];
+
+                        self._state.dirty = true;
+
                         self.fire(&quot;dirty&quot;, true);
                         self.fire(type, null);
                     });
@@ -712,74 +739,75 @@
                 this._textures[type] = texture;
             }
 
+            this._state[type] = texture ? texture._state : null;
+
+            this._state.dirty = true;
+
             this.fire(type, texture || null);
         },
 
         _compile: function () {
 
-            // Set material state on renderer
-            this._renderer.material = this._state;
+            if (this._state.dirty) {
 
-            // Set texture state on renderer
-            var layers = [];
-            for (var i = 0, len = this._textures.length; i &lt; len; i++) {
-                layers.push(this._textures[i]._state);
+                this._makeHash();
+
+                this._state.dirty = false;
             }
 
-            var state = {
-                type: &quot;texture&quot;,
-                bumpMap: this.bumpMap ? this.bumpMap._state : null,
-                diffuseMap: this.diffuseMap ? this.diffuseMap._state : null,
-                specularMap: this.specularMap ? this.specularMap._state : null,
-                emissiveMap: this.emissiveMap ? this.emissiveMap._state : null,
-                opacityMap: this.opacityMap ? this.opacityMap._state : null,
-                reflectivityMap: this.reflectivityMap ? this.reflectivityMap._state : null,
-                hash: this._makeTexturesHash()
-            };
-
-            this._renderer.texture = state;
+            this._renderer.material = this._state;
         },
 
-        // Texture hash helps reuse pooled shaders
-        _makeTexturesHash: function (layers) {
+        _makeHash: function () {
+
+            var state = this._state;
             var hash = [];
-            if (this.bumpMap) {
+
+            if (state.bumpMap) {
                 hash.push(&quot;/b&quot;);
-                if (this.bumpMap.matrix) {
+                if (state.bumpMap.matrix) {
                     hash.push(&quot;/anim&quot;);
                 }
             }
-            if (this.diffuseMap) {
+
+            if (state.diffuseMap) {
                 hash.push(&quot;/d&quot;);
-                if (this.bumpMap.matrix) {
+                if (state.diffuseMap.matrix) {
                     hash.push(&quot;/anim&quot;);
                 }
             }
-            if (this.specularMap) {
+
+            if (state.specularMap) {
                 hash.push(&quot;/s&quot;);
-                if (this.bumpMap.matrix) {
+                if (state.specularMap.matrix) {
                     hash.push(&quot;/anim&quot;);
                 }
             }
-            if (this.emissiveMap) {
+
+            if (state.emissiveMap) {
                 hash.push(&quot;/e&quot;);
-                if (this.bumpMap.matrix) {
+                if (state.emissiveMap.matrix) {
                     hash.push(&quot;/anim&quot;);
                 }
             }
-            if (this.opacityMap) {
+
+            if (state.opacityMap) {
                 hash.push(&quot;/o&quot;);
-                if (this.bumpMap.matrix) {
+                if (state.opacityMap.matrix) {
                     hash.push(&quot;/anim&quot;);
                 }
             }
-            if (this.reflectivityMap) {
+
+            if (state.reflectivityMap) {
                 hash.push(&quot;/r&quot;);
-                if (this.bumpMap.matrix) {
+                if (state.reflectivityMap.matrix) {
                     hash.push(&quot;/anim&quot;);
                 }
             }
-            return  hash.join(&quot;&quot;);
+
+            hash.push(&quot;;&quot;);
+
+            state.hash = hash.join(&quot;&quot;);
         },
 
         _getJSON: function () {
@@ -802,30 +830,37 @@
 
             // Textures
 
-            if (this.bumpMap) {
-                json.bumpMap = this.bumpMap.id;
+            var textures = this._textures;
+
+            if (textures.bumpMap) {
+                json.bumpMap = textures.bumpMap.id;
             }
-            if (this.diffuseMap) {
-                json.diffuseMap = this.diffuseMap.id;
+
+            if (textures.diffuseMap) {
+                json.diffuseMap = textures.diffuseMap.id;
             }
-            if (this.specularMap) {
-                json.specularMap = this.specularMap.id;
+
+            if (textures.specularMap) {
+                json.specularMap = textures.specularMap.id;
             }
-            if (this.emissiveMap) {
-                json.emissiveMap = this.emissiveMap.id;
+
+            if (textures.emissiveMap) {
+                json.emissiveMap = textures.emissiveMap.id;
             }
-            if (this.opacityMap) {
-                json.opacityMap = this.opacityMap.id;
+
+            if (textures.opacityMap) {
+                json.opacityMap = textures.opacityMap.id;
             }
-            if (this.reflectivityMap) {
-                json.reflectivityMap = this.reflectivityMap.id;
+
+            if (textures.reflectivityMap) {
+                json.reflectivityMap = textures.reflectivityMap.id;
             }
 
             return json;
         },
 
         _destroy: function () {
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

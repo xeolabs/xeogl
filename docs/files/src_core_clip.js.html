@@ -151,6 +151,8 @@
  via the {{#crossLink &quot;Modes/clipping:property&quot;}}{{/crossLink}} flag on {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} components
  attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Clips create within xeoEngine&#x27;s shaders.&lt;/li&gt;
+
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/Clip.png&quot;&gt;&lt;/img&gt;
@@ -211,7 +213,7 @@
  enable or disable clipping of it:
 
  &#x60;&#x60;&#x60;&#x60; javascript
-// Create the Modes
+ // Create the Modes
  var modes = new XEO.Modes(scene, {
     clipping: true
  });
@@ -249,9 +251,15 @@
         type: &quot;clip&quot;,
 
         _init: function (cfg) {
-            this.mode = cfg.mode;
-            this.dir = cfg.dir;
-            this.dist = cfg.dist;
+
+            this._state = {
+
+                mode: cfg.mode,
+
+                dir: cfg.dir,
+
+                dist: cfg.dist
+            };
         },
 
         _props: {
@@ -276,8 +284,11 @@
             mode: {
 
                 set: function (value) {
+
                     value = value || &quot;disabled&quot;;
+
                     this._state.mode = value;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -286,7 +297,7 @@
                      @event mode
                      @param value {String} The property&#x27;s new value
                      */
-                    this.fire(&quot;mode&quot;, value);
+                    this.fire(&quot;mode&quot;, this._state.mode);
                 },
 
                 get: function () {
@@ -308,8 +319,9 @@
             dir: {
 
                 set: function (value) {
-                    value = value || [1, 0, 0];
-                    this._state.dir = value;
+
+                    this._state.dir =  value || [1, 0, 0];
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -318,7 +330,7 @@
                      @event dir
                      @param  value  {Array(Number)} The property&#x27;s new value
                      */
-                    this.fire(&quot;dir&quot;, value);
+                    this.fire(&quot;dir&quot;, this._state.dir);
                 },
 
                 get: function () {
@@ -340,8 +352,9 @@
             dist: {
 
                 set: function (value) {
-                    value = value !== undefined ? value : 1.0;
-                    this._state.dist = value;
+
+                    this._state.dist = value !== undefined ? value : 1.0;
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -350,7 +363,7 @@
                      @event dist
                      @param  value Number The property&#x27;s new value
                      */
-                    this.fire(&quot;dist&quot;, value);
+                    this.fire(&quot;dist&quot;, this._state.dist);
                 },
 
                 get: function () {

@@ -148,6 +148,8 @@
  via the {{#crossLink &quot;Modes/clipping:property&quot;}}{{/crossLink}} flag on {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} components
  attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
 
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Clips create within xeoEngine&#x27;s shaders.&lt;/li&gt;
+
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/Clips.png&quot;&gt;&lt;/img&gt;
@@ -245,10 +247,23 @@
 
         _init: function (cfg) {
 
+            // Renderer state contains the states of the child Clip components
+            this._state = new XEO.renderer.Clips({
+                clips: [],
+                hash: &quot;&quot;,
+                dirty: true
+            });
+
+            // Array of child Clip components
             this._clips = [];
+
+            // Subscriptions to &quot;dirty&quot; events from child Clip components
             this._dirtySubs = [];
+
+            // Subscriptions to &quot;destroyed&quot; events from child Clip components
             this._destroyedSubs = [];
 
+            // Add initial Clip components
             this.clips = cfg.clips;
         },
 
@@ -273,16 +288,18 @@
 
                     // Unsubscribe from events on old clips
                     for (var i = 0, len = this._clips.length; i &lt; len; i++) {
+
                         clip = this._clips[i];
+
                         clip.off(this._dirtySubs[i]);
                         clip.off(this._destroyedSubs[i]);
                     }
 
                     this._clips = [];
+
                     this._dirtySubs = [];
                     this._destroyedSubs = [];
 
-                    var clips = [];
                     var self = this;
 
                     function clipDirty() {
@@ -290,14 +307,23 @@
                     }
 
                     function clipDestroyed() {
+
                         var id = this.id; // Clip ID
+
                         for (var i = 0, len = self._clips.length; i &lt; len; i++) {
+
                             if (self._clips[i].id === id) {
+
                                 self._clips = self._clips.slice(i, i + 1);
+
                                 self._dirtySubs = self._dirtySubs.slice(i, i + 1);
                                 self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
+
+                                self._state.dirty = true;
+
                                 self.fire(&quot;dirty&quot;, true);
                                 self.fire(&quot;clips&quot;, self._clips);
+
                                 return;
                             }
                         }
@@ -312,7 +338,9 @@
                             // ID given for clip - find the clip component
 
                             var id = clip;
+
                             clip = this.components[id];
+
                             if (!clip) {
                                 this.error(&quot;Clip not found for ID: &#x27;&quot; + id + &quot;&#x27;&quot;);
                                 continue;
@@ -329,9 +357,9 @@
                         this._dirtySubs.push(clip.on(&quot;dirty&quot;, clipDirty));
 
                         this._destroyedSubs.push(clip.on(&quot;destroyed&quot;, clipDestroyed));
-
-                        clips.push(clip);
                     }
+
+                    this._state.dirty = true;
 
                     /**
                      Fired whenever this Clips&#x27; {{#crossLink &quot;Clips/clips:property&quot;}}{{/crossLink}} property changes.
@@ -349,46 +377,63 @@
         },
 
         _compile: function () {
-            var clips = [];
-            for (var i = 0, len = this._clips.length; i &lt; len; i++) {
-                clips.push(this._clips[i]._state);
+
+            var state = this._state;
+
+            if (state.dirty) {
+
+                state.clips = [];
+
+                for (var i = 0, len = this._clips.length; i &lt; len; i++) {
+                    state.clips.push(this._clips[i]._state);
+                }
+
+                this._makeHash();
+
+                state.dirty = false;
             }
-            var state = {
-                type: &quot;clips&quot;,
-                clips: clips,
-                hash: this._makeHash(clips)
-            };
+
             this._renderer.clips = state;
         },
 
-        _makeHash: function (clips) {
+        _makeHash: function () {
+
+            var clips = this._state.clips;
+
             if (clips.length === 0) {
-                return &quot;&quot;;
+                return &quot;;&quot;;
             }
-            var parts = [];
+
             var clip;
+            var hash = [];
+
             for (var i = 0, len = clips.length; i &lt; len; i++) {
+
                 clip = clips[i];
-                parts.push(clip.mode);
-                if (clip.specular) {
-                    parts.push(&quot;s&quot;);
-                }
-                if (clip.diffuse) {
-                    parts.push(&quot;d&quot;);
-                }
-                parts.push((clip.space === &quot;world&quot;) ? &quot;w&quot; : &quot;v&quot;);
+
+                hash.push(clip._state.mode);
             }
-            return parts.join(&quot;&quot;);
+
+            hash.push(&quot;;&quot;);
+
+            this._state.hash = hash.join(&quot;&quot;);
         },
 
         _getJSON: function () {
+
             var clipIds = [];
+
             for (var i = 0, len = this._clips.length; i &lt; len; i++) {
                 clipIds.push(this._clips[i].id);
             }
+
             return {
                 clips: clipIds
             };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
         }
     });
 

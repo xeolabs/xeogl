@@ -139,6 +139,7 @@
  (which is a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}) and default
  {{#crossLink &quot;Scene/project:property&quot;}}{{/crossLink}} transform (which is a {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}).
  You would override those with your own transform components as necessary.&lt;/li&gt;
+
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/Camera.png&quot;&gt;&lt;/img&gt;
@@ -213,7 +214,9 @@
         type: &quot;camera&quot;,
 
         _init: function (cfg) {
+
             this.project = cfg.project;
+
             this.view = cfg.view;
         },
 

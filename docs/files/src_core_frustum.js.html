@@ -129,6 +129,7 @@
  &lt;ul&gt;
  &lt;li&gt;{{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Ortho components create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/Frustum.png&quot;&gt;&lt;/img&gt;
@@ -212,35 +213,20 @@
 
         _init: function (cfg) {
 
-            var self = this;
-
-            this._state = this._renderer.createState({
-
-                mode: &quot;frustum&quot;,
-
-                left: -1.0,
-                right: 1.0,
-                top: 1.0,
-                bottom: -1.0,
-                near: 0.1,
-                far: 10000.0,
-
-                dirty: true,
-
-                build: function () {
-
-                    this.matrix = XEO.math.frustumMat4(this.left, this.right, this.bottom, this.top, this.near, this.far, this.matrix);
-
-                    this.dirty = false;
-
-                    /**
-                     * Fired whenever this Frustum&#x27;s  {{#crossLink &quot;Lookat/matrix:property&quot;}}{{/crossLink}} property is regenerated.
-                     * @event matrix
-                     * @param value The property&#x27;s new value
-                     */
-                    self.fire(&quot;matrix&quot;, this.matrix);
-                }
+            this._state = new XEO.renderer.ProjTransform({
+                matrix: null
             });
+
+            this._dirty = false;
+
+            this._left = -1.0;
+            this._right = 1.0;
+            this._top = 1.0;
+            this._bottom = -1.0;
+            this._near = 0.1;
+            this._far = 10000.0;
+
+            // Set component properties
 
             this.left = cfg.left;
             this.right = cfg.right;
@@ -248,13 +234,33 @@
             this.bottom = cfg.bottom;
             this.near = cfg.near;
             this.far = cfg.far;
+        },
 
-            this._onTick = this.scene.on(&quot;tick&quot;,
-                function () {
-                    if (self._state.dirty) {
-                        self._state.build();
-                    }
-                });
+        // Schedules a call to #_build on the next &quot;tick&quot;
+        _scheduleBuild: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                var self = this;
+                this.scene.once(&quot;tick&quot;,
+                    function () {
+                        self._build();
+                    });
+            }
+        },
+
+        // Rebuilds renderer state
+        _build: function () {
+
+            this._state.matrix = XEO.math.frustumMat4(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
+
+            this._dirty = false;
+
+            /**
+             * Fired whenever this Frustum&#x27;s  {{#crossLink &quot;Lookat/matrix:property&quot;}}{{/crossLink}} property is regenerated.
+             * @event matrix
+             * @param value The property&#x27;s new value
+             */
+            this.fire(&quot;matrix&quot;, this._state.matrix);
         },
 
         _props: {
@@ -272,12 +278,11 @@
 
                 set: function (value) {
 
-                    value = value || -1.0;
-
-                    this._state.left = value;
-                    this._state.dirty = true;
+                    this._left = (value !== undefined &amp;&amp; value !== null) ? value : -1.0;
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Frustum&#x27;s {{#crossLink &quot;Frustum/left:property&quot;}}{{/crossLink}} property changes.
@@ -285,11 +290,11 @@
                      * @event left
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;left&quot;, this._state.left);
+                    this.fire(&quot;left&quot;, this._left);
                 },
 
                 get: function () {
-                    return this._state.left;
+                    return this._left;
                 }
             },
 
@@ -306,12 +311,11 @@
 
                 set: function (value) {
 
-                    value = value || 1.0;
-
-                    this._state.right = value;
-                    this._state.dirty = true;
+                    this._right = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Frustum&#x27;s {{#crossLink &quot;Frustum/right:property&quot;}}{{/crossLink}} property changes.
@@ -319,11 +323,11 @@
                      * @event right
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;right&quot;, this._state.right);
+                    this.fire(&quot;right&quot;, this._right);
                 },
 
                 get: function () {
-                    return this._state.right;
+                    return this._right;
                 }
             },
 
@@ -340,12 +344,11 @@
 
                 set: function (value) {
 
-                    value = value || 1.0;
-
-                    this._state.top = value;
-                    this._state.dirty = true;
+                    this._top  = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Frustum&#x27;s   {{#crossLink &quot;Frustum/top:property&quot;}}{{/crossLink}} property changes.
@@ -353,11 +356,11 @@
                      * @event top
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;top&quot;, this._state.top);
+                    this.fire(&quot;top&quot;, this._top);
                 },
 
                 get: function () {
-                    return this._state.top;
+                    return this._top;
                 }
             },
 
@@ -374,12 +377,11 @@
 
                 set: function (value) {
 
-                    value = value || -1.0;
-
-                    this._state.bottom = value;
-                    this._state.dirty = true;
+                    this._bottom =  (value !== undefined &amp;&amp; value !== null) ? value : -1.0;
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Frustum&#x27;s   {{#crossLink &quot;Frustum/bottom:property&quot;}}{{/crossLink}} property changes.
@@ -387,11 +389,11 @@
                      * @event bottom
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;bottom&quot;, this._state.bottom);
+                    this.fire(&quot;bottom&quot;, this._bottom);
                 },
 
                 get: function () {
-                    return this._state.bottom;
+                    return this._bottom;
                 }
             },
 
@@ -408,24 +410,23 @@
 
                 set: function (value) {
 
-                    value = value || 0.1;
-
-                    this._state.near = value;
-                    this._state.dirty = true;
+                    this._near = (value !== undefined &amp;&amp; value !== null) ? value : 0.1;
 
                     this._renderer.imageDirty = true;
 
+                    this._scheduleBuild();
+
                     /**
-                     * Fired whenever this Frustum&#x27;s   {{#crossLink &quot;Frustum/near:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this Frustum&#x27;s {{#crossLink &quot;Frustum/near:property&quot;}}{{/crossLink}} property changes.
                      *
                      * @event near
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;near&quot;, this._state.near);
+                    this.fire(&quot;near&quot;, this._near);
                 },
 
                 get: function () {
-                    return this._state.near;
+                    return this._near;
                 }
             },
 
@@ -442,12 +443,11 @@
 
                 set: function (value) {
 
-                    value = value || 10000.0;
-
-                    this._state.far = value;
-                    this._state.dirty = true;
+                    this._far = (value !== undefined &amp;&amp; value !== null) ? value : 10000.0;
 
                     this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
                      * Fired whenever this Frustum&#x27;s  {{#crossLink &quot;Frustum/far:property&quot;}}{{/crossLink}} property changes.
@@ -455,11 +455,11 @@
                      * @event far
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;far&quot;, this._state.far);
+                    this.fire(&quot;far&quot;, this._far);
                 },
 
                 get: function () {
-                    return this._state.far;
+                    return this._far;
                 }
             },
 
@@ -475,8 +475,8 @@
 
                 get: function () {
 
-                    if (this._state.dirty) {
-                        this._state.build();
+                    if (this._dirty) {
+                        this._build();
                     }
 
                     return this._state.matrix.slice(0);
@@ -485,25 +485,22 @@
         },
 
         _compile: function () {
-            this._renderer.project = this._state;
+            this._renderer.projectTransform = this._state;
         },
 
         _getJSON: function () {
             return {
-                left: this.left,
-                right: this.right,
-                top: this.top,
-                bottom: this.bottom,
-                near: this.near,
-                far: this.far
+                left: this._left,
+                right: this._right,
+                top: this._top,
+                bottom: this._bottom,
+                near: this._near,
+                far: this._far
             };
         },
 
         _destroy: function () {
-
-            this.scene.off(this._onTick);
-
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 
