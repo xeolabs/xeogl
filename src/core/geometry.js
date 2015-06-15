@@ -27,6 +27,7 @@
  made of triangles, with UV coordinates, vertex colors and normals. This default is used for most of the examples in this documentation.</li>
  <li>A {{#crossLink "Scene"}}{{/crossLink}} provides such a box as its default {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
  for {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to fall back on, when they are not explicitly attached to a Geometry.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Geometries create within xeoEngine's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Geometry.png"></img>
@@ -267,7 +268,7 @@
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
+            this._state = new XEO.renderer.Geometry({
                 primitive: null, // WebGL enum
                 positions: null, // VBOs
                 colors: null,
@@ -299,6 +300,8 @@
             if (defaultGeometry) {
 
                 this.primitive = "triangles";
+
+                // Call property setters
 
                 this.positions = [
                     -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, // Front face
@@ -429,7 +432,7 @@
                 if (this._state.positions) {
                     this._state.positions.destroy();
                 }
-                this._state.positions = this._positions ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, usage) : null;
+                this._state.positions = this._positions ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, usage) : null;
                 this._positionsDirty = false;
             }
 
@@ -437,7 +440,7 @@
                 if (this._state.colors) {
                     this._state.colors.destroy();
                 }
-                this._state.colors = this._colors ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, usage) : null;
+                this._state.colors = this._colors ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, usage) : null;
                 this._colorsDirty = false;
             }
 
@@ -445,7 +448,7 @@
                 if (this._state.normals) {
                     this._state.normals.destroy();
                 }
-                this._state.normals = this._normals ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, usage) : null;
+                this._state.normals = this._normals ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, usage) : null;
                 this._normalsDirty = false;
             }
 
@@ -453,15 +456,15 @@
                 if (this._state.uv) {
                     this._state.uv.destroy();
                 }
-                this._state.uv = this._uv ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uv, this._uv.length, 2, usage) : null;
-                this._uv = false;
+                this._state.uv = this._uv ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uv, this._uv.length, 2, usage) : null;
+                this._uvDirty = false;
             }
 
             if (this._tangentsDirty) {
                 if (this._state.tangents) {
                     this._state.tangents.destroy();
                 }
-                this._state.tangents = this._tangents ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangents, this._tangents.length, 4, usage) : null;
+                this._state.tangents = this._tangents ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangents, this._tangents.length, 4, usage) : null;
                 this._tangentsDirty = false;
             }
 
@@ -469,7 +472,7 @@
                 if (this._state.indices) {
                     this._state.indices.destroy();
                 }
-                this._state.indices = this._indices ? new XEO.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, usage) : null;
+                this._state.indices = this._indices ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, usage) : null;
                 this._indicesDirty = false;
             }
 
@@ -774,7 +777,7 @@
 
             // Destroy state
 
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
 
             // Decrement geometry statistic
 

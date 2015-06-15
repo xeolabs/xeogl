@@ -50,6 +50,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -162,7 +163,8 @@
 
  &lt;ul&gt;
  &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}},&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} which applies the {{#crossLink &quot;Texture&quot;}}{{/crossLink}} as a diffuse map,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Fresnel&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}} which applies the {{#crossLink &quot;Texture&quot;}}{{/crossLink}} as a diffuse map and the {{#crossLink &quot;Fresnel&quot;}}{{/crossLink}} as a specular Fresnel effect,&lt;/li&gt;
  &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;DirLight&quot;}}{{/crossLink}},&lt;/li&gt;
  &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
  &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
@@ -181,12 +183,19 @@
     src: &quot;diffuseMap.jpg&quot;
  });
 
+ var fresnel = new XEO.Fresnel(scene, {
+    leftColor: [1.0, 1.0, 1.0],
+    rightColor: [0.0, 0.0, 0.0],
+    power: 4
+ });
+
  var material = new XEO.Material(scene, {
-    ambient:    [0.3, 0.3, 0.3],
-    diffuse:    [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
-    diffuseMap: diffuseMap,
-    specular:   [1, 1, 1],
-    shininess:  30
+    ambient:         [0.3, 0.3, 0.3],
+    diffuse:         [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
+    diffuseMap:      diffuseMap,
+    specular:        [1, 1, 1],
+    shininess:       30,
+    specularFresnel: fresnel
  });
 
  var ambientLight = new XEO.AmbientLight(scene, {
@@ -239,6 +248,11 @@
  @param [cfg.bumpMap=null] {Texture} A bump map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Material.
  @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Material.
  @param [cfg.reflectivityMap=null] {Texture} A reflectivity control map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Material.
+ @param [cfg.diffuseFresnel=null] {Fresnel} A diffuse {{#crossLink &quot;Fresnel&quot;}}Fresnel{{/crossLink}}.
+ @param [cfg.specularFresnel=null] {Fresnel} A specular {{#crossLink &quot;Fresnel&quot;}}Fresnel{{/crossLink}}.
+ @param [cfg.emissiveFresnel=null] {Fresnel} An emissive {{#crossLink &quot;Fresnel&quot;}}Fresnel{{/crossLink}}.
+ @param [cfg.opacityFresnel=null] {Fresnel} An opacity {{#crossLink &quot;Fresnel&quot;}}Fresnel{{/crossLink}}.
+ @param [cfg.reflectivityFresnel=null] {Fresnel} A reflectivity {{#crossLink &quot;Fresnel&quot;}}Fresnel{{/crossLink}}.
  */
 (function () {
 
@@ -270,13 +284,21 @@
                 opacityMap: null,
                 reflectivityMap: null,
 
-                dirty: true
+                diffuseFresnel: null,
+                specularFresnel: null,
+                emissiveFresnel: null,
+                opacityFresnel: null,
+                reflectivityFresnel: null,
+
+                dirty: true,
+                
+                hash: null
             });
 
 
-            this._textures = [];
-            this._dirtyTextureSubs = [];
-            this._destroyedTextureSubs = [];
+            this._components = [];
+            this._dirtyComponentSubs = [];
+            this._destroyedComponentSubs = [];
 
 
             this.ambient = cfg.ambient;
@@ -294,6 +316,12 @@
             this.emissiveMap = cfg.emissiveMap;
             this.opacityMap = cfg.opacityMap;
             this.reflectivityMap = cfg.reflectivityMap;
+
+            this.diffuseFresnel = cfg.diffuseFresnel;
+            this.specularFresnel = cfg.specularFresnel;
+            this.emissiveFresnel = cfg.emissiveFresnel;
+            this.opacityFresnel = cfg.opacityFresnel;
+            this.reflectivityFresnel = cfg.reflectivityFresnel;
         },
 
         _props: {
@@ -312,7 +340,7 @@
 
                 set: function (value) {
 
-                    this._state.ambient = value || [ 1.0, 1.0, 1.0 ];
+                    this._state.ambient = value || [1.0, 1.0, 1.0];
 
                     this._renderer.imageDirty = true;
 
@@ -345,7 +373,7 @@
 
                 set: function (value) {
 
-                    this._state.diffuse = value || [ 1.0, 1.0, 1.0 ];
+                    this._state.diffuse = value || [1.0, 1.0, 1.0];
 
                     this._renderer.imageDirty = true;
 
@@ -378,7 +406,7 @@
 
                 set: function (value) {
 
-                    this._state.specular = value || [ 0.3, 0.3, 0.3 ];
+                    this._state.specular = value || [0.3, 0.3, 0.3];
 
                     this._renderer.imageDirty = true;
 
@@ -411,7 +439,7 @@
 
                 set: function (value) {
 
-                    this._state.emissive = value || [ 1.0, 1.0, 1.0 ];
+                    this._state.emissive = value || [1.0, 1.0, 1.0];
 
                     this._renderer.imageDirty = true;
 
@@ -559,11 +587,11 @@
                      @event diffuseMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachTexture(&quot;diffuseMap&quot;, texture);
+                    this._attachComponent(&quot;diffuseMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._textures[&quot;diffuseMap&quot;];
+                    return this._components[&quot;diffuseMap&quot;];
                 }
             },
 
@@ -588,11 +616,11 @@
                      @event specularMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachTexture(&quot;specularMap&quot;, texture);
+                    this._attachComponent(&quot;specularMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._textures[&quot;specularMap&quot;];
+                    return this._components[&quot;specularMap&quot;];
                 }
             },
 
@@ -617,11 +645,11 @@
                      @event emissiveMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachTexture(&quot;emissiveMap&quot;, texture);
+                    this._attachComponent(&quot;emissiveMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._textures[&quot;emissiveMap&quot;];
+                    return this._components[&quot;emissiveMap&quot;];
                 }
             },
 
@@ -646,11 +674,11 @@
                      @event opacityMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachTexture(&quot;opacityMap&quot;, texture);
+                    this._attachComponent(&quot;opacityMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._textures[&quot;opacityMap&quot;];
+                    return this._components[&quot;opacityMap&quot;];
                 }
             },
 
@@ -675,60 +703,206 @@
                      @event reflectivityMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachTexture(&quot;reflectivityMap&quot;, texture);
+                    this._attachComponent(&quot;reflectivityMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._textures[&quot;reflectivityMap&quot;];
+                    return this._components[&quot;reflectivityMap&quot;];
+                }
+            },
+
+            /**
+             A diffuse {{#crossLink &quot;Fresnel&quot;}}{{/crossLink}} attached to this Material.
+
+             This property overrides {{#crossLink &quot;Material/diffuseFresnel:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires a {{#crossLink &quot;Material/diffuseFresnel:event&quot;}}{{/crossLink}} event on change.
+
+             @property diffuseFresnel
+             @default null
+             @type {Fresnel}
+             */
+            diffuseFresnel: {
+
+                set: function (fresnel) {
+
+                    /**
+                     Fired whenever this Material&#x27;s {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} property changes.
+
+                     @event diffuseFresnel
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;diffuseFresnel&quot;, fresnel);
+                },
+
+                get: function () {
+                    return this._components[&quot;diffuseFresnel&quot;];
+                }
+            },
+
+            /**
+             A specular {{#crossLink &quot;Fresnel&quot;}}{{/crossLink}} attached to this Material.
+
+             This property overrides {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires a {{#crossLink &quot;Material/specularFresnel:event&quot;}}{{/crossLink}} event on change.
+
+             @property specularFresnel
+             @default null
+             @type {Fresnel}
+             */
+            specularFresnel: {
+
+                set: function (fresnel) {
+
+                    /**
+                     Fired whenever this Material&#x27;s {{#crossLink &quot;Material/specularFresnel:property&quot;}}{{/crossLink}} property changes.
+
+                     @event specularFresnel
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;specularFresnel&quot;, fresnel);
+                },
+
+                get: function () {
+                    return this._components[&quot;specularFresnel&quot;];
+                }
+            },
+
+            /**
+             An emissive {{#crossLink &quot;Fresnel&quot;}}{{/crossLink}} attached to this Material.
+
+             This property overrides {{#crossLink &quot;Material/emissive:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires an {{#crossLink &quot;Material/emissiveFresnel:event&quot;}}{{/crossLink}} event on change.
+
+             @property emissiveFresnel
+             @default null
+             @type {Fresnel}
+             */
+            emissiveFresnel: {
+
+                set: function (fresnel) {
+
+                    /**
+                     Fired whenever this Material&#x27;s {{#crossLink &quot;Material/emissiveFresnel:property&quot;}}{{/crossLink}} property changes.
+
+                     @event emissiveFresnel
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;emissiveFresnel&quot;, fresnel);
+                },
+
+                get: function () {
+                    return this._components[&quot;emissiveFresnel&quot;];
+                }
+            },
+
+            /**
+             An opacity {{#crossLink &quot;Fresnel&quot;}}{{/crossLink}} attached to this Material.
+
+             This property overrides {{#crossLink &quot;Material/opacity:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires an {{#crossLink &quot;Material/opacityFresnel:event&quot;}}{{/crossLink}} event on change.
+
+             @property opacityFresnel
+             @default null
+             @type {Fresnel}
+             */
+            opacityFresnel: {
+
+                set: function (fresnel) {
+
+                    /**
+                     Fired whenever this Material&#x27;s {{#crossLink &quot;Material/opacityFresnel:property&quot;}}{{/crossLink}} property changes.
+
+                     @event opacityFresnel
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;opacityFresnel&quot;, fresnel);
+                },
+
+                get: function () {
+                    return this._components[&quot;opacityFresnel&quot;];
+                }
+            },
+
+            /**
+             A reflectivity {{#crossLink &quot;Fresnel&quot;}}{{/crossLink}} attached to this Material.
+
+             This property overrides {{#crossLink &quot;Material/reflectivity:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires a {{#crossLink &quot;Material/reflectivityFresnel:event&quot;}}{{/crossLink}} event on change.
+
+             @property reflectivityFresnel
+             @default null
+             @type {Fresnel}
+             */
+            reflectivityFresnel: {
+
+                set: function (fresnel) {
+
+                    /**
+                     Fired whenever this Material&#x27;s {{#crossLink &quot;Material/reflectivityFresnel:property&quot;}}{{/crossLink}} property changes.
+
+                     @event reflectivityFresnel
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;reflectivityFresnel&quot;, fresnel);
+                },
+
+                get: function () {
+                    return this._components[&quot;reflectivityFresnel&quot;];
                 }
             }
         },
 
-        _attachTexture: function (type, texture) {
+        _attachComponent: function (type, component) {
 
-            if (XEO._isString(texture)) {
+            if (XEO._isString(component)) {
 
-                // ID given for texture - find the texture component
-                var id = texture;
+                // ID given for component - find the component 
+                var id = component;
 
-                texture = this.scene.components[id];
+                component = this.scene.components[id];
 
-                if (!texture) {
+                if (!component) {
                     this.error(&quot;Component with this ID not found: &#x27;&quot; + id + &quot;&#x27;&quot;);
                     return;
                 }
             }
 
-            if (texture &amp;&amp; texture.type !== &quot;texture&quot;) {
-                this.error(&quot;Component with this ID is not a texture: &#x27;&quot; + id + &quot;&#x27;&quot;);
+            if (component &amp;&amp; component.type !== &quot;texture&quot; &amp;&amp; component.type !== &quot;fresnel&quot;) {
+                this.error(&quot;Component with this ID is not a Texture or Fresnel: &#x27;&quot; + id + &quot;&#x27;&quot;);
                 return;
             }
 
-            var oldTexture = this._textures[type];
+            var oldComponent = this._components[type];
 
-            if (oldTexture) {
+            if (oldComponent) {
 
-                // Replacing old texture
+                // Replacing old component
 
-                oldTexture.off(this._dirtyTextureSubs[type]);
-                oldTexture.off(this._destroyedTextureSubs[type]);
+                oldComponent.off(this._dirtyComponentSubs[type]);
+                oldComponent.off(this._destroyedComponentSubs[type]);
 
-                delete this._textures[type];
+                delete this._components[type];
             }
 
             var self = this;
 
-            if (texture) {
+            if (component) {
 
-                this._dirtyTextureSubs[type] = texture.on(&quot;dirty&quot;, function () {
-                    self.fire(&quot;dirty&quot;, true);
-                });
+                this._dirtyComponentSubs[type] = component.on(&quot;dirty&quot;,
+                    function () {
+                        self.fire(&quot;dirty&quot;, true);
+                    });
 
-                this._destroyedTextureSubs[type] = texture.on(&quot;destroyed&quot;,
+                this._destroyedComponentSubs[type] = component.on(&quot;destroyed&quot;,
                     function () {
 
-                        delete self._dirtyTextureSubs[type];
-                        delete self._destroyedTextureSubs[type];
+                        delete self._dirtyComponentSubs[type];
+                        delete self._destroyedComponentSubs[type];
 
                         self._state.dirty = true;
 
@@ -736,14 +910,14 @@
                         self.fire(type, null);
                     });
 
-                this._textures[type] = texture;
+                this._components[type] = component;
             }
 
-            this._state[type] = texture ? texture._state : null;
+            this._state[type] = component ? component._state : null;
 
             this._state.dirty = true;
 
-            this.fire(type, texture || null);
+            this.fire(type, component || null);
         },
 
         _compile: function () {
@@ -805,6 +979,26 @@
                 }
             }
 
+            if (state.diffuseFresnel) {
+                hash.push(&quot;/df&quot;);
+            }
+
+            if (state.specularFresnel) {
+                hash.push(&quot;/sf&quot;);
+            }
+
+            if (state.emissiveFresnel) {
+                hash.push(&quot;/ef&quot;);
+            }
+
+            if (state.opacityFresnel) {
+                hash.push(&quot;/of&quot;);
+            }
+
+            if (state.reflectivityFresnel) {
+                hash.push(&quot;/rf&quot;);
+            }
+            
             hash.push(&quot;;&quot;);
 
             state.hash = hash.join(&quot;&quot;);
@@ -830,30 +1024,50 @@
 
             // Textures
 
-            var textures = this._textures;
+            var components = this._components;
 
-            if (textures.bumpMap) {
-                json.bumpMap = textures.bumpMap.id;
+            if (components.bumpMap) {
+                json.bumpMap = components.bumpMap.id;
             }
 
-            if (textures.diffuseMap) {
-                json.diffuseMap = textures.diffuseMap.id;
+            if (components.diffuseMap) {
+                json.diffuseMap = components.diffuseMap.id;
             }
 
-            if (textures.specularMap) {
-                json.specularMap = textures.specularMap.id;
+            if (components.specularMap) {
+                json.specularMap = components.specularMap.id;
             }
 
-            if (textures.emissiveMap) {
-                json.emissiveMap = textures.emissiveMap.id;
+            if (components.emissiveMap) {
+                json.emissiveMap = components.emissiveMap.id;
             }
 
-            if (textures.opacityMap) {
-                json.opacityMap = textures.opacityMap.id;
+            if (components.opacityMap) {
+                json.opacityMap = components.opacityMap.id;
             }
 
-            if (textures.reflectivityMap) {
-                json.reflectivityMap = textures.reflectivityMap.id;
+            if (components.reflectivityMap) {
+                json.reflectivityMap = components.reflectivityMap.id;
+            }
+
+            if (components.diffuseFresnel) {
+                json.diffuseFresnel = components.diffuseFresnel.id;
+            }
+
+            if (components.specularFresnel) {
+                json.specularFresnel = components.specularFresnel.id;
+            }
+
+            if (components.emissiveFresnel) {
+                json.emissiveFresnel = components.emissiveFresnel.id;
+            }
+
+            if (components.opacityFresnel) {
+                json.opacityFresnel = components.opacityFresnel.id;
+            }
+
+            if (components.reflectivityFresnel) {
+                json.reflectivityFresnel = components.reflectivityFresnel.id;
             }
 
             return json;

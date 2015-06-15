@@ -9,7 +9,7 @@
      * @param type gl.VERTEX_SHADER | gl.FRAGMENT_SHADER
      * @param source Source code for shader
      */
-    XEO.webgl.Shader = function (gl, type, source) {
+    XEO.renderer.webgl.Shader = function (gl, type, source) {
 
         /**
          * True as soon as this shader is allocated and ready to go
@@ -34,7 +34,9 @@
 
                 XEO.log.error("Shader program failed to compile: " + gl.getShaderInfoLog(this.handle));
                 XEO.log.error("Shader source:");
+
                 var lines = source.split('\n');
+
                 for (var j = 0; j < lines.length; j++) {
                     XEO.log.error((j + 1) + ": " + lines[j]);
                 }

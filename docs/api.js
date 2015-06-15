@@ -13,6 +13,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "DepthBuf",
         "DepthTarget",
         "DirLight",
+        "Fresnel",
         "Frustum",
         "GameObject",
         "Geometry",

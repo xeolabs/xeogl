@@ -2,7 +2,7 @@
 
     "use strict";
 
-    XEO.webgl.Texture2D = function (gl, cfg) {
+    XEO.renderer.webgl.Texture2D = function (gl, cfg) {
 
         this.gl = gl;
 
@@ -15,19 +15,19 @@
         this.allocated = true;
     };
 
-    XEO.webgl.Texture2D.prototype.setImage = function (image) {
+    XEO.renderer.webgl.Texture2D.prototype.setImage = function (image) {
 
         var gl = this.gl;
 
         gl.bindTexture(this.target, this.texture);
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-            XEO.webgl.ensureImageSizePowerOfTwo(cfg.image));
+            XEO.renderer.webgl.ensureImageSizePowerOfTwo(cfg.image));
 
         gl.bindTexture(this.target, null);
     };
 
-    XEO.webgl.Texture2D.prototype.setProps = function (cfg) {
+    XEO.renderer.webgl.Texture2D.prototype.setProps = function (cfg) {
 
         var gl = this.gl;
 
@@ -74,13 +74,13 @@
         gl.bindTexture(this.target, null);
     };
 
-    XEO.webgl.Texture2D.prototype._getGLEnum = function (name, defaultVal) {
+    XEO.renderer.webgl.Texture2D.prototype._getGLEnum = function (name, defaultVal) {
 
         if (name === undefined) {
             return defaultVal;
         }
 
-        var glName = XEO.webgl.enums[name];
+        var glName = XEO.renderer.webgl.enums[name];
 
         if (glName === undefined) {
             return defaultVal;
@@ -90,7 +90,7 @@
     };
 
 
-    XEO.webgl.Texture2D.prototype.bind = function (unit) {
+    XEO.renderer.webgl.Texture2D.prototype.bind = function (unit) {
 
         if (!this.allocated) {
             return;
@@ -110,7 +110,7 @@
         return false;
     };
 
-    XEO.webgl.Texture2D.prototype.unbind = function (unit) {
+    XEO.renderer.webgl.Texture2D.prototype.unbind = function (unit) {
 
         if (!this.allocated) {
             return;
@@ -126,7 +126,7 @@
         }
     };
 
-    XEO.webgl.Texture2D.prototype.destroy = function () {
+    XEO.renderer.webgl.Texture2D.prototype.destroy = function () {
 
         if (!this.allocated) {
             return;
@@ -141,7 +141,7 @@
     };
 
 
-    XEO.webgl.clampImageSize = function (image, numPixels) {
+    XEO.renderer.webgl.clampImageSize = function (image, numPixels) {
 
         var n = image.width * image.height;
 
@@ -154,8 +154,8 @@
 
             var canvas = document.createElement("canvas");
 
-            canvas.width = XEO.webgl.nextHighestPowerOfTwo(width);
-            canvas.height = XEO.webgl.nextHighestPowerOfTwo(height);
+            canvas.width = XEO.renderer.webgl.nextHighestPowerOfTwo(width);
+            canvas.height = XEO.renderer.webgl.nextHighestPowerOfTwo(height);
 
             var ctx = canvas.getContext("2d");
 
@@ -167,14 +167,14 @@
         return image;
     };
 
-    XEO.webgl.ensureImageSizePowerOfTwo = function (image) {
+    XEO.renderer.webgl.ensureImageSizePowerOfTwo = function (image) {
 
-        if (!XEO.webgl.isPowerOfTwo(image.width) || !XEO.webgl.isPowerOfTwo(image.height)) {
+        if (!XEO.renderer.webgl.isPowerOfTwo(image.width) || !XEO.renderer.webgl.isPowerOfTwo(image.height)) {
 
             var canvas = document.createElement("canvas");
 
-            canvas.width = XEO.webgl.nextHighestPowerOfTwo(image.width);
-            canvas.height = XEO.webgl.nextHighestPowerOfTwo(image.height);
+            canvas.width = XEO.renderer.webgl.nextHighestPowerOfTwo(image.width);
+            canvas.height = XEO.renderer.webgl.nextHighestPowerOfTwo(image.height);
 
             var ctx = canvas.getContext("2d");
 
@@ -187,11 +187,11 @@
         return image;
     };
 
-    XEO.webgl.isPowerOfTwo = function (x) {
+    XEO.renderer.webgl.isPowerOfTwo = function (x) {
         return (x & (x - 1)) === 0;
     };
 
-    XEO.webgl.nextHighestPowerOfTwo = function (x) {
+    XEO.renderer.webgl.nextHighestPowerOfTwo = function (x) {
         --x;
         for (var i = 1; i < 32; i <<= 1) {
             x = x | x >> i;

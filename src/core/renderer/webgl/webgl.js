@@ -2,7 +2,7 @@
 
     "use strict";
 
-    XEO.webgl = {
+    XEO.renderer.webgl = {
 
         /** Maps XEO component parameter names to WebGL enum names
          */

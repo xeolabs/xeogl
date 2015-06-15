@@ -19,15 +19,41 @@
         unique: true,
 
         build: function () {
-            this._depthModeDraw = this.program.draw.getUniformLocation("XEO_uDepthMode");
-            this._depthModePick = this.program.pick.getUniformLocation("XEO_uDepthMode");
+
+            this._depthModeDraw = this.program.draw.getUniform("XEO_uDepthMode");
+
+            this._depthModePick = this.program.pick.getUniform("XEO_uDepthMode");
+
+            this._uPickColor = this.program.pick.getUniform("XEO_uPickColor");
         },
 
         drawAndPick: function (frameCtx) {
+
             var gl = this.program.gl;
-            gl.uniform1i(frameCtx.pick ? this._depthModePick : this._depthModeDraw, frameCtx.depthMode);
+
+            if (frameCtx.pick) {
+
+                // TODO: Only set pick color when depthMode === false/0?
+
+                if (this._uPickColor && this.state.name) {
+
+                    frameCtx.pickNames[frameCtx.pickIndex++] = this.state;
+
+                    var b = frameCtx.pickIndex >> 16 & 0xFF;
+                    var g = frameCtx.pickIndex >> 8 & 0xFF;
+                    var r = frameCtx.pickIndex & 0xFF;
+
+                    this._uPickColor.setValue([r / 255, g / 255, b / 255]);
+                }
+
+                this._depthModePick.setValue(frameCtx.depthMode);
+
+            } else {
+
+                this._depthModeDraw.setValue(frameCtx.depthMode);
+            }
+
             gl.drawElements(this.state.primitive, this.state.indexBuf.numItems, gl.UNSIGNED_SHORT, 0);
-            //frameCtx.textureUnit = 0;
         }
     });
 

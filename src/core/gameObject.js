@@ -655,7 +655,7 @@
 
             // (Re)build this GameObject in the renderer
 
-            this._renderer.buildGameObject(this.id);
+            this._renderer.buildObject(this.id);
         },
 
         _getJSON: function () {

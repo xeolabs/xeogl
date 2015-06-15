@@ -2,9 +2,6 @@
 
     "use strict";
 
-    /**
-     * Create display state chunk type for draw render of material transform
-     */
     XEO.ChunkFactory.createChunkType({
 
         type: "material",
@@ -13,51 +10,145 @@
 
             var draw = this.program.draw;
 
-            this._uMaterialBaseColor = draw.getUniformLocation("XEO_uMaterialColor");
-            this._uMaterialSpecularColor = draw.getUniformLocation("XEO_uMaterialSpecularColor");
-            this._uMaterialSpecular = draw.getUniformLocation("XEO_uMaterialSpecular");
-            this._uMaterialShine = draw.getUniformLocation("XEO_uMaterialShine");
-            this._uMaterialEmit = draw.getUniformLocation("XEO_uMaterialEmit");
-            this._uMaterialAlpha = draw.getUniformLocation("XEO_uMaterialAlpha");
+            // Color
+
+            this._uMaterialDiffuse = draw.getUniform("XEO_uMaterialDiffuse");
+            this._uMaterialSpecular = draw.getUniform("XEO_uMaterialSpecular");
+            this._uMaterialEmissive = draw.getUniform("XEO_uMaterialEmissive");
+
+            // Opacity
+
+            this._uMaterialOpacity = draw.getUniform("XEO_uMaterialOpacity");
+
+            this._uMaterialShine = draw.getUniform("XEO_uMaterialShine");
+
+            this._uDiffuseMap = draw.getUniform("XEO_uDiffuseMap");
+            this._uDiffuseMapMatrix = draw.getUniform("XEO_uDiffuseMapMatrix");
+
+            this._uSpecularMap = draw.getUniform("XEO_uSpecularMap");
+            this._uSpecularMapMatrix = draw.getUniform("XEO_uSpecularMapMatrix");
+
+            this._uEmissiveMap = draw.getUniform("XEO_uEmissiveMap");
+            this._uEmissiveMapMatrix = draw.getUniform("XEO_uEmissiveMapMatrix");
+
+            this._uOpacityMap = draw.getUniform("XEO_uOpacityMap");
+            this._uOpacityMapMatrix = draw.getUniform("XEO_uOpacityMapMatrix");
+
+            this._uReflectivityMap = draw.getUniform("XEO_uReflectivityMap");
+            this._uReflectivityMapMatrix = draw.getUniform("XEO_uReflectivityMapMatrix");
+
+            this._uBumpMap = draw.getUniform("XEO_uBumpMap");
+            this._uBumpMapMatrix = draw.getUniform("XEO_uBumpMapMatrix");
+
         },
 
-        draw: function () {
+        draw: function (frameCtx) {
 
-            var gl = this.program.gl;
-            var materialSettings = this.program.draw.materialSettings;
+            var draw = this.program.draw;
+            var state = this.state;
 
-            if (this._uMaterialBaseColor) {
-                gl.uniform3fv(this._uMaterialBaseColor, this.state.baseColor);
+            // Diffuse color
+
+            if (this._uMaterialDiffuse) {
+                this._uMaterialDiffuse.setValue(state.diffuse);
             }
 
-            if (this._uMaterialSpecularColor &&
-                (materialSettings.specular[0] !== this.state.specular[0] ||
-                    materialSettings.specular[1] !== this.state.specular[1] ||
-                    materialSettings.specular[2] !== this.state.specular[2])) {
-                gl.uniform3fv(this._uMaterialSpecularColor, this.state.specular);
-                materialSettings.specular[0] = this.state.specular[0];
-                materialSettings.specular[1] = this.state.specular[1];
-                materialSettings.specular[2] = this.state.specular[2];
+            // Specular color
+
+            if (this._uMaterialSpecular) {
+                this._uMaterialSpecular.setValue(state.specular);
             }
 
-            if (this._uMaterialSpecular && materialSettings.specular !== this.state.specular) {
-                gl.uniform1f(this._uMaterialSpecular, this.state.specular);
-                materialSettings.specular = this.state.specular;
+            // Emissive color
+
+            if (this._uMaterialEmissive) {
+                this._uMaterialEmissive.setValue(state.emissive);
             }
 
-            if (this._uMaterialShine && materialSettings.shininess !== this.state.shininess) {
-                gl.uniform1f(this._uMaterialShine, this.state.shininess);
-                materialSettings.shininess = this.state.shininess;
+            // Opacity 
+
+            if (this._uMaterialOpacity) {
+                this._uMaterialOpacity.setValue(state.opacity);
             }
 
-            if (this._uMaterialEmit && materialSettings.emit !== this.state.emit) {
-                gl.uniform1f(this._uMaterialEmit, this.state.emit);
-                materialSettings.emit = this.state.emit;
+
+            if (this._uMaterialShine) {
+                this._uMaterialShine.setValue(state.shininess);
             }
 
-            if (this._uMaterialAlpha && materialSettings.alpha !== this.state.alpha) {
-                gl.uniform1f(this._uMaterialAlpha, this.state.alpha);
-                materialSettings.alpha = this.state.alpha;
+            // Textures
+
+            frameCtx.textureUnit = 0;
+
+            // Diffuse map
+
+            if (state.diffuseMap && this._uDiffuseMap) {
+
+                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit++);
+
+                if (this._uDiffuseMapMatrix) {
+                    this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
+                }
+            }
+
+            // Specular map
+
+            if (state.specularMap && this._uSpecularMap) {
+
+                draw.bindTexture(this._uSpecularMap, state.specularMap.texture, frameCtx.textureUnit++);
+
+                if (this._uSpecularMapMatrix) {
+                    this._uSpecularMapMatrix.setValue(state.specularMap.matrix);
+                }
+            }
+
+            // Emissive map
+
+            if (state.emissiveMap && this._uEmissiveMap) {
+
+                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
+
+                if (this._uEmissiveMapMatrix) {
+                    this._uEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
+                }
+            }
+
+            // Opacity map
+
+            if (state.opacityMap && this._uOpacityMap) {
+
+                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit++);
+
+                if (this._uOpacityMapMatrix) {
+                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                }
+            }
+
+            // Reflectivity map
+
+            if (state.reflectivityMap && this._uReflectivityMap) {
+
+                draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, frameCtx.textureUnit++);
+
+                if (this._uReflectivityMapMatrix) {
+                    this._uReflectivityMapMatrix.setValue(state.reflectivityMap.matrix);
+                }
+            }
+
+            // Bump map
+
+            if (state.bumpMap && this._uBumpMap) {
+
+                draw.bindTexture(this._uBumpMap, state.bumpMap.texture, frameCtx.textureUnit++);
+
+                if (this._uBumpMapMatrix) {
+                    this._uBumpMapMatrix.setValue(state.bumpMap.matrix);
+                }
+            }
+
+
+            if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
+                frameCtx.textureUnit = 0;
             }
         }
     });

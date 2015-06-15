@@ -6,6 +6,7 @@
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Frustum.png"></img>
@@ -89,8 +90,7 @@
 
         _init: function (cfg) {
 
-            // Renderer state
-            this._state = this._renderer.createState({
+            this._state = new XEO.renderer.ProjTransform({
                 matrix: null
             });
 
@@ -377,7 +377,7 @@
         },
 
         _destroy: function () {
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

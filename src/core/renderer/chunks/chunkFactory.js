@@ -3,25 +3,25 @@
     "use strict";
 
     /**
-     * @class Manages creation, reuse and destruction of {@link XEO.Chunk}s for the components within a single {@link XEO.Renderer}.
+     * @class Manages creation, reuse and destruction of {@link XEO.renderer.Chunk}s.
      */
     XEO.renderer.ChunkFactory = function () {
+
         this._chunks = {};
+
         this.chunkTypes = XEO.renderer.ChunkFactory.chunkTypes;
     };
 
     /**
-     * Sub-classes of {@link XEO.Chunk} provided by this factory
+     * Sub-classes of {@link XEO.renderer.Chunk} provided by this factory
      */
     XEO.renderer.ChunkFactory.chunkTypes = {};    // Supported chunk classes, installed by #createChunkType
 
-    /**
-     * Free pool of unused {@link XEO.Chunk} instances
-     */
+    // Free pool of unused XEO.renderer.Chunk instances
     XEO.renderer.ChunkFactory._freeChunks = {};    // Free chunk pool for each type
 
     /**
-     * Creates a chunk class for instantiation by this factory
+     * Creates a chunk type.
      *
      * @param params Members to augment the chunk class prototype with
      * @param params.type Type name for the new chunk class
@@ -35,10 +35,12 @@
             throw "'type' expected in params";
         }
 
-        var supa = XEO.Chunk;
+        var supa = XEO.renderer.Chunk;
 
         var chunkClass = function () { // Create the class
+
             this.useCount = 0;
+
             this.init.apply(this, arguments);
         };
 
@@ -49,9 +51,9 @@
             params.draw = params.pick = params.drawAndPick;
         }
 
-        XEO.renderer.ChunkFactory.chunkTypes[params.type] = chunkClass;
-
         XEO._apply(params, chunkClass.prototype);   // Augment subclass
+
+        XEO.renderer.ChunkFactory.chunkTypes[params.type] = chunkClass;
 
         XEO.renderer.ChunkFactory._freeChunks[params.type] = { // Set up free chunk pool for this type
             chunks: [],
@@ -62,9 +64,9 @@
     };
 
     /**
-     *
+     * Gets a chunk from this factory.
      */
-    XEO.renderer.ChunkFactory.prototype.getChunk = function (chunkId, type, program, state, core2) {
+    XEO.renderer.ChunkFactory.prototype.getChunk = function (chunkId, type, program, state) {
 
         var chunkClass = XEO.renderer.ChunkFactory.chunkTypes[type]; // Check type supported
 
@@ -72,30 +74,35 @@
             throw "chunk type not supported: '" + type + "'";
         }
 
-        var chunk = this._chunks[chunkId];  // Try to reference an existing chunk
+        // Try to instance an existing chunk
+
+        var chunk = this._chunks[chunkId];
 
         if (chunk) {
             chunk.useCount++;
             return chunk;
         }
 
-        var freeChunks = XEO.renderer.ChunkFactory._freeChunks[type]; // Try to recycle a free chunk
+        // Try to recycle a free chunk
+
+        var freeChunks = XEO.renderer.ChunkFactory._freeChunks[type];
 
         if (freeChunks.chunksLen > 0) {
             chunk = freeChunks.chunks[--freeChunks.chunksLen];
         }
 
-        if (chunk) {    // Reinitialise the recycled chunk
+        if (chunk) {
 
-            chunk.init(chunkId, program, state, core2);
+            // Reinitialise the free chunk
 
-        } else {        // Instantiate a fresh chunk
+            chunk.init(chunkId, program, state);
 
-            chunk = new chunkClass(chunkId, program, state, core2); // Create new chunk
+        } else {
 
+            // No free chunk, create a new one
+
+            chunk = new chunkClass(chunkId, program, state);
         }
-
-        chunk.type = type;
 
         chunk.useCount = 1;
 
@@ -105,21 +112,19 @@
     };
 
     /**
-     * Releases a display state chunk back to this factory, destroying it if the chunk's use count is then zero.
+     * Releases a chunk back to this factory.
      *
-     * @param {XEO.Chunk} chunk Chunk to release
+     * @param {XEO.renderer.Chunk} chunk Chunk to release
      */
     XEO.renderer.ChunkFactory.prototype.putChunk = function (chunk) {
 
-        if (chunk.useCount === 0) {
-            return; // In case of excess puts
+        if (chunk.useCount === 0) { // In case of excess puts
+            return;
         }
 
-        if (--chunk.useCount <= 0) {    // Release shared state if use count now zero
+        // Free the chunk if use count now zero
 
-            if (chunk.recycle) {
-                chunk.recycle();
-            }
+        if (--chunk.useCount <= 0) {
 
             this._chunks[chunk.id] = null;
 
@@ -130,7 +135,7 @@
     };
 
     /**
-     * Re-cache shader variable locations for each active chunk and reset VAOs if any
+     * Restores the chunks in this factory after a WebGL context recovery.
      */
     XEO.renderer.ChunkFactory.prototype.webglRestored = function () {
 
@@ -140,7 +145,7 @@
 
             if (this._chunks.hasOwnProperty(chunkId)) {
 
-                chunk = this._chunks[chunkId]; // Re-cache chunk's shader variable locations
+                chunk = this._chunks[chunkId];
 
                 if (chunk.build) {
                     chunk.build();

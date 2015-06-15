@@ -30,48 +30,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/core/webgl/arrayBuffer.js": {
-            "name": "src/core/webgl/arrayBuffer.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/webgl/attribute.js": {
-            "name": "src/core/webgl/attribute.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/webgl/program.js": {
-            "name": "src/core/webgl/program.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/webgl/renderBuffer.js": {
-            "name": "src/core/webgl/renderBuffer.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/webgl/shader.js": {
-            "name": "src/core/webgl/shader.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/webgl/webgl.js": {
-            "name": "src/core/webgl/webgl.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
         "src/core/ambientLight.js": {
             "name": "src/core/ambientLight.js",
             "modules": {},
@@ -176,6 +134,15 @@
             "modules": {},
             "classes": {
                 "DirLight": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/fresnel.js": {
+            "name": "src/core/fresnel.js",
+            "modules": {},
+            "classes": {
+                "Fresnel": 1
             },
             "fors": {},
             "namespaces": {}
@@ -464,6 +431,7 @@
                 "DepthBuf": 1,
                 "DepthTarget": 1,
                 "DirLight": 1,
+                "Fresnel": 1,
                 "Frustum": 1,
                 "GameObject": 1,
                 "Geometry": 1,
@@ -1116,6 +1084,71 @@
             ],
             "extends": "Component"
         },
+        "Fresnel": {
+            "name": "Fresnel",
+            "shortname": "Fresnel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/fresnel.js",
+            "line": 1,
+            "description": "A **Fresnel** specifies a Fresnel map.\n\n## Overview\n\n<ul>\n<li>Fresnels are grouped within {{#crossLink \"Material\"}}Material{{/crossLink}}s, which are attached to\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Fresnels create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Fresnel.png\"></img>\n\n## Example\n\nThe example below has:\n<ul>\n<li>two Fresnels,</li>\n<li>a {{#crossLink \"Material\"}}{{/crossLink}} which applies the {{#crossLink \"Fresnel\"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar fresnel1 = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4\n});\n\nvar fresnel2 = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4\n});\n\nvar material = new XEO.Material(scene, {\n   ambient: [0.3, 0.3, 0.3],\n   shininess: 30,\n   diffuseFresnel: fresnel1,\n   specularFresnel: fresnel3\n});\n\nvar light1 = new XEO.PointLight(scene, {\n   pos: [0, 100, 100],\n   diffuse: [0.5, 0.7, 0.5],\n   specular: [1.0, 1.0, 1.0]\n});\n\nvar light2 = new XEO.AmbientLight(scene, {\n   ambient: [0.5, 0.7, 0.5]\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       light1,\n       light2\n   ]\n});\n\n// Geometry without parameters will default to a 2x2x2 box.\nvar geometry = new XEO.Geometry(scene);\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Geometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Fresnel.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "leftColor",
+                            "description": "Color used on edges.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[ 0.0, 0.0, 0.0 ]"
+                        },
+                        {
+                            "name": "rightColor",
+                            "description": "Color used on center.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[ 0.0, 0.0, 0.0 ]"
+                        },
+                        {
+                            "name": "power",
+                            "description": "The power.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
         "Frustum": {
             "name": "Frustum",
             "shortname": "Frustum",
@@ -1623,7 +1656,7 @@
             "namespace": "",
             "file": "src/core/material.js",
             "line": 1,
-            "description": "A **Material** defines the surface appearance of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li>Materials interact with {{#crossLink \"Lights\"}}{{/crossLink}} using the <a href=\"http://en.wikipedia.org/wiki/Phong_reflection_model\">Phong</a> reflection model.</li>\n\n<li>Within xeoEngine's shading calculations, a Material's {{#crossLink \"Material/ambient:property\"}}{{/crossLink}}, {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}} and\n{{#crossLink \"Material/specular:property\"}}{{/crossLink}} properties are multiplied by corresponding color properties on attached\n{{#crossLink \"PointLight\"}}AmbientLights{{/crossLink}}, {{#crossLink \"PointLight\"}}PointLights{{/crossLink}} and {{#crossLink \"DirLight\"}}DirLights{{/crossLink}}.</li>\n\n<li>These Material properties, along with {{#crossLink \"Material/emissive:property\"}}{{/crossLink}},\n{{#crossLink \"Material/opacity:property\"}}{{/crossLink}} and {{#crossLink \"Material/reflectivity:property\"}}{{/crossLink}},\nspecify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.</li>\n\n<li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by\nassigning {{#crossLink \"Texture\"}}Textures{{/crossLink}} to the Material's\n{{#crossLink \"Material/diffuseMap:property\"}}{{/crossLink}}, {{#crossLink \"Material/specularMap:property\"}}{{/crossLink}},\n{{#crossLink \"Material/emissiveMap:property\"}}{{/crossLink}}, {{#crossLink \"Material/opacityMap:property\"}}{{/crossLink}}\nand  {{#crossLink \"Material/reflectivityMap:property\"}}{{/crossLink}} properties.</li>\n\n<li>For example, the value of {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}} will be ignored if your\nMaterial also has a {{#crossLink \"Material/diffuseMap:property\"}}{{/crossLink}} set to a {{#crossLink \"Texture\"}}Texture{{/crossLink}}.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface, ie. they are not multiplied by\nthe {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>\n\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Materials create within xeoEngine's shaders.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Material.png\"></img>\n\n## Example\n\nIn this example we have\n\n<ul>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Material\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}} as a diffuse map,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\nNote that the value for the {{#crossLink \"Material\"}}Material's{{/crossLink}} {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}}\nproperty is ignored and redundant, since we assign a {{#crossLink \"Texture\"}}{{/crossLink}} to the\n{{#crossLink \"Material\"}}Material's{{/crossLink}} {{#crossLink \"Material/diffuseMap:property\"}}{{/crossLink}} property.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar diffuseMap = new XEO.Texture(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar material = new XEO.Material(scene, {\n   ambient:    [0.3, 0.3, 0.3],\n   diffuse:    [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n   diffuseMap: diffuseMap,\n   specular:   [1, 1, 1],\n   shininess:  30\n});\n\nvar ambientLight = new XEO.AmbientLight(scene, {\n   ambient: [0.7, 0.7, 0.7]\n});\n\nvar dirLight = new XEO.DirLight(scene, {\n   dir:        [-1, -1, -1],\n   diffuse:    [0.5, 0.7, 0.5],\n   specular:   [1.0, 1.0, 1.0],\n   space:      \"view\"\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       ambientLight,\n       dirLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
+            "description": "A **Material** defines the surface appearance of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li>Materials interact with {{#crossLink \"Lights\"}}{{/crossLink}} using the <a href=\"http://en.wikipedia.org/wiki/Phong_reflection_model\">Phong</a> reflection model.</li>\n\n<li>Within xeoEngine's shading calculations, a Material's {{#crossLink \"Material/ambient:property\"}}{{/crossLink}}, {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}} and\n{{#crossLink \"Material/specular:property\"}}{{/crossLink}} properties are multiplied by corresponding color properties on attached\n{{#crossLink \"PointLight\"}}AmbientLights{{/crossLink}}, {{#crossLink \"PointLight\"}}PointLights{{/crossLink}} and {{#crossLink \"DirLight\"}}DirLights{{/crossLink}}.</li>\n\n<li>These Material properties, along with {{#crossLink \"Material/emissive:property\"}}{{/crossLink}},\n{{#crossLink \"Material/opacity:property\"}}{{/crossLink}} and {{#crossLink \"Material/reflectivity:property\"}}{{/crossLink}},\nspecify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.</li>\n\n<li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by\nassigning {{#crossLink \"Texture\"}}Textures{{/crossLink}} to the Material's\n{{#crossLink \"Material/diffuseMap:property\"}}{{/crossLink}}, {{#crossLink \"Material/specularMap:property\"}}{{/crossLink}},\n{{#crossLink \"Material/emissiveMap:property\"}}{{/crossLink}}, {{#crossLink \"Material/opacityMap:property\"}}{{/crossLink}}\nand  {{#crossLink \"Material/reflectivityMap:property\"}}{{/crossLink}} properties.</li>\n\n<li>For example, the value of {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}} will be ignored if your\nMaterial also has a {{#crossLink \"Material/diffuseMap:property\"}}{{/crossLink}} set to a {{#crossLink \"Texture\"}}Texture{{/crossLink}}.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface, ie. they are not multiplied by\nthe {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>\n\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Materials create within xeoEngine's shaders.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Material.png\"></img>\n\n## Example\n\nIn this example we have\n\n<ul>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Fresnel\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Material\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}} as a diffuse map and the {{#crossLink \"Fresnel\"}}{{/crossLink}} as a specular Fresnel effect,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\nNote that the value for the {{#crossLink \"Material\"}}Material's{{/crossLink}} {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}}\nproperty is ignored and redundant, since we assign a {{#crossLink \"Texture\"}}{{/crossLink}} to the\n{{#crossLink \"Material\"}}Material's{{/crossLink}} {{#crossLink \"Material/diffuseMap:property\"}}{{/crossLink}} property.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar diffuseMap = new XEO.Texture(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar fresnel = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4\n});\n\nvar material = new XEO.Material(scene, {\n   ambient:         [0.3, 0.3, 0.3],\n   diffuse:         [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n   diffuseMap:      diffuseMap,\n   specular:        [1, 1, 1],\n   shininess:       30,\n   specularFresnel: fresnel\n});\n\nvar ambientLight = new XEO.AmbientLight(scene, {\n   ambient: [0.7, 0.7, 0.7]\n});\n\nvar dirLight = new XEO.DirLight(scene, {\n   dir:        [-1, -1, -1],\n   diffuse:    [0.5, 0.7, 0.5],\n   specular:   [1.0, 1.0, 1.0],\n   space:      \"view\"\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       ambientLight,\n       dirLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
             "is_constructor": 1,
             "extends": "Component",
             "params": [
@@ -1740,6 +1773,41 @@
                             "name": "reflectivityMap",
                             "description": "A reflectivity control map {{#crossLink \"Texture\"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Material.",
                             "type": "Texture",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "diffuseFresnel",
+                            "description": "A diffuse {{#crossLink \"Fresnel\"}}Fresnel{{/crossLink}}.",
+                            "type": "Fresnel",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "specularFresnel",
+                            "description": "A specular {{#crossLink \"Fresnel\"}}Fresnel{{/crossLink}}.",
+                            "type": "Fresnel",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "emissiveFresnel",
+                            "description": "An emissive {{#crossLink \"Fresnel\"}}Fresnel{{/crossLink}}.",
+                            "type": "Fresnel",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "opacityFresnel",
+                            "description": "An opacity {{#crossLink \"Fresnel\"}}Fresnel{{/crossLink}}.",
+                            "type": "Fresnel",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "reflectivityFresnel",
+                            "description": "A reflectivity {{#crossLink \"Fresnel\"}}Fresnel{{/crossLink}}.",
+                            "type": "Fresnel",
                             "optional": true,
                             "optdefault": "null"
                         }
@@ -2321,7 +2389,7 @@
             "namespace": "",
             "file": "src/core/shader.js",
             "line": 1,
-            "description": "A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>\n<li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other\ncomponents on the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Use Shaders in combination with {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} components when you need to share\nthe same Shaders among multiple {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms\ndifferently for each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.</li>\n<li>Use {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}}, {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}}\nand {{#crossLink \"Texture\"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>\n</ul>\n\n<img src=\"../../../assets/images/Shader.png\"></img>\n\n## Example\n\nThis example shows the simplest way to use a Shader, where we're just going to render a ripply water\npattern to a screen-aligned quad.\n\n<img src=\"../../assets/images/shaderExample1.png\"></img>\n\nIn our scene definition, we have an  {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that has a {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} that is our\nscreen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.\nFinally, we animate the rippling by periodically updating the Shader's \"time\" uniform.\n\n````javascript\n\nvar scene = new XEO.Scene();\n\n// Shader that's used by our Object. Note the 'XEO_aGeometryPosition' and 'XEO_aGeometryUV attributes',\n// which will receive the positions and UVs from the Geometry. Also note the 'time'\n// uniform, which we'll be animating via Shader#setParams.\n\nvar shader = new XEO.Shader(scene, {\n\n      // Vertex shading stage\n      vertex: [\n          \"attribute vec3 XEO_aGeometryPosition;\",\n          \"attribute vec2 XEO_aGeometryUV;\",\n          \"varying vec2 vUv;\",\n          \"void main () {\",\n          \"    gl_Position = vec4(XEO_aGeometryPosition, 1.0);\",\n          \"    vUv = XEO_aGeometryUV;\",\n          \"}\"\n      ],\n\n      // Fragment shading stage\n      fragment: [\n          \"precision mediump float;\",\n\n          \"uniform float time;\",\n          \"varying vec2 vUv;\",\n\n          \"void main( void ) {\",\n          \"    vec2 sp = vUv;\",\n          \"    vec2 p = sp*5.0 - vec2(10.0);\",\n          \"    vec2 i = p;\",\n          \"    float c = 1.0;\",\n          \"    float inten = 0.10;\",\n          \"    for (int n = 0; n < 10; n++) {\",\n          \"        float t = time * (1.0 - (3.0 / float(n+1)));\",\n          \"        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));\",\n          \"        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));\",\n          \"    }\",\n          \"    c /= float(10);\",\n          \"    c = 1.5-sqrt(c);\",\n          \"    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);\",\n          \"}\"\n      ],\n\n      // Initial value for the 'time' uniform in the fragment stage.\n      params: {\n          time: 0.0\n      }\n });\n\n// A screen-aligned quad\nvar quad = new XEO.Geometry(scene, {\n      primitive:\"triangles\",\n      positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],\n      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n      indices:[ 0, 1, 2, 0, 2, 3 ]\n });\n\nvar object = new XEO.GameObject(scene, {\n      shader: shader,\n      geometry: quad\n });\n\n````\nNow let's animate the \"time\" parameter on the Shader, to make the water ripple:\n\n```` javascript\nscene.on(\"tick\", function(params) {\n           shader.setParams({\n               time: params.timeElapsed\n           });\n       });\n````\n\n## <a name=\"inputs\">Shader Inputs</a>\n\nxeoEngine provides the following inputs for your shaders.\n\n**TODO - this section is under construction**\n\n#### Attributes\n\n*Attributes are used only in vertex shaders*\n\n| Attribute  | Description | Depends on  |\n|---|---|\n| attribute vec3 XEO_aGeometryPosition   | Geometry vertex positions | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} |\n| attribute vec2 XEO_aGeometryUV         | Geometry vertex UV coordinates | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n| attribute vec3 XEO_aGeometryNormal     | Geometry vertex normals | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}}  |\n| attribute vec4 XEO_aGeometryColor      | Geometry vertex colors  | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}}  |\n| attribute vec4 XEO_aGeometryTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n\n#### Uniforms\n\n*Uniforms are used in vertex and fragment shaders*\n\n| Uniform  | Description | Depends on  |\n|---|---|\n| uniform mat4  XEO_uModelMatrix                                   | Modelling transform matrix | {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  XEO_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  XEO_uViewMatrix                                    | View transform matrix | {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  XEO_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  XEO_uProjMatrix                                    | Projection transform matrix | {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float XEO_uZNear                                         | Near clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float XEO_uZFar                                          | Far clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform vec3  XEO_uLightAmbient                                  | Ambient color of first {{#crossLink \"AmbientLight\"}}{{/crossLink}} in {{#crossLink \"Lights\"}}{{/crossLink}}| {{#crossLink \"AmbientLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightDiffuse&lt;***N***&gt;                    | Diffuse color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightSpecular&lt;***N***&gt;                   | Specular color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink \"DirLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n\n#### Varying\n\n*Varying types are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|\n| varying vec4 XEO_vWorldVertex | |\n| varying vec4 XEO_vViewVertex | |\n| varying vec4 XEO_vColor | |",
+            "description": "A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>\n<li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other\ncomponents on the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Use Shaders in combination with {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} components when you need to share\nthe same Shaders among multiple {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms\ndifferently for each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.</li>\n<li>Use {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}}, {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}}\nand {{#crossLink \"Texture\"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>\n</ul>\n\n<img src=\"../../../assets/images/Shader.png\"></img>\n\n## Example\n\nThis example shows the simplest way to use a Shader, where we're just going to render a ripply water\npattern to a screen-aligned quad.\n\n<img src=\"../../assets/images/shaderExample1.png\"></img>\n\nIn our scene definition, we have an  {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that has a {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} that is our\nscreen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.\nFinally, we animate the rippling by periodically updating the Shader's \"time\" uniform.\n\n````javascript\n\nvar scene = new XEO.Scene();\n\n// Shader that's used by our Object. Note the 'XEO_aGeometryPosition' and 'XEO_aGeometryUV attributes',\n// which will receive the positions and UVs from the Geometry. Also note the 'time'\n// uniform, which we'll be animating via Shader#setParams.\n\nvar shader = new XEO.Shader(scene, {\n\n      // Vertex shading stage\n      vertex: [\n          \"attribute vec3 XEO_aGeometryPosition;\",\n          \"attribute vec2 XEO_aGeometryUV;\",\n          \"varying vec2 vUv;\",\n          \"void main () {\",\n          \"    gl_Position = vec4(XEO_aGeometryPosition, 1.0);\",\n          \"    vUv = XEO_aGeometryUV;\",\n          \"}\"\n      ],\n\n      // Fragment shading stage\n      fragment: [\n          \"precision mediump float;\",\n\n          \"uniform float time;\",\n          \"varying vec2 vUv;\",\n\n          \"void main( void ) {\",\n          \"    vec2 sp = vUv;\",\n          \"    vec2 p = sp*5.0 - vec2(10.0);\",\n          \"    vec2 i = p;\",\n          \"    float c = 1.0;\",\n          \"    float inten = 0.10;\",\n          \"    for (int n = 0; n < 10; n++) {\",\n          \"        float t = time * (1.0 - (3.0 / float(n+1)));\",\n          \"        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));\",\n          \"        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));\",\n          \"    }\",\n          \"    c /= float(10);\",\n          \"    c = 1.5-sqrt(c);\",\n          \"    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);\",\n          \"}\"\n      ],\n\n      // Initial value for the 'time' uniform in the fragment stage.\n      params: {\n          time: 0.0\n      }\n });\n\n// A screen-aligned quad\nvar quad = new XEO.Geometry(scene, {\n      primitive:\"triangles\",\n      positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],\n      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n      indices:[ 0, 1, 2, 0, 2, 3 ]\n });\n\nvar object = new XEO.GameObject(scene, {\n      shader: shader,\n      geometry: quad\n });\n\n````\nNow let's animate the \"time\" parameter on the Shader, to make the water ripple:\n\n```` javascript\nscene.on(\"tick\", function(params) {\n           shader.setParams({\n               time: params.timeElapsed\n           });\n       });\n````\n\n## <a name=\"inputs\">Shader Inputs</a>\n\nxeoEngine provides the following inputs for your shaders.\n\n#### Attributes\n\n*Attributes are used only in vertex shaders*\n\n| Attribute  | Description | Depends on  |\n|---|---|\n| attribute vec3 XEO_aGeometryPosition   | Geometry vertex positions | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} |\n| attribute vec2 XEO_aGeometryUV         | Geometry vertex UV coordinates | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n| attribute vec3 XEO_aGeometryNormal     | Geometry vertex normals | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}}  |\n| attribute vec4 XEO_aGeometryColor      | Geometry vertex colors  | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}}  |\n| attribute vec4 XEO_aGeometryTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n\n#### Uniforms\n\n*Uniforms are used in vertex and fragment shaders*\n\n| Uniform  | Description | Depends on  |\n|---|---|\n| uniform mat4  XEO_uModelMatrix                                   | Modelling transform matrix | {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  XEO_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  XEO_uViewMatrix                                    | View transform matrix | {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  XEO_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  XEO_uProjMatrix                                    | Projection transform matrix | {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float XEO_uZNear                                         | Near clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float XEO_uZFar                                          | Far clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform vec3  XEO_uLightAmbient                                  | Ambient color of the first {{#crossLink \"AmbientLight\"}}{{/crossLink}} in {{#crossLink \"Lights\"}}{{/crossLink}}| {{#crossLink \"AmbientLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightDiffuse&lt;***N***&gt;                    | Diffuse color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightSpecular&lt;***N***&gt;                   | Specular color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink \"DirLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n\n#### Varying\n\n*Varying types are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|\n| varying vec4 XEO_vWorldPosition | |\n| varying vec4 XEO_vViewPosition | |\n| varying vec4 XEO_vColor | |",
             "is_constructor": 1,
             "params": [
                 {
@@ -2659,7 +2727,7 @@
             "namespace": "",
             "file": "src/core/transform.js",
             "line": 1,
-            "description": "A **Transform** defines a modelling transform matrix for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Sub-classes of Transform are: {{#crossLink \"Translate\"}}{{/crossLink}},\n{{#crossLink \"Scale\"}}{{/crossLink}}, {{#crossLink \"Rotate\"}}{{/crossLink}}, and {{#crossLink \"Quaternion\"}}{{/crossLink}}</li>\n<li>Can be connected into hierarchies with other {{#crossLink \"Transform\"}}Transforms{{/crossLink}} and sub-classes</li>\n<li>{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are connected to leaf Transforms\nin the hierarchy, and will be transformed by each Transform on the path up to the\nroot, in that order.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Transform.png\"></img>\n\n## Example\n\nTODO",
+            "description": "A **Transform** defines a modelling transform matrix for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Sub-classes of Transform are: {{#crossLink \"Translate\"}}{{/crossLink}},\n{{#crossLink \"Scale\"}}{{/crossLink}}, {{#crossLink \"Rotate\"}}{{/crossLink}}, and {{#crossLink \"Quaternion\"}}{{/crossLink}}</li>\n<li>Can be connected into hierarchies with other {{#crossLink \"Transform\"}}Transforms{{/crossLink}} and sub-classes</li>\n<li>{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are connected to leaf Transforms\nin the hierarchy, and will be transformed by each Transform on the path up to the\nroot, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Transform.png\"></img>\n\n## Example\n\nTODO",
             "is_constructor": 1,
             "params": [
                 {
@@ -4291,249 +4359,6 @@
             "module": "XEO"
         },
         {
-            "file": "src/core/webgl/arrayBuffer.js",
-            "line": 5,
-            "params": [
-                {
-                    "name": "gl",
-                    "description": "WebGL gl"
-                },
-                {
-                    "name": "type",
-                    "description": "Eg. ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER"
-                },
-                {
-                    "name": "values",
-                    "description": "WebGL array wrapper"
-                },
-                {
-                    "name": "numItems",
-                    "description": "Count of items in array wrapper"
-                },
-                {
-                    "name": "itemSize",
-                    "description": "Size of each item"
-                },
-                {
-                    "name": "usage",
-                    "description": "Eg. STATIC_DRAW"
-                }
-            ],
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/arrayBuffer.js",
-            "line": 16,
-            "description": "True when this buffer is allocated and ready to go",
-            "type": "{boolean}",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/arrayBuffer.js",
-            "line": 31,
-            "description": "Allocates this buffer",
-            "params": [
-                {
-                    "name": "values",
-                    "description": ""
-                },
-                {
-                    "name": "numItems",
-                    "description": ""
-                }
-            ],
-            "access": "private",
-            "tagname": "",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/arrayBuffer.js",
-            "line": 54,
-            "description": "Updates values within this buffer, reallocating if needed",
-            "params": [
-                {
-                    "name": "data",
-                    "description": ""
-                },
-                {
-                    "name": "offset",
-                    "description": ""
-                }
-            ],
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/arrayBuffer.js",
-            "line": 78,
-            "description": "Unbinds this buffer on WebGL",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/arrayBuffer.js",
-            "line": 88,
-            "description": "Destroys this buffer",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/attribute.js",
-            "line": 5,
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/program.js",
-            "line": 5,
-            "description": "Wrapper for a WebGL program",
-            "params": [
-                {
-                    "name": "gl",
-                    "description": "WebGL gl"
-                },
-                {
-                    "name": "vertex",
-                    "description": "Source code for vertex shader"
-                },
-                {
-                    "name": "fragment",
-                    "description": "Source code for fragment shader"
-                }
-            ],
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/program.js",
-            "line": 14,
-            "description": "True as soon as this program is allocated and ready to go",
-            "type": "{boolean}",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 7,
-            "description": "True as soon as this buffer is allocated and ready to go",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 12,
-            "description": "The canvas, to synch buffer size with when its dimensions change",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 17,
-            "description": "WebGL context",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 22,
-            "description": "Buffer resources, set up in #_touch",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 27,
-            "description": "True while this buffer is bound",
-            "type": "{boolean}",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 34,
-            "description": "Called after WebGL context is restored.",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 44,
-            "description": "Binds this buffer",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 134,
-            "description": "Clears this renderbuffer",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 145,
-            "description": "Reads buffer pixel at given coordinates",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 156,
-            "description": "Unbinds this renderbuffer",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 164,
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/renderBuffer.js",
-            "line": 186,
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/shader.js",
-            "line": 5,
-            "description": "A vertex/fragment shader in a program",
-            "params": [
-                {
-                    "name": "gl",
-                    "description": "WebGL gl"
-                },
-                {
-                    "name": "type",
-                    "description": "gl.VERTEX_SHADER | gl.FRAGMENT_SHADER"
-                },
-                {
-                    "name": "source",
-                    "description": "Source code for shader"
-                }
-            ],
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/shader.js",
-            "line": 14,
-            "description": "True as soon as this shader is allocated and ready to go",
-            "type": "{boolean}",
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/webgl/webgl.js",
-            "line": 7,
-            "class": "AmbientLight",
-            "module": "XEO"
-        },
-        {
             "file": "src/core/ambientLight.js",
             "line": 118,
             "description": "The color of this AmbientLight.\n\nFires an {{#crossLink \"AmbientLight/ambient:event\"}}{{/crossLink}} event on change.",
@@ -5405,6 +5230,84 @@
             "module": "XEO"
         },
         {
+            "file": "src/core/fresnel.js",
+            "line": 112,
+            "description": "This Fresnel's edge color.\n\nFires an {{#crossLink \"Fresnel/leftColor:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "leftColor",
+            "default": "[0.0, 0.0, 0.0]",
+            "type": "Array(Number)",
+            "class": "Fresnel",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/fresnel.js",
+            "line": 129,
+            "description": "Fired whenever this Fresnel's {{#crossLink \"leftColorLight/leftColor:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "leftColor",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Fresnel",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/fresnel.js",
+            "line": 143,
+            "description": "This Fresnel's center color.\n\nFires an {{#crossLink \"Fresnel/rightColor:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "rightColor",
+            "default": "[0.0, 0.0, 0.0]",
+            "type": "Array(Number)",
+            "class": "Fresnel",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/fresnel.js",
+            "line": 160,
+            "description": "Fired whenever this Fresnel's {{#crossLink \"rightColorLight/rightColor:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "rightColor",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Fresnel",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/fresnel.js",
+            "line": 174,
+            "description": "Indicates this Fresnel's power.\n\nFires a {{#crossLink \"Fresnel/power:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "power",
+            "default": "0",
+            "type": "Number",
+            "class": "Fresnel",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/fresnel.js",
+            "line": 193,
+            "description": "Fired whenever this Fresnel's  {{#crossLink \"Fresnel/power:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "power",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Fresnel",
+            "module": "XEO"
+        },
+        {
             "file": "src/core/frustum.js",
             "line": 135,
             "description": "Fired whenever this Frustum's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is regenerated.",
@@ -6063,7 +5966,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 482,
+            "line": 484,
             "description": "The Geometry's primitive type.\n\nValid types are: 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.\n\nFires a {{#crossLink \"Geometry/primitive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "primitive",
@@ -6074,7 +5977,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 519,
+            "line": 521,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/primitive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "primitive",
@@ -6090,7 +5993,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 535,
+            "line": 537,
             "description": "The Geometry's positions array.\n\nFires a {{#crossLink \"Geometry/positions:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "positions",
@@ -6101,7 +6004,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 556,
+            "line": 558,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "positions",
@@ -6116,7 +6019,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 569,
+            "line": 571,
             "description": "The Geometry's normal vectors array.\n\nFires a {{#crossLink \"Geometry/normals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normals",
@@ -6127,7 +6030,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 590,
+            "line": 592,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/ normals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normals",
@@ -6142,7 +6045,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 603,
+            "line": 605,
             "description": "The Geometry's UV coordinate array.\n\nFires a {{#crossLink \"Geometry/uv:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "uv",
@@ -6153,7 +6056,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 624,
+            "line": 626,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "uv",
@@ -6168,7 +6071,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 637,
+            "line": 639,
             "description": "The Geometry's vertex colors array.\n\nFires a {{#crossLink \"Geometry/colors:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colors",
@@ -6179,7 +6082,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 658,
+            "line": 660,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colors",
@@ -6194,7 +6097,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 671,
+            "line": 673,
             "description": "The Geometry's indices array.\n\nFires a {{#crossLink \"Geometry/indices:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "indices",
@@ -6205,7 +6108,7 @@
         },
         {
             "file": "src/core/geometry.js",
-            "line": 692,
+            "line": 694,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "indices",
@@ -7636,7 +7539,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 178,
+            "line": 205,
             "description": "The Material's ambient color, which is multiplied by the {{#crossLink \"AmbientLight/ambient:property\"}}{{/crossLink}}\nproperty of the {{#crossLink \"AmbientLight\"}}AmbientLight{{/crossLink}}.\n\nFires a {{#crossLink \"Material/ambient:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ambient",
@@ -7647,7 +7550,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 196,
+            "line": 223,
             "description": "Fired whenever this Material's {{#crossLink \"Material/ambient:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ambient",
@@ -7663,7 +7566,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 210,
+            "line": 237,
             "description": "The Material's diffuse color.\n\nThis property may be overridden by {{#crossLink \"Material/diffuseMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Material/diffuse:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuse",
@@ -7674,7 +7577,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 229,
+            "line": 256,
             "description": "Fired whenever this Material's {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuse",
@@ -7690,7 +7593,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 243,
+            "line": 270,
             "description": "The material's specular color.\n\nThis property may be overridden by {{#crossLink \"Material/specularMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Material/specular:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specular",
@@ -7701,7 +7604,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 262,
+            "line": 289,
             "description": "Fired whenever this Material's {{#crossLink \"Material/specular:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specular",
@@ -7717,7 +7620,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 276,
+            "line": 303,
             "description": "The Material's emissive color.\n\nThis property may be overridden by {{#crossLink \"Material/emissiveMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Material/emissive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissive",
@@ -7728,7 +7631,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 295,
+            "line": 322,
             "description": "Fired whenever this Material's {{#crossLink \"Material/emissive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissive",
@@ -7744,7 +7647,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 309,
+            "line": 336,
             "description": "Factor in the range [0..1] indicating how transparent the Material is.\n\nA value of 0.0 indicates fully transparent, 1.0 is fully opaque.\n\nAttached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nThis property may be overridden by {{#crossLink \"Material/opacityMap:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"Material/opacity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacity",
@@ -7755,7 +7658,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 334,
+            "line": 361,
             "description": "Fired whenever this Material's {{#crossLink \"Material/opacity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacity",
@@ -7771,7 +7674,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 348,
+            "line": 375,
             "description": "A factor in range [0..128] that determines the size and sharpness of the specular highlights create by this Material.\n\nLarger values produce smaller, sharper highlights. A value of 0.0 gives very large highlights that are almost never\ndesirable. Try values close to 10 for a larger, fuzzier highlight and values of 100 or more for a small, sharp\nhighlight.\n\nFires a {{#crossLink \"Material/shininess:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shininess",
@@ -7782,7 +7685,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 369,
+            "line": 396,
             "description": "Fired whenever this Material's {{#crossLink \"Material/shininess:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shininess",
@@ -7797,7 +7700,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 383,
+            "line": 410,
             "description": "Scalar in range 0-1 that controls how much {{#crossLink \"CubeMap\"}}CubeMap{{/crossLink}} is reflected by this Material.\n\nThe surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.\n\nThis property may be overridden by {{#crossLink \"Material/reflectivityMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Material/reflectivity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflectivity",
@@ -7808,7 +7711,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 404,
+            "line": 431,
             "description": "Fired whenever this Material's {{#crossLink \"Material/reflectivity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflectivity",
@@ -7823,7 +7726,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 418,
+            "line": 445,
             "description": "A diffuse {{#crossLink \"Texture\"}}{{/crossLink}} attached to this Material.\n\nThis property overrides {{#crossLink \"Material/diffuseMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"Material/diffuseMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuseMap",
@@ -7834,7 +7737,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 433,
+            "line": 460,
             "description": "Fired whenever this Material's {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuseMap",
@@ -7849,7 +7752,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 447,
+            "line": 474,
             "description": "A specular {{#crossLink \"Texture\"}}{{/crossLink}} attached to this Material.\n\nThis property overrides {{#crossLink \"Material/specular:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"Material/specularMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularMap",
@@ -7860,7 +7763,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 462,
+            "line": 489,
             "description": "Fired whenever this Material's {{#crossLink \"Material/specularMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularMap",
@@ -7875,7 +7778,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 476,
+            "line": 503,
             "description": "An emissive {{#crossLink \"Texture\"}}{{/crossLink}} attached to this Material.\n\nThis property overrides {{#crossLink \"Material/emissive:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"Material/emissiveMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissiveMap",
@@ -7886,7 +7789,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 491,
+            "line": 518,
             "description": "Fired whenever this Material's {{#crossLink \"Material/emissiveMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissiveMap",
@@ -7901,7 +7804,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 505,
+            "line": 532,
             "description": "An opacity {{#crossLink \"Texture\"}}{{/crossLink}} attached to this Material.\n\nThis property overrides {{#crossLink \"Material/opacity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"Material/opacityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacityMap",
@@ -7912,7 +7815,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 520,
+            "line": 547,
             "description": "Fired whenever this Material's {{#crossLink \"Material/opacityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacityMap",
@@ -7927,7 +7830,7 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 534,
+            "line": 561,
             "description": "A reflectivity {{#crossLink \"Texture\"}}{{/crossLink}} attached to this Material.\n\nThis property overrides {{#crossLink \"Material/reflectivity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"Material/reflectivityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflectivityMap",
@@ -7938,10 +7841,140 @@
         },
         {
             "file": "src/core/material.js",
-            "line": 549,
+            "line": 576,
             "description": "Fired whenever this Material's {{#crossLink \"Material/reflectivityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflectivityMap",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Number The property's new value"
+                }
+            ],
+            "class": "Material",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/material.js",
+            "line": 590,
+            "description": "A diffuse {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this Material.\n\nThis property overrides {{#crossLink \"Material/diffuseFresnel:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"Material/diffuseFresnel:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "diffuseFresnel",
+            "default": "null",
+            "type": "{Fresnel}",
+            "class": "Material",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/material.js",
+            "line": 605,
+            "description": "Fired whenever this Material's {{#crossLink \"Material/diffuse:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "diffuseFresnel",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Number The property's new value"
+                }
+            ],
+            "class": "Material",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/material.js",
+            "line": 619,
+            "description": "A specular {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this Material.\n\nThis property overrides {{#crossLink \"Material/specular:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"Material/specularFresnel:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "specularFresnel",
+            "default": "null",
+            "type": "{Fresnel}",
+            "class": "Material",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/material.js",
+            "line": 634,
+            "description": "Fired whenever this Material's {{#crossLink \"Material/specularFresnel:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "specularFresnel",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Number The property's new value"
+                }
+            ],
+            "class": "Material",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/material.js",
+            "line": 648,
+            "description": "An emissive {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this Material.\n\nThis property overrides {{#crossLink \"Material/emissive:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"Material/emissiveFresnel:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "emissiveFresnel",
+            "default": "null",
+            "type": "{Fresnel}",
+            "class": "Material",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/material.js",
+            "line": 663,
+            "description": "Fired whenever this Material's {{#crossLink \"Material/emissiveFresnel:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "emissiveFresnel",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Number The property's new value"
+                }
+            ],
+            "class": "Material",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/material.js",
+            "line": 677,
+            "description": "An opacity {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this Material.\n\nThis property overrides {{#crossLink \"Material/opacity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"Material/opacityFresnel:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "opacityFresnel",
+            "default": "null",
+            "type": "{Fresnel}",
+            "class": "Material",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/material.js",
+            "line": 692,
+            "description": "Fired whenever this Material's {{#crossLink \"Material/opacityFresnel:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "opacityFresnel",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Number The property's new value"
+                }
+            ],
+            "class": "Material",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/material.js",
+            "line": 706,
+            "description": "A reflectivity {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this Material.\n\nThis property overrides {{#crossLink \"Material/reflectivity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"Material/reflectivityFresnel:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "reflectivityFresnel",
+            "default": "null",
+            "type": "{Fresnel}",
+            "class": "Material",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/material.js",
+            "line": 721,
+            "description": "Fired whenever this Material's {{#crossLink \"Material/reflectivityFresnel:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "reflectivityFresnel",
             "params": [
                 {
                     "name": "value",
@@ -9115,7 +9148,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 196,
+            "line": 194,
             "description": "GLSL source code for this Shader's vertex stage.\n\nFires a {{#crossLink \"Shader/vertex:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "vertex",
@@ -9126,7 +9159,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 214,
+            "line": 212,
             "description": "Fired whenever this Shader's {{#crossLink \"Shader/vertex:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "vertex",
@@ -9141,7 +9174,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 228,
+            "line": 226,
             "description": "GLSL source code for this Shader's fragment stage.\n\nFires a {{#crossLink \"Shader/fragment:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fragment",
@@ -9152,7 +9185,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 246,
+            "line": 244,
             "description": "Fired whenever this Shader's {{#crossLink \"Shader/fragment:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fragment",
@@ -9167,7 +9200,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 260,
+            "line": 258,
             "description": "Params for this Shader.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "params",
@@ -9178,7 +9211,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 277,
+            "line": 275,
             "description": "Sets one or more params for this Shader.\n\nThese will be individually overridden by any {{#crossLink \"ShaderParams/setParams:method\"}}params subsequently specified{{/crossLink}} on\n{{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
             "itemtype": "method",
             "name": "setParams",
@@ -9195,7 +9228,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 298,
+            "line": 296,
             "description": "Fired whenever this Shader's  {{#crossLink \"Shader/params:property\"}}{{/crossLink}} property has been updated.",
             "itemtype": "event",
             "name": "params",
@@ -10071,102 +10104,6 @@
         {
             "message": "Missing item type\nRemoves the item of the given ID from the map and returns it",
             "line": " src/core/utils/map.js:53"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/core/webgl/arrayBuffer.js:5"
-        },
-        {
-            "message": "Missing item type\nTrue when this buffer is allocated and ready to go",
-            "line": " src/core/webgl/arrayBuffer.js:16"
-        },
-        {
-            "message": "Missing item type\nAllocates this buffer",
-            "line": " src/core/webgl/arrayBuffer.js:31"
-        },
-        {
-            "message": "Missing item type\nUpdates values within this buffer, reallocating if needed",
-            "line": " src/core/webgl/arrayBuffer.js:54"
-        },
-        {
-            "message": "Missing item type\nUnbinds this buffer on WebGL",
-            "line": " src/core/webgl/arrayBuffer.js:78"
-        },
-        {
-            "message": "Missing item type\nDestroys this buffer",
-            "line": " src/core/webgl/arrayBuffer.js:88"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/core/webgl/attribute.js:5"
-        },
-        {
-            "message": "Missing item type\nWrapper for a WebGL program",
-            "line": " src/core/webgl/program.js:5"
-        },
-        {
-            "message": "Missing item type\nTrue as soon as this program is allocated and ready to go",
-            "line": " src/core/webgl/program.js:14"
-        },
-        {
-            "message": "Missing item type\nTrue as soon as this buffer is allocated and ready to go",
-            "line": " src/core/webgl/renderBuffer.js:7"
-        },
-        {
-            "message": "Missing item type\nThe canvas, to synch buffer size with when its dimensions change",
-            "line": " src/core/webgl/renderBuffer.js:12"
-        },
-        {
-            "message": "Missing item type\nWebGL context",
-            "line": " src/core/webgl/renderBuffer.js:17"
-        },
-        {
-            "message": "Missing item type\nBuffer resources, set up in #_touch",
-            "line": " src/core/webgl/renderBuffer.js:22"
-        },
-        {
-            "message": "Missing item type\nTrue while this buffer is bound",
-            "line": " src/core/webgl/renderBuffer.js:27"
-        },
-        {
-            "message": "Missing item type\nCalled after WebGL context is restored.",
-            "line": " src/core/webgl/renderBuffer.js:34"
-        },
-        {
-            "message": "Missing item type\nBinds this buffer",
-            "line": " src/core/webgl/renderBuffer.js:44"
-        },
-        {
-            "message": "Missing item type\nClears this renderbuffer",
-            "line": " src/core/webgl/renderBuffer.js:134"
-        },
-        {
-            "message": "Missing item type\nReads buffer pixel at given coordinates",
-            "line": " src/core/webgl/renderBuffer.js:145"
-        },
-        {
-            "message": "Missing item type\nUnbinds this renderbuffer",
-            "line": " src/core/webgl/renderBuffer.js:156"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/core/webgl/renderBuffer.js:164"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/core/webgl/renderBuffer.js:186"
-        },
-        {
-            "message": "Missing item type\nA vertex/fragment shader in a program",
-            "line": " src/core/webgl/shader.js:5"
-        },
-        {
-            "message": "Missing item type\nTrue as soon as this shader is allocated and ready to go",
-            "line": " src/core/webgl/shader.js:14"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/core/webgl/webgl.js:7"
         },
         {
             "message": "Missing item type\nAttributes for the WebGL context",

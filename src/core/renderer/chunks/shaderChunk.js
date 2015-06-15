@@ -23,7 +23,9 @@
                 var name;
 
                 for (var i = 0, len = paramsStack.length; i < len; i++) {
+
                     params = paramsStack[i];
+
                     for (name in params) {
                         if (params.hasOwnProperty(name)) {
                             program.setUniform(name, params[name]);  // TODO: cache locations

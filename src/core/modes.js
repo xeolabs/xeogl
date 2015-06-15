@@ -11,6 +11,8 @@
  <li>A Modes may be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to toggle
  rendering modes for them as a group.</li>
 
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeoEngine's shaders.</li>
+
  </ul>
 
  <img src="../../../assets/images/Modes.png"></img>
@@ -91,12 +93,12 @@
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
+            this._state = new XEO.renderer.Modes({
                 picking: true,
                 clipping: true,
                 transparent: false,
                 backfaces: false,
-                frontface: "ccw"
+                frontface: true // Boolean for speed; true == "ccw", false == "cw"
             });
 
             this.picking = cfg.picking;
@@ -193,7 +195,7 @@
 
                 set: function (value) {
 
-                    this._state.transparent = value = !!value;
+                    this._state.transparent = !!value;
 
                     this._renderer.stateOrderDirty = true;
 
@@ -261,7 +263,7 @@
 
                 set: function (value) {
 
-                    this._state.frontface = value || "ccw";
+                    this._state.frontface = value === "ccw";
 
                     this._renderer.imageDirty = true;
 
@@ -271,11 +273,11 @@
                      @event frontface
                      @param value The property's new value
                      */
-                    this.fire("frontface", this._state.frontface);
+                    this.fire("frontface", this._state.frontface ? "ccw" : "cw");
                 },
 
                 get: function () {
-                    return this._state.frontface;
+                    return this._state.frontface ? "ccw" : "cw";
                 }
             }
         },
@@ -286,16 +288,16 @@
 
         _getJSON: function () {
             return {
-                picking: this._state.picking,
-                clipping: this._state.clipping,
-                transparent: this._state.transparent,
-                backfaces: this._state.backfaces,
-                frontface: this._state.frontface
+                picking: this.picking,
+                clipping: this.clipping,
+                transparent: this.transparent,
+                backfaces: this.backfaces,
+                frontface: this.frontface
             };
         },
 
         _destroy: function () {
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

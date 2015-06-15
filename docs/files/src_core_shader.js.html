@@ -50,6 +50,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -230,8 +231,6 @@
 
  xeoEngine provides the following inputs for your shaders.
 
- **TODO - this section is under construction**
-
  #### Attributes
 
  *Attributes are used only in vertex shaders*
@@ -257,7 +256,7 @@
  | uniform mat4  XEO_uProjMatrix                                    | Projection transform matrix | {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
  | uniform float XEO_uZNear                                         | Near clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
  | uniform float XEO_uZFar                                          | Far clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
- | uniform vec3  XEO_uLightAmbient                                  | Ambient color of first {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} in {{#crossLink &quot;Lights&quot;}}{{/crossLink}}| {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} |
+ | uniform vec3  XEO_uLightAmbient                                  | Ambient color of the first {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} in {{#crossLink &quot;Lights&quot;}}{{/crossLink}}| {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} |
  | uniform vec3 XEO_uLightDiffuse&amp;lt;***N***&amp;gt;                    | Diffuse color of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} or {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} or {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} |
  | uniform vec3 XEO_uLightSpecular&amp;lt;***N***&amp;gt;                   | Specular color of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} or {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} or {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} |
  | uniform vec3 XEO_uLightDir&amp;lt;***N***&amp;gt;                        | Direction of {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} |
@@ -272,8 +271,8 @@
 
  | Varying | Description | Depends on  |
  |---|---|
- | varying vec4 XEO_vWorldVertex | |
- | varying vec4 XEO_vViewVertex | |
+ | varying vec4 XEO_vWorldPosition | |
+ | varying vec4 XEO_vViewPosition | |
  | varying vec4 XEO_vColor | |
 
 

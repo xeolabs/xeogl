@@ -10,38 +10,34 @@
 
             var draw = this.program.draw;
 
-            this._uMatLocationDraw = draw.getUniformLocation("XEO_uMMatrix");
-            this._uNormalMatLocationDraw = draw.getUniformLocation("XEO_uMNMatrix");
+            this._uModelMatrixDraw = draw.getUniform("XEO_uModelMatrix");
+            this._uModelNormalMatrixDraw = draw.getUniform("XEO_uModelNormalMatrix");
 
             var pick = this.program.pick;
 
-            this._uMatLocationPick = pick.getUniformLocation("XEO_uMMatrix");
+            this._uModelMatrixPick = pick.getUniform("XEO_uModelMatrix");
         },
 
-        draw: function (frameCtx) {
+        draw: function () {
 
             var gl = this.program.gl;
 
-            if (this._uMatLocationDraw) {
-                gl.uniformMatrix4fv(this._uMatLocationDraw, gl.FALSE, this.state.matrix);
+            if (this._uModelMatrixDraw) {
+                this._uModelMatrixDraw.setValue(this.state.matrix);
             }
 
-            if (this._uNormalMatLocationDraw) {
-                gl.uniformMatrix4fv(this._uNormalMatLocationDraw, gl.FALSE, this.state.normalMatrix);
+            if (this._uModelNormalMatrixDraw) {
+                this._uModelNormalMatrixDraw.setValue(this.state.normalMatrix);
             }
-
-            frameCtx.modelMatrix = this.state.matrix;
         },
 
-        pick: function (frameCtx) {
+        pick: function () {
 
             var gl = this.program.gl;
 
-            if (this._uMatLocationPick) {
-                gl.uniformMatrix4fv(this._uMatLocationPick, gl.FALSE, this.state.matrix);
+            if (this._uModelMatrixPick) {
+                this._uModelMatrixPick.setValue(this.state.matrix);
             }
-
-            frameCtx.modelMatrix = this.state.matrix;
         }
     });
 

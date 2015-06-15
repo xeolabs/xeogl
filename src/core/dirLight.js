@@ -16,6 +16,7 @@
  {{#crossLink "DirLight/specular:property"}}{{/crossLink}} are multiplied by {{#crossLink "Material"}}Material{{/crossLink}}
  {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and {{#crossLink "Material/specular:property"}}{{/crossLink}},
  respectively.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that DirLights create within xeoEngine's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/DirLight.png"></img>
@@ -259,9 +260,7 @@
 
                 set: function (value) {
 
-                    value = value || "view";
-
-                    this._state.space = value;
+                    this._state.space = value || "view";
 
                     this.fire("dirty", true); // Need to rebuild shader
 
@@ -270,7 +269,7 @@
                      * @event space
                      * @param value The property's new value
                      */
-                    this.fire("space", value);
+                    this.fire("space", this._state.space);
                 },
 
                 get: function () {

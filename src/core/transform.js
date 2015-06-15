@@ -10,6 +10,7 @@
  <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} are connected to leaf Transforms
  in the hierarchy, and will be transformed by each Transform on the path up to the
  root, in that order.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Transform.png"></img>
@@ -108,7 +109,7 @@
         },
 
         _compile: function () {
-            //this._renderer.cameraMat = this._state;
+            //this._renderer.projMatrix = this._state;
         },
 
         _getJSON: function () {

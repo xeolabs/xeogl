@@ -2,22 +2,23 @@
 
     "use strict";
 
-    /**
-     *  Create display state chunk type for draw render of lights projection
-     */
     XEO.ChunkFactory.createChunkType({
 
         type: "lights",
 
         build: function () {
 
-            this._uAmbientColor = this._uAmbientColor || [];
-            this._uLightColor = this._uLightColor || [];
+            this._uLightAmbient = this._uLightAmbient || [];
+
+            this._uLightDiffuse = this._uLightDiffuse || [];
+            this._uLightSpecular = this._uLightSpecular || [];
+
             this._uLightDir = this._uLightDir || [];
             this._uLightPos = this._uLightPos || [];
-            this._uLightCutOff = this._uLightCutOff || [];
-            this._uLightSpotExp = this._uLightSpotExp || [];
-            this._uLightAttenuation = this._uLightAttenuation || [];
+
+            this._uLightConstantAttenuation = this._uLightConstantAttenuation || [];
+            this._uLightLinearAttenuation = this._uLightLinearAttenuation || [];
+            this._uLightQuadraticAttenuation = this._uLightQuadraticAttenuation || [];
 
             var lights = this.state.lights;
             var program = this.program;
@@ -27,30 +28,30 @@
                 switch (lights[i].mode) {
 
                     case "ambient":
-                        this._uAmbientColor[i] = (program.draw.getUniformLocation("XEO_uAmbientColor"));
+                        this._uLightAmbient[i] = program.draw.getUniform("XEO_uLightAmbient");
                         break;
 
                     case "dir":
-                        this._uLightColor[i] = program.draw.getUniformLocation("XEO_uLightColor" + i);
+                        this._uLightDiffuse[i] = program.draw.getUniform("XEO_uLightDiffuse" + i);
+                        this._uLightSpecular[i] = program.draw.getUniform("XEO_uLightSpecular" + i);
                         this._uLightPos[i] = null;
-                        this._uLightDir[i] = program.draw.getUniformLocation("XEO_uLightDir" + i);
+                        this._uLightDir[i] = program.draw.getUniform("XEO_uLightDir" + i);
                         break;
 
                     case "point":
-                        this._uLightColor[i] = program.draw.getUniformLocation("XEO_uLightColor" + i);
-                        this._uLightPos[i] = program.draw.getUniformLocation("XEO_uLightPos" + i);
+                        this._uLightDiffuse[i] = program.draw.getUniform("XEO_uLightDiffuse" + i);
+                        this._uLightSpecular[i] = program.draw.getUniform("XEO_uLightSpecular" + i);
+                        this._uLightPos[i] = program.draw.getUniform("XEO_uLightPos" + i);
                         this._uLightDir[i] = null;
-                        this._uLightAttenuation[i] = program.draw.getUniformLocation("XEO_uLightAttenuation" + i);
+                        this._uLightConstantAttenuation[i] = program.draw.getUniform("XEO_uLightConstantAttenuation" + i);
+                        this._uLightLinearAttenuation[i] = program.draw.getUniform("XEO_uLightLinearAttenuation" + i);
+                        this._uLightQuadraticAttenuation[i] = program.draw.getUniform("XEO_uLightQuadraticAttenuation" + i);
                         break;
                 }
             }
         },
 
-        draw: function (frameCtx) {
-
-            if (frameCtx.dirty) {
-                this.build();
-            }
+        draw: function () {
 
             var lights = this.state.lights;
             var light;
@@ -61,25 +62,48 @@
 
                 light = lights[i];
 
-                if (this._uAmbientColor[i]) {
-                    gl.uniform3fv(this._uAmbientColor[i], light.color);
+                // Ambient color
+
+                if (this._uLightAmbient[i]) {
+                    this._uLightAmbient[i].setValue(light.ambient);
 
                 } else {
 
-                    if (this._uLightColor[i]) {
-                        gl.uniform3fv(this._uLightColor[i], light.color);
+                    // Diffuse and specular color
+
+                    if (this._uLightDiffuse[i]) {
+                        this._uLightDiffuse[i].setValue(light.diffuse);
+                    }
+
+                    if (this._uLightSpecular[i]) {
+                        this._uLightSpecular[i].setValue(light.specular);
                     }
 
                     if (this._uLightPos[i]) {
-                        gl.uniform3fv(this._uLightPos[i], light.pos);
 
-                        if (this._uLightAttenuation[i]) {
-                            gl.uniform3fv(this._uLightAttenuation[i], light.attenuation);
+                        // Position
+
+                        this._uLightPos[i].setValue(light.pos);
+
+                        // Attenuation
+
+                        if (this._uLightConstantAttenuation[i]) {
+                            this._uLightConstantAttenuation[i].setValue(light.constantAttenuation);
+                        }
+
+                        if (this._uLightLinearAttenuation[i]) {
+                            this._uLightLinearAttenuation[i].setValue(light.linearAttenuation);
+                        }
+
+                        if (this._uLightQuadraticAttenuation[i]) {
+                            this._uLightQuadraticAttenuation[i].setValue(light.quadraticAttenuation);
                         }
                     }
 
+                    // Direction
+
                     if (this._uLightDir[i]) {
-                        gl.uniform3fv(this._uLightDir[i], light.dir);
+                        this._uLightDir[i].setValue(light.dir);
                     }
                 }
             }

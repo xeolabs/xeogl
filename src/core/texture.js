@@ -15,6 +15,7 @@
  <li>Similarly, to render depth images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
  property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
  <li>For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Texture.png"></img>
@@ -114,8 +115,8 @@
         _init: function (cfg) {
 
             // Rendering state
-            
-            this._state = this._renderer.createState({
+
+            this._state = new XEO.renderer.Texture({
                 texture: null,
                 matrix: null
             });
@@ -227,7 +228,7 @@
             var state = this._state;
 
             if (!state.texture) {
-                state.texture = new XEO.webgl.Texture2D(gl);
+                state.texture = new XEO.renderer.webgl.Texture2D(gl);
             }
 
             if (this._srcDirty) {
@@ -310,7 +311,7 @@
                     // Keep self._src because that's where we loaded the image
                     // from, and we may need to save that in JSON later
 
-                    self._image = XEO.webgl.ensureImageSizePowerOfTwo(image);
+                    self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
                     self._target = null;
 
                     self._imageDirty = false;
@@ -368,7 +369,7 @@
 
                 set: function (value) {
 
-                    this._image = XEO.webgl.ensureImageSizePowerOfTwo(value);
+                    this._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(value);
                     this._src = null;
                     this._target = null;
 

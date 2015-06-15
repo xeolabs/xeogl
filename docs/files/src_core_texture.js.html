@@ -50,6 +50,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -351,7 +352,7 @@
             var state = this._state;
 
             if (!state.texture) {
-                state.texture = new XEO.webgl.Texture2D(gl);
+                state.texture = new XEO.renderer.webgl.Texture2D(gl);
             }
 
             if (this._srcDirty) {
@@ -434,7 +435,7 @@
                     // Keep self._src because that&#x27;s where we loaded the image
                     // from, and we may need to save that in JSON later
 
-                    self._image = XEO.webgl.ensureImageSizePowerOfTwo(image);
+                    self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
                     self._target = null;
 
                     self._imageDirty = false;
@@ -492,7 +493,7 @@
 
                 set: function (value) {
 
-                    this._image = XEO.webgl.ensureImageSizePowerOfTwo(value);
+                    this._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(value);
                     this._src = null;
                     this._target = null;
 

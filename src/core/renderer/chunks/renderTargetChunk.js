@@ -15,8 +15,10 @@
         draw: function (frameCtx) {
 
             var gl = this.program.gl;
+            var state = this.state;
 
             // Flush and unbind any render buffer already bound
+
             if (frameCtx.renderBuf) {
                 gl.flush();
                 frameCtx.renderBuf.unbind();
@@ -24,7 +26,7 @@
             }
 
             // Set depthMode false and bail if no render buffer for this chunk
-            var renderBuf = this.state.renderBuf;
+            var renderBuf = state.renderBuf;
             if (!renderBuf) {
                 frameCtx.depthMode = false;
                 return;
@@ -33,7 +35,7 @@
             // Bind this chunk's render buffer, set depthMode, enable blend if depthMode false, clear buffer
             renderBuf.bind();
 
-            frameCtx.depthMode = (this.state.bufType === "depth");
+            frameCtx.depthMode = (state.type === state.DEPTH);
 
             if (!frameCtx.depthMode) {
 
@@ -45,9 +47,10 @@
             }
 
             gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
             gl.clearColor(frameCtx.ambientColor[0], frameCtx.ambientColor[1], frameCtx.ambientColor[2], 1.0);
+
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-            //  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
             frameCtx.renderBuf = renderBuf;
         }

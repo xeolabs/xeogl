@@ -50,6 +50,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -424,6 +425,8 @@
 
                 this.primitive = &quot;triangles&quot;;
 
+                // Call property setters
+
                 this.positions = [
                     -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, // Front face
                     -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, // Back face
@@ -553,7 +556,7 @@
                 if (this._state.positions) {
                     this._state.positions.destroy();
                 }
-                this._state.positions = this._positions ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, usage) : null;
+                this._state.positions = this._positions ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, usage) : null;
                 this._positionsDirty = false;
             }
 
@@ -561,7 +564,7 @@
                 if (this._state.colors) {
                     this._state.colors.destroy();
                 }
-                this._state.colors = this._colors ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, usage) : null;
+                this._state.colors = this._colors ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, usage) : null;
                 this._colorsDirty = false;
             }
 
@@ -569,7 +572,7 @@
                 if (this._state.normals) {
                     this._state.normals.destroy();
                 }
-                this._state.normals = this._normals ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, usage) : null;
+                this._state.normals = this._normals ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, usage) : null;
                 this._normalsDirty = false;
             }
 
@@ -577,15 +580,15 @@
                 if (this._state.uv) {
                     this._state.uv.destroy();
                 }
-                this._state.uv = this._uv ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uv, this._uv.length, 2, usage) : null;
-                this._uv = false;
+                this._state.uv = this._uv ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uv, this._uv.length, 2, usage) : null;
+                this._uvDirty = false;
             }
 
             if (this._tangentsDirty) {
                 if (this._state.tangents) {
                     this._state.tangents.destroy();
                 }
-                this._state.tangents = this._tangents ? new XEO.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangents, this._tangents.length, 4, usage) : null;
+                this._state.tangents = this._tangents ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangents, this._tangents.length, 4, usage) : null;
                 this._tangentsDirty = false;
             }
 
@@ -593,7 +596,7 @@
                 if (this._state.indices) {
                     this._state.indices.destroy();
                 }
-                this._state.indices = this._indices ? new XEO.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, usage) : null;
+                this._state.indices = this._indices ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, usage) : null;
                 this._indicesDirty = false;
             }
 

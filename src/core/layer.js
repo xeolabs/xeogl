@@ -167,7 +167,7 @@ var object3 = new XEO.GameObject(scene, {
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
+            this._state = new XEO.renderer.Layer({
                 priority: 0
             });
 
@@ -224,7 +224,7 @@ var object3 = new XEO.GameObject(scene, {
         },
 
         _destroy: function () {
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

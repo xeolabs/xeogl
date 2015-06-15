@@ -8,6 +8,7 @@
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
  {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Lookat.png"></img>
@@ -78,12 +79,9 @@
 
         _init: function (cfg) {
 
-            // Renderer state
-            this._state = this._renderer.createState({
-
+            this._state = new XEO.renderer.ViewTransform({
                 matrix: null,
                 normalMatrix: null,
-
                 eye: [0, 0, 10.0],
                 look: [0, 0, 0.0 ],
                 up: [0, 1, 0.0 ]
@@ -262,7 +260,7 @@
         },
 
         _destroy: function () {
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

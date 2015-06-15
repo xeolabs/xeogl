@@ -67,7 +67,7 @@
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
+            this._state = new XEO.renderer.DepthBuf({
                 clearDepth: 1.0,
                 depthFunc: "less"
             });
@@ -186,7 +186,7 @@
         },
 
         _destroy: function () {
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

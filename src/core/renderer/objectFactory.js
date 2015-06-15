@@ -2,25 +2,31 @@
 
     "use strict";
 
-    XEO.renderer = XEO.renderer || {};
-
     XEO.renderer.ObjectFactory = function () {
 
-        var freeGameObjects = [];
-        var numFreeGameObjects = 0;
+        var freeObjects = [];
+        var numFreeObjects = 0;
 
-        this.getGameObject = function (id) {
+        this.get = function (id) {
+
             var object;
-            if (numFreeGameObjects > 0) {
-                object = freeGameObjects[--numFreeGameObjects];
+
+            if (numFreeObjects > 0) {
+
+                object = freeObjects[--numFreeObjects];
+
                 object.id = id;
+
                 return object;
             }
+
             return new XEO.renderer.Object(id);
         };
 
-        this.putGameObject = function (object) {
-            freeGameObjects[numFreeGameObjects++] = object;
+        this.put = function (object) {
+
+
+            freeObjects[numFreeObjects++] = object;
         };
     };
 

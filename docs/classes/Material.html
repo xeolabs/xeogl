@@ -50,6 +50,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -169,7 +170,8 @@ the <a href="../classes/Material.html#property_diffuse" class="crosslink">diffus
 <p>In this example we have</p>
 <ul>
 <li>a <a href="../classes/Texture.html" class="crosslink">Texture</a>,</li>
-<li>a <a href="../classes/Material.html" class="crosslink">Material</a> which applies the <a href="../classes/Texture.html" class="crosslink">Texture</a> as a diffuse map,</li>
+<li>a <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>,</li>
+<li>a <a href="../classes/Material.html" class="crosslink">Material</a> which applies the <a href="../classes/Texture.html" class="crosslink">Texture</a> as a diffuse map and the <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> as a specular Fresnel effect,</li>
 <li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> and a <a href="../classes/DirLight.html" class="crosslink">DirLight</a>,</li>
 <li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
 <li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
@@ -186,12 +188,19 @@ var diffuseMap = new XEO.Texture(scene, {
    src: "diffuseMap.jpg"
 });
 
+var fresnel = new XEO.Fresnel(scene, {
+   leftColor: [1.0, 1.0, 1.0],
+   rightColor: [0.0, 0.0, 0.0],
+   power: 4
+});
+
 var material = new XEO.Material(scene, {
-   ambient:    [0.3, 0.3, 0.3],
-   diffuse:    [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
-   diffuseMap: diffuseMap,
-   specular:   [1, 1, 1],
-   shininess:  30
+   ambient:         [0.3, 0.3, 0.3],
+   diffuse:         [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
+   diffuseMap:      diffuseMap,
+   specular:        [1, 1, 1],
+   shininess:       30,
+   specularFresnel: fresnel
 });
 
 var ambientLight = new XEO.AmbientLight(scene, {
@@ -455,6 +464,61 @@ var object = new XEO.GameObject(scene, {
                                         </div>
         
                                     </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[diffuseFresnel=null]</code>
+                                            <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A diffuse <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[specularFresnel=null]</code>
+                                            <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A specular <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[emissiveFresnel=null]</code>
+                                            <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>An emissive <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[opacityFresnel=null]</code>
+                                            <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>An opacity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[reflectivityFresnel=null]</code>
+                                            <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A reflectivity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
                                 </ul>
                         </li>
                     </ul>
@@ -538,11 +602,19 @@ var object = new XEO.GameObject(scene, {
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_diffuseFresnel">diffuseFresnel</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_diffuseMap">diffuseMap</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_emissive">emissive</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_emissiveFresnel">emissiveFresnel</a>
 
                             </li>
                             <li class="index-item property">
@@ -562,11 +634,19 @@ var object = new XEO.GameObject(scene, {
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_opacityFresnel">opacityFresnel</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_opacityMap">opacityMap</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_reflectivity">reflectivity</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_reflectivityFresnel">reflectivityFresnel</a>
 
                             </li>
                             <li class="index-item property">
@@ -583,6 +663,10 @@ var object = new XEO.GameObject(scene, {
                             </li>
                             <li class="index-item property">
                                 <a href="#property_specular">specular</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_specularFresnel">specularFresnel</a>
 
                             </li>
                             <li class="index-item property">
@@ -614,11 +698,19 @@ var object = new XEO.GameObject(scene, {
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_diffuseFresnel">diffuseFresnel</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_diffuseMap">diffuseMap</a>
 
                             </li>
                             <li class="index-item event">
                                 <a href="#event_emissive">emissive</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_emissiveFresnel">emissiveFresnel</a>
 
                             </li>
                             <li class="index-item event">
@@ -630,11 +722,19 @@ var object = new XEO.GameObject(scene, {
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_opacityFresnel">opacityFresnel</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_opacityMap">opacityMap</a>
 
                             </li>
                             <li class="index-item event">
                                 <a href="#event_reflectivity">reflectivity</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_reflectivityFresnel">reflectivityFresnel</a>
 
                             </li>
                             <li class="index-item event">
@@ -647,6 +747,10 @@ var object = new XEO.GameObject(scene, {
                             </li>
                             <li class="index-item event">
                                 <a href="#event_specular">specular</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_specularFresnel">specularFresnel</a>
 
                             </li>
                             <li class="index-item event">
@@ -1202,7 +1306,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l178"><code>src&#x2F;core&#x2F;material.js:178</code></a>
+                            <a href="../files/src_core_material.js.html#l205"><code>src&#x2F;core&#x2F;material.js:205</code></a>
                             </p>
                     
                     
@@ -1284,7 +1388,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l210"><code>src&#x2F;core&#x2F;material.js:210</code></a>
+                            <a href="../files/src_core_material.js.html#l237"><code>src&#x2F;core&#x2F;material.js:237</code></a>
                             </p>
                     
                     
@@ -1301,6 +1405,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_diffuseFresnel" class="property item">
+                        <h3 class="name"><code>diffuseFresnel</code></h3>
+                        <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l590"><code>src&#x2F;core&#x2F;material.js:590</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A diffuse <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> attached to this Material.</p>
+                    <p>This property overrides <a href="../classes/Material.html#property_diffuseFresnel" class="crosslink">diffuseFresnel</a> when not null or undefined.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_diffuseFresnel" class="crosslink">diffuseFresnel</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
                     <div id="property_diffuseMap" class="property item">
                         <h3 class="name"><code>diffuseMap</code></h3>
                         <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
@@ -1312,7 +1444,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l418"><code>src&#x2F;core&#x2F;material.js:418</code></a>
+                            <a href="../files/src_core_material.js.html#l445"><code>src&#x2F;core&#x2F;material.js:445</code></a>
                             </p>
                     
                     
@@ -1340,7 +1472,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l276"><code>src&#x2F;core&#x2F;material.js:276</code></a>
+                            <a href="../files/src_core_material.js.html#l303"><code>src&#x2F;core&#x2F;material.js:303</code></a>
                             </p>
                     
                     
@@ -1357,6 +1489,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_emissiveFresnel" class="property item">
+                        <h3 class="name"><code>emissiveFresnel</code></h3>
+                        <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l648"><code>src&#x2F;core&#x2F;material.js:648</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>An emissive <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> attached to this Material.</p>
+                    <p>This property overrides <a href="../classes/Material.html#property_emissive" class="crosslink">emissive</a> when not null or undefined.</p>
+                    <p>Fires an <a href="../classes/Material.html#event_emissiveFresnel" class="crosslink">emissiveFresnel</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
                     <div id="property_emissiveMap" class="property item">
                         <h3 class="name"><code>emissiveMap</code></h3>
                         <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
@@ -1368,7 +1528,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l476"><code>src&#x2F;core&#x2F;material.js:476</code></a>
+                            <a href="../files/src_core_material.js.html#l503"><code>src&#x2F;core&#x2F;material.js:503</code></a>
                             </p>
                     
                     
@@ -1447,7 +1607,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l309"><code>src&#x2F;core&#x2F;material.js:309</code></a>
+                            <a href="../files/src_core_material.js.html#l336"><code>src&#x2F;core&#x2F;material.js:336</code></a>
                             </p>
                     
                     
@@ -1468,6 +1628,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_opacityFresnel" class="property item">
+                        <h3 class="name"><code>opacityFresnel</code></h3>
+                        <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l677"><code>src&#x2F;core&#x2F;material.js:677</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>An opacity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> attached to this Material.</p>
+                    <p>This property overrides <a href="../classes/Material.html#property_opacity" class="crosslink">opacity</a> when not null or undefined.</p>
+                    <p>Fires an <a href="../classes/Material.html#event_opacityFresnel" class="crosslink">opacityFresnel</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
                     <div id="property_opacityMap" class="property item">
                         <h3 class="name"><code>opacityMap</code></h3>
                         <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
@@ -1479,7 +1667,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l505"><code>src&#x2F;core&#x2F;material.js:505</code></a>
+                            <a href="../files/src_core_material.js.html#l532"><code>src&#x2F;core&#x2F;material.js:532</code></a>
                             </p>
                     
                     
@@ -1507,7 +1695,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l383"><code>src&#x2F;core&#x2F;material.js:383</code></a>
+                            <a href="../files/src_core_material.js.html#l410"><code>src&#x2F;core&#x2F;material.js:410</code></a>
                             </p>
                     
                     
@@ -1525,6 +1713,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_reflectivityFresnel" class="property item">
+                        <h3 class="name"><code>reflectivityFresnel</code></h3>
+                        <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l706"><code>src&#x2F;core&#x2F;material.js:706</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A reflectivity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> attached to this Material.</p>
+                    <p>This property overrides <a href="../classes/Material.html#property_reflectivity" class="crosslink">reflectivity</a> when not null or undefined.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_reflectivityFresnel" class="crosslink">reflectivityFresnel</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
                     <div id="property_reflectivityMap" class="property item">
                         <h3 class="name"><code>reflectivityMap</code></h3>
                         <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
@@ -1536,7 +1752,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l534"><code>src&#x2F;core&#x2F;material.js:534</code></a>
+                            <a href="../files/src_core_material.js.html#l561"><code>src&#x2F;core&#x2F;material.js:561</code></a>
                             </p>
                     
                     
@@ -1590,7 +1806,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l348"><code>src&#x2F;core&#x2F;material.js:348</code></a>
+                            <a href="../files/src_core_material.js.html#l375"><code>src&#x2F;core&#x2F;material.js:375</code></a>
                             </p>
                     
                     
@@ -1620,7 +1836,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l243"><code>src&#x2F;core&#x2F;material.js:243</code></a>
+                            <a href="../files/src_core_material.js.html#l270"><code>src&#x2F;core&#x2F;material.js:270</code></a>
                             </p>
                     
                     
@@ -1637,6 +1853,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_specularFresnel" class="property item">
+                        <h3 class="name"><code>specularFresnel</code></h3>
+                        <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l619"><code>src&#x2F;core&#x2F;material.js:619</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A specular <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> attached to this Material.</p>
+                    <p>This property overrides <a href="../classes/Material.html#property_specular" class="crosslink">specular</a> when not null or undefined.</p>
+                    <p>Fires a <a href="../classes/Material.html#event_specularFresnel" class="crosslink">specularFresnel</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
                     <div id="property_specularMap" class="property item">
                         <h3 class="name"><code>specularMap</code></h3>
                         <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
@@ -1648,7 +1892,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l447"><code>src&#x2F;core&#x2F;material.js:447</code></a>
+                            <a href="../files/src_core_material.js.html#l474"><code>src&#x2F;core&#x2F;material.js:474</code></a>
                             </p>
                     
                     
@@ -1709,7 +1953,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l196"><code>src&#x2F;core&#x2F;material.js:196</code></a>
+                            <a href="../files/src_core_material.js.html#l223"><code>src&#x2F;core&#x2F;material.js:223</code></a>
                             </p>
                     
                     
@@ -1776,7 +2020,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l229"><code>src&#x2F;core&#x2F;material.js:229</code></a>
+                            <a href="../files/src_core_material.js.html#l256"><code>src&#x2F;core&#x2F;material.js:256</code></a>
                             </p>
                     
                     
@@ -1807,6 +2051,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_diffuseFresnel" class="events item">
+                        <h3 class="name"><code>diffuseFresnel</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l605"><code>src&#x2F;core&#x2F;material.js:605</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_diffuseMap" class="events item">
                         <h3 class="name"><code>diffuseMap</code></h3>
                         <span class="type"></span>
@@ -1818,7 +2104,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l433"><code>src&#x2F;core&#x2F;material.js:433</code></a>
+                            <a href="../files/src_core_material.js.html#l460"><code>src&#x2F;core&#x2F;material.js:460</code></a>
                             </p>
                     
                     
@@ -1860,7 +2146,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l295"><code>src&#x2F;core&#x2F;material.js:295</code></a>
+                            <a href="../files/src_core_material.js.html#l322"><code>src&#x2F;core&#x2F;material.js:322</code></a>
                             </p>
                     
                     
@@ -1891,6 +2177,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_emissiveFresnel" class="events item">
+                        <h3 class="name"><code>emissiveFresnel</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l663"><code>src&#x2F;core&#x2F;material.js:663</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_emissiveFresnel" class="crosslink">emissiveFresnel</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_emissiveMap" class="events item">
                         <h3 class="name"><code>emissiveMap</code></h3>
                         <span class="type"></span>
@@ -1902,7 +2230,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l491"><code>src&#x2F;core&#x2F;material.js:491</code></a>
+                            <a href="../files/src_core_material.js.html#l518"><code>src&#x2F;core&#x2F;material.js:518</code></a>
                             </p>
                     
                     
@@ -1944,7 +2272,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l334"><code>src&#x2F;core&#x2F;material.js:334</code></a>
+                            <a href="../files/src_core_material.js.html#l361"><code>src&#x2F;core&#x2F;material.js:361</code></a>
                             </p>
                     
                     
@@ -1975,6 +2303,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_opacityFresnel" class="events item">
+                        <h3 class="name"><code>opacityFresnel</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l692"><code>src&#x2F;core&#x2F;material.js:692</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_opacityFresnel" class="crosslink">opacityFresnel</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_opacityMap" class="events item">
                         <h3 class="name"><code>opacityMap</code></h3>
                         <span class="type"></span>
@@ -1986,7 +2356,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l520"><code>src&#x2F;core&#x2F;material.js:520</code></a>
+                            <a href="../files/src_core_material.js.html#l547"><code>src&#x2F;core&#x2F;material.js:547</code></a>
                             </p>
                     
                     
@@ -2028,7 +2398,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l404"><code>src&#x2F;core&#x2F;material.js:404</code></a>
+                            <a href="../files/src_core_material.js.html#l431"><code>src&#x2F;core&#x2F;material.js:431</code></a>
                             </p>
                     
                     
@@ -2036,6 +2406,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_reflectivity" class="crosslink">reflectivity</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_reflectivityFresnel" class="events item">
+                        <h3 class="name"><code>reflectivityFresnel</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l721"><code>src&#x2F;core&#x2F;material.js:721</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_reflectivityFresnel" class="crosslink">reflectivityFresnel</a> property changes.</p>
                     
                         </div>
                     
@@ -2070,7 +2482,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l549"><code>src&#x2F;core&#x2F;material.js:549</code></a>
+                            <a href="../files/src_core_material.js.html#l576"><code>src&#x2F;core&#x2F;material.js:576</code></a>
                             </p>
                     
                     
@@ -2112,7 +2524,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l369"><code>src&#x2F;core&#x2F;material.js:369</code></a>
+                            <a href="../files/src_core_material.js.html#l396"><code>src&#x2F;core&#x2F;material.js:396</code></a>
                             </p>
                     
                     
@@ -2154,7 +2566,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l262"><code>src&#x2F;core&#x2F;material.js:262</code></a>
+                            <a href="../files/src_core_material.js.html#l289"><code>src&#x2F;core&#x2F;material.js:289</code></a>
                             </p>
                     
                     
@@ -2185,6 +2597,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_specularFresnel" class="events item">
+                        <h3 class="name"><code>specularFresnel</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_material.js.html#l634"><code>src&#x2F;core&#x2F;material.js:634</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_specularFresnel" class="crosslink">specularFresnel</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_specularMap" class="events item">
                         <h3 class="name"><code>specularMap</code></h3>
                         <span class="type"></span>
@@ -2196,7 +2650,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_material.js.html#l462"><code>src&#x2F;core&#x2F;material.js:462</code></a>
+                            <a href="../files/src_core_material.js.html#l489"><code>src&#x2F;core&#x2F;material.js:489</code></a>
                             </p>
                     
                     

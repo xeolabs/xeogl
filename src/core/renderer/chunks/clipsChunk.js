@@ -11,65 +11,61 @@
 
         build: function () {
 
-            this._draw = this._draw || [];
+            this._uClipModeDraw = this._uClipModeDraw || [];
+            this._uClipPlaneDraw = this._uClipPlaneDraw || [];
 
             var draw = this.program.draw;
 
             for (var i = 0, len = this.state.clips.length; i < len; i++) {
-                this._draw[i] = {
-                    uClipMode: draw.getUniformLocation("XEO_uClipMode" + i),
-                    uClipNormalAndDist: draw.getUniformLocation("XEO_uClipNormalAndDist" + i)
-                };
+                this._uClipModeDraw[i] = draw.getUniform("XEO_uClipMode" + i);
+                this._uClipPlaneDraw[i] = draw.getUniform("XEO_uClipPlane" + i)
             }
 
-            this._pick = this._pick || [];
+            this._uClipModePick = this._uClipModePick || [];
+            this._uClipPlanePick = this._uClipPlanePick || [];
 
             var pick = this.program.pick;
 
             for (var i = 0, len = this.state.clips.length; i < len; i++) {
-                this._pick[i] = {
-                    uClipMode: pick.getUniformLocation("XEO_uClipMode" + i),
-                    uClipNormalAndDist: pick.getUniformLocation("XEO_uClipNormalAndDist" + i)
-                };
+                this._uClipModePick[i] = pick.getUniform("XEO_uClipMode" + i);
+                this._uClipPlanePick[i] = pick.getUniform("XEO_uClipPlane" + i)
             }
         },
 
         drawAndPick: function (frameCtx) {
 
-            var vars = (frameCtx.pick) ? this._pick : this._draw;
+            var uClipMode = (frameCtx.pick) ? this._uClipModePick : this._uClipModeDraw;
+            var uClipPlane = (frameCtx.pick) ? this._uClipPlanePick : this._uClipPlaneDraw;
 
             var mode;
-            var normalAndDist;
+            var plane;
             var clips = this.state.clips;
             var clip;
-            var gl = this.program.gl;
 
             for (var i = 0, len = clips.length; i < len; i++) {
 
-                if (frameCtx.pick) {
-                    mode = vars[i].uClipMode;
-                    normalAndDist = vars[i].uClipNormalAndDist;
-                } else {
-                    mode = vars[i].uClipMode;
-                    normalAndDist = vars[i].uClipNormalAndDist;
-                }
+                mode = uClipMode[i];
+                plane = uClipPlane[i];
 
-                if (mode && normalAndDist) {
+                if (mode && plane) {
 
                     clip = clips[i];
 
                     if (clip.mode === "inside") {
 
-                        gl.uniform1f(mode, 2);
-                        gl.uniform4fv(normalAndDist, clip.normalAndDist);
+                        mode.setValue(2);
+                        plane.setValue(clip.plane);
 
                     } else if (clip.mode === "outside") {
 
-                        gl.uniform1f(mode, 1);
-                        gl.uniform4fv(normalAndDist, clip.normalAndDist);
+                        mode.setValue(1);
+                        plane.setValue(clip.plane);
 
-                    } else { // disabled
-                        gl.uniform1f(mode, 0);
+                    } else {
+
+                        // Disabled
+
+                        mode.setValue(0);
                     }
                 }
             }

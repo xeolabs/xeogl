@@ -24,6 +24,7 @@
  <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>
 
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PointLights create within xeoEngine's shaders.</li>
 
  </ul>
 
@@ -156,9 +157,7 @@
 
                 set: function (value) {
 
-                    value = value || [ 1.0, 1.0, 1.0 ];
-
-                    this._state.pos = value;
+                    this._state.pos = value || [ 1.0, 1.0, 1.0 ];
 
                     this._renderer.imageDirty = true;
 
@@ -188,9 +187,7 @@
 
                 set: function (value) {
 
-                    value = value || [0.7, 0.7, 0.8 ];
-
-                    this._state.diffuse = value;
+                    this._state.diffuse = value || [0.7, 0.7, 0.8 ];
 
                     this._renderer.imageDirty = true;
 
@@ -220,9 +217,7 @@
 
                 set: function (value) {
 
-                    value = value || [0.7, 0.7, 0.8 ];
-
-                    this._state.specular = value;
+                    this._state.specular = value || [0.7, 0.7, 0.8 ];
 
                     this._renderer.imageDirty = true;
 
@@ -252,9 +247,7 @@
 
                 set: function (value) {
 
-                    value = value || 0.0;
-
-                    this._state.constantAttenuation = value;
+                    this._state.constantAttenuation = value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -285,9 +278,7 @@
 
                 set: function (value) {
 
-                    value = value || 0.0;
-
-                    this._state.linearAttenuation = value;
+                    this._state.linearAttenuation = value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -318,9 +309,7 @@
 
                 set: function (value) {
 
-                    value = value || 0.0;
-
-                    this._state.quadraticAttenuation = value;
+                    this._state.quadraticAttenuation =  value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -358,9 +347,7 @@
 
                 set: function (value) {
 
-                    value = value || "view";
-
-                    this._state.space = value;
+                    this._state.space = value || "view";
 
                     this.fire("dirty", true); // Need to rebuild shader
 

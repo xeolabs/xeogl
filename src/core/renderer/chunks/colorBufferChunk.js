@@ -9,7 +9,7 @@
 
         type: "colorBuf",
 
-        // Avoid reapplication of a chunk after a program switch.
+        // Avoid re-application of this chunk after a program switch.
         programGlobal: true,
 
         build: function () {
@@ -17,23 +17,30 @@
 
         drawAndPick: function (frameCtx) {
 
-            if (!frameCtx.transparent) { // Blending forced when rendering transparent bin
+            if (!frameCtx.transparent) {
 
-                var blendEnabled = this.state.blendEnabled;
+                // Blending forced while rendering a transparent bin
+
+                var state = this.state;
+                var blendEnabled = state.blendEnabled;
 
                 var gl = this.program.gl;
 
                 if (frameCtx.blendEnabled !== blendEnabled) {
+
                     if (blendEnabled) {
                         gl.enable(gl.BLEND);
+
                     } else {
                         gl.disable(gl.BLEND);
                     }
+
                     frameCtx.blendEnabled = blendEnabled;
                 }
 
-                var colorMask = this.state.colorMask;
-                gl.colorMask(colorMask.r, colorMask.g, colorMask.b, colorMask.a);
+                var colorMask = state.colorMask;
+
+                gl.colorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
             }
         }
     });

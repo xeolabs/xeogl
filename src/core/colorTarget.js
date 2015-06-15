@@ -87,9 +87,9 @@
 
         _init: function () {
 
-            this._state = this._renderer.createState({
-                bufType: "color",
-                renderBuf: new XEO.webgl.RenderBuffer({
+            this._state = new XEO.renderer.RenderTarget({
+                type: XEO.renderer.RenderTarget.COLOR,
+                renderBuf: new XEO.renderer.webgl.RenderBuffer({
                     canvas: this.scene.canvas
                 })
             });
@@ -112,7 +112,7 @@
 
             this._state.renderBuf.destroy();
 
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

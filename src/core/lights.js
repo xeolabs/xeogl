@@ -106,16 +106,23 @@
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
+            // Renderer state contains the states of the child light source components
+            this._state = new XEO.renderer.Lights({
                 lights: [],
-                numLights: 0,
-                hash: ""
+                hash: "",
+                dirty: true
             });
 
+            // Array of child light source components
             this._lights = [];
+
+            // Subscriptions to "dirty" events from child light source components
             this._dirtySubs = [];
+
+            // Subscriptions to "destroyed" events from child light source components
             this._destroyedSubs = [];
 
+            // Add initial light source components
             this.lights = cfg.lights;
         },
 
@@ -146,6 +153,7 @@
                     }
 
                     this._lights = [];
+
                     this._dirtySubs = [];
                     this._destroyedSubs = [];
 
@@ -157,14 +165,22 @@
                     }
 
                     function lightDestroyed() {
+
                         var id = this.id; // Light ID
+
                         for (var i = 0, len = self._lights.length; i < len; i++) {
+
                             if (self._lights[i].id === id) {
+
                                 self._lights = self._lights.slice(i, i + 1);
                                 self._dirtySubs = self._dirtySubs.slice(i, i + 1);
                                 self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
+
+                                self._state.dirty = true;
+
                                 self.fire("dirty", true);
                                 self.fire("lights", self._lights);
+
                                 return;
                             }
                         }
@@ -200,6 +216,8 @@
                         lights.push(light);
                     }
 
+                    this._state.dirty = true;
+
                     this.fire("dirty", true);
                     this.fire("lights", this._lights);
                 },
@@ -213,46 +231,54 @@
         _compile: function () {
 
             var state = this._state;
-            var lights = state.lights;
-            var numLights = this._lights.length;
 
-            state.numLights = numLights;
+            if (state.dirty) {
 
-            for (var i = 0; i < numLights; i++) {
-                lights[i] = this._lights[i]._state;
+                state.lights = [];
+
+                for (var i = 0, len = this._lights.length; i < len; i++) {
+                    state.lights.push(this._lights[i]._state);
+                }
+
+                this._makeHash();
+
+                state.dirty = false;
             }
 
-            this._state.hash = this._makeHash(lights, numLights);
-
-            this._renderer.lights = this._state;
+            this._renderer.lights = state;
         },
 
-        _makeHash: function (lights, numLights) {
+        _makeHash: function () {
 
-            if (numLights === 0) {
-                return "";
+            var state = this._state;
+            var lights = this._state.lights;
+
+            if (lights.length === 0) {
+                return ";";
             }
 
-            var parts = [];
+            var hash = [];
             var light;
 
-            for (var i = 0; i < numLights; i++) {
+            for (var i = 0, len = lights.length; i < len; i++) {
 
                 light = lights[i];
-                parts.push(light.mode);
+                hash.push(light.mode);
 
                 if (light.specular) {
-                    parts.push("s");
+                    hash.push("s");
                 }
 
                 if (light.diffuse) {
-                    parts.push("d");
+                    hash.push("d");
                 }
 
-                parts.push((light.space === "world") ? "w" : "v");
+                hash.push((light.space === "world") ? "w" : "v");
             }
 
-            return parts.join("");
+            hash.push(";");
+
+            state.hash = hash.join("");
         },
 
         _getJSON: function () {
@@ -269,7 +295,7 @@
         },
 
         _destroy: function () {
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 })();

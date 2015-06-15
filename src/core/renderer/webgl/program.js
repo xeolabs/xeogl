@@ -9,7 +9,7 @@
      * @param vertex Source code for vertex shader
      * @param fragment Source code for fragment shader
      */
-    XEO.webgl.Program = function (gl, vertex, fragment) {
+    XEO.renderer.webgl.Program = function (gl, vertex, fragment) {
 
         /**
          * True as soon as this program is allocated and ready to go
@@ -19,28 +19,21 @@
 
         this.gl = gl;
 
-        this._uniforms = {};
-        this._samplers = {};
-        this._attributes = {};
+        // Inputs for this program
 
-        this.uniformValues = [];
+        this.uniforms = {};
+        this.samplers = {};
+        this.attributes = {};
 
-        this.materialSettings = {
-            specularColor: [0, 0, 0],
+        // Shaders
 
-            specular: 0,
-            shininess: 0,
-            emit: 0,
-            alpha: 0
-        };
+        this._vertexShader = new XEO.renderer.webgl.Shader(gl, gl.VERTEX_SHADER, vertex);
 
-        this._vertexShader = new XEO.webgl.Shader(gl, gl.VERTEX_SHADER, vertex);
-
-        this._fragmentShader = new XEO.webgl.Shader(gl, gl.FRAGMENT_SHADER, fragment);
+        this._fragmentShader = new XEO.renderer.webgl.Shader(gl, gl.FRAGMENT_SHADER, fragment);
 
         var a, i, u, u_name, location, shader;
 
-        // Create program, attach shaders, link and validate program
+        // Program
 
         this.handle = gl.createProgram();
 
@@ -60,20 +53,28 @@
 
             var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
             var valueIndex = 0;
+
             for (i = 0; i < numUniforms; ++i) {
+
                 u = gl.getActiveUniform(this.handle, i);
+
                 if (u) {
+
                     u_name = u.name;
+
                     if (u_name[u_name.length - 1] === "\u0000") {
                         u_name = u_name.substr(0, u_name.length - 1);
                     }
+
                     location = gl.getUniformLocation(this.handle, u_name);
+
                     if ((u.type === gl.SAMPLER_2D) || (u.type === gl.SAMPLER_CUBE) || (u.type === 35682)) {
-                        this._samplers[u_name] = new XEO.webgl.Sampler(gl, this.handle, u_name, u.type, u.size, location);
+
+                        this.samplers[u_name] = new XEO.renderer.webgl.Sampler(gl, location);
+
                     } else {
-                        this._uniforms[u_name] = new XEO.webgl.Uniform(gl, this.handle, u_name, u.type, u.size, location, valueIndex);
-                        this.uniformValues[valueIndex] = null;
-                        ++valueIndex;
+
+                        this.uniforms[u_name] = new XEO.renderer.webgl.Uniform(gl, u.type, location);
                     }
                 }
             }
@@ -81,104 +82,104 @@
             // Discover attributes
 
             var numAttribs = gl.getProgramParameter(this.handle, gl.ACTIVE_ATTRIBUTES);
+
             for (i = 0; i < numAttribs; i++) {
+
                 a = gl.getActiveAttrib(this.handle, i);
+
                 if (a) {
+
                     location = gl.getAttribLocation(this.handle, a.name);
-                    this._attributes[a.name] = new XEO.webgl.Attribute(gl, this.handle, a.name, a.type, a.size, location);
+
+                    this.attributes[a.name] = new XEO.renderer.webgl.Attribute(gl, location);
                 }
             }
 
-            // Program allocated
             this.allocated = true;
         }
     };
 
-    XEO.webgl.Program.prototype.bind = function () {
+    XEO.renderer.webgl.Program.prototype.bind = function () {
+
         if (!this.allocated) {
             return;
         }
+
         this.gl.useProgram(this.handle);
     };
 
-    XEO.webgl.Program.prototype.getUniformLocation = function (name) {
+    XEO.renderer.webgl.Program.prototype.setUniform = function (name, value) {
+
         if (!this.allocated) {
             return;
         }
-        var u = this._uniforms[name];
+
+        var u = this.uniforms[name];
+
         if (u) {
-            return u.getLocation();
+            u.setValue(value);
         }
     };
 
-    XEO.webgl.Program.prototype.getUniform = function (name) {
+    XEO.renderer.webgl.Program.prototype.getUniform = function (name) {
+
         if (!this.allocated) {
             return;
         }
-        var u = this._uniforms[name];
-        if (u) {
-            return u;
-        }
+
+        return this.uniforms[name];
     };
 
-    XEO.webgl.Program.prototype.getAttribute = function (name) {
+    XEO.renderer.webgl.Program.prototype.getAttribute = function (name) {
+
         if (!this.allocated) {
             return;
         }
-        var attr = this._attributes[name];
-        if (attr) {
-            return attr;
-        }
+
+        return this.attributes[name];
     };
 
-    XEO.webgl.Program.prototype.bindFloatArrayBuffer = function (name, buffer) {
+    XEO.renderer.webgl.Program.prototype.bindFloatArrayBuffer = function (name, buffer) {
+
         if (!this.allocated) {
             return;
         }
-        var attr = this._attributes[name];
-        if (attr) {
-            attr.bindFloatArrayBuffer(buffer);
-        }
+
+        return this.attributes[name];
     };
 
-    XEO.webgl.Program.prototype.bindTexture = function (name, texture, unit) {
+    XEO.renderer.webgl.Program.prototype.bindTexture = function (name, texture, unit) {
+
         if (!this.allocated) {
             return false;
         }
-        var sampler = this._samplers[name];
+
+        var sampler = this.samplers[name];
+
         if (sampler) {
             return sampler.bindTexture(texture, unit);
+
         } else {
             return false;
         }
     };
 
-    XEO.webgl.Program.prototype.destroy = function () {
+    XEO.renderer.webgl.Program.prototype.destroy = function () {
+
         if (!this.allocated) {
             return;
         }
+
         this.gl.deleteProgram(this.handle);
         this.gl.deleteShader(this._vertexShader.handle);
         this.gl.deleteShader(this._fragmentShader.handle);
+
         this.handle = null;
-        this._attributes = null;
-        this._uniforms = null;
-        this._samplers = null;
+        this.attributes = null;
+        this.uniforms = null;
+        this.samplers = null;
+
         this.allocated = false;
-    };
-
-
-    XEO.webgl.Program.prototype.setUniform = function (name, value) {
-        if (!this.allocated) {
-            return;
-        }
-        var u = this._uniforms[name];
-        if (u) {
-            if (this.uniformValues[u.index] !== value || !u.numberValue) {
-                u.setValue(value);
-                this.uniformValues[u.index] = value;
-            }
-        }
     };
 
 })();

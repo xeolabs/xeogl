@@ -72,7 +72,7 @@ visibility.destroy();
 
         _init: function (cfg) {
 
-            this._state = this._renderer.createState({
+            this._state = new XEO.renderer.Visibility({
                 visible: true
             });
 
@@ -124,7 +124,7 @@ visibility.destroy();
         },
 
         _destroy: function () {
-            this._renderer.destroyState(this._state);
+            this._state.destroy();
         }
     });
 

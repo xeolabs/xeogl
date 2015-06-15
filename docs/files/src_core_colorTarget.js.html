@@ -50,6 +50,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -211,8 +212,8 @@
         _init: function () {
 
             this._state = new XEO.renderer.RenderTarget({
-                bufType: &quot;color&quot;,
-                renderBuf: new XEO.webgl.RenderBuffer({
+                type: XEO.renderer.RenderTarget.COLOR,
+                renderBuf: new XEO.renderer.webgl.RenderBuffer({
                     canvas: this.scene.canvas
                 })
             });

@@ -64,15 +64,11 @@
      * This is also re-called to re-create them after WebGL context loss.
      */
     XEO.renderer.Program.prototype.build = function (gl) {
-        /**
-         * Current draw uniform state cached as a bitfield to avoid costly extra uniform1i calls
-         * @type Number
-         */
-        this.drawUniformFlags = 0;
 
         this.gl = gl;
-        this.draw = new XEO.webgl.Program(gl, this.source.drawVertex, this.source.drawFragment);
-        this.pick = new XEO.webgl.Program(gl, this.source.pickVertex, this.source.pickFragment);
+
+        this.draw = new XEO.renderer.webgl.Program(gl, this.source.drawVertex, this.source.drawFragment);
+        this.pick = new XEO.renderer.webgl.Program(gl, this.source.pickVertex, this.source.pickFragment);
     };
 
 })();
