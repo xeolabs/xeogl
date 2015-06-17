@@ -16,7 +16,7 @@
  The example below has:
  <ul>
  <li>two Fresnels,</li>
- <li>a {{#crossLink "Material"}}{{/crossLink}} which applies the {{#crossLink "Fresnel"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>
+ <li>a {{#crossLink "Material"}}{{/crossLink}} which applies the {{#crossLink "Fresnel"}}{{/crossLink}}s to diffuse and specular shading,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
  <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
