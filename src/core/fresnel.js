@@ -28,13 +28,15 @@
  var fresnel1 = new XEO.Fresnel(scene, {
     leftColor: [1.0, 1.0, 1.0],
     rightColor: [0.0, 0.0, 0.0],
-    power: 4
+    power: 4,
+    bias: 0.6
 });
 
  var fresnel2 = new XEO.Fresnel(scene, {
     leftColor: [1.0, 1.0, 1.0],
     rightColor: [0.0, 0.0, 0.0],
-    power: 4
+    power: 4,
+    bias: 0.2
 });
 
  var material = new XEO.Material(scene, {
@@ -82,6 +84,7 @@
  @param [cfg.leftColor=[ 0.0, 0.0, 0.0 ]] {Array of Number} Color used on edges.
  @param [cfg.rightColor=[ 0.0, 0.0, 0.0 ]] {Array of Number} Color used on center.
  @param [cfg.power=0] {Number} The power.
+ @param [cfg.bias=0] {Number} The bias.
  @extends Component
  */
 (function () {
@@ -105,6 +108,7 @@
             this.leftColor = cfg.leftColor;
             this.rightColor = cfg.rightColor;
             this.power = cfg.power;
+            this.bias = cfg.bias;
         },
 
         _props: {
@@ -201,6 +205,39 @@
 
                 get: function () {
                     return this._state.power;
+                }
+            },
+
+            /**
+             * Indicates this Fresnel's bias.
+             *
+             * Fires a {{#crossLink "Fresnel/bias:event"}}{{/crossLink}} event on change.
+             *
+             * @property bias
+             * @default 0
+             * @type Number
+             */
+            bias: {
+
+                set: function (value) {
+
+                    value = value || 0;
+
+                    this._state.bias = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Fresnel's  {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event bias
+                     * @param value The property's new value
+                     */
+                    this.fire("bias", value);
+                },
+
+                get: function () {
+                    return this._state.bias;
                 }
             }
         },

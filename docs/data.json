@@ -1096,7 +1096,7 @@
             "namespace": "",
             "file": "src/core/fresnel.js",
             "line": 1,
-            "description": "A **Fresnel** specifies a Fresnel effect.\n\n## Overview\n\n<ul>\n<li>Fresnels are grouped within {{#crossLink \"Material\"}}Material{{/crossLink}}s, which are attached to\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Fresnels create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Fresnel.png\"></img>\n\n## Example\n\nThe example below has:\n<ul>\n<li>two Fresnels,</li>\n<li>a {{#crossLink \"Material\"}}{{/crossLink}} which applies the {{#crossLink \"Fresnel\"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar fresnel1 = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4\n});\n\nvar fresnel2 = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4\n});\n\nvar material = new XEO.Material(scene, {\n   ambient: [0.3, 0.3, 0.3],\n   shininess: 30,\n   diffuseFresnel: fresnel1,\n   specularFresnel: fresnel3\n});\n\nvar light1 = new XEO.PointLight(scene, {\n   pos: [0, 100, 100],\n   diffuse: [0.5, 0.7, 0.5],\n   specular: [1.0, 1.0, 1.0]\n});\n\nvar light2 = new XEO.AmbientLight(scene, {\n   ambient: [0.5, 0.7, 0.5]\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       light1,\n       light2\n   ]\n});\n\n// Geometry without parameters will default to a 2x2x2 box.\nvar geometry = new XEO.Geometry(scene);\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
+            "description": "A **Fresnel** specifies a Fresnel effect.\n\n## Overview\n\n<ul>\n<li>Fresnels are grouped within {{#crossLink \"Material\"}}Material{{/crossLink}}s, which are attached to\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Fresnels create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Fresnel.png\"></img>\n\n## Example\n\nThe example below has:\n<ul>\n<li>two Fresnels,</li>\n<li>a {{#crossLink \"Material\"}}{{/crossLink}} which applies the {{#crossLink \"Fresnel\"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar fresnel1 = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4,\n   bias: 0.6\n});\n\nvar fresnel2 = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4,\n   bias: 0.2\n});\n\nvar material = new XEO.Material(scene, {\n   ambient: [0.3, 0.3, 0.3],\n   shininess: 30,\n   diffuseFresnel: fresnel1,\n   specularFresnel: fresnel3\n});\n\nvar light1 = new XEO.PointLight(scene, {\n   pos: [0, 100, 100],\n   diffuse: [0.5, 0.7, 0.5],\n   specular: [1.0, 1.0, 1.0]\n});\n\nvar light2 = new XEO.AmbientLight(scene, {\n   ambient: [0.5, 0.7, 0.5]\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       light1,\n       light2\n   ]\n});\n\n// Geometry without parameters will default to a 2x2x2 box.\nvar geometry = new XEO.Geometry(scene);\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
             "is_constructor": 1,
             "params": [
                 {
@@ -1140,6 +1140,13 @@
                         {
                             "name": "power",
                             "description": "The power.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        },
+                        {
+                            "name": "bias",
+                            "description": "The bias.",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "0"
@@ -5231,7 +5238,7 @@
         },
         {
             "file": "src/core/fresnel.js",
-            "line": 112,
+            "line": 116,
             "description": "This Fresnel's edge color.\n\nFires an {{#crossLink \"Fresnel/leftColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "leftColor",
@@ -5242,7 +5249,7 @@
         },
         {
             "file": "src/core/fresnel.js",
-            "line": 129,
+            "line": 133,
             "description": "Fired whenever this Fresnel's {{#crossLink \"leftColorLight/leftColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "leftColor",
@@ -5257,7 +5264,7 @@
         },
         {
             "file": "src/core/fresnel.js",
-            "line": 143,
+            "line": 147,
             "description": "This Fresnel's center color.\n\nFires an {{#crossLink \"Fresnel/rightColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "rightColor",
@@ -5268,7 +5275,7 @@
         },
         {
             "file": "src/core/fresnel.js",
-            "line": 160,
+            "line": 164,
             "description": "Fired whenever this Fresnel's {{#crossLink \"rightColorLight/rightColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "rightColor",
@@ -5283,7 +5290,7 @@
         },
         {
             "file": "src/core/fresnel.js",
-            "line": 174,
+            "line": 178,
             "description": "Indicates this Fresnel's power.\n\nFires a {{#crossLink \"Fresnel/power:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "power",
@@ -5294,10 +5301,36 @@
         },
         {
             "file": "src/core/fresnel.js",
-            "line": 193,
+            "line": 197,
             "description": "Fired whenever this Fresnel's  {{#crossLink \"Fresnel/power:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "power",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Fresnel",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/fresnel.js",
+            "line": 211,
+            "description": "Indicates this Fresnel's bias.\n\nFires a {{#crossLink \"Fresnel/bias:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "bias",
+            "default": "0",
+            "type": "Number",
+            "class": "Fresnel",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/fresnel.js",
+            "line": 230,
+            "description": "Fired whenever this Fresnel's  {{#crossLink \"Fresnel/bias:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "bias",
             "params": [
                 {
                     "name": "value",

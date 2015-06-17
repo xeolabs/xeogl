@@ -159,13 +159,15 @@
 var fresnel1 = new XEO.Fresnel(scene, {
    leftColor: [1.0, 1.0, 1.0],
    rightColor: [0.0, 0.0, 0.0],
-   power: 4
+   power: 4,
+   bias: 0.6
 });
 
 var fresnel2 = new XEO.Fresnel(scene, {
    leftColor: [1.0, 1.0, 1.0],
    rightColor: [0.0, 0.0, 0.0],
-   power: 4
+   power: 4,
+   bias: 0.2
 });
 
 var material = new XEO.Material(scene, {
@@ -325,6 +327,17 @@ var object = new XEO.GameObject(scene, {
                                         </div>
         
                                     </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[bias=0]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The bias.</p>
+        
+                                        </div>
+        
+                                    </li>
                                 </ul>
                         </li>
                     </ul>
@@ -391,6 +404,10 @@ var object = new XEO.GameObject(scene, {
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_bias">bias</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_className">className</a>
 
@@ -435,6 +452,10 @@ var object = new XEO.GameObject(scene, {
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_bias">bias</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
@@ -989,6 +1010,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_bias" class="property item">
+                        <h3 class="name"><code>bias</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_fresnel.js.html#l211"><code>src&#x2F;core&#x2F;fresnel.js:211</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates this Fresnel&#39;s bias.</p>
+                    <p>Fires a <a href="../classes/Fresnel.html#event_bias" class="crosslink">bias</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0</p>
+                    
+                    
+                    </div>
                     <div id="property_className" class="property item inherited">
                         <h3 class="name"><code>className</code></h3>
                         <span class="type">String</span>
@@ -1080,7 +1128,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l112"><code>src&#x2F;core&#x2F;fresnel.js:112</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l116"><code>src&#x2F;core&#x2F;fresnel.js:116</code></a>
                             </p>
                     
                     
@@ -1132,7 +1180,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l174"><code>src&#x2F;core&#x2F;fresnel.js:174</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l178"><code>src&#x2F;core&#x2F;fresnel.js:178</code></a>
                             </p>
                     
                     
@@ -1159,7 +1207,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l143"><code>src&#x2F;core&#x2F;fresnel.js:143</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l147"><code>src&#x2F;core&#x2F;fresnel.js:147</code></a>
                             </p>
                     
                     
@@ -1234,6 +1282,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_bias" class="events item">
+                        <h3 class="name"><code>bias</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_fresnel.js.html#l230"><code>src&#x2F;core&#x2F;fresnel.js:230</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Fresnel&#39;s  <a href="../classes/Fresnel.html#property_bias" class="crosslink">bias</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1270,7 +1360,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l129"><code>src&#x2F;core&#x2F;fresnel.js:129</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l133"><code>src&#x2F;core&#x2F;fresnel.js:133</code></a>
                             </p>
                     
                     
@@ -1312,7 +1402,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l193"><code>src&#x2F;core&#x2F;fresnel.js:193</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l197"><code>src&#x2F;core&#x2F;fresnel.js:197</code></a>
                             </p>
                     
                     
@@ -1354,7 +1444,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l160"><code>src&#x2F;core&#x2F;fresnel.js:160</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l164"><code>src&#x2F;core&#x2F;fresnel.js:164</code></a>
                             </p>
                     
                     
