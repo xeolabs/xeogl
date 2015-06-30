@@ -44,6 +44,11 @@
 
         _init: function (cfg) {
 
+            this._state = new XEO.renderer.ViewTransform({
+                matrix: null,
+                normalMatrix: null
+            });
+
             this.parent = cfg.parent;
             this.matrix = cfg.matrix;
         },
@@ -69,7 +74,7 @@
                      * @event parent
                      * @param value The property's new value
                      */
-                    this.fire("parent", value);
+                    this.fire("parent", this._parent);
                 },
 
                 get: function () {
@@ -89,8 +94,11 @@
             matrix: {
 
                 set: function (value) {
+
                     value = value || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
                     this._state.matrix = value;
+                    this._state.normalMatrix = XEO.math.transposeMat4(XEO.math.inverseMat4(value, this._state.normalMat));
                     this._dirty = true;
                     this._renderer.imageDirty = true;
 
@@ -99,7 +107,7 @@
                      * @event matrix
                      * @param value The property's new value
                      */
-                    this.fire("matrix", value);
+                    this.fire("matrix", this._state.matrix);
                 },
 
                 get: function () {
