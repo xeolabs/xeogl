@@ -3,6 +3,31 @@
         "src/core/inheritance.js",
         "src/core/xeo.js",
         "src/core/utils/map.js",
+
+        "src/core/math/math.js",
+
+        "src/core/renderer/renderer.js",
+        "src/core/renderer/states.js",
+        "src/core/renderer/object.js",
+        "src/core/renderer/objectFactory.js",
+        "src/core/renderer/program.js",
+        "src/core/renderer/programFactory.js",
+        "src/core/renderer/programSource.js",
+        "src/core/renderer/programSourceFactory.js",
+        "src/core/renderer/renderContext.js",
+
+        "src/core/renderer/webgl/webgl.js",
+        "src/core/renderer/webgl/arrayBuffer.js",
+        "src/core/renderer/webgl/attribute.js",
+        "src/core/renderer/webgl/program.js",
+        "src/core/renderer/webgl/renderBuffer.js",
+        "src/core/renderer/webgl/sampler.js",
+        "src/core/renderer/webgl/texture2d.js",
+        "src/core/renderer/webgl/uniform.js",
+
+        "src/core/renderer/chunks/chunkFactory.js",
+
+
         "src/core/component.js",
         "src/core/ambientLight.js",
         "src/core/camera.js",
@@ -16,7 +41,6 @@
         "src/core/depthBuf.js",
         "src/core/depthTarget.js",
         "src/core/dirLight.js",
-        "src/core/visibility.js",
         "src/core/modes.js",
         "src/core/frustum.js",
         "src/core/geometry.js",
@@ -43,29 +67,11 @@
         "src/core/task.js",
         "src/core/tasks.js",
         "src/core/texture.js",
-
-        "src/core/math/math.js",
-
-        "src/core/webgl/webgl.js",
-        "src/core/webgl/arrayBuffer.js",
-        "src/core/webgl/attribute.js",
-        "src/core/webgl/program.js",
-        "src/core/webgl/renderBuffer.js",
-        "src/core/webgl/sampler.js",
-        "src/core/webgl/texture2d.js",
-        "src/core/webgl/uniform.js",
-
-        "src/core/renderer/renderer.js",
-        "src/core/renderer/states.js",
-        "src/core/renderer/object.js",
-        "src/core/renderer/objectFactory.js",
-        "src/core/renderer/program.js",
-        "src/core/renderer/programFactory.js",
-        "src/core/renderer/programSource.js",
-        "src/core/renderer/programSourceFactory.js",
-        "src/core/renderer/renderContext.js",
-
-        "src/core/renderer/chunks/chunkFactory.js"
+        "src/core/transform.js",
+        "src/core/rotate.js",
+        "src/core/translate.js",
+        "src/core/scale.js",
+        "src/core/visibility.js"
     ],
 
     "extras": [
