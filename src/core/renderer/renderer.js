@@ -90,104 +90,128 @@
         this.transparent = cfg.transparent === true;
 
         /**
-         * State from the last {@link XEO.Visibility} visited during scene graph compilation traversal
+         Visibility
+         @property visibility
+         @type {renderer.Visibility}
          */
         this.visibility = null;
 
         /**
-         * Rendering state from the last {@link XEO.Modes} visited during scene graph compilation traversal
+         Modes
+         @property modes
+         @type {renderer.Modes}
          */
         this.modes = null;
 
         /**
-         * Rendering state from the last {@link XEO.Layer} visited during scene graph compilation traversal
+         Layer
+         @property layer
+         @type {renderer.Layer}
          */
         this.layer = null;
 
         /**
-         * Rendering state from the last {@link XEO.Stage} visited during scene graph compilation traversal
+         Stage
+         @property stage
+         @type {renderer.Layer}
          */
         this.stage = null;
 
         /**
-         * Rendering state from the last {@link XEO.DepthBuf} visited during scene graph compilation traversal
+         DepthBuf
+         @property depthBuf
+         @type {renderer.DepthBuf}
          */
         this.depthBuf = null;
 
         /**
-         * Rendering state from the last {@link XEO.ColorBuf} visited during scene graph compilation traversal
+         ColorBuf
+         @property colorBuf
+         @type {renderer.ColorBuf}
          */
         this.colorBuf = null;
 
         /**
-         * Rendering state from the last {@link XEO.Lights} visited during scene graph compilation traversal
-         * @type Object
+         Lights
+         @property lights
+         @type {renderer.Lights}
          */
         this.lights = null;
 
         /**
-         * Rendering state from the last {@link XEO.Material} visited during scene graph compilation traversal
-         * @type Object
+         Material
+         @property material
+         @type {renderer.Material}
          */
         this.material = null;
 
         /**
-         * Rendering state from the last {@link XEO.Reflect} visited during scene graph compilation traversal
-         * @type Object
+         Reflection
+         @property reflection
+         @type {renderer.Reflect}
          */
         this.reflect = null;
 
         /**
-         * Rendering state from the last {@link XEO.XForm} visited during scene graph compilation traversal
-         * @type Object
+         ModelTransform
+         @property modelTransform
+         @type {renderer.ModelTransform}
          */
         this.modelTransform = null;
 
         /**
-         * Rendering state from the last {@link XEO.LookAt} visited during scene graph compilation traversal
-         * @type Object
+         ViewTransform
+         @property viewTransform
+         @type {renderer.ViewTransform}
          */
         this.viewTransform = null;
 
         /**
-         * Rendering state from the last {@link XEO.Camera} visited during scene graph compilation traversal
-         * @type Object
+         ProjTransform
+         @property projTransform
+         @type {renderer.ProjTransform}
          */
         this.projTransform = null;
 
         /**
-         * Rendering state from the last {@link XEO.ColorTarget} visited during scene graph compilation traversal
-         * @type Object
+         RenderTarget
+         @property renderTarget
+         @type {renderer.RenderTarget}
          */
         this.renderTarget = null;
 
         /**
-         * Rendering state from the last {@link XEO.Clips} visited during scene graph compilation traversal
-         * @type Object
+         Clips
+         @property clips
+         @type {renderer.Clips}
          */
         this.clips = null;
 
         /**
-         * Rendering state from the last {@link XEO.MorphTargets} visited during scene graph compilation traversal
-         * @type Object
+         MorphTargets
+         @property morphTargets
+         @type {renderer.MorphTargets}
          */
         this.morphTargets = null;
 
         /**
-         * Rendering state from the last {@link XEO.Shader} visited during scene graph compilation traversal
-         * @type Object
+         Shader
+         @property shader
+         @type {renderer.Shader}
          */
         this.shader = null;
 
         /**
-         * Rendering state from the last {@link XEO.Uniforms} visited during scene graph compilation traversal
-         * @type Object
+         Shader
+         @property shaderParams
+         @type {renderer.Shader}
          */
         this.shaderParams = null;
 
         /**
-         * Rendering state from the last {@link XEO.Geometry} visited during scene graph compilation traversal
-         * @type Object
+         Geometry
+         @property geometry
+         @type {renderer.Geometry}
          */
         this.geometry = null;
 
@@ -386,13 +410,14 @@
 
         var chunkId;
         var chunkClass = this._chunkFactory.chunkTypes[chunkType];
+        var oldChunk
 
         if (state) {
 
             // state supplied
 
             if (state.empty) { // Only set default cores for state types that have them
-                var oldChunk = object.chunks[order];
+                oldChunk = object.chunks[order];
                 if (oldChunk) {
                     this._chunkFactory.putChunk(oldChunk); // Release previous chunk to pool
                 }
@@ -419,7 +444,7 @@
 
         chunkId = order + '__' + chunkId;
 
-        var oldChunk = object.chunks[order];
+        oldChunk = object.chunks[order];
 
         if (oldChunk) {
             if (oldChunk.id === chunkId) { // Avoid needless chunk reattachment
@@ -491,7 +516,7 @@
         params = params || {};
 
         if (this.objectListDirty) {
-            this._buildObjectList();    // Build the scene object list
+            this._buildObjectList();        // Build the scene object list
             this.objectListDirty = false;
             this.stateOrderDirty = true;    // Now needs state ordering
         }
@@ -518,11 +543,11 @@
             // Render the object draw list
 
             this._doDrawList({
-                clear: (params.clear !== false)     // Clear buffers by default
+                clear: (params.clear !== false) // Clear buffers by default
             });
 
             this.imageDirty = false;
-            this.pickBufDirty = true;       // Pick buffer now needs redraw on next pick
+            this.pickBufDirty = true;           // Pick buffer now needs redraw on next pick
         }
     };
 
@@ -819,7 +844,7 @@
 
         if (!pickBuf) {
 
-            pickBuf =  new XEO.renderer.webgl.RenderBuffer({ canvas: this._canvas });
+            pickBuf = new XEO.renderer.webgl.RenderBuffer({canvas: this._canvas});
 
             this.pickBuf = pickBuf;
 
@@ -882,7 +907,7 @@
 
                 if (!rayPickBuf) {
 
-                    rayPickBuf =  new XEO.renderer.webgl.RenderBuffer({
+                    rayPickBuf = new XEO.renderer.webgl.RenderBuffer({
                         canvas: this._canvas
                     });
 
