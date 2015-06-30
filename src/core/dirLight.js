@@ -119,6 +119,7 @@
 
             this._state = {
                 mode: "dir",
+                dir: [0,0,-1],
                 diffuse: [0.7, 0.7, 0.8],
                 specular: [1.0, 1.0, 1.0],
                 space: "view"
