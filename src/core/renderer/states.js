@@ -19,22 +19,29 @@
      @constructor
      @param cfg {*} Configs
      */
-    XEO.renderer.State = function (cfg) {
+    XEO.renderer.State = Class.extend({
 
-        this.id = states.addItem({});
+        __init: function (cfg) {
 
-        this.hash = cfg.hash || "" + this.id;
+            this.id = states.addItem({});
 
-        for (var key in cfg) {
-            if (cfg.hasOwnProperty(key)) {
-                this[key] = cfg[key];
+            this.hash = cfg.hash || "" + this.id;
+
+            for (var key in cfg) {
+                if (cfg.hasOwnProperty(key)) {
+                    this[key] = cfg[key];
+                }
             }
-        }
-    };
+        },
 
-    XEO.renderer.State.prototype.destroy = function () {
-        states.removeItem(this.id);
-    };
+        destroy: function () {
+            states.removeItem(this.id);
+        }
+    });
+
+    //XEO.renderer.State.prototype.destroy = function () {
+    //    states.removeItem(this.id);
+    //};
 
     /**
 
@@ -48,9 +55,7 @@
      @param cfg.visible {Boolean} Flag which controls visibility of the associated render objects.
      @extends renderer.State
      */
-    XEO.renderer.Visibility = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.Visibility = XEO.renderer.State.extend({});
 
     /**
 
@@ -67,9 +72,7 @@
      @param cfg.frontFace {Boolean} Flag which determines winding order of backfaces on the associated render objects - true == "ccw", false == "cw".
      @extends renderer.State
      */
-    XEO.renderer.Modes = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.Modes = XEO.renderer.State.extend({});
 
     /**
 
@@ -83,9 +86,7 @@
      @param cfg.priority {Number} Layer render priority.
      @extends renderer.State
      */
-    XEO.renderer.Layer = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.Layer = XEO.renderer.State.extend({});
 
     /**
 
@@ -99,9 +100,7 @@
      @param cfg.priority {Number} Stage render priority.
      @extends renderer.State
      */
-    XEO.renderer.Stage = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.Stage = XEO.renderer.State.extend({});
 
     /**
 
@@ -116,9 +115,7 @@
      @param cfg.depthBuf {String} Depth function
      @extends renderer.State
      */
-    XEO.renderer.DepthBuf = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.DepthBuf = XEO.renderer.State.extend({});
 
     /**
 
@@ -133,9 +130,7 @@
      @param cfg.colorMask {Array of String} The color mask
      @extends renderer.State
      */
-    XEO.renderer.ColorBuf = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.ColorBuf = XEO.renderer.State.extend({});
 
     /**
 
@@ -149,9 +144,7 @@
      @param cfg.colorMask {Array of Object} The light sources
      @extends renderer.State
      */
-    XEO.renderer.Lights = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.Lights = XEO.renderer.State.extend({});
 
     /**
 
@@ -164,9 +157,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Material = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.Material = XEO.renderer.State.extend({});
 
     /**
 
@@ -179,9 +170,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Reflect = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.Reflect = XEO.renderer.State.extend({});
 
     /**
 
@@ -194,9 +183,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ModelTransform = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.ModelTransform = XEO.renderer.State.extend({});
 
     /**
 
@@ -209,9 +196,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ViewTransform = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.ViewTransform = XEO.renderer.State.extend({});
 
     /**
 
@@ -224,9 +209,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ProjTransform = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.ProjTransform = XEO.renderer.State.extend({});
 
     /**
 
@@ -239,9 +222,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.RenderTarget = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.RenderTarget = XEO.renderer.State.extend({});
 
     XEO.renderer.RenderTarget.DEPTH = 0;
     XEO.renderer.RenderTarget.COLOR = 1;
@@ -257,9 +238,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Clips = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.Clips = XEO.renderer.State.extend({});
 
     /**
 
@@ -272,9 +251,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.MorphTargets = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.MorphTargets = XEO.renderer.State.extend({});
 
     /**
 
@@ -287,9 +264,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Shader = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.Shader = XEO.renderer.State.extend({});
 
     /**
 
@@ -302,9 +277,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ShaderParams = XEO.renderer.State.extend({
-
-    });
+    XEO.renderer.ShaderParams = XEO.renderer.State.extend({});
 
     /**
 
@@ -317,9 +290,7 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Geometry = XEO.renderer.Geometry.extend({
-
-    });
+    XEO.renderer.Geometry = XEO.renderer.State.extend({});
 
 })();
 
