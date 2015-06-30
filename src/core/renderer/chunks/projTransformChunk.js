@@ -2,7 +2,7 @@
 
     "use strict";
 
-    XEO.ChunkFactory.createChunkType({
+    XEO.renderer.ChunkFactory.createChunkType({
 
         type: "projTransform",
 

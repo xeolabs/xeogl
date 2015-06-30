@@ -5,7 +5,7 @@
     /**
      *   Create display state chunk type for draw and pick render of renderTarget
      */
-    XEO.ChunkFactory.createChunkType({
+    XEO.renderer.ChunkFactory.createChunkType({
 
         type: "renderTarget",
 

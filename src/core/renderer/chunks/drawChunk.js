@@ -5,12 +5,12 @@
     /**
      *
      */
-    XEO.ChunkFactory.createChunkType({
+    XEO.renderer.ChunkFactory.createChunkType({
 
         type: "draw",
 
         /**
-         * As we apply a list of state chunks in a {@link XEO.Renderer}, we track the ID of each chunk
+         * As we apply a list of state chunks in a {@link XEO.renderer.Renderer}, we track the ID of each chunk
          * in order to avoid redundantly re-applying the same chunk.
          *
          * We don't want that for draw chunks however, because they contain GL drawElements calls,
@@ -35,7 +35,7 @@
 
                 // TODO: Only set pick color when depthMode === false/0?
 
-                if (this._uPickColor && this.state.name) {
+                if (this._uPickColor) {
 
                     frameCtx.pickNames[frameCtx.pickIndex++] = this.state;
 

@@ -182,7 +182,7 @@
         ]
 });
 
- var object = new XEO.GameObject(myScene, {
+ var object = new XEO.GameObject(scene, {
     geometry: geometry
 });
  ````

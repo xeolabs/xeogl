@@ -24,8 +24,6 @@
         };
 
         this.put = function (object) {
-
-
             freeObjects[numFreeObjects++] = object;
         };
     };

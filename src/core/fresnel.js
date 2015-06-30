@@ -102,7 +102,8 @@
             this._state = new XEO.renderer.Fresnel({
                 leftColor: [0,0,0],
                 rightColor: [0,0,0],
-                power: 0
+                power: 1,
+                bias: 0
             });
 
             this.leftColor = cfg.leftColor;
@@ -174,14 +175,14 @@
                     return this._state.rightColor;
                 }
             },
-            
+
             /**
              * Indicates this Fresnel's power.
              *
              * Fires a {{#crossLink "Fresnel/power:event"}}{{/crossLink}} event on change.
              *
              * @property power
-             * @default 0
+             * @default 1
              * @type Number
              */
             power: {
@@ -246,7 +247,8 @@
             return {
                 leftColor: this._state.leftColor,
                 rightColor: this._state.rightColor,
-                power: this._state.power
+                power: this._state.power,
+                bias: this._state.bias
             };
         },
 

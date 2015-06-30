@@ -2,7 +2,7 @@
 
     "use strict";
 
-    XEO.ChunkFactory.createChunkType({
+    XEO.renderer.ChunkFactory.createChunkType({
 
         type: "viewTransform",
 
@@ -36,13 +36,13 @@
 
         pick: function (frameCtx) {
 
-            var gl = this.program.gl;
+            var state = this.state;
 
             if (this._uViewMatrixPick) {
-                this._uViewMatrixPick.setValue(this.state.matrix);
+                this._uViewMatrixPick.setValue(state.matrix);
             }
 
-            frameCtx.viewMatrix = this.state.matrix;
+            frameCtx.viewMatrix = state.matrix;
         }
     });
 

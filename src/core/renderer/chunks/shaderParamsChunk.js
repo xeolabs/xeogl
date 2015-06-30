@@ -5,7 +5,7 @@
     /**
      *
      */
-    XEO.ChunkFactory.createChunkType({
+    XEO.renderer.ChunkFactory.createChunkType({
 
         type: "shaderParams",
 
@@ -14,22 +14,16 @@
 
         drawAndPick: function (frameCtx) {
 
-            var paramsStack = this.state.paramsStack;
+            var params = this.state.params;
 
-            if (paramsStack) {
+            if (params) {
 
                 var program = frameCtx.pick ? this.program.pick : this.program.draw;
-                var params;
                 var name;
 
-                for (var i = 0, len = paramsStack.length; i < len; i++) {
-
-                    params = paramsStack[i];
-
-                    for (name in params) {
-                        if (params.hasOwnProperty(name)) {
-                            program.setUniform(name, params[name]);  // TODO: cache locations
-                        }
+                for (name in params) {
+                    if (params.hasOwnProperty(name)) {
+                        program.setUniform(name, params[name]);
                     }
                 }
             }
