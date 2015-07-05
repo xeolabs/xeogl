@@ -46,7 +46,7 @@
     src: "specularMap.jpg"
 });
 
- var material = new XEO.Material(scene, {
+ var material = new XEO.PhongMaterial(scene, {
     ambient: [0.3, 0.3, 0.3],
     shininess: 30,
     diffuseMap: texture1,
@@ -61,7 +61,7 @@
 });
 
  var light2 = new XEO.AmbientLight(scene, {
-    ambient: [0.5, 0.7, 0.5]
+    color: [0.5, 0.7, 0.5]
 });
 
  var lights = new XEO.Lights(scene, {

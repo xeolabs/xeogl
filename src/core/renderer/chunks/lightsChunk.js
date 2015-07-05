@@ -8,10 +8,11 @@
 
         build: function () {
 
-            this._uLightAmbient = this._uLightAmbient || [];
+            this._uLightAmbientColor = this._uLightAmbientColor || [];
+            this._uLightAmbientIntensity = this._uLightAmbientIntensity || [];
 
-            this._uLightDiffuse = this._uLightDiffuse || [];
-            this._uLightSpecular = this._uLightSpecular || [];
+            this._uLightColor = this._uLightColor || [];
+            this._uLightIntensity = this._uLightIntensity || [];
 
             this._uLightDir = this._uLightDir || [];
             this._uLightPos = this._uLightPos || [];
@@ -25,22 +26,23 @@
 
             for (var i = 0, len = lights.length; i < len; i++) {
 
-                switch (lights[i].mode) {
+                switch (lights[i].type) {
 
                     case "ambient":
-                        this._uLightAmbient[i] = program.draw.getUniform("XEO_uLightAmbient");
+                        this._uLightAmbientColor[i] = program.draw.getUniform("XEO_uLightAmbientColor");
+                        this._uLightAmbientIntensity[i] = program.draw.getUniform("XEO_uLightAmbientIntensity" + i);
                         break;
 
                     case "dir":
-                        this._uLightDiffuse[i] = program.draw.getUniform("XEO_uLightDiffuse" + i);
-                        this._uLightSpecular[i] = program.draw.getUniform("XEO_uLightSpecular" + i);
+                        this._uLightColor[i] = program.draw.getUniform("XEO_uLightColor" + i);
+                        this._uLightIntensity[i] = program.draw.getUniform("XEO_uLightIntensity" + i);
                         this._uLightPos[i] = null;
                         this._uLightDir[i] = program.draw.getUniform("XEO_uLightDir" + i);
                         break;
 
                     case "point":
-                        this._uLightDiffuse[i] = program.draw.getUniform("XEO_uLightDiffuse" + i);
-                        this._uLightSpecular[i] = program.draw.getUniform("XEO_uLightSpecular" + i);
+                        this._uLightColor[i] = program.draw.getUniform("XEO_uLightColor" + i);
+                        this._uLightIntensity[i] = program.draw.getUniform("XEO_uLightIntensity" + i);
                         this._uLightPos[i] = program.draw.getUniform("XEO_uLightPos" + i);
                         this._uLightDir[i] = null;
                         this._uLightConstantAttenuation[i] = program.draw.getUniform("XEO_uLightConstantAttenuation" + i);
@@ -64,19 +66,23 @@
 
                 // Ambient color
 
-                if (this._uLightAmbient[i]) {
-                    this._uLightAmbient[i].setValue(light.ambient);
+                if (this._uLightAmbientColor[i]) {
+                    this._uLightAmbientColor[i].setValue(light.color);
+
+                    if (this._uLightAmbientIntensity[i]) {
+                        this._uLightAmbientIntensity[i].setValue(light.intensity);
+                    }
 
                 } else {
 
-                    // Diffuse and specular color
+                    // Color and intensity
 
-                    if (this._uLightDiffuse[i]) {
-                        this._uLightDiffuse[i].setValue(light.diffuse);
+                    if (this._uLightColor[i]) {
+                        this._uLightColor[i].setValue(light.color);
                     }
 
-                    if (this._uLightSpecular[i]) {
-                        this._uLightSpecular[i].setValue(light.specular);
+                    if (this._uLightIntensity[i]) {
+                        this._uLightIntensity[i].setValue(light.intensity);
                     }
 
                     if (this._uLightPos[i]) {

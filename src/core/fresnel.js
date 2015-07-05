@@ -39,7 +39,7 @@
     bias: 0.2
 });
 
- var material = new XEO.Material(scene, {
+ var material = new XEO.PhongMaterial(scene, {
     ambient: [0.3, 0.3, 0.3],
     shininess: 30,
     diffuseFresnel: fresnel1,
@@ -53,7 +53,7 @@
 });
 
  var light2 = new XEO.AmbientLight(scene, {
-    ambient: [0.5, 0.7, 0.5]
+    color: [0.5, 0.7, 0.5]
 });
 
  var lights = new XEO.Lights(scene, {
@@ -100,7 +100,7 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Fresnel({
-                leftColor: [0,0,0],
+                leftColor: [1,1,1],
                 rightColor: [0,0,0],
                 power: 1,
                 bias: 0

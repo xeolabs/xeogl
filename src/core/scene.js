@@ -64,7 +64,7 @@
        id: "myScene"   // ID is optional on all components
   });
 
- var material = new XEO.Material(myScene, {
+ var material = new XEO.PhongMaterial(myScene, {
        id: "myMaterial",         // We'll use this ID to show how to find components by ID
        diffuse: [ 0.6, 0.6, 0.7 ],
        specular: [ 1.0, 1.0, 1.0 ]
@@ -119,7 +119,7 @@
  For example:
 
  ```` javascript
- var material2 = new XEO.Material({
+ var material2 = new XEO.PhongMaterial({
     diffuse: { r: 0.6, g: 0.6, b: 0.7 },
     specular: { 1.0, 1.0, 1.0 }
 });
@@ -711,7 +711,8 @@
                                 // Ambient light source #0
                                 new XEO.AmbientLight(this, {
                                     id: "default.light0",
-                                    color: [0.7, 0.7, 0.7]
+                                    color: [0.7, 0.7, 0.7],
+                                    intensity: 1.0
                                 }),
 
                                 // Directional light source #1
@@ -719,8 +720,7 @@
                                     id: "default.light1",
                                     dir: [-0.5, -0.5, -1.0 ],
                                     color: [1.0, 1.0, 1.0 ],
-                                    specular: true,
-                                    diffuse: true,
+                                    intensity: 1.0,
                                     space: "view"
                                 }),
 
@@ -729,8 +729,7 @@
                                     id: "default.light2",
                                     dir: [1.0, -0.9, -0.7 ],
                                     color: [1.0, 1.0, 1.0 ],
-                                    specular: true,
-                                    diffuse: true,
+                                    intensity: 1.0,
                                     space: "view"
                                 })
                             ]
@@ -739,22 +738,22 @@
             },
 
             /**
-             * The default {{#crossLink "Material"}}Material{{/crossLink}} provided by this Scene.
+             * The {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.
              *
-             * This {{#crossLink "Material"}}Material{{/crossLink}} has
+             * This {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.material", with all
              * other properties initialised to their default values.
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Material"}}Material{{/crossLink}} by default.
+             * {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} by default.
              * @property material
              * @final
-             * @type Material
+             * @type PhongMaterial
              */
             material: {
                 get: function () {
                     return this.components["default.material"] ||
-                        new XEO.Material(this, {
+                        new XEO.PhongMaterial(this, {
                             id: "default.material"
                         });
                 }

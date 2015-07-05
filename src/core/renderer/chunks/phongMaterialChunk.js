@@ -4,7 +4,7 @@
 
     XEO.renderer.ChunkFactory.createChunkType({
 
-        type: "material",
+        type: "phongMaterial",
 
         build: function () {
 
@@ -18,13 +18,13 @@
             this._uMaterialSpecular = draw.getUniform("XEO_uMaterialSpecular");
             this._uMaterialEmissive = draw.getUniform("XEO_uMaterialEmissive");
             this._uMaterialOpacity = draw.getUniform("XEO_uMaterialOpacity");
-            this._uMaterialShine = draw.getUniform("XEO_uMaterialShine");
+            this._uMaterialShininess = draw.getUniform("XEO_uMaterialShininess");
 
             // Textures
 
             if (state.diffuseMap) {
-                this._uDiffuseMap = draw.getUniform("XEO_uDiffuseMap");
-                this._uDiffuseMapMatrix = draw.getUniform("XEO_uDiffuseMapMatrix");
+                this._uMaterialDiffuseMap = draw.getUniform("XEO_uMaterialDiffuseMap");
+                this._uMaterialDiffuseMapMatrix = draw.getUniform("XEO_uMaterialDiffuseMapMatrix");
             }
 
             if (state.specularMap) {
@@ -55,10 +55,10 @@
             // Fresnel effects
 
             if (state.diffuseFresnel) {
-                this._uDiffuseFresnelBias = draw.getUniform("XEO_uDiffuseFresnelBias");
-                this._uDiffuseFresnelPower = draw.getUniform("XEO_uDiffuseFresnelPower");
-                this._uDiffuseFresnelLeftColor = draw.getUniform("XEO_uDiffuseFresnelLeftColor");
-                this._uDiffuseFresnelRightColor = draw.getUniform("XEO_uDiffuseFresnelRightColor");
+                this._uMaterialDiffuseFresnelBias = draw.getUniform("XEO_uMaterialDiffuseFresnelBias");
+                this._uMaterialDiffuseFresnelPower = draw.getUniform("XEO_uMaterialDiffuseFresnelPower");
+                this._uMaterialDiffuseFresnelLeftColor = draw.getUniform("XEO_uMaterialDiffuseFresnelLeftColor");
+                this._uMaterialDiffuseFresnelRightColor = draw.getUniform("XEO_uMaterialDiffuseFresnelRightColor");
             }
 
             if (state.specularFresnel) {
@@ -120,8 +120,8 @@
             }
 
 
-            if (this._uMaterialShine) {
-                this._uMaterialShine.setValue(state.shininess);
+            if (this._uMaterialShininess) {
+                this._uMaterialShininess.setValue(state.shininess);
             }
 
             // Textures
@@ -130,12 +130,12 @@
 
             // Diffuse map
 
-            if ( this._uDiffuseMap) {
+            if ( this._uMaterialDiffuseMap) {
 
-                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uMaterialDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit++);
 
-                if (this._uDiffuseMapMatrix) {
-                    this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
+                if (this._uMaterialDiffuseMapMatrix) {
+                    this._uMaterialDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
                 }
             }
 
@@ -204,20 +204,20 @@
 
             if (state.diffuseFresnel) {
 
-                if (this._uDiffuseFresnelBias) {
-                    this._uDiffuseFresnelBias.setValue(state.diffuseFresnel.bias);
+                if (this._uMaterialDiffuseFresnelBias) {
+                    this._uMaterialDiffuseFresnelBias.setValue(state.diffuseFresnel.bias);
                 }
 
-                if (this._uDiffuseFresnelPower) {
-                    this._uDiffuseFresnelPower.setValue(state.diffuseFresnel.power);
+                if (this._uMaterialDiffuseFresnelPower) {
+                    this._uMaterialDiffuseFresnelPower.setValue(state.diffuseFresnel.power);
                 }
 
-                if (this._uDiffuseFresnelLeftColor) {
-                    this._uDiffuseFresnelLeftColor.setValue(state.diffuseFresnel.leftColor);
+                if (this._uMaterialDiffuseFresnelLeftColor) {
+                    this._uMaterialDiffuseFresnelLeftColor.setValue(state.diffuseFresnel.leftColor);
                 }
 
-                if (this._uDiffuseFresnelRightColor) {
-                    this._uDiffuseFresnelRightColor.setValue(state.diffuseFresnel.rightColor);
+                if (this._uMaterialDiffuseFresnelRightColor) {
+                    this._uMaterialDiffuseFresnelRightColor.setValue(state.diffuseFresnel.rightColor);
                 }
             }
 

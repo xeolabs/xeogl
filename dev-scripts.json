@@ -1,10 +1,14 @@
 {
     "engine": [
+
         "src/core/inheritance.js",
+
         "src/core/xeo.js",
+
         "src/core/utils/map.js",
 
         "src/core/math/math.js",
+        "src/core/math/mathGeometry.js",
 
         "src/core/renderer/renderer.js",
         "src/core/renderer/states.js",
@@ -22,10 +26,28 @@
         "src/core/renderer/webgl/program.js",
         "src/core/renderer/webgl/renderBuffer.js",
         "src/core/renderer/webgl/sampler.js",
+        "src/core/renderer/webgl/shader.js",
         "src/core/renderer/webgl/texture2d.js",
         "src/core/renderer/webgl/uniform.js",
 
+        "src/core/renderer/chunks/chunk.js",
         "src/core/renderer/chunks/chunkFactory.js",
+        "src/core/renderer/chunks/clipsChunk.js",
+        "src/core/renderer/chunks/colorBufferChunk.js",
+        "src/core/renderer/chunks/cubemapChunk.js",
+        "src/core/renderer/chunks/depthBufferChunk.js",
+        "src/core/renderer/chunks/drawChunk.js",
+        "src/core/renderer/chunks/geometryChunk.js",
+        "src/core/renderer/chunks/lightsChunk.js",
+        "src/core/renderer/chunks/modelTransformChunk.js",
+        "src/core/renderer/chunks/modesChunk.js",
+        "src/core/renderer/chunks/phongMaterialChunk.js",
+        "src/core/renderer/chunks/programChunk.js",
+        "src/core/renderer/chunks/projTransformChunk.js",
+        "src/core/renderer/chunks/renderTargetChunk.js",
+        "src/core/renderer/chunks/shaderChunk.js",
+        "src/core/renderer/chunks/shaderParamsChunk.js",
+        "src/core/renderer/chunks/viewTransformChunk.js",
 
 
         "src/core/component.js",
@@ -50,7 +72,7 @@
         "src/core/lights.js",
         "src/core/lookat.js",
         "src/core/matrix.js",
-        "src/core/material.js",
+        "src/core/phongMaterial.js",
         "src/core/morphTargets.js",
         "src/core/name.js",
         "src/core/gameObject.js",

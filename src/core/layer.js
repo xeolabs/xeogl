@@ -75,7 +75,7 @@ var layer1 = new XEO.Layer(scene, {
     priority: 1
 });
 
-var material1 = new XEO.Material(scene, {
+var material1 = new XEO.PhongMaterial(scene, {
     diffuse: [0.2, 0.2, 1.0],
     opacity: 1.0
 });
@@ -97,7 +97,7 @@ var layer2 = new XEO.Layer(scene, {
     priority: 2
 });
 
-var material2 = new XEO.Material(scene, {
+var material2 = new XEO.PhongMaterial(scene, {
     diffuse: [1, 0.2, 0.2],
     opacity: 0.2
 });
@@ -124,7 +124,7 @@ var layer3 = new XEO.Layer(scene, {
     priority: 3
 });
 
-var material3 = new XEO.Material(scene, {
+var material3 = new XEO.PhongMaterial(scene, {
     diffuse: [0.2, 1, 0.2],
     opacity: 0.2
 });

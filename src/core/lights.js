@@ -14,13 +14,6 @@
  {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally from a given direction</li>
  </ul>
 
- Within xeoEngine's <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model, ambient,
- diffuse and specular light sources are multiplied by the {{#crossLink "Material/ambient:property"}}{{/crossLink}},
- {{#crossLink "Material/diffuse:property"}}{{/crossLink}} and {{#crossLink "Material/specular:property"}}{{/crossLink}}
- properties, respectively, on the {{#crossLink "Material"}}Materials{{/crossLink}} attached to
- the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
-
  <img src="../../../assets/images/Lights.png"></img>
 
  ## Example
@@ -33,32 +26,29 @@
  ```` javascript
  var scene = new XEO.Scene();
 
- var material = new XEO.Material(scene, {
+ var material = new XEO.PhongMaterial(scene, {
     ambient:    [0.3, 0.3, 0.3],
     diffuse:    [0.7, 0.7, 0.7],
     specular:   [1. 1, 1],
     shininess:  30
 });
 
- // Within xeoEngine's lighting calculations, the AmbientLight's ambient color
- // will be multiplied by the Material's ambient color, while the DirLight and PointLight's
- // diffuse and specular colors will be multiplied by the Material's diffuse and specular colors
-
  var ambientLight = new XEO.AmbientLight(scene, {
-    ambient: [0.7, 0.7, 0.7]
+    color: [0.7, 0.7, 0.7],
+    intensity:   1.0
 });
 
  var dirLight = new XEO.DirLight(scene, {
     dir:        [-1, -1, -1],
-    diffuse:    [0.5, 0.7, 0.5],
-    specular:   [1.0, 1.0, 1.0],
+    color:    [0.5, 0.7, 0.5],
+    intensity:   1.0,
     space:      "view"
 });
 
  var pointLight = new XEO.PointLight(scene, {
     pos: [0, 100, 100],
-    diffuse: [0.5, 0.7, 0.5],
-    specular: [1.0, 1.0, 1.0],
+    color: [0.5, 0.7, 0.5],
+    intensity: [1.0, 1.0, 1.0],
     constantAttenuation: 0,
     linearAttenuation: 0,
     quadraticAttenuation: 0,
@@ -263,16 +253,7 @@
             for (var i = 0, len = lights.length; i < len; i++) {
 
                 light = lights[i];
-                hash.push(light.mode);
-
-                if (light.specular) {
-                    hash.push("s");
-                }
-
-                if (light.diffuse) {
-                    hash.push("d");
-                }
-
+                hash.push(light.type);
                 hash.push((light.space === "world") ? "w" : "v");
             }
 

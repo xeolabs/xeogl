@@ -174,11 +174,18 @@
         this.projTransform = null;
 
         /**
-         RenderTarget
-         @property renderTarget
+         Color RenderTarget
+         @property colorTarget
          @type {renderer.RenderTarget}
          */
-        this.renderTarget = null;
+        this.colorTarget = null;
+
+        /**
+         Depth RenderTarget
+         @property depthTarget
+         @type {renderer.RenderTarget}
+         */
+        this.depthTarget = null;
 
         /**
          Clips
@@ -354,7 +361,8 @@
 
         object.stage = this.stage;
         object.layer = this.layer;
-        object.renderTarget = this.renderTarget;
+        object.colorTarget = this.colorTarget;
+        object.depthTarget = this.depthTarget;
         object.material = this.material;
         object.reflect = this.reflect;
         object.geometry = this.geometry;
@@ -398,7 +406,7 @@
         this._setChunk(object, 7, "depthBuf", this.depthBuf);
         this._setChunk(object, 8, "colorBuf", this.colorBuf);
         this._setChunk(object, 9, "lights", this.lights);
-        this._setChunk(object, 10, "material", this.material);
+        this._setChunk(object, 10, this.material.type, this.material);
         this._setChunk(object, 11, "reflect", this.reflect);
         this._setChunk(object, 12, "clips", this.clips);
         this._setChunk(object, 13, "geometry", this.geometry);
@@ -410,7 +418,7 @@
 
         var chunkId;
         var chunkClass = this._chunkFactory.chunkTypes[chunkType];
-        var oldChunk
+        var oldChunk;
 
         if (state) {
 
@@ -453,7 +461,7 @@
             this._chunkFactory.putChunk(oldChunk); // Release previous chunk to pool
         }
 
-        object.chunks[order] = this._chunkFactory.getChunk(chunkId, chunkType, object.program, state, core2); // Attach new chunk
+        object.chunks[order] = this._chunkFactory.getChunk(chunkId, chunkType, object.program, state); // Attach new chunk
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
@@ -663,13 +671,32 @@
 
             // Put objects with render targets into a bin for each target
 
-            if (object.renderTarget.targets) {
+            if (object.colorTarget || object.depthTarget) {
 
-                targets = object.renderTarget.targets;
+                if (object.colorTarget) {
 
-                for (var j = 0, lenj = targets.length; j < lenj; j++) {
+                    target = object.colorTarget;
 
-                    target = targets[j];
+                    list = targetObjectLists[target.id];
+
+                    if (!list) {
+
+                        list = [];
+
+                        targetObjectLists[target.id] = list;
+
+                        targetListList.push(list);
+
+                        targetList.push(this._chunkFactory.getChunk(target.id, "renderTarget", object.program, target));
+                    }
+
+                    list.push(object);
+                }
+
+                if (object.depthTarget) {
+
+                    target = object.colorTarget;
+
                     list = targetObjectLists[target.id];
 
                     if (!list) {
@@ -798,7 +825,7 @@
                     console.log("\n");
                     break;
                 case "renderTarget":
-                    console.log(" type = " + chunk.state.type);
+                    console.log(" type = renderTarget");
                     break;
             }
         }
@@ -820,7 +847,7 @@
                     console.log("\n");
                     break;
                 case "renderTarget":
-                    console.log(" type = " + chunk.state.type);
+                    console.log(" type = renderTarget");
                     break;
             }
         }

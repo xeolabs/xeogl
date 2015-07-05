@@ -41,6 +41,22 @@ module.exports = function (grunt) {
             docs: ["docs/*"]
         },
 
+        yuidoc: {
+            all: {
+                name: '<%= pkg.name %>',
+                description: '<%= pkg.description %>',
+                version: '<%= pkg.version %>',
+                url: '<%= pkg.homepage %>',
+                options: {
+                    paths: ['src/core'],
+                    outdir: './docs/',
+                    "exclude" : "renderer, utils, webgl"
+                },
+                logo: '../assets/images/logo.png'
+            }
+
+        },
+
         copy: {
             minified: {
                 src: 'build/<%= PROJECT_NAME %>.min.js',
@@ -57,14 +73,15 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks("grunt-contrib-yuidoc");
 
     // Builds snapshot libs within api/latest
     // Run this when testing examples locally against your changes before committing them
-    grunt.registerTask("snapshot", ["concat", "uglify"]);
+    grunt.registerTask("snapshot", ["concat", "yuidoc", "uglify"]);
 
     // Build a package within ./build
     // Assigns the package the current version number that's defined in package.json
-    grunt.registerTask("build", ["snapshot", "copy"]);
+    grunt.registerTask("build", ["snapshot", "yuidoc", "copy"]);
 
     grunt.registerTask("default", "snapshot");
 };

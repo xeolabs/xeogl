@@ -26,7 +26,7 @@ var scene = new XEO.Scene({
     id: "myScene"
 });
 
-var material = new XEO.Material(scene, {
+var material = new XEO.PhongMaterial(scene, {
     id: "myMaterial"
 });
 
@@ -54,8 +54,8 @@ var theMaterial = theScene.components["myMaterial"];
 ## <a name="componentProps">Properties</a>
 
 Almost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe
- to the {{#crossLink "Material/diffuse:event"}}{{/crossLink}} event that a
-{{#crossLink "Material"}}{{/crossLink}} fires when its {{#crossLink "Material/diffuse:property"}}{{/crossLink}}
+ to the {{#crossLink "PhongMaterial/diffuse:event"}}{{/crossLink}} event that a
+{{#crossLink "Material"}}{{/crossLink}} fires when its {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
 property is updated, like so:
 
  ````javascript
@@ -83,7 +83,7 @@ object1.on("material", function(material) {
 });
 
 // Now replace that Material with another
-object1.material = new XEO.Material({
+object1.material = new XEO.PhongMaterial({
     id: "myOtherMaterial",
     diffuse: [ 0.3, 0.3, 0.6 ]
     //..
@@ -108,7 +108,7 @@ var scene = new XEO.Scene({
 });
 
 // Material with descriptive metadata
-var material = new XEO.Material(scene, {
+var material = new XEO.PhongMaterial(scene, {
     id: "myMaterial",
     diffuse: [1, 0, 0],
     metadata: {

@@ -56,7 +56,7 @@
 });
 
  // Material contains our Texture
- var material = new XEO.Material(scene, {
+ var material = new XEO.PhongMaterial(scene, {
     textures: [
         texture
     ]
