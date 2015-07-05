@@ -1,11 +1,11 @@
 /**
- A **PhongMaterial** defines the surface appearance of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} subclass which defines the surface appearance of
+ attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} using
+ the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.
 
  ## Overview
 
  <ul>
-
- <li>PhongMaterials interact with {{#crossLink "Lights"}}{{/crossLink}} using the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model.</li>
 
  <li>These PhongMaterial properties, along with {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}},

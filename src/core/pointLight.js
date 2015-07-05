@@ -29,7 +29,7 @@
 
  In this example we have
  <ul>
- <li>a {{#crossLink "Material"}}{{/crossLink}},</li>
+ <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}},</li>
  <li>a PointLight,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the PointLight,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and

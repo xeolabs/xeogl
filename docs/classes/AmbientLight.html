@@ -142,21 +142,21 @@
 <p><ul>
  <li>AmbientLights are grouped, along with other light source types, within
  <a href="../classes/Lights.html" class="crosslink">Lights</a> components, which are attached to <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
- <li>Within xeoEngine&#39;s Phong shading calculations, AmbientLight <a href="../classes/AmbientLight.html#property_color" class="crosslink">color</a> is
- multiplied by <a href="../classes/Material.html" class="crosslink">Material</a> <a href="../classes/PhongMaterial.html#property_ambient" class="crosslink">ambient</a>.</li>
+ <li>When the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> have <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterials</a>,
+ AmbientLight <a href="../classes/AmbientLight.html#property_color" class="crosslink">color</a> is multiplied by
+ <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> <a href="../classes/PhongMaterial.html#property_ambient" class="crosslink">ambient</a>.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that AmbientLights create within xeoEngine&#39;s shaders.</li>
  </ul>
 <img src="../../../assets/images/AmbientLight.png"></img></p>
 <h2 id="example">Example</h2>
 <p>In this example we have
  <ul>
- <li>a <a href="../classes/Material.html" class="crosslink">Material</a>,</li>
+ <li>a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>,</li>
  <li>an AmbientLight,</li>
  <li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing the AmbientLight,</li>
  <li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
  <li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
  </ul></p>
-<p><iframe style="width: 600px; height: 400px" src="../../examples/light_AmbientLight.html"></iframe></p>
 <pre class="code prettyprint"><code class="lang-javascript"> var scene = new XEO.Scene();
 
 var material = new XEO.PhongMaterial(scene, {
@@ -999,7 +999,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ambientLight.js.html#l119"><code>src&#x2F;core&#x2F;ambientLight.js:119</code></a>
+                            <a href="../files/src_core_ambientLight.js.html#l118"><code>src&#x2F;core&#x2F;ambientLight.js:118</code></a>
                             </p>
                     
                     
@@ -1077,7 +1077,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ambientLight.js.html#l150"><code>src&#x2F;core&#x2F;ambientLight.js:150</code></a>
+                            <a href="../files/src_core_ambientLight.js.html#l149"><code>src&#x2F;core&#x2F;ambientLight.js:149</code></a>
                             </p>
                     
                     
@@ -1212,7 +1212,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ambientLight.js.html#l136"><code>src&#x2F;core&#x2F;ambientLight.js:136</code></a>
+                            <a href="../files/src_core_ambientLight.js.html#l135"><code>src&#x2F;core&#x2F;ambientLight.js:135</code></a>
                             </p>
                     
                     
@@ -1279,7 +1279,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_ambientLight.js.html#l169"><code>src&#x2F;core&#x2F;ambientLight.js:169</code></a>
+                            <a href="../files/src_core_ambientLight.js.html#l168"><code>src&#x2F;core&#x2F;ambientLight.js:168</code></a>
                             </p>
                     
                     

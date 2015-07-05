@@ -144,10 +144,10 @@
 
  ## Example
 
- In this example we have a DirLight
+ In this example we have:
 
  &lt;ul&gt;
- &lt;li&gt;a {{#crossLink &quot;material&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}},&lt;/li&gt;
  &lt;li&gt;a DirLight that points along the negative diagonal of the View coordinate system,&lt;/li&gt;
  &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing the DirLight,&lt;/li&gt;
  &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
@@ -159,7 +159,7 @@
  &#x60;&#x60;&#x60;&#x60; javascript
  var scene = new XEO.Scene();
 
- // A shiny Material with quantities of reflected
+ // A shiny PhongMaterial with quantities of reflected
  // ambient, diffuse and specular color
  var material = new XEO.PhongMaterial(scene, {
     ambient:    [0.3, 0.3, 0.3],

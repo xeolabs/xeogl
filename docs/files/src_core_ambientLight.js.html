@@ -133,8 +133,9 @@
  &lt;ul&gt;
  &lt;li&gt;AmbientLights are grouped, along with other light source types, within
  {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components, which are attached to {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
- &lt;li&gt;Within xeoEngine&#x27;s Phong shading calculations, AmbientLight {{#crossLink &quot;AmbientLight/color:property&quot;}}color{{/crossLink}} is
- multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} {{#crossLink &quot;PhongMaterial/ambient:property&quot;}}{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;When the {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} have {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterials{{/crossLink}},
+ AmbientLight {{#crossLink &quot;AmbientLight/color:property&quot;}}color{{/crossLink}} is multiplied by
+ {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial{{/crossLink}} {{#crossLink &quot;PhongMaterial/ambient:property&quot;}}{{/crossLink}}.&lt;/li&gt;
  &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that AmbientLights create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
@@ -144,14 +145,12 @@
 
  In this example we have
  &lt;ul&gt;
- &lt;li&gt;a {{#crossLink &quot;Material&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}},&lt;/li&gt;
  &lt;li&gt;an AmbientLight,&lt;/li&gt;
  &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing the AmbientLight,&lt;/li&gt;
  &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
  &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
  &lt;/ul&gt;
-
- &lt;iframe style=&quot;width: 600px; height: 400px&quot; src=&quot;../../examples/light_AmbientLight.html&quot;&gt;&lt;/iframe&gt;
 
  &#x60;&#x60;&#x60;&#x60; javascript
  var scene = new XEO.Scene();

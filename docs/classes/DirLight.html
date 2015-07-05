@@ -152,9 +152,9 @@ head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
 
 <p><img src="../../../assets/images/DirLight.png"></img></p>
 <h2 id="example">Example</h2>
-<p>In this example we have a DirLight</p>
+<p>In this example we have:</p>
 <ul>
-<li>a <a href="../classes/Material.html" class="crosslink">Material</a>,</li>
+<li>a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>,</li>
 <li>a DirLight that points along the negative diagonal of the View coordinate system,</li>
 <li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing the DirLight,</li>
 <li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
@@ -165,7 +165,7 @@ head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
 
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
-// A shiny Material with quantities of reflected
+// A shiny PhongMaterial with quantities of reflected
 // ambient, diffuse and specular color
 var material = new XEO.PhongMaterial(scene, {
    ambient:    [0.3, 0.3, 0.3],
