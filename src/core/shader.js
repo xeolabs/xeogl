@@ -132,14 +132,22 @@
  | uniform mat4  XEO_uProjMatrix                                    | Projection transform matrix | {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
  | uniform float XEO_uZNear                                         | Near clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
  | uniform float XEO_uZFar                                          | Far clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
- | uniform vec3  XEO_uLightAmbient                                  | Ambient color of the first {{#crossLink "AmbientLight"}}{{/crossLink}} in {{#crossLink "Lights"}}{{/crossLink}}| {{#crossLink "AmbientLight"}}{{/crossLink}} |
- | uniform vec3 XEO_uLightDiffuse&lt;***N***&gt;                    | Diffuse color of {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 XEO_uLightSpecular&lt;***N***&gt;                   | Specular color of {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} |
+ |---|---|
+ | uniform vec3  XEO_uLightAmbientColor                             | Color of the first {{#crossLink "AmbientLight"}}{{/crossLink}} in {{#crossLink "Lights"}}{{/crossLink}}| {{#crossLink "AmbientLight"}}{{/crossLink}} |
+ | uniform vec3 XEO_uLightColor&lt;***N***&gt;                    | Diffuse color of {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} |
+ | uniform vec3 XEO_uLightIntensity&lt;***N***&gt;                   | Specular color of {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} |
  | uniform vec3 XEO_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink "DirLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} |
  | uniform vec3 XEO_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  | uniform vec3 XEO_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  | uniform vec3 XEO_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  | uniform vec3 XEO_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
+ |---|---|
+ | uniform vec3 XEO_uMaterialDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
+ | uniform vec3 XEO_uMaterialSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
+ | uniform vec3 XEO_uMaterialEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
+ | uniform float XEO_uMaterialOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
+ | uniform float XEO_uMaterialShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
+ | uniform float XEO_uMaterialDiffuseFresnelBias;       |  | {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} |
 
  #### Varying
 
@@ -150,6 +158,14 @@
  | varying vec4 XEO_vWorldPosition | |
  | varying vec4 XEO_vViewPosition | |
  | varying vec4 XEO_vColor | |
+
+ #### Samplers
+
+ *Samplers are used in fragment shaders*
+
+ | Varying | Description | Depends on  |
+ |---|---|
+
 
 
  @class Shader
@@ -178,7 +194,8 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Shader({
-                shaders: {},
+                vertex: null,
+                fragment: null,
                 params: {}
             });
 
@@ -204,7 +221,7 @@
 
                 set: function (value) {
 
-                    this._state.shaders.vertex = value;
+                    this._state.vertex = value;
 
                     // Trigger recompile
                     this.fire("dirty", true);
@@ -215,11 +232,11 @@
                      * @event vertex
                      * @param value The property's new value
                      */
-                    this.fire("vertex", this._state.shaders.vertex);
+                    this.fire("vertex", this._state.vertex);
                 },
 
                 get: function () {
-                    return this._state.shaders.vertex;
+                    return this._state.vertex;
                 }
             },
 
@@ -236,7 +253,7 @@
 
                 set: function (value) {
 
-                    this._state.shaders.fragment = value;
+                    this._state.fragment = value;
 
                     // Trigger recompile
                     this.fire("dirty", true);
@@ -247,11 +264,11 @@
                      * @event fragment
                      * @param value The property's new value
                      */
-                    this.fire("fragment", this._state.shaders.fragment);
+                    this.fire("fragment", this._state.fragment);
                 },
 
                 get: function () {
-                    return this._state.shaders.fragment;
+                    return this._state.fragment;
                 }
             },
 
