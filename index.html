@@ -88,7 +88,7 @@
 
         <p>Since xeoEngine provides defaults for <span class="emphasis">everything</span>, we only need to specify what
             we need to override,
-            in this case the <a href="./docs/classes/Material.html">material</a> and <a
+            in this case the <a href="./docs/classes/PhongMaterial.html">material</a> and <a
                     href="./docs/classes/Geometry.html">geometry</a>
             for
             our game object. The game object will fall back on the scene's
@@ -100,7 +100,7 @@
 <pre class="prettyprint lang-javascript">
 var scene = new XEO.Scene();
 
-var material = new XEO.Material(scene, {
+var material = new XEO.PhongMaterial(scene, {
     diffuse: [ 0.6, 0.6, 0.7 ]
 });
 
