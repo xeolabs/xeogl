@@ -17,7 +17,7 @@
                 <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.0.1</em>
+            <em>API Docs for: 0.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -64,6 +64,7 @@
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -314,17 +315,21 @@ var object = new XEO.GameObject(scene, {
 <td><a href="../classes/Ortho.html" class="crosslink">Ortho</a>, <a href="../classes/Frustum.html" class="crosslink">Frustum</a> or <a href="../classes/Perspective.html" class="crosslink">Perspective</a></td>
 </tr>
 <tr>
-<td>uniform vec3  XEO_uLightAmbient</td>
-<td>Ambient color of the first <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
+<td>---</td>
+<td>---</td>
+</tr>
+<tr>
+<td>uniform vec3  XEO_uLightAmbientColor</td>
+<td>Color of the first <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uLightDiffuse&lt;<strong><em>N</em></strong>&gt;</td>
+<td>uniform vec3 XEO_uLightColor&lt;<strong><em>N</em></strong>&gt;</td>
 <td>Diffuse color of <a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uLightSpecular&lt;<strong><em>N</em></strong>&gt;</td>
+<td>uniform vec3 XEO_uLightIntensity&lt;<strong><em>N</em></strong>&gt;</td>
 <td>Specular color of <a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
 </tr>
@@ -353,10 +358,68 @@ var object = new XEO.GameObject(scene, {
 <td>Quadratic attenuation factor for <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
 </tr>
+<tr>
+<td>---</td>
+<td>---</td>
+</tr>
+<tr>
+<td>uniform vec3 XEO_uMaterialDiffuse;</td>
+<td></td>
+<td><a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a></td>
+</tr>
+<tr>
+<td>uniform vec3 XEO_uMaterialSpecular;</td>
+<td></td>
+<td><a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a></td>
+</tr>
+<tr>
+<td>uniform vec3 XEO_uMaterialEmissive;</td>
+<td></td>
+<td><a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a></td>
+</tr>
+<tr>
+<td>uniform float XEO_uMaterialOpacity;</td>
+<td></td>
+<td><a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a></td>
+</tr>
+<tr>
+<td>uniform float XEO_uMaterialShininess;</td>
+<td></td>
+<td><a href="../classes/PhongMaterial.html#property_shininess" class="crosslink">shininess</a></td>
+</tr>
+<tr>
+<td>uniform float XEO_uMaterialDiffuseFresnelBias;</td>
+<td></td>
+<td><a href="../classes/Fresnel.html#property_bias" class="crosslink">bias</a></td>
+</tr>
 </tbody>
 </table>
 <h4 id="varying">Varying</h4>
 <p><em>Varying types are used in fragment shaders</em></p>
+<table>
+<thead>
+<tr>
+<th>Varying</th>
+<th>Description</th>
+<th>Depends on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>varying vec4 XEO_vWorldPosition</td>
+<td></td>
+</tr>
+<tr>
+<td>varying vec4 XEO_vViewPosition</td>
+<td></td>
+</tr>
+<tr>
+<td>varying vec4 XEO_vColor</td>
+</tr>
+</tbody>
+</table>
+<h4 id="samplers">Samplers</h4>
+<p><em>Samplers are used in fragment shaders</em></p>
 <table>
 <thead>
 <tr>
@@ -1131,7 +1194,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_shader.js.html#l275"><code>src&#x2F;core&#x2F;shader.js:275</code></a>
+        <a href="../files/src_core_shader.js.html#l294"><code>src&#x2F;core&#x2F;shader.js:294</code></a>
         </p>
 
 
@@ -1295,7 +1358,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l226"><code>src&#x2F;core&#x2F;shader.js:226</code></a>
+                            <a href="../files/src_core_shader.js.html#l245"><code>src&#x2F;core&#x2F;shader.js:245</code></a>
                             </p>
                     
                     
@@ -1373,7 +1436,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l258"><code>src&#x2F;core&#x2F;shader.js:258</code></a>
+                            <a href="../files/src_core_shader.js.html#l277"><code>src&#x2F;core&#x2F;shader.js:277</code></a>
                             </p>
                     
                     
@@ -1453,7 +1516,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l194"><code>src&#x2F;core&#x2F;shader.js:194</code></a>
+                            <a href="../files/src_core_shader.js.html#l213"><code>src&#x2F;core&#x2F;shader.js:213</code></a>
                             </p>
                     
                     
@@ -1511,7 +1574,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l244"><code>src&#x2F;core&#x2F;shader.js:244</code></a>
+                            <a href="../files/src_core_shader.js.html#l263"><code>src&#x2F;core&#x2F;shader.js:263</code></a>
                             </p>
                     
                     
@@ -1553,7 +1616,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l296"><code>src&#x2F;core&#x2F;shader.js:296</code></a>
+                            <a href="../files/src_core_shader.js.html#l315"><code>src&#x2F;core&#x2F;shader.js:315</code></a>
                             </p>
                     
                     
@@ -1595,7 +1658,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l212"><code>src&#x2F;core&#x2F;shader.js:212</code></a>
+                            <a href="../files/src_core_shader.js.html#l231"><code>src&#x2F;core&#x2F;shader.js:231</code></a>
                             </p>
                     
                     

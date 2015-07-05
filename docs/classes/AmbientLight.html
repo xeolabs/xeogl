@@ -17,7 +17,7 @@
                 <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.0.1</em>
+            <em>API Docs for: 0.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -64,6 +64,7 @@
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -141,8 +142,8 @@
 <p><ul>
  <li>AmbientLights are grouped, along with other light source types, within
  <a href="../classes/Lights.html" class="crosslink">Lights</a> components, which are attached to <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
- <li>Within xeoEngine&#39;s Phong shading calculations, AmbientLight <a href="../classes/AmbientLight.html#property_ambient" class="crosslink">ambient</a> is
- multiplied by <a href="../classes/Material.html" class="crosslink">Material</a> <a href="../classes/Material.html#property_ambient" class="crosslink">ambient</a>.</li>
+ <li>Within xeoEngine&#39;s Phong shading calculations, AmbientLight <a href="../classes/AmbientLight.html#property_color" class="crosslink">color</a> is
+ multiplied by <a href="../classes/Material.html" class="crosslink">Material</a> <a href="../classes/PhongMaterial.html#property_ambient" class="crosslink">ambient</a>.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that AmbientLights create within xeoEngine&#39;s shaders.</li>
  </ul>
 <img src="../../../assets/images/AmbientLight.png"></img></p>
@@ -158,7 +159,7 @@
 <p><iframe style="width: 600px; height: 400px" src="../../examples/light_AmbientLight.html"></iframe></p>
 <pre class="code prettyprint"><code class="lang-javascript"> var scene = new XEO.Scene();
 
-var material = new XEO.Material(scene, {
+var material = new XEO.PhongMaterial(scene, {
     ambient: [0.3, 0.3, 0.3],
     diffuse: [1, 1, 1],
     specular: [1.1, 1],
@@ -168,7 +169,7 @@ var material = new XEO.Material(scene, {
 // Within xeoEngine&#39;s lighting calculations, the AmbientLight&#39;s
  // ambient color will be multiplied by the Material&#39;s ambient color
 var ambientLight = new XEO.AmbientLight(scene, {
-    ambient: [0.7, 0.7, 0.7]
+    color: [0.7, 0.7, 0.7]
  });
 
 var lights = new XEO.Lights(scene, {
@@ -187,12 +188,12 @@ var object = new XEO.GameObject(scene, {
 </code></pre>
 <p>As with all components, we can observe and change properties on AmbientLights like so:</p>
 <pre class="code prettyprint"><code class="lang-Javascript"> // Attach a change listener to a property
- var handle = ambientLight.on("ambient",
+ var handle = ambientLight.on("color",
  function(value) {
             // Property value has changed
     });
 
-ambientLight.ambient = [0.6, 0.6, 0.6]; // Fires the change listener
+ambientLight.color = [0.6, 0.6, 0.6]; // Fires the change listener
 
 ambientLight.off(handle); // Detach the change listener
 </code></pre>
@@ -288,7 +289,7 @@ ambientLight.off(handle); // Detach the change listener
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[ambient=[0.7, 0.7, 0.8]]</code>
+                                            <code class="param-name optional">[color=[0.7, 0.7, 0.8]]</code>
                                             <span class="type">Array(Number)</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
@@ -364,12 +365,12 @@ ambientLight.off(handle); // Detach the change listener
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property">
-                                <a href="#property_ambient">ambient</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_className">className</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_color">color</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -405,7 +406,7 @@ ambientLight.off(handle); // Detach the change listener
 
                     <ul class="index-list events extends">
                             <li class="index-item event">
-                                <a href="#event_ambient">ambient</a>
+                                <a href="#event_color">color</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -950,33 +951,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_ambient" class="property item">
-                        <h3 class="name"><code>ambient</code></h3>
-                        <span class="type">Array(Number)</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_ambientLight.js.html#l118"><code>src&#x2F;core&#x2F;ambientLight.js:118</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The color of this AmbientLight.</p>
-                    <p>Fires an <a href="../classes/AmbientLight.html#event_ambient" class="crosslink">ambient</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0.7, 0.7, 0.8]</p>
-                    
-                    
-                    </div>
                     <div id="property_className" class="property item inherited">
                         <h3 class="name"><code>className</code></h3>
                         <span class="type">String</span>
@@ -1003,6 +977,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_color" class="property item">
+                        <h3 class="name"><code>color</code></h3>
+                        <span class="type">Array(Number)</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_ambientLight.js.html#l118"><code>src&#x2F;core&#x2F;ambientLight.js:118</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The color of this AmbientLight.</p>
+                    <p>Fires an <a href="../classes/AmbientLight.html#event_color" class="crosslink">color</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [0.7, 0.7, 0.8]</p>
                     
                     
                     </div>
@@ -1165,8 +1166,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_ambient" class="events item">
-                        <h3 class="name"><code>ambient</code></h3>
+                    <div id="event_color" class="events item">
+                        <h3 class="name"><code>color</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1183,7 +1184,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this AmbientLight&#39;s <a href="../classes/AmbientLight.html#property_ambient" class="crosslink">ambient</a> property changes.</p>
+                            <p>Fired whenever this AmbientLight&#39;s <a href="../classes/AmbientLight.html#property_color" class="crosslink">color</a> property changes.</p>
                     
                         </div>
                     

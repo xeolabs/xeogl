@@ -17,7 +17,7 @@
                 <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.0.1</em>
+            <em>API Docs for: 0.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -64,6 +64,7 @@
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -168,6 +169,11 @@
 
         _init: function (cfg) {
 
+            this._state = new XEO.renderer.ViewTransform({
+                matrix: null,
+                normalMatrix: null
+            });
+
             this.parent = cfg.parent;
             this.matrix = cfg.matrix;
         },
@@ -193,7 +199,7 @@
                      * @event parent
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;parent&quot;, value);
+                    this.fire(&quot;parent&quot;, this._parent);
                 },
 
                 get: function () {
@@ -213,8 +219,11 @@
             matrix: {
 
                 set: function (value) {
+
                     value = value || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
                     this._state.matrix = value;
+                    this._state.normalMatrix = XEO.math.transposeMat4(XEO.math.inverseMat4(value, this._state.normalMat));
                     this._dirty = true;
                     this._renderer.imageDirty = true;
 
@@ -223,7 +232,7 @@
                      * @event matrix
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;matrix&quot;, value);
+                    this.fire(&quot;matrix&quot;, this._state.matrix);
                 },
 
                 get: function () {

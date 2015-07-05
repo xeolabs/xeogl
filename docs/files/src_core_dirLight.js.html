@@ -17,7 +17,7 @@
                 <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.0.1</em>
+            <em>API Docs for: 0.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -64,6 +64,7 @@
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -136,10 +137,6 @@
  is relative to the World coordinate system, and will appear to move as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer&#x27;s
  head as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.&lt;/li&gt;
- &lt;li&gt;Within xeoEngine&#x27;s Phong lighting calculations, DirLight {{#crossLink &quot;DirLight/diffuse:property&quot;}}{{/crossLink}} and
- {{#crossLink &quot;DirLight/specular:property&quot;}}{{/crossLink}} are multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
- {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}},
- respectively.&lt;/li&gt;
  &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that DirLights create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
@@ -164,19 +161,19 @@
 
  // A shiny Material with quantities of reflected
  // ambient, diffuse and specular color
- var material = new XEO.Material(scene, {
+ var material = new XEO.PhongMaterial(scene, {
     ambient:    [0.3, 0.3, 0.3],
     diffuse:    [0.7, 0.7, 0.7],
     specular:   [1. 1, 1],
     shininess:  30
 });
 
- // DirLight with diffuse and specular color, pointing along
+ // DirLight with color and intensity, pointing along
  // the negative diagonal within the View coordinate system
  var dirLight = new XEO.DirLight(scene, {
-    dir:        [-1, -1, -1],
-    diffuse:    [0.5, 0.7, 0.5],
-    specular:   [1.0, 1.0, 1.0],
+    dir:         [-1, -1, -1],
+    color:       [0.5, 0.7, 0.5],
+    intensity:   [1.0, 1.0, 1.0],
     space:      &quot;view&quot;  // Other option is &quot;world&quot;, for World-space
 });
 
@@ -202,13 +199,13 @@
 
  &#x60;&#x60;&#x60;&#x60;Javascript
  // Attach a change listener to a property
- var handle = dirLight.on(&quot;diffuse&quot;,
+ var handle = dirLight.on(&quot;color&quot;,
  function(value) {
         // Property value has changed
     });
 
  // Set the property, which fires our change listener
- dirLight.diffuse = [0.0, 0.3, 0.3];
+ dirLight.color = [0.0, 0.3, 0.3];
 
  // Detach the change listener
  dirLight.off(handle);
@@ -223,8 +220,8 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DirLight.
  @param [cfg.dir=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.
- @param [cfg.diffuse=[0.7, 0.7, 0.8 ]] {Array(Number)} The diffuse color of this DirLight.
- @param [cfg.specular=[1.0, 1.0, 1.0 ]] {Array(Number)} The specular color of this DirLight.
+ @param [cfg.color=[0.7, 0.7, 0.8 ]] {Array(Number)} The color of this DirLight.
+ @param [cfg.intensity=[1.0, 1.0, 1.0 ]] {Array(Number)} The intensity of this DirLight.
  @param [cfg.space=&quot;view&quot;] {String} The coordinate system the DirLight is defined in - &quot;view&quot; or &quot;space&quot;.
 
  @extends Component
@@ -243,14 +240,15 @@
 
             this._state = {
                 mode: &quot;dir&quot;,
-                diffuse: [0.7, 0.7, 0.8],
-                specular: [1.0, 1.0, 1.0],
+                dir: [0,0,-1],
+                color: [0.7, 0.7, 0.8],
+                intensity: [1.0, 1.0, 1.0],
                 space: &quot;view&quot;
             };
 
             this.dir = cfg.dir;
-            this.diffuse = cfg.diffuse;
-            this.specular = cfg.specular;
+            this.color = cfg.color;
+            this.intensity = cfg.intensity;
             this.space = cfg.space;
         },
 
@@ -293,74 +291,74 @@
             },
 
             /**
-             The diffuse color of this DirLight.
+             The color of this DirLight.
 
-             Fires a {{#crossLink &quot;DirLight/diffuse:event&quot;}}{{/crossLink}} event on change.
+             Fires a {{#crossLink &quot;DirLight/color:event&quot;}}{{/crossLink}} event on change.
 
-             @property diffuse
+             @property color
              @default [0.7, 0.7, 0.8]
              @type Array(Number)
              */
-            diffuse: {
+            color: {
 
                 set: function (value) {
 
                     value = value || [0.7, 0.7, 0.8 ];
 
-                    var diffuse = this._state.diffuse;
+                    var color = this._state.color;
 
-                    diffuse[0] = value[0];
-                    diffuse[1] = value[1];
-                    diffuse[2] = value[2];
+                    color[0] = value[0];
+                    color[1] = value[1];
+                    color[2] = value[2];
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this DirLight&#x27;s  {{#crossLink &quot;DirLight/diffuse:property&quot;}}{{/crossLink}} property changes.
-                     * @event diffuse
+                     * Fired whenever this DirLight&#x27;s  {{#crossLink &quot;DirLight/color:property&quot;}}{{/crossLink}} property changes.
+                     * @event color
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;diffuse&quot;, diffuse);
+                    this.fire(&quot;color&quot;, color);
                 },
 
                 get: function () {
-                    return this._state.diffuse;
+                    return this._state.color;
                 }
             },
 
             /**
-             The specular color of this DirLight.
+             The intensity of this DirLight.
 
-             Fires a {{#crossLink &quot;DirLight/specular:event&quot;}}{{/crossLink}} event on change.
+             Fires a {{#crossLink &quot;DirLight/intensity:event&quot;}}{{/crossLink}} event on change.
 
-             @property specular
+             @property intensity
              @default [1.0, 1.0, 1.0]
              @type Array(Number)
              */
-            specular: {
+            intensity: {
 
                 set: function (value) {
 
                     value = value || [1.0, 1.0, 1.0 ];
 
-                    var specular = this._state.specular;
+                    var intensity = this._state.intensity;
 
-                    specular[0] = value[0];
-                    specular[1] = value[1];
-                    specular[2] = value[2];
+                    intensity[0] = value[0];
+                    intensity[1] = value[1];
+                    intensity[2] = value[2];
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this DirLight&#x27;s  {{#crossLink &quot;DirLight/specular:property&quot;}}{{/crossLink}} property changes.
-                     * @event specular
+                     * Fired whenever this DirLight&#x27;s  {{#crossLink &quot;DirLight/intensity:property&quot;}}{{/crossLink}} property changes.
+                     * @event intensity
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;specular&quot;, specular);
+                    this.fire(&quot;intensity&quot;, intensity);
                 },
 
                 get: function () {
-                    return this._state.specular;
+                    return this._state.intensity;
                 }
             },
 
@@ -407,8 +405,7 @@
                 mode: this.mode,
                 dir: this.dir,
                 color: this.color,
-                diffuse: this.diffuse,
-                specular: this.specular,
+                intensity: this.intensity,
                 space: this.space
             };
         }

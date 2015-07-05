@@ -17,7 +17,7 @@
                 <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.0.1</em>
+            <em>API Docs for: 0.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -64,6 +64,7 @@
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -170,7 +171,7 @@ var fresnel2 = new XEO.Fresnel(scene, {
    bias: 0.2
 });
 
-var material = new XEO.Material(scene, {
+var material = new XEO.PhongMaterial(scene, {
    ambient: [0.3, 0.3, 0.3],
    shininess: 30,
    diffuseFresnel: fresnel1,
@@ -184,7 +185,7 @@ var light1 = new XEO.PointLight(scene, {
 });
 
 var light2 = new XEO.AmbientLight(scene, {
-   ambient: [0.5, 0.7, 0.5]
+   color: [0.5, 0.7, 0.5]
 });
 
 var lights = new XEO.Lights(scene, {
@@ -1021,7 +1022,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l211"><code>src&#x2F;core&#x2F;fresnel.js:211</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l212"><code>src&#x2F;core&#x2F;fresnel.js:212</code></a>
                             </p>
                     
                     
@@ -1128,7 +1129,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l116"><code>src&#x2F;core&#x2F;fresnel.js:116</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l117"><code>src&#x2F;core&#x2F;fresnel.js:117</code></a>
                             </p>
                     
                     
@@ -1180,7 +1181,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l178"><code>src&#x2F;core&#x2F;fresnel.js:178</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l179"><code>src&#x2F;core&#x2F;fresnel.js:179</code></a>
                             </p>
                     
                     
@@ -1192,7 +1193,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> 0</p>
+                            <p><strong>Default:</strong> 1</p>
                     
                     
                     </div>
@@ -1207,7 +1208,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l147"><code>src&#x2F;core&#x2F;fresnel.js:147</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l148"><code>src&#x2F;core&#x2F;fresnel.js:148</code></a>
                             </p>
                     
                     
@@ -1293,7 +1294,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l230"><code>src&#x2F;core&#x2F;fresnel.js:230</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l231"><code>src&#x2F;core&#x2F;fresnel.js:231</code></a>
                             </p>
                     
                     
@@ -1360,7 +1361,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l133"><code>src&#x2F;core&#x2F;fresnel.js:133</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l134"><code>src&#x2F;core&#x2F;fresnel.js:134</code></a>
                             </p>
                     
                     
@@ -1402,7 +1403,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l197"><code>src&#x2F;core&#x2F;fresnel.js:197</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l198"><code>src&#x2F;core&#x2F;fresnel.js:198</code></a>
                             </p>
                     
                     
@@ -1444,7 +1445,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_fresnel.js.html#l164"><code>src&#x2F;core&#x2F;fresnel.js:164</code></a>
+                            <a href="../files/src_core_fresnel.js.html#l165"><code>src&#x2F;core&#x2F;fresnel.js:165</code></a>
                             </p>
                     
                     

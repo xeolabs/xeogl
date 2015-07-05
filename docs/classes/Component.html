@@ -17,7 +17,7 @@
                 <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.0.1</em>
+            <em>API Docs for: 0.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -64,6 +64,7 @@
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -155,7 +156,7 @@ var scene = new XEO.Scene({
     id: "myScene"
 });
 
-var material = new XEO.Material(scene, {
+var material = new XEO.PhongMaterial(scene, {
     id: "myMaterial"
 });
 
@@ -178,8 +179,8 @@ var theMaterial = theScene.components["myMaterial"];
 </code></pre>
 <h2 id="-a-name-componentprops-properties-a-"><a name="componentProps">Properties</a></h2>
 <p>Almost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe
- to the <a href="../classes/Material.html#event_diffuse" class="crosslink">diffuse</a> event that a
-<a href="../classes/Material.html" class="crosslink">Material</a> fires when its <a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a>
+ to the <a href="../classes/PhongMaterial.html#event_diffuse" class="crosslink">diffuse</a> event that a
+<a href="../classes/Material.html" class="crosslink">Material</a> fires when its <a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a>
 property is updated, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">// Bind a change callback to a property
 var handle = material.on("diffuse", function(diffuse) {
@@ -202,7 +203,7 @@ object1.on("material", function(material) {
 });
 
 // Now replace that Material with another
-object1.material = new XEO.Material({
+object1.material = new XEO.PhongMaterial({
     id: "myOtherMaterial",
     diffuse: [ 0.3, 0.3, 0.6 ]
     //..
@@ -223,7 +224,7 @@ var scene = new XEO.Scene({
 });
 
 // Material with descriptive metadata
-var material = new XEO.Material(scene, {
+var material = new XEO.PhongMaterial(scene, {
     id: "myMaterial",
     diffuse: [1, 0, 0],
     metadata: {

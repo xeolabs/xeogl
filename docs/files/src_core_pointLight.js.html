@@ -17,7 +17,7 @@
                 <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.0.1</em>
+            <em>API Docs for: 0.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -64,6 +64,7 @@
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -140,11 +141,6 @@
  When in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer&#x27;s
  head as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.&lt;/li&gt;
 
- &lt;li&gt;Within xeoEngine&#x27;s Phong lighting calculations, PointLight {{#crossLink &quot;PointLight/diffuse:property&quot;}}{{/crossLink}} and
- {{#crossLink &quot;PointLight/specular:property&quot;}}{{/crossLink}} are multiplied by {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
- {{#crossLink &quot;Material/diffuse:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Material/specular:property&quot;}}{{/crossLink}},
- respectively.&lt;/li&gt;
-
  &lt;li&gt;PointLights have {{#crossLink &quot;PointLight/constantAttenuation:property&quot;}}{{/crossLink}}, {{#crossLink &quot;PointLight/linearAttenuation:property&quot;}}{{/crossLink}} and
  {{#crossLink &quot;PointLight/quadraticAttenuation:property&quot;}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.&lt;/li&gt;
 
@@ -170,17 +166,17 @@
  &#x60;&#x60;&#x60;&#x60; javascript
  var scene = new XEO.Scene();
 
- var material = new XEO.Material(scene, {
-        diffuse: [1, 1, 1],
-        specular: [1.1, 1]
+ var material = new XEO.PhongMaterial(scene, {
+        color: [1, 1, 1],
+        intensity: [1.1, 1]
  });
 
  // Our PointLight&#x27;s intensity does not attenuate over distance.
 
  var pointLight = new XEO.PointLight(scene, {
         pos: [0, 100, 100],
-        diffuse: [0.5, 0.7, 0.5],
-        specular: [1.0, 1.0, 1.0],
+        color: [0.5, 0.7, 0.5],
+        intensity: [1.0, 1.0, 1.0],
         constantAttenuation: 0,
         linearAttenuation: 0,
         quadraticAttenuation: 0,
@@ -205,12 +201,12 @@
  As with all components, we can &lt;a href=&quot;XEO.Component.html#changeEvents&quot; class=&quot;crosslink&quot;&gt;observe and change properties&lt;/a&gt; on PointLights like so:
 
  &#x60;&#x60;&#x60;&#x60;Javascript
- var handle = pointLight.on(&quot;diffuse&quot;, // Attach a change listener to a property
+ var handle = pointLight.on(&quot;color&quot;, // Attach a change listener to a property
  function(value) {
         // Property value has changed
     });
 
- pointLight.diffuse = [0.4, 0.6, 0.4]; // Fires the change listener
+ pointLight.color = [0.4, 0.6, 0.4]; // Fires the change listener
 
  pointLight.off(handle); // Detach the change listener
  &#x60;&#x60;&#x60;&#x60;
@@ -225,8 +221,8 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PointLight.
  @param [cfg.pos=[ 1.0, 1.0, 1.0 ]] {Array(Number)} Position, in either World or View space, depending on the value of the **space** parameter.
- @param [cfg.diffuse=[0.7, 0.7, 0.8 ]] {Array(Number)} Diffuse color of this PointLight.
- @param [cfg.specular=[1.0, 1.0, 1.1 ]] {Array(Number)} Specular color of this PointLight.
+ @param [cfg.color=[0.7, 0.7, 0.8 ]] {Array(Number)} Color of this PointLight.
+ @param [cfg.intensity=[1.0, 1.0, 1.1 ]] {Array(Number)} Intensity of this PointLight.
  @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
  @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
  @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
@@ -247,8 +243,8 @@
             this._state = {
                 mode: &quot;point&quot;,
                 pos: [1.0, 1.0, 1.0],
-                diffuse: [0.7, 0.7, 0.8],
-                specular: [1.0, 1.0, 1.0],
+                color: [0.7, 0.7, 0.8],
+                intensity: [1.0, 1.0, 1.0],
                 constantAttenuation: 0.0,
                 linearAttenuation: 0.0,
                 quadraticAttenuation: 0.0,
@@ -256,8 +252,8 @@
             };
 
             this.pos = cfg.pos;
-            this.diffuse = cfg.diffuse;
-            this.specular = cfg.specular;
+            this.color = cfg.color;
+            this.intensity = cfg.intensity;
             this.constantAttenuation = cfg.constantAttenuation;
             this.linearAttenuation = cfg.linearAttenuation;
             this.quadraticAttenuation = cfg.quadraticAttenuation;
@@ -299,62 +295,62 @@
             },
 
             /**
-             The diffuse color of this PointLight.
+             The color of this PointLight.
 
-             Fires a {{#crossLink &quot;PointLight/diffuse:event&quot;}}{{/crossLink}} event on change.
+             Fires a {{#crossLink &quot;PointLight/color:event&quot;}}{{/crossLink}} event on change.
 
-             @property diffuse
+             @property color
              @default [0.7, 0.7, 0.8]
              @type Array(Number)
              */
-            diffuse: {
+            color: {
 
                 set: function (value) {
 
-                    this._state.diffuse = value || [0.7, 0.7, 0.8 ];
+                    this._state.color = value || [0.7, 0.7, 0.8 ];
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/diffuse:property&quot;}}{{/crossLink}} property changes.
-                     @event diffuse
+                     Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/color:property&quot;}}{{/crossLink}} property changes.
+                     @event color
                      @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;diffuse&quot;, this._state.diffuse);
+                    this.fire(&quot;color&quot;, this._state.color);
                 },
 
                 get: function () {
-                    return this._state.diffuse;
+                    return this._state.color;
                 }
             },
 
             /**
-             The specular color of this PointLight.
+             The intensity of this PointLight.
 
-             Fires a {{#crossLink &quot;PointLight/specular:event&quot;}}{{/crossLink}} event on change.
+             Fires a {{#crossLink &quot;PointLight/intensity:event&quot;}}{{/crossLink}} event on change.
 
-             @property specular
+             @property intensity
              @default [0.7, 0.7, 0.8]
              @type Array(Number)
              */
-            specular: {
+            intensity: {
 
                 set: function (value) {
 
-                    this._state.specular = value || [0.7, 0.7, 0.8 ];
+                    this._state.intensity = value || [0.7, 0.7, 0.8 ];
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/specular:property&quot;}}{{/crossLink}} property changes.
-                     * @event specular
+                     * Fired whenever this PointLight&#x27;s  {{#crossLink &quot;PointLight/intensity:property&quot;}}{{/crossLink}} property changes.
+                     * @event intensity
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;specular&quot;, this._state.specular);
+                    this.fire(&quot;intensity&quot;, this._state.intensity);
                 },
 
                 get: function () {
-                    return this._state.specular;
+                    return this._state.intensity;
                 }
             },
 
@@ -494,8 +490,8 @@
             return {
                 mode: this.mode,
                 pos: this.pos,
-                diffuse: this.diffuse,
-                specular: this.specular,
+                color: this.color,
+                intensity: this.intensity,
                 constantAttenuation: this.constantAttenuation,
                 linearAttenuation: this.linearAttenuation,
                 quadraticAttenuation: this.quadraticAttenuation,

@@ -17,7 +17,7 @@
                 <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.0.1</em>
+            <em>API Docs for: 0.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -64,6 +64,7 @@
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -147,11 +148,6 @@ originates from a single point and spreads outward in all directions, and </li>
 <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> equally from a given direction</li>
 </ul>
 
-<p>Within xeoEngine&#39;s <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> reflection model, ambient,
-diffuse and specular light sources are multiplied by the <a href="../classes/Material.html#property_ambient" class="crosslink">ambient</a>,
-<a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> and <a href="../classes/Material.html#property_specular" class="crosslink">specular</a>
-properties, respectively, on the <a href="../classes/Material.html" class="crosslink">Materials</a> attached to
-the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <p><img src="../../../assets/images/Lights.png"></img></p>
 <h2 id="example">Example</h2>
 <p>In this example we have a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that has a <a href="../classes/Geometry.html" class="crosslink">Geometry</a>,
@@ -159,32 +155,28 @@ a <a href="../classes/Material.html" class="crosslink">Material</a> and a <a hre
 contains an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a>, a <a href="../classes/DirLight.html" class="crosslink">DirLight</a> and a <a href="../classes/PointLight.html" class="crosslink">PointLight</a>.</p>
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
-var material = new XEO.Material(scene, {
+var material = new XEO.PhongMaterial(scene, {
    ambient:    [0.3, 0.3, 0.3],
    diffuse:    [0.7, 0.7, 0.7],
    specular:   [1. 1, 1],
    shininess:  30
 });
 
-// Within xeoEngine&#39;s lighting calculations, the AmbientLight&#39;s ambient color
-// will be multiplied by the Material&#39;s ambient color, while the DirLight and PointLight&#39;s
-// diffuse and specular colors will be multiplied by the Material&#39;s diffuse and specular colors
-
 var ambientLight = new XEO.AmbientLight(scene, {
-   ambient: [0.7, 0.7, 0.7]
+   color: [0.7, 0.7, 0.7]
 });
 
 var dirLight = new XEO.DirLight(scene, {
    dir:        [-1, -1, -1],
-   diffuse:    [0.5, 0.7, 0.5],
-   specular:   [1.0, 1.0, 1.0],
+   color:    [0.5, 0.7, 0.5],
+   intensity:   [1.0, 1.0, 1.0],
    space:      "view"
 });
 
 var pointLight = new XEO.PointLight(scene, {
    pos: [0, 100, 100],
-   diffuse: [0.5, 0.7, 0.5],
-   specular: [1.0, 1.0, 1.0],
+   color: [0.5, 0.7, 0.5],
+   intensity: [1.0, 1.0, 1.0],
    constantAttenuation: 0,
    linearAttenuation: 0,
    quadraticAttenuation: 0,
@@ -1044,7 +1036,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lights.js.html#l131"><code>src&#x2F;core&#x2F;lights.js:131</code></a>
+                            <a href="../files/src_core_lights.js.html#l120"><code>src&#x2F;core&#x2F;lights.js:120</code></a>
                             </p>
                     
                     

@@ -17,7 +17,7 @@
                 <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.0.1</em>
+            <em>API Docs for: 0.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -64,6 +64,7 @@
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -163,7 +164,7 @@
     bias: 0.2
 });
 
- var material = new XEO.Material(scene, {
+ var material = new XEO.PhongMaterial(scene, {
     ambient: [0.3, 0.3, 0.3],
     shininess: 30,
     diffuseFresnel: fresnel1,
@@ -177,7 +178,7 @@
 });
 
  var light2 = new XEO.AmbientLight(scene, {
-    ambient: [0.5, 0.7, 0.5]
+    color: [0.5, 0.7, 0.5]
 });
 
  var lights = new XEO.Lights(scene, {
@@ -224,9 +225,10 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Fresnel({
-                leftColor: [0,0,0],
+                leftColor: [1,1,1],
                 rightColor: [0,0,0],
-                power: 0
+                power: 1,
+                bias: 0
             });
 
             this.leftColor = cfg.leftColor;
@@ -298,14 +300,14 @@
                     return this._state.rightColor;
                 }
             },
-            
+
             /**
              * Indicates this Fresnel&#x27;s power.
              *
              * Fires a {{#crossLink &quot;Fresnel/power:event&quot;}}{{/crossLink}} event on change.
              *
              * @property power
-             * @default 0
+             * @default 1
              * @type Number
              */
             power: {
@@ -370,7 +372,8 @@
             return {
                 leftColor: this._state.leftColor,
                 rightColor: this._state.rightColor,
-                power: this._state.power
+                power: this._state.power,
+                bias: this._state.bias
             };
         },
 

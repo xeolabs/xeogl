@@ -17,7 +17,7 @@
                 <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.0.1</em>
+            <em>API Docs for: 0.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -64,6 +64,7 @@
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -150,11 +151,6 @@ is relative to the World coordinate system, and will appear to move as the <a hr
 When in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer&#39;s
 head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.</li>
 
-<li>Within xeoEngine&#39;s Phong lighting calculations, PointLight <a href="../classes/PointLight.html#property_diffuse" class="crosslink">diffuse</a> and
-<a href="../classes/PointLight.html#property_specular" class="crosslink">specular</a> are multiplied by <a href="../classes/Material.html" class="crosslink">Material</a>
-<a href="../classes/Material.html#property_diffuse" class="crosslink">diffuse</a> and <a href="../classes/Material.html#property_specular" class="crosslink">specular</a>,
-respectively.</li>
-
 <li>PointLights have <a href="../classes/PointLight.html#property_constantAttenuation" class="crosslink">constantAttenuation</a>, <a href="../classes/PointLight.html#property_linearAttenuation" class="crosslink">linearAttenuation</a> and
 <a href="../classes/PointLight.html#property_quadraticAttenuation" class="crosslink">quadraticAttenuation</a> factors, which indicate how their intensity attenuates over distance.</li>
 
@@ -177,17 +173,17 @@ respectively.</li>
 
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
-var material = new XEO.Material(scene, {
-       diffuse: [1, 1, 1],
-       specular: [1.1, 1]
+var material = new XEO.PhongMaterial(scene, {
+       color: [1, 1, 1],
+       intensity: [1.1, 1]
 });
 
 // Our PointLight&#39;s intensity does not attenuate over distance.
 
 var pointLight = new XEO.PointLight(scene, {
        pos: [0, 100, 100],
-       diffuse: [0.5, 0.7, 0.5],
-       specular: [1.0, 1.0, 1.0],
+       color: [0.5, 0.7, 0.5],
+       intensity: [1.0, 1.0, 1.0],
        constantAttenuation: 0,
        linearAttenuation: 0,
        quadraticAttenuation: 0,
@@ -209,12 +205,12 @@ var object = new XEO.GameObject(scene, {
  });
 </code></pre>
 <p>As with all components, we can <a href="XEO.Component.html#changeEvents" class="crosslink">observe and change properties</a> on PointLights like so:</p>
-<pre class="code prettyprint"><code class="lang-Javascript">var handle = pointLight.on("diffuse", // Attach a change listener to a property
+<pre class="code prettyprint"><code class="lang-Javascript">var handle = pointLight.on("color", // Attach a change listener to a property
 function(value) {
        // Property value has changed
    });
 
-pointLight.diffuse = [0.4, 0.6, 0.4]; // Fires the change listener
+pointLight.color = [0.4, 0.6, 0.4]; // Fires the change listener
 
 pointLight.off(handle); // Detach the change listener
 </code></pre>
@@ -321,23 +317,23 @@ pointLight.off(handle); // Detach the change listener
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[diffuse=[0.7, 0.7, 0.8 ]]</code>
+                                            <code class="param-name optional">[color=[0.7, 0.7, 0.8 ]]</code>
                                             <span class="type">Array(Number)</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Diffuse color of this PointLight.</p>
+                                            <p>Color of this PointLight.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[specular=[1.0, 1.0, 1.1 ]]</code>
+                                            <code class="param-name optional">[intensity=[1.0, 1.0, 1.1 ]]</code>
                                             <span class="type">Array(Number)</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Specular color of this PointLight.</p>
+                                            <p>Intensity of this PointLight.</p>
         
                                         </div>
         
@@ -457,6 +453,10 @@ pointLight.off(handle); // Detach the change listener
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_color">color</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_constantAttenuation">constantAttenuation</a>
 
                             </li>
@@ -464,12 +464,12 @@ pointLight.off(handle); // Detach the change listener
                                 <a href="#property_destroyed">destroyed</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_diffuse">diffuse</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_intensity">intensity</a>
 
                             </li>
                             <li class="index-item property">
@@ -496,10 +496,6 @@ pointLight.off(handle); // Detach the change listener
                                 <a href="#property_space">space</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_specular">specular</a>
-
-                            </li>
                             <li class="index-item property public inherited">
                                 <a href="#property_type">type</a>
 
@@ -513,6 +509,10 @@ pointLight.off(handle); // Detach the change listener
 
                     <ul class="index-list events extends">
                             <li class="index-item event">
+                                <a href="#event_color">color</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_constantAttenuation">constantAttenuation</a>
 
                             </li>
@@ -521,7 +521,7 @@ pointLight.off(handle); // Detach the change listener
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_diffuse">diffuse</a>
+                                <a href="#event_intensity">intensity</a>
 
                             </li>
                             <li class="index-item event">
@@ -538,10 +538,6 @@ pointLight.off(handle); // Detach the change listener
                             </li>
                             <li class="index-item event">
                                 <a href="#event_space">space</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_specular">specular</a>
 
                             </li>
                     </ul>
@@ -1111,6 +1107,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_color" class="property item">
+                        <h3 class="name"><code>color</code></h3>
+                        <span class="type">Array(Number)</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_pointLight.js.html#l172"><code>src&#x2F;core&#x2F;pointLight.js:172</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The color of this PointLight.</p>
+                    <p>Fires a <a href="../classes/PointLight.html#event_color" class="crosslink">color</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [0.7, 0.7, 0.8]</p>
+                    
+                    
+                    </div>
                     <div id="property_constantAttenuation" class="property item">
                         <h3 class="name"><code>constantAttenuation</code></h3>
                         <span class="type">Number</span>
@@ -1122,7 +1145,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l237"><code>src&#x2F;core&#x2F;pointLight.js:237</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l232"><code>src&#x2F;core&#x2F;pointLight.js:232</code></a>
                             </p>
                     
                     
@@ -1163,33 +1186,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_diffuse" class="property item">
-                        <h3 class="name"><code>diffuse</code></h3>
-                        <span class="type">Array(Number)</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_pointLight.js.html#l177"><code>src&#x2F;core&#x2F;pointLight.js:177</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The diffuse color of this PointLight.</p>
-                    <p>Fires a <a href="../classes/PointLight.html#event_diffuse" class="crosslink">diffuse</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0.7, 0.7, 0.8]</p>
-                    
-                    
-                    </div>
                     <div id="property_id" class="property item inherited">
                         <h3 class="name"><code>id</code></h3>
                         <span class="type">String</span>
@@ -1216,6 +1212,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_intensity" class="property item">
+                        <h3 class="name"><code>intensity</code></h3>
+                        <span class="type">Array(Number)</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_pointLight.js.html#l202"><code>src&#x2F;core&#x2F;pointLight.js:202</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The intensity of this PointLight.</p>
+                    <p>Fires a <a href="../classes/PointLight.html#event_intensity" class="crosslink">intensity</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [0.7, 0.7, 0.8]</p>
+                    
+                    
+                    </div>
                     <div id="property_linearAttenuation" class="property item">
                         <h3 class="name"><code>linearAttenuation</code></h3>
                         <span class="type">Number</span>
@@ -1227,7 +1250,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l268"><code>src&#x2F;core&#x2F;pointLight.js:268</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l263"><code>src&#x2F;core&#x2F;pointLight.js:263</code></a>
                             </p>
                     
                     
@@ -1279,7 +1302,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l145"><code>src&#x2F;core&#x2F;pointLight.js:145</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l140"><code>src&#x2F;core&#x2F;pointLight.js:140</code></a>
                             </p>
                     
                     
@@ -1307,7 +1330,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l299"><code>src&#x2F;core&#x2F;pointLight.js:299</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l294"><code>src&#x2F;core&#x2F;pointLight.js:294</code></a>
                             </p>
                     
                     
@@ -1360,7 +1383,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l330"><code>src&#x2F;core&#x2F;pointLight.js:330</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l325"><code>src&#x2F;core&#x2F;pointLight.js:325</code></a>
                             </p>
                     
                     
@@ -1379,33 +1402,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                             <p><strong>Default:</strong> &quot;view&quot;</p>
-                    
-                    
-                    </div>
-                    <div id="property_specular" class="property item">
-                        <h3 class="name"><code>specular</code></h3>
-                        <span class="type">Array(Number)</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_pointLight.js.html#l207"><code>src&#x2F;core&#x2F;pointLight.js:207</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The specular color of this PointLight.</p>
-                    <p>Fires a <a href="../classes/PointLight.html#event_specular" class="crosslink">specular</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0.7, 0.7, 0.8]</p>
                     
                     
                     </div>
@@ -1442,6 +1438,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_color" class="events item">
+                        <h3 class="name"><code>color</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_pointLight.js.html#l189"><code>src&#x2F;core&#x2F;pointLight.js:189</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this PointLight&#39;s  <a href="../classes/PointLight.html#property_color" class="crosslink">color</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_constantAttenuation" class="events item">
                         <h3 class="name"><code>constantAttenuation</code></h3>
                         <span class="type"></span>
@@ -1453,7 +1491,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l254"><code>src&#x2F;core&#x2F;pointLight.js:254</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l249"><code>src&#x2F;core&#x2F;pointLight.js:249</code></a>
                             </p>
                     
                     
@@ -1509,8 +1547,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_diffuse" class="events item">
-                        <h3 class="name"><code>diffuse</code></h3>
+                    <div id="event_intensity" class="events item">
+                        <h3 class="name"><code>intensity</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1520,14 +1558,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l194"><code>src&#x2F;core&#x2F;pointLight.js:194</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l219"><code>src&#x2F;core&#x2F;pointLight.js:219</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this PointLight&#39;s  <a href="../classes/PointLight.html#property_diffuse" class="crosslink">diffuse</a> property changes.</p>
+                            <p>Fired whenever this PointLight&#39;s  <a href="../classes/PointLight.html#property_intensity" class="crosslink">intensity</a> property changes.</p>
                     
                         </div>
                     
@@ -1562,7 +1600,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l285"><code>src&#x2F;core&#x2F;pointLight.js:285</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l280"><code>src&#x2F;core&#x2F;pointLight.js:280</code></a>
                             </p>
                     
                     
@@ -1604,7 +1642,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l164"><code>src&#x2F;core&#x2F;pointLight.js:164</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l159"><code>src&#x2F;core&#x2F;pointLight.js:159</code></a>
                             </p>
                     
                     
@@ -1646,7 +1684,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l316"><code>src&#x2F;core&#x2F;pointLight.js:316</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l311"><code>src&#x2F;core&#x2F;pointLight.js:311</code></a>
                             </p>
                     
                     
@@ -1688,7 +1726,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l354"><code>src&#x2F;core&#x2F;pointLight.js:354</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l349"><code>src&#x2F;core&#x2F;pointLight.js:349</code></a>
                             </p>
                     
                     
@@ -1696,48 +1734,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Pointlight&#39;s  <a href="../classes/PointLight.html#property_space" class="crosslink">space</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_specular" class="events item">
-                        <h3 class="name"><code>specular</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_pointLight.js.html#l224"><code>src&#x2F;core&#x2F;pointLight.js:224</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PointLight&#39;s  <a href="../classes/PointLight.html#property_specular" class="crosslink">specular</a> property changes.</p>
                     
                         </div>
                     
