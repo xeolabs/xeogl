@@ -168,7 +168,7 @@
 
  var material = new XEO.PhongMaterial(scene, {
         color: [1, 1, 1],
-        intensity: [1.1, 1]
+        intensity: 1
  });
 
  // Our PointLight&#x27;s intensity does not attenuate over distance.
@@ -176,7 +176,7 @@
  var pointLight = new XEO.PointLight(scene, {
         pos: [0, 100, 100],
         color: [0.5, 0.7, 0.5],
-        intensity: [1.0, 1.0, 1.0],
+        intensity: 1
         constantAttenuation: 0,
         linearAttenuation: 0,
         quadraticAttenuation: 0,
@@ -222,7 +222,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PointLight.
  @param [cfg.pos=[ 1.0, 1.0, 1.0 ]] {Array(Number)} Position, in either World or View space, depending on the value of the **space** parameter.
  @param [cfg.color=[0.7, 0.7, 0.8 ]] {Array(Number)} Color of this PointLight.
- @param [cfg.intensity=[1.0, 1.0, 1.1 ]] {Array(Number)} Intensity of this PointLight.
+ @param [cfg.intensity=1.0] {Number} Intensity of this PointLight.
  @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
  @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
  @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
@@ -244,7 +244,7 @@
                 mode: &quot;point&quot;,
                 pos: [1.0, 1.0, 1.0],
                 color: [0.7, 0.7, 0.8],
-                intensity: [1.0, 1.0, 1.0],
+                intensity:   1.0,
                 constantAttenuation: 0.0,
                 linearAttenuation: 0.0,
                 quadraticAttenuation: 0.0,
@@ -330,14 +330,16 @@
              Fires a {{#crossLink &quot;PointLight/intensity:event&quot;}}{{/crossLink}} event on change.
 
              @property intensity
-             @default [0.7, 0.7, 0.8]
-             @type Array(Number)
+             @default 1.0
+             @type Number
              */
             intensity: {
 
                 set: function (value) {
 
-                    this._state.intensity = value || [0.7, 0.7, 0.8 ];
+                    value = value !== undefined ? value :  1.0;
+
+                    this._state.intensity = value;
 
                     this._renderer.imageDirty = true;
 

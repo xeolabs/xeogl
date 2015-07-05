@@ -179,7 +179,7 @@ var material = new XEO.PhongMaterial(scene, {
 var dirLight = new XEO.DirLight(scene, {
    dir:         [-1, -1, -1],
    color:       [0.5, 0.7, 0.5],
-   intensity:   [1.0, 1.0, 1.0],
+   intensity:   1.0,
    space:      "view"  // Other option is "world", for World-space
 });
 
@@ -327,8 +327,8 @@ dirLight.off(handle);
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[intensity=[1.0, 1.0, 1.0 ]]</code>
-                                            <span class="type">Array(Number)</span>
+                                            <code class="param-name optional">[intensity=1.0]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -1156,7 +1156,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_intensity" class="property item">
                         <h3 class="name"><code>intensity</code></h3>
-                        <span class="type">Array(Number)</span>
+                        <span class="type">Number</span>
                     
                     
                     
@@ -1177,7 +1177,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
+                            <p><strong>Default:</strong> 1.0</p>
                     
                     
                     </div>
@@ -1243,7 +1243,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l240"><code>src&#x2F;core&#x2F;dirLight.js:240</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l236"><code>src&#x2F;core&#x2F;dirLight.js:236</code></a>
                             </p>
                     
                     
@@ -1418,7 +1418,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l227"><code>src&#x2F;core&#x2F;dirLight.js:227</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l223"><code>src&#x2F;core&#x2F;dirLight.js:223</code></a>
                             </p>
                     
                     
@@ -1460,7 +1460,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_dirLight.js.html#l264"><code>src&#x2F;core&#x2F;dirLight.js:264</code></a>
+                            <a href="../files/src_core_dirLight.js.html#l260"><code>src&#x2F;core&#x2F;dirLight.js:260</code></a>
                             </p>
                     
                     

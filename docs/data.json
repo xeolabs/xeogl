@@ -1034,7 +1034,7 @@
             "namespace": "",
             "file": "src/core/dirLight.js",
             "line": 1,
-            "description": "A **DirLight** is a directional light source that illuminates all attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} equally\nfrom a given direction.\n\n## Overview\n\n<ul>\n<li>DirLights are grouped, along with other light source types, within {{#crossLink \"Lights\"}}Lights{{/crossLink}} components,\nwhich are attached to {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>DirLights have a direction, but no position.</li>\n<li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction\nis relative to the World coordinate system, and will appear to move as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.\nWhen in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's\nhead as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that DirLights create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/DirLight.png\"></img>\n\n## Example\n\nIn this example we have a DirLight\n\n<ul>\n<li>a {{#crossLink \"material\"}}{{/crossLink}},</li>\n<li>a DirLight that points along the negative diagonal of the View coordinate system,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing the DirLight,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/light_DirLight.html\"></iframe>\n\n```` javascript\nvar scene = new XEO.Scene();\n\n// A shiny Material with quantities of reflected\n// ambient, diffuse and specular color\nvar material = new XEO.PhongMaterial(scene, {\n   ambient:    [0.3, 0.3, 0.3],\n   diffuse:    [0.7, 0.7, 0.7],\n   specular:   [1. 1, 1],\n   shininess:  30\n});\n\n// DirLight with color and intensity, pointing along\n// the negative diagonal within the View coordinate system\nvar dirLight = new XEO.DirLight(scene, {\n   dir:         [-1, -1, -1],\n   color:       [0.5, 0.7, 0.5],\n   intensity:   [1.0, 1.0, 1.0],\n   space:      \"view\"  // Other option is \"world\", for World-space\n});\n\n// Lights which contains our DirLight\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       dirLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\n// Object which renders our Geometry, colored with\n// the Material and illuminated with the DirLight\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````\n\nAs with all components, we can observe and change properties on a DirLights, like so:\n\n````Javascript\n// Attach a change listener to a property\nvar handle = dirLight.on(\"color\",\nfunction(value) {\n       // Property value has changed\n   });\n\n// Set the property, which fires our change listener\ndirLight.color = [0.0, 0.3, 0.3];\n\n// Detach the change listener\ndirLight.off(handle);\n````",
+            "description": "A **DirLight** is a directional light source that illuminates all attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} equally\nfrom a given direction.\n\n## Overview\n\n<ul>\n<li>DirLights are grouped, along with other light source types, within {{#crossLink \"Lights\"}}Lights{{/crossLink}} components,\nwhich are attached to {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>DirLights have a direction, but no position.</li>\n<li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction\nis relative to the World coordinate system, and will appear to move as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.\nWhen in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's\nhead as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that DirLights create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/DirLight.png\"></img>\n\n## Example\n\nIn this example we have a DirLight\n\n<ul>\n<li>a {{#crossLink \"material\"}}{{/crossLink}},</li>\n<li>a DirLight that points along the negative diagonal of the View coordinate system,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing the DirLight,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/light_DirLight.html\"></iframe>\n\n```` javascript\nvar scene = new XEO.Scene();\n\n// A shiny Material with quantities of reflected\n// ambient, diffuse and specular color\nvar material = new XEO.PhongMaterial(scene, {\n   ambient:    [0.3, 0.3, 0.3],\n   diffuse:    [0.7, 0.7, 0.7],\n   specular:   [1. 1, 1],\n   shininess:  30\n});\n\n// DirLight with color and intensity, pointing along\n// the negative diagonal within the View coordinate system\nvar dirLight = new XEO.DirLight(scene, {\n   dir:         [-1, -1, -1],\n   color:       [0.5, 0.7, 0.5],\n   intensity:   1.0,\n   space:      \"view\"  // Other option is \"world\", for World-space\n});\n\n// Lights which contains our DirLight\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       dirLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\n// Object which renders our Geometry, colored with\n// the Material and illuminated with the DirLight\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````\n\nAs with all components, we can observe and change properties on a DirLights, like so:\n\n````Javascript\n// Attach a change listener to a property\nvar handle = dirLight.on(\"color\",\nfunction(value) {\n       // Property value has changed\n   });\n\n// Set the property, which fires our change listener\ndirLight.color = [0.0, 0.3, 0.3];\n\n// Detach the change listener\ndirLight.off(handle);\n````",
             "is_constructor": 1,
             "params": [
                 {
@@ -1078,9 +1078,9 @@
                         {
                             "name": "intensity",
                             "description": "The intensity of this DirLight.",
-                            "type": "Array(Number)",
+                            "type": "Number",
                             "optional": true,
-                            "optdefault": "[1.0, 1.0, 1.0 ]"
+                            "optdefault": "1.0"
                         },
                         {
                             "name": "space",
@@ -1557,7 +1557,7 @@
             "namespace": "",
             "file": "src/core/lights.js",
             "line": 1,
-            "description": "A **Lights** defines a group of light sources that illuminate attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\nA Lights may contain a virtually unlimited number of three types of light source:\n\n<ul>\n<li>{{#crossLink \"AmbientLight\"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and\naffect all the {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} equally,</li>\n<li>{{#crossLink \"PointLight\"}}PointLight{{/crossLink}}s, which emit light that\noriginates from a single point and spreads outward in all directions, and </li>\n<li>{{#crossLink \"DirLight\"}}DirLight{{/crossLink}}s, which illuminate all the\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} equally from a given direction</li>\n</ul>\n\n<img src=\"../../../assets/images/Lights.png\"></img>\n\n## Example\n\nIn this example we have a {{#crossLink \"GameObject\"}}{{/crossLink}} that has a {{#crossLink \"Geometry\"}}{{/crossLink}},\na {{#crossLink \"Material\"}}{{/crossLink}} and a {{#crossLink \"Lights\"}}{{/crossLink}}. The {{#crossLink \"Lights\"}}{{/crossLink}}\ncontains an {{#crossLink \"AmbientLight\"}}{{/crossLink}}, a {{#crossLink \"DirLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}}.\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient:    [0.3, 0.3, 0.3],\n   diffuse:    [0.7, 0.7, 0.7],\n   specular:   [1. 1, 1],\n   shininess:  30\n});\n\nvar ambientLight = new XEO.AmbientLight(scene, {\n   color: [0.7, 0.7, 0.7]\n});\n\nvar dirLight = new XEO.DirLight(scene, {\n   dir:        [-1, -1, -1],\n   color:    [0.5, 0.7, 0.5],\n   intensity:   [1.0, 1.0, 1.0],\n   space:      \"view\"\n});\n\nvar pointLight = new XEO.PointLight(scene, {\n   pos: [0, 100, 100],\n   color: [0.5, 0.7, 0.5],\n   intensity: [1.0, 1.0, 1.0],\n   constantAttenuation: 0,\n   linearAttenuation: 0,\n   quadraticAttenuation: 0,\n   space: \"view\"\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       ambientLight,\n       dirLight,\n       pointLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
+            "description": "A **Lights** defines a group of light sources that illuminate attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\nA Lights may contain a virtually unlimited number of three types of light source:\n\n<ul>\n<li>{{#crossLink \"AmbientLight\"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and\naffect all the {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} equally,</li>\n<li>{{#crossLink \"PointLight\"}}PointLight{{/crossLink}}s, which emit light that\noriginates from a single point and spreads outward in all directions, and </li>\n<li>{{#crossLink \"DirLight\"}}DirLight{{/crossLink}}s, which illuminate all the\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} equally from a given direction</li>\n</ul>\n\n<img src=\"../../../assets/images/Lights.png\"></img>\n\n## Example\n\nIn this example we have a {{#crossLink \"GameObject\"}}{{/crossLink}} that has a {{#crossLink \"Geometry\"}}{{/crossLink}},\na {{#crossLink \"Material\"}}{{/crossLink}} and a {{#crossLink \"Lights\"}}{{/crossLink}}. The {{#crossLink \"Lights\"}}{{/crossLink}}\ncontains an {{#crossLink \"AmbientLight\"}}{{/crossLink}}, a {{#crossLink \"DirLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}}.\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient:    [0.3, 0.3, 0.3],\n   diffuse:    [0.7, 0.7, 0.7],\n   specular:   [1. 1, 1],\n   shininess:  30\n});\n\nvar ambientLight = new XEO.AmbientLight(scene, {\n   color: [0.7, 0.7, 0.7],\n   intensity:   1.0\n});\n\nvar dirLight = new XEO.DirLight(scene, {\n   dir:        [-1, -1, -1],\n   color:    [0.5, 0.7, 0.5],\n   intensity:   1.0,\n   space:      \"view\"\n});\n\nvar pointLight = new XEO.PointLight(scene, {\n   pos: [0, 100, 100],\n   color: [0.5, 0.7, 0.5],\n   intensity: [1.0, 1.0, 1.0],\n   constantAttenuation: 0,\n   linearAttenuation: 0,\n   quadraticAttenuation: 0,\n   space: \"view\"\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       ambientLight,\n       dirLight,\n       pointLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
             "is_constructor": 1,
             "params": [
                 {
@@ -1984,7 +1984,7 @@
             "namespace": "",
             "file": "src/core/phongMaterial.js",
             "line": 1,
-            "description": "A **PhongMaterial** defines the surface appearance of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li>PhongMaterials interact with {{#crossLink \"Lights\"}}{{/crossLink}} using the <a href=\"http://en.wikipedia.org/wiki/Phong_reflection_model\">Phong</a> reflection model.</li>\n\n<li>These PhongMaterial properties, along with {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} and {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}},\nspecify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.</li>\n\n<li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by\nassigning {{#crossLink \"Texture\"}}Textures{{/crossLink}} to the PhongMaterial's\n{{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}}\nand  {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}} properties.</li>\n\n<li>For example, the value of {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} will be ignored if your\nPhongMaterial also has a {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} set to a {{#crossLink \"Texture\"}}Texture{{/crossLink}}.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface, ie. they are not multiplied by\nthe {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>\n\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that PhongMaterials create within xeoEngine's shaders.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/PhongMaterial.png\"></img>\n\n## Example\n\nIn this example we have\n\n<ul>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Fresnel\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}} as a diffuse map and the {{#crossLink \"Fresnel\"}}{{/crossLink}} as a specular Fresnel effect,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\nNote that the value for the {{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\nproperty is ignored and redundant, since we assign a {{#crossLink \"Texture\"}}{{/crossLink}} to the\n{{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} property.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar diffuseMap = new XEO.Texture(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar fresnel = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient:         [0.3, 0.3, 0.3],\n   diffuse:         [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n   diffuseMap:      diffuseMap,\n   specular:        [1, 1, 1],\n   shininess:       30,\n   specularFresnel: fresnel\n});\n\nvar ambientLight = new XEO.AmbientLight(scene, {\n   color: [0.7, 0.7, 0.7]\n});\n\nvar dirLight = new XEO.DirLight(scene, {\n   dir:        [-1, -1, -1],\n   color:      [0.5, 0.7, 0.5],\n   intensity:  [1.0, 1.0, 1.0],\n   space:      \"view\"\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       ambientLight,\n       dirLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
+            "description": "A **PhongMaterial** defines the surface appearance of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li>PhongMaterials interact with {{#crossLink \"Lights\"}}{{/crossLink}} using the <a href=\"http://en.wikipedia.org/wiki/Phong_reflection_model\">Phong</a> reflection model.</li>\n\n<li>These PhongMaterial properties, along with {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} and {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}},\nspecify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.</li>\n\n<li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by\nassigning {{#crossLink \"Texture\"}}Textures{{/crossLink}} to the PhongMaterial's\n{{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}}\nand  {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}} properties.</li>\n\n<li>For example, the value of {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} will be ignored if your\nPhongMaterial also has a {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} set to a {{#crossLink \"Texture\"}}Texture{{/crossLink}}.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface, ie. they are not multiplied by\nthe {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>\n\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that PhongMaterials create within xeoEngine's shaders.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Material.png\"></img>\n\n## Example\n\nIn this example we have\n\n<ul>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Fresnel\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}} as a diffuse map and the {{#crossLink \"Fresnel\"}}{{/crossLink}} as a specular Fresnel effect,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\nNote that the value for the {{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\nproperty is ignored and redundant, since we assign a {{#crossLink \"Texture\"}}{{/crossLink}} to the\n{{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} property.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar diffuseMap = new XEO.Texture(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar fresnel = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient:         [0.3, 0.3, 0.3],\n   diffuse:         [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n   diffuseMap:      diffuseMap,\n   specular:        [1, 1, 1],\n   shininess:       30,\n   specularFresnel: fresnel\n});\n\nvar ambientLight = new XEO.AmbientLight(scene, {\n   color: [0.7, 0.7, 0.7]\n});\n\nvar dirLight = new XEO.DirLight(scene, {\n   dir:        [-1, -1, -1],\n   color:      [0.5, 0.7, 0.5],\n   intensity:  [1.0, 1.0, 1.0],\n   space:      \"view\"\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       ambientLight,\n       dirLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
             "is_constructor": 1,
             "extends": "Material",
             "params": [
@@ -2155,7 +2155,7 @@
             "namespace": "",
             "file": "src/core/pointLight.js",
             "line": 1,
-            "description": "A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate\nattached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li>PointLights are grouped, along with other light source types, within {{#crossLink \"Lights\"}}Lights{{/crossLink}} components,\nwhich are attached to {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n\n<li>PointLights have a position, but no direction.</li>\n\n<li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their position\nis relative to the World coordinate system, and will appear to move as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.\nWhen in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer's\nhead as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.</li>\n\n<li>PointLights have {{#crossLink \"PointLight/constantAttenuation:property\"}}{{/crossLink}}, {{#crossLink \"PointLight/linearAttenuation:property\"}}{{/crossLink}} and\n{{#crossLink \"PointLight/quadraticAttenuation:property\"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>\n\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that PointLights create within xeoEngine's shaders.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/PointLight.png\"></img>\n\n## Example\n\nIn this example we have\n<ul>\n<li>a {{#crossLink \"Material\"}}{{/crossLink}},</li>\n<li>a PointLight,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing the PointLight,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/light_PointLight.html\"></iframe>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar material = new XEO.PhongMaterial(scene, {\n       color: [1, 1, 1],\n       intensity: [1.1, 1]\n});\n\n// Our PointLight's intensity does not attenuate over distance.\n\nvar pointLight = new XEO.PointLight(scene, {\n       pos: [0, 100, 100],\n       color: [0.5, 0.7, 0.5],\n       intensity: [1.0, 1.0, 1.0],\n       constantAttenuation: 0,\n       linearAttenuation: 0,\n       quadraticAttenuation: 0,\n       space: \"view\"\n});\n\nvar lights = new XEO.Lights(scene, {\n       lights: [\n           pointLight\n       ]\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n       lights: lights,\n       material: material,\n       geometry: geometry\n });\n````\n\nAs with all components, we can <a href=\"XEO.Component.html#changeEvents\" class=\"crosslink\">observe and change properties</a> on PointLights like so:\n\n````Javascript\nvar handle = pointLight.on(\"color\", // Attach a change listener to a property\nfunction(value) {\n       // Property value has changed\n   });\n\npointLight.color = [0.4, 0.6, 0.4]; // Fires the change listener\n\npointLight.off(handle); // Detach the change listener\n````",
+            "description": "A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate\nattached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li>PointLights are grouped, along with other light source types, within {{#crossLink \"Lights\"}}Lights{{/crossLink}} components,\nwhich are attached to {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n\n<li>PointLights have a position, but no direction.</li>\n\n<li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their position\nis relative to the World coordinate system, and will appear to move as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.\nWhen in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer's\nhead as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.</li>\n\n<li>PointLights have {{#crossLink \"PointLight/constantAttenuation:property\"}}{{/crossLink}}, {{#crossLink \"PointLight/linearAttenuation:property\"}}{{/crossLink}} and\n{{#crossLink \"PointLight/quadraticAttenuation:property\"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>\n\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that PointLights create within xeoEngine's shaders.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/PointLight.png\"></img>\n\n## Example\n\nIn this example we have\n<ul>\n<li>a {{#crossLink \"Material\"}}{{/crossLink}},</li>\n<li>a PointLight,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing the PointLight,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/light_PointLight.html\"></iframe>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar material = new XEO.PhongMaterial(scene, {\n       color: [1, 1, 1],\n       intensity: 1\n});\n\n// Our PointLight's intensity does not attenuate over distance.\n\nvar pointLight = new XEO.PointLight(scene, {\n       pos: [0, 100, 100],\n       color: [0.5, 0.7, 0.5],\n       intensity: 1\n       constantAttenuation: 0,\n       linearAttenuation: 0,\n       quadraticAttenuation: 0,\n       space: \"view\"\n});\n\nvar lights = new XEO.Lights(scene, {\n       lights: [\n           pointLight\n       ]\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n       lights: lights,\n       material: material,\n       geometry: geometry\n });\n````\n\nAs with all components, we can <a href=\"XEO.Component.html#changeEvents\" class=\"crosslink\">observe and change properties</a> on PointLights like so:\n\n````Javascript\nvar handle = pointLight.on(\"color\", // Attach a change listener to a property\nfunction(value) {\n       // Property value has changed\n   });\n\npointLight.color = [0.4, 0.6, 0.4]; // Fires the change listener\n\npointLight.off(handle); // Detach the change listener\n````",
             "is_constructor": 1,
             "extends": "Component",
             "params": [
@@ -2200,9 +2200,9 @@
                         {
                             "name": "intensity",
                             "description": "Intensity of this PointLight.",
-                            "type": "Array(Number)",
+                            "type": "Number",
                             "optional": true,
-                            "optdefault": "[1.0, 1.0, 1.1 ]"
+                            "optdefault": "1.0"
                         },
                         {
                             "name": "constantAttenuation",
@@ -2422,7 +2422,7 @@
             "namespace": "",
             "file": "src/core/shader.js",
             "line": 1,
-            "description": "A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>\n<li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other\ncomponents on the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Use Shaders in combination with {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} components when you need to share\nthe same Shaders among multiple {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms\ndifferently for each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.</li>\n<li>Use {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}}, {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}}\nand {{#crossLink \"Texture\"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>\n</ul>\n\n<img src=\"../../../assets/images/Shader.png\"></img>\n\n## Example\n\nThis example shows the simplest way to use a Shader, where we're just going to render a ripply water\npattern to a screen-aligned quad.\n\n<img src=\"../../assets/images/shaderExample1.png\"></img>\n\nIn our scene definition, we have an  {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that has a {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} that is our\nscreen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.\nFinally, we animate the rippling by periodically updating the Shader's \"time\" uniform.\n\n````javascript\n\nvar scene = new XEO.Scene();\n\n// Shader that's used by our Object. Note the 'XEO_aGeometryPosition' and 'XEO_aGeometryUV attributes',\n// which will receive the positions and UVs from the Geometry. Also note the 'time'\n// uniform, which we'll be animating via Shader#setParams.\n\nvar shader = new XEO.Shader(scene, {\n\n      // Vertex shading stage\n      vertex: [\n          \"attribute vec3 XEO_aGeometryPosition;\",\n          \"attribute vec2 XEO_aGeometryUV;\",\n          \"varying vec2 vUv;\",\n          \"void main () {\",\n          \"    gl_Position = vec4(XEO_aGeometryPosition, 1.0);\",\n          \"    vUv = XEO_aGeometryUV;\",\n          \"}\"\n      ],\n\n      // Fragment shading stage\n      fragment: [\n          \"precision mediump float;\",\n\n          \"uniform float time;\",\n          \"varying vec2 vUv;\",\n\n          \"void main( void ) {\",\n          \"    vec2 sp = vUv;\",\n          \"    vec2 p = sp*5.0 - vec2(10.0);\",\n          \"    vec2 i = p;\",\n          \"    float c = 1.0;\",\n          \"    float inten = 0.10;\",\n          \"    for (int n = 0; n < 10; n++) {\",\n          \"        float t = time * (1.0 - (3.0 / float(n+1)));\",\n          \"        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));\",\n          \"        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));\",\n          \"    }\",\n          \"    c /= float(10);\",\n          \"    c = 1.5-sqrt(c);\",\n          \"    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);\",\n          \"}\"\n      ],\n\n      // Initial value for the 'time' uniform in the fragment stage.\n      params: {\n          time: 0.0\n      }\n });\n\n// A screen-aligned quad\nvar quad = new XEO.Geometry(scene, {\n      primitive:\"triangles\",\n      positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],\n      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n      indices:[ 0, 1, 2, 0, 2, 3 ]\n });\n\nvar object = new XEO.GameObject(scene, {\n      shader: shader,\n      geometry: quad\n });\n\n````\nNow let's animate the \"time\" parameter on the Shader, to make the water ripple:\n\n```` javascript\nscene.on(\"tick\", function(params) {\n           shader.setParams({\n               time: params.timeElapsed\n           });\n       });\n````\n\n## <a name=\"inputs\">Shader Inputs</a>\n\nxeoEngine provides the following inputs for your shaders.\n\n#### Attributes\n\n*Attributes are used only in vertex shaders*\n\n| Attribute  | Description | Depends on  |\n|---|---|\n| attribute vec3 XEO_aGeometryPosition   | Geometry vertex positions | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} |\n| attribute vec2 XEO_aGeometryUV         | Geometry vertex UV coordinates | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n| attribute vec3 XEO_aGeometryNormal     | Geometry vertex normals | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}}  |\n| attribute vec4 XEO_aGeometryColor      | Geometry vertex colors  | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}}  |\n| attribute vec4 XEO_aGeometryTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n\n#### Uniforms\n\n*Uniforms are used in vertex and fragment shaders*\n\n| Uniform  | Description | Depends on  |\n|---|---|\n| uniform mat4  XEO_uModelMatrix                                   | Modelling transform matrix | {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  XEO_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  XEO_uViewMatrix                                    | View transform matrix | {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  XEO_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  XEO_uProjMatrix                                    | Projection transform matrix | {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float XEO_uZNear                                         | Near clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float XEO_uZFar                                          | Far clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n|---|---|\n| uniform vec3  XEO_uLightAmbientColor                             | Color of the first {{#crossLink \"AmbientLight\"}}{{/crossLink}} in {{#crossLink \"Lights\"}}{{/crossLink}}| {{#crossLink \"AmbientLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightColor&lt;***N***&gt;                    | Diffuse color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightIntensity&lt;***N***&gt;                   | Specular color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink \"DirLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n|---|---|\n| uniform vec3 XEO_uMaterialDiffuse;       |  | {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} |\n| uniform vec3 XEO_uMaterialSpecular;       |  | {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} |\n| uniform vec3 XEO_uMaterialEmissive;       |  | {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} |\n| uniform float XEO_uMaterialOpacity;       |  | {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} |\n| uniform float XEO_uMaterialShininess;       |  | {{#crossLink \"PhongMaterial/shininess:property\"}}{{/crossLink}} |\n| uniform float XEO_uMaterialDiffuseFresnelBias;       |  | {{#crossLink \"Fresnel/bias:property\"}}{{/crossLink}} |\n\n#### Varying\n\n*Varying types are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|\n| varying vec4 XEO_vWorldPosition | |\n| varying vec4 XEO_vViewPosition | |\n| varying vec4 XEO_vColor | |\n\n#### Samplers\n\n*Samplers are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|\n| varying vec4 XEO_vWorldPosition | |\n| varying vec4 XEO_vViewPosition | |\n| varying vec4 XEO_vColor | |",
+            "description": "A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>\n<li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other\ncomponents on the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Use Shaders in combination with {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} components when you need to share\nthe same Shaders among multiple {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms\ndifferently for each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.</li>\n<li>Use {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}}, {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}}\nand {{#crossLink \"Texture\"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>\n</ul>\n\n<img src=\"../../../assets/images/Shader.png\"></img>\n\n## Example\n\nThis example shows the simplest way to use a Shader, where we're just going to render a ripply water\npattern to a screen-aligned quad.\n\n<img src=\"../../assets/images/shaderExample1.png\"></img>\n\nIn our scene definition, we have an  {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that has a {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} that is our\nscreen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.\nFinally, we animate the rippling by periodically updating the Shader's \"time\" uniform.\n\n````javascript\n\nvar scene = new XEO.Scene();\n\n// Shader that's used by our Object. Note the 'XEO_aGeometryPosition' and 'XEO_aGeometryUV attributes',\n// which will receive the positions and UVs from the Geometry. Also note the 'time'\n// uniform, which we'll be animating via Shader#setParams.\n\nvar shader = new XEO.Shader(scene, {\n\n      // Vertex shading stage\n      vertex: [\n          \"attribute vec3 XEO_aGeometryPosition;\",\n          \"attribute vec2 XEO_aGeometryUV;\",\n          \"varying vec2 vUv;\",\n          \"void main () {\",\n          \"    gl_Position = vec4(XEO_aGeometryPosition, 1.0);\",\n          \"    vUv = XEO_aGeometryUV;\",\n          \"}\"\n      ],\n\n      // Fragment shading stage\n      fragment: [\n          \"precision mediump float;\",\n\n          \"uniform float time;\",\n          \"varying vec2 vUv;\",\n\n          \"void main( void ) {\",\n          \"    vec2 sp = vUv;\",\n          \"    vec2 p = sp*5.0 - vec2(10.0);\",\n          \"    vec2 i = p;\",\n          \"    float c = 1.0;\",\n          \"    float inten = 0.10;\",\n          \"    for (int n = 0; n < 10; n++) {\",\n          \"        float t = time * (1.0 - (3.0 / float(n+1)));\",\n          \"        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));\",\n          \"        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));\",\n          \"    }\",\n          \"    c /= float(10);\",\n          \"    c = 1.5-sqrt(c);\",\n          \"    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);\",\n          \"}\"\n      ],\n\n      // Initial value for the 'time' uniform in the fragment stage.\n      params: {\n          time: 0.0\n      }\n });\n\n// A screen-aligned quad\nvar quad = new XEO.Geometry(scene, {\n      primitive:\"triangles\",\n      positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],\n      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n      indices:[ 0, 1, 2, 0, 2, 3 ]\n });\n\nvar object = new XEO.GameObject(scene, {\n      shader: shader,\n      geometry: quad\n });\n\n````\nNow let's animate the \"time\" parameter on the Shader, to make the water ripple:\n\n```` javascript\nscene.on(\"tick\", function(params) {\n           shader.setParams({\n               time: params.timeElapsed\n           });\n       });\n````\n\n## <a name=\"inputs\">Shader Inputs</a>\n\nxeoEngine provides the following inputs for your shaders.\n\n#### Attributes\n\n*Attributes are used only in vertex shaders*\n\n| Attribute  | Description | Depends on  |\n|---|---|\n| attribute vec3 XEO_aGeometryPosition   | Geometry vertex positions | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} |\n| attribute vec2 XEO_aGeometryUV         | Geometry vertex UV coordinates | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n| attribute vec3 XEO_aGeometryNormal     | Geometry vertex normals | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}}  |\n| attribute vec4 XEO_aGeometryColor      | Geometry vertex colors  | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}}  |\n| attribute vec4 XEO_aGeometryTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n\n#### Uniforms\n\n*Uniforms are used in vertex and fragment shaders*\n\n| Uniform  | Description | Depends on  |\n|---|---|\n| uniform mat4  XEO_uModelMatrix                                   | Modelling transform matrix | {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  XEO_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  XEO_uViewMatrix                                    | View transform matrix | {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  XEO_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  XEO_uProjMatrix                                    | Projection transform matrix | {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float XEO_uZNear                                         | Near clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float XEO_uZFar                                          | Far clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n|---|---|\n| uniform vec3  XEO_uLightAmbientColor                             | Color of the first {{#crossLink \"AmbientLight\"}}{{/crossLink}} in {{#crossLink \"Lights\"}}{{/crossLink}}| {{#crossLink \"AmbientLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightColor&lt;***N***&gt;                    | Diffuse color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightIntensity&lt;***N***&gt;                   | Specular color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink \"DirLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 XEO_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n|---|---|\n| uniform vec3 XEO_uMaterialDiffuse;       |  | {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} |\n| uniform vec3 XEO_uMaterialSpecular;       |  | {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} |\n| uniform vec3 XEO_uMaterialEmissive;       |  | {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} |\n| uniform float XEO_uMaterialOpacity;       |  | {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} |\n| uniform float XEO_uMaterialShininess;       |  | {{#crossLink \"PhongMaterial/shininess:property\"}}{{/crossLink}} |\n| uniform float XEO_uMaterialDiffuseFresnelBias;       |  | {{#crossLink \"Fresnel/bias:property\"}}{{/crossLink}} |\n\n#### Varying\n\n*Varying types are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|\n| varying vec4 XEO_vWorldPosition | |\n| varying vec4 XEO_vViewPosition | |\n| varying vec4 XEO_vColor | |\n\n#### Samplers\n\n*Samplers are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|",
             "is_constructor": 1,
             "params": [
                 {
@@ -2639,7 +2639,7 @@
             "namespace": "",
             "file": "src/core/texture.js",
             "line": 1,
-            "description": "A **Texture** specifies a texture map.\n\n## Overview\n\n<ul>\n<li>Textures are grouped within {{#crossLink \"Material\"}}Material{{/crossLink}}s, which are attached to\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>To create a Texture from an image file, set the Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}}\nproperty to the image file path.</li>\n<li>To create a Texture from an HTML DOM Image object, set the Texture's {{#crossLink \"Texture/image:property\"}}{{/crossLink}}\nproperty to the object.</li>\n<li>To render color images of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Similarly, to render depth images of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>For special effects, we often use rendered Textures in combination with {{#crossLink \"Shader\"}}Shaders{{/crossLink}} and {{#crossLink \"Stage\"}}Stages{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Texture.png\"></img>\n\n## Example\n\nThe example below has:\n<ul>\n<li>three Textures,</li>\n<li>a {{#crossLink \"Material\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar texture1 = new XEO.Texture(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar texture2 = new XEO.Texture(scene, {\n   src: \"bumpMap.jpg\"\n});\n\nvar texture3 = new XEO.Texture(scene, {\n   src: \"specularMap.jpg\"\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient: [0.3, 0.3, 0.3],\n   shininess: 30,\n   diffuseMap: texture1,\n   bumpMap: texture2,\n   specularMap: texture3\n});\n\nvar light1 = new XEO.PointLight(scene, {\n   pos: [0, 100, 100],\n   diffuse: [0.5, 0.7, 0.5],\n   specular: [1.0, 1.0, 1.0]\n});\n\nvar light2 = new XEO.AmbientLight(scene, {\n   color: [0.5, 0.7, 0.5]\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       light1,\n       light2\n   ]\n});\n\n// Geometry without parameters will default to a 2x2x2 box.\nvar geometry = new XEO.Geometry(scene);\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
+            "description": "A **Texture** specifies a texture map.\n\n## Overview\n\n<ul>\n<li>Textures are grouped within {{#crossLink \"Material\"}}Material{{/crossLink}}s, which are attached to\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>To create a Texture from an image file, set the Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}}\nproperty to the image file path.</li>\n<li>To create a Texture from an HTML DOM Image object, set the Texture's {{#crossLink \"Texture/image:property\"}}{{/crossLink}}\nproperty to the object.</li>\n<li>To render color images of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Similarly, to render depth images of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>For special effects, we often use rendered Textures in combination with {{#crossLink \"Shader\"}}Shaders{{/crossLink}} and {{#crossLink \"Stage\"}}Stages{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Texture.png\"></img>\n\n## Example\n\nThe example below has:\n<ul>\n<li>three Textures,</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar texture1 = new XEO.Texture(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar texture2 = new XEO.Texture(scene, {\n   src: \"bumpMap.jpg\"\n});\n\nvar texture3 = new XEO.Texture(scene, {\n   src: \"specularMap.jpg\"\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient: [0.3, 0.3, 0.3],\n   shininess: 30,\n   diffuseMap: texture1,\n   bumpMap: texture2,\n   specularMap: texture3\n});\n\nvar light1 = new XEO.PointLight(scene, {\n   pos: [0, 100, 100],\n   color: [0.5, 0.7, 0.5]\n});\n\nvar light2 = new XEO.AmbientLight(scene, {\n   color: [0.5, 0.7, 0.5]\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       light1,\n       light2\n   ]\n});\n\n// Geometry without parameters will default to a 2x2x2 box.\nvar geometry = new XEO.Geometry(scene);\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
             "is_constructor": 1,
             "params": [
                 {
@@ -4393,7 +4393,7 @@
         },
         {
             "file": "src/core/ambientLight.js",
-            "line": 118,
+            "line": 119,
             "description": "The color of this AmbientLight.\n\nFires an {{#crossLink \"AmbientLight/color:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "color",
@@ -4404,10 +4404,36 @@
         },
         {
             "file": "src/core/ambientLight.js",
-            "line": 135,
+            "line": 136,
             "description": "Fired whenever this AmbientLight's {{#crossLink \"AmbientLight/color:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "color",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "AmbientLight",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/ambientLight.js",
+            "line": 150,
+            "description": "The intensity of this AmbientLight.\n\nFires a {{#crossLink \"AmbientLight/intensity:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "intensity",
+            "default": "1.0",
+            "type": "Number",
+            "class": "AmbientLight",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/ambientLight.js",
+            "line": 169,
+            "description": "Fired whenever this AmbientLight's  {{#crossLink \"AmbientLight/intensity:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "intensity",
             "params": [
                 {
                     "name": "value",
@@ -5216,14 +5242,14 @@
             "description": "The intensity of this DirLight.\n\nFires a {{#crossLink \"DirLight/intensity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "intensity",
-            "default": "[1.0, 1.0, 1.0]",
-            "type": "Array(Number)",
+            "default": "1.0",
+            "type": "Number",
             "class": "DirLight",
             "module": "XEO"
         },
         {
             "file": "src/core/dirLight.js",
-            "line": 227,
+            "line": 223,
             "description": "Fired whenever this DirLight's  {{#crossLink \"DirLight/intensity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "intensity",
@@ -5238,7 +5264,7 @@
         },
         {
             "file": "src/core/dirLight.js",
-            "line": 240,
+            "line": 236,
             "description": "Specifies which coordinate space this DirLight is in.\n\nSupported values are:\n\n<ul>\n<li>\"view\" - View space, aligned within the view volume as if fixed to the viewer's head</li>\n<li>\"world\" - World space, fixed within the world, moving within the view volume with respect to camera</li>\n</ul>\n\nFires a {{#crossLink \"DirLight/space:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "space",
@@ -5249,7 +5275,7 @@
         },
         {
             "file": "src/core/dirLight.js",
-            "line": 264,
+            "line": 260,
             "description": "Fired whenever this DirLight's {{#crossLink \"DirLight/space:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "space",
@@ -7484,7 +7510,7 @@
         },
         {
             "file": "src/core/lights.js",
-            "line": 120,
+            "line": 121,
             "description": "The light sources in this Lights.\n\nFires a {{#crossLink \"Lights/lights:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lights",
@@ -8603,14 +8629,14 @@
             "description": "The intensity of this PointLight.\n\nFires a {{#crossLink \"PointLight/intensity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "intensity",
-            "default": "[0.7, 0.7, 0.8]",
-            "type": "Array(Number)",
+            "default": "1.0",
+            "type": "Number",
             "class": "PointLight",
             "module": "XEO"
         },
         {
             "file": "src/core/pointLight.js",
-            "line": 219,
+            "line": 221,
             "description": "Fired whenever this PointLight's  {{#crossLink \"PointLight/intensity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "intensity",
@@ -8625,7 +8651,7 @@
         },
         {
             "file": "src/core/pointLight.js",
-            "line": 232,
+            "line": 234,
             "description": "The constant attenuation factor for this PointLight.\n\nFires a {{#crossLink \"PointLight/constantAttenuation:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "constantAttenuation",
@@ -8636,7 +8662,7 @@
         },
         {
             "file": "src/core/pointLight.js",
-            "line": 249,
+            "line": 251,
             "description": "Fired whenever this PointLight's {{#crossLink \"PointLight/constantAttenuation:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "constantAttenuation",
@@ -8651,7 +8677,7 @@
         },
         {
             "file": "src/core/pointLight.js",
-            "line": 263,
+            "line": 265,
             "description": "The linear attenuation factor for this PointLight.\n\nFires a {{#crossLink \"PointLight/linearAttenuation:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "linearAttenuation",
@@ -8662,7 +8688,7 @@
         },
         {
             "file": "src/core/pointLight.js",
-            "line": 280,
+            "line": 282,
             "description": "Fired whenever this PointLight's  {{#crossLink \"PointLight/linearAttenuation:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "linearAttenuation",
@@ -8677,7 +8703,7 @@
         },
         {
             "file": "src/core/pointLight.js",
-            "line": 294,
+            "line": 296,
             "description": "The quadratic attenuation factor for this Pointlight.\n\nFires a {{#crossLink \"PointLight/quadraticAttenuation:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "quadraticAttenuation",
@@ -8688,7 +8714,7 @@
         },
         {
             "file": "src/core/pointLight.js",
-            "line": 311,
+            "line": 313,
             "description": "Fired whenever this PointLight's {{#crossLink \"PointLight/quadraticAttenuation:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "quadraticAttenuation",
@@ -8703,7 +8729,7 @@
         },
         {
             "file": "src/core/pointLight.js",
-            "line": 325,
+            "line": 327,
             "description": "Indicates which coordinate space this PointLight is in.\n\nSupported values are:\n\n<ul>\n<li>\"view\" - View space, aligned within the view volume as if fixed to the viewer's head</li>\n<li>\"world\" - World space, fixed within the world, moving within the view volume with respect to camera</li>\n</ul>\n\nFires a {{#crossLink \"PointLight/space:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "space",
@@ -8714,7 +8740,7 @@
         },
         {
             "file": "src/core/pointLight.js",
-            "line": 349,
+            "line": 351,
             "description": "Fired whenever this Pointlight's  {{#crossLink \"PointLight/space:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "space",
@@ -9125,18 +9151,18 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 739,
-            "description": "The default {{#crossLink \"Material\"}}Material{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Material\"}}Material{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Material\"}}Material{{/crossLink}} by default.",
+            "line": 740,
+            "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
             "final": 1,
-            "type": "Material",
+            "type": "PhongMaterial",
             "class": "Scene",
             "module": "XEO"
         },
         {
             "file": "src/core/scene.js",
-            "line": 761,
+            "line": 762,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -9147,7 +9173,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 782,
+            "line": 783,
             "description": "The default {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} provided by this Scene,\n(which is a neutral {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.reflect\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Reflect\"}}Reflect{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "reflect",
@@ -9158,7 +9184,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 804,
+            "line": 805,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is a neutral {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -9169,7 +9195,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 826,
+            "line": 827,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ShaderParams\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -9180,7 +9206,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 847,
+            "line": 848,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -9191,14 +9217,14 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 871,
+            "line": 872,
             "description": "Destroys all components in this Scene",
             "class": "Scene",
             "module": "XEO"
         },
         {
             "file": "src/core/scene.js",
-            "line": 887,
+            "line": 888,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -9207,7 +9233,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 213,
+            "line": 211,
             "description": "GLSL source code for this Shader's vertex stage.\n\nFires a {{#crossLink \"Shader/vertex:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "vertex",
@@ -9218,7 +9244,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 231,
+            "line": 229,
             "description": "Fired whenever this Shader's {{#crossLink \"Shader/vertex:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "vertex",
@@ -9233,7 +9259,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 245,
+            "line": 243,
             "description": "GLSL source code for this Shader's fragment stage.\n\nFires a {{#crossLink \"Shader/fragment:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fragment",
@@ -9244,7 +9270,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 263,
+            "line": 261,
             "description": "Fired whenever this Shader's {{#crossLink \"Shader/fragment:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fragment",
@@ -9259,7 +9285,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 277,
+            "line": 275,
             "description": "Params for this Shader.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "params",
@@ -9270,7 +9296,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 294,
+            "line": 292,
             "description": "Sets one or more params for this Shader.\n\nThese will be individually overridden by any {{#crossLink \"ShaderParams/setParams:method\"}}params subsequently specified{{/crossLink}} on\n{{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
             "itemtype": "method",
             "name": "setParams",
@@ -9287,7 +9313,7 @@
         },
         {
             "file": "src/core/shader.js",
-            "line": 315,
+            "line": 313,
             "description": "Fired whenever this Shader's  {{#crossLink \"Shader/params:property\"}}{{/crossLink}} property has been updated.",
             "itemtype": "event",
             "name": "params",
@@ -9578,7 +9604,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 321,
+            "line": 320,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -9594,7 +9620,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 353,
+            "line": 352,
             "description": "Indicates an HTML DOM Image object to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"Texture/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "image",
@@ -9605,7 +9631,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 382,
+            "line": 381,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -9621,7 +9647,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 395,
+            "line": 394,
             "description": "Indicates a path to an image file to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/image:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "src",
@@ -9632,7 +9658,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 424,
+            "line": 423,
             "description": "Fired whenever this Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -9648,7 +9674,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 438,
+            "line": 437,
             "description": "Instance or ID of a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} or\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/image:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/target:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "target",
@@ -9659,7 +9685,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 468,
+            "line": 467,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/target:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "target",
@@ -9675,7 +9701,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 482,
+            "line": 481,
             "description": "2D translation vector that will be added to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/translate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "translate",
@@ -9686,7 +9712,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 503,
+            "line": 502,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/translate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "translate",
@@ -9702,7 +9728,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 516,
+            "line": 515,
             "description": "2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/scale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "scale",
@@ -9713,7 +9739,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 536,
+            "line": 535,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/scale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "scale",
@@ -9729,7 +9755,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 549,
+            "line": 548,
             "description": "Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/rotate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "rotate",
@@ -9740,7 +9766,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 569,
+            "line": 568,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/rotate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "rotate",
@@ -9756,7 +9782,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 582,
+            "line": 581,
             "description": "How this Texture is sampled when a texel covers less than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n\n    <li>**\"linear\"** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n\n    <li>**\"nearestMipmapNearest\"** - Chooses the mipmap that most closely matches the\n    size of the pixel being textured and uses the \"nearest\" criterion (the texture\n    element nearest to the center of the pixel) to produce a texture value.</li>\n\n    <li>**\"linearMipmapNearest\"** - Chooses the mipmap that most closely matches the size of\n    the pixel being textured and uses the \"linear\" criterion (a weighted average of the\n    four texture elements that are closest to the center of the pixel) to produce a\n    texture value.</li>\n\n    <li>**\"nearestMipmapLinear\"** - Chooses the two mipmaps that most closely\n    match the size of the pixel being textured and uses the \"nearest\" criterion\n    (the texture element nearest to the center of the pixel) to produce a texture\n    value from each mipmap. The final texture value is a weighted average of those two\n    values.</li>\n\n    <li>**\"linearMipmapLinear\"** - **(default)** - Chooses the two mipmaps that most closely match the size\n    of the pixel being textured and uses the \"linear\" criterion (a weighted average\n    of the four texture elements that are closest to the center of the pixel) to\n    produce a texture value from each mipmap. The final texture value is a weighted\n    average of those two values.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/minFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "minFilter",
@@ -9767,7 +9793,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 633,
+            "line": 632,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/minFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "minFilter",
@@ -9783,7 +9809,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 646,
+            "line": 645,
             "description": "How this Texture is sampled when a texel covers more than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n    <li>**\"linear\"** - **(default)** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/magFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "magFilter",
@@ -9794,7 +9820,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 675,
+            "line": 674,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/magFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "magFilter",
@@ -9810,7 +9836,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 688,
+            "line": 687,
             "description": "Wrap parameter for this Texture's *S* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  causes *S* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>\n    <li>**\"repeat\"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; XEOEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapS:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapS",
@@ -9821,7 +9847,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 719,
+            "line": 718,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapS:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapS",
@@ -9837,7 +9863,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 732,
+            "line": 731,
             "description": "Wrap parameter for this Texture's *T* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  Causes *T* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>\n    <li>**\"repeat\"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; XEOEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapT:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapT",
@@ -9848,7 +9874,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 763,
+            "line": 762,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapT:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapT",
@@ -9864,7 +9890,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 777,
+            "line": 776,
             "description": "Flips this Texture's Y axis to match the WebGL texture coordinate space.\n\nFires a {{#crossLink \"Texture/flipY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "flipY",
@@ -9875,7 +9901,7 @@
         },
         {
             "file": "src/core/texture.js",
-            "line": 797,
+            "line": 796,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/flipY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "flipY",
@@ -10218,11 +10244,11 @@
         },
         {
             "message": "Missing item type\nDestroys all components in this Scene",
-            "line": " src/core/scene.js:871"
+            "line": " src/core/scene.js:872"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/core/scene.js:887"
+            "line": " src/core/scene.js:888"
         },
         {
             "message": "Missing item type\nTests if the given object is an array",

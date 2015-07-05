@@ -236,6 +236,7 @@
             };
 
             this.color = cfg.color;
+            this.intensity = cfg.intensity;
         },
 
         _props: {
@@ -268,6 +269,38 @@
 
                 get: function () {
                     return this._state.color;
+                }
+            },
+
+            /**
+             The intensity of this AmbientLight.
+
+             Fires a {{#crossLink &quot;AmbientLight/intensity:event&quot;}}{{/crossLink}} event on change.
+
+             @property intensity
+             @default 1.0
+             @type Number
+             */
+            intensity: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value :  1.0;
+
+                    this._state.intensity = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this AmbientLight&#x27;s  {{#crossLink &quot;AmbientLight/intensity:property&quot;}}{{/crossLink}} property changes.
+                     * @event intensity
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;intensity&quot;, this._state.intensity);
+                },
+
+                get: function () {
+                    return this._state.intensity;
                 }
             }
         },

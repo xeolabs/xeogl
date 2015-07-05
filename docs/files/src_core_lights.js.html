@@ -159,13 +159,14 @@
 });
 
  var ambientLight = new XEO.AmbientLight(scene, {
-    color: [0.7, 0.7, 0.7]
+    color: [0.7, 0.7, 0.7],
+    intensity:   1.0
 });
 
  var dirLight = new XEO.DirLight(scene, {
     dir:        [-1, -1, -1],
     color:    [0.5, 0.7, 0.5],
-    intensity:   [1.0, 1.0, 1.0],
+    intensity:   1.0,
     space:      &quot;view&quot;
 });
 
@@ -377,7 +378,7 @@
             for (var i = 0, len = lights.length; i &lt; len; i++) {
 
                 light = lights[i];
-                hash.push(light.mode);
+                hash.push(light.type);
                 hash.push((light.space === &quot;world&quot;) ? &quot;w&quot; : &quot;v&quot;);
             }
 

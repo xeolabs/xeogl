@@ -836,7 +836,8 @@
                                 // Ambient light source #0
                                 new XEO.AmbientLight(this, {
                                     id: &quot;default.light0&quot;,
-                                    color: [0.7, 0.7, 0.7]
+                                    color: [0.7, 0.7, 0.7],
+                                    intensity: 1.0
                                 }),
 
                                 // Directional light source #1
@@ -844,7 +845,7 @@
                                     id: &quot;default.light1&quot;,
                                     dir: [-0.5, -0.5, -1.0 ],
                                     color: [1.0, 1.0, 1.0 ],
-                                    intensity: [1.0, 1.0, 1.0],
+                                    intensity: 1.0,
                                     space: &quot;view&quot;
                                 }),
 
@@ -853,7 +854,7 @@
                                     id: &quot;default.light2&quot;,
                                     dir: [1.0, -0.9, -0.7 ],
                                     color: [1.0, 1.0, 1.0 ],
-                                    intensity: [1.0, 1.0, 1.0 ],
+                                    intensity: 1.0,
                                     space: &quot;view&quot;
                                 })
                             ]
@@ -862,17 +863,17 @@
             },
 
             /**
-             * The default {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} provided by this Scene.
+             * The {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.
              *
-             * This {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} has
+             * This {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial{{/crossLink}} has
              * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.material&quot;, with all
              * other properties initialised to their default values.
              *
              * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;Material&quot;}}Material{{/crossLink}} by default.
+             * {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial{{/crossLink}} by default.
              * @property material
              * @final
-             * @type Material
+             * @type PhongMaterial
              */
             material: {
                 get: function () {

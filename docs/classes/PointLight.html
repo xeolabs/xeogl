@@ -175,7 +175,7 @@ head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
 
 var material = new XEO.PhongMaterial(scene, {
        color: [1, 1, 1],
-       intensity: [1.1, 1]
+       intensity: 1
 });
 
 // Our PointLight&#39;s intensity does not attenuate over distance.
@@ -183,7 +183,7 @@ var material = new XEO.PhongMaterial(scene, {
 var pointLight = new XEO.PointLight(scene, {
        pos: [0, 100, 100],
        color: [0.5, 0.7, 0.5],
-       intensity: [1.0, 1.0, 1.0],
+       intensity: 1
        constantAttenuation: 0,
        linearAttenuation: 0,
        quadraticAttenuation: 0,
@@ -328,8 +328,8 @@ pointLight.off(handle); // Detach the change listener
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[intensity=[1.0, 1.0, 1.1 ]]</code>
-                                            <span class="type">Array(Number)</span>
+                                            <code class="param-name optional">[intensity=1.0]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -1145,7 +1145,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l232"><code>src&#x2F;core&#x2F;pointLight.js:232</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l234"><code>src&#x2F;core&#x2F;pointLight.js:234</code></a>
                             </p>
                     
                     
@@ -1214,7 +1214,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_intensity" class="property item">
                         <h3 class="name"><code>intensity</code></h3>
-                        <span class="type">Array(Number)</span>
+                        <span class="type">Number</span>
                     
                     
                     
@@ -1235,7 +1235,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> [0.7, 0.7, 0.8]</p>
+                            <p><strong>Default:</strong> 1.0</p>
                     
                     
                     </div>
@@ -1250,7 +1250,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l263"><code>src&#x2F;core&#x2F;pointLight.js:263</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l265"><code>src&#x2F;core&#x2F;pointLight.js:265</code></a>
                             </p>
                     
                     
@@ -1330,7 +1330,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l294"><code>src&#x2F;core&#x2F;pointLight.js:294</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l296"><code>src&#x2F;core&#x2F;pointLight.js:296</code></a>
                             </p>
                     
                     
@@ -1383,7 +1383,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l325"><code>src&#x2F;core&#x2F;pointLight.js:325</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l327"><code>src&#x2F;core&#x2F;pointLight.js:327</code></a>
                             </p>
                     
                     
@@ -1491,7 +1491,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l249"><code>src&#x2F;core&#x2F;pointLight.js:249</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l251"><code>src&#x2F;core&#x2F;pointLight.js:251</code></a>
                             </p>
                     
                     
@@ -1558,7 +1558,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l219"><code>src&#x2F;core&#x2F;pointLight.js:219</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l221"><code>src&#x2F;core&#x2F;pointLight.js:221</code></a>
                             </p>
                     
                     
@@ -1600,7 +1600,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l280"><code>src&#x2F;core&#x2F;pointLight.js:280</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l282"><code>src&#x2F;core&#x2F;pointLight.js:282</code></a>
                             </p>
                     
                     
@@ -1684,7 +1684,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l311"><code>src&#x2F;core&#x2F;pointLight.js:311</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l313"><code>src&#x2F;core&#x2F;pointLight.js:313</code></a>
                             </p>
                     
                     
@@ -1726,7 +1726,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pointLight.js.html#l349"><code>src&#x2F;core&#x2F;pointLight.js:349</code></a>
+                            <a href="../files/src_core_pointLight.js.html#l351"><code>src&#x2F;core&#x2F;pointLight.js:351</code></a>
                             </p>
                     
                     

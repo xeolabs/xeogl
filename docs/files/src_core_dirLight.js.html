@@ -173,7 +173,7 @@
  var dirLight = new XEO.DirLight(scene, {
     dir:         [-1, -1, -1],
     color:       [0.5, 0.7, 0.5],
-    intensity:   [1.0, 1.0, 1.0],
+    intensity:   1.0,
     space:      &quot;view&quot;  // Other option is &quot;world&quot;, for World-space
 });
 
@@ -221,7 +221,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DirLight.
  @param [cfg.dir=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.
  @param [cfg.color=[0.7, 0.7, 0.8 ]] {Array(Number)} The color of this DirLight.
- @param [cfg.intensity=[1.0, 1.0, 1.0 ]] {Array(Number)} The intensity of this DirLight.
+ @param [cfg.intensity=1.0 ] {Number} The intensity of this DirLight.
  @param [cfg.space=&quot;view&quot;] {String} The coordinate system the DirLight is defined in - &quot;view&quot; or &quot;space&quot;.
 
  @extends Component
@@ -242,7 +242,7 @@
                 mode: &quot;dir&quot;,
                 dir: [0,0,-1],
                 color: [0.7, 0.7, 0.8],
-                intensity: [1.0, 1.0, 1.0],
+                intensity: 1.0,
                 space: &quot;view&quot;
             };
 
@@ -332,20 +332,16 @@
              Fires a {{#crossLink &quot;DirLight/intensity:event&quot;}}{{/crossLink}} event on change.
 
              @property intensity
-             @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @default 1.0
+             @type Number
              */
             intensity: {
 
                 set: function (value) {
 
-                    value = value || [1.0, 1.0, 1.0 ];
+                    value = value !== undefined ? value :  1.0;
 
-                    var intensity = this._state.intensity;
-
-                    intensity[0] = value[0];
-                    intensity[1] = value[1];
-                    intensity[2] = value[2];
+                    this._state.intensity = value;
 
                     this._renderer.imageDirty = true;
 
@@ -354,7 +350,7 @@
                      * @event intensity
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;intensity&quot;, intensity);
+                    this.fire(&quot;intensity&quot;, this._state.intensity);
                 },
 
                 get: function () {

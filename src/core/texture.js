@@ -25,7 +25,7 @@
  The example below has:
  <ul>
  <li>three Textures,</li>
- <li>a {{#crossLink "Material"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>
+ <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
  <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
@@ -56,8 +56,7 @@
 
  var light1 = new XEO.PointLight(scene, {
     pos: [0, 100, 100],
-    diffuse: [0.5, 0.7, 0.5],
-    specular: [1.0, 1.0, 1.0]
+    color: [0.5, 0.7, 0.5]
 });
 
  var light2 = new XEO.AmbientLight(scene, {

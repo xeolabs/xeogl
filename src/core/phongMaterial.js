@@ -27,7 +27,7 @@
 
  </ul>
 
- <img src="../../../assets/images/PhongMaterial.png"></img>
+ <img src="../../../assets/images/Material.png"></img>
 
  ## Example
 
