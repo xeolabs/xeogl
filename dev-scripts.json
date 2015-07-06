@@ -73,6 +73,7 @@
         "src/core/lookat.js",
         "src/core/matrix.js",
         "src/core/phongMaterial.js",
+        "src/core/pbrMaterial.js",
         "src/core/morphTargets.js",
         "src/core/name.js",
         "src/core/gameObject.js",
