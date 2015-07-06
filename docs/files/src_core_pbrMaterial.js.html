@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/core/pbrMaterial.js - xeoengine</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/GameObject.html">GameObject</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/math.html">math</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stats.html">Stats</a></li>
+                                <li><a href="../classes/Task.html">Task</a></li>
+                                <li><a href="../classes/Tasks.html">Tasks</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/XEO.html">XEO</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/XEO.html">XEO</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src/core/pbrMaterial.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **PBRMaterial** is a {{#crossLink &quot;Material&quot;}}{{/crossLink}} subclass which defines the appearance of
+ attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} using a physically-based rendering model.
+
+ ## Overview
+
+ Physically Based Rendering (PBR) is a method of shading and rendering that provides a more accurate representation
+ of how light interacts with surfaces. It can be referred to as Physically Based Rendering (PBR) or Physically Based Shading (PBS).
+ Depending on what aspect of the pipeline is being discussed, PBS is usually specific to shading concepts and PBR specific
+ to rendering and lighting. However, both terms describe on a whole, the process of representing assets from a physically
+ accurate standpoint. - *Wes McDermott, Allegorithmic PBR Guide, Vol. 2*
+
+ See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that PBRMaterials create within xeoEngine&#x27;s shaders.
+
+ ### Metallic materials
+
+ ### Specular materials
+
+ &lt;img src=&quot;../../../assets/images/PBRMaterial.png&quot;&gt;&lt;/img&gt;
+
+ ## Example 1: Metallic material with color map
+
+ In this example we have
+
+ &lt;ul&gt;
+ &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a metallic {{#crossLink &quot;PBRMaterial&quot;}}{{/crossLink}} which applies the {{#crossLink &quot;Texture&quot;}}{{/crossLink}} as a color map,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ Note that the value for the {{#crossLink &quot;PBRMaterial&quot;}}PBRMaterial&#x27;s{{/crossLink}} {{#crossLink &quot;PBRMaterial/color:property&quot;}}{{/crossLink}}
+ property is ignored and redundant, since we assign a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} to the
+ {{#crossLink &quot;PBRMaterial&quot;}}PBRMaterial&#x27;s{{/crossLink}} {{#crossLink &quot;PBRMaterial/colorMap:property&quot;}}{{/crossLink}} property.
+ The {{#crossLink &quot;Texture&quot;}}Texture&#x27;s{{/crossLink}} pixel colors then directly provide the metallic base color of each fragment across the
+ {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} surface.
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ var scene = new XEO.Scene();
+
+ var colorMap = new XEO.Texture(scene, {
+    src: &quot;colorMap.jpg&quot;
+ });
+
+ // A metallic material
+ var metalMaterial = new XEO.PBRMaterial(scene, {
+
+    // Metallic material (else specular)
+    metallic: true,
+
+    // Base color in Metallic mode (else albedo in Specular mode)
+    color: [1.0, 0.8, 0.0],
+    colorMap: colorMap,
+
+    // Black (0.0) for non-metal and white (1.0) for raw metal
+    metalness: 0.8,
+
+    // Fresnel values
+    specularF0: 0.0,
+ });
+
+ var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
+
+ var object = new XEO.GameObject(scene, {
+    material: metalMaterial,
+    geometry: geometry
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class PBRMaterial
+ @module XEO
+ @constructor
+ @extends Material
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this PBRMaterial within the
+ default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} The PBRMaterial configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta=null] {String:Object} Metadata to attach to this PBRMaterial.
+ @param [cfg.metallic=false] {Boolean} Selects the material mode: Metallic when true, Specular otherwise (default).
+ @param [cfg.color=[ 1.0, 1.0, 1.0 ]] {Array of Number} Base color in Metallic mode, albedo in Specular mode.
+ @param [cfg.colorMap=null] {Texture} A color map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the color property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PBRMaterial.
+ @param [cfg.emissive=[ 1.0, 1.0, 1.0 ]] {Array of Number} Emissive color.
+ @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PBRMaterial.
+ @param [cfg.opacity=1] {Number} Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque. Only applies while {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} {{#crossLink &quot;Modes/transparent:property&quot;}}transparent{{/crossLink}} equals &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60;.
+ @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PBRMaterial.
+ @param [cfg.roughness=0] {Number} Scalar in range 0-1 that controls roughness, where 0 is 100% glossiness and 1 is 100% roughness.
+ @param [cfg.roughnessMap=null] {Texture} A roughness map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the roughness property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PBRMaterial.
+ @param [cfg.bumpMap=null] {Texture} A bump map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PBRMaterial.
+ @param [cfg.metalness=1] {Number} Scalar in range 0-1 that controls how much metalness is applied for non-metalic PBRMaterials; black (0.0) for non-metal and white (1.0) for raw metal.
+ @param [cfg.specularF0=1] {Number} Scalar in range 0-1 that controls how much Fresnel is applied for non-metalic PBRMaterials.
+ @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} Specular color.
+ @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PBRMaterial.
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    XEO.PBRMaterial = XEO.Material.extend({
+
+        className: &quot;XEO.PBRMaterial&quot;,
+
+        type: &quot;material&quot;,
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.PBRMaterial({
+
+                type: &quot;pbrMaterial&quot;,
+
+                // Workflow selector; true == Metallic, false == Specular
+                metallic: false,
+
+                //--------------------------------------------
+                // Attributes common to both workflows
+                //--------------------------------------------
+
+                // Base color in Metallic mode, albedo in Specular mode
+                color: [1.0, 1.0, 1.0],
+                colorMap: null,
+
+                // Emissive color
+                emissive: [1.0, 1.0, 1.0],
+                emissiveMap: null,
+
+                // Opacity
+                opacity: 1.0,
+                opacityMap: null,
+
+                // Roughness
+                roughness: 0.0,
+                roughnessMap: null,
+
+                // Bumpiness
+                bumpMap: null,
+
+                //--------------------------------------------
+                // Attributes used in Metallic workflow
+                //--------------------------------------------
+
+                // Black (0.0) for non-metal and white (1.0) for raw metal
+                metalness: 1.0,
+
+                // Fresnel values
+                specularF0: 0.0,
+
+                //--------------------------------------------
+                // Attributes used in Specular workflow
+                //--------------------------------------------
+
+                // Specular reflectance
+                specular: [1.0, 1.0, 1.0],
+                specularMap: null,
+
+
+                // True when state needs rebuild
+                dirty: true,
+
+                hash: null
+            });
+
+
+            this._components = [];
+            this._dirtyComponentSubs = [];
+            this._destroyedComponentSubs = [];
+
+
+            // Mode switch
+
+            this.metallic = cfg.metallic;
+
+            // Common 
+
+            this.color = cfg.color;
+            this.colorMap = cfg.colorMap;
+            this.emissive = cfg.emissive;
+            this.emissiveMap = cfg.emissiveMap;
+            this.opacity = cfg.opacity;
+            this.opacityMap = cfg.opacityMap;
+            this.roughness = cfg.roughness;
+            this.roughnessMap = cfg.roughnessMap;
+            this.bumpMap = cfg.bumpMap;
+
+            // Metallic
+
+            this.metalness = cfg.metalness;
+            this.specularF0 = cfg.specularF0;
+
+            // Specular 
+
+            this.specular = cfg.specular;
+            this.specularMap = cfg.specularMap;
+        },
+
+        _props: {
+
+            /**
+             Selects the material mode: Metallic when true, Specular otherwise (default).
+
+             Fires a {{#crossLink &quot;PBRMaterial/metallic:event&quot;}}{{/crossLink}} event on change.
+
+             @property metallic
+             @default false
+             @type Boolean
+             */
+            metallic: {
+
+                set: function (value) {
+
+                    this._state.metallic = value === true;
+
+                    this._renderer.imageDirty = true;
+
+                    this.fire(&quot;dirty&quot;, true);
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}} property changes.
+
+                     @event metallic
+                     @param value {Boolean} The property&#x27;s new value
+                     */
+                    this.fire(&quot;metallic&quot;, this._state.metallic);
+                },
+
+                get: function () {
+                    return this._state.metallic;
+                }
+            },
+
+            /**
+             Indicates the PBRMaterial&#x27;s base color in Metallic mode, or [albedo](https://en.wikipedia.org/wiki/Albedo) in Specular mode.
+
+             This property may be overridden by {{#crossLink &quot;PBRMaterial/colorMap:property&quot;}}{{/crossLink}}.
+
+             Fires a {{#crossLink &quot;PBRMaterial/color:event&quot;}}{{/crossLink}} event on change.
+
+             @property color
+             @default [1.0, 1.0, 1.0]
+             @type Array(Number)
+             */
+            color: {
+
+                set: function (value) {
+
+                    this._state.color = value || [1.0, 1.0, 1.0];
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/color:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event color
+                     * @param value {Array(Number)} The property&#x27;s new value
+                     */
+                    this.fire(&quot;color&quot;, this._state.color);
+                },
+
+                get: function () {
+                    return this._state.color;
+                }
+            },
+
+            /**
+             A color {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PBRMaterial.
+
+             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}}).
+
+             This property overrides {{#crossLink &quot;PBRMaterial/colorMap:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires a {{#crossLink &quot;PBRMaterial/colorMap:event&quot;}}{{/crossLink}} event on change.
+
+             @property colorMap
+             @default null
+             @type {Texture}
+             */
+            colorMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/color:property&quot;}}{{/crossLink}} property changes.
+
+                     @event colorMap
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;colorMap&quot;, texture);
+                },
+
+                get: function () {
+                    return this._components[&quot;colorMap&quot;];
+                }
+            },
+
+            /**
+             The PBRMaterial&#x27;s emissive color.
+
+             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}}).
+
+             This property may be overridden by {{#crossLink &quot;PBRMaterial/emissiveMap:property&quot;}}{{/crossLink}}.
+
+             Fires a {{#crossLink &quot;PBRMaterial/emissive:event&quot;}}{{/crossLink}} event on change.
+
+             @property emissive
+             @default [1.0, 1.0, 1.0]
+             @type Array(Number)
+             */
+            emissive: {
+
+                set: function (value) {
+
+                    this._state.emissive = value || [1.0, 1.0, 1.0];
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/emissive:property&quot;}}{{/crossLink}} property changes.
+
+                     @event emissive
+                     @param value {Array(Number)} The property&#x27;s new value
+                     */
+                    this.fire(&quot;emissive&quot;, this._state.emissive);
+                },
+
+                get: function () {
+                    return this._state.emissive;
+                }
+            },
+
+            /**
+             An emissive {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PBRMaterial.
+
+             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}}).
+
+             This property overrides {{#crossLink &quot;PBRMaterial/emissive:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires an {{#crossLink &quot;PBRMaterial/emissiveMap:event&quot;}}{{/crossLink}} event on change.
+
+             @property emissiveMap
+             @default null
+             @type {Texture}
+             */
+            emissiveMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/emissiveMap:property&quot;}}{{/crossLink}} property changes.
+
+                     @event emissiveMap
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;emissiveMap&quot;, texture);
+                },
+
+                get: function () {
+                    return this._components[&quot;emissiveMap&quot;];
+                }
+            },
+
+            /**
+             Factor in the range [0..1] indicating how transparent the PBRMaterial is.
+
+             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}}).
+
+             A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+
+             Attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} will appear transparent only if they are also attached
+             to {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} that have {{#crossLink &quot;Modes/transparent:property&quot;}}transparent{{/crossLink}}
+             set to **true**.
+
+             This property may be overridden by {{#crossLink &quot;PBRMaterial/opacityMap:property&quot;}}{{/crossLink}}.
+
+             Fires an {{#crossLink &quot;PBRMaterial/opacity:event&quot;}}{{/crossLink}} event on change.
+
+             @property opacity
+             @default 1.0
+             @type Number
+             */
+            opacity: {
+
+                set: function (value) {
+
+                    this._state.opacity = (value !== undefined || value !== null) ? value : 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/opacity:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event opacity
+                     * @param value {Number} The property&#x27;s new value
+                     */
+                    this.fire(&quot;opacity&quot;, this._state.opacity);
+                },
+
+                get: function () {
+                    return this._state.opacity;
+                }
+            },
+
+            /**
+             An opacity {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PBRMaterial.
+
+             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}}).
+
+             This property overrides {{#crossLink &quot;PBRMaterial/opacity:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires an {{#crossLink &quot;PBRMaterial/opacityMap:event&quot;}}{{/crossLink}} event on change.
+
+             @property opacityMap
+             @default null
+             @type {Texture}
+             */
+            opacityMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/opacityMap:property&quot;}}{{/crossLink}} property changes.
+
+                     @event opacityMap
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;opacityMap&quot;, texture);
+                },
+
+                get: function () {
+                    return this._components[&quot;opacityMap&quot;];
+                }
+            },
+
+            /**
+             A factor in range [0..1] that indicates the surface roughness of this PBRMaterial.
+
+             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}}).
+
+             A value of &#x60;&#x60;&#x60;&#x60;0&#x60;&#x60;&#x60;&#x60; is 100% glossiness, while &#x60;&#x60;&#x60;&#x60;1&#x60;&#x60;&#x60;&#x60; is 100% roughness.
+
+             Fires a {{#crossLink &quot;PBRMaterial/roughness:event&quot;}}{{/crossLink}} event on change.
+
+             @property roughness
+             @default 0.0
+             @type Number
+             */
+            roughness: {
+
+                set: function (value) {
+
+                    this._state.roughness = value !== undefined ? value : 0;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/roughness:property&quot;}}{{/crossLink}} property changes.
+
+                     @event roughness
+                     @param value Number The property&#x27;s new value
+                     */
+                    this.fire(&quot;roughness&quot;, this._state.roughness);
+                },
+
+                get: function () {
+                    return this._state.roughness;
+                }
+            },
+
+            /**
+             An roughness {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PBRMaterial.
+
+             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}}).
+
+             This property overrides {{#crossLink &quot;PBRMaterial/roughness:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires an {{#crossLink &quot;PBRMaterial/roughnessMap:event&quot;}}{{/crossLink}} event on change.
+
+             @property roughnessMap
+             @default null
+             @type {Texture}
+             */
+            roughnessMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/roughnessMap:property&quot;}}{{/crossLink}} property changes.
+
+                     @event roughnessMap
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;roughnessMap&quot;, texture);
+                },
+
+                get: function () {
+                    return this._components[&quot;roughnessMap&quot;];
+                }
+            },
+
+            /**
+             A bump {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PhongMaterial.
+
+             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}}).
+
+             This property overrides {{#crossLink &quot;PBRMaterial/bumpMap:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires a {{#crossLink &quot;PhongMaterial/bumpMap:event&quot;}}{{/crossLink}} event on change.
+
+             @property bumpMap
+             @default null
+             @type {Texture}
+             */
+            bumpMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PhongMaterial&#x27;s {{#crossLink &quot;PhongMaterial/bump:property&quot;}}{{/crossLink}} property changes.
+
+                     @event bumpMap
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;bumpMap&quot;, texture);
+                },
+
+                get: function () {
+                    return this._components[&quot;bumpMap&quot;];
+                }
+            },
+
+            /**
+             A factor in range [0..1] that indicates the surface metalness of this PBRMaterial.
+
+             A value of &#x60;&#x60;&#x60;&#x60;0&#x60;&#x60;&#x60;&#x60; is non-metallic, while &#x60;&#x60;&#x60;&#x60;1&#x60;&#x60;&#x60;&#x60; is raw metal.
+
+             Active when this PBRMaterial is in Metallic mode, ie. when {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}} is &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60;.
+
+             Fires a {{#crossLink &quot;PBRMaterial/metalness:event&quot;}}{{/crossLink}} event on change.
+
+             @property metalness
+             @default 0.0
+             @type Number
+             */
+            metalness: {
+
+                set: function (value) {
+
+                    this._state.metalness = value !== undefined ? value : 0;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/metalness:property&quot;}}{{/crossLink}} property changes.
+
+                     @event metalness
+                     @param value Number The property&#x27;s new value
+                     */
+                    this.fire(&quot;metalness&quot;, this._state.metalness);
+                },
+
+                get: function () {
+                    return this._state.metalness;
+                }
+            },
+
+            /**
+             Scalar in range 0-1 that controls the degree of Fresnel.
+
+             Active when this PBRMaterial is in Metallic mode, ie. when {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}} is &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60;.
+
+             Fires a {{#crossLink &quot;PBRMaterial/specularF0:event&quot;}}{{/crossLink}} event on change.
+
+             @property specularF0
+             @default 1.0
+             @type Number
+             */
+            specularF0: {
+
+                set: function (value) {
+
+                    this._state.specularF0 = value !== undefined ? value : 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/specularF0:property&quot;}}{{/crossLink}} property changes.
+
+                     @event specularF0
+                     @param value Number The property&#x27;s new value
+                     */
+                    this.fire(&quot;specularF0&quot;, this._state.specularF0);
+                },
+
+                get: function () {
+                    return this._state.specularF0;
+                }
+            },
+
+
+            /**
+             The material&#x27;s specular color.
+
+             Active when this PBRMaterial is in Specular mode, ie. when {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}} is &#x60;&#x60;&#x60;&#x60;false&#x60;&#x60;&#x60;&#x60;.
+
+             This property may be overridden by {{#crossLink &quot;PBRMaterial/specularMap:property&quot;}}{{/crossLink}}.
+
+             Fires a {{#crossLink &quot;PBRMaterial/specular:event&quot;}}{{/crossLink}} event on change.
+
+             @property specular
+             @default [0.3, 0.3, 0.3]
+             @type Array(Number)
+             */
+            specular: {
+
+                set: function (value) {
+
+                    this._state.specular = value || [0.3, 0.3, 0.3];
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/specular:property&quot;}}{{/crossLink}} property changes.
+
+                     @event specular
+                     @param value {Array(Number)} The property&#x27;s new value
+                     */
+                    this.fire(&quot;specular&quot;, this._state.specular);
+                },
+
+                get: function () {
+                    return this._state.specular;
+                }
+            },
+
+
+            /**
+             A specular {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PBRMaterial.
+
+             Active when this PBRMaterial is in Specular mode, ie. when {{#crossLink &quot;PBRMaterial/metallic:property&quot;}}{{/crossLink}} is &#x60;&#x60;&#x60;&#x60;false&#x60;&#x60;&#x60;&#x60;.
+
+             This property overrides {{#crossLink &quot;PBRMaterial/specular:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires a {{#crossLink &quot;PBRMaterial/specularMap:event&quot;}}{{/crossLink}} event on change.
+
+             @property specularMap
+             @default null
+             @type {Texture}
+             */
+            specularMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PBRMaterial&#x27;s {{#crossLink &quot;PBRMaterial/specularMap:property&quot;}}{{/crossLink}} property changes.
+
+                     @event specularMap
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;specularMap&quot;, texture);
+                },
+
+                get: function () {
+                    return this._components[&quot;specularMap&quot;];
+                }
+            }
+        },
+
+        _attachComponent: function (type, component) {
+
+            if (XEO._isString(component)) {
+
+                // ID given for component - find the component 
+                var id = component;
+
+                component = this.scene.components[id];
+
+                if (!component) {
+                    this.error(&quot;Component with this ID not found: &#x27;&quot; + id + &quot;&#x27;&quot;);
+                    return;
+                }
+            }
+
+            if (component &amp;&amp; component.type !== &quot;texture&quot; &amp;&amp; component.type !== &quot;fresnel&quot;) {
+                this.error(&quot;Component with this ID is not a Texture or Fresnel: &#x27;&quot; + id + &quot;&#x27;&quot;);
+                return;
+            }
+
+            var oldComponent = this._components[type];
+
+            if (oldComponent) {
+
+                // Replacing old component
+
+                oldComponent.off(this._dirtyComponentSubs[type]);
+                oldComponent.off(this._destroyedComponentSubs[type]);
+
+                delete this._components[type];
+            }
+
+            var self = this;
+
+            if (component) {
+
+                this._dirtyComponentSubs[type] = component.on(&quot;dirty&quot;,
+                    function () {
+                        self.fire(&quot;dirty&quot;, true);
+                    });
+
+                this._destroyedComponentSubs[type] = component.on(&quot;destroyed&quot;,
+                    function () {
+
+                        delete self._dirtyComponentSubs[type];
+                        delete self._destroyedComponentSubs[type];
+
+                        self._state.dirty = true;
+
+                        self.fire(&quot;dirty&quot;, true);
+                        self.fire(type, null);
+                    });
+
+                this._components[type] = component;
+            }
+
+            this._state[type] = component ? component._state : null;
+
+            this._state.dirty = true;
+
+            this.fire(type, component || null);
+        },
+
+        _compile: function () {
+
+            if (this._state.dirty) {
+
+                this._makeHash();
+
+                this._state.dirty = false;
+            }
+
+            this._renderer.material = this._state;
+        },
+
+        _makeHash: function () {
+
+            var state = this._state;
+
+            var hash = [];
+
+            if (this._state.metallic) {
+                hash.push(&quot;/m&quot;);
+            } else {
+                hash.push(&quot;/s&quot;);
+            }
+
+            if (state.colorMap) {
+                hash.push(&quot;/c&quot;);
+                if (state.colorMap.matrix) {
+                    hash.push(&quot;/anim&quot;);
+                }
+            }
+
+            if (state.emissiveMap) {
+                hash.push(&quot;/e&quot;);
+                if (state.emissiveMap.matrix) {
+                    hash.push(&quot;/anim&quot;);
+                }
+            }
+
+            if (state.opacityMap) {
+                hash.push(&quot;/o&quot;);
+                if (state.opacityMap.matrix) {
+                    hash.push(&quot;/anim&quot;);
+                }
+            }
+
+            if (state.roughnessMap) {
+                hash.push(&quot;/r&quot;);
+                if (state.roughnessMap.matrix) {
+                    hash.push(&quot;/anim&quot;);
+                }
+            }
+
+            if (state.bumpMap) {
+                hash.push(&quot;/b&quot;);
+                if (state.bumpMap.matrix) {
+                    hash.push(&quot;/anim&quot;);
+                }
+            }
+
+            hash.push(&quot;;&quot;);
+
+            state.hash = hash.join(&quot;&quot;);
+        },
+
+        _getJSON: function () {
+
+            var components = this._components;
+
+            var json = {};
+
+            json.metallic = this._state.metallic;
+
+            // Common
+
+            json.color = this._state.color;
+
+            if (components.colorMap) {
+                json.colorMap = components.colorMap.id;
+            }
+
+            json.emissive = this._state.emissive;
+
+            if (components.emissiveMap) {
+                json.emissiveMap = components.emissiveMap.id;
+            }
+
+            json.opacity = this._state.opacity;
+
+            if (components.opacityMap) {
+                json.opacityMap = components.opacityMap.id;
+            }
+
+            json.roughness = this._state.roughness;
+
+            if (components.roughnessMap) {
+                json.roughnessMap = components.roughnessMap.id;
+            }
+
+            if (components.bumpMap) {
+                json.bumpMap = components.bumpMap.id;
+            }
+
+            // Metallic
+
+            json.metalness = this._state.metalness;
+            json.specularF0 = this.specularF0;
+
+            // Specular
+
+            json.specular = this.specular;
+
+            if (components.specularMap) {
+                json.specularMap = components.specularMap.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

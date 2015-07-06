@@ -25,6 +25,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Modes",
         "MorphTargets",
         "Ortho",
+        "PBRMaterial",
         "Perspective",
         "PhongMaterial",
         "PointLight",
