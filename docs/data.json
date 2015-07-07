@@ -1683,7 +1683,7 @@
             "namespace": "",
             "file": "src/core/material.js",
             "line": 1,
-            "description": "A **Material** defines the surface appearance of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<img src=\"../../../assets/images/Material.png\"></img>",
+            "description": "A **Material** defines the surface appearance of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nMaterial is the base class for:\n\n<ul>\n<li>{{#crossLink \"PBRMaterial\"}}{{/crossLink}} - Physically-based rendering (PBR) material.</li>\n<li>{{#crossLink \"PhongMaterial\"}}{{/crossLink}} - Blinn-Phong shading material.</li>\n<li>(more coming)</li>\n</ul>\n\n<img src=\"../../../assets/images/Material.png\"></img>",
             "is_constructor": 1,
             "extends": "Component"
         },
@@ -1922,7 +1922,7 @@
             "namespace": "",
             "file": "src/core/pbrMaterial.js",
             "line": 1,
-            "description": "A **PBRMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} subclass which defines the appearance of\nattached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} using a physically-based rendering model.\n\n## Overview\n\nPhysically Based Rendering (PBR) is a method of shading and rendering that provides a more accurate representation\nof how light interacts with surfaces. It can be referred to as Physically Based Rendering (PBR) or Physically Based Shading (PBS).\nDepending on what aspect of the pipeline is being discussed, PBS is usually specific to shading concepts and PBR specific\nto rendering and lighting. However, both terms describe on a whole, the process of representing assets from a physically\naccurate standpoint. - *Wes McDermott, Allegorithmic PBR Guide, Vol. 2*\n\nSee <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that PBRMaterials create within xeoEngine's shaders.\n\n### Metallic materials\n\n### Specular materials\n\n<img src=\"../../../assets/images/PBRMaterial.png\"></img>\n\n## Example 1: Metallic material with color map\n\nIn this example we have\n\n<ul>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}},</li>\n<li>a metallic {{#crossLink \"PBRMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}} as a color map,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\nNote that the value for the {{#crossLink \"PBRMaterial\"}}PBRMaterial's{{/crossLink}} {{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}}\nproperty is ignored and redundant, since we assign a {{#crossLink \"Texture\"}}{{/crossLink}} to the\n{{#crossLink \"PBRMaterial\"}}PBRMaterial's{{/crossLink}} {{#crossLink \"PBRMaterial/colorMap:property\"}}{{/crossLink}} property.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors then directly provide the metallic base color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar colorMap = new XEO.Texture(scene, {\n   src: \"colorMap.jpg\"\n});\n\n// A metallic material\nvar metalMaterial = new XEO.PBRMaterial(scene, {\n\n   // Metallic material (else specular)\n   metallic: true,\n\n   // Base color in Metallic mode (else albedo in Specular mode)\n   color: [1.0, 0.8, 0.0],\n   colorMap: colorMap,\n\n   // Black (0.0) for non-metal and white (1.0) for raw metal\n   metalness: 0.8,\n\n   // Fresnel values\n   specularF0: 0.0,\n});\n\nvar geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.\n\nvar object = new XEO.GameObject(scene, {\n   material: metalMaterial,\n   geometry: geometry\n});\n````",
+            "description": "A **PBRMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} that defines the appearance of\nattached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} using a physically-based rendering model.\n\n## Overview\n\nPhysically Based Rendering (PBR) is a method of shading and rendering that provides a more accurate representation\nof how light interacts with surfaces. It can be referred to as Physically Based Rendering (PBR) or Physically Based Shading (PBS).\nDepending on what aspect of the pipeline is being discussed, PBS is usually specific to shading concepts and PBR specific\nto rendering and lighting. However, both terms describe on a whole, the process of representing assets from a physically\naccurate standpoint. - *Wes McDermott, Allegorithmic PBR Guide, Vol. 2*\n\nSee <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that PBRMaterials create within xeoEngine's shaders.\n\n<img src=\"../../../assets/images/PBRMaterial.png\"></img>\n\n### Material attributes\n\n* **{{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}}** - degree of metallicity in range ````[0..1]````, where ````0```` is fully dialectric (non-metal) and ````1```` is fully metallic.\n* **{{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}}** - base color.\n* **{{#crossLink \"PBRMaterial/colorMap:property\"}}{{/crossLink}}** - color map {{#crossLink \"Texture\"}}{{/crossLink}} to replace {{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}}.\n* **{{#crossLink \"PBRMaterial/emissive:property\"}}{{/crossLink}}** - emissive color.\n* **{{#crossLink \"PBRMaterial/emissiveMap:property\"}}{{/crossLink}}** - emissive map {{#crossLink \"Texture\"}}{{/crossLink}} to replace {{#crossLink \"PBRMaterial/emissive:property\"}}{{/crossLink}}.\n* **{{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}}** - opacity in range ````[0..1]````.\n* **{{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}}** - opacity map {{#crossLink \"Texture\"}}{{/crossLink}} to replace {{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}}.\n* **{{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}}** - surface roughness in range ````[0..1]````, where ````0```` is 100% smooth and ````1```` is 100% rough.\n* **{{#crossLink \"PBRMaterial/roughnessMap:property\"}}{{/crossLink}}** - roughness map {{#crossLink \"Texture\"}}{{/crossLink}} to replace {{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}}.\n* **{{#crossLink \"PBRMaterial/normalMap:property\"}}{{/crossLink}}** - normal map {{#crossLink \"Texture\"}}{{/crossLink}}.\n* **{{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}}** - specular reflection color.\n* **{{#crossLink \"PBRMaterial/specularMap:property\"}}{{/crossLink}}** - specular map, applies instead of {{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}}.\n\n\n## Example 1: Dialectric material\n\nIn this example we have\n\n<ul>\n<li>a non-metallic PBRMaterial,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar material1 = new XEO.PBRMaterial(scene, {\n   metallic: 0.0, // Default\n   color: [1.0, 0.8, 0.0],\n   specular: [1.0, 1.0, 1.0]\n});\n\nvar geometry = new XEO.Geometry(scene);  // Default box\n\nvar object = new XEO.GameObject(scene, {\n   material: material1,\n   geometry: geometry\n});\n````\n\n## Example 2: Metallic material\n\n```` javascript\nvar material2 = new XEO.PBRMaterial(scene, {\n   metallic: 1.0,\n   color: [1.0, 0.8, 0.0],\n   roughness: 0.3\n});\n````\n\n## Example 3: Metallic material with color map\n\n```` javascript\nvar colorMap = new XEO.Texture(scene, {\n   src: \"colorMap.jpg\"\n});\n\nvar material3 = new XEO.PBRMaterial(scene, {\n   metallic: 1.0,\n   colorMap: colorMap,\n   roughness: 0.0\n});\n````",
             "is_constructor": 1,
             "extends": "Material",
             "params": [
@@ -1952,15 +1952,8 @@
                             "optdefault": "null"
                         },
                         {
-                            "name": "metallic",
-                            "description": "Selects the material mode: Metallic when true, Specular otherwise (default).",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        },
-                        {
                             "name": "color",
-                            "description": "Base color in Metallic mode, albedo in Specular mode.",
+                            "description": "Base color.",
                             "type": "Array of Number",
                             "optional": true,
                             "optdefault": "[ 1.0, 1.0, 1.0 ]"
@@ -2015,22 +2008,22 @@
                             "optdefault": "null"
                         },
                         {
-                            "name": "bumpMap",
-                            "description": "A bump map {{#crossLink \"Texture\"}}Texture{{/crossLink}}. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRMaterial.",
+                            "name": "normalMap",
+                            "description": "A normal map {{#crossLink \"Texture\"}}Texture{{/crossLink}}. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRMaterial.",
                             "type": "Texture",
                             "optional": true,
                             "optdefault": "null"
                         },
                         {
-                            "name": "metalness",
-                            "description": "Scalar in range 0-1 that controls how much metalness is applied for non-metalic PBRMaterials; black (0.0) for non-metal and white (1.0) for raw metal.",
+                            "name": "metallic",
+                            "description": "Scalar in range 0-1 that controls how metallic the material is; black (0.0) for non-metal and white (1.0) for raw metal.",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "1"
                         },
                         {
                             "name": "specularF0",
-                            "description": "Scalar in range 0-1 that controls how much Fresnel is applied for non-metalic PBRMaterials.",
+                            "description": "Scalar in range 0-1 that controls how much Fresnel is applied.",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "1"
@@ -2137,7 +2130,7 @@
             "namespace": "",
             "file": "src/core/phongMaterial.js",
             "line": 1,
-            "description": "A **PhongMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} subclass which defines the surface appearance of\nattached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} using\nthe <a href=\"http://en.wikipedia.org/wiki/Phong_reflection_model\">Phong</a> lighting model.\n\n## Overview\n\n<ul>\n\n<li>These PhongMaterial properties, along with {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} and {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}},\nspecify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.</li>\n\n<li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by\nassigning {{#crossLink \"Texture\"}}Textures{{/crossLink}} to the PhongMaterial's\n{{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}}\nand  {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}} properties.</li>\n\n<li>For example, the value of {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} will be ignored if your\nPhongMaterial also has a {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} set to a {{#crossLink \"Texture\"}}Texture{{/crossLink}}.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface, ie. they are not multiplied by\nthe {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>\n\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that PhongMaterials create within xeoEngine's shaders.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Material.png\"></img>\n\n## Example\n\nIn this example we have\n\n<ul>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Fresnel\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}} as a diffuse map and the {{#crossLink \"Fresnel\"}}{{/crossLink}} as a specular Fresnel effect,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\nNote that the value for the {{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\nproperty is ignored and redundant, since we assign a {{#crossLink \"Texture\"}}{{/crossLink}} to the\n{{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} property.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar diffuseMap = new XEO.Texture(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar fresnel = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient:         [0.3, 0.3, 0.3],\n   diffuse:         [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n   diffuseMap:      diffuseMap,\n   specular:        [1, 1, 1],\n   shininess:       30,\n   specularFresnel: fresnel\n});\n\nvar ambientLight = new XEO.AmbientLight(scene, {\n   color: [0.7, 0.7, 0.7]\n});\n\nvar dirLight = new XEO.DirLight(scene, {\n   dir:        [-1, -1, -1],\n   color:      [0.5, 0.7, 0.5],\n   intensity:  [1.0, 1.0, 1.0],\n   space:      \"view\"\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       ambientLight,\n       dirLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
+            "description": "A **PhongMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\nattached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} using\nthe <a href=\"http://en.wikipedia.org/wiki/Phong_reflection_model\">Phong</a> lighting model.\n\n## Overview\n\n<ul>\n\n<li>These PhongMaterial properties, along with {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} and {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}},\nspecify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.</li>\n\n<li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by\nassigning {{#crossLink \"Texture\"}}Textures{{/crossLink}} to the PhongMaterial's\n{{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}}\nand  {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}} properties.</li>\n\n<li>For example, the value of {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} will be ignored if your\nPhongMaterial also has a {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} set to a {{#crossLink \"Texture\"}}Texture{{/crossLink}}.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface, ie. they are not multiplied by\nthe {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>\n\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that PhongMaterials create within xeoEngine's shaders.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Material.png\"></img>\n\n## Example\n\nIn this example we have\n\n<ul>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Fresnel\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}} as a diffuse map and the {{#crossLink \"Fresnel\"}}{{/crossLink}} as a specular Fresnel effect,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\nNote that the value for the {{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\nproperty is ignored and redundant, since we assign a {{#crossLink \"Texture\"}}{{/crossLink}} to the\n{{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} property.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar diffuseMap = new XEO.Texture(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar fresnel = new XEO.Fresnel(scene, {\n   leftColor: [1.0, 1.0, 1.0],\n   rightColor: [0.0, 0.0, 0.0],\n   power: 4\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient:         [0.3, 0.3, 0.3],\n   diffuse:         [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n   diffuseMap:      diffuseMap,\n   specular:        [1, 1, 1],\n   shininess:       30,\n   specularFresnel: fresnel\n});\n\nvar ambientLight = new XEO.AmbientLight(scene, {\n   color: [0.7, 0.7, 0.7]\n});\n\nvar dirLight = new XEO.DirLight(scene, {\n   dir:        [-1, -1, -1],\n   color:      [0.5, 0.7, 0.5],\n   intensity:  [1.0, 1.0, 1.0],\n   space:      \"view\"\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       ambientLight,\n       dirLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
             "is_constructor": 1,
             "extends": "Material",
             "params": [
@@ -2237,8 +2230,8 @@
                             "optdefault": "null"
                         },
                         {
-                            "name": "bumpMap",
-                            "description": "A bump map {{#crossLink \"Texture\"}}Texture{{/crossLink}}. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PhongMaterial.",
+                            "name": "normalMap",
+                            "description": "A normal map {{#crossLink \"Texture\"}}Texture{{/crossLink}}. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PhongMaterial.",
                             "type": "Texture",
                             "optional": true,
                             "optdefault": "null"
@@ -2792,7 +2785,7 @@
             "namespace": "",
             "file": "src/core/texture.js",
             "line": 1,
-            "description": "A **Texture** specifies a texture map.\n\n## Overview\n\n<ul>\n<li>Textures are grouped within {{#crossLink \"Material\"}}Material{{/crossLink}}s, which are attached to\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>To create a Texture from an image file, set the Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}}\nproperty to the image file path.</li>\n<li>To create a Texture from an HTML DOM Image object, set the Texture's {{#crossLink \"Texture/image:property\"}}{{/crossLink}}\nproperty to the object.</li>\n<li>To render color images of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Similarly, to render depth images of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>For special effects, we often use rendered Textures in combination with {{#crossLink \"Shader\"}}Shaders{{/crossLink}} and {{#crossLink \"Stage\"}}Stages{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Texture.png\"></img>\n\n## Example\n\nThe example below has:\n<ul>\n<li>three Textures,</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}}s as diffuse, bump and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar texture1 = new XEO.Texture(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar texture2 = new XEO.Texture(scene, {\n   src: \"bumpMap.jpg\"\n});\n\nvar texture3 = new XEO.Texture(scene, {\n   src: \"specularMap.jpg\"\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient: [0.3, 0.3, 0.3],\n   shininess: 30,\n   diffuseMap: texture1,\n   bumpMap: texture2,\n   specularMap: texture3\n});\n\nvar light1 = new XEO.PointLight(scene, {\n   pos: [0, 100, 100],\n   color: [0.5, 0.7, 0.5]\n});\n\nvar light2 = new XEO.AmbientLight(scene, {\n   color: [0.5, 0.7, 0.5]\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       light1,\n       light2\n   ]\n});\n\n// Geometry without parameters will default to a 2x2x2 box.\nvar geometry = new XEO.Geometry(scene);\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
+            "description": "A **Texture** specifies a texture map.\n\n## Overview\n\n<ul>\n<li>Textures are grouped within {{#crossLink \"Material\"}}Material{{/crossLink}}s, which are attached to\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>To create a Texture from an image file, set the Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}}\nproperty to the image file path.</li>\n<li>To create a Texture from an HTML DOM Image object, set the Texture's {{#crossLink \"Texture/image:property\"}}{{/crossLink}}\nproperty to the object.</li>\n<li>To render color images of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Similarly, to render depth images of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>For special effects, we often use rendered Textures in combination with {{#crossLink \"Shader\"}}Shaders{{/crossLink}} and {{#crossLink \"Stage\"}}Stages{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Texture.png\"></img>\n\n## Example\n\nThe example below has:\n<ul>\n<li>three Textures,</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"Texture\"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar texture1 = new XEO.Texture(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar texture2 = new XEO.Texture(scene, {\n   src: \"normalMap.jpg\"\n});\n\nvar texture3 = new XEO.Texture(scene, {\n   src: \"specularMap.jpg\"\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient: [0.3, 0.3, 0.3],\n   shininess: 30,\n   diffuseMap: texture1,\n   normalMap: texture2,\n   specularMap: texture3\n});\n\nvar light1 = new XEO.PointLight(scene, {\n   pos: [0, 100, 100],\n   color: [0.5, 0.7, 0.5]\n});\n\nvar light2 = new XEO.AmbientLight(scene, {\n   color: [0.5, 0.7, 0.5]\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       light1,\n       light2\n   ]\n});\n\n// Geometry without parameters will default to a 2x2x2 box.\nvar geometry = new XEO.Geometry(scene);\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
             "is_constructor": 1,
             "params": [
                 {
@@ -8150,35 +8143,8 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 196,
-            "description": "Selects the material mode: Metallic when true, Specular otherwise (default).\n\nFires a {{#crossLink \"PBRMaterial/metallic:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "metallic",
-            "default": "false",
-            "type": "Boolean",
-            "class": "PBRMaterial",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/pbrMaterial.js",
-            "line": 215,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "metallic",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value",
-                    "type": "Boolean"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/pbrMaterial.js",
-            "line": 229,
-            "description": "Indicates the PBRMaterial's base color in Metallic mode, or [albedo](https://en.wikipedia.org/wiki/Albedo) in Specular mode.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/colorMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/color:event\"}}{{/crossLink}} event on change.",
+            "line": 183,
+            "description": "Indicates the PBRMaterial's base color.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/colorMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/color:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "color",
             "default": "[1.0, 1.0, 1.0]",
@@ -8188,7 +8154,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 248,
+            "line": 202,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "color",
@@ -8204,8 +8170,8 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 262,
-            "description": "A color {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nActive when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}}).\n\nThis property overrides {{#crossLink \"PBRMaterial/colorMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PBRMaterial/colorMap:event\"}}{{/crossLink}} event on change.",
+            "line": 216,
+            "description": "A color {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nThis property overrides {{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PBRMaterial/colorMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorMap",
             "default": "null",
@@ -8215,7 +8181,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 279,
+            "line": 231,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorMap",
@@ -8230,8 +8196,8 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 293,
-            "description": "The PBRMaterial's emissive color.\n\nActive when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}}).\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/emissiveMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/emissive:event\"}}{{/crossLink}} event on change.",
+            "line": 245,
+            "description": "The PBRMaterial's emissive color.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/emissiveMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/emissive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissive",
             "default": "[1.0, 1.0, 1.0]",
@@ -8241,7 +8207,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 314,
+            "line": 264,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/emissive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissive",
@@ -8257,8 +8223,8 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 328,
-            "description": "An emissive {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nActive when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}}).\n\nThis property overrides {{#crossLink \"PBRMaterial/emissive:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PBRMaterial/emissiveMap:event\"}}{{/crossLink}} event on change.",
+            "line": 278,
+            "description": "An emissive {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nThis property overrides {{#crossLink \"PBRMaterial/emissive:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PBRMaterial/emissiveMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissiveMap",
             "default": "null",
@@ -8268,7 +8234,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 345,
+            "line": 293,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/emissiveMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissiveMap",
@@ -8283,8 +8249,8 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 359,
-            "description": "Factor in the range [0..1] indicating how transparent the PBRMaterial is.\n\nActive when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}}).\n\nA value of 0.0 indicates fully transparent, 1.0 is fully opaque.\n\nAttached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PBRMaterial/opacity:event\"}}{{/crossLink}} event on change.",
+            "line": 307,
+            "description": "Factor in the range [0..1] indicating how transparent the PBRMaterial is.\n\nA value of 0.0 indicates fully transparent, 1.0 is fully opaque.\n\nThis property may be overidden by {{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}}.\n\nAttached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PBRMaterial/opacity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacity",
             "default": "1.0",
@@ -8294,7 +8260,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 386,
+            "line": 334,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacity",
@@ -8310,8 +8276,8 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 400,
-            "description": "An opacity {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nActive when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}}).\n\nThis property overrides {{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PBRMaterial/opacityMap:event\"}}{{/crossLink}} event on change.",
+            "line": 348,
+            "description": "An opacity {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nThis property overrides {{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PBRMaterial/opacityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacityMap",
             "default": "null",
@@ -8321,7 +8287,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 417,
+            "line": 363,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacityMap",
@@ -8336,8 +8302,8 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 431,
-            "description": "A factor in range [0..1] that indicates the surface roughness of this PBRMaterial.\n\nActive when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}}).\n\nA value of ````0```` is 100% glossiness, while ````1```` is 100% roughness.\n\nFires a {{#crossLink \"PBRMaterial/roughness:event\"}}{{/crossLink}} event on change.",
+            "line": 377,
+            "description": "A factor in range [0..1] that indicates the surface roughness of this PBRMaterial.\n\nA value of ````0```` is a mirrow reflection, while ````1```` is completely matte.\n\nThis property may be overidden by {{#crossLink \"PBRMaterial/roughnessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/roughness:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "roughness",
             "default": "0.0",
@@ -8347,7 +8313,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 452,
+            "line": 398,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "roughness",
@@ -8362,8 +8328,8 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 466,
-            "description": "An roughness {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nActive when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}}).\n\nThis property overrides {{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PBRMaterial/roughnessMap:event\"}}{{/crossLink}} event on change.",
+            "line": 412,
+            "description": "An roughness {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nThis property overrides {{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PBRMaterial/roughnessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "roughnessMap",
             "default": "null",
@@ -8373,7 +8339,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 483,
+            "line": 427,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/roughnessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "roughnessMap",
@@ -8388,10 +8354,10 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 497,
-            "description": "A bump {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nActive when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}}).\n\nThis property overrides {{#crossLink \"PBRMaterial/bumpMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/bumpMap:event\"}}{{/crossLink}} event on change.",
+            "line": 441,
+            "description": "A normal {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nFires a {{#crossLink \"PBRMaterial/normalMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "bumpMap",
+            "name": "normalMap",
             "default": "null",
             "type": "{Texture}",
             "class": "PBRMaterial",
@@ -8399,10 +8365,10 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 514,
-            "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/bump:property\"}}{{/crossLink}} property changes.",
+            "line": 454,
+            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/normal:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "bumpMap",
+            "name": "normalMap",
             "params": [
                 {
                     "name": "value",
@@ -8414,10 +8380,10 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 528,
-            "description": "A factor in range [0..1] that indicates the surface metalness of this PBRMaterial.\n\nA value of ````0```` is non-metallic, while ````1```` is raw metal.\n\nActive when this PBRMaterial is in Metallic mode, ie. when {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}} is ````true````.\n\nFires a {{#crossLink \"PBRMaterial/metalness:event\"}}{{/crossLink}} event on change.",
+            "line": 468,
+            "description": "Indicates how metallic the PBRMaterial is.\n\nNonmetals have a value of ````0````, while metals have a value of ````1````. For pure surfaces, such as\npure metal, pure stone, pure plastic, etc. this value will be 0 or 1, not anything in between. When\ncreating hybrid surfaces like corroded, dusty, or rusty metals, you may find that you need some value\nbetween 0 and 1.\n\nFires a {{#crossLink \"PBRMaterial/metallic:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "metalness",
+            "name": "metallic",
             "default": "0.0",
             "type": "Number",
             "class": "PBRMaterial",
@@ -8425,10 +8391,10 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 549,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/metalness:property\"}}{{/crossLink}} property changes.",
+            "line": 490,
+            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "metalness",
+            "name": "metallic",
             "params": [
                 {
                     "name": "value",
@@ -8440,34 +8406,8 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 563,
-            "description": "Scalar in range 0-1 that controls the degree of Fresnel.\n\nActive when this PBRMaterial is in Metallic mode, ie. when {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}} is ````true````.\n\nFires a {{#crossLink \"PBRMaterial/specularF0:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "specularF0",
-            "default": "1.0",
-            "type": "Number",
-            "class": "PBRMaterial",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/pbrMaterial.js",
-            "line": 582,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/specularF0:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "specularF0",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "Number The property's new value"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/pbrMaterial.js",
-            "line": 597,
-            "description": "The material's specular color.\n\nActive when this PBRMaterial is in Specular mode, ie. when {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}} is ````false````.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/specularMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/specular:event\"}}{{/crossLink}} event on change.",
+            "line": 504,
+            "description": "The material's specular color.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/specularMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/specular:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specular",
             "default": "[0.3, 0.3, 0.3]",
@@ -8477,7 +8417,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 618,
+            "line": 523,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specular",
@@ -8493,8 +8433,8 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 633,
-            "description": "A specular {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nActive when this PBRMaterial is in Specular mode, ie. when {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}} is ````false````.\n\nThis property overrides {{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PBRMaterial/specularMap:event\"}}{{/crossLink}} event on change.",
+            "line": 538,
+            "description": "A specular {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMaterial.\n\nThis property overrides {{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PBRMaterial/specularMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularMap",
             "default": "null",
@@ -8504,7 +8444,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 650,
+            "line": 553,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/specularMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularMap",
@@ -8836,9 +8776,9 @@
         {
             "file": "src/core/phongMaterial.js",
             "line": 442,
-            "description": "A bump {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/bumpMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/bumpMap:event\"}}{{/crossLink}} event on change.",
+            "description": "A normal {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/normalMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/normalMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "bumpMap",
+            "name": "normalMap",
             "default": "null",
             "type": "{Texture}",
             "class": "PhongMaterial",
@@ -8847,9 +8787,9 @@
         {
             "file": "src/core/phongMaterial.js",
             "line": 457,
-            "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/bump:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/normal:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "bumpMap",
+            "name": "normalMap",
             "params": [
                 {
                     "name": "value",

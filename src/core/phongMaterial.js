@@ -1,5 +1,5 @@
 /**
- A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} subclass which defines the surface appearance of
+ A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
  attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} using
  the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.
 
@@ -117,7 +117,7 @@
  @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.bumpMap=null] {Texture} A bump map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.normalMap=null] {Texture} A normal map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.reflectivityMap=null] {Texture} A reflectivity control map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.diffuseFresnel=null] {Fresnel} A diffuse {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
@@ -151,7 +151,7 @@
                 shininess: 30.0,
                 reflectivity: 1.0,
 
-                bumpMap: null,
+                normalMap: null,
                 diffuseMap: null,
                 specularMap: null,
                 emissiveMap: null,
@@ -184,7 +184,7 @@
             this.shininess = cfg.shininess;
             this.reflectivity = cfg.reflectivity;
 
-            this.bumpMap = cfg.bumpMap;
+            this.normalMap = cfg.normalMap;
             this.diffuseMap = cfg.diffuseMap;
             this.specularMap = cfg.specularMap;
             this.emissiveMap = cfg.emissiveMap;
@@ -436,6 +436,35 @@
 
                 get: function () {
                     return this._state.reflectivity;
+                }
+            },
+
+            /**
+             A normal {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+
+             This property overrides {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} when not null or undefined.
+
+             Fires a {{#crossLink "PhongMaterial/normalMap:event"}}{{/crossLink}} event on change.
+
+             @property normalMap
+             @default null
+             @type {Texture}
+             */
+            normalMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/normal:property"}}{{/crossLink}} property changes.
+
+                     @event normalMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("normalMap", texture);
+                },
+
+                get: function () {
+                    return this._components["normalMap"];
                 }
             },
 
@@ -811,9 +840,9 @@
 
             var hash = ["/p"]; // 'P' for Phong
 
-            if (state.bumpMap) {
+            if (state.normalMap) {
                 hash.push("/b");
-                if (state.bumpMap.matrix) {
+                if (state.normalMap.matrix) {
                     hash.push("/anim");
                 }
             }
@@ -900,8 +929,8 @@
 
             var components = this._components;
 
-            if (components.bumpMap) {
-                json.bumpMap = components.bumpMap.id;
+            if (components.normalMap) {
+                json.normalMap = components.normalMap.id;
             }
 
             if (components.diffuseMap) {

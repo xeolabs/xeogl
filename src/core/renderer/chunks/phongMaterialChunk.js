@@ -47,7 +47,7 @@
                 this._uReflectivityMapMatrix = draw.getUniform("XEO_uReflectivityMapMatrix");
             }
 
-            if (state.bumpMap) {
+            if (state.normalMap) {
                 this._uBumpMap = draw.getUniform("XEO_uBumpMap");
                 this._uBumpMapMatrix = draw.getUniform("XEO_uBumpMapMatrix");
             }
@@ -187,10 +187,10 @@
 
             if (this._uBumpMap) {
 
-                draw.bindTexture(this._uBumpMap, state.bumpMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uBumpMap, state.normalMap.texture, frameCtx.textureUnit++);
 
                 if (this._uBumpMapMatrix) {
-                    this._uBumpMapMatrix.setValue(state.bumpMap.matrix);
+                    this._uBumpMapMatrix.setValue(state.normalMap.matrix);
                 }
             }
 

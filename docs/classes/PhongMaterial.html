@@ -137,7 +137,7 @@
 
 
 <div class="box intro">
-    <p>A <strong>PhongMaterial</strong> is a <a href="../classes/Material.html" class="crosslink">Material</a> subclass which defines the surface appearance of
+    <p>A <strong>PhongMaterial</strong> is a <a href="../classes/Material.html" class="crosslink">Material</a> that defines the surface appearance of
 attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> using
 the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.</p>
 <h2 id="overview">Overview</h2>
@@ -430,12 +430,12 @@ var object = new XEO.GameObject(scene, {
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[bumpMap=null]</code>
+                                            <code class="param-name optional">[normalMap=null]</code>
                                             <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A bump map <a href="../classes/Texture.html" class="crosslink">Texture</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+                                            <p>A normal map <a href="../classes/Texture.html" class="crosslink">Texture</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
         
                                         </div>
         
@@ -587,10 +587,6 @@ var object = new XEO.GameObject(scene, {
                                 <a href="#property_ambient">ambient</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_bumpMap">bumpMap</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_className">className</a>
 
@@ -629,6 +625,10 @@ var object = new XEO.GameObject(scene, {
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_normalMap">normalMap</a>
 
                             </li>
                             <li class="index-item property">
@@ -691,10 +691,6 @@ var object = new XEO.GameObject(scene, {
                                 <a href="#event_ambient">ambient</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_bumpMap">bumpMap</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
@@ -721,6 +717,10 @@ var object = new XEO.GameObject(scene, {
                             </li>
                             <li class="index-item event">
                                 <a href="#event_emissiveMap">emissiveMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_normalMap">normalMap</a>
 
                             </li>
                             <li class="index-item event">
@@ -1328,34 +1328,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_bumpMap" class="property item">
-                        <h3 class="name"><code>bumpMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_phongMaterial.js.html#l442"><code>src&#x2F;core&#x2F;phongMaterial.js:442</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>A bump <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_bumpMap" class="crosslink">bumpMap</a> when not null or undefined.</p>
-                    <p>Fires a <a href="../classes/PhongMaterial.html#event_bumpMap" class="crosslink">bumpMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
                     <div id="property_className" class="property item inherited">
                         <h3 class="name"><code>className</code></h3>
                         <span class="type">String</span>
@@ -1626,6 +1598,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_normalMap" class="property item">
+                        <h3 class="name"><code>normalMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_phongMaterial.js.html#l442"><code>src&#x2F;core&#x2F;phongMaterial.js:442</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A normal <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PhongMaterial.</p>
+                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_normalMap" class="crosslink">normalMap</a> when not null or undefined.</p>
+                    <p>Fires a <a href="../classes/PhongMaterial.html#event_normalMap" class="crosslink">normalMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
@@ -2017,48 +2017,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_bumpMap" class="events item">
-                        <h3 class="name"><code>bumpMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_phongMaterial.js.html#l457"><code>src&#x2F;core&#x2F;phongMaterial.js:457</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PhongMaterial&#39;s PhongMaterial/bump:property property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -2313,6 +2271,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this PhongMaterial&#39;s <a href="../classes/PhongMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_normalMap" class="events item">
+                        <h3 class="name"><code>normalMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_phongMaterial.js.html#l457"><code>src&#x2F;core&#x2F;phongMaterial.js:457</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this PhongMaterial&#39;s PhongMaterial/normal:property property changes.</p>
                     
                         </div>
                     

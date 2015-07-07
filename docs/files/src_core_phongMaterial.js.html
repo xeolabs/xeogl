@@ -125,7 +125,7 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **PhongMaterial** is a {{#crossLink &quot;Material&quot;}}{{/crossLink}} subclass which defines the surface appearance of
+ A **PhongMaterial** is a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that defines the surface appearance of
  attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} using
  the &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; lighting model.
 
@@ -243,7 +243,7 @@
  @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.bumpMap=null] {Texture} A bump map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.normalMap=null] {Texture} A normal map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.reflectivityMap=null] {Texture} A reflectivity control map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.diffuseFresnel=null] {Fresnel} A diffuse {{#crossLink &quot;Fresnel&quot;}}Fresnel{{/crossLink}}.
@@ -277,7 +277,7 @@
                 shininess: 30.0,
                 reflectivity: 1.0,
 
-                bumpMap: null,
+                normalMap: null,
                 diffuseMap: null,
                 specularMap: null,
                 emissiveMap: null,
@@ -310,7 +310,7 @@
             this.shininess = cfg.shininess;
             this.reflectivity = cfg.reflectivity;
 
-            this.bumpMap = cfg.bumpMap;
+            this.normalMap = cfg.normalMap;
             this.diffuseMap = cfg.diffuseMap;
             this.specularMap = cfg.specularMap;
             this.emissiveMap = cfg.emissiveMap;
@@ -566,31 +566,31 @@
             },
 
             /**
-             A bump {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PhongMaterial.
+             A normal {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink &quot;PhongMaterial/bumpMap:property&quot;}}{{/crossLink}} when not null or undefined.
+             This property overrides {{#crossLink &quot;PhongMaterial/normalMap:property&quot;}}{{/crossLink}} when not null or undefined.
 
-             Fires a {{#crossLink &quot;PhongMaterial/bumpMap:event&quot;}}{{/crossLink}} event on change.
+             Fires a {{#crossLink &quot;PhongMaterial/normalMap:event&quot;}}{{/crossLink}} event on change.
 
-             @property bumpMap
+             @property normalMap
              @default null
              @type {Texture}
              */
-            bumpMap: {
+            normalMap: {
 
                 set: function (texture) {
 
                     /**
-                     Fired whenever this PhongMaterial&#x27;s {{#crossLink &quot;PhongMaterial/bump:property&quot;}}{{/crossLink}} property changes.
+                     Fired whenever this PhongMaterial&#x27;s {{#crossLink &quot;PhongMaterial/normal:property&quot;}}{{/crossLink}} property changes.
 
-                     @event bumpMap
+                     @event normalMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;bumpMap&quot;, texture);
+                    this._attachComponent(&quot;normalMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._components[&quot;bumpMap&quot;];
+                    return this._components[&quot;normalMap&quot;];
                 }
             },
 
@@ -966,9 +966,9 @@
 
             var hash = [&quot;/p&quot;]; // &#x27;P&#x27; for Phong
 
-            if (state.bumpMap) {
+            if (state.normalMap) {
                 hash.push(&quot;/b&quot;);
-                if (state.bumpMap.matrix) {
+                if (state.normalMap.matrix) {
                     hash.push(&quot;/anim&quot;);
                 }
             }
@@ -1055,8 +1055,8 @@
 
             var components = this._components;
 
-            if (components.bumpMap) {
-                json.bumpMap = components.bumpMap.id;
+            if (components.normalMap) {
+                json.normalMap = components.normalMap.id;
             }
 
             if (components.diffuseMap) {

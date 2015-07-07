@@ -159,7 +159,7 @@ property to a <a href="../classes/DepthTarget.html" class="crosslink">DepthTarge
 <p>The example below has:</p>
 <ul>
 <li>three Textures,</li>
-<li>a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> which applies the <a href="../classes/Texture.html" class="crosslink">Texture</a>s as diffuse, bump and specular maps,</li>
+<li>a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> which applies the <a href="../classes/Texture.html" class="crosslink">Texture</a>s as diffuse, normal and specular maps,</li>
 <li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> and a <a href="../classes/PointLight.html" class="crosslink">PointLight</a>,</li>
 <li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that has the default box shape, and
 <li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
@@ -172,7 +172,7 @@ var texture1 = new XEO.Texture(scene, {
 });
 
 var texture2 = new XEO.Texture(scene, {
-   src: "bumpMap.jpg"
+   src: "normalMap.jpg"
 });
 
 var texture3 = new XEO.Texture(scene, {
@@ -183,7 +183,7 @@ var material = new XEO.PhongMaterial(scene, {
    ambient: [0.3, 0.3, 0.3],
    shininess: 30,
    diffuseMap: texture1,
-   bumpMap: texture2,
+   normalMap: texture2,
    specularMap: texture3
 });
 

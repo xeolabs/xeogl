@@ -1,5 +1,5 @@
 /**
- A **PBRMaterial** is a {{#crossLink "Material"}}{{/crossLink}} subclass which defines the appearance of
+ A **PBRMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of
  attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} using a physically-based rendering model.
 
  ## Overview
@@ -12,58 +12,73 @@
 
  See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PBRMaterials create within xeoEngine's shaders.
 
- ### Metallic materials
-
- ### Specular materials
-
  <img src="../../../assets/images/PBRMaterial.png"></img>
 
- ## Example 1: Metallic material with color map
+ ### Material attributes
+
+ * **{{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}}** - degree of metallicity in range ````[0..1]````, where ````0```` is fully dialectric (non-metal) and ````1```` is fully metallic.
+ * **{{#crossLink "PBRMaterial/color:property"}}{{/crossLink}}** - base color.
+ * **{{#crossLink "PBRMaterial/colorMap:property"}}{{/crossLink}}** - color map {{#crossLink "Texture"}}{{/crossLink}} to replace {{#crossLink "PBRMaterial/color:property"}}{{/crossLink}}.
+ * **{{#crossLink "PBRMaterial/emissive:property"}}{{/crossLink}}** - emissive color.
+ * **{{#crossLink "PBRMaterial/emissiveMap:property"}}{{/crossLink}}** - emissive map {{#crossLink "Texture"}}{{/crossLink}} to replace {{#crossLink "PBRMaterial/emissive:property"}}{{/crossLink}}.
+ * **{{#crossLink "PBRMaterial/opacity:property"}}{{/crossLink}}** - opacity in range ````[0..1]````.
+ * **{{#crossLink "PBRMaterial/opacityMap:property"}}{{/crossLink}}** - opacity map {{#crossLink "Texture"}}{{/crossLink}} to replace {{#crossLink "PBRMaterial/opacity:property"}}{{/crossLink}}.
+ * **{{#crossLink "PBRMaterial/roughness:property"}}{{/crossLink}}** - surface roughness in range ````[0..1]````, where ````0```` is 100% smooth and ````1```` is 100% rough.
+ * **{{#crossLink "PBRMaterial/roughnessMap:property"}}{{/crossLink}}** - roughness map {{#crossLink "Texture"}}{{/crossLink}} to replace {{#crossLink "PBRMaterial/roughness:property"}}{{/crossLink}}.
+ * **{{#crossLink "PBRMaterial/normalMap:property"}}{{/crossLink}}** - normal map {{#crossLink "Texture"}}{{/crossLink}}.
+ * **{{#crossLink "PBRMaterial/specular:property"}}{{/crossLink}}** - specular reflection color.
+ * **{{#crossLink "PBRMaterial/specularMap:property"}}{{/crossLink}}** - specular map, applies instead of {{#crossLink "PBRMaterial/specular:property"}}{{/crossLink}}.
+
+
+ ## Example 1: Dialectric material
 
  In this example we have
 
  <ul>
- <li>a {{#crossLink "Texture"}}{{/crossLink}},</li>
- <li>a metallic {{#crossLink "PBRMaterial"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}} as a color map,</li>
+ <li>a non-metallic PBRMaterial,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
  <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
- Note that the value for the {{#crossLink "PBRMaterial"}}PBRMaterial's{{/crossLink}} {{#crossLink "PBRMaterial/color:property"}}{{/crossLink}}
- property is ignored and redundant, since we assign a {{#crossLink "Texture"}}{{/crossLink}} to the
- {{#crossLink "PBRMaterial"}}PBRMaterial's{{/crossLink}} {{#crossLink "PBRMaterial/colorMap:property"}}{{/crossLink}} property.
- The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel colors then directly provide the metallic base color of each fragment across the
- {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
  ```` javascript
  var scene = new XEO.Scene();
 
+ var material1 = new XEO.PBRMaterial(scene, {
+    metallic: 0.0, // Default
+    color: [1.0, 0.8, 0.0],
+    specular: [1.0, 1.0, 1.0]
+ });
+
+ var geometry = new XEO.Geometry(scene);  // Default box
+
+ var object = new XEO.GameObject(scene, {
+    material: material1,
+    geometry: geometry
+ });
+ ````
+
+ ## Example 2: Metallic material
+
+ ```` javascript
+ var material2 = new XEO.PBRMaterial(scene, {
+    metallic: 1.0,
+    color: [1.0, 0.8, 0.0],
+    roughness: 0.3
+ });
+ ````
+
+ ## Example 3: Metallic material with color map
+
+ ```` javascript
  var colorMap = new XEO.Texture(scene, {
     src: "colorMap.jpg"
  });
 
- // A metallic material
- var metalMaterial = new XEO.PBRMaterial(scene, {
-
-    // Metallic material (else specular)
-    metallic: true,
-
-    // Base color in Metallic mode (else albedo in Specular mode)
-    color: [1.0, 0.8, 0.0],
+ var material3 = new XEO.PBRMaterial(scene, {
+    metallic: 1.0,
     colorMap: colorMap,
-
-    // Black (0.0) for non-metal and white (1.0) for raw metal
-    metalness: 0.8,
-
-    // Fresnel values
-    specularF0: 0.0,
- });
-
- var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
-
- var object = new XEO.GameObject(scene, {
-    material: metalMaterial,
-    geometry: geometry
+    roughness: 0.0
  });
  ````
 
@@ -76,8 +91,7 @@
  @param [cfg] {*} The PBRMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this PBRMaterial.
- @param [cfg.metallic=false] {Boolean} Selects the material mode: Metallic when true, Specular otherwise (default).
- @param [cfg.color=[ 1.0, 1.0, 1.0 ]] {Array of Number} Base color in Metallic mode, albedo in Specular mode.
+ @param [cfg.color=[ 1.0, 1.0, 1.0 ]] {Array of Number} Base color.
  @param [cfg.colorMap=null] {Texture} A color map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the color property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
  @param [cfg.emissive=[ 1.0, 1.0, 1.0 ]] {Array of Number} Emissive color.
  @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
@@ -85,9 +99,9 @@
  @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
  @param [cfg.roughness=0] {Number} Scalar in range 0-1 that controls roughness, where 0 is 100% glossiness and 1 is 100% roughness.
  @param [cfg.roughnessMap=null] {Texture} A roughness map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the roughness property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
- @param [cfg.bumpMap=null] {Texture} A bump map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
- @param [cfg.metalness=1] {Number} Scalar in range 0-1 that controls how much metalness is applied for non-metalic PBRMaterials; black (0.0) for non-metal and white (1.0) for raw metal.
- @param [cfg.specularF0=1] {Number} Scalar in range 0-1 that controls how much Fresnel is applied for non-metalic PBRMaterials.
+ @param [cfg.normalMap=null] {Texture} A normal map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
+ @param [cfg.metallic=1] {Number} Scalar in range 0-1 that controls how metallic the material is; black (0.0) for non-metal and white (1.0) for raw metal.
+ @param [cfg.specularF0=1] {Number} Scalar in range 0-1 that controls how much Fresnel is applied.
  @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} Specular color.
  @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
  */
@@ -107,14 +121,10 @@
 
                 type: "pbrMaterial",
 
-                // Workflow selector; true == Metallic, false == Specular
-                metallic: false,
+                // (0.0) for non-metal and (1.0) for raw metal
+                metallic: 1.0,
 
-                //--------------------------------------------
-                // Attributes common to both workflows
-                //--------------------------------------------
-
-                // Base color in Metallic mode, albedo in Specular mode
+                // Base color
                 color: [1.0, 1.0, 1.0],
                 colorMap: null,
 
@@ -131,26 +141,11 @@
                 roughnessMap: null,
 
                 // Bumpiness
-                bumpMap: null,
-
-                //--------------------------------------------
-                // Attributes used in Metallic workflow
-                //--------------------------------------------
-
-                // Black (0.0) for non-metal and white (1.0) for raw metal
-                metalness: 1.0,
-
-                // Fresnel values
-                specularF0: 0.0,
-
-                //--------------------------------------------
-                // Attributes used in Specular workflow
-                //--------------------------------------------
+                normalMap: null,
 
                 // Specular reflectance
                 specular: [1.0, 1.0, 1.0],
                 specularMap: null,
-
 
                 // True when state needs rebuild
                 dirty: true,
@@ -163,29 +158,21 @@
             this._dirtyComponentSubs = [];
             this._destroyedComponentSubs = [];
 
-
-            // Mode switch
-
             this.metallic = cfg.metallic;
-
-            // Common 
 
             this.color = cfg.color;
             this.colorMap = cfg.colorMap;
+
             this.emissive = cfg.emissive;
             this.emissiveMap = cfg.emissiveMap;
+
             this.opacity = cfg.opacity;
             this.opacityMap = cfg.opacityMap;
+
             this.roughness = cfg.roughness;
             this.roughnessMap = cfg.roughnessMap;
-            this.bumpMap = cfg.bumpMap;
 
-            // Metallic
-
-            this.metalness = cfg.metalness;
-            this.specularF0 = cfg.specularF0;
-
-            // Specular 
+            this.normalMap = cfg.normalMap;
 
             this.specular = cfg.specular;
             this.specularMap = cfg.specularMap;
@@ -194,40 +181,7 @@
         _props: {
 
             /**
-             Selects the material mode: Metallic when true, Specular otherwise (default).
-
-             Fires a {{#crossLink "PBRMaterial/metallic:event"}}{{/crossLink}} event on change.
-
-             @property metallic
-             @default false
-             @type Boolean
-             */
-            metallic: {
-
-                set: function (value) {
-
-                    this._state.metallic = value === true;
-
-                    this._renderer.imageDirty = true;
-
-                    this.fire("dirty", true);
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}} property changes.
-
-                     @event metallic
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("metallic", this._state.metallic);
-                },
-
-                get: function () {
-                    return this._state.metallic;
-                }
-            },
-
-            /**
-             Indicates the PBRMaterial's base color in Metallic mode, or [albedo](https://en.wikipedia.org/wiki/Albedo) in Specular mode.
+             Indicates the PBRMaterial's base color.
 
              This property may be overridden by {{#crossLink "PBRMaterial/colorMap:property"}}{{/crossLink}}.
 
@@ -262,9 +216,7 @@
             /**
              A color {{#crossLink "Texture"}}{{/crossLink}} attached to this PBRMaterial.
 
-             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}}).
-
-             This property overrides {{#crossLink "PBRMaterial/colorMap:property"}}{{/crossLink}} when not null or undefined.
+             This property overrides {{#crossLink "PBRMaterial/color:property"}}{{/crossLink}} when not null or undefined.
 
              Fires a {{#crossLink "PBRMaterial/colorMap:event"}}{{/crossLink}} event on change.
 
@@ -292,8 +244,6 @@
 
             /**
              The PBRMaterial's emissive color.
-
-             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}}).
 
              This property may be overridden by {{#crossLink "PBRMaterial/emissiveMap:property"}}{{/crossLink}}.
 
@@ -328,8 +278,6 @@
             /**
              An emissive {{#crossLink "Texture"}}{{/crossLink}} attached to this PBRMaterial.
 
-             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}}).
-
              This property overrides {{#crossLink "PBRMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
 
              Fires an {{#crossLink "PBRMaterial/emissiveMap:event"}}{{/crossLink}} event on change.
@@ -359,9 +307,9 @@
             /**
              Factor in the range [0..1] indicating how transparent the PBRMaterial is.
 
-             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}}).
-
              A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+
+             This property may be overidden by {{#crossLink "PBRMaterial/opacityMap:property"}}{{/crossLink}}.
 
              Attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
@@ -400,8 +348,6 @@
             /**
              An opacity {{#crossLink "Texture"}}{{/crossLink}} attached to this PBRMaterial.
 
-             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}}).
-
              This property overrides {{#crossLink "PBRMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
 
              Fires an {{#crossLink "PBRMaterial/opacityMap:event"}}{{/crossLink}} event on change.
@@ -431,9 +377,9 @@
             /**
              A factor in range [0..1] that indicates the surface roughness of this PBRMaterial.
 
-             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}}).
+             A value of ````0```` is a mirrow reflection, while ````1```` is completely matte.
 
-             A value of ````0```` is 100% glossiness, while ````1```` is 100% roughness.
+             This property may be overidden by {{#crossLink "PBRMaterial/roughnessMap:property"}}{{/crossLink}}.
 
              Fires a {{#crossLink "PBRMaterial/roughness:event"}}{{/crossLink}} event on change.
 
@@ -466,8 +412,6 @@
             /**
              An roughness {{#crossLink "Texture"}}{{/crossLink}} attached to this PBRMaterial.
 
-             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}}).
-
              This property overrides {{#crossLink "PBRMaterial/roughness:property"}}{{/crossLink}} when not null or undefined.
 
              Fires an {{#crossLink "PBRMaterial/roughnessMap:event"}}{{/crossLink}} event on change.
@@ -495,109 +439,70 @@
             },
 
             /**
-             A bump {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+             A normal {{#crossLink "Texture"}}{{/crossLink}} attached to this PBRMaterial.
 
-             Active when this PBRMaterial is in both Metallic and Specular modes (which is set by {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}}).
+             Fires a {{#crossLink "PBRMaterial/normalMap:event"}}{{/crossLink}} event on change.
 
-             This property overrides {{#crossLink "PBRMaterial/bumpMap:property"}}{{/crossLink}} when not null or undefined.
-
-             Fires a {{#crossLink "PhongMaterial/bumpMap:event"}}{{/crossLink}} event on change.
-
-             @property bumpMap
+             @property normalMap
              @default null
              @type {Texture}
              */
-            bumpMap: {
+            normalMap: {
 
                 set: function (texture) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/bump:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/normal:property"}}{{/crossLink}} property changes.
 
-                     @event bumpMap
+                     @event normalMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("bumpMap", texture);
+                    this._attachComponent("normalMap", texture);
                 },
 
                 get: function () {
-                    return this._components["bumpMap"];
+                    return this._components["normalMap"];
                 }
             },
 
             /**
-             A factor in range [0..1] that indicates the surface metalness of this PBRMaterial.
+             Indicates how metallic the PBRMaterial is.
 
-             A value of ````0```` is non-metallic, while ````1```` is raw metal.
+             Nonmetals have a value of ````0````, while metals have a value of ````1````. For pure surfaces, such as
+             pure metal, pure stone, pure plastic, etc. this value will be 0 or 1, not anything in between. When
+             creating hybrid surfaces like corroded, dusty, or rusty metals, you may find that you need some value
+             between 0 and 1.
 
-             Active when this PBRMaterial is in Metallic mode, ie. when {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}} is ````true````.
+             Fires a {{#crossLink "PBRMaterial/metallic:event"}}{{/crossLink}} event on change.
 
-             Fires a {{#crossLink "PBRMaterial/metalness:event"}}{{/crossLink}} event on change.
-
-             @property metalness
+             @property metallic
              @default 0.0
              @type Number
              */
-            metalness: {
+            metallic: {
 
                 set: function (value) {
 
-                    this._state.metalness = value !== undefined ? value : 0;
+                    this._state.metallic = value !== undefined ? value : 0;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/metalness:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}} property changes.
 
-                     @event metalness
+                     @event metallic
                      @param value Number The property's new value
                      */
-                    this.fire("metalness", this._state.metalness);
+                    this.fire("metallic", this._state.metallic);
                 },
 
                 get: function () {
-                    return this._state.metalness;
+                    return this._state.metallic;
                 }
             },
-
-            /**
-             Scalar in range 0-1 that controls the degree of Fresnel.
-
-             Active when this PBRMaterial is in Metallic mode, ie. when {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}} is ````true````.
-
-             Fires a {{#crossLink "PBRMaterial/specularF0:event"}}{{/crossLink}} event on change.
-
-             @property specularF0
-             @default 1.0
-             @type Number
-             */
-            specularF0: {
-
-                set: function (value) {
-
-                    this._state.specularF0 = value !== undefined ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/specularF0:property"}}{{/crossLink}} property changes.
-
-                     @event specularF0
-                     @param value Number The property's new value
-                     */
-                    this.fire("specularF0", this._state.specularF0);
-                },
-
-                get: function () {
-                    return this._state.specularF0;
-                }
-            },
-
 
             /**
              The material's specular color.
-
-             Active when this PBRMaterial is in Specular mode, ie. when {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}} is ````false````.
 
              This property may be overridden by {{#crossLink "PBRMaterial/specularMap:property"}}{{/crossLink}}.
 
@@ -632,8 +537,6 @@
 
             /**
              A specular {{#crossLink "Texture"}}{{/crossLink}} attached to this PBRMaterial.
-
-             Active when this PBRMaterial is in Specular mode, ie. when {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}} is ````false````.
 
              This property overrides {{#crossLink "PBRMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
 
@@ -743,11 +646,11 @@
 
             var hash = [];
 
-            if (this._state.metallic) {
-                hash.push("/m");
-            } else {
-                hash.push("/s");
-            }
+            //if (this._state.metallic) {
+            //    hash.push("/m");
+            //} else {
+            //    hash.push("/s");
+            //}
 
             if (state.colorMap) {
                 hash.push("/c");
@@ -777,9 +680,9 @@
                 }
             }
 
-            if (state.bumpMap) {
+            if (state.normalMap) {
                 hash.push("/b");
-                if (state.bumpMap.matrix) {
+                if (state.normalMap.matrix) {
                     hash.push("/anim");
                 }
             }
@@ -794,8 +697,6 @@
             var components = this._components;
 
             var json = {};
-
-            json.metallic = this._state.metallic;
 
             // Common
 
@@ -823,16 +724,11 @@
                 json.roughnessMap = components.roughnessMap.id;
             }
 
-            if (components.bumpMap) {
-                json.bumpMap = components.bumpMap.id;
+            if (components.normalMap) {
+                json.normalMap = components.normalMap.id;
             }
 
-            // Metallic
-
-            json.metalness = this._state.metalness;
-            json.specularF0 = this.specularF0;
-
-            // Specular
+            json.metallic = this._state.metallic;
 
             json.specular = this.specular;
 
