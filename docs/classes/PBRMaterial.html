@@ -140,11 +140,15 @@
     <p>A <strong>PBRMaterial</strong> is a <a href="../classes/Material.html" class="crosslink">Material</a> that defines the appearance of
 attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> using a physically-based rendering model.</p>
 <h2 id="overview">Overview</h2>
-<p>Physically Based Rendering (PBR) is a method of shading and rendering that provides a more accurate representation
+<ul>
+<li>Physically Based Rendering (PBR) is a method of shading and rendering that provides a more accurate representation
 of how light interacts with surfaces. It can be referred to as Physically Based Rendering (PBR) or Physically Based Shading (PBS).
 Depending on what aspect of the pipeline is being discussed, PBS is usually specific to shading concepts and PBR specific
 to rendering and lighting. However, both terms describe on a whole, the process of representing assets from a physically
-accurate standpoint. - <em>Wes McDermott, Allegorithmic PBR Guide, Vol. 2</em></p>
+accurate standpoint. - <em>Wes McDermott, Allegorithmic PBR Guide, Vol. 2</em></li>
+<li>The xeoEngine PBRMaterial is based on the once used in <a href="https://docs.unrealengine.com/latest/INT/Engine/Rendering/Materials/PhysicallyBased/index.html">Unreal Engine</a></li>
+</ul>
+
 <p><img src="../../../assets/images/PBRMaterial.png"></img></p>
 <h3 id="material-attributes">Material attributes</h3>
 <ul>
@@ -159,12 +163,12 @@ accurate standpoint. - <em>Wes McDermott, Allegorithmic PBR Guide, Vol. 2</em></
 <li><strong><a href="../classes/PBRMaterial.html#property_roughnessMap" class="crosslink">roughnessMap</a></strong> - roughness map <a href="../classes/Texture.html" class="crosslink">Texture</a> to replace <a href="../classes/PBRMaterial.html#property_roughness" class="crosslink">roughness</a>.</li>
 <li><strong><a href="../classes/PBRMaterial.html#property_normalMap" class="crosslink">normalMap</a></strong> - normal map <a href="../classes/Texture.html" class="crosslink">Texture</a>.</li>
 <li><strong><a href="../classes/PBRMaterial.html#property_specular" class="crosslink">specular</a></strong> - specular reflection color.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_specularMap" class="crosslink">specularMap</a></strong> - specular map, applies instead of <a href="../classes/PBRMaterial.html#property_specular" class="crosslink">specular</a>.</li>
+<li><strong><a href="../classes/PBRMaterial.html#property_specularMap" class="crosslink">specularMap</a></strong> - specular map <a href="../classes/Texture.html" class="crosslink">Texture</a> to replace <a href="../classes/PBRMaterial.html#property_specular" class="crosslink">specular</a>.</li>
 </ul>
-<h2 id="example-1-dialectric-material">Example 1: Dialectric material</h2>
+<h2 id="example-1-non-metallic-material">Example 1: Non-metallic material</h2>
 <p>In this example we have</p>
 <ul>
-<li>a non-metallic PBRMaterial,</li>
+<li>a dialectric (non-metallic) PBRMaterial,</li>
 <li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
 <li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
 </ul>
@@ -200,7 +204,7 @@ var object = new XEO.GameObject(scene, {
 var material3 = new XEO.PBRMaterial(scene, {
    metallic: 1.0,
    colorMap: colorMap,
-   roughness: 0.0
+   roughness: 0.3
 });
 </code></pre>
 
@@ -295,6 +299,17 @@ var material3 = new XEO.PBRMaterial(scene, {
         
                                     </li>
                                     <li class="param">
+                                            <code class="param-name optional">[metallic=0.0]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Scalar in range 0-1 that controls how metallic the PBRMaterial is.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
                                             <code class="param-name optional">[color=[ 1.0, 1.0, 1.0 ]]</code>
                                             <span class="type">Array of Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -361,7 +376,7 @@ var material3 = new XEO.PBRMaterial(scene, {
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[roughness=0]</code>
+                                            <code class="param-name optional">[roughness=0.0]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
@@ -389,28 +404,6 @@ var material3 = new XEO.PBRMaterial(scene, {
         
                                         <div class="param-description">
                                             <p>A normal map <a href="../classes/Texture.html" class="crosslink">Texture</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PBRMaterial.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[metallic=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Scalar in range 0-1 that controls how metallic the material is; black (0.0) for non-metal and white (1.0) for raw metal.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[specularF0=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Scalar in range 0-1 that controls how much Fresnel is applied.</p>
         
                                         </div>
         
@@ -1213,14 +1206,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l181"><code>src&#x2F;core&#x2F;pbrMaterial.js:181</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l219"><code>src&#x2F;core&#x2F;pbrMaterial.js:219</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Indicates the PBRMaterial&#39;s base color.</p>
+                            <p>Base color of this material.</p>
                     <p>This property may be overridden by <a href="../classes/PBRMaterial.html#property_colorMap" class="crosslink">colorMap</a>.</p>
                     <p>Fires a <a href="../classes/PBRMaterial.html#event_color" class="crosslink">color</a> event on change.</p>
                     
@@ -1241,15 +1234,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l214"><code>src&#x2F;core&#x2F;pbrMaterial.js:214</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l252"><code>src&#x2F;core&#x2F;pbrMaterial.js:252</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>A color <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PBRMaterial.</p>
-                    <p>This property overrides <a href="../classes/PBRMaterial.html#property_color" class="crosslink">color</a> when not null or undefined.</p>
+                            <p>Color <a href="../classes/Texture.html" class="crosslink">Texture</a>, to apply instead of <a href="../classes/PBRMaterial.html#property_color" class="crosslink">color</a>.</p>
                     <p>Fires a <a href="../classes/PBRMaterial.html#event_colorMap" class="crosslink">colorMap</a> event on change.</p>
                     
                         </div>
@@ -1294,16 +1286,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l243"><code>src&#x2F;core&#x2F;pbrMaterial.js:243</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l279"><code>src&#x2F;core&#x2F;pbrMaterial.js:279</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The PBRMaterial&#39;s emissive color.</p>
+                            <p>Emissive color of this material.</p>
                     <p>This property may be overridden by <a href="../classes/PBRMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a>.</p>
-                    <p>Fires a <a href="../classes/PBRMaterial.html#event_emissive" class="crosslink">emissive</a> event on change.</p>
+                    <p>Fires an <a href="../classes/PBRMaterial.html#event_emissive" class="crosslink">emissive</a> event on change.</p>
                     
                         </div>
                     
@@ -1322,15 +1314,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l276"><code>src&#x2F;core&#x2F;pbrMaterial.js:276</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l312"><code>src&#x2F;core&#x2F;pbrMaterial.js:312</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>An emissive <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PBRMaterial.</p>
-                    <p>This property overrides <a href="../classes/PBRMaterial.html#property_emissive" class="crosslink">emissive</a> when not null or undefined.</p>
+                            <p>Emissive <a href="../classes/Texture.html" class="crosslink">Texture</a>, to apply instead of <a href="../classes/PBRMaterial.html#property_emissive" class="crosslink">emissive</a>.</p>
                     <p>Fires an <a href="../classes/PBRMaterial.html#event_emissiveMap" class="crosslink">emissiveMap</a> event on change.</p>
                     
                         </div>
@@ -1401,14 +1392,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l466"><code>src&#x2F;core&#x2F;pbrMaterial.js:466</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l183"><code>src&#x2F;core&#x2F;pbrMaterial.js:183</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Indicates how metallic the PBRMaterial is.</p>
+                            <p>Controls how metallic this material is.</p>
                     <p>Nonmetals have a value of <code>0</code>, while metals have a value of <code>1</code>. For pure surfaces, such as
                     pure metal, pure stone, pure plastic, etc. this value will be 0 or 1, not anything in between. When
                     creating hybrid surfaces like corroded, dusty, or rusty metals, you may find that you need some value
@@ -1432,14 +1423,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l439"><code>src&#x2F;core&#x2F;pbrMaterial.js:439</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l469"><code>src&#x2F;core&#x2F;pbrMaterial.js:469</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>A normal <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PBRMaterial.</p>
+                            <p>A normal map <a href="../classes/Texture.html" class="crosslink">Texture</a>.</p>
                     <p>Fires a <a href="../classes/PBRMaterial.html#event_normalMap" class="crosslink">normalMap</a> event on change.</p>
                     
                         </div>
@@ -1459,15 +1450,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l305"><code>src&#x2F;core&#x2F;pbrMaterial.js:305</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l339"><code>src&#x2F;core&#x2F;pbrMaterial.js:339</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Factor in the range [0..1] indicating how transparent the PBRMaterial is.</p>
-                    <p>A value of 0.0 indicates fully transparent, 1.0 is fully opaque.</p>
+                            <p>Opacity of this material.</p>
+                    <p>Opacity is a value in the range [0..1], in which 0 is fully transparent and 1.0 is fully opaque.</p>
                     <p>This property may be overidden by <a href="../classes/PBRMaterial.html#property_opacityMap" class="crosslink">opacityMap</a>.</p>
                     <p>Attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> will appear transparent only if they are also attached
                     to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
@@ -1492,15 +1483,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l346"><code>src&#x2F;core&#x2F;pbrMaterial.js:346</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l380"><code>src&#x2F;core&#x2F;pbrMaterial.js:380</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>An opacity <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PBRMaterial.</p>
-                    <p>This property overrides <a href="../classes/PBRMaterial.html#property_opacity" class="crosslink">opacity</a> when not null or undefined.</p>
+                            <p>Opacity <a href="../classes/Texture.html" class="crosslink">Texture</a>, to apply instead of <a href="../classes/PBRMaterial.html#property_opacity" class="crosslink">opacity</a>.</p>
                     <p>Fires an <a href="../classes/PBRMaterial.html#event_opacityMap" class="crosslink">opacityMap</a> event on change.</p>
                     
                         </div>
@@ -1520,7 +1510,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l375"><code>src&#x2F;core&#x2F;pbrMaterial.js:375</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l407"><code>src&#x2F;core&#x2F;pbrMaterial.js:407</code></a>
                             </p>
                     
                     
@@ -1549,15 +1539,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l410"><code>src&#x2F;core&#x2F;pbrMaterial.js:410</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l442"><code>src&#x2F;core&#x2F;pbrMaterial.js:442</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>An roughness <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PBRMaterial.</p>
-                    <p>This property overrides <a href="../classes/PBRMaterial.html#property_roughness" class="crosslink">roughness</a> when not null or undefined.</p>
+                            <p>Roughness <a href="../classes/Texture.html" class="crosslink">Texture</a>, to apply instead of <a href="../classes/PBRMaterial.html#property_roughness" class="crosslink">roughness</a>.</p>
                     <p>Fires an <a href="../classes/PBRMaterial.html#event_roughnessMap" class="crosslink">roughnessMap</a> event on change.</p>
                     
                         </div>
@@ -1603,14 +1592,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l502"><code>src&#x2F;core&#x2F;pbrMaterial.js:502</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l496"><code>src&#x2F;core&#x2F;pbrMaterial.js:496</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The material&#39;s specular color.</p>
+                            <p>Specular color of this material.</p>
                     <p>This property may be overridden by <a href="../classes/PBRMaterial.html#property_specularMap" class="crosslink">specularMap</a>.</p>
                     <p>Fires a <a href="../classes/PBRMaterial.html#event_specular" class="crosslink">specular</a> event on change.</p>
                     
@@ -1631,15 +1620,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l536"><code>src&#x2F;core&#x2F;pbrMaterial.js:536</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l530"><code>src&#x2F;core&#x2F;pbrMaterial.js:530</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>A specular <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PBRMaterial.</p>
-                    <p>This property overrides <a href="../classes/PBRMaterial.html#property_specular" class="crosslink">specular</a> when not null or undefined.</p>
+                            <p>Specular <a href="../classes/Texture.html" class="crosslink">Texture</a>, to apply instead of <a href="../classes/PBRMaterial.html#property_specular" class="crosslink">specular</a>.</p>
                     <p>Fires a <a href="../classes/PBRMaterial.html#event_specularMap" class="crosslink">specularMap</a> event on change.</p>
                     
                         </div>
@@ -1692,7 +1680,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l200"><code>src&#x2F;core&#x2F;pbrMaterial.js:200</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l238"><code>src&#x2F;core&#x2F;pbrMaterial.js:238</code></a>
                             </p>
                     
                     
@@ -1734,7 +1722,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l229"><code>src&#x2F;core&#x2F;pbrMaterial.js:229</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l265"><code>src&#x2F;core&#x2F;pbrMaterial.js:265</code></a>
                             </p>
                     
                     
@@ -1801,7 +1789,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l262"><code>src&#x2F;core&#x2F;pbrMaterial.js:262</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l298"><code>src&#x2F;core&#x2F;pbrMaterial.js:298</code></a>
                             </p>
                     
                     
@@ -1843,7 +1831,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l291"><code>src&#x2F;core&#x2F;pbrMaterial.js:291</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l325"><code>src&#x2F;core&#x2F;pbrMaterial.js:325</code></a>
                             </p>
                     
                     
@@ -1885,7 +1873,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l488"><code>src&#x2F;core&#x2F;pbrMaterial.js:488</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l205"><code>src&#x2F;core&#x2F;pbrMaterial.js:205</code></a>
                             </p>
                     
                     
@@ -1927,7 +1915,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l452"><code>src&#x2F;core&#x2F;pbrMaterial.js:452</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l482"><code>src&#x2F;core&#x2F;pbrMaterial.js:482</code></a>
                             </p>
                     
                     
@@ -1969,7 +1957,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l332"><code>src&#x2F;core&#x2F;pbrMaterial.js:332</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l366"><code>src&#x2F;core&#x2F;pbrMaterial.js:366</code></a>
                             </p>
                     
                     
@@ -2011,7 +1999,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l361"><code>src&#x2F;core&#x2F;pbrMaterial.js:361</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l393"><code>src&#x2F;core&#x2F;pbrMaterial.js:393</code></a>
                             </p>
                     
                     
@@ -2053,7 +2041,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l396"><code>src&#x2F;core&#x2F;pbrMaterial.js:396</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l428"><code>src&#x2F;core&#x2F;pbrMaterial.js:428</code></a>
                             </p>
                     
                     
@@ -2095,7 +2083,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l425"><code>src&#x2F;core&#x2F;pbrMaterial.js:425</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l455"><code>src&#x2F;core&#x2F;pbrMaterial.js:455</code></a>
                             </p>
                     
                     
@@ -2137,7 +2125,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l521"><code>src&#x2F;core&#x2F;pbrMaterial.js:521</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l515"><code>src&#x2F;core&#x2F;pbrMaterial.js:515</code></a>
                             </p>
                     
                     
@@ -2179,7 +2167,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l551"><code>src&#x2F;core&#x2F;pbrMaterial.js:551</code></a>
+                            <a href="../files/src_core_pbrMaterial.js.html#l543"><code>src&#x2F;core&#x2F;pbrMaterial.js:543</code></a>
                             </p>
                     
                     
