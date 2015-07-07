@@ -8269,7 +8269,7 @@
         {
             "file": "src/core/pbrMaterial.js",
             "line": 339,
-            "description": "Opacity of this material.\n\nOpacity is a value in the range [0..1], in which 0 is fully transparent and 1.0 is fully opaque.\n\nThis property may be overidden by {{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}}.\n\nAttached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PBRMaterial/opacity:event\"}}{{/crossLink}} event on change.",
+            "description": "Opacity of this material.\n\nOpacity is a value in the range [0..1], in which 0 is fully transparent and 1.0 is fully opaque.\n\nThis property may be overidden by {{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}}.\n\nAttached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nFires an {{#crossLink \"PBRMaterial/opacity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacity",
             "default": "1.0",
@@ -8279,7 +8279,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 366,
+            "line": 364,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacity",
@@ -8295,7 +8295,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 380,
+            "line": 378,
             "description": "Opacity {{#crossLink \"Texture\"}}{{/crossLink}}, to apply instead of {{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PBRMaterial/opacityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacityMap",
@@ -8306,7 +8306,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 393,
+            "line": 391,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacityMap",
@@ -8321,7 +8321,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 407,
+            "line": 405,
             "description": "A factor in range [0..1] that indicates the surface roughness of this PBRMaterial.\n\nA value of ````0```` is a mirrow reflection, while ````1```` is completely matte.\n\nThis property may be overidden by {{#crossLink \"PBRMaterial/roughnessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/roughness:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "roughness",
@@ -8332,7 +8332,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 428,
+            "line": 426,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "roughness",
@@ -8347,7 +8347,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 442,
+            "line": 440,
             "description": "Roughness {{#crossLink \"Texture\"}}{{/crossLink}}, to apply instead of {{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PBRMaterial/roughnessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "roughnessMap",
@@ -8358,7 +8358,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 455,
+            "line": 453,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/roughnessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "roughnessMap",
@@ -8373,7 +8373,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 469,
+            "line": 467,
             "description": "A normal map {{#crossLink \"Texture\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/normalMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normalMap",
@@ -8384,7 +8384,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 482,
+            "line": 480,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/normal:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normalMap",
@@ -8399,7 +8399,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 496,
+            "line": 494,
             "description": "Specular color of this material.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/specularMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/specular:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specular",
@@ -8410,7 +8410,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 515,
+            "line": 513,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specular",
@@ -8426,7 +8426,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 530,
+            "line": 528,
             "description": "Specular {{#crossLink \"Texture\"}}{{/crossLink}}, to apply instead of {{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/specularMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularMap",
@@ -8437,7 +8437,7 @@
         },
         {
             "file": "src/core/pbrMaterial.js",
-            "line": 543,
+            "line": 541,
             "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/specularMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularMap",

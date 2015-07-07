@@ -347,8 +347,6 @@
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
              set to **true**.
 
-             This property may be overridden by {{#crossLink "PBRMaterial/opacityMap:property"}}{{/crossLink}}.
-
              Fires an {{#crossLink "PBRMaterial/opacity:event"}}{{/crossLink}} event on change.
 
              @property opacity
