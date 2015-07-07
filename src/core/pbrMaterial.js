@@ -10,8 +10,6 @@
  to rendering and lighting. However, both terms describe on a whole, the process of representing assets from a physically
  accurate standpoint. - *Wes McDermott, Allegorithmic PBR Guide, Vol. 2*
 
- See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PBRMaterials create within xeoEngine's shaders.
-
  <img src="../../../assets/images/PBRMaterial.png"></img>
 
  ### Material attributes
