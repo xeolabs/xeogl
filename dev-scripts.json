@@ -41,6 +41,7 @@
         "src/core/renderer/chunks/lightsChunk.js",
         "src/core/renderer/chunks/modelTransformChunk.js",
         "src/core/renderer/chunks/modesChunk.js",
+        "src/core/renderer/chunks/pbrMaterialChunk.js",
         "src/core/renderer/chunks/phongMaterialChunk.js",
         "src/core/renderer/chunks/programChunk.js",
         "src/core/renderer/chunks/projTransformChunk.js",
