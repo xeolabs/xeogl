@@ -9,13 +9,10 @@
 
         type: "draw",
 
-        /**
-         * As we apply a list of state chunks in a {@link XEO.renderer.Renderer}, we track the ID of each chunk
-         * in order to avoid redundantly re-applying the same chunk.
-         *
-         * We don't want that for draw chunks however, because they contain GL drawElements calls,
-         * which we need to do for each object.
-         */
+        // As we apply a list of state chunks in a {@link XEO.renderer.Renderer},
+        // we track the ID of each chunk in order to avoid redundantly re-applying
+        // the same chunk. We don't want that for draw chunks however, because
+        // they contain GL drawElements calls, which we need to do for each object.
         unique: true,
 
         build: function () {
@@ -37,7 +34,7 @@
 
                 if (this._uPickColor) {
 
-                    frameCtx.pickNames[frameCtx.pickIndex++] = this.state;
+                    frameCtx.pickObjects[frameCtx.pickIndex++] = this.object;
 
                     var b = frameCtx.pickIndex >> 16 & 0xFF;
                     var g = frameCtx.pickIndex >> 8 & 0xFF;

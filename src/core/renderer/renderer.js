@@ -75,254 +75,262 @@
         // Renderer is bound to the lifetime of an HTML5 canvas
         this._canvas = cfg.canvas;
 
-        // Factory which creates and recycles {@link XEO.renderer.Program} instances
+        // Factory which creates and recycles XEO.renderer.Program instances
         this._programFactory = new XEO.renderer.ProgramFactory({
             canvas: cfg.canvas
         });
 
-        // Factory which creates and recycles {@link SceneJS.Chunk} instances
+        // Factory which creates and recycles XEO.renderer.Object instances
+        this._objectFactory = new XEO.renderer.ObjectFactory();
+
+        // Factory which creates and recycles XEO.renderer.Chunk instances
         this._chunkFactory = new XEO.renderer.ChunkFactory();
 
         /**
-         * True when the background is to be transparent
+         * Indicates if the canvas is transparent
          * @type {boolean}
          */
         this.transparent = cfg.transparent === true;
 
+        // The objects in the render
+        this._objects = {};
+
+        // Ambient color
+        this._ambientColor = [0, 0, 0, 1.0];
+
+        // The object list, containing all elements of #_objects, kept in GL state-sorted order
+        this._objectList = [];
+        this._objectListLen = 0;
+
+        // The "draw list", comprised collectively of three lists of state chunks belong to visible objects
+        // within #_objectList: a "pick" list to render a pick buffer for colour-indexed GPU picking, along with an
+        // "draw" list for normal image rendering.  The chunks in these lists are held in the state-sorted order of
+        // their objects in #_objectList, with runs of duplicate states removed.
+
+        this._drawList = [];      // State chunk list to render all objects
+        this._drawListLen = 0;
+
+        this._pickDrawList = [];  // State chunk list to render scene to pick buffer
+        this._pickDrawListLen = 0;
+
+
+        // The frame context holds state shared across a single render of the
+        // draw list, along with any results of the render, such as pick hits
+        this._frameCtx = {
+            pickObjects: [], // Pick names of objects hit during pick render
+            canvas: this._canvas
+        };
+
+        //----------------- Render states --------------------------------------
+
         /**
-         Visibility
+         Visibility render state.
          @property visibility
          @type {renderer.Visibility}
          */
         this.visibility = null;
 
         /**
-         Modes
+         Modes render state.
          @property modes
          @type {renderer.Modes}
          */
         this.modes = null;
 
         /**
-         Layer
+         Render state for an effects layer.
          @property layer
          @type {renderer.Layer}
          */
         this.layer = null;
 
         /**
-         Stage
+         Render state for an effects pipeline stage.
          @property stage
          @type {renderer.Layer}
          */
         this.stage = null;
 
         /**
-         DepthBuf
+         Depth buffer render state.
          @property depthBuf
          @type {renderer.DepthBuf}
          */
         this.depthBuf = null;
 
         /**
-         ColorBuf
+         Color buffer render state.
          @property colorBuf
          @type {renderer.ColorBuf}
          */
         this.colorBuf = null;
 
         /**
-         Lights
+         Lights render state.
          @property lights
          @type {renderer.Lights}
          */
         this.lights = null;
 
         /**
-         Material
+         Material render state.
          @property material
          @type {renderer.Material}
          */
         this.material = null;
 
         /**
-         Reflection
+         Environmental reflection render state.
          @property reflection
          @type {renderer.Reflect}
          */
         this.reflect = null;
 
         /**
-         ModelTransform
+         Modelling transform render state.
          @property modelTransform
          @type {renderer.ModelTransform}
          */
         this.modelTransform = null;
 
         /**
-         ViewTransform
+         View transform render state.
          @property viewTransform
          @type {renderer.ViewTransform}
          */
         this.viewTransform = null;
 
         /**
-         ProjTransform
+         Projection transform render state.
          @property projTransform
          @type {renderer.ProjTransform}
          */
         this.projTransform = null;
 
         /**
-         Color RenderTarget
+         Color target render state.
          @property colorTarget
          @type {renderer.RenderTarget}
          */
         this.colorTarget = null;
 
         /**
-         Depth RenderTarget
+         Depth target render state.
          @property depthTarget
          @type {renderer.RenderTarget}
          */
         this.depthTarget = null;
 
         /**
-         Clips
+         Cross-section planes render state.
          @property clips
          @type {renderer.Clips}
          */
         this.clips = null;
 
         /**
-         MorphTargets
+         Morph targets render state.
          @property morphTargets
          @type {renderer.MorphTargets}
          */
         this.morphTargets = null;
 
         /**
-         Shader
+         Custom shader render state.
          @property shader
          @type {renderer.Shader}
          */
         this.shader = null;
 
         /**
-         Shader
+        Render state providing custom shader params.
          @property shaderParams
          @type {renderer.Shader}
          */
         this.shaderParams = null;
 
         /**
-         Geometry
+         Geometry render state.
          @property geometry
          @type {renderer.Geometry}
          */
         this.geometry = null;
 
 
-        /* Factory which creates and recycles {@link XEO.renderer.Object} instances
-         */
-        this._objectFactory = new XEO.renderer.ObjectFactory();
+        //----------------- Renderer dirty flags -------------------------------
 
         /**
-         * The objects in the display
-         */
-        this._objects = {};
-
-        /**
-         * Ambient color, which must be given to gl.clearColor before draw list iteration
-         */
-        this._ambientColor = [0, 0, 0, 1.0];
-
-        /**
-         * The object list, containing all elements of #_objects, kept in GL state-sorted order
-         */
-        this._objectList = [];
-        this._objectListLen = 0;
-
-        /* The "draw list", comprised collectively of three lists of state chunks belong to visible objects
-         * within #_objectList: a "pick" list to render a pick buffer for colour-indexed GPU picking, along with an
-         * "draw" list for normal image rendering.  The chunks in these lists are held in the state-sorted order of
-         * their objects in #_objectList, with runs of duplicate states removed.
-         */
-        this._drawList = [];                // State chunk list to render all objects
-        this._drawListLen = 0;
-
-        this._pickDrawList = [];            // State chunk list to render scene to pick buffer
-        this._pickDrawListLen = 0;
-
-
-        /* The frame context holds state shared across a single render of the draw list, along with any results of
-         * the render, such as pick hits
-         */
-        this._frameCtx = {
-            pickNames: [], // Pick names of objects hit during pick render
-            canvas: this._canvas
-        };
-
-        /*-------------------------------------------------------------------------------------
-         * modes which schedule what the display is to do when #render is next called.
-         *------------------------------------------------------------------------------------*/
-
-        /**
-         * Flags the object list as needing to be rebuilt from existing objects on the next call to {@link #render} or {@link #pick}.
-         * Setting this will cause the rendering pipeline to be executed from stage #2 (see class comment),
-         * causing object list rebuild, state order determination, state sort, draw list construction and image render.
+         * Flags the object list as needing to be rebuilt from renderer objects
+         * on the next call to {@link #render} or {@link #pick}. Setting this
+         * will cause the rendering pipeline to be executed from stage #2
+         * (see class comment), causing object list rebuild, state order
+         * determination, state sort, draw list construction and image render.
          * @type Boolean
          */
         this.objectListDirty = true;
 
         /**
-         * Flags the object list as needing state orders to be computed on the next call to {@link #render} or {@link #pick}.
-         * Setting this will cause the rendering pipeline to be executed from stage #3 (see class comment),
-         * causing state order determination, state sort, draw list construction and image render.
+         * Flags the object list as needing state orders to be (re)computed on the
+         * next call to {@link #render} or {@link #pick}. Setting this will cause
+         * the rendering pipeline to be executed from stage #3 (see class comment),
+         * causing state order determination, state sort, draw list construction
+         * and image render.
          * @type Boolean
          */
         this.stateOrderDirty = true;
 
         /**
-         * Flags the object list as needing to be state sorted on the next call to {@link #render} or {@link #pick}.
-         * Setting this will cause the rendering pipeline to be executed from stage #4 (see class comment),
+         * Flags the object list as needing to be state-sorted on the next call
+         * to {@link #render} or {@link #pick}.Setting this will cause the
+         * rendering pipeline to be executed from stage #4 (see class comment),
          * causing state sort, draw list construction and image render.
          * @type Boolean
          */
         this.stateSortDirty = true;
 
         /**
-         * Flags the draw list as needing to be rebuilt from the object list on the next call to {@link #render} or {@link #pick}.
-         * Setting this will cause the rendering pipeline to be executed from stage #5 (see class comment),
-         * causing draw list construction and image render.
+         * Flags the draw list as needing to be rebuilt from the object list on
+         * the next call to {@link #render} or {@link #pick}.  Setting this will
+         * cause the rendering pipeline to be executed from stage #5
+         * (see class comment), causing draw list construction and image render.
          * @type Boolean
          */
         this.drawListDirty = true;
 
         /**
-         * Flags the image as needing to be redrawn from the draw list on the next call to {@link #render} or {@link #pick}.
-         * Setting this will cause the rendering pipeline to be executed from stage #6 (see class comment),
-         * causing the image render.
+         * Flags the image as needing to be redrawn from the draw list on the
+         * next call to {@link #render} or {@link #pick}. Setting this will
+         * cause the rendering pipeline to be executed from stage #6
+         * (see class comment), causing the image render.
          * @type Boolean
          */
         this.imageDirty = true;
 
         /**
-         * Flags the neccessity for the image buffer to be re-rendered from the draw list.
+         * Flags the neccessity for the pick buffer to be re-rendered from the
+         * draw list.
          * @type Boolean
          */
-        this.pickBufDirty = true;           // Redraw pick buffer
-        this.rayPickBufDirty = true;        // Redraw raypick buffer
+        this.pickBufDirty = true;
+
+        /**
+         * Flags the neccessity for the ray-pick depth buffer to be re-rendered
+         * from the draw list.
+         * @type Boolean
+         */
+        this.rayPickBufDirty = true;
     };
 
     /**
-     * Reallocates WebGL resources for objects within this display
+     * Reallocates WebGL resources for objects within this renderer.
      */
     XEO.renderer.Renderer.prototype.webglRestored = function () {
 
-        this._programFactory.webglRestored();// Reallocate programs
+        // Re-allocate programs
+        this._programFactory.webglRestored();
 
-        this._chunkFactory.webglRestored(); // Recache shader var locations
+        // Re-bind chunks to the programs
+        this._chunkFactory.webglRestored();
 
         var gl = this._canvas.gl;
 
@@ -336,13 +344,17 @@
             this.rayPickBuf.webglRestored(gl);
         }
 
-        this.imageDirty = true; // Need redraw
+        // Need redraw
+
+        this.imageDirty = true;
     };
 
     /**
-     * Internally creates (or updates) a {@link XEO.renderer.Object} of the given ID from whatever component state cores are currently set
-     * on this {@link XEO.Renderer}. The object is created if it does not already exist in the display, otherwise it is
-     * updated with the current state cores, possibly replacing cores already referenced by the object.
+     * Internally creates (or updates) a {@link XEO.renderer.Object} of the given
+     * ID from whatever component state cores are currently set on this {@link XEO.Renderer}.
+     * The object is created if it does not already exist in the display, otherwise
+     * it is updated with the current states, possibly replacing states already
+     * referenced by the object.
      *
      * @param {String} objectId ID of object to create or update
      */
@@ -352,12 +364,15 @@
 
         if (!object) {
 
-            // Create object
+            // Create the object
 
             object = this._objects[objectId] = this._objectFactory.get(objectId);
 
             this.objectListDirty = true;
         }
+
+        // Attach to the object any states that we need to get off it later.
+        // Most of these will be used when composing the object's shader.
 
         object.stage = this.stage;
         object.layer = this.layer;
@@ -369,9 +384,15 @@
         object.visibility = this.visibility;
         object.modes = this.modes;
 
-        // Build current state hash
+        // Build hash of the object's state configuration. This is used
+        // to hash the object's shader so that it may be reused by other
+        // objects that have the same state configuration.
 
         var hash = ([
+
+            // Make sure that every state type
+            // with a hash is concatenated here
+
             this.geometry.hash,
             this.shader.hash,
             this.clips.hash,
@@ -379,11 +400,12 @@
             this.material.hash,
             this.reflect.hash,
             this.lights.hash
+
         ]).join(";");
 
         if (!object.program || hash !== object.hash) {
 
-            // Get new program for object if no program or hash mismatch
+            // Get new program for object if needed
 
             if (object.program) {
                 this._programFactory.put(object.program);
@@ -394,7 +416,10 @@
             object.hash = hash;
         }
 
-        // Build draw chunks for object
+        // Build sequence of draw chunks on the object
+
+        // The order of some of these is important because some chunks will set
+        // state on this._framectx to be consumed by other chunks downstream.
 
         this._setChunk(object, 0, "program"); // Must be first
         this._setChunk(object, 1, "modelTransform", this.modelTransform);
@@ -406,62 +431,29 @@
         this._setChunk(object, 7, "depthBuf", this.depthBuf);
         this._setChunk(object, 8, "colorBuf", this.colorBuf);
         this._setChunk(object, 9, "lights", this.lights);
-        this._setChunk(object, 10, this.material.type, this.material);
+        this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
         this._setChunk(object, 11, "reflect", this.reflect);
         this._setChunk(object, 12, "clips", this.clips);
         this._setChunk(object, 13, "geometry", this.geometry);
         this._setChunk(object, 14, "draw", this.geometry); // Must be last
     };
 
-
+    /** Adds a render state chunk to a render graph object.
+    */
     XEO.renderer.Renderer.prototype._setChunk = function (object, order, chunkType, state) {
 
-        var chunkId;
-        var chunkClass = this._chunkFactory.chunkTypes[chunkType];
-        var oldChunk;
-
-        if (state) {
-
-            // state supplied
-
-            if (state.empty) { // Only set default cores for state types that have them
-                oldChunk = object.chunks[order];
-                if (oldChunk) {
-                    this._chunkFactory.putChunk(oldChunk); // Release previous chunk to pool
-                }
-                object.chunks[order] = null;
-                return;
-            }
-
-            // Note that state.id can be either a number or a string, that's why we make
-            // chunkId a string here.
-            // TODO: Would it be better if all were numbers?
-
-            chunkId = chunkClass.prototype.programGlobal ? '_' + state.id : 'p' + object.program.id + '_' + state.id;
-
-        } else {
-
-            // No state supplied for a program.
-            // Only one chunk of this type per program.
-
-            chunkId = 'p' + object.program.id;
-        }
-
-        // This is needed so that chunkFactory can distinguish between draw and geometry
-        // chunks with the same state.
-
-        chunkId = order + '__' + chunkId;
-
-        oldChunk = object.chunks[order];
+        var oldChunk = object.chunks[order];
 
         if (oldChunk) {
-            if (oldChunk.id === chunkId) { // Avoid needless chunk reattachment
-                return;
-            }
-            this._chunkFactory.putChunk(oldChunk); // Release previous chunk to pool
+
+          oldChunk.init(oldChunk.id, object.program, state);
+
+          return;
         }
 
-        object.chunks[order] = this._chunkFactory.getChunk(chunkId, chunkType, object.program, state); // Attach new chunk
+        // Attach new chunk
+
+        object.chunks[order] = this._chunkFactory.getChunk(chunkType, object, object.program, state);
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
@@ -472,7 +464,7 @@
         }
     };
 
-
+    // Sets the singular ambient light.
     XEO.renderer.Renderer.prototype._setAmbient = function (state) {
 
         var lights = state.lights;
@@ -503,21 +495,24 @@
             return;
         }
 
+        // Release object's shader
         this._programFactory.put(object.program);
 
         object.program = null;
         object.hash = null;
 
+        // Release object
         this._objectFactory.put(object);
 
         delete this._objects[objectId];
 
+        // Need to repack object map into fast iteration list
         this.objectListDirty = true;
     };
 
 
     /**
-     *
+     * Renders a new frame, if neccessary.
      */
     XEO.renderer.Renderer.prototype.render = function (params) {
 
@@ -548,14 +543,14 @@
 
         if (this.imageDirty || params.force) {
 
-            // Render the object draw list
+            // Render the draw list
 
             this._doDrawList({
                 clear: (params.clear !== false) // Clear buffers by default
             });
 
             this.imageDirty = false;
-            this.pickBufDirty = true;           // Pick buffer now needs redraw on next pick
+            this.pickBufDirty = true;      // Pick buffer now needs redraw on next pick
         }
     };
 
@@ -578,15 +573,23 @@
      * (Re)generates each object's state sort key from it's states.
      */
     XEO.renderer.Renderer.prototype._makeStateSortKeys = function () {
+
         //  console.log("--------------------------------------------------------------------------------------------------");
         // console.log("XEO.Renderer_makeSortKeys");
+
         var object;
+
         for (var i = 0, len = this._objectListLen; i < len; i++) {
+
             object = this._objectList[i];
+
             if (!object.program) {
+
                 // Non-visual object (eg. sound)
                 object.sortKey = -1;
+
             } else {
+
                 object.sortKey =
                     ((object.stage.priority + 1) * 1000000000000)
                     + ((object.modes.transparent ? 2 : 1) * 1000000000)
@@ -630,12 +633,12 @@
      */
     XEO.renderer.Renderer.prototype._buildDrawList = function () {
 
-        this._lastStateId = this._lastStateId || [];
-        this._lastPickStateId = this._lastPickStateId || [];
+        this._lastChunkId = this._lastChunkId || [];
+        this._lastPickChunkId = this._lastPickChunkId || [];
 
         for (var i = 0; i < 20; i++) {
-            this._lastStateId[i] = null;
-            this._lastPickStateId[i] = null;
+            this._lastChunkId[i] = null;
+            this._lastPickChunkId[i] = null;
         }
 
         this._drawListLen = 0;
@@ -687,7 +690,7 @@
 
                         targetListList.push(list);
 
-                        targetList.push(this._chunkFactory.getChunk(target.id, "renderTarget", object.program, target));
+                        targetList.push(this._chunkFactory.getChunk("renderTarget", object, object.program, target));
                     }
 
                     list.push(object);
@@ -707,7 +710,7 @@
 
                         targetListList.push(list);
 
-                        targetList.push(this._chunkFactory.getChunk(target.id, "renderTarget", object.program, target));
+                        targetList.push(this._chunkFactory.getChunk("renderTarget", object, object.program, target));
                     }
 
                     list.push(object);
@@ -746,7 +749,7 @@
 
             // Unbinds any render target bound previously
 
-            this._appendRenderTargetChunk(this._chunkFactory.getChunk(-1, "renderTarget", object.program, {}));
+            this._appendRenderTargetChunk(this._chunkFactory.getChunk("renderTarget", object.program, {}));
         }
 
         // Append chunks for objects not in render targets
@@ -777,31 +780,54 @@
      * @private
      */
     XEO.renderer.Renderer.prototype._appendObjectToDrawLists = function (object, pickable) {
+
         var chunks = object.chunks;
         var picking = object.modes.picking;
         var chunk;
+
         for (var i = 0, len = chunks.length; i < len; i++) {
+
             chunk = chunks[i];
+
             if (chunk) {
 
-                // As we apply the state chunk lists we track the ID of most types of chunk in order
-                // to cull redundant re-applications of runs of the same chunk - except for those chunks with a
-                // 'unique' flag, because we don't want to cull runs of draw chunks because they contain the GL
-                // drawElements calls which render the objects.
+                // As we apply the state chunk lists we track the ID of most types
+                // of chunk in order to cull redundant re-applications of runs
+                // of the same chunk - except for those chunks with a 'unique' flag,
+                // because we don't want to collapse runs of draw chunks because
+                // they contain the GL drawElements calls which render the objects.
 
                 if (chunk.draw) {
-                    if (chunk.unique || this._lastId[i] !== chunk.id) { // Don't reapply repeated states
+
+                  // Rendering pass
+
+                    if (chunk.unique || this._lastChunkId[i] !== chunk.id) {
+
+                        // Don't reapply repeated chunks
+
                         this._drawList[this._drawListLen++] = chunk;
-                        this._lastStateId[i] = chunk.id;
+                        this._lastChunkId[i] = chunk.id;
                     }
                 }
 
                 if (chunk.pick) {
-                    if (pickable !== false) {   // Don't pick objects in unpickable stages
-                        if (picking) {          // Don't pick unpickable objects
-                            if (chunk.unique || this._lastPickStateId[i] !== chunk.id) { // Don't reapply repeated states
+
+                   // Picking pass
+
+                    if (pickable !== false) {
+
+                        // Don't pick objects in unpickable stages
+
+                        if (picking) {
+
+                            // Don't pick unpickable objects
+
+                            if (chunk.unique || this._lastPickChunkId[i] !== chunk.id) {
+
+                                // Don't reapply repeated chunks
+
                                 this._pickDrawList[this._pickDrawListLen++] = chunk;
-                                this._lastPickStateId[i] = chunk.id;
+                                this._lastPickChunkId[i] = chunk.id;
                             }
                         }
                     }
@@ -812,36 +838,50 @@
 
     /**
      * Logs the contents of the draw list to the console.
+     *
      * @private
      */
     XEO.renderer.Renderer.prototype._logDrawList = function () {
+
         console.log("--------------------------------------------------------------------------------------------------");
         console.log(this._drawListLen + " draw list chunks");
+
         for (var i = 0, len = this._drawListLen; i < len; i++) {
+
             var chunk = this._drawList[i];
+
             console.log("[chunk " + i + "] type = " + chunk.type);
+
             switch (chunk.type) {
                 case "draw":
                     console.log("\n");
                     break;
+
                 case "renderTarget":
                     console.log(" type = renderTarget");
                     break;
             }
         }
+
         console.log("--------------------------------------------------------------------------------------------------");
     };
 
     /**
      * Logs the contents of the pick list to the console.
+     *
      * @private
      */
     XEO.renderer.Renderer.prototype._logPickList = function () {
+
         console.log("--------------------------------------------------------------------------------------------------");
         console.log(this._pickDrawListLen + " pick list chunks");
+
         for (var i = 0, len = this._pickDrawListLen; i < len; i++) {
+
             var chunk = this._pickDrawList[i];
+
             console.log("[chunk " + i + "] type = " + chunk.type);
+
             switch (chunk.type) {
                 case "draw":
                     console.log("\n");
@@ -851,13 +891,15 @@
                     break;
             }
         }
+
         console.log("--------------------------------------------------------------------------------------------------");
     };
 
     /**
-     * Performs a pick on the display graph and returns info on the result.
-     * @param {*} params
-     * @returns {*}
+     * Attempts to pick a renderer object at the given canvas coordinates.
+     *
+     * @param {*} params Picking params.
+     * @returns {*} Hit result, if any.
      */
     XEO.renderer.Renderer.prototype.pick = function (params) {
 
@@ -867,18 +909,20 @@
         var canvasY = params.canvasY;
         var pickBuf = this.pickBuf;
 
-        // Lazy-create pick buffer
+        // Lazy-create the pick buffer
 
         if (!pickBuf) {
 
-            pickBuf = new XEO.renderer.webgl.RenderBuffer({canvas: this._canvas});
+            pickBuf = new XEO.renderer.webgl.RenderBuffer({
+                canvas: this._canvas
+            });
 
             this.pickBuf = pickBuf;
 
             this.pickBufDirty = true;
         }
 
-        // Do any pending visible render
+        // Do any pending render
 
         this.render();
 
@@ -886,11 +930,14 @@
 
         pickBuf.bind();
 
-        // Re-render the pick buffer if the display has updated
+        // Re-render the pick buffer if the image
+        // was updated by the render we just did
 
         if (this.pickBufDirty) {
 
             pickBuf.clear();
+
+            // Do a color-index picking pass over the draw list
 
             this._doDrawList({
                 pick: true,
@@ -900,6 +947,10 @@
             this._canvas.gl.finish();
 
             this.pickBufDirty = false;
+
+            // Because the image was updated, we'll also need
+            // to re-render the ray-pick depth buffer
+
             this.rayPickBufDirty = true;
         }
 
@@ -909,19 +960,24 @@
         var pix = pickBuf.read(canvasX, canvasY);
         var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
         var pickIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
+
         pickBuf.unbind();
 
         // Look up pick name from index
 
-        var pickName = this._frameCtx.pickNames[pickIndex];
+        var object = this._frameCtx.pickObjects[pickIndex];
 
-        if (pickName) {
+        if (object) {
+
+            // Object was picked
+            // Build hit report
 
             hit = {
-                name: pickName.name,
-                path: pickName.path,
-                componentId: pickName.componentId,
-                canvasPos: [canvasX, canvasY]
+                  objectId: object.id,
+                  canvasPos: [
+                    canvasX,
+                    canvasY
+                  ]
             };
 
             // Now do a ray-pick if requested
@@ -943,7 +999,7 @@
                     this.rayPickBufDirty = true;
                 }
 
-                // Render depth values to ray-pick depth buffer
+                // Render depth values to the ray-pick depth buffer
 
                 rayPickBuf.bind();
 
@@ -952,6 +1008,7 @@
                     rayPickBuf.clear();
 
                     this._doDrawList({
+                        object: object,  // Render just the picked object
                         pick: true,
                         rayPick: true,
                         clear: true
@@ -962,9 +1019,12 @@
 
                 // Read pixel from depth buffer, convert to normalised device Z coordinate,
                 // which will be in range of [0..1] with z=0 at front
+
                 pix = rayPickBuf.read(canvasX, canvasY);
 
                 rayPickBuf.unbind();
+
+                // Get World-space ray-intersect position
 
                 var screenZ = this._unpackDepth(pix);
                 var w = canvas.width;
@@ -985,6 +1045,7 @@
                 var vWorld = XEO.math.addVec3(world1, XEO.math.mulVec4Scalar(dir, screenZ, []), []);
 
                 // Got World-space intersect with surface of picked geometry
+
                 hit.worldPos = vWorld;
             }
         }
@@ -1016,60 +1077,90 @@
 
         var gl = this._canvas.gl;
 
-        // Reset frame context
+        // Initialize the renderer frame context.
+        // The frame context holds state that will be used by draw list
+        // chunks as they are rendered for this frame. Some of the frame context
+        // state will also be updated by chunks as they are rendered.
 
         var frameCtx = this._frameCtx;
 
+        frameCtx.pick = !!params.pick;
+        frameCtx.rayPick = !!params.rayPick;
         frameCtx.renderTarget = null;
-        frameCtx.targetIndex = 0;
         frameCtx.renderBuf = null;
         frameCtx.viewMatrix = null;
         frameCtx.projMatrix = null;
         frameCtx.depthbufEnabled = null;
         frameCtx.clearDepth = null;
         frameCtx.depthFunc = gl.LESS;
-        frameCtx.scissorTestEnabled = false;
         frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = "ccw";
-        frameCtx.pick = !!params.pick;
-        frameCtx.rayPick = !!params.rayPick;
-        frameCtx.pickIndex = 0;
+        frameCtx.pickIndex = 0; // Indexes this._pickObjects
         frameCtx.textureUnit = 0;
         frameCtx.lineWidth = 1;
-        frameCtx.transparent = false;
+        frameCtx.transparent = false; // True while rendering transparency bin
         frameCtx.ambientColor = this._ambientColor;
+
+        // Set the viewport to the extents of the drawing buffer
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
         if (this.transparent) {
+
+            // Canvas is transparent - set clear color with zero alpha
+            // to allow background to show through
+
             gl.clearColor(0, 0, 0, 0);
 
         } else {
+
+            // Canvas is opaque - set clear color to the current ambient
+            // color, which can be provided by an ambient light source
+
             gl.clearColor(this._ambientColor[0], this._ambientColor[1], this._ambientColor[2], 1.0);
         }
 
         if (params.clear) {
+
+            // Clear the various buffers for this frame
+
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
         }
 
+        // "modes" chunks set the backface winding direction
         gl.frontFace(gl.CCW);
+
+        // "modes" chunks set backface culling on/off
         gl.disable(gl.CULL_FACE);
+
+        // Last "modes" chunk in draw list with
+        // transparent == true will enable blend
         gl.disable(gl.BLEND);
 
         if (params.pick) {
 
             // Pick render
 
-            for (var i = 0, len = this._pickDrawListLen; i < len; i++) {
-                this._pickDrawList[i].pick(frameCtx);
+            if (params.object) {
+
+                // Render the pick chunks for a given object
+                // TODO
+
+            } else {
+
+                // Render all pick chunks in the draw list
+
+                for (var i = 0, len = this._pickDrawListLen; i < len; i++) {
+                    this._pickDrawList[i].pick(frameCtx);
+                }
             }
 
         } else {
 
-            // Draw render
+            // Render the draw chunk list
 
-            for (var i = 0, len = this._drawListLen; i < len; i++) {      // Push opaque rendering chunks
+            for (var i = 0, len = this._drawListLen; i < len; i++) {
                 this._drawList[i].draw(frameCtx);
             }
         }
@@ -1089,6 +1180,9 @@
 //    }
     };
 
+    /**
+     * Destroys this Renderer.
+     */
     XEO.renderer.Renderer.prototype.destroy = function () {
         this._programFactory.destroy();
     };

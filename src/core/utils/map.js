@@ -40,8 +40,8 @@
 
             } else {
                 while (true) {
-                    item = arguments[0];
-                    var findId = lastUniqueId++;
+                    item = arguments[0] || {};
+                      var findId = lastUniqueId++;
                     if (!this.items[findId]) {
                         this.items[findId] = item;
                         return findId;

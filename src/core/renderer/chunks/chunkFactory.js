@@ -8,6 +8,7 @@
     XEO.renderer.ChunkFactory = function () {
 
         this._chunks = {};
+        this._chunkIDs = new XEO.utils.Map();
 
         this.chunkTypes = XEO.renderer.ChunkFactory.chunkTypes;
     };
@@ -66,7 +67,7 @@
     /**
      * Gets a chunk from this factory.
      */
-    XEO.renderer.ChunkFactory.prototype.getChunk = function (chunkId, type, program, state) {
+    XEO.renderer.ChunkFactory.prototype.getChunk = function (type, object, program, state) {
 
         var chunkClass = XEO.renderer.ChunkFactory.chunkTypes[type]; // Check type supported
 
@@ -74,18 +75,15 @@
             throw "chunk type not supported: '" + type + "'";
         }
 
-        // Try to instance an existing chunk
+        // Unique ID for our chunk
 
-        var chunk = this._chunks[chunkId];
-
-        if (chunk) {
-            chunk.useCount++;
-            return chunk;
-        }
+        var id = this._chunkIDs.addItem();
 
         // Try to recycle a free chunk
 
         var freeChunks = XEO.renderer.ChunkFactory._freeChunks[type];
+
+        var chunk;
 
         if (freeChunks.chunksLen > 0) {
             chunk = freeChunks.chunks[--freeChunks.chunksLen];
@@ -95,18 +93,18 @@
 
             // Reinitialise the free chunk
 
-            chunk.init(chunkId, program, state);
+            chunk.init(id, object, program, state);
 
         } else {
 
             // No free chunk, create a new one
 
-            chunk = new chunkClass(chunkId, program, state);
+            chunk = new chunkClass(id, object, program, state);
         }
 
         chunk.useCount = 1;
 
-        this._chunks[chunkId] = chunk;
+        this._chunks[id] = chunk;
 
         return chunk;
     };
@@ -126,7 +124,9 @@
 
         if (--chunk.useCount <= 0) {
 
-            this._chunks[chunk.id] = null;
+          this._chunkIDs.removeItem(chunk.id);
+
+            delete this._chunks[chunk.id];
 
             var freeChunks = XEO.renderer.ChunkFactory._freeChunks[chunk.type];
 
@@ -141,11 +141,11 @@
 
         var chunk;
 
-        for (var chunkId in this._chunks) {
+        for (var id in this._chunks) {
 
-            if (this._chunks.hasOwnProperty(chunkId)) {
+            if (this._chunks.hasOwnProperty(id)) {
 
-                chunk = this._chunks[chunkId];
+                chunk = this._chunks[id];
 
                 if (chunk.build) {
                     chunk.build();
