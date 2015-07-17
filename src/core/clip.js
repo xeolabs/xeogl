@@ -130,13 +130,14 @@
         _init: function (cfg) {
 
             this._state = {
-
-                mode: cfg.mode,
-
-                dir: cfg.dir,
-
-                dist: cfg.dist
+                mode: "disabled",
+                dir: [1,0,0],
+                dist: 1.0
             };
+
+            this.mode = cfg.mode;
+            this.dir = cfg.dir;
+            this.dist = cfg.dist;
         },
 
         _props: {
@@ -162,9 +163,7 @@
 
                 set: function (value) {
 
-                    value = value || "disabled";
-
-                    this._state.mode = value;
+                    this._state.mode =  value || "disabled";
 
                     this._renderer.imageDirty = true;
 
@@ -251,9 +250,9 @@
 
         _getJSON: function () {
             return {
-                mode: this.mode,
-                dir: this.dir,
-                dist: this.dist
+                mode: this._state.mode,
+                dir: this._state.dir,
+                dist: this._state.dist
             };
         }
     });
