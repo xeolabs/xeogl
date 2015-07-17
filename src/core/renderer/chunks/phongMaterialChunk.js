@@ -113,7 +113,7 @@
                 this._uMaterialEmissive.setValue(state.emissive);
             }
 
-            // Opacity 
+            // Opacity
 
             if (this._uMaterialOpacity) {
                 this._uMaterialOpacity.setValue(state.opacity);
@@ -198,8 +198,8 @@
             if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
                 frameCtx.textureUnit = 0;
             }
-            
-            
+
+
             // Fresnel effects
 
             if (state.diffuseFresnel) {

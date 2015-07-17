@@ -114,9 +114,12 @@
             priority: {
 
                 /**
-                 * Indicates the rendering priority for the {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in this Stage.
+                 * Indicates the rendering priority for the
+                 * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in
+                 * this Stage.
                  *
-                 * Fires a {{#crossLink "Stage/priority:event"}}{{/crossLink}} event on change.
+                 * Fires a {{#crossLink "Stage/priority:event"}}{{/crossLink}}
+                 * event on change.
                  *
                  * @property priority
                  * @default 0
@@ -124,14 +127,15 @@
                  */
                 set: function (value) {
 
-                    value = value || 0;
-
-                    this._state.priority = value;
+                    this._state.priority = value || 0;
 
                     this._renderer.stateOrderDirty = true;
 
                     /**
-                     * Fired whenever this Stage's {{#crossLink "Stage/priority:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Stage's
+                     * {{#crossLink "Stage/priority:property"}}{{/crossLink}}
+                     * property changes.
+                     *
                      * @event priority
                      * @param value The property's new value
                      */
@@ -144,9 +148,12 @@
             },
 
             /**
-             * Indicates whether the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable (see {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}).
+             * Indicates whether the attached
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are
+             * pickable (see {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}).
              *
              * Fires a {{#crossLink "Stage/pickable:event"}}{{/crossLink}} event on change.
+             *
              * @property pickable
              * @default true
              * @type Boolean
@@ -155,14 +162,15 @@
 
                 set: function (value) {
 
-                    value = value !== false; // Default is true
-
-                    this._state.pickable = value;
+                    this._state.pickable = value !== false;
 
                     this._renderer.drawListDirty = true;
 
                     /**
-                     * Fired whenever this Stage's {{#crossLink "Stage/pickable:pickable"}}{{/crossLink}} property changes.
+                     * Fired whenever this Stage's
+                     * {{#crossLink "Stage/pickable:pickable"}}{{/crossLink}}
+                     * property changes.
+                     *
                      * @event pickable
                      * @param value The property's new value
                      */

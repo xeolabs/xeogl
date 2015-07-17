@@ -116,7 +116,7 @@
         _init: function (cfg) {
 
             this._state = {
-                mode: "point",
+                type: "point",
                 pos: [1.0, 1.0, 1.0],
                 color: [0.7, 0.7, 0.8],
                 intensity:   1.0,
@@ -365,14 +365,14 @@
 
         _getJSON: function () {
             return {
-                mode: this.mode,
-                pos: this.pos,
-                color: this.color,
-                intensity: this.intensity,
-                constantAttenuation: this.constantAttenuation,
-                linearAttenuation: this.linearAttenuation,
-                quadraticAttenuation: this.quadraticAttenuation,
-                space: this.space
+                type: this._state.type,
+                pos: this._state.pos,
+                color: this._state.color,
+                intensity: this._state.intensity,
+                constantAttenuation: this._state.constantAttenuation,
+                linearAttenuation: this._state.linearAttenuation,
+                quadraticAttenuation: this._state.quadraticAttenuation,
+                space: this._state.space
             };
         }
     });

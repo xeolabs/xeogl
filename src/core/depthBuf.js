@@ -136,8 +136,9 @@
                     value = value || "less";
 
                     var enumName = this._depthFuncNames[value];
+
                     if (enumName === undefined) {
-                        this.error("unsupported value for 'clearFunc' attribute on depthBuf component: '" + value +
+                        this.error("Unsupported value for 'clearFunc' attribute on depthBuf component: '" + value +
                             "' - supported values are 'less', 'equal', 'lequal', 'greater', 'notequal' and 'gequal'");
                         return;
                     }

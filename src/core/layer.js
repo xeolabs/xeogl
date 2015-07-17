@@ -70,7 +70,7 @@ var geometry = new XEO.Geometry(scene);
 // Innermost box
 // Blue and opaque, in Layer with render order 0, renders first
  //-----------------------------------------------------------------------------
- 
+
 var layer1 = new XEO.Layer(scene, {
     priority: 1
 });
@@ -79,7 +79,7 @@ var material1 = new XEO.PhongMaterial(scene, {
     diffuse: [0.2, 0.2, 1.0],
     opacity: 1.0
 });
-    
+
 var object1 = new XEO.GameObject(scene, {
     camera: camera,
     geometry: geometry,
@@ -192,9 +192,7 @@ var object3 = new XEO.GameObject(scene, {
 
                 set: function (value) {
 
-                    value = value || 0;
-
-                    this._state.priority = value;
+                    this._state.priority = value || 0;
 
                     this._renderer.stateOrderDirty = true;
 
@@ -204,7 +202,7 @@ var object3 = new XEO.GameObject(scene, {
                      * @event priority
                      * @param value The property's new value
                      */
-                    this.fire("priority", value);
+                    this.fire("priority", this._state.priority);
                 },
 
                 get: function () {
@@ -219,7 +217,7 @@ var object3 = new XEO.GameObject(scene, {
 
         _getJSON: function () {
             return {
-                priority: this.priority
+                priority: this._state.priority
             };
         },
 

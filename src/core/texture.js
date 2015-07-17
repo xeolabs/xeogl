@@ -119,7 +119,7 @@
                 texture: null,
                 matrix: null
             });
-            
+
             // Data source
 
             this._src = null;
@@ -150,7 +150,7 @@
             this._propsDirty = true;
 
             var self = this;
-            
+
             // Handle WebGL context restore
 
             this._webglContextRestored = this.scene.canvas.on(
@@ -241,7 +241,7 @@
             if (this._imageDirty) {
                 if (this._image) {
                     state.texture.setImage(this._image);
-                    this._imageDirty = false;            
+                    this._imageDirty = false;
                 }
             }
 
@@ -249,7 +249,7 @@
 
                 // TODO: destroy texture only if created for this state,
                 // don't destroy texture belong to a previous target
-                
+
                 this._targetDirty = false;
             }
 
@@ -279,7 +279,7 @@
 
                 this._matrixDirty = false;
             }
-            
+
             if (this._propsDirty) {
                 state.texture.setProps(state);
                 this._propsDirty = false;
@@ -291,7 +291,7 @@
         },
 
 
-        _loadSrc: function (src) {            
+        _loadSrc: function (src) {
 
             var task = this.scene.tasks.create({
                 description: "Loading texture"
@@ -807,19 +807,33 @@
             }
         },
 
-        _getJSON: function () {            
+        _getJSON: function () {
 
             var json = {
-                minFilter: this._minFilter,
-                magFilter: this._magFilter,
-                wrapS: this._wrapS,
-                wrapT: this._wrapT,
-                flipY: this._flipY,
-
                 translate: this._translate,
                 scale: this._scale,
                 rotate: this._rotate
             };
+
+            if (this._minFilter != "linearMipMapLinear") {
+                json.minFilter = this._minFilter;
+            }
+
+            if (this._magFilter != "linear") {
+                json.magFilter = this._magFilter;
+            }
+
+            if (this._wrapS != "repeat") {
+                json.wrapS = this._wrapS;
+            }
+
+            if (this._wrapT != "repeat") {
+                json.wrapT = this._wrapT;
+            }
+
+            if (this._flipY !== true) {
+                json.flipY = this._flipY;
+            }
 
             if (this._src) {
                 json.src = this._src;
@@ -828,6 +842,7 @@
                 json.target = this._target.id;
 
             } else if (this._image) {
+               // TODO: Image data
                 // json.src = image.src;
             }
 

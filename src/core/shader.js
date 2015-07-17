@@ -311,7 +311,9 @@
             this._renderer.imageDirty = true;
 
             /**
-             * Fired whenever this Shader's  {{#crossLink "Shader/params:property"}}{{/crossLink}} property has been updated.
+             * Fired whenever this Shader's  {{#crossLink "Shader/params:property"}}{{/crossLink}}
+             * property has been updated.
+             *
              * @event params
              * @param value The property's new value
              */
@@ -323,11 +325,20 @@
         },
 
         _getJSON: function () {
-            return {
-                vertex: this.vertex,
-                fragment: this.fragment,
-                params: this.params
+
+            var json = {
+                params: this._state.params
             };
+
+            if (this._state.vertex) {
+                json.vertex = this._state.vertex;
+            }
+
+            if (this._state.fragment) {
+                json.fragment = this._state.fragment;
+            }
+
+            return json;
         }
     });
 

@@ -254,7 +254,7 @@
 
                 set: function (value) {
 
-                    this._bottom =  (value !== undefined && value !== null) ? value : -1.0;
+                    this._bottom = (value !== undefined && value !== null) ? value : -1.0;
 
                     this._renderer.imageDirty = true;
 

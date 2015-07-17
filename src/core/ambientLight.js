@@ -106,7 +106,8 @@
 
             this._state = {
                 type: "ambient",
-                color: [0.7, 0.7, 0.7]
+                color: [0.7, 0.7, 0.7],
+                intensity: 1.0
             };
 
             this.color = cfg.color;
@@ -159,9 +160,7 @@
 
                 set: function (value) {
 
-                    value = value !== undefined ? value :  1.0;
-
-                    this._state.intensity = value;
+                    this._state.intensity = value !== undefined ? value :  1.0;
 
                     this._renderer.imageDirty = true;
 
@@ -181,7 +180,8 @@
 
         _getJSON: function () {
             return {
-                color: this.color
+                color: this._state.color,
+                intensity: this._state.intensity
             };
         }
     });

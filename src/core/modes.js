@@ -288,11 +288,11 @@
 
         _getJSON: function () {
             return {
-                picking: this.picking,
-                clipping: this.clipping,
-                transparent: this.transparent,
-                backfaces: this.backfaces,
-                frontface: this.frontface
+                picking: this._state.picking,
+                clipping: this._state.clipping,
+                transparent: this._state.transparent,
+                backfaces: this._state.backfaces,
+                frontface: this._state.frontface
             };
         },
 
@@ -302,5 +302,3 @@
     });
 
 })();
-
-

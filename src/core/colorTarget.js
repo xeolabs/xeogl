@@ -87,19 +87,22 @@
 
         _init: function () {
 
-            this._state = new XEO.renderer.RenderTarget({
-                type: XEO.renderer.RenderTarget.COLOR,
-                renderBuf: new XEO.renderer.webgl.RenderBuffer({
-                    canvas: this.scene.canvas
-                })
-            });
+          var canvas = this.scene.canvas;
 
-            var self = this;
+          this._state = new XEO.renderer.RenderTarget({
+              type: XEO.renderer.RenderTarget.COLOR,
+              renderBuf: new XEO.renderer.webgl.RenderBuffer({
+                  canvas: canvas.canvas,
+                  gl: canvas.gl
+              })
+          });
 
-            this._webglContextRestored = this.scene.canvas.on("webglContextRestored",
-                function () {
-                    self._state.renderBuf.webglRestored();
-                });
+          var self = this;
+
+          this._webglContextRestored = canvas.on("webglContextRestored",
+              function () {
+                  self._state.renderBuf.webglRestored(canvas.gl);
+              });
         },
 
         _compile: function () {
@@ -117,4 +120,3 @@
     });
 
 })();
-

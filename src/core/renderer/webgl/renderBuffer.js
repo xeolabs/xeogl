@@ -17,7 +17,7 @@
         /**
          * WebGL context
          */
-        this.gl = cfg.canvas.gl;
+        this.gl = cfg.gl;
 
         /**
          * Buffer resources, set up in #_touch
@@ -58,8 +58,8 @@
 
     XEO.renderer.webgl.RenderBuffer.prototype._touch = function () {
 
-        var width = this.canvas.canvas.width;
-        var height = this.canvas.canvas.height;
+        var width = this.canvas.width;
+        var height = this.canvas.height;
 
         if (this.buffer) {
 
@@ -165,7 +165,7 @@
      */
     XEO.renderer.webgl.RenderBuffer.prototype.read = function (pickX, pickY) {
         var x = pickX;
-        var y = this.canvas.canvas.height - pickY;
+        var y = this.canvas.height - pickY;
         var pix = new Uint8Array(4);
         this.gl.readPixels(x, y, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pix);
         return pix;

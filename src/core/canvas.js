@@ -151,17 +151,25 @@
 
                         // Canvas not found - create one automatically
 
-                        this.error("Canvas element not found: '" + cfg.canvas + "' - creating one automatically.");
+                        this.error("Canvas element not found: '" + cfg.canvas
+                          + "' - creating default canvas instead.");
+
                         this._createCanvas();
                     }
 
                 } else {
 
-                    this.error("Config 'canvasId' should be a string.");
+                    this.error("Config 'canvasId' should be a string - "
+                          + "creating default canvas instead.");
+
+                    this._createCanvas();
                 }
             }
 
             if (!this.canvas) {
+
+                this.error("Faied to create canvas");
+
                 return;
             }
 
@@ -267,13 +275,15 @@
         },
 
         /**
-         * Creates a canvas
+         * Creates a canvas in the DOM
          * @private
          */
         _createCanvas: function () {
-            var canvasId = "canvas-" + this.id;
+
+            var canvasId = "xeo-canvas-" + this.id;
             var body = document.getElementsByTagName("body")[0];
             var div = document.createElement('div');
+
             var style = div.style;
             style.height = "100%";
             style.width = "100%";
@@ -283,8 +293,11 @@
             style.top = "0";
             style.position = "absolute";
             // style["z-index"] = "10000";
+
             div.innerHTML += '<canvas id="' + canvasId + '" style="width: 100%; height: 100%; margin: 0; padding: 0;"></canvas>';
+
             body.appendChild(div);
+
             this.canvas = document.getElementById(canvasId);
         },
 
@@ -310,6 +323,10 @@
                  * @event webglContextFailed
                  */
                 this.fire("webglContextFailed", true, true);
+
+                // TODO: render message in canvas
+
+
             }
         },
 

@@ -103,7 +103,9 @@ scene.on("tick", function(e) {
         className: "XEO.Translate",
 
         _init: function (cfg) {
+
             this._super(cfg);
+            
             this.xyz = cfg.xyz;
         },
 
@@ -119,7 +121,9 @@ scene.on("tick", function(e) {
             xyz: {
 
                 set: function (value) {
+
                     this._xyz = value || [1, 1, 1];
+
                     this.matrix = XEO.math.translationMat4v(this._xyz);
 
                     /**

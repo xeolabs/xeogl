@@ -99,9 +99,10 @@
             // Renderer state contains the states of the child light source components
             this._state = new XEO.renderer.Lights({
                 lights: [],
-                hash: "",
-                dirty: true
+                hash: ""
             });
+
+            this._dirty = true;
 
             // Array of child light source components
             this._lights = [];
@@ -136,8 +137,11 @@
                     var light;
 
                     // Unsubscribe from events on old lights
+
                     for (var i = 0, len = this._lights.length; i < len; i++) {
+
                         light = this._lights[i];
+
                         light.off(this._dirtySubs[i]);
                         light.off(this._destroyedSubs[i]);
                     }
@@ -147,7 +151,6 @@
                     this._dirtySubs = [];
                     this._destroyedSubs = [];
 
-                    var lights = [];
                     var self = this;
 
                     function lightDirty() {
@@ -166,7 +169,7 @@
                                 self._dirtySubs = self._dirtySubs.slice(i, i + 1);
                                 self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
 
-                                self._state.dirty = true;
+                                self._dirty = true;
 
                                 self.fire("dirty", true);
                                 self.fire("lights", self._lights);
@@ -202,11 +205,9 @@
                         this._dirtySubs.push(light.on("dirty", lightDirty));
 
                         this._destroyedSubs.push(light.on("destroyed", lightDestroyed));
-
-                        lights.push(light);
                     }
 
-                    this._state.dirty = true;
+                    this._dirty = true;
 
                     this.fire("dirty", true);
                     this.fire("lights", this._lights);
@@ -222,7 +223,7 @@
 
             var state = this._state;
 
-            if (state.dirty) {
+            if (this._dirty) {
 
                 state.lights = [];
 
@@ -232,7 +233,7 @@
 
                 this._makeHash();
 
-                state.dirty = false;
+                this._dirty = false;
             }
 
             this._renderer.lights = state;
@@ -240,7 +241,6 @@
 
         _makeHash: function () {
 
-            var state = this._state;
             var lights = this._state.lights;
 
             if (lights.length === 0) {
@@ -259,7 +259,7 @@
 
             hash.push(";");
 
-            state.hash = hash.join("");
+            this._state.hash = hash.join("");
         },
 
         _getJSON: function () {

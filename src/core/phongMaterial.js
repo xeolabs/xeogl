@@ -164,11 +164,10 @@
                 opacityFresnel: null,
                 reflectivityFresnel: null,
 
-                dirty: true,
-                
                 hash: null
             });
 
+            this._dirty = true;
 
             this._components = [];
             this._dirtyComponentSubs = [];
@@ -763,7 +762,7 @@
 
             if (XEO._isString(component)) {
 
-                // ID given for component - find the component 
+                // ID given for component - find the component
                 var id = component;
 
                 component = this.scene.components[id];
@@ -806,7 +805,7 @@
                         delete self._dirtyComponentSubs[type];
                         delete self._destroyedComponentSubs[type];
 
-                        self._state.dirty = true;
+                        self._dirty = true;
 
                         self.fire("dirty", true);
                         self.fire(type, null);
@@ -817,18 +816,18 @@
 
             this._state[type] = component ? component._state : null;
 
-            this._state.dirty = true;
+            this._dirty = true;
 
             this.fire(type, component || null);
         },
 
         _compile: function () {
 
-            if (this._state.dirty) {
+            if (this._dirty) {
 
                 this._makeHash();
 
-                this._state.dirty = false;
+                this._dirty = false;
             }
 
             this._renderer.material = this._state;
@@ -843,42 +842,42 @@
             if (state.normalMap) {
                 hash.push("/b");
                 if (state.normalMap.matrix) {
-                    hash.push("/anim");
+                    hash.push("/mat");
                 }
             }
 
             if (state.diffuseMap) {
                 hash.push("/d");
                 if (state.diffuseMap.matrix) {
-                    hash.push("/anim");
+                    hash.push("/mat");
                 }
             }
 
             if (state.specularMap) {
                 hash.push("/s");
                 if (state.specularMap.matrix) {
-                    hash.push("/anim");
+                    hash.push("/mat");
                 }
             }
 
             if (state.emissiveMap) {
                 hash.push("/e");
                 if (state.emissiveMap.matrix) {
-                    hash.push("/anim");
+                    hash.push("/mat");
                 }
             }
 
             if (state.opacityMap) {
                 hash.push("/o");
                 if (state.opacityMap.matrix) {
-                    hash.push("/anim");
+                    hash.push("/mat");
                 }
             }
 
             if (state.reflectivityMap) {
                 hash.push("/r");
                 if (state.reflectivityMap.matrix) {
-                    hash.push("/anim");
+                    hash.push("/mat");
                 }
             }
 
@@ -901,7 +900,7 @@
             if (state.reflectivityFresnel) {
                 hash.push("/rf");
             }
-            
+
             hash.push(";");
 
             state.hash = hash.join("");
@@ -913,16 +912,16 @@
 
                 // Colors
 
-                ambient: this.ambient,
-                diffuse: this.diffuse,
-                specular: this.specular,
-                emissive: this.emissive,
+                ambient: this._state.ambient,
+                diffuse: this._state.diffuse,
+                specular: this._state.specular,
+                emissive: this._state.emissive,
 
                 // Factors
 
-                opacity: this.opacity,
-                shininess: this.shininess,
-                reflectivity: this.reflectivity
+                opacity: this._state.opacity,
+                shininess: this._state.shininess,
+                reflectivity: this._state.reflectivity
             };
 
             // Textures

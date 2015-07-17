@@ -238,6 +238,8 @@ Other Components that are linked to it will fall back on a default of some sort.
 
                     } else {
 
+                        // Create this component within the default XEO Scene
+
                         this.scene = XEO.scene;
 
                         cfg = arg1;
@@ -285,16 +287,20 @@ Other Components that are linked to it will fall back on a default of some sort.
             this._handleMap = new XEO.utils.Map(); // Subscription handle pool
             this._eventSubs = {}; // A [handle -> callback] map for each location name
             this._handleLocs = {}; // Maps handles to loc names
+
             this.props = {}; // Maps locations to publications
 
-            // Initialize
+            // Initialize this component using the configs
+
             if (this._init) {
                 this._init(cfg);
             }
 
             if (this.scene) {
+
                 // Register this component on its scene
                 // Assigns this component an automatic ID if not yet assigned
+
                 this.scene._addComponent(this);
             }
         },
@@ -366,7 +372,7 @@ Other Components that are linked to it will fall back on a default of some sort.
          *
          * @method on
          * @param {String} event The event
-         * @param {Function} callback Called fired on the event 
+         * @param {Function} callback Called fired on the event
          * @param {Object} [scope=this] Scope for the callback
          * @return {String} Handle to the subscription, which may be used to unsubscribe with {@link #off}.
          */
@@ -515,22 +521,26 @@ Other Components that are linked to it will fall back on a default of some sort.
                     child = this.scene.components[id];
 
                     if (!child) {
-                        this.error("component not found for ID: '" + id + "'");
+                        this.error("Component not found for ID: '" + id + "'");
                         return;
                     }
                 }
 
                 if (!child.type || child.type !== type) {
-                    this.error("Failed to add component '" + child.id + "' to object - component expected to be a '" + type + "' type");
+                    this.error("Failed to add component '" + child.id + "' - component expected to be a '" + type + "' type");
                     return;
                 }
             }
 
             var oldChild = this._children[type];
 
-            if (oldChild) { // child of given type already attached
+            if (oldChild) {
 
-                if (oldChild.id === child.id) { // Attempt to reattach same child
+                // Child of given type already attached
+
+                if (oldChild.id === child.id) {
+
+                    // Reject attempt to reattach same child
                     return;
                 }
 
@@ -540,33 +550,36 @@ Other Components that are linked to it will fall back on a default of some sort.
                 oldChild.off(this._childDirtySubs[type]);
             }
 
-            // Set and publish new child on this object
+            // Set and publish the new child on this component
 
             this._children[type] = child;
 
             var self = this;
 
-            // Bind destruct listener to new child to remove it from this one when destroyed
+            // Bind destruct listener to new child to remove it
+            // from this component when destroyed
+
             this._childDestroySubs[type] = child.on("destroyed",
                 function () {
 
-                    // child destroyed
+                    // Child destroyed
                     delete self._children[type];
 
                     // Try to fall back on default child
                     var defaultComponent = self.scene[type];
-                    if (child.id === defaultComponent.id) {
+
+                    if (!defaultComponent || child.id === defaultComponent.id) {
 
                         // Old child was the default,
                         // so publish null child and bail
+
                         self.set(type, null);
+
                         return;
                     }
 
                     // Set default child
                     self._setChild(type, defaultComponent);
-
-                    // TODO: Flag object recompile
                 });
 
             this._childDirtySubs[type] = child.on("dirty",
@@ -590,15 +603,18 @@ Other Components that are linked to it will fall back on a default of some sort.
             "json": {
 
                 get: function () {
+
                     // Return component's type-specific properties,
                     // augmented with the base component properties
-                    var props = {
+
+                    var json = {
                         id: this.id, // Only output user-defined IDs
                         className: this.className,
                         type: this.type,
                         metadata: this.metadata
                     };
-                    return this._getJSON ? XEO._apply(props, this._getJSON()) : props;
+
+                    return this._getJSON ? XEO._apply(json, this._getJSON()) : json;
                 }
             }
         },
@@ -616,16 +632,21 @@ Other Components that are linked to it will fall back on a default of some sort.
         destroy: function () {
 
             // Unsubscribe from child components
+
             var child;
+
             for (var type in this._children) {
                 if (this._children.hasOwnProperty(type)) {
+
                     child = this._children[type];
+
                     child.off(this._childDestroySubs[type]);
                     child.off(this._childDirtySubs[type]);
                 }
             }
 
             // Execute subclass behaviour
+
             if (this._destroy) {
                 this._destroy();
             }

@@ -44,7 +44,7 @@
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.ViewTransform({
+            this._state = new XEO.renderer.ModelTransform({
                 matrix: null,
                 normalMatrix: null
             });
@@ -98,8 +98,11 @@
                     value = value || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
                     this._state.matrix = value;
-                    this._state.normalMatrix = XEO.math.transposeMat4(XEO.math.inverseMat4(value, this._state.normalMat));
-                    this._dirty = true;
+
+                    this._state.normalMatrix =
+                        XEO.math.transposeMat4(
+                            XEO.math.inverseMat4(value, this._state.normalMatrix));
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -116,8 +119,8 @@
             }
         },
 
-        _compile: function () {
-            //this._renderer.projMatrix = this._state;
+        _compile: function () {                    
+          this._renderer.modelTransform = this._state;
         },
 
         _getJSON: function () {

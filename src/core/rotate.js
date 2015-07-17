@@ -91,24 +91,30 @@ scene.on("tick", function(e) {
         className: "XEO.Rotate",
 
         _init: function (cfg) {
+
             this._super(cfg);
+
             this.xyz = cfg.xyz;
+
+            this.angle = cfg.angle;
         },
 
         _props: {
 
             /**
              * Vector indicating the axis of rotation.
+             *
              * Fires an {{#crossLink "Rotate/xyz:event"}}{{/crossLink}} event on change.
+             *
              * @property xyz
-             * @default [1,1,1]
+             * @default [0,1,0]
              * @type {Array of Number}
              */
             xyz: {
 
                 set: function (value) {
-                    this._xyz = value || [0, 0, 0];
-                    this.matrix = XEO.math.scalingMat4v(this._xyz);
+
+                    this._xyz = value || [0, 1, 0];
 
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/xyz:property"}}{{/crossLink}} property changes.
@@ -122,14 +128,42 @@ scene.on("tick", function(e) {
                 get: function () {
                     return this._xyz;
                 }
-            }
+            },
 
-            // TODO angle
+            /**
+             * Angle of rotation in degrees.
+             *
+             * Fires an {{#crossLink "Rotate/angle:event"}}{{/crossLink}} event on change.
+             *
+             * @property angle
+             * @default 0
+             * @type {Number}
+             */
+            angle: {
+
+                set: function (value) {
+
+                    this._angle = value || 0;
+
+                    /**
+                     Fired whenever this Rotate's {{#crossLink "Rotate/angle:property"}}{{/crossLink}} property changes.
+
+                     @event angle
+                     @param value {Array of Number} The property's new value
+                     */
+                    this.fire("angle", this._angle);
+                },
+
+                get: function () {
+                    return this._angle;
+                }
+            }
         },
 
         _getJSON: function () {
             return {
-                xyz: this.xyz
+                xyz: this._xyz,
+                angle: this._angle
             };
         }
     });

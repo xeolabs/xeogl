@@ -129,5 +129,3 @@ visibility.destroy();
     });
 
 })();
-
-

@@ -126,10 +126,13 @@
 
             // Renderer state contains the states of the child Clip components
             this._state = new XEO.renderer.Clips({
+
                 clips: [],
-                hash: "",
-                dirty: true
+
+                hash: ""
             });
+
+            this._dirty = true;
 
             // Array of child Clip components
             this._clips = [];
@@ -196,7 +199,7 @@
                                 self._dirtySubs = self._dirtySubs.slice(i, i + 1);
                                 self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
 
-                                self._state.dirty = true;
+                                self._dirty = true;
 
                                 self.fire("dirty", true);
                                 self.fire("clips", self._clips);
@@ -236,7 +239,7 @@
                         this._destroyedSubs.push(clip.on("destroyed", clipDestroyed));
                     }
 
-                    this._state.dirty = true;
+                    this._dirty = true;
 
                     /**
                      Fired whenever this Clips' {{#crossLink "Clips/clips:property"}}{{/crossLink}} property changes.
@@ -257,7 +260,7 @@
 
             var state = this._state;
 
-            if (state.dirty) {
+            if (this._dirty) {
 
                 state.clips = [];
 
@@ -267,7 +270,7 @@
 
                 this._makeHash();
 
-                state.dirty = false;
+                this._dirty = false;
             }
 
             this._renderer.clips = state;

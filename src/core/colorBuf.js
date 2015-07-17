@@ -145,8 +145,8 @@
 
         _getJSON: function () {
             return {
-                blendEnabled: this.blendEnabled,
-                colorMask: this.colorMask
+                blendEnabled: this._state.blendEnabled,
+                colorMask: this._state.colorMask
             };
         },
 
@@ -156,4 +156,3 @@
     });
 
 })();
-

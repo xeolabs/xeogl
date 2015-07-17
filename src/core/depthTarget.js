@@ -92,18 +92,21 @@
 
         _init: function () {
 
+            var canvas = this.scene.canvas;
+
             this._state = new XEO.renderer.RenderTarget({
                 type: XEO.renderer.RenderTarget.DEPTH,
                 renderBuf: new XEO.renderer.webgl.RenderBuffer({
-                    canvas: this.scene.canvas
+                    canvas: canvas.canvas,
+                    gl: canvas.gl
                 })
             });
 
             var self = this;
 
-            this._webglContextRestored = this.scene.canvas.on("webglContextRestored",
+            this._webglContextRestored = canvas.on("webglContextRestored",
                 function () {
-                    self._state.renderBuf.webglRestored();
+                    self._state.renderBuf.webglRestored(canvas.gl);
                 });
         },
 
@@ -122,4 +125,3 @@
     });
 
 })();
-

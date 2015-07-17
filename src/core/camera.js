@@ -165,10 +165,18 @@
         },
 
         _getJSON: function () {
-            return {
-                project: this.project.id,
-                view: this.view.id
-            };
+
+            var json = {};
+
+            if (this._children.project) {
+                json.project = this._children.project.id;
+            }
+
+            if (this._children.view) {
+                json.view = this._children.view.id;
+            }
+
+            return json;
         }
     });
 

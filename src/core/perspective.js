@@ -92,9 +92,13 @@
 
         // Schedules a call to #_build on the next "tick"
         _scheduleBuild: function () {
+
             if (!this._dirty) {
+
                 this._dirty = true;
+
                 var self = this;
+
                 this.scene.once("tick",
                     function () {
                         self._build();
@@ -273,6 +277,11 @@
         },
 
         _compile: function () {
+
+            if (this._dirty) {
+                this._build();
+            }
+
             this._renderer.projectTransform = this._state;
         },
 

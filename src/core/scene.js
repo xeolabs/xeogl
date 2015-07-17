@@ -225,17 +225,20 @@
             this._componentIDMap = new XEO.utils.Map();
 
             /**
-             * The {{#crossLink "Component"}}Component{{/crossLink}}s within this Scene, mapped to their IDs.
+             * The {{#crossLink "Component"}}Component{{/crossLink}}s within
+             * this Scene, mapped to their IDs.
              * @property components
              * @type {String:XEO.Component}
              */
             this.components = {};
 
+            // Contains XEO.GameObjects that need to be recompiled back into
+            // this._renderer
             this._dirtyObjects = {};
 
             /**
-             * Configurations for this Scene. Set whatever properties on here that will be
-             * useful to the components within the Scene.
+             * Configurations for this Scene. Set whatever properties on here
+             * that will be useful to the components within the Scene.
              * @final
              * @property configs
              * @type {Configs}
@@ -255,9 +258,10 @@
 
             this.canvas.on("webglContextFailed",
                 function () {
-                    alert("XeoEngine failed to find WebGL");
+                    alert("xeoEngine failed to find WebGL!");
                 });
 
+            // The core WebGL renderer
             this._renderer = new XEO.renderer.Renderer({
                 canvas: this.canvas,
                 transparent: cfg.transparent
@@ -282,7 +286,8 @@
             this.tasks = new XEO.Tasks(this);
 
             /**
-             * Tracks statistics within this Scene, such as numbers of textures, geometries etc.
+             * Tracks statistics within this Scene, such as numbers of
+             * textures, geometries etc.
              * @final
              * @property stats
              * @type {Stats}
@@ -298,19 +303,28 @@
             XEO._addScene(this);
 
             // Add components specified as JSON
-            // This may also add the default components for this Scene
-            var components = cfg.components;
-            if (components) {
-                var component;
+            // This will also add the default components for this Scene,
+            // if this JSON was serialized from a XEO.Scene instance.
+
+            var componentJSONs = cfg.components;
+
+            if (componentJSONs) {
+
+                var componentJSON;
                 var className;
                 var constructor;
-                for (var i = 0, len = components.length; i < len; i++) {
-                    component = components[i];
-                    className = component.className;
+
+                for (var i = 0, len = componentJSONs.length; i < len; i++) {
+
+                    componentJSON = componentJSONs[i];
+                    className = componentJSON.className;
+
                     if (className) {
+
                         constructor = window[className];
+
                         if (constructor) {
-                            new constructor(this, component);
+                            new constructor(this, componentJSON);
                         }
                     }
                 }
@@ -321,9 +335,7 @@
 
             this.view;
             this.project;
-
             this.camera;
-
             this.clips;
             this.colorTarget;
             this.colorBuf;
@@ -341,18 +353,25 @@
             this.shaderParams;
             this.stage;
             this.transform;
-
         },
 
+        // Called by each component that is created with this Scene as parent.
+        // Registers the component within this scene.
         _addComponent: function (c) {
 
             if (c.id) {
+
+                // User-supplied ID
+
                 if (this.components[c.id]) {
                     this.error("A component with this ID already exists in this Scene: " + c.id);
                     return;
                 }
             } else {
-                c.id = this._componentIDMap.addItem({});
+
+                // Auto-generated ID
+
+                c.id = this._componentIDMap.addItem(c);
             }
 
             this.components[c.id] = c;
@@ -368,6 +387,13 @@
                     delete self.components[c.id];
 
                     if (isGameObject) {
+
+                        // Component is a XEO.GameObject
+
+                        // Update scene statistics,
+                        // Unschedule any pending recompilation of
+                        // the GameObject into the renderer
+
                         self.stats.dec("objects");
                         delete self._dirtyObjects[c.id];
                         self.fire("dirty", true);
@@ -383,13 +409,22 @@
 
             if (isGameObject) {
 
+                // Component is a XEO.GameObject
+
+                // Update scene statistics
+
                 this.stats.inc("objects");
 
                 c.on("dirty",
                     function () {
+
+                        // Whenever the GameObject signals dirty,
+                        // schedule its recompilation into the renderer
+
                         if (!self._dirtyObjects[c.id]) {
                             self._dirtyObjects[c.id] = object;
                         }
+
                         self.fire("dirty", true);
                     });
             }
@@ -405,14 +440,18 @@
         _props: {
 
             /**
-             * The default projection transform provided by this Scene, which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
+             * The default projection transform provided by this Scene, which is
+             * a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
              *
              * This {{#crossLink "Perspective"}}Perspective{{/crossLink}} has an
-             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.project", with all other properties set to
-             * their default values.
+             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to
+             * "default.project", with all other properties set to their default
+             * values.
              *
-             * {{#crossLink "Camera"}}Cameras{{/crossLink}} within this Scene are attached to
-             * this {{#crossLink "Perspective"}}Perspective{{/crossLink}} by default.
+             * {{#crossLink "Camera"}}Cameras{{/crossLink}} within this Scene
+             * are attached to this {{#crossLink "Perspective"}}Perspective{{/crossLink}}
+             * by default.
+             *
              * @property project
              * @final
              * @type Perspective
@@ -690,13 +729,15 @@
             },
 
             /**
-             * The default {{#crossLink "Lights"}}Lights{{/crossLink}} provided by this Scene.
+             * The default {{#crossLink "Lights"}}Lights{{/crossLink}} provided
+             * by this Scene.
              *
              * This {{#crossLink "Lights"}}Lights{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to *````"default.lights"````*,
              * with all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink "Lights"}}Lights{{/crossLink}}).
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Lights"}}Lights{{/crossLink}} by default.
+             *
              * @property lights
              * @final
              * @type Lights
@@ -706,6 +747,10 @@
                     return this.components["default.lights"] ||
                         new XEO.Lights(this, {
                             id: "default.lights",
+
+                            // By default a XEO.Lights has an empty lights
+                            // property, so we must provide some lights
+
                             lights: [
 
                                 // Ambient light source #0
@@ -782,7 +827,7 @@
 
             /**
              * The default {{#crossLink "Reflect"}}Reflect{{/crossLink}} provided by this Scene,
-             * (which is a neutral {{#crossLink "Reflect"}}Reflect{{/crossLink}} that has no effect).
+             * (which is initially an empty {{#crossLink "Reflect"}}Reflect{{/crossLink}} that has no effect).
              *
              * This {{#crossLink "Reflect"}}Reflect{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.reflect",
              * with all other properties initialised to their default values.
@@ -804,7 +849,7 @@
 
             /**
              * The default {{#crossLink "Shader"}}Shader{{/crossLink}} provided by this Scene
-             * (which is a neutral {{#crossLink "Shader"}}Shader{{/crossLink}} that has no effect).
+             * (which is initially an empty {{#crossLink "Shader"}}Shader{{/crossLink}} that has no effect).
              *
              * This {{#crossLink "Shader"}}Shader{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.shader",
              * with all other properties initialised to their default values.
@@ -832,6 +877,7 @@
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ShaderParams"}}{{/crossLink}} by default.
+             *
              * @property shaderParams
              * @final
              * @type ShaderParams
@@ -870,18 +916,33 @@
         },
 
         /**
-         * Destroys all components in this Scene
+         * Destroys all non-default components in this Scene.
          */
         clear: function () {
-            var component;
+
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
-                    component = this.components[id];
-                    if (!component.id !== this.id) { // This Scene is also in the component map
-                        component.destroy();
+
+                    // Don't destroy the default components
+
+                    if (id.startsWith("default.")) {
+                      continue;
                     }
+
+                    // This Scene is also in the component map,
+                    // don't destroy it
+
+                    if (id === this.id) {
+                        continue;
+                    }
+
+                    // Each component fires "destroyed" as it is destroyed,
+                    // which this Scene handles by removing the component
+
+                    this.components[id].destroy();
                 }
             }
+
             this._dirtyObjects = {};
         },
 
@@ -891,7 +952,7 @@
          */
         _compile: function () {
 
-            // Compile dirty objects, if any
+            // Compile dirty objects into this._renderer
 
             for (var id in this._dirtyObjects) {
                 if (this._dirtyObjects.hasOwnProperty(id)) {
@@ -901,29 +962,39 @@
 
             this._dirtyObjects = {};
 
+            // Render a frame
+
             this._renderer.render({
                 clear: i === 0
             });
-
         },
 
         _getJSON: function () {
 
-            // Get list of component JSONs, in ascending order of component creation
+            // Get list of component JSONs, in ascending order of component
+            // creation. We need them in that order so that any dependencies
+            // that exist between them are resolved correctly as the
+            // components are instantiawhen when we load the JSON again.
+
             var components = [];
             var priorities = [];
+
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
                     components.push(this.components[id]);
                 }
             }
+
             components.sort(function (a, b) {
                 return a._componentOrder - b._componentOrder
             });
+
             var componentJSONs = [];
+
             for (var i = 0, len = components.length; i < len; i++) {
                 componentJSONs.push(components[i].json);
             }
+
             return {
                 components: componentJSONs
             };

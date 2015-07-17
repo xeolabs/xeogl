@@ -95,4 +95,3 @@ var bar = configs.props["bar"];
     });
 
 })();
-

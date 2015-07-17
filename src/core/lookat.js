@@ -82,23 +82,27 @@
             this._state = new XEO.renderer.ViewTransform({
                 matrix: null,
                 normalMatrix: null,
-                eye: [0, 0, 10.0],
+                eye: [0, 0, -10.0],
                 look: [0, 0, 0.0 ],
                 up: [0, 1, 0.0 ]
             });
+
+            this._dirty = true;
 
             this.eye = cfg.eye;
             this.look = cfg.look;
             this.up = cfg.up;
         },
 
-        _dirty: false,
-
         // Schedules a call to #_build on the next "tick"
         _scheduleBuild: function () {
+
             if (!this._dirty) {
+
                 this._dirty = true;
+
                 var self = this;
+
                 this.scene.once("tick",
                     function () {
                         self._build();
@@ -112,9 +116,11 @@
             this._state.matrix = XEO.math.lookAtMat4c(
                 this._state.eye[0], this._state.eye[1], this._state.eye[2],
                 this._state.look[1], this._state.look[1], this._state.look[2],
-                this._state.up[0], this._state.up[1], this._state.up[2], this._state.matrix);
+                this._state.up[0], this._state.up[1], this._state.up[2],
+                this._state.matrix);
 
-            this._state.normalMat = XEO.math.transposeMat4(XEO.math.inverseMat4(this._state.matrix, this._state.normalMat));
+            this._state.normalMat = XEO.math.transposeMat4(
+                XEO.math.inverseMat4(this._state.matrix, this._state.normalMat));
 
             this._dirty = false;
 
@@ -238,8 +244,8 @@
 
                 get: function () {
 
-                    if (this._state.dirty) {
-                        this._state.build();
+                    if (this._dirty) {
+                        this._build();
                     }
 
                     return this._state.matrix.slice(0);
@@ -248,14 +254,19 @@
         },
 
         _compile: function () {
+
+            if (this._dirty) {
+                this._build();
+            }
+
             this._renderer.viewTransform = this._state;
         },
 
         _getJSON: function () {
             return {
-                eye: this.eye,
-                look: this.look,
-                up: this.up
+                eye: this._state.eye,
+                look: this._state.look,
+                up: this._state.up
             };
         },
 
@@ -265,4 +276,3 @@
     });
 
 })();
-

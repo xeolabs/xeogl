@@ -341,6 +341,11 @@
         },
 
         _compile: function () {
+
+            if (this._dirty) {
+                this._build();
+            }
+
             this._renderer.projectTransform = this._state;
         },
 

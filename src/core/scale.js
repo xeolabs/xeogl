@@ -92,7 +92,9 @@ scene.on("tick", function(e) {
         className: "XEO.Scale",
 
         _init: function (cfg) {
+
             this._super(cfg);
+
             this.xyz = cfg.xyz;
         },
 
@@ -108,7 +110,9 @@ scene.on("tick", function(e) {
             xyz: {
 
                 set: function (value) {
+
                     this._xyz = value || [0, 0, 0];
+
                     this.matrix = XEO.math.scalingMat4v(this._xyz);
 
                     /**

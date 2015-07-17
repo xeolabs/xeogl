@@ -220,7 +220,7 @@
 
         _getJSON: function () {
             return {
-                params: this.params
+                params: this._state.params
             };
         }
     });

@@ -127,7 +127,9 @@
 
                 set: function (value) {
 
-                    this._state.leftColor = value || [ 0.0, 0.0, 0.0 ];
+                    value = value || [ 0.0, 0.0, 0.0 ];
+
+                    this._state.leftColor = value;
 
                     this._renderer.imageDirty = true;
 
@@ -158,7 +160,9 @@
 
                 set: function (value) {
 
-                    this._state.rightColor = value || [ 0.0, 0.0, 0.0 ];
+                    value = value || [ 0.0, 0.0, 0.0 ];
+
+                    this._state.rightColor = value;
 
                     this._renderer.imageDirty = true;
 
@@ -201,7 +205,7 @@
                      * @event power
                      * @param value The property's new value
                      */
-                    this.fire("power", value);
+                    this.fire("power", this._state.power);
                 },
 
                 get: function () {
@@ -234,7 +238,7 @@
                      * @event bias
                      * @param value The property's new value
                      */
-                    this.fire("bias", value);
+                    this.fire("bias", this._state.bias);
                 },
 
                 get: function () {

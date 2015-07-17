@@ -77,11 +77,19 @@
          @type Scene
          */
         get scene() {
-            return this._scene || (this._scene = new XEO.Scene());
+
+            // XEO.Scene constructor will call this._addScene
+            // to register itself on XEO
+
+            return this._scene || this._scene = new XEO.Scene({
+                id: "default.scene"
+            });
         },
 
         /**
-         * Registers a scene on xeoEngine
+         * Registers a scene on xeoEngine.
+         * This is called within the XEO.Scene constructor.
+         *
          * @method _addScene
          * @param {Scene} scene The scene
          * @private
@@ -107,13 +115,28 @@
         },
 
         /**
-         * Destroys all scenes
+         * Destroys all user-created {{#crossLink "Scene"}}Scenes{{/crossLink}} and
+         * clears the default {{#crossLink "Scene"}}Scene{{/crossLink}}.
+         *
          * @method clear
          */
         clear: function () {
+
+            var scene;
+
             for (var id in this.scenes) {
-                if (this.scenes.hasOwnProperty(id)) {
-                    this.scenes[id].destroy();
+              if (this.scenes.hasOwnProperty(id)) {
+
+                  scene = this.scenes[id];
+
+                  // Only clear the default Scene
+                  // but destroy all the others
+
+                  if (id === "default.scene") {
+                    scene.clear();
+                  } else {
+                    scene.destroy();
+                  }
                 }
             }
             this.scenes = {};
@@ -189,4 +212,3 @@
     window.XEO = new XEO();
 
 })();
-

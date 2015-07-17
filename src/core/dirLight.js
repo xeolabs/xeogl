@@ -114,7 +114,7 @@
         _init: function (cfg) {
 
             this._state = {
-                mode: "dir",
+                type: "dir",
                 dir: [0,0,-1],
                 color: [0.7, 0.7, 0.8],
                 intensity: 1.0,
@@ -273,11 +273,11 @@
 
         _getJSON: function () {
             return {
-                mode: this.mode,
-                dir: this.dir,
-                color: this.color,
-                intensity: this.intensity,
-                space: this.space
+                type: this._state.type,
+                dir: this._state.dir,
+                color: this._state.color,
+                intensity: this._state.intensity,
+                space: this._state.space
             };
         }
     });
