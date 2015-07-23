@@ -295,7 +295,7 @@
             this._indicesDirty = true;
 
 
-            var defaultGeometry = (!cfg.positions && !cfg.normals && !cfg.uv && cfg.uv2 && !cfg.indices);
+            var defaultGeometry = (!cfg.positions && !cfg.normals && !cfg.uv && !cfg.indices);
 
             if (defaultGeometry) {
 
@@ -313,12 +313,12 @@
                 ];
 
                 this.colors = [
-                    1.0, 1.0, 1.0, 1.0,    // Front face: white
-                    1.0, 0.0, 0.0, 1.0,    // Back face: red
-                    0.0, 1.0, 0.0, 1.0,    // Top face: green
-                    0.0, 0.0, 1.0, 1.0,    // Bottom face: blue
-                    1.0, 1.0, 0.0, 1.0,    // Right face: yellow
-                    1.0, 0.0, 1.0, 1.0     // Left face: purple
+                    1.0, 1.0, 1.0, 1.0,    // Front face
+                    1.0, 1.0, 1.0, 1.0,    // Back face
+                    1.0, 1.0, 1.0, 1.0,    // Top face
+                    1.0, 1.0, 1.0, 1.0,    // Bottom face
+                    1.0, 1.0, 1.0, 1.0,    // Right face
+                    1.0, 1.0, 1.0, 1.0     // Left face
                 ];
 
                 this.normals = [
@@ -547,13 +547,18 @@
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._positions !== !value);
+
                     this._positions = value;
                     this._positionsDirty = value;
                     this._dirty = true;
 
                     this._scheduleBuild();
 
-                    this.fire("dirty", true);
+                    if (dirty) {
+                        this.fire("dirty", true);
+                    }
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/positions:property"}}{{/crossLink}} property changes.
@@ -581,13 +586,18 @@
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._normals !== !value);
+
                     this._normals = value;
                     this._normalsDirty = value;
                     this._dirty = true;
 
                     this._scheduleBuild();
 
-                    this.fire("dirty", true);
+                    if (dirty) {
+                        this.fire("dirty", true);
+                    }
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/ normals:property"}}{{/crossLink}} property changes.
@@ -615,13 +625,18 @@
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._uv !== !value);
+
                     this._uv = value;
-                    this._uvBufDirty = value;
+                    this._uvDirty = value;
                     this._dirty = true;
 
                     this._scheduleBuild();
 
-                    this.fire("dirty", true);
+                    if (dirty) {
+                        this.fire("dirty", true);
+                    }
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/uv:property"}}{{/crossLink}} property changes.
@@ -649,13 +664,18 @@
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._colors != !value);
+
                     this._colors = value;
                     this._colorsDirty = value;
                     this._dirty = true;
 
                     this._scheduleBuild();
 
-                    this.fire("dirty", true);
+                    if (dirty) {
+                        this.fire("dirty", true);
+                    }
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/colors:property"}}{{/crossLink}} property changes.
@@ -683,13 +703,18 @@
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._indices && !value);
+
                     this._indices = value;
                     this._indicesDirty = value;
                     this._dirty = true;
 
                     this._scheduleBuild();
 
-                    this.fire("dirty", true);
+                    if (dirty) {
+                        this.fire("dirty", true);
+                    }
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/indices:property"}}{{/crossLink}} property changes.

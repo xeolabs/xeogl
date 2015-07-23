@@ -13,41 +13,41 @@
 
             var draw = this.program.draw;
 
-            this._aGeometryPositionDraw = draw.getAttribute("XEO_aGeometryPosition");
-            this._aGeometryNormalDraw = draw.getAttribute("XEO_aGeometryNormal");
-            this._aGeometryUVDraw = draw.getAttribute("XEO_aGeometryUV");
-            this._aGeometryTangentDraw = draw.getAttribute("XEO_aGeometryTangent");
-            this._aGeometryColorDraw = draw.getAttribute("XEO_aGeometryColor");
+            this._aPositionDraw = draw.getAttribute("XEO_aPosition");
+            this._aNormalDraw = draw.getAttribute("XEO_aNormal");
+            this._aUVDraw = draw.getAttribute("XEO_aUV");
+            this._aTangentDraw = draw.getAttribute("XEO_aTangent");
+            this._aColorDraw = draw.getAttribute("XEO_aColor");
 
             var pick = this.program.pick;
 
-            this._aGeometryPositionPick = pick.getAttribute("XEO_aGeometryPosition");
+            this._aPositionPick = pick.getAttribute("XEO_aPosition");
         },
 
         draw: function (frameCtx) {
 
             var core = this.core;
 
-            if (this._aGeometryPositionDraw) {
-                this._aGeometryPositionDraw.bindFloatArrayBuffer(core.positions);
+            if (this._aPositionDraw) {
+                this._aPositionDraw.bindFloatArrayBuffer(core.positions);
             }
 
-            if (this._aGeometryNormalDraw) {
-                this._aGeometryNormalDraw.bindFloatArrayBuffer(core.normals);
+            if (this._aNormalDraw) {
+                this._aNormalDraw.bindFloatArrayBuffer(core.normals);
             }
 
-            if (this._aGeometryUVDraw) {
-                this._aGeometryUVDraw.bindFloatArrayBuffer(core.uv);
+            if (this._aUVDraw) {
+                this._aUVDraw.bindFloatArrayBuffer(core.uv);
             }
 
-            if (this._aGeometryColorDraw) {
-                this._aGeometryColorDraw.bindFloatArrayBuffer(core.colors);
+            if (this._aColorDraw) {
+                this._aColorDraw.bindFloatArrayBuffer(core.colors);
             }
 
-            if (this._aGeometryTangentDraw) {
+            if (this._aTangentDraw) {
 
                 // Lazy-compute tangents
-                //    this._aGeometryTangentDraw.bindFloatArrayBuffer(core2.tangentBuf || core2.getTangentBuf());
+                //    this._aTangentDraw.bindFloatArrayBuffer(core2.tangentBuf || core2.getTangentBuf());
             }
 
             core.indices.bind();
@@ -57,8 +57,8 @@
 
             var core = this.core;
 
-            if (this._aGeometryPositionPick) {
-                this._aGeometryPositionPick.bindFloatArrayBuffer(core.positions);
+            if (this._aPositionPick) {
+                this._aPositionPick.bindFloatArrayBuffer(core.positions);
             }
 
             core.indices.bind();

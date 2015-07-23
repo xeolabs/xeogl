@@ -113,11 +113,16 @@
             this.far = cfg.far;
         },
 
-        // Schedules a call to #_build on the next "tick"
+        // Schedules state rebuild on the next "tick"
+
         _scheduleBuild: function () {
+
             if (!this._dirty) {
+
                 this._dirty = true;
+
                 var self = this;
+
                 this.scene.once("tick",
                     function () {
                         self._build();
@@ -125,10 +130,12 @@
             }
         },
 
-        // Rebuilds renderer state
+        // Rebuilds state
+
         _build: function () {
 
-            this._state.matrix = XEO.math.frustumMat4(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
+            this._state.matrix = XEO.math.frustumMat4(
+                this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
 
             this._dirty = false;
 

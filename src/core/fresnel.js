@@ -127,9 +127,7 @@
 
                 set: function (value) {
 
-                    value = value || [ 0.0, 0.0, 0.0 ];
-
-                    this._state.leftColor = value;
+                    this._state.leftColor = value || [ 0.0, 0.0, 0.0 ];
 
                     this._renderer.imageDirty = true;
 
@@ -160,9 +158,7 @@
 
                 set: function (value) {
 
-                    value = value || [ 0.0, 0.0, 0.0 ];
-
-                    this._state.rightColor = value;
+                    this._state.rightColor = value || [ 0.0, 0.0, 0.0 ];
 
                     this._renderer.imageDirty = true;
 
@@ -193,9 +189,7 @@
 
                 set: function (value) {
 
-                    value = value || 0;
-
-                    this._state.power = value;
+                    this._state.power = value || 0;
 
                     this._renderer.imageDirty = true;
 
@@ -226,9 +220,7 @@
 
                 set: function (value) {
 
-                    value = value || 0;
-
-                    this._state.bias = value;
+                    this._state.bias = value || 0;
 
                     this._renderer.imageDirty = true;
 

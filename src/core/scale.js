@@ -111,7 +111,7 @@ scene.on("tick", function(e) {
 
                 set: function (value) {
 
-                    this._xyz = value || [0, 0, 0];
+                    this._xyz = value || [1, 1, 1];
 
                     this.matrix = XEO.math.scalingMat4v(this._xyz);
 

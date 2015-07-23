@@ -34,6 +34,7 @@
             }
 
             states = _states;
+
             texturing = isTexturing();
             normals = hasNormals();
             tangents = hasTangents();
@@ -126,7 +127,9 @@
          * Releases program source code back to this factory.
          */
         this.putSource = function (hash) {
+
             var source = cache[hash];
+
             if (source) {
                 if (--source.useCount === 0) {
                     cache[source.hash] = null;
@@ -140,7 +143,7 @@
 
             begin();
 
-            add("attribute vec3 XEO_aGeometryPosition;");
+            add("attribute vec3 XEO_aPosition;");
 
             add("uniform mat4 XEO_uModelMatrix;");
             add("uniform mat4 XEO_uViewMatrix;");
@@ -159,7 +162,7 @@
 
             add("void main(void) {");
 
-            add("vec4 tmpVertex = vec4(XEO_aGeometryPosition, 1.0); ");
+            add("vec4 tmpVertex = vec4(XEO_aPosition, 1.0); ");
 
 //            if (morphing) {
 //                if (states.MorphTargets.targets[0].vertexBuf) {
@@ -189,7 +192,6 @@
 
             add("uniform bool  XEO_uRayPickMode;");
             add("uniform vec3  XEO_uPickColor;");
-            add("uniform bool  XEO_uModesClipping;");
 
             // Clipping
 
@@ -250,41 +252,57 @@
         function composeRenderingVertexShader() {
 
             var vertex = states.shader.vertex;
+
             if (vertex) {
+
                 // Custom vertex shader
                 return vertex;
             }
 
             begin();
 
-            // uniforms
+            // Matrix uniforms
 
             add("uniform mat4 XEO_uModelMatrix;");
             add("uniform mat4 XEO_uViewMatrix;");
             add("uniform mat4 XEO_uProjMatrix;");
 
-            add("uniform vec3 XEO_uEye;"); // World-space eye position
+            // World-space eye position
 
-            // attributes
+            add("uniform vec3 XEO_uEye;");
 
-            add("attribute vec3 XEO_aGeometryPosition;");
+            // Model-space vertex position
 
-            // varyings
+            add("attribute vec3 XEO_aPosition;");
 
-            add("varying vec3 XEO_vViewEyeVec;"); // View-space vector from position to eye
+            // View-space fragment position
+
+            add("varying vec4 XEO_vViewPosition;");
+
+            // View-space vector from fragment position to eye
+
+            add("varying vec3 XEO_vViewEyeVec;");
 
             if (normals) {
 
-                add("attribute vec3 XEO_aGeometryNormal;");
+                // Normals
+
+                add("attribute vec3 XEO_aNormal;");
+
+                // Modelling and View normal transform matrix
 
                 add("uniform mat4 XEO_uModelNormalMatrix;");
                 add("uniform mat4 XEO_uViewNormalMatrix;");
 
-                add("varying vec3 XEO_vViewNormal;");  // View-space vertex normal
+                // View-space normal
+
+                add("varying vec3 XEO_vViewNormal;");
 
                 if (tangents) {
-                    add("attribute vec4 XEO_aGeometryTangent;");
+                    add("attribute vec4 XEO_aTangent;");
                 }
+
+                // Lights
 
                 for (var i = 0; i < states.lights.lights.length; i++) {
 
@@ -294,13 +312,19 @@
                         continue;
                     }
 
+                    // Directional
+
                     if (light.mode === "dir") {
                         add("uniform vec3 XEO_uLightDir" + i + ";");
                     }
 
+                    // Point
+
                     if (light.mode === "point") {
                         add("uniform vec3 XEO_uLightPos" + i + ";");
                     }
+
+                    // Spot
 
                     if (light.mode === "spot") {
                         add("uniform vec3 XEO_uLightPos" + i + ";");
@@ -312,22 +336,31 @@
             }
 
             if (clipping) {
+
+                // World-space fragment position
+
                 add("varying vec4 XEO_vWorldPosition;");
             }
 
-            add("varying vec4 XEO_vViewPosition;");
-
             if (texturing) {
-                if (states.geometry.uv) {
 
-                    add("attribute vec2 XEO_aGeometryUV;"); // UV coords
-                    add("varying vec2 XEO_vUVCoord;");
-                }
+                // Vertex UV coordinate
+
+                add("attribute vec2 XEO_aUV;");
+
+                // Fragment UV coordinate
+
+                add("varying vec2 XEO_vUV;");
             }
 
             if (states.geometry.colorBuf) {
 
-                add("attribute vec4 XEO_aGeometryColor;"); // Vertex colors
+                // Vertex color
+
+                add("attribute vec4 XEO_aColor;"); // Vertex colors
+
+                // Fragment color
+
                 add("varying vec4 XEO_vColor;"); // Varying for fragment texturing
             }
 
@@ -345,16 +378,16 @@
 
             add("void main(void) {");
 
-            add("vec4 modelVertex=vec4(XEO_aGeometryPosition, 1.0); ");
+            add("vec4 modelPosition = vec4(XEO_aPosition, 1.0); ");
 
             if (normals) {
-                add("vec4 modelNormal = vec4(XEO_aGeometryNormal, 0.0); ");
+                add("vec4 modelNormal = vec4(XEO_aNormal, 0.0); ");
             }
 
             //if (morphing) {
             //    if (states.MorphTargets.targets[0].vertexBuf) {
             //        add("vec4 vMorphVertex = vec4(XEO_aMorphVertex, 1.0); ");
-            //        add("modelVertex = vec4(mix(modelVertex.xyz, vMorphVertex.xyz, XEO_uMorphFactor), 1.0); ");
+            //        add("modelPosition = vec4(mix(modelPosition.xyz, vMorphVertex.xyz, XEO_uMorphFactor), 1.0); ");
             //    }
             //    if (normals) {
             //        if (states.MorphTargets.targets[0].normalBuf) {
@@ -364,9 +397,9 @@
             //    }
             //}
 
-            add("vec4 worldVertex = XEO_uModelMatrix * modelVertex;");
+            add("vec4 worldPosition = XEO_uModelMatrix * modelPosition;");
 
-            add("vec4 viewVertex  = XEO_uViewMatrix * worldVertex; ");
+            add("vec4 viewPosition  = XEO_uViewMatrix * worldPosition; ");
 
             if (normals) {
                 add("vec3 worldNormal = (XEO_uModelNormalMatrix * modelNormal).xyz; ");
@@ -374,18 +407,18 @@
             }
 
             if (clipping) {
-                add("  XEO_vWorldPosition = worldVertex;");
+                add("  XEO_vWorldPosition = worldPosition;");
             }
 
-            add("XEO_vViewPosition = viewVertex;");
+            add("XEO_vViewPosition = viewPosition;");
 
-            add("gl_Position = XEO_uProjMatrix * viewVertex;");
+            add("gl_Position = XEO_uProjMatrix * viewPosition;");
 
             if (tangents) {
 
                 // Compute tangent-bitangent-normal matrix
 
-                add("vec3 tangent = normalize((XEO_uViewNormalMatrix * XEO_uModelNormalMatrix * XEO_aGeometryTangent).xyz);");
+                add("vec3 tangent = normalize((XEO_uViewNormalMatrix * XEO_uModelNormalMatrix * XEO_aTangent).xyz);");
                 add("vec3 bitangent = cross(XEO_vViewNormal, tangent);");
                 add("mat3 TBM = mat3(tangent, bitangent, XEO_vViewNormal);");
             }
@@ -398,11 +431,11 @@
 
                     light = states.lights.lights[i];
 
-                    if (light.mode === "ambient") {
+                    if (light.type === "ambient") {
                         continue;
                     }
 
-                    if (light.mode === "dir") {
+                    if (light.type === "dir") {
 
                         // Directional light
 
@@ -438,7 +471,7 @@
                         add("XEO_vViewLightVecAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                     }
 
-                    if (light.mode === "point") {
+                    if (light.type === "point") {
 
                         // Positional light
 
@@ -446,7 +479,9 @@
 
                             // World space
 
-                            add("tmpVec3 = XEO_uLightPos" + i + " - worldVertex.xyz;"); // Vector from World coordinate to light pos
+                            // Transform into View space
+
+                            add("tmpVec3 = XEO_uLightPos" + i + " - worldPosition.xyz;"); // Vector from World coordinate to light pos
 
                             // Transform to View space
                             add("tmpVec3 = vec3(XEO_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
@@ -461,7 +496,7 @@
 
                             // View space
 
-                            add("tmpVec3 = XEO_uLightPos" + i + ".xyz - viewVertex.xyz;"); // Vector from View coordinate to light pos
+                            add("tmpVec3 = XEO_uLightPos" + i + ".xyz - viewPosition.xyz;"); // Vector from View coordinate to light pos
 
                             if (tangents) {
 
@@ -471,12 +506,12 @@
                         }
 
                         // Output
-                        add("XEO_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length( XEO_uLightPos" + i + " - worldVertex.xyz));");
+                        add("XEO_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length(XEO_uLightPos" + i + ".xyz - worldPosition.xyz));");
                     }
                 }
             }
 
-            add("XEO_vViewEyeVec = ((XEO_uViewMatrix * vec4(XEO_uEye, 0.0)).xyz  - viewVertex.xyz);");
+            add("XEO_vViewEyeVec = ((XEO_uViewMatrix * vec4(XEO_uEye, 0.0)).xyz  - viewPosition.xyz);");
 
             if (tangents) {
 
@@ -486,12 +521,12 @@
             if (texturing) {
 
                 if (states.geometry.uv) {
-                    add("XEO_vUVCoord = XEO_aGeometryUV;");
+                    add("XEO_vUV = XEO_aUV;");
                 }
             }
 
             if (states.geometry.colorBuf) {
-                add("XEO_vColor = XEO_aGeometryColor;");
+                add("XEO_vColor = XEO_aColor;");
             }
 
             add("}");
@@ -543,7 +578,7 @@
                 if (texturing) {
 
                     if (states.geometry.uv) {
-                        add("varying vec2 XEO_vUVCoord;");
+                        add("varying vec2 XEO_vUV;");
                     }
 
                     if (states.material.diffuseMap) {
@@ -599,20 +634,28 @@
             //    }
             //}
 
-            add("uniform bool  XEO_uModesClipping;");
 
-            add("uniform bool  XEO_uDepthMode;");
+            add("uniform bool XEO_uDepthMode;");
 
             if (states.geometry.colorBuf) {
                 add("varying vec4 XEO_vColor;");
             }
 
-            add("uniform vec3 XEO_uLightAmbientColor;");                         // Scene ambient colour - taken from clear colour
-            add("varying vec3 XEO_vViewEyeVec;");                          // Direction of world-space vertex from eye
+            // Global, ambient colour - taken from clear colour
+
+            add("uniform vec3 XEO_uLightAmbientColor;");
+
+            // World-space vector from fragment to eye
+
+            add("varying vec3 XEO_vViewEyeVec;");
 
             if (normals) {
 
-                add("varying vec3 XEO_vViewNormal;");                   // View-space normal
+                // View-space fragment normal
+
+                add("varying vec3 XEO_vViewNormal;");
+
+                // Light sources
 
                 var light;
 
@@ -620,7 +663,7 @@
 
                     light = states.lights.lights[i];
 
-                    if (light.mode === "ambient") {
+                    if (light.type === "ambient") {
                         continue;
                     }
 
@@ -628,7 +671,7 @@
 
                     add("uniform vec3 XEO_uLightIntensity" + i + ";");
 
-                    if (light.mode === "point") {
+                    if (light.type === "point") {
                         add("uniform vec3 XEO_uLightConstantAttenuation" + i + ";");
                     }
 
@@ -636,18 +679,23 @@
                 }
             }
 
-
             add("void main(void) {");
 
             if (clipping) {
+
+                // World-space fragment clipping
+
                 add("if (SCENEJS_uModesClipping) {");
+
                 add("float dist = 0.0;");
+
                 for (var i = 0; i < states.clips.clips.length; i++) {
                     add("if (XEO_uClipMode" + i + " != 0.0) {");
                     add("dist += clamp(dot(XEO_vWorldPosition.xyz, XEO_uClipPlane" + i + ".xyz) - XEO_uClipPlane" + i + ".w, 0.0, 1000.0);");
                     add("}");
                 }
                 add("if (dist > 0.0) { discard; }");
+
                 add("}");
             }
 
@@ -659,10 +707,18 @@
             if (phongMaterial) {
 
                 if (states.geometry.colorBuf) {
+
+                    // Fragment diffuse color from geometry vertex colors
+
                     add("vec3 diffuse = XEO_vColor.rgb;");
                 } else {
+
+                    // Fragment diffuse color from material
+
                     add("vec3 diffuse = XEO_uMaterialDiffuse;")
                 }
+
+                // These may be overridden by textures later
 
                 add("vec3 specular = XEO_uMaterialSpecular;");
                 add("vec3 emissive = XEO_uMaterialEmissive;");
@@ -672,9 +728,10 @@
 
                 if (normals) {
 
-                    add("float attenuation = 1.0;");
                     if (tangents) {
+
                         add("vec3 viewNormalVec = vec3(0.0, 1.0, 0.0);");
+
                     } else {
 
                         // Normalize the interpolated normals in the per-fragment-fragment-shader,
@@ -685,7 +742,9 @@
 
                 if (texturing) {
 
-                    add("vec4 texturePos = vec4(XEO_vUVCoord.s, XEO_vUVCoord.t, 1.0, 1.0);");
+                    // Textures
+
+                    add("vec4 texturePos = vec4(XEO_vUV.s, XEO_vUV.t, 1.0, 1.0);");
                     add("vec2 textureCoord = texturePos.xy;");
 
                     add("textureCoord.y = -textureCoord.y;");
@@ -693,47 +752,67 @@
                     var material = states.material;
 
                     if (material.diffuseMap) {
+
+                        // Diffuse map
+
                         if (material.diffuseMap.matrix) {
                             add("textureCoord = (XEO_uMaterialDiffuseTextureMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
+
                         add("diffuse = texture2D(XEO_uMaterialDiffuseTexture, textureCoord).rgb);");
                     }
 
                     if (material.specularMap) {
+
+                        // Specular map
+
                         if (material.specularMap.matrix) {
                             add("textureCoord = (XEO_uSpecularTextureMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
+
                         add("specular = texture2D(XEO_uSpecularTexture, textureCoord).rgb;");
                     }
 
                     if (material.emissiveMap) {
+
+                        // Emissive map
+
                         if (material.emissiveMap.matrix) {
                             add("textureCoord = (XEO_uEmissiveTextureMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
+
                         add("emissive = texture2D(XEO_uEmissiveTexture, textureCoord).rgb;");
                     }
 
                     if (material.opacityMap) {
+
+                        // Opacity map
+
                         if (material.opacityMap.matrix) {
                             add("textureCoord = (XEO_uOpacityTextureMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
+
                         add("opacity = texture2D(XEO_uOpacityTexture, textureCoord).b;");
                     }
 
                     if (material.reflectivityMap) {
+
+                        // Reflectivity map
+
                         if (material.reflectivityMap.matrix) {
                             add("textureCoord = (XEO_uReflectivityTextureMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
+
                         add("reflectivity = texture2D(XEO_uReflectivityTexture, textureCoord).b;");
                     }
                 }
@@ -760,19 +839,21 @@
                     add("vec3  viewLightVec;");
                     add("float dotN;");
                     add("float lightDist;");
+                    add("float attenuation;");
 
                     var light;
 
                     for (var i = 0, len = states.lights.lights.length; i < len; i++) {
+
                         light = states.lights.lights[i];
 
-                        if (light.mode === "ambient") {
+                        if (light.type === "ambient") {
                             continue;
                         }
 
                         add("viewLightVec = XEO_vViewLightVecAndDist" + i + ".xyz;");
 
-                        if (light.mode === "point") {
+                        if (light.type === "point") {
 
                             add("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
 
@@ -789,7 +870,7 @@
                                 " * specular * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-XEO_vViewPosition.xyz)), 0.0), shininess) * attenuation;");
                         }
 
-                        if (light.mode === "dir") {
+                        if (light.type === "dir") {
 
                             add("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
 

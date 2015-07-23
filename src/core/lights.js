@@ -253,6 +253,7 @@
             for (var i = 0, len = lights.length; i < len; i++) {
 
                 light = lights[i];
+
                 hash.push(light.type);
                 hash.push((light.space === "world") ? "w" : "v");
             }

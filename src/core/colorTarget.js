@@ -90,7 +90,9 @@
           var canvas = this.scene.canvas;
 
           this._state = new XEO.renderer.RenderTarget({
+
               type: XEO.renderer.RenderTarget.COLOR,
+
               renderBuf: new XEO.renderer.webgl.RenderBuffer({
                   canvas: canvas.canvas,
                   gl: canvas.gl

@@ -346,19 +346,25 @@ Other Components that are linked to it will fall back on a default of some sort.
          *
          * @method fire
          * @param {String} event The event type name
-         * @param {Object} value The event
+         * @param {Object} value The event parameters
          * @param {Boolean} [forget=false] When true, does not retain for subsequent subscribers
          */
         fire: function (event, value, forget) {
+
             if (forget !== true) {
                 this.props[event] = value; // Save notification
             }
+
             var subs = this._eventSubs[event];
             var sub;
+
             if (subs) { // Notify subscriptions
+
                 for (var handle in subs) {
                     if (subs.hasOwnProperty(handle)) {
+
                         sub = subs[handle];
+
                         sub.callback.call(sub.scope, value);
                     }
                 }

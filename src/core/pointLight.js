@@ -182,7 +182,7 @@
 
                 set: function (value) {
 
-                    this._state.color = value || [0.7, 0.7, 0.8 ];
+                    this._state.color = value || [ 0.7, 0.7, 0.8 ];
 
                     this._renderer.imageDirty = true;
 
