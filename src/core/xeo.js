@@ -30,10 +30,22 @@
         var self = this;
 
         // Called on each animation frame
-        // fires a "tick" on each scene, recompiles scenes as needed
+        // fires a "tick" event on each scene, recompiles scenes as needed
+
+        var tickEvent = {
+            sceneId: null,
+            time: null,
+            startTime: null,
+            prevTime: null,
+            deltaTime: null
+        };
+
         var frame = function () {
 
-            var tick = {}; // Publish this on every scene
+            var time = (new Date()).getTime();
+
+            tickEvent.time = time;
+
             var scene;
 
             for (var id in self.scenes) {
@@ -41,15 +53,27 @@
 
                     scene = self.scenes[id];
 
-                    scene.fire("tick", tick);
+                    // Fire the tick event on the scene
 
-                    // If scene dirty, then recompile it
+                    tickEvent.sceneId = id;
+                    tickEvent.startTime = scene.startTime;
+                    tickEvent.deltaTime = tickEvent.prevTime != null ? time - tickEvent.prevTime : 0;
+
+                    scene.fire("tick", tickEvent);
+
+                    // Recompile the scene if it's now dirty
+                    // after handling the tick event
+
                     if (self._dirtyScenes[id]) {
+
                         scene._compile();
+
                         self._dirtyScenes[id] = false;
                     }
                 }
             }
+
+            tickEvent.prevTime = time;
 
             window.requestAnimationFrame(frame);
         };
@@ -81,9 +105,9 @@
             // XEO.Scene constructor will call this._addScene
             // to register itself on XEO
 
-            return this._scene || this._scene = new XEO.Scene({
-                id: "default.scene"
-            });
+            return this._scene || (this._scene = new XEO.Scene({
+                    id: "default.scene"
+                }));
         },
 
         /**
@@ -125,18 +149,18 @@
             var scene;
 
             for (var id in this.scenes) {
-              if (this.scenes.hasOwnProperty(id)) {
+                if (this.scenes.hasOwnProperty(id)) {
 
-                  scene = this.scenes[id];
+                    scene = this.scenes[id];
 
-                  // Only clear the default Scene
-                  // but destroy all the others
+                    // Only clear the default Scene
+                    // but destroy all the others
 
-                  if (id === "default.scene") {
-                    scene.clear();
-                  } else {
-                    scene.destroy();
-                  }
+                    if (id === "default.scene") {
+                        scene.clear();
+                    } else {
+                        scene.destroy();
+                    }
                 }
             }
             this.scenes = {};
