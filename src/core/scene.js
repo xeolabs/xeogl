@@ -225,6 +225,14 @@
             this._componentIDMap = new XEO.utils.Map();
 
             /**
+             * The epoch time (in milliseconds since 1970) when this Scene was instantiated.
+             *
+             * @property timeCreated
+             * @type {Number}
+             */
+            this.startTime = (new Date()).getTime();
+
+            /**
              * The {{#crossLink "Component"}}Component{{/crossLink}}s within
              * this Scene, mapped to their IDs.
              * @property components
@@ -925,7 +933,7 @@
 
                     // Don't destroy the default components
 
-                    if (id.startsWith("default.")) {
+                    if (id.lastIndexOf("default.", 0) === 0) {
                       continue;
                     }
 
