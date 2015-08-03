@@ -69,33 +69,17 @@
 
         <h3>Usage</h3>
 
-        <p>To start with, simply include <a href="."
-                                            onclick="javascript:alert('Not released yet!')">xeoengine.min.js</a> in your
-            HTML page:</p>
+        <p>To start with, include <a href="."
+                                            onclick="javascript:alert('Not released yet!')">xeoengine.min.js</a> in your HTML page:</p>
         <pre>&lt;script src="http://xeoengine.org/build/xeoengine.min.js"&gt;&lt;/script&gt;</pre>
 
         <br>
-        <h5>Defining a 3D scene</h5>
+        <h5>Creating a 3D scene</h5>
 
-        <p>Next, we define a <a href="./docs/classes/Scene.html">scene</a> as a component-object graph, like the example
+        <p>Next, define a <a href="./docs/classes/Scene.html">scene</a> as a component-object graph, like the one
             below. Note that a scene is
             essentially a soup of <a href="./docs/classes/Component.html">components</a> that are tied together into
             enties by <a href="./docs/classes/GameObject.html">game objects</a>.</p>
-
-        <div style="text-align:center">
-            <img src="http://www.gliffy.com/go/publish/image/7304207/L.png">
-        </div>
-
-        <p>Since xeoEngine provides defaults for <span class="emphasis">everything</span>, we only need to specify what
-            we need to override,
-            in this case the <a href="./docs/classes/PhongMaterial.html">material</a> and <a
-                    href="./docs/classes/Geometry.html">geometry</a>
-            for
-            our game object. The game object will fall back on the scene's
-            default flyweight components
-            (eg. <a href="./docs/classes/Camera.html">camera</a>, <a href="./docs/classes/Lights.html">lights</a> etc)
-            for everything else. As you can see, this keeps the code compact, while flattening the learning curve and
-            making harder to accidentally make scenes that don't render anything.</p>
 
 <pre class="prettyprint lang-javascript">
 var scene = new XEO.Scene();
@@ -114,6 +98,19 @@ var object = new XEO.GameObject(scene, {
 </pre>
 
         <br>
+        <div style="text-align:center">
+            <img src="http://www.gliffy.com/go/publish/image/7304207/L.png">
+        </div>
+
+        <p>Since xeoEngine provides defaults for everything, we only create what
+            we need to override, in this case the <a href="./docs/classes/PhongMaterial.html">material</a> and <a
+                    href="./docs/classes/Geometry.html">geometry</a>
+            for
+            our game object. The game object will fall back on the scene's
+            default flyweight components
+            (eg. <a href="./docs/classes/Camera.html">camera</a>, <a href="./docs/classes/Lights.html">lights</a> etc)
+            for everything else. As you can see, this keeps the code compact, while flattening the learning curve and
+            making harder to accidentally make scenes that don't render anything.</p>
 
         <h5>Animating</h5>
 
