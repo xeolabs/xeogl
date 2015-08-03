@@ -76,7 +76,7 @@
         <br>
         <h5>Creating a 3D scene</h5>
 
-        <p>Next, define a <a href="./docs/classes/Scene.html">scene</a> as a component-object graph, like the one
+        <p>Next, define a <a href="./docs/classes/Scene.html">scene</a> as a component-object graph like the one
             below. Note that a scene is
             essentially a soup of <a href="./docs/classes/Component.html">components</a> that are tied together into
             enties by <a href="./docs/classes/GameObject.html">game objects</a>.</p>
@@ -114,10 +114,9 @@ var object = new XEO.GameObject(scene, {
 
         <h5>Animating</h5>
 
-        <p>Animate scene state by setting the values of component properties. Almost everything in xeoEngine fires change
-            events which
-            you can subscribe to. This is cool for scripting the engine, while also making it easier to write a UI
-            layer for a graphical scene editor, which is one of the future goals of xeoEngine.</p>
+        <p>Animate scenes by setting the values of component properties. Almost everything in xeoEngine fires change
+            events which you can subscribe to. This is nice for scripting, and makes it easier to hook in a
+            graphical scene editor.</p>
 
 <pre class="prettyprint lang-javascript">material.on("diffuse",
      function(value) {
