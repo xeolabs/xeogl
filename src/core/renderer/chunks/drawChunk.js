@@ -17,11 +17,11 @@
 
         build: function () {
 
-            this._depthModeDraw = this.program.draw.getUniform("XEO_uDepthMode");
+            this._depthModeDraw = this.program.draw.getUniform("xeo_uDepthMode");
 
-            this._depthModePick = this.program.pick.getUniform("XEO_uDepthMode");
+            this._depthModePick = this.program.pick.getUniform("xeo_uDepthMode");
 
-            this._uPickColor = this.program.pick.getUniform("XEO_uPickColor");
+            this._uPickColor = this.program.pick.getUniform("xeo_uPickColor");
         },
 
         drawAndPick: function (frameCtx) {
@@ -43,14 +43,18 @@
                     this._uPickColor.setValue([r / 255, g / 255, b / 255]);
                 }
 
-                this._depthModePick.setValue(frameCtx.depthMode);
+                if (this._depthModeDraw) {
+                    this._depthModePick.setValue(frameCtx.depthMode);
+                }
 
             } else {
 
+                if (this._depthModePick) {
                 this._depthModeDraw.setValue(frameCtx.depthMode);
+                }
             }
 
-            gl.drawElements(this.state.primitive, this.state.indexBuf.numItems, gl.UNSIGNED_SHORT, 0);
+            gl.drawElements(this.state.primitive, this.state.indices.numItems, this.state.indices.itemType, 0);
         }
     });
 

@@ -87,7 +87,7 @@
   });
 
  // Second object uses Scene's default Material
- var object1 = new XEO.GameObject(myScene, {
+ var object3 = new XEO.GameObject(myScene, {
        geometry: myGeometry,
        camera: myCamera
   });
@@ -211,12 +211,19 @@
      * @param {String} value The warning message
      */
 
+    /**
+     * Fired on each frame.
+     * @event error
+     * @param {String} sceneID The ID of this Scene.
+     * @param {Number} startTime The time in seconds since 1970 that this Scene was instantiated.
+     * @param {Number} time The time in seconds since 1970 of this "tick" event.
+     * @param {Number} prevTime The time of the previous "tick" event from this Scene.
+     * @param {Number} deltaTime The time in seconds since the previous "tick" event from this Scene.
+     */
 
     XEO.Scene = XEO.Component.extend({
 
-        className: "XEO.Scene",
-
-        type: "scene",
+        type: "XEO.Scene",
 
         _init: function (cfg) {
 
@@ -235,10 +242,35 @@
             /**
              * The {{#crossLink "Component"}}Component{{/crossLink}}s within
              * this Scene, mapped to their IDs.
+             *
+             * Will also contain the {{#crossLink "GameObject"}}{{/crossLink}}s
+             * contained in {{#crossLink "GameObject/components:property"}}{{/crossLink}}.
+             *
              * @property components
              * @type {String:XEO.Component}
              */
             this.components = {};
+
+            /**
+             * For each {{#crossLink "Component"}}Component{{/crossLink}} type, a map of
+             * IDs to instances.
+             *
+             * @property types
+             * @type {String:{String:XEO.Component}}
+             */
+            this.types = {};
+
+            /**
+             * The {{#crossLink "GameObject"}}{{/crossLink}}s within
+             * this Scene, mapped to their IDs.
+             *
+             * The {{#crossLink "GameObject"}}{{/crossLink}}s in this map
+             * will also be contained in {{#crossLink "GameObject/components:property"}}{{/crossLink}}.
+             *
+             * @property objects
+             * @type {String:XEO.GameObject}
+             */
+            this.objects = {};
 
             // Contains XEO.GameObjects that need to be recompiled back into
             // this._renderer
@@ -280,6 +312,7 @@
              * @final
              * @property input
              * @type {Input}
+             * @final
              */
             this.input = new XEO.Input(this, {
                 canvas: this.canvas.canvas
@@ -290,6 +323,7 @@
              * @final
              * @property tasks
              * @type {Tasks}
+             * @final
              */
             this.tasks = new XEO.Tasks(this);
 
@@ -299,6 +333,7 @@
              * @final
              * @property stats
              * @type {Stats}
+             * @final
              */
             this.stats = new XEO.Stats(this, {
                 objects: 0,
@@ -319,17 +354,17 @@
             if (componentJSONs) {
 
                 var componentJSON;
-                var className;
+                var type;
                 var constructor;
 
                 for (var i = 0, len = componentJSONs.length; i < len; i++) {
 
                     componentJSON = componentJSONs[i];
-                    className = componentJSON.className;
+                    type = componentJSON.type;
 
-                    if (className) {
+                    if (type) {
 
-                        constructor = window[className];
+                        constructor = window[type];
 
                         if (constructor) {
                             new constructor(this, componentJSON);
@@ -341,9 +376,15 @@
             // Create the default components if not already created.
             // These may have already been created in the JSON above.
 
+            this._initDefaults();
+        },
+
+        _initDefaults: function() {
+
             this.view;
             this.project;
             this.camera;
+            this.cameraControl;
             this.clips;
             this.colorTarget;
             this.colorBuf;
@@ -372,7 +413,7 @@
                 // User-supplied ID
 
                 if (this.components[c.id]) {
-                    this.error("A component with this ID already exists in this Scene: " + c.id);
+                    this.error("Component " + XEO._inQuotes(c.id) + " already exists");
                     return;
                 }
             } else {
@@ -384,7 +425,18 @@
 
             this.components[c.id] = c;
 
-            var isGameObject = c.type === "object";
+            // Register for class type
+
+            //var type = c.type.indexOf("XEO.") > -1 ? c.type.substring(4) : c.type;
+            var type = c.type;
+
+            var types = this.types[c.type];
+
+            if (!types) {
+                types = this.types[type] = {};
+            }
+
+            types[c.id] = c;
 
             var self = this;
 
@@ -392,9 +444,21 @@
                 function () {
 
                     self._componentIDMap.removeItem(c.id);
+
                     delete self.components[c.id];
 
-                    if (isGameObject) {
+                    var types = self.types[c.type];
+
+                    if (types) {
+
+                        delete types[c.id];
+
+                        if (XEO._isEmptyObject(types)) {
+                            delete self.types[c.type];
+                        }
+                    }
+
+                    if (c.type === "XEO.GameObject") {
 
                         // Component is a XEO.GameObject
 
@@ -403,7 +467,11 @@
                         // the GameObject into the renderer
 
                         self.stats.dec("objects");
+
+                        delete self.objects[c.id];
+
                         delete self._dirtyObjects[c.id];
+
                         self.fire("dirty", true);
                     }
 
@@ -413,15 +481,13 @@
                      * @param {Component} value The component that was destroyed
                      */
                     self.fire("componentDestroyed", c, true);
+
+                    //self.log("Destroyed " + c.type + " " + XEO._inQuotes(c.id));
                 });
 
-            if (isGameObject) {
+            if (c.type === "XEO.GameObject") {
 
                 // Component is a XEO.GameObject
-
-                // Update scene statistics
-
-                this.stats.inc("objects");
 
                 c.on("dirty",
                     function () {
@@ -430,11 +496,17 @@
                         // schedule its recompilation into the renderer
 
                         if (!self._dirtyObjects[c.id]) {
-                            self._dirtyObjects[c.id] = object;
+                            self._dirtyObjects[c.id] = c;
                         }
 
                         self.fire("dirty", true);
                     });
+
+                this.objects[c.id] = c;
+
+                // Update scene statistics
+
+                this.stats.inc("objects");
             }
 
             /**
@@ -443,6 +515,8 @@
              * @param {Component} value The component that was created
              */
             this.fire("componentCreated", c, true);
+
+            //self.log("Created " + c.type + " " + XEO._inQuotes(c.id));
         },
 
         _props: {
@@ -516,6 +590,28 @@
                             id: "default.camera",
                             project: "default.project",
                             view: "default.view"
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink "CameraControl"}}{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "CameraControl"}}{{/crossLink}} has
+             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.cameraControl",
+             * and controls this Scene's default {{#crossLink "Scene/camera:property"}}{{/crossLink}} by default.
+             *
+             * @property cameraControl
+             * @final
+             * @type CameraControl
+             */
+            cameraControl: {
+
+                get: function () {
+                    return this.components["default.cameraControl"] ||
+                        new XEO.CameraControl(this, {
+                            id: "default.cameraControl",
+                            camera: this.camera
                         });
                 }
             },
@@ -668,7 +764,7 @@
                     return this.components["default.visibility"] ||
                         new XEO.Visibility(this, {
                             id: "default.visibility",
-                            enabled: true
+                            visible: true
                         });
                 }
             },
@@ -771,8 +867,8 @@
                                 // Directional light source #1
                                 new XEO.DirLight(this, {
                                     id: "default.light1",
-                                    dir: [-0.5, -0.5, -1.0 ],
-                                    color: [1.0, 1.0, 1.0 ],
+                                    dir: [-0.5, -0.5, -1.0],
+                                    color: [1.0, 1.0, 1.0],
                                     intensity: 1.0,
                                     space: "view"
                                 }),
@@ -780,8 +876,8 @@
                                 // Directional light source #2
                                 new XEO.DirLight(this, {
                                     id: "default.light2",
-                                    dir: [1.0, -0.9, -0.7 ],
-                                    color: [1.0, 1.0, 1.0 ],
+                                    dir: [1.0, -0.9, -0.7],
+                                    color: [1.0, 1.0, 1.0],
                                     intensity: 1.0,
                                     space: "view"
                                 })
@@ -872,8 +968,8 @@
                 get: function () {
                     return this.components["default.shader"] ||
                         this.components["default.shader"] || new XEO.Shader(this, {
-                        id: "default.shader"
-                    });
+                            id: "default.shader"
+                        });
                 }
             },
 
@@ -924,25 +1020,39 @@
         },
 
         /**
-         * Destroys all non-default components in this Scene.
+         * Attempts to pick a {{#crossLink "GameObject"}}GameObject{{/crossLink}} at the given Canvas-space coordinates.
+         *
+         * Ignores {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are attached
+         * to either a {{#crossLink "Stage"}}Stage{{/crossLink}} with {{#crossLink "Stage/pickable:property"}}pickable{{/crossLink}}
+         * set *false* or a {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/picking:property"}}picking{{/crossLink}} set *false*.
+         *
+         * On success, will fire a {{#crossLink "Scene/picked:event"}}{{/crossLink}} event on this Scene, along with
+         * a separate {{#crossLink "Object/picked:event"}}{{/crossLink}} event on the target {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
+         *
+         * @method pick
+         * @param {Array of Number} canvasPos Canvas-space coordinates.
+         * @param {*} [options] Pick options.
+         * @param {Boolean} [options.rayPick=false] Whether to perform a 3D ray-intersect pick.
+         * @returns {*} Hit record when a {{#crossLink "GameObject"}}{{/crossLink}} is picked.
+         */
+        pick: function (canvasPos, options) {
+
+            return this._renderer.pick({
+                canvasPos: canvasPos,
+                rayPick: options.rayPick
+            });
+        },
+
+
+        /**
+         * Resets this Scene to its default state.
+         *
+         * References to any components in this Scene will become invalid.
          */
         clear: function () {
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
-
-                    // Don't destroy the default components
-
-                    if (id.lastIndexOf("default.", 0) === 0) {
-                      continue;
-                    }
-
-                    // This Scene is also in the component map,
-                    // don't destroy it
-
-                    if (id === this.id) {
-                        continue;
-                    }
 
                     // Each component fires "destroyed" as it is destroyed,
                     // which this Scene handles by removing the component
@@ -951,7 +1061,53 @@
                 }
             }
 
+            // Reinitialise defaults
+
+            this._initDefaults();
+
             this._dirtyObjects = {};
+        },
+
+        testPattern: function () {
+
+            // Clear the scene
+
+            this.clear();
+
+            // Create spinning test object
+
+            var rotate = new XEO.Rotate(this, {
+                xyz: [0, .5, .5],
+                angle: 0
+            });
+
+            var object = new XEO.GameObject(this, {
+                transform: rotate
+            });
+
+            var angle = 0;
+
+            var spin = this.on("tick",
+                function () {
+                    object.transform.angle = angle;
+                    angle += 0.01;
+                });
+
+            var self = this;
+
+            object.on("destroyed",
+                function () {
+                    self.off(spin);
+                });
+
+            // Destroy spinning test object as soon as something
+            // is created subsequently in the scene
+
+            this.on("componentCreated",
+                function () {
+                    object.destroy();
+                    rotate.destroy();
+                });
         },
 
         /**
@@ -962,18 +1118,29 @@
 
             // Compile dirty objects into this._renderer
 
+            var countCompiledObjects = 0;
+
             for (var id in this._dirtyObjects) {
                 if (this._dirtyObjects.hasOwnProperty(id)) {
-                    this._dirtyObjects[i]._compile();
+
+                    this._dirtyObjects[id]._compile();
+
+                    delete this._dirtyObjects[id];
+
+                    countCompiledObjects++;
                 }
             }
 
-            this._dirtyObjects = {};
+            if (countCompiledObjects > 0) {
+            //    this.log("Compiled " + countCompiledObjects + " XEO.GameObject" + (countCompiledObjects > 1 ? "s" : ""));
+            }
 
             // Render a frame
 
             this._renderer.render({
-                clear: i === 0
+
+                // Clear buffers
+                clear: true
             });
         },
 
@@ -985,11 +1152,25 @@
             // components are instantiawhen when we load the JSON again.
 
             var components = [];
+            var component;
             var priorities = [];
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
-                    components.push(this.components[id]);
+
+                    component = this.components[id];
+
+                    // Don't serialize service components that
+                    // will always be created on this Scene
+
+                    if (!component._getJSON) {
+                        continue;
+                    }
+
+                    // Serialize in same order as creation
+                    // in order to resolve inter-component dependencies
+
+                    components.unshift(component);
                 }
             }
 

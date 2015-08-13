@@ -34,6 +34,7 @@
      * This utility object provides math functions that are used within xeoEngine. These functions are also part xeoEngine's
      * public API and are therefore available for you to use within your application code.
      * @module XEO
+     * @submodule math
      * @class math
      * @static
      */

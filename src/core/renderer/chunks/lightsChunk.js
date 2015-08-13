@@ -29,25 +29,25 @@
                 switch (lights[i].type) {
 
                     case "ambient":
-                        this._uLightAmbientColor[i] = program.draw.getUniform("XEO_uLightAmbientColor");
-                        this._uLightAmbientIntensity[i] = program.draw.getUniform("XEO_uLightAmbientIntensity" + i);
+                        this._uLightAmbientColor[i] = program.draw.getUniform("xeo_uLightAmbientColor");
+                        this._uLightAmbientIntensity[i] = program.draw.getUniform("xeo_uLightAmbientIntensity" + i);
                         break;
 
                     case "dir":
-                        this._uLightColor[i] = program.draw.getUniform("XEO_uLightColor" + i);
-                        this._uLightIntensity[i] = program.draw.getUniform("XEO_uLightIntensity" + i);
+                        this._uLightColor[i] = program.draw.getUniform("xeo_uLightColor" + i);
+                        this._uLightIntensity[i] = program.draw.getUniform("xeo_uLightIntensity" + i);
                         this._uLightPos[i] = null;
-                        this._uLightDir[i] = program.draw.getUniform("XEO_uLightDir" + i);
+                        this._uLightDir[i] = program.draw.getUniform("xeo_uLightDir" + i);
                         break;
 
                     case "point":
-                        this._uLightColor[i] = program.draw.getUniform("XEO_uLightColor" + i);
-                        this._uLightIntensity[i] = program.draw.getUniform("XEO_uLightIntensity" + i);
-                        this._uLightPos[i] = program.draw.getUniform("XEO_uLightPos" + i);
+                        this._uLightColor[i] = program.draw.getUniform("xeo_uLightColor" + i);
+                        this._uLightIntensity[i] = program.draw.getUniform("xeo_uLightIntensity" + i);
+                        this._uLightPos[i] = program.draw.getUniform("xeo_uLightPos" + i);
                         this._uLightDir[i] = null;
-                        this._uLightConstantAttenuation[i] = program.draw.getUniform("XEO_uLightConstantAttenuation" + i);
-                        this._uLightLinearAttenuation[i] = program.draw.getUniform("XEO_uLightLinearAttenuation" + i);
-                        this._uLightQuadraticAttenuation[i] = program.draw.getUniform("XEO_uLightQuadraticAttenuation" + i);
+                        this._uLightConstantAttenuation[i] = program.draw.getUniform("xeo_uLightConstantAttenuation" + i);
+                        this._uLightLinearAttenuation[i] = program.draw.getUniform("xeo_uLightLinearAttenuation" + i);
+                        this._uLightQuadraticAttenuation[i] = program.draw.getUniform("xeo_uLightQuadraticAttenuation" + i);
                         break;
                 }
             }

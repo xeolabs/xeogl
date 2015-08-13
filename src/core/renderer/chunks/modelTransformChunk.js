@@ -10,12 +10,12 @@
 
             var draw = this.program.draw;
 
-            this._uModelMatrixDraw = draw.getUniform("XEO_uModelMatrix");
-            this._uModelNormalMatrixDraw = draw.getUniform("XEO_uModelNormalMatrix");
+            this._uModelMatrixDraw = draw.getUniform("xeo_uModelMatrix");
+            this._uModelNormalMatrixDraw = draw.getUniform("xeo_uModelNormalMatrix");
 
             var pick = this.program.pick;
 
-            this._uModelMatrixPick = pick.getUniform("XEO_uModelMatrix");
+            this._uModelMatrixPick = pick.getUniform("xeo_uModelMatrix");
         },
 
         draw: function () {

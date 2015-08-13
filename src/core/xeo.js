@@ -1,7 +1,6 @@
 /**
  The xeoEngine namespace.
 
-
  @class XEO
  @main XEO
  @static
@@ -12,6 +11,10 @@
     "use strict";
 
     var XEO = function () {
+
+        // Ensures unique scene IDs
+        // Lazy-instantiated because class won't be defined yet
+        this._sceneIDMap = null;
 
         // Default singleton Scene, lazy-initialized in getter
         this._scene = null;
@@ -42,7 +45,7 @@
 
         var frame = function () {
 
-            var time = (new Date()).getTime();
+            var time = (new Date()).getTime() * 0.001;
 
             tickEvent.time = time;
 
@@ -64,12 +67,12 @@
                     // Recompile the scene if it's now dirty
                     // after handling the tick event
 
-                    if (self._dirtyScenes[id]) {
+                    // if (self._dirtyScenes[id]) {
 
-                        scene._compile();
+                    scene._compile();
 
-                        self._dirtyScenes[id] = false;
-                    }
+                    self._dirtyScenes[id] = false;
+                    // }
                 }
             }
 
@@ -105,7 +108,7 @@
             // XEO.Scene constructor will call this._addScene
             // to register itself on XEO
 
-            return this._scene || (this._scene = new XEO.Scene({
+            return this._scene || (this._scene = new window.XEO.Scene({
                     id: "default.scene"
                 }));
         },
@@ -120,18 +123,42 @@
          */
         _addScene: function (scene) {
 
+            this._sceneIDMap = this._sceneIDMap || new window.XEO.utils.Map();
+
+            if (scene.id) {
+
+                // User-supplied ID
+
+                if (this.scenes[scene.id]) {
+                    console.error("[ERROR] Scene " + XEO._inQuotes(scene.id) + " already exists");
+                    return;
+                }
+
+            } else {
+
+                // Auto-generated ID
+
+                scene.id = this._sceneIDMap.addItem(scene);
+            }
+
             this.scenes[scene.id] = scene;
 
             var self = this;
 
             // Unregister destroyed scenes
+
             scene.on("destroyed",
                 function () {
+
+                    self._sceneIDMap.removeItem(scene.id);
+
                     delete self.scenes[scene.id];
+
                     delete self._dirtyScenes[scene.id];
                 });
 
             // Schedule recompilation of dirty scenes for next animation frame
+
             scene.on("dirty",
                 function () {
                     self._dirtyScenes[scene.id] = true;
@@ -185,6 +212,17 @@
             return (typeof value === 'string' || value instanceof String);
         },
 
+
+        /**
+         * Tests if the given value is a number
+         * @param value
+         * @returns {boolean}
+         * @private
+         */
+        _isNumeric: function (value) {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        },
+
         /** Returns a shallow copy
          */
         _copy: function (o) {
@@ -209,7 +247,7 @@
         _apply2: function (o, o2) {
             for (var name in o) {
                 if (o.hasOwnProperty(name)) {
-                    if (o[name] === undefined || o[name] === null) {
+                    if (o[name] !== undefined && o[name] !== null) {
                         o2[name] = o[name];
                     }
                 }
@@ -230,9 +268,40 @@
                 }
             }
             return o2;
+        },
+
+        /**
+         * Returns true if the given map is empty.
+         * @param obj
+         * @returns {boolean}
+         * @private
+         */
+        _isEmptyObject: function (obj) {
+            for (var name in obj) {
+                if (obj.hasOwnProperty(name)) {
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        /**
+         * Returns the given ID as a string, in quotes if the ID was a string to begin with.
+         *
+         * This is useful for logging IDs.
+         *
+         * @param {Number| String} id The ID
+         * @returns {String}
+         * @private
+         */
+        _inQuotes: function (id) {
+            return this._isNumeric(id) ? ("" + id) : ("'" + id + "'");
         }
     };
 
-    window.XEO = new XEO();
+    // Have a lower-case XEO namespace as well,
+    // just because it's easier to type when live-coding
+
+    window.XEO = window.XEO = new XEO();
 
 })();

@@ -10,9 +10,9 @@
 
             // Note that "program" chunks are always after "renderTarget" chunks
 
-            this._depthModeDraw = this.program.draw.getUniform("XEO_uDepthMode");
-            this._depthModePick = this.program.pick.getUniform("XEO_uDepthMode");
-            this._rayPickMode = this.program.pick.getUniform("XEO_uRayPickMode");
+            this._depthModeDraw = this.program.draw.getUniform("xeo_uDepthMode");
+            this._depthModePick = this.program.pick.getUniform("xeo_uDepthMode");
+            this._rayPickMode = this.program.pick.getUniform("xeo_uRayPickMode");
         },
 
         draw: function (frameCtx) {
@@ -23,7 +23,9 @@
 
             frameCtx.textureUnit = 0;
 
-            this._depthModeDraw.setValue(frameCtx.depthMode);
+            if (this._depthModeDraw) {
+                this._depthModeDraw.setValue(frameCtx.depthMode);
+            }
 
             frameCtx.drawProgram = draw;
         },
@@ -36,7 +38,9 @@
 
             this._rayPickMode.setValue(frameCtx.rayPick);
 
-            this._depthModePick.setValue(frameCtx.depthMode);
+            if (this._depthModePick) {
+                this._depthModePick.setValue(frameCtx.depthMode);
+            }
 
             frameCtx.textureUnit = 0;
 

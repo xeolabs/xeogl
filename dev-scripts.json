@@ -1,14 +1,75 @@
 {
     "engine": [
 
-        "src/core/inheritance.js",
-
         "src/core/xeo.js",
-
+        "src/core/inheritance.js",
         "src/core/utils/map.js",
 
+        "src/core/component.js",
+        "src/core/scene.js",
+
+        "src/core/animation/_module.js",
+        "src/core/animation/cameraFlyAnimation.js",
+        "src/core/animation/morphTargets.js",
+
+        "src/core/clipping/_module.js",
+        "src/core/clipping/clip.js",
+        "src/core/clipping/clips.js",
+
+        "src/core/configuration/_module.js",
+        "src/core/configuration/configs.js",
+
+        "src/core/culling/_module.js",
+        "src/core/culling/visibility.js",
+
+        "src/core/geometry/_module.js",
+        "src/core/geometry/geometry.js",
+
+        "src/core/grouping/_module.js",
+        "src/core/grouping/group.js",
+        "src/core/grouping/groupBoundary.js",
+
+        "src/core/input/_module.js",
+        "src/core/input/input.js",
+        "src/core/input/cameraControl.js",
+        "src/core/input/keyboardAxisCamera.js",
+        "src/core/input/keyboardOrbitCamera.js",
+        "src/core/input/keyboardPanCamera.js",
+        "src/core/input/keyboardZoomCamera.js",
+        "src/core/input/mouseOrbitCamera.js",
+        "src/core/input/mousePanCamera.js",
+        "src/core/input/mousePickObject.js",
+        "src/core/input/mouseZoomCamera.js",
+
+        "src/core/lighting/_module.js",
+        "src/core/lighting/lights.js",
+        "src/core/lighting/ambientLight.js",
+        "src/core/lighting/dirLight.js",
+        "src/core/lighting/pointLight.js",
+
+        "src/core/materials/_module.js",
+        "src/core/materials/material.js",
+        "src/core/materials/phongMaterial.js",
+        "src/core/materials/pbrMaterial.js",
+        "src/core/materials/texture.js",
+        "src/core/materials/reflect.js",
+
+        "src/core/math/_module.js",
         "src/core/math/math.js",
         "src/core/math/mathGeometry.js",
+
+        "src/core/objects/_module.js",
+        "src/core/objects/gameObject.js",
+
+        "src/core/ordering/_module.js",
+        "src/core/ordering/layer.js",
+        "src/core/ordering/stage.js",
+
+        "src/core/rendering/_module.js",
+        "src/core/rendering/canvas.js",
+        "src/core/rendering/colorBuf.js",
+        "src/core/rendering/depthBuf.js",
+        "src/core/rendering/modes.js",
 
         "src/core/renderer/renderer.js",
         "src/core/renderer/states.js",
@@ -19,7 +80,6 @@
         "src/core/renderer/programSource.js",
         "src/core/renderer/programSourceFactory.js",
         "src/core/renderer/renderContext.js",
-
         "src/core/renderer/webgl/webgl.js",
         "src/core/renderer/webgl/arrayBuffer.js",
         "src/core/renderer/webgl/attribute.js",
@@ -29,7 +89,6 @@
         "src/core/renderer/webgl/shader.js",
         "src/core/renderer/webgl/texture2d.js",
         "src/core/renderer/webgl/uniform.js",
-
         "src/core/renderer/chunks/chunk.js",
         "src/core/renderer/chunks/chunkFactory.js",
         "src/core/renderer/chunks/clipsChunk.js",
@@ -50,52 +109,33 @@
         "src/core/renderer/chunks/shaderParamsChunk.js",
         "src/core/renderer/chunks/viewTransformChunk.js",
 
+        "src/core/reporting/_module.js",
+        "src/core/reporting/stats.js",
+        "src/core/reporting/task.js",
+        "src/core/reporting/tasks.js",
 
-        "src/core/component.js",
-        "src/core/ambientLight.js",
-        "src/core/camera.js",
-        "src/core/canvas.js",
-        "src/core/clip.js",
-        "src/core/clips.js",
-        "src/core/colorBuf.js",
-        "src/core/colorTarget.js",
-        "src/core/component.js",
-        "src/core/configs.js",
-        "src/core/depthBuf.js",
-        "src/core/depthTarget.js",
-        "src/core/dirLight.js",
-        "src/core/modes.js",
-        "src/core/frustum.js",
-        "src/core/geometry.js",
-        "src/core/helloWorld.js",
-        "src/core/input.js",
-        "src/core/layer.js",
-        "src/core/lights.js",
-        "src/core/lookat.js",
-        "src/core/matrix.js",
-        "src/core/phongMaterial.js",
-        "src/core/pbrMaterial.js",
-        "src/core/morphTargets.js",
-        "src/core/name.js",
-        "src/core/gameObject.js",
-        "src/core/ortho.js",
-        "src/core/perspective.js",
-        "src/core/pointLight.js",
-        "src/core/reflect.js",
-        "src/core/scene.js",
-        "src/core/shader.js",
-        "src/core/shaderParams.js",
-        "src/core/stage.js",
-        "src/core/stats.js",
-        "src/core/tag.js",
-        "src/core/task.js",
-        "src/core/tasks.js",
-        "src/core/texture.js",
-        "src/core/transform.js",
-        "src/core/rotate.js",
-        "src/core/translate.js",
-        "src/core/scale.js",
-        "src/core/visibility.js"
+        "src/core/rtt/_module.js",
+        "src/core/rtt/colorTarget.js",
+        "src/core/rtt/depthTarget.js",
+
+        "src/core/shading/_module.js",
+        "src/core/shading/shader.js",
+        "src/core/shading/shaderParams.js",
+
+        "src/core/spatial/_module.js",
+        "src/core/spatial/boundary3d.js",
+
+        "src/core/transforms/_module.js",
+        "src/core/transforms/camera.js",
+        "src/core/transforms/frustum.js",
+        "src/core/transforms/lookat.js",
+        "src/core/transforms/matrix.js",
+        "src/core/transforms/ortho.js",
+        "src/core/transforms/perspective.js",
+        "src/core/transforms/transform.js",
+        "src/core/transforms/rotate.js",
+        "src/core/transforms/translate.js",
+        "src/core/transforms/scale.js"
     ],
 
     "extras": [

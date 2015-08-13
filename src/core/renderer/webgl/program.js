@@ -49,6 +49,11 @@
 
             gl.linkProgram(this.handle);
 
+            console.error("vertex");
+            console.error(gl.getShaderInfoLog(this._vertexShader.handle));
+            console.error("fragment");
+            console.error(gl.getShaderInfoLog(this._fragmentShader.handle));
+
             // Discover uniforms and samplers
 
             var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);

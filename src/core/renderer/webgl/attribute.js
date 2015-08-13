@@ -18,10 +18,10 @@
 
             buffer.bind();
 
-            gl.enableVertexAttribArray(this.location);
+            this.gl.enableVertexAttribArray(this.location);
 
             // Vertices are not homogeneous - no w-element
-            gl.vertexAttribPointer(this.location, buffer.itemSize, gl.FLOAT, false, 0, 0);
+            this.gl.vertexAttribPointer(this.location, buffer.itemSize, this.gl.FLOAT, false, 0, 0);
         }
     };
 

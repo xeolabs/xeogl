@@ -15,8 +15,8 @@
 //                var draw = this.program.draw;
 //                for (var i = 0, len = layers.length; i < len; i++) {
 //                    layer = layers[i];
-//                    this._uCubeMapSampler[i] = "XEO_uCubeMapSampler" + i;
-//                    this._uCubeMapIntensity[i] = draw.getUniform("XEO_uCubeMapIntensity" + i);
+//                    this._uCubeMapSampler[i] = "xeo_uCubeMapSampler" + i;
+//                    this._uCubeMapIntensity[i] = draw.getUniform("xeo_uCubeMapIntensity" + i);
 //                }
 //            }
         },

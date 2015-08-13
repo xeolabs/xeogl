@@ -10,11 +10,11 @@
 
             var draw = this.program.draw;
 
-            this._uModesClippingDraw = draw.getUniform("XEO_uModesClipping");
+            this._uModesClippingDraw = draw.getUniform("xeo_uModesClipping");
 
             var pick = this.program.pick;
 
-            this._uModesClippingPick = pick.getUniform("XEO_uModesClipping");
+            this._uModesClippingPick = pick.getUniform("xeo_uModesClipping");
         },
 
         drawAndPick: function (frameCtx) {
@@ -83,10 +83,14 @@
 
             if (frameCtx.pick) {
 
-                this._uModesClippingPick.setValue(state.clipping);
+                if (this._uModesClippingPick) {
+                    this._uModesClippingPick.setValue(state.clipping);
+                }
 
             } else {
-                this._uModesClippingDraw.setValue(state.clipping);
+                if (this._uModesClippingDraw) {
+                    this._uModesClippingDraw.setValue(state.clipping);
+                }
             }
         }
     });

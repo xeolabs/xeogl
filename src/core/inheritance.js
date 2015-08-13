@@ -1,14 +1,16 @@
 /*
-  Based on Simple JavaScript Inheritance
-  By John Resig http://ejohn.org/
-  MIT Licensed.
+ Based on Simple JavaScript Inheritance
+ By John Resig http://ejohn.org/
+ MIT Licensed.
  */
 // Inspired by base2 and Prototype
 (function () {
 
     var initializing = false;
 
-    var fnTest = /xyz/.test(function () {xyz;}) ? /\b_super\b/ : /.*/;
+    var fnTest = /xyz/.test(function () {
+        xyz;
+    }) ? /\b_super\b/ : /.*/;
 
     // The base Class implementation (does nothing)
     this.Class = function () {
@@ -34,6 +36,26 @@
                 var descriptor;
                 for (var key in props) {
                     descriptor = props[key];
+
+                    // If no setter is provided, then the property
+                    // is strictly read-only. Insert a dummy setter
+                    // to log a warning.
+
+                    if (!descriptor.set) {
+                        (function () {
+
+                            var name = key;
+
+                            descriptor.set = function () {
+                                this.warn("Property '" + name + "' is read-only, ignoring assignment");
+                            };
+                        })();
+                    }
+
+
+                    // Want property to show up in inspectors
+                    descriptor.enumerable = true;
+
                     Object.defineProperty(prototype, key, descriptor);
                 }
                 continue;

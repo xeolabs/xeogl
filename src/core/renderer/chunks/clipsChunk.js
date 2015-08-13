@@ -17,8 +17,8 @@
             var draw = this.program.draw;
 
             for (var i = 0, len = this.state.clips.length; i < len; i++) {
-                this._uClipModeDraw[i] = draw.getUniform("XEO_uClipMode" + i);
-                this._uClipPlaneDraw[i] = draw.getUniform("XEO_uClipPlane" + i)
+                this._uClipModeDraw[i] = draw.getUniform("xeo_uClipMode" + i);
+                this._uClipPlaneDraw[i] = draw.getUniform("xeo_uClipPlane" + i)
             }
 
             this._uClipModePick = this._uClipModePick || [];
@@ -27,8 +27,8 @@
             var pick = this.program.pick;
 
             for (var i = 0, len = this.state.clips.length; i < len; i++) {
-                this._uClipModePick[i] = pick.getUniform("XEO_uClipMode" + i);
-                this._uClipPlanePick[i] = pick.getUniform("XEO_uClipPlane" + i)
+                this._uClipModePick[i] = pick.getUniform("xeo_uClipMode" + i);
+                this._uClipPlanePick[i] = pick.getUniform("xeo_uClipPlane" + i)
             }
         },
 

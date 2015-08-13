@@ -148,16 +148,16 @@
 
     /**
 
-     Material state.
+     PhongMaterial state.
 
-     @class renderer.Material
+     @class renderer.PhongMaterial
      @module XEO
      @submodule renderer
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Material = XEO.renderer.State.extend({});
+    XEO.renderer.PhongMaterial = XEO.renderer.State.extend({});
 
     /**
 

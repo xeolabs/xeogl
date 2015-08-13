@@ -8,13 +8,13 @@
 
         build: function () {
 
-            this._uProjMatrixDraw = this.program.draw.getUniform("XEO_uProjMatrix");
-            this._uZNearDraw = this.program.draw.getUniform("XEO_uZNear");
-            this._uZFarDraw = this.program.draw.getUniform("XEO_uZFar");
+            this._uProjMatrixDraw = this.program.draw.getUniform("xeo_uProjMatrix");
+            this._uZNearDraw = this.program.draw.getUniform("xeo_uZNear");
+            this._uZFarDraw = this.program.draw.getUniform("xeo_uZFar");
 
-            this._uProjMatrixPick = this.program.pick.getUniform("XEO_uProjMatrix");
-            this._uZNearPick = this.program.pick.getUniform("XEO_uZNear");
-            this._uZFarPick = this.program.pick.getUniform("XEO_uZFar");
+            this._uProjMatrixPick = this.program.pick.getUniform("xeo_uProjMatrix");
+            this._uZNearPick = this.program.pick.getUniform("xeo_uZNear");
+            this._uZFarPick = this.program.pick.getUniform("xeo_uZFar");
         },
 
         draw: function (frameCtx) {

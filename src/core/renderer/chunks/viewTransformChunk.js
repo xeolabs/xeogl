@@ -8,11 +8,11 @@
 
         build: function () {
 
-            this._uViewMatrixDraw = this.program.draw.getUniform("XEO_uViewMatrix");
-            this._uViewNormalMatrixDraw = this.program.draw.getUniform("XEO_uViewNormalMatrix");
-            this._uEyeDraw = this.program.draw.getUniform("XEO_uEye");
+            this._uViewMatrixDraw = this.program.draw.getUniform("xeo_uViewMatrix");
+            this._uViewNormalMatrixDraw = this.program.draw.getUniform("xeo_uViewNormalMatrix");
+            this._uEyeDraw = this.program.draw.getUniform("xeo_uEye");
 
-            this._uViewMatrixPick = this.program.pick.getUniform("XEO_uViewMatrix");
+            this._uViewMatrixPick = this.program.pick.getUniform("xeo_uViewMatrix");
         },
 
         draw: function (frameCtx) {

@@ -12,46 +12,46 @@
 
             var draw = this.program.draw;
 
-            this._uMetallic = draw.getUniform("XEO_uMetallic");
+            this._uMetallic = draw.getUniform("xeo_uMetallic");
 
-            this._uMaterialColor = draw.getUniform("XEO_uMaterialColor");
+            this._uMaterialColor = draw.getUniform("xeo_uMaterialColor");
             
             if (state.colorMap) {
-                this._uMaterialColorMap = draw.getUniform("XEO_uMaterialColorMap");
-                this._uMaterialColorMapMatrix = draw.getUniform("XEO_uMaterialColorMapMatrix");
+                this._uMaterialColorMap = draw.getUniform("xeo_uMaterialColorMap");
+                this._uMaterialColorMapMatrix = draw.getUniform("xeo_uMaterialColorMapMatrix");
             }
             
-            this._uMaterialEmissive = draw.getUniform("XEO_uMaterialEmissive");
+            this._uMaterialEmissive = draw.getUniform("xeo_uMaterialEmissive");
 
             if (state.emissiveMap) {
-                this._uMaterialEmissiveMap = draw.getUniform("XEO_uMaterialEmissiveMap");
-                this._uMaterialEmissiveMapMatrix = draw.getUniform("XEO_uMaterialEmissiveMapMatrix");
+                this._uMaterialEmissiveMap = draw.getUniform("xeo_uMaterialEmissiveMap");
+                this._uMaterialEmissiveMapMatrix = draw.getUniform("xeo_uMaterialEmissiveMapMatrix");
             }
 
-            this._uMaterialOpacity = draw.getUniform("XEO_uMaterialOpacity");
+            this._uMaterialOpacity = draw.getUniform("xeo_uMaterialOpacity");
 
             if (state.opacityMap) {
-                this._uMaterialOpacityMap = draw.getUniform("XEO_uMaterialOpacityMap");
-                this._uMaterialOpacityMapMatrix = draw.getUniform("XEO_uMaterialOpacityMapMatrix");
+                this._uMaterialOpacityMap = draw.getUniform("xeo_uMaterialOpacityMap");
+                this._uMaterialOpacityMapMatrix = draw.getUniform("xeo_uMaterialOpacityMapMatrix");
             }
 
-            this._uMaterialRoughness = draw.getUniform("XEO_uMaterialRoughness");
+            this._uMaterialRoughness = draw.getUniform("xeo_uMaterialRoughness");
 
             if (state.roughnessMap) {
-                this._uMaterialRoughnessMap = draw.getUniform("XEO_uMaterialRoughnessMap");
-                this._uMaterialRoughnessMapMatrix = draw.getUniform("XEO_uMaterialRoughnessMapMatrix");
+                this._uMaterialRoughnessMap = draw.getUniform("xeo_uMaterialRoughnessMap");
+                this._uMaterialRoughnessMapMatrix = draw.getUniform("xeo_uMaterialRoughnessMapMatrix");
             }
 
             if (state.normalMap) {
-                this._uMaterialNormalMap = draw.getUniform("XEO_uMaterialNormalMap");
-                this._uMaterialNormalMapMatrix = draw.getUniform("XEO_uMaterialNormalMapMatrix");
+                this._uMaterialNormalMap = draw.getUniform("xeo_uMaterialNormalMap");
+                this._uMaterialNormalMapMatrix = draw.getUniform("xeo_uMaterialNormalMapMatrix");
             }
 
-            this._uMaterialSpecular = draw.getUniform("XEO_uMaterialSpecular");
+            this._uMaterialSpecular = draw.getUniform("xeo_uMaterialSpecular");
             
             if (state.specularMap) {
-                this._uMaterialSpecularMap = draw.getUniform("XEO_uMaterialSpecularMap");
-                this._uMaterialSpecularMapMatrix = draw.getUniform("XEO_uMaterialSpecularMapMatrix");
+                this._uMaterialSpecularMap = draw.getUniform("xeo_uMaterialSpecularMap");
+                this._uMaterialSpecularMapMatrix = draw.getUniform("xeo_uMaterialSpecularMapMatrix");
             }
         },
 

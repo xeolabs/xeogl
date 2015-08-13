@@ -2,7 +2,7 @@
 
     "use strict";
 
-    /** 
+    /**
      * Buffer for vertices and indices
      *
      * @param gl WebGL
@@ -21,9 +21,18 @@
         this.allocated = false;
 
         this.gl = gl;
+
         this.type = type;
+
+        this.itemType = values.constructor == Uint8Array ? gl.UNSIGNED_BYTE :
+            values.constructor == Uint16Array ? gl.UNSIGNED_SHORT :
+                values.constructor == Uint32Array ? gl.UNSIGNED_INT :
+                    gl.FLOAT;
+
         this.numItems = numItems;
+
         this.itemSize = itemSize;
+
         this.usage = usage;
 
         this._allocate(values, numItems);
@@ -37,15 +46,15 @@
      * @private
      */
     XEO.renderer.webgl.ArrayBuffer.prototype._allocate = function (values, numItems) {
-        
+
         this.allocated = false;
-        
+
         this._handle = this.gl.createBuffer();
-        
+
         if (!this._handle) {
             throw "Failed to allocate WebGL ArrayBuffer";
         }
-        
+
         if (this._handle) {
             this.gl.bindBuffer(this.type, this._handle);
             this.gl.bufferData(this.type, values, this.usage);
@@ -63,55 +72,55 @@
      * @param offset
      */
     XEO.renderer.webgl.ArrayBuffer.prototype.setData = function (data, offset) {
-        
+
         if (!this.allocated) {
             return;
         }
-        
+
         if (data.length > this.length) {
-            
+
             // Needs reallocation
-            
+
             this.destroy();
-            
+
             this._allocate(data, data.length);
-            
+
         } else {
-            
+
             // No reallocation needed
-            
+
             if (offset || offset === 0) {
-                
+
                 this.gl.bufferSubData(this.type, offset, data);
-                
+
             } else {
-                
+
                 this.gl.bufferData(this.type, data);
             }
         }
     };
 
-    /** 
-     * Binds this buffer     
+    /**
+     * Binds this buffer
      */
     XEO.renderer.webgl.ArrayBuffer.prototype.bind = function () {
-        
+
         if (!this.allocated) {
             return;
         }
-        
+
         this.gl.bindBuffer(this.type, this._handle);
     };
-    
+
     /**
      * Unbinds this buffer
      */
     XEO.renderer.webgl.ArrayBuffer.prototype.unbind = function () {
-        
+
         if (!this.allocated) {
             return;
         }
-        
+
         this.gl.bindBuffer(this.type, null);
     };
 
@@ -119,15 +128,15 @@
      * Destroys this buffer
      */
     XEO.renderer.webgl.ArrayBuffer.prototype.destroy = function () {
-        
+
         if (!this.allocated) {
             return;
         }
-        
+
         this.gl.deleteBuffer(this._handle);
-        
+
         this._handle = null;
-        
+
         this.allocated = false;
     };
 

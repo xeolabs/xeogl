@@ -396,9 +396,9 @@
             this.geometry.hash,
             this.shader.hash,
             this.clips.hash,
-            this.morphTargets.hash,
+            //this.morphTargets.hash,
             this.material.hash,
-            this.reflect.hash,
+            //this.reflect.hash,
             this.lights.hash
 
         ]).join(";");
@@ -432,10 +432,14 @@
         this._setChunk(object, 8, "colorBuf", this.colorBuf);
         this._setChunk(object, 9, "lights", this.lights);
         this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 11, "reflect", this.reflect);
-        this._setChunk(object, 12, "clips", this.clips);
-        this._setChunk(object, 13, "geometry", this.geometry);
-        this._setChunk(object, 14, "draw", this.geometry); // Must be last
+        this._setChunk(object, 11, "clips", this.clips);
+        this._setChunk(object, 12, "geometry", this.geometry);
+        this._setChunk(object, 13, "draw", this.geometry); // Must be last
+
+        // At the very least, the object sort order
+        // will need be recomputed
+
+        this.stateOrderDirty = true;
     };
 
     /** Adds a render state chunk to a render graph object.
@@ -446,7 +450,7 @@
 
         if (oldChunk) {
 
-          oldChunk.init(oldChunk.id, object.program, state);
+          oldChunk.init(oldChunk.id, object, object.program, state);
 
           return;
         }
@@ -474,7 +478,7 @@
 
             light = lights[i];
 
-            if (light.mode === "ambient") {
+            if (light.type === "ambient") {
                 this._ambientColor[0] = light.color[0];
                 this._ambientColor[1] = light.color[1];
                 this._ambientColor[2] = light.color[2];
@@ -749,7 +753,7 @@
 
             // Unbinds any render target bound previously
 
-            this._appendRenderTargetChunk(this._chunkFactory.getChunk("renderTarget", object.program, {}));
+            this._appendRenderTargetChunk(this._chunkFactory.getChunk("renderTarget", object, object.program, {}));
         }
 
         // Append chunks for objects not in render targets
@@ -904,9 +908,12 @@
     XEO.renderer.Renderer.prototype.pick = function (params) {
 
         var canvas = this._canvas.canvas;
+
         var hit = null;
-        var canvasX = params.canvasX;
-        var canvasY = params.canvasY;
+
+        var canvasX = params.canvasPos[0];
+        var canvasY = params.canvasPos[1];
+
         var pickBuf = this.pickBuf;
 
         // Lazy-create the pick buffer
@@ -914,6 +921,7 @@
         if (!pickBuf) {
 
             pickBuf = new XEO.renderer.webgl.RenderBuffer({
+                gl: this._canvas.gl,
                 canvas: this._canvas
             });
 
@@ -973,7 +981,7 @@
             // Build hit report
 
             hit = {
-                  objectId: object.id,
+                  object: object,
                   canvasPos: [
                     canvasX,
                     canvasY
@@ -991,6 +999,7 @@
                 if (!rayPickBuf) {
 
                     rayPickBuf = new XEO.renderer.webgl.RenderBuffer({
+                        gl: this._canvas.gl,
                         canvas: this._canvas
                     });
 
@@ -1095,7 +1104,7 @@
         frameCtx.depthFunc = gl.LESS;
         frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
-        frameCtx.frontface = "ccw";
+        frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.pickIndex = 0; // Indexes this._pickObjects
         frameCtx.textureUnit = 0;
         frameCtx.lineWidth = 1;
@@ -1168,7 +1177,7 @@
         gl.flush();
 
         if (frameCtx.renderBuf) {
-            frameCtx.renderBuf.unbind();
+    //        frameCtx.renderBuf.unbind();
         }
 
 //

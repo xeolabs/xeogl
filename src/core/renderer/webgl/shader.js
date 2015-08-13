@@ -20,7 +20,8 @@
         this.handle = gl.createShader(type);
 
         if (!this.handle) {
-            throw "Failed to create WebGL shader";
+            console.error("Failed to create WebGL shader");
+            return;
         }
 
         gl.shaderSource(this.handle, source);
@@ -30,18 +31,18 @@
 
         if (!this.valid) {
 
-            if (!gl.isContextLost()) { // Handled explicitely elsewhere, so wont rehandle here
+            if (!gl.isContextLost()) { // Handled explicitly elsewhere, so won't re-handle here
 
-                XEO.log.error("Shader program failed to compile: " + gl.getShaderInfoLog(this.handle));
-                XEO.log.error("Shader source:");
+                console.error("Shader program failed to compile: " + gl.getShaderInfoLog(this.handle));
+                console.error("Shader source:");
 
                 var lines = source.split('\n');
 
                 for (var j = 0; j < lines.length; j++) {
-                    XEO.log.error((j + 1) + ": " + lines[j]);
+                    console.error((j + 1) + ": " + lines[j]);
                 }
 
-                throw "Shader program failed to compile";
+                return;
             }
         }
 

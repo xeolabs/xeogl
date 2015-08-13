@@ -13,7 +13,7 @@
         programGlobal: true,
 
         draw: function (frameCtx) {
-
+return;
             var gl = this.program.gl;
             var state = this.state;
 

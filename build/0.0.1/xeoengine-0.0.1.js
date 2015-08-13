@@ -9616,7 +9616,7 @@
 
      var scene = new XEO.Scene();
 
-     // Shader that's used by our GameObject. Note the 'XEO_aPosition' and 'XEO_aUV attributes',
+     // Shader that's used by our GameObject. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
      // which will receive the positions and UVs from the Geometry. Also note the 'time'
      // uniform, which we'll be animating via Shader#setParams.
 
@@ -9624,12 +9624,12 @@
 
        // Vertex shading stage
        vertex: [
-           "attribute vec3 XEO_aPosition;",
-           "attribute vec2 XEO_aUV;",
+           "attribute vec3 xeo_aPosition;",
+           "attribute vec2 xeo_aUV;",
            "varying vec2 vUv;",
            "void main () {",
-           "    gl_Position = vec4(XEO_aPosition, 1.0);",
-           "    vUv = XEO_aUV;",
+           "    gl_Position = vec4(xeo_aPosition, 1.0);",
+           "    vUv = xeo_aUV;",
            "}"
        ],
 
@@ -9698,11 +9698,11 @@
 
      | Attribute  | Description | Depends on  |
      |---|---|
-     | attribute vec3   XEO_aPosition   | Vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
-     | attribute vec2   XEO_aUV         | UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
-     | attribute vec3   XEO_aNormal     | Normal vectors | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
-     | attribute vec4   XEO_aVertexColor  | Vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
-     | attribute vec4 XEO_aTangent    | Tangent vectors for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
+     | attribute vec3   xeo_aPosition   | Vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
+     | attribute vec2   xeo_aUV         | UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
+     | attribute vec3   xeo_aNormal     | Normal vectors | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
+     | attribute vec4   xeo_aVertexColor  | Vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
+     | attribute vec4 xeo_aTangent    | Tangent vectors for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
 
      #### Uniforms
 
@@ -9710,15 +9710,15 @@
 
      | Uniform  | Description | Depends on  |
      |---|---|
-     | uniform mat4  XEO_uMNMatrix               | Modelling normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Matrix"}}{{/crossLink}} |
-     | uniform mat4  XEO_uVMatrix                | View matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
-     | uniform mat4  XEO_uVNMatrix               | View normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
-     | uniform mat4  XEO_uPMatrix                | Projection matrix | {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
-     | uniform mat4  XEO_uPNMatrix               | Projection normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
-     | uniform float XEO_uZNear                  | Near clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
-     | uniform float XEO_uZFar                   | Far clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
-     | uniform vec3  XEO_uAmbientColor | Ambient light color | {{#crossLink "AmbientLight"}}{{/crossLink}} |
-     | uniform vec3 XEO_uLightDir&lt;N&gt; | Direction of {{#crossLink "DirLight"}}{{/crossLink}} at index N in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} |
+     | uniform mat4  xeo_uMNMatrix               | Modelling normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Matrix"}}{{/crossLink}} |
+     | uniform mat4  xeo_uVMatrix                | View matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
+     | uniform mat4  xeo_uVNMatrix               | View normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
+     | uniform mat4  xeo_uPMatrix                | Projection matrix | {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
+     | uniform mat4  xeo_uPNMatrix               | Projection normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
+     | uniform float xeo_uZNear                  | Near clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
+     | uniform float xeo_uZFar                   | Far clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
+     | uniform vec3  xeo_uAmbientColor | Ambient light color | {{#crossLink "AmbientLight"}}{{/crossLink}} |
+     | uniform vec3 xeo_uLightDir&lt;N&gt; | Direction of {{#crossLink "DirLight"}}{{/crossLink}} at index N in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} |
 
 
 
@@ -9729,9 +9729,9 @@
 
      | Varying | Description | Depends on  |
      |---|---|
-     | varying vec4 XEO_vWorldVertex | |
-     | varying vec4 XEO_vViewVertex | |
-     | varying vec4 XEO_vColor | |
+     | varying vec4 xeo_vWorldVertex | |
+     | varying vec4 xeo_vViewVertex | |
+     | varying vec4 xeo_vColor | |
 
 
      @class Shader
@@ -9907,7 +9907,7 @@
      ````javascript
      var scene = new XEO.Scene();
 
-     // Shader that's shared by both our GameObjects. Note the 'XEO_aPosition' and 'XEO_aUV attributes',
+     // Shader that's shared by both our GameObjects. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
      // which will receive the positions and UVs from the Geometry components. Also note the 'time'
      // uniform, which we'll be animating via the ShaderParams components.
 
@@ -9915,12 +9915,12 @@
 
        // Vertex shading stage
        vertex: [
-           "attribute vec3 XEO_aPosition;",
-           "attribute vec2 XEO_aUV;",
+           "attribute vec3 xeo_aPosition;",
+           "attribute vec2 xeo_aUV;",
            "varying vec2 vUv;",
            "void main () {",
-           "    gl_Position = vec4(XEO_aPosition, 1.0);",
-           "    vUv = XEO_aUV;",
+           "    gl_Position = vec4(xeo_aPosition, 1.0);",
+           "    vUv = xeo_aUV;",
            "}"
        ],
 
@@ -13573,7 +13573,7 @@
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.buf.framebuf);
 
         if (!this.gl.isFramebuffer(this.buf.framebuf)) {
-            throw XEO_error.fatalError(XEO.errors.INVALID_FRAMEBUFFER, "Invalid framebuffer");
+            throw xeo_error.fatalError(XEO.errors.INVALID_FRAMEBUFFER, "Invalid framebuffer");
         }
 
         var status = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
@@ -13584,19 +13584,19 @@
                 break;
 
             case this.gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                throw XEO_error.fatalError(XEO.errors.ERROR, "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+                throw xeo_error.fatalError(XEO.errors.ERROR, "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
 
             case this.gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                throw XEO_error.fatalError(XEO.errors.ERROR, "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+                throw xeo_error.fatalError(XEO.errors.ERROR, "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
 
             case this.gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-                throw XEO_error.fatalError(XEO.errors.ERROR, "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
+                throw xeo_error.fatalError(XEO.errors.ERROR, "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
 
             case this.gl.FRAMEBUFFER_UNSUPPORTED:
-                throw XEO_error.fatalError(XEO.errors.ERROR, "Incomplete framebuffer: FRAMEBUFFER_UNSUPPORTED");
+                throw xeo_error.fatalError(XEO.errors.ERROR, "Incomplete framebuffer: FRAMEBUFFER_UNSUPPORTED");
 
             default:
-                throw XEO_error.fatalError(XEO.errors.ERROR, "Incomplete framebuffer: " + status);
+                throw xeo_error.fatalError(XEO.errors.ERROR, "Incomplete framebuffer: " + status);
         }
 
         this.bound = false;
@@ -13737,7 +13737,7 @@
             this.allocated = true;
 
         } catch (e) {
-            throw XEO_error.fatalError(XEO.errors.OUT_OF_VRAM, "Failed to create texture: " + e.message || e);
+            throw xeo_error.fatalError(XEO.errors.OUT_OF_VRAM, "Failed to create texture: " + e.message || e);
         }
 
         this.bind = function (unit) {
@@ -15308,36 +15308,36 @@
 
                 "precision mediump float;",
 
-                "attribute vec3 XEO_aPosition;",
-                "uniform mat4 XEO_uMMatrix;",
-                "uniform mat4 XEO_uVMatrix;",
-                "uniform mat4 XEO_uVNMatrix;",
-                "uniform mat4 XEO_uPMatrix;"
+                "attribute vec3 xeo_aPosition;",
+                "uniform mat4 xeo_uMMatrix;",
+                "uniform mat4 xeo_uVMatrix;",
+                "uniform mat4 xeo_uVNMatrix;",
+                "uniform mat4 xeo_uPMatrix;"
             ];
 
-            src.push("varying vec4 XEO_vWorldVertex;");
-            src.push("varying vec4 XEO_vViewVertex;");
+            src.push("varying vec4 xeo_vWorldVertex;");
+            src.push("varying vec4 xeo_vViewVertex;");
 
             if (morphing) {
-                src.push("uniform float XEO_uMorphFactor;");       // LERP factor for morph
+                src.push("uniform float xeo_uMorphFactor;");       // LERP factor for morph
                 if (states.MorphTargets.targets[0].vertexBuf) {      // target2 has these arrays also
-                    src.push("attribute vec3 XEO_aMorphVertex;");
+                    src.push("attribute vec3 xeo_aMorphVertex;");
                 }
             }
 
             src.push("void main(void) {");
 
-            src.push("   vec4 tmpVertex=vec4(XEO_aPosition, 1.0); ");
+            src.push("   vec4 tmpVertex=vec4(xeo_aPosition, 1.0); ");
             if (morphing) {
                 if (states.MorphTargets.targets[0].vertexBuf) {
-                    src.push("  tmpVertex = vec4(mix(tmpVertex.xyz, XEO_aMorphVertex, XEO_uMorphFactor), 1.0); ");
+                    src.push("  tmpVertex = vec4(mix(tmpVertex.xyz, xeo_aMorphVertex, xeo_uMorphFactor), 1.0); ");
                 }
             }
-            src.push("  XEO_vWorldVertex = XEO_uMMatrix * tmpVertex; ");
+            src.push("  xeo_vWorldVertex = xeo_uMMatrix * tmpVertex; ");
 
-            src.push("  XEO_vViewVertex = XEO_uVMatrix * XEO_vWorldVertex;");
+            src.push("  xeo_vViewVertex = xeo_uVMatrix * xeo_vWorldVertex;");
 
-            src.push("  gl_Position =  XEO_uPMatrix * XEO_vViewVertex;");
+            src.push("  gl_Position =  xeo_uPMatrix * xeo_vViewVertex;");
             src.push("}");
 
             return src.join("\n");
@@ -15355,21 +15355,21 @@
                 "precision mediump float;"
             ];
 
-            src.push("varying vec4 XEO_vWorldVertex;");
-            src.push("varying vec4  XEO_vViewVertex;");                  // View-space vertex
+            src.push("varying vec4 xeo_vWorldVertex;");
+            src.push("varying vec4  xeo_vViewVertex;");                  // View-space vertex
 
-            src.push("uniform bool  XEO_uRayPickMode;");                   // Z-pick mode when true else colour-pick
-            src.push("uniform vec3  XEO_uPickColor;");                   // Used in colour-pick mode
-            src.push("uniform float XEO_uZNear;");                      // Used in Z-pick mode
-            src.push("uniform float XEO_uZFar;");                       // Used in Z-pick mode
-            src.push("uniform bool  XEO_uClipping;");
+            src.push("uniform bool  xeo_uRayPickMode;");                   // Z-pick mode when true else colour-pick
+            src.push("uniform vec3  xeo_uPickColor;");                   // Used in colour-pick mode
+            src.push("uniform float xeo_uZNear;");                      // Used in Z-pick mode
+            src.push("uniform float xeo_uZFar;");                       // Used in Z-pick mode
+            src.push("uniform bool  xeo_uClipping;");
 
             if (clipping) {
 
                 // World-space clipping planes
                 for (var i = 0; i < states.clips.clips.length; i++) {
-                    src.push("uniform float XEO_uClipMode" + i + ";");
-                    src.push("uniform vec4  XEO_uClipNormalAndDist" + i + ";");
+                    src.push("uniform float xeo_uClipMode" + i + ";");
+                    src.push("uniform vec4  xeo_uClipNormalAndDist" + i + ";");
                 }
             }
 
@@ -15386,15 +15386,15 @@
 
             if (clipping) {
 
-                src.push("if (XEO_uClipping) {");
+                src.push("if (xeo_uClipping) {");
                 src.push("  float   dist;");
                 for (var i = 0; i < states.clips.clips.length; i++) {
-                    src.push("    if (XEO_uClipMode" + i + " != 0.0) {");
-                    src.push("        dist = dot(XEO_vWorldVertex.xyz, XEO_uClipNormalAndDist" + i + ".xyz) - XEO_uClipNormalAndDist" + i + ".w;");
-                    src.push("        if (XEO_uClipMode" + i + " == 1.0) {");
+                    src.push("    if (xeo_uClipMode" + i + " != 0.0) {");
+                    src.push("        dist = dot(xeo_vWorldVertex.xyz, xeo_uClipNormalAndDist" + i + ".xyz) - xeo_uClipNormalAndDist" + i + ".w;");
+                    src.push("        if (xeo_uClipMode" + i + " == 1.0) {");
                     src.push("            if (dist > 0.0) { discard; }");
                     src.push("        }");
-                    src.push("        if (XEO_uClipMode" + i + " == 2.0) {");
+                    src.push("        if (xeo_uClipMode" + i + " == 2.0) {");
                     src.push("            if (dist > 0.0) { discard; }");
                     src.push("        }");
                     src.push("    }");
@@ -15402,11 +15402,11 @@
                 src.push("}");
             }
 
-            src.push("    if (XEO_uRayPickMode) {");
-            src.push("          float zNormalizedDepth = abs((XEO_uZNear + XEO_vViewVertex.z) / (XEO_uZFar - XEO_uZNear));");
+            src.push("    if (xeo_uRayPickMode) {");
+            src.push("          float zNormalizedDepth = abs((xeo_uZNear + xeo_vViewVertex.z) / (xeo_uZFar - xeo_uZNear));");
             src.push("          gl_FragColor = packDepth(zNormalizedDepth); ");
             src.push("    } else {");
-            src.push("          gl_FragColor = vec4(XEO_uPickColor.rgb, 1.0);  ");
+            src.push("          gl_FragColor = vec4(xeo_uPickColor.rgb, 1.0);  ");
             src.push("    }");
 
             src.push("}");
@@ -15483,26 +15483,26 @@
                 "precision mediump float;"
             ];
 
-            src.push("uniform mat4 XEO_uMMatrix;");             // Model matrix
-            src.push("uniform mat4 XEO_uVMatrix;");             // View matrix
-            src.push("uniform mat4 XEO_uPMatrix;");             // Projection matrix
+            src.push("uniform mat4 xeo_uMMatrix;");             // Model matrix
+            src.push("uniform mat4 xeo_uVMatrix;");             // View matrix
+            src.push("uniform mat4 xeo_uPMatrix;");             // Projection matrix
 
-            src.push("attribute vec3 XEO_aPosition;");            // Model coordinates
+            src.push("attribute vec3 xeo_aPosition;");            // Model coordinates
 
-            src.push("uniform vec3 XEO_uWorldEye;");            // World-space eye position
+            src.push("uniform vec3 xeo_uWorldEye;");            // World-space eye position
 
-            src.push("varying vec3 XEO_vViewEyeVec;");          // View-space vector from origin to eye
+            src.push("varying vec3 xeo_vViewEyeVec;");          // View-space vector from origin to eye
 
             if (normals) {
 
-                src.push("attribute vec3 XEO_aNormal;");        // Normal vectors
-                src.push("uniform   mat4 XEO_uMNMatrix;");      // Model normal matrix
-                src.push("uniform   mat4 XEO_uVNMatrix;");      // View normal matrix
+                src.push("attribute vec3 xeo_aNormal;");        // Normal vectors
+                src.push("uniform   mat4 xeo_uMNMatrix;");      // Model normal matrix
+                src.push("uniform   mat4 xeo_uVNMatrix;");      // View normal matrix
 
-                src.push("varying   vec3 XEO_vViewNormal;");    // Output view-space vertex normal
+                src.push("varying   vec3 xeo_vViewNormal;");    // Output view-space vertex normal
 
                 if (tangents) {
-                    src.push("attribute vec4 XEO_aTangent;");
+                    src.push("attribute vec4 xeo_aTangent;");
                 }
 
                 for (var i = 0; i < states.lights.lights.length; i++) {
@@ -15514,63 +15514,63 @@
                     }
 
                     if (light.mode === "dir") {
-                        src.push("uniform vec3 XEO_uLightDir" + i + ";");
+                        src.push("uniform vec3 xeo_uLightDir" + i + ";");
                     }
 
                     if (light.mode === "point") {
-                        src.push("uniform vec3 XEO_uLightPos" + i + ";");
+                        src.push("uniform vec3 xeo_uLightPos" + i + ";");
                     }
 
                     if (light.mode === "spot") {
-                        src.push("uniform vec3 XEO_uLightPos" + i + ";");
+                        src.push("uniform vec3 xeo_uLightPos" + i + ";");
                     }
 
                     // Vector from vertex to light, packaged with the pre-computed length of that vector
-                    src.push("varying vec4 XEO_vViewLightVecAndDist" + i + ";");
+                    src.push("varying vec4 xeo_vViewLightVecAndDist" + i + ";");
                 }
             }
 
             if (texturing) {
 
                 if (states.geometry.uvBuf) {
-                    src.push("attribute vec2 XEO_aUV;");      // UV coords
+                    src.push("attribute vec2 xeo_aUV;");      // UV coords
                 }
 
                 if (states.geometry.uvBuf2) {
-                    src.push("attribute vec2 XEO_aUV2;");     // UV2 coords
+                    src.push("attribute vec2 xeo_aUV2;");     // UV2 coords
                 }
             }
 
             if (states.geometry.colorBuf) {
-                src.push("attribute vec4 XEO_aVertexColor;");       // UV2 coords
-                src.push("varying vec4 XEO_vColor;");               // Varying for fragment texturing
+                src.push("attribute vec4 xeo_aVertexColor;");       // UV2 coords
+                src.push("varying vec4 xeo_vColor;");               // Varying for fragment texturing
             }
 
             if (clipping) {
-                src.push("varying vec4 XEO_vWorldVertex;");         // Varying for fragment clip or world pos hook
+                src.push("varying vec4 xeo_vWorldVertex;");         // Varying for fragment clip or world pos hook
             }
 
-            src.push("varying vec4 XEO_vViewVertex;");              // Varying for fragment view clip hook
+            src.push("varying vec4 xeo_vViewVertex;");              // Varying for fragment view clip hook
 
             if (texturing) {                                            // Varyings for fragment texturing
 
                 if (states.geometry.uvBuf) {
-                    src.push("varying vec2 XEO_vUVCoord;");
+                    src.push("varying vec2 xeo_vUVCoord;");
                 }
 
                 if (states.geometry.uvBuf2) {
-                    src.push("varying vec2 XEO_vUVCoord2;");
+                    src.push("varying vec2 xeo_vUVCoord2;");
                 }
             }
 
             if (morphing) {
-                src.push("uniform float XEO_uMorphFactor;");       // LERP factor for morph
+                src.push("uniform float xeo_uMorphFactor;");       // LERP factor for morph
                 if (states.MorphTargets.targets[0].vertexBuf) {      // target2 has these arrays also
-                    src.push("attribute vec3 XEO_aMorphVertex;");
+                    src.push("attribute vec3 xeo_aMorphVertex;");
                 }
                 if (normals) {
                     if (states.MorphTargets.targets[0].normalBuf) {
-                        src.push("attribute vec3 XEO_aMorphNormal;");
+                        src.push("attribute vec3 xeo_aMorphNormal;");
                     }
                 }
             }
@@ -15581,33 +15581,33 @@
 
             src.push("void main(void) {");
 
-            src.push("  vec4 tmpVertex=vec4(XEO_aPosition, 1.0); ");
+            src.push("  vec4 tmpVertex=vec4(xeo_aPosition, 1.0); ");
 
             src.push("  vec4 modelVertex = tmpVertex; ");
             if (normals) {
-                src.push("  vec4 modelNormal = vec4(XEO_aNormal, 0.0); ");
+                src.push("  vec4 modelNormal = vec4(xeo_aNormal, 0.0); ");
             }
 
             // Morphing - morph targets are in same model space as the geometry
             if (morphing) {
                 if (states.MorphTargets.targets[0].vertexBuf) {
-                    src.push("  vec4 vMorphVertex = vec4(XEO_aMorphVertex, 1.0); ");
-                    src.push("  modelVertex = vec4(mix(modelVertex.xyz, vMorphVertex.xyz, XEO_uMorphFactor), 1.0); ");
+                    src.push("  vec4 vMorphVertex = vec4(xeo_aMorphVertex, 1.0); ");
+                    src.push("  modelVertex = vec4(mix(modelVertex.xyz, vMorphVertex.xyz, xeo_uMorphFactor), 1.0); ");
                 }
                 if (normals) {
                     if (states.MorphTargets.targets[0].normalBuf) {
-                        src.push("  vec4 vMorphNormal = vec4(XEO_aMorphNormal, 1.0); ");
-                        src.push("  modelNormal = vec4( mix(modelNormal.xyz, vMorphNormal.xyz, XEO_uMorphFactor), 1.0); ");
+                        src.push("  vec4 vMorphNormal = vec4(xeo_aMorphNormal, 1.0); ");
+                        src.push("  modelNormal = vec4( mix(modelNormal.xyz, vMorphNormal.xyz, xeo_uMorphFactor), 1.0); ");
                     }
                 }
             }
 
-            src.push("  vec4 worldVertex = XEO_uMMatrix * modelVertex;");
+            src.push("  vec4 worldVertex = xeo_uMMatrix * modelVertex;");
 
             if (vertexHooks.viewMatrix) {
-                src.push("vec4 viewVertex = " + vertexHooks.viewMatrix + "(XEO_uVMatrix) * worldVertex;");
+                src.push("vec4 viewVertex = " + vertexHooks.viewMatrix + "(xeo_uVMatrix) * worldVertex;");
             } else {
-                src.push("vec4 viewVertex  = XEO_uVMatrix * worldVertex; ");
+                src.push("vec4 viewVertex  = xeo_uVMatrix * worldVertex; ");
             }
 
             if (vertexHooks.viewPos) {
@@ -15615,29 +15615,29 @@
             }
 
             if (normals) {
-                src.push("  vec3 worldNormal = (XEO_uMNMatrix * modelNormal).xyz; ");
-                src.push("  XEO_vViewNormal = (XEO_uVNMatrix * vec4(worldNormal, 1.0)).xyz;");
+                src.push("  vec3 worldNormal = (xeo_uMNMatrix * modelNormal).xyz; ");
+                src.push("  xeo_vViewNormal = (xeo_uVNMatrix * vec4(worldNormal, 1.0)).xyz;");
             }
 
             if (clipping || fragmentHooks.worldPos) {
-                src.push("  XEO_vWorldVertex = worldVertex;");                  // Varying for fragment world clip or hooks
+                src.push("  xeo_vWorldVertex = worldVertex;");                  // Varying for fragment world clip or hooks
             }
 
-            src.push("  XEO_vViewVertex = viewVertex;");                    // Varying for fragment hooks
+            src.push("  xeo_vViewVertex = viewVertex;");                    // Varying for fragment hooks
 
             if (vertexHooks.projMatrix) {
-                src.push("gl_Position = " + vertexHooks.projMatrix + "(XEO_uPMatrix) * viewVertex;");
+                src.push("gl_Position = " + vertexHooks.projMatrix + "(xeo_uPMatrix) * viewVertex;");
             } else {
-                src.push("  gl_Position = XEO_uPMatrix * viewVertex;");
+                src.push("  gl_Position = xeo_uPMatrix * viewVertex;");
             }
 
             if (tangents) {
 
                 // Compute tangent-bitangent-normal matrix
 
-                src.push("vec3 tangent = normalize((XEO_uVNMatrix * XEO_uMNMatrix * XEO_aTangent).xyz);");
-                src.push("vec3 bitangent = cross(XEO_vViewNormal, tangent);");
-                src.push("mat3 TBM = mat3(tangent, bitangent, XEO_vViewNormal);");
+                src.push("vec3 tangent = normalize((xeo_uVNMatrix * xeo_uMNMatrix * xeo_aTangent).xyz);");
+                src.push("vec3 bitangent = cross(xeo_vViewNormal, tangent);");
+                src.push("mat3 TBM = mat3(tangent, bitangent, xeo_vViewNormal);");
             }
 
             src.push("  vec3 tmpVec3;");
@@ -15660,10 +15660,10 @@
 
                             // World space light
 
-                            src.push("tmpVec3 = normalize(XEO_uLightDir" + i + ");");
+                            src.push("tmpVec3 = normalize(xeo_uLightDir" + i + ");");
 
                             // Transform to View space
-                            src.push("tmpVec3 = vec3(XEO_uVMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            src.push("tmpVec3 = vec3(xeo_uVMatrix * vec4(tmpVec3, 0.0)).xyz;");
 
                             if (tangents) {
 
@@ -15675,7 +15675,7 @@
 
                             // View space light
 
-                            src.push("tmpVec3 = normalize(XEO_uLightDir" + i + ");");
+                            src.push("tmpVec3 = normalize(xeo_uLightDir" + i + ");");
 
                             if (tangents) {
 
@@ -15685,7 +15685,7 @@
                         }
 
                         // Output
-                        src.push("XEO_vViewLightVecAndDist" + i + " = vec4(-tmpVec3, 0.0);");
+                        src.push("xeo_vViewLightVecAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                     }
 
                     if (light.mode === "point") {
@@ -15696,10 +15696,10 @@
 
                             // World space
 
-                            src.push("tmpVec3 = XEO_uLightPos" + i + " - worldVertex.xyz;"); // Vector from World coordinate to light pos
+                            src.push("tmpVec3 = xeo_uLightPos" + i + " - worldVertex.xyz;"); // Vector from World coordinate to light pos
 
                             // Transform to View space
-                            src.push("tmpVec3 = vec3(XEO_uVMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            src.push("tmpVec3 = vec3(xeo_uVMatrix * vec4(tmpVec3, 0.0)).xyz;");
 
                             if (tangents) {
 
@@ -15711,7 +15711,7 @@
 
                             // View space
 
-                            src.push("tmpVec3 = XEO_uLightPos" + i + ".xyz - viewVertex.xyz;"); // Vector from View coordinate to light pos
+                            src.push("tmpVec3 = xeo_uLightPos" + i + ".xyz - viewVertex.xyz;"); // Vector from View coordinate to light pos
 
                             if (tangents) {
 
@@ -15721,31 +15721,31 @@
                         }
 
                         // Output
-                        src.push("XEO_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length( XEO_uLightPos" + i + " - worldVertex.xyz));");
+                        src.push("xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length( xeo_uLightPos" + i + " - worldVertex.xyz));");
                     }
                 }
             }
 
-            src.push("XEO_vViewEyeVec = ((XEO_uVMatrix * vec4(XEO_uWorldEye, 0.0)).xyz  - viewVertex.xyz);");
+            src.push("xeo_vViewEyeVec = ((xeo_uVMatrix * vec4(xeo_uWorldEye, 0.0)).xyz  - viewVertex.xyz);");
 
             if (tangents) {
 
-                src.push("XEO_vViewEyeVec *= TBM;");
+                src.push("xeo_vViewEyeVec *= TBM;");
             }
 
             if (texturing) {
 
                 if (states.geometry.uvBuf) {
-                    src.push("XEO_vUVCoord = XEO_aUV;");
+                    src.push("xeo_vUVCoord = xeo_aUV;");
                 }
 
                 if (states.geometry.uvBuf2) {
-                    src.push("XEO_vUVCoord2 = XEO_aUV2;");
+                    src.push("xeo_vUVCoord2 = xeo_aUV2;");
                 }
             }
 
             if (states.geometry.colorBuf) {
-                src.push("XEO_vColor = XEO_aVertexColor;");
+                src.push("xeo_vColor = xeo_aVertexColor;");
             }
             src.push("}");
 
@@ -15784,15 +15784,15 @@
 
 
             if (clipping) {
-                src.push("varying vec4 XEO_vWorldVertex;");             // World-space vertex
+                src.push("varying vec4 xeo_vWorldVertex;");             // World-space vertex
             }
 
             //  if (fragmentHooks.viewPos) {
-            src.push("varying vec4 XEO_vViewVertex;");              // View-space vertex
+            src.push("varying vec4 xeo_vViewVertex;");              // View-space vertex
             //  }
 
-            src.push("uniform float XEO_uZNear;");                      // Used in Z-pick mode
-            src.push("uniform float XEO_uZFar;");                       // Used in Z-pick mode
+            src.push("uniform float xeo_uZNear;");                      // Used in Z-pick mode
+            src.push("uniform float xeo_uZFar;");                       // Used in Z-pick mode
 
 
             /*-----------------------------------------------------------------------------------
@@ -15801,26 +15801,26 @@
 
             if (clipping) {
                 for (var i = 0; i < states.clips.clips.length; i++) {
-                    src.push("uniform float XEO_uClipMode" + i + ";");
-                    src.push("uniform vec4  XEO_uClipNormalAndDist" + i + ";");
+                    src.push("uniform float xeo_uClipMode" + i + ";");
+                    src.push("uniform vec4  xeo_uClipNormalAndDist" + i + ";");
                 }
             }
 
             if (texturing) {
                 if (states.geometry.uvBuf) {
-                    src.push("varying vec2 XEO_vUVCoord;");
+                    src.push("varying vec2 xeo_vUVCoord;");
                 }
                 if (states.geometry.uvBuf2) {
-                    src.push("varying vec2 XEO_vUVCoord2;");
+                    src.push("varying vec2 xeo_vUVCoord2;");
                 }
                 var layer;
                 for (var i = 0, len = states.texture.layers.length; i < len; i++) {
                     layer = states.texture.layers[i];
-                    src.push("uniform sampler2D XEO_uSampler" + i + ";");
+                    src.push("uniform sampler2D xeo_uSampler" + i + ";");
                     if (layer.matrix) {
-                        src.push("uniform mat4 XEO_uLayer" + i + "Matrix;");
+                        src.push("uniform mat4 xeo_uLayer" + i + "Matrix;");
                     }
-                    src.push("uniform float XEO_uLayer" + i + "BlendFactor;");
+                    src.push("uniform float xeo_uLayer" + i + "BlendFactor;");
                 }
             }
 
@@ -15828,48 +15828,48 @@
                 var layer;
                 for (var i = 0, len = states.cubemap.layers.length; i < len; i++) {
                     layer = states.cubemap.layers[i];
-                    src.push("uniform samplerCube XEO_uCubeMapSampler" + i + ";");
-                    src.push("uniform float XEO_uCubeMapIntensity" + i + ";");
+                    src.push("uniform samplerCube xeo_uCubeMapSampler" + i + ";");
+                    src.push("uniform float xeo_uCubeMapIntensity" + i + ";");
                 }
             }
 
             /* True when lighting
              */
-            src.push("uniform bool  XEO_uBackfaceTexturing;");
-            src.push("uniform bool  XEO_uBackfaceLighting;");
-            src.push("uniform bool  XEO_uSpecularLighting;");
-            src.push("uniform bool  XEO_uClipping;");
-            src.push("uniform bool  XEO_uAmbient;");
-            src.push("uniform bool  XEO_uDiffuse;");
-            src.push("uniform bool  XEO_uReflection;");
+            src.push("uniform bool  xeo_uBackfaceTexturing;");
+            src.push("uniform bool  xeo_uBackfaceLighting;");
+            src.push("uniform bool  xeo_uSpecularLighting;");
+            src.push("uniform bool  xeo_uClipping;");
+            src.push("uniform bool  xeo_uAmbient;");
+            src.push("uniform bool  xeo_uPhongMaterialDiffuse;");
+            src.push("uniform bool  xeo_uReflection;");
 
             // Added in v4.0 to support depth targets
-            src.push("uniform bool  XEO_uDepthMode;");
+            src.push("uniform bool  xeo_uDepthMode;");
 
             /* True when rendering transparency
              */
-            src.push("uniform bool  XEO_uTransparent;");
+            src.push("uniform bool  xeo_uTransparent;");
 
             /* Vertex color variable
              */
             if (states.geometry.colorBuf) {
-                src.push("varying vec4 XEO_vColor;");
+                src.push("varying vec4 xeo_vColor;");
             }
 
-            src.push("uniform vec3  XEO_uAmbientColor;");                         // Scene ambient colour - taken from clear colour
+            src.push("uniform vec3  xeo_uAmbientColor;");                         // Scene ambient colour - taken from clear colour
 
-            src.push("uniform vec3  XEO_uMaterialColor;");
-            src.push("uniform float XEO_uMaterialAlpha;");
-            src.push("uniform float XEO_uMaterialEmit;");
-            src.push("uniform vec3  XEO_uMaterialSpecularColor;");
-            src.push("uniform float XEO_uMaterialSpecular;");
-            src.push("uniform float XEO_uMaterialShine;");
+            src.push("uniform vec3  xeo_uMaterialColor;");
+            src.push("uniform float xeo_uMaterialAlpha;");
+            src.push("uniform float xeo_uMaterialEmit;");
+            src.push("uniform vec3  xeo_uMaterialSpecularColor;");
+            src.push("uniform float xeo_uMaterialSpecular;");
+            src.push("uniform float xeo_uMaterialShine;");
 
-            src.push("varying vec3 XEO_vViewEyeVec;");                          // Direction of world-space vertex from eye
+            src.push("varying vec3 xeo_vViewEyeVec;");                          // Direction of world-space vertex from eye
 
             if (normals) {
 
-                src.push("varying vec3 XEO_vViewNormal;");                   // View-space normal
+                src.push("varying vec3 xeo_vViewNormal;");                   // View-space normal
 
                 var light;
                 for (var i = 0; i < states.lights.lights.length; i++) {
@@ -15877,11 +15877,11 @@
                     if (light.mode === "ambient") {
                         continue;
                     }
-                    src.push("uniform vec3  XEO_uLightColor" + i + ";");
+                    src.push("uniform vec3  xeo_uLightColor" + i + ";");
                     if (light.mode === "point") {
-                        src.push("uniform vec3  XEO_uLightAttenuation" + i + ";");
+                        src.push("uniform vec3  xeo_uLightAttenuation" + i + ";");
                     }
-                    src.push("varying vec4  XEO_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
+                    src.push("varying vec4  xeo_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
                 }
             }
 
@@ -15894,15 +15894,15 @@
             // World-space arbitrary clipping planes
 
             if (clipping) {
-                src.push("if (XEO_uClipping) {");
+                src.push("if (xeo_uClipping) {");
                 src.push("  float   dist;");
                 for (var i = 0; i < states.clips.clips.length; i++) {
-                    src.push("    if (XEO_uClipMode" + i + " != 0.0) {");
-                    src.push("        dist = dot(XEO_vWorldVertex.xyz, XEO_uClipNormalAndDist" + i + ".xyz) - XEO_uClipNormalAndDist" + i + ".w;");
-                    src.push("        if (XEO_uClipMode" + i + " == 1.0) {");
+                    src.push("    if (xeo_uClipMode" + i + " != 0.0) {");
+                    src.push("        dist = dot(xeo_vWorldVertex.xyz, xeo_uClipNormalAndDist" + i + ".xyz) - xeo_uClipNormalAndDist" + i + ".w;");
+                    src.push("        if (xeo_uClipMode" + i + " == 1.0) {");
                     src.push("            if (dist > 0.0) { discard; }");
                     src.push("        }");
-                    src.push("        if (XEO_uClipMode" + i + " == 2.0) {");
+                    src.push("        if (xeo_uClipMode" + i + " == 2.0) {");
                     src.push("            if (dist > 0.0) { discard; }");
                     src.push("        }");
                     src.push("    }");
@@ -15910,31 +15910,31 @@
                 src.push("}");
             }
 
-            src.push("  vec3 ambient= XEO_uAmbient ? XEO_uAmbientColor : vec3(0.0, 0.0, 0.0);");
+            src.push("  vec3 ambient= xeo_uAmbient ? xeo_uAmbientColor : vec3(0.0, 0.0, 0.0);");
 
             if (texturing && states.geometry.uvBuf && fragmentHooks.texturePos) {
-                src.push(fragmentHooks.texturePos + "(XEO_vUVCoord);");
+                src.push(fragmentHooks.texturePos + "(xeo_vUVCoord);");
             }
 
             if (fragmentHooks.viewPos) {
-                src.push(fragmentHooks.viewPos + "(XEO_vViewVertex);");
+                src.push(fragmentHooks.viewPos + "(xeo_vViewVertex);");
             }
 
             if (normals && fragmentHooks.viewNormal) {
-                src.push(fragmentHooks.viewNormal + "(XEO_vViewNormal);");
+                src.push(fragmentHooks.viewNormal + "(xeo_vViewNormal);");
             }
 
             if (states.geometry.colorBuf) {
-                src.push("  vec3    color   = XEO_vColor.rgb;");
+                src.push("  vec3    color   = xeo_vColor.rgb;");
             } else {
-                src.push("  vec3    color   = XEO_uMaterialColor;")
+                src.push("  vec3    color   = xeo_uMaterialColor;")
             }
 
-            src.push("  float alpha         = XEO_uMaterialAlpha;");
-            src.push("  float emit          = XEO_uMaterialEmit;");
-            src.push("  float specular      = XEO_uMaterialSpecular;");
-            src.push("  vec3  specularColor = XEO_uMaterialSpecularColor;");
-            src.push("  float shininess         = XEO_uMaterialShine;");
+            src.push("  float alpha         = xeo_uMaterialAlpha;");
+            src.push("  float emit          = xeo_uMaterialEmit;");
+            src.push("  float specular      = xeo_uMaterialSpecular;");
+            src.push("  vec3  specularColor = xeo_uMaterialSpecularColor;");
+            src.push("  float shininess         = xeo_uMaterialShine;");
 
             if (fragmentHooks.materialBaseColor) {
                 src.push("color=" + fragmentHooks.materialBaseColor + "(color);");
@@ -15963,7 +15963,7 @@
 
                     // Normalize the interpolated normals in the per-fragment-fragment-shader,
                     // because if we linear interpolated two nonparallel normalized vectors, the resulting vector won’t be of length 1
-                    src.push("  vec3    viewNormalVec = normalize(XEO_vViewNormal);");
+                    src.push("  vec3    viewNormalVec = normalize(xeo_vViewNormal);");
                 }
             }
 
@@ -15971,7 +15971,7 @@
             if (texturing) {
 
                 if (normals) {
-                    src.push("if (XEO_uBackfaceTexturing || dot(XEO_vViewNormal, XEO_vViewEyeVec) > 0.0) {");
+                    src.push("if (xeo_uBackfaceTexturing || dot(xeo_vViewNormal, xeo_vViewEyeVec) > 0.0) {");
                 }
 
                 src.push("  vec4    texturePos;");
@@ -15992,7 +15992,7 @@
                     }
                     if (layer.applyFrom === "uv") {
                         if (states.geometry.uvBuf) {
-                            src.push("texturePos = vec4(XEO_vUVCoord.s, XEO_vUVCoord.t, 1.0, 1.0);");
+                            src.push("texturePos = vec4(xeo_vUVCoord.s, xeo_vUVCoord.t, 1.0, 1.0);");
                         } else {
                             SceneJS.log.warn("Texture layer applyTo='uv' but geometry has no UV coordinates");
                             continue;
@@ -16000,7 +16000,7 @@
                     }
                     if (layer.applyFrom === "uv2") {
                         if (states.geometry.uvBuf2) {
-                            src.push("texturePos = vec4(XEO_vUVCoord2.s, XEO_vUVCoord2.t, 1.0, 1.0);");
+                            src.push("texturePos = vec4(xeo_vUVCoord2.s, xeo_vUVCoord2.t, 1.0, 1.0);");
                         } else {
                             SceneJS.log.warn("Texture layer applyTo='uv2' but geometry has no UV2 coordinates");
                             continue;
@@ -16010,7 +16010,7 @@
                     /* Texture matrix
                      */
                     if (layer.matrix) {
-                        src.push("textureCoord=(XEO_uLayer" + i + "Matrix * texturePos).xy;");
+                        src.push("textureCoord=(xeo_uLayer" + i + "Matrix * texturePos).xy;");
                     } else {
                         src.push("textureCoord=texturePos.xy;");
                     }
@@ -16019,9 +16019,9 @@
                      */
                     if (layer.applyTo === "alpha") {
                         if (layer.blendMode === "multiply") {
-                            src.push("alpha = alpha * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).b);");
+                            src.push("alpha = alpha * (xeo_uLayer" + i + "BlendFactor * texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).b);");
                         } else if (layer.blendMode === "add") {
-                            src.push("alpha = ((1.0 - XEO_uLayer" + i + "BlendFactor) * alpha) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).b);");
+                            src.push("alpha = ((1.0 - xeo_uLayer" + i + "BlendFactor) * alpha) + (xeo_uLayer" + i + "BlendFactor * texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).b);");
                         }
                     }
 
@@ -16029,38 +16029,38 @@
                      */
                     if (layer.applyTo === "baseColor") {
                         if (layer.blendMode === "multiply") {
-                            src.push("color = color * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).rgb);");
+                            src.push("color = color * (xeo_uLayer" + i + "BlendFactor * texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).rgb);");
                         } else {
-                            src.push("color = ((1.0 - XEO_uLayer" + i + "BlendFactor) * color) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).rgb);");
+                            src.push("color = ((1.0 - xeo_uLayer" + i + "BlendFactor) * color) + (xeo_uLayer" + i + "BlendFactor * texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).rgb);");
                         }
                     }
 
                     if (layer.applyTo === "emit") {
                         if (layer.blendMode === "multiply") {
-                            src.push("emit  = emit * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            src.push("emit  = emit * (xeo_uLayer" + i + "BlendFactor * texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         } else {
-                            src.push("emit = ((1.0 - XEO_uLayer" + i + "BlendFactor) * emit) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            src.push("emit = ((1.0 - xeo_uLayer" + i + "BlendFactor) * emit) + (xeo_uLayer" + i + "BlendFactor * texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         }
                     }
 
                     if (layer.applyTo === "specular" && normals) {
                         if (layer.blendMode === "multiply") {
-                            src.push("specular  = specular * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            src.push("specular  = specular * (xeo_uLayer" + i + "BlendFactor * texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         } else {
-                            src.push("specular = ((1.0 - XEO_uLayer" + i + "BlendFactor) * specular) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            src.push("specular = ((1.0 - xeo_uLayer" + i + "BlendFactor) * specular) + (xeo_uLayer" + i + "BlendFactor * texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         }
                     }
 
                     if (layer.applyTo === "shininess") {
                         if (layer.blendMode === "multiply") {
-                            src.push("shininess  = shininess * (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            src.push("shininess  = shininess * (xeo_uLayer" + i + "BlendFactor * texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         } else {
-                            src.push("shininess = ((1.0 - XEO_uLayer" + i + "BlendFactor) * shininess) + (XEO_uLayer" + i + "BlendFactor * texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                            src.push("shininess = ((1.0 - xeo_uLayer" + i + "BlendFactor) * shininess) + (xeo_uLayer" + i + "BlendFactor * texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
                         }
                     }
 
                     if (layer.applyTo === "normals" && normals) {
-                        src.push("viewNormalVec = normalize(texture2D(XEO_uSampler" + i + ", vec2(textureCoord.x, -textureCoord.y)).xyz * 2.0 - 1.0);");
+                        src.push("viewNormalVec = normalize(texture2D(xeo_uSampler" + i + ", vec2(textureCoord.x, -textureCoord.y)).xyz * 2.0 - 1.0);");
                     }
 
                 }
@@ -16070,14 +16070,14 @@
             }
 
             if (normals && cubeMapping) {
-                src.push("if (XEO_uReflection) {"); // Flag which can enable/disable reflection
-                src.push("vec3 envLookup = reflect(XEO_vViewEyeVec, viewNormalVec);");
+                src.push("if (xeo_uReflection) {"); // Flag which can enable/disable reflection
+                src.push("vec3 envLookup = reflect(xeo_vViewEyeVec, viewNormalVec);");
                 src.push("envLookup.y = envLookup.y * -1.0;"); // Need to flip textures on Y-axis for some reason
                 src.push("vec4 envColor;");
                 for (var i = 0, len = states.cubemap.layers.length; i < len; i++) {
                     layer = states.cubemap.layers[i];
-                    src.push("envColor = textureCube(XEO_uCubeMapSampler" + i + ", envLookup);");
-                    src.push("color = mix(color, envColor.rgb, specular * XEO_uCubeMapIntensity" + i + ");");
+                    src.push("envColor = textureCube(xeo_uCubeMapSampler" + i + ", envLookup);");
+                    src.push("color = mix(color, envColor.rgb, specular * xeo_uCubeMapIntensity" + i + ");");
                 }
                 src.push("}");
             }
@@ -16086,7 +16086,7 @@
 
             if (normals) {
 
-                src.push("if (XEO_uBackfaceLighting || dot(viewNormalVec, XEO_vViewEyeVec) > 0.0) {");
+                src.push("if (xeo_uBackfaceLighting || dot(viewNormalVec, xeo_vViewEyeVec) > 0.0) {");
 
                 src.push("  vec3    lightValue      = vec3(0.0, 0.0, 0.0);");
                 src.push("  vec3    specularValue   = vec3(0.0, 0.0, 0.0);");
@@ -16103,7 +16103,7 @@
                         continue;
                     }
 
-                    src.push("viewLightVec = XEO_vViewLightVecAndDist" + i + ".xyz;");
+                    src.push("viewLightVec = xeo_vViewLightVecAndDist" + i + ".xyz;");
 
                     if (light.mode === "point") {
 
@@ -16111,23 +16111,23 @@
 
                         //src.push("if (dotN > 0.0) {");
 
-                        src.push("lightDist = XEO_vViewLightVecAndDist" + i + ".w;");
+                        src.push("lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
 
                         src.push("attenuation = 1.0 - (" +
-                            "  XEO_uLightAttenuation" + i + "[0] + " +
-                            "  XEO_uLightAttenuation" + i + "[1] * lightDist + " +
-                            "  XEO_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
+                            "  xeo_uLightAttenuation" + i + "[0] + " +
+                            "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
+                            "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
 
                         if (light.diffuse) {
-                            src.push("if (XEO_uDiffuse) {");
-                            src.push("      lightValue += dotN * XEO_uLightColor" + i + " * attenuation;");
+                            src.push("if (xeo_uPhongMaterialDiffuse) {");
+                            src.push("      lightValue += dotN * xeo_uLightColor" + i + " * attenuation;");
                             src.push("}");
                         }
 
                         if (light.specular) {
-                            src.push("if (XEO_uSpecularLighting) {");
-                            src.push("    specularValue += specularColor * XEO_uLightColor" + i +
-                                " * specular * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-XEO_vViewVertex.xyz)), 0.0), shininess) * attenuation;");
+                            src.push("if (xeo_uSpecularLighting) {");
+                            src.push("    specularValue += specularColor * xeo_uLightColor" + i +
+                                " * specular * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-xeo_vViewVertex.xyz)), 0.0), shininess) * attenuation;");
                             src.push("}");
                         }
                     }
@@ -16137,15 +16137,15 @@
                         src.push("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
 
                         if (light.diffuse) {
-                            src.push("if (XEO_uDiffuse) {");
-                            src.push("      lightValue += dotN * XEO_uLightColor" + i + ";");
+                            src.push("if (xeo_uPhongMaterialDiffuse) {");
+                            src.push("      lightValue += dotN * xeo_uLightColor" + i + ";");
                             src.push("}");
                         }
 
                         if (light.specular) {
-                            src.push("if (XEO_uSpecularLighting) {");
-                            src.push("    specularValue += specularColor * XEO_uLightColor" + i +
-                                " * specular * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-XEO_vViewVertex.xyz)), 0.0), shininess);");
+                            src.push("if (xeo_uSpecularLighting) {");
+                            src.push("    specularValue += specularColor * xeo_uLightColor" + i +
+                                " * specular * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-xeo_vViewVertex.xyz)), 0.0), shininess);");
                             src.push("}");
                         }
                     }
@@ -16166,8 +16166,8 @@
             if (false && debugCfg.whitewash === true) {
                 src.push("    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);");
             } else {
-                src.push("    if (XEO_uDepthMode) {");
-                src.push("          float depth = length(XEO_vViewVertex) / (XEO_uZFar - XEO_uZNear);");
+                src.push("    if (xeo_uDepthMode) {");
+                src.push("          float depth = length(xeo_vViewVertex) / (xeo_uZFar - xeo_uZNear);");
                 src.push("          const vec4 bias = vec4(1.0 / 255.0,");
                 src.push("          1.0 / 255.0,");
                 src.push("          1.0 / 255.0,");

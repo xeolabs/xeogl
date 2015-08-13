@@ -14,79 +14,79 @@
 
             // Blinn-Phong base material
 
-            this._uMaterialDiffuse = draw.getUniform("XEO_uMaterialDiffuse");
-            this._uMaterialSpecular = draw.getUniform("XEO_uMaterialSpecular");
-            this._uMaterialEmissive = draw.getUniform("XEO_uMaterialEmissive");
-            this._uMaterialOpacity = draw.getUniform("XEO_uMaterialOpacity");
-            this._uMaterialShininess = draw.getUniform("XEO_uMaterialShininess");
+            this._uMaterialDiffuse = draw.getUniform("xeo_uMaterialDiffuse");
+            this._uMaterialSpecular = draw.getUniform("xeo_uMaterialSpecular");
+            this._uMaterialEmissive = draw.getUniform("xeo_uMaterialEmissive");
+            this._uMaterialOpacity = draw.getUniform("xeo_uMaterialOpacity");
+            this._uMaterialShininess = draw.getUniform("xeo_uMaterialShininess");
 
             // Textures
 
             if (state.diffuseMap) {
-                this._uMaterialDiffuseMap = draw.getUniform("XEO_uMaterialDiffuseMap");
-                this._uMaterialDiffuseMapMatrix = draw.getUniform("XEO_uMaterialDiffuseMapMatrix");
+                this._uMaterialDiffuseMap = draw.getUniform("xeo_uMaterialDiffuseMap");
+                this._uMaterialDiffuseMapMatrix = draw.getUniform("xeo_uMaterialDiffuseMapMatrix");
             }
 
             if (state.specularMap) {
-                this._uSpecularMap = draw.getUniform("XEO_uSpecularMap");
-                this._uSpecularMapMatrix = draw.getUniform("XEO_uSpecularMapMatrix");
+                this._uSpecularMap = draw.getUniform("xeo_uSpecularMap");
+                this._uSpecularMapMatrix = draw.getUniform("xeo_uSpecularMapMatrix");
             }
 
             if (state.emissiveMap) {
-                this._uEmissiveMap = draw.getUniform("XEO_uEmissiveMap");
-                this._uEmissiveMapMatrix = draw.getUniform("XEO_uEmissiveMapMatrix");
+                this._uEmissiveMap = draw.getUniform("xeo_uEmissiveMap");
+                this._uEmissiveMapMatrix = draw.getUniform("xeo_uEmissiveMapMatrix");
             }
 
             if (state.opacityMap) {
-                this._uOpacityMap = draw.getUniform("XEO_uOpacityMap");
-                this._uOpacityMapMatrix = draw.getUniform("XEO_uOpacityMapMatrix");
+                this._uOpacityMap = draw.getUniform("xeo_uOpacityMap");
+                this._uOpacityMapMatrix = draw.getUniform("xeo_uOpacityMapMatrix");
             }
 
             if (state.reflectivityMap) {
-                this._uReflectivityMap = draw.getUniform("XEO_uReflectivityMap");
-                this._uReflectivityMapMatrix = draw.getUniform("XEO_uReflectivityMapMatrix");
+                this._uReflectivityMap = draw.getUniform("xeo_uReflectivityMap");
+                this._uReflectivityMapMatrix = draw.getUniform("xeo_uReflectivityMapMatrix");
             }
 
             if (state.normalMap) {
-                this._uBumpMap = draw.getUniform("XEO_uBumpMap");
-                this._uBumpMapMatrix = draw.getUniform("XEO_uBumpMapMatrix");
+                this._uBumpMap = draw.getUniform("xeo_uBumpMap");
+                this._uBumpMapMatrix = draw.getUniform("xeo_uBumpMapMatrix");
             }
 
             // Fresnel effects
 
             if (state.diffuseFresnel) {
-                this._uMaterialDiffuseFresnelBias = draw.getUniform("XEO_uMaterialDiffuseFresnelBias");
-                this._uMaterialDiffuseFresnelPower = draw.getUniform("XEO_uMaterialDiffuseFresnelPower");
-                this._uMaterialDiffuseFresnelLeftColor = draw.getUniform("XEO_uMaterialDiffuseFresnelLeftColor");
-                this._uMaterialDiffuseFresnelRightColor = draw.getUniform("XEO_uMaterialDiffuseFresnelRightColor");
+                this._uMaterialDiffuseFresnelBias = draw.getUniform("xeo_uMaterialDiffuseFresnelBias");
+                this._uMaterialDiffuseFresnelPower = draw.getUniform("xeo_uMaterialDiffuseFresnelPower");
+                this._uMaterialDiffuseFresnelLeftColor = draw.getUniform("xeo_uMaterialDiffuseFresnelLeftColor");
+                this._uMaterialDiffuseFresnelRightColor = draw.getUniform("xeo_uMaterialDiffuseFresnelRightColor");
             }
 
             if (state.specularFresnel) {
-                this._uSpecularFresnelBias = draw.getUniform("XEO_uSpecularFresnelBias");
-                this._uSpecularFresnelPower = draw.getUniform("XEO_uSpecularFresnelPower");
-                this._uSpecularFresnelLeftColor = draw.getUniform("XEO_uSpecularFresnelLeftColor");
-                this._uSpecularFresnelRightColor = draw.getUniform("XEO_uSpecularFresnelRightColor");
+                this._uSpecularFresnelBias = draw.getUniform("xeo_uSpecularFresnelBias");
+                this._uSpecularFresnelPower = draw.getUniform("xeo_uSpecularFresnelPower");
+                this._uSpecularFresnelLeftColor = draw.getUniform("xeo_uSpecularFresnelLeftColor");
+                this._uSpecularFresnelRightColor = draw.getUniform("xeo_uSpecularFresnelRightColor");
             }
 
             if (state.opacityFresnel) {
-                this._uOpacityFresnelBias = draw.getUniform("XEO_uOpacityFresnelBias");
-                this._uOpacityFresnelPower = draw.getUniform("XEO_uOpacityFresnelPower");
-                this._uOpacityFresnelLeftColor = draw.getUniform("XEO_uOpacityFresnelLeftColor");
-                this._uOpacityFresnelRightColor = draw.getUniform("XEO_uOpacityFresnelRightColor");
+                this._uOpacityFresnelBias = draw.getUniform("xeo_uOpacityFresnelBias");
+                this._uOpacityFresnelPower = draw.getUniform("xeo_uOpacityFresnelPower");
+                this._uOpacityFresnelLeftColor = draw.getUniform("xeo_uOpacityFresnelLeftColor");
+                this._uOpacityFresnelRightColor = draw.getUniform("xeo_uOpacityFresnelRightColor");
             }
 
             if (state.reflectivityFresnel) {
-                this._uReflectivityFresnelBias = draw.getUniform("XEO_uReflectivityFresnelBias");
-                this._uReflectivityFresnelPower = draw.getUniform("XEO_uReflectivityFresnelPower");
-                this._uReflectivityFresnelLeftColor = draw.getUniform("XEO_uReflectivityFresnelLeftColor");
-                this._uReflectivityFresnelRightColor = draw.getUniform("XEO_uReflectivityFresnelRightColor");
+                this._uReflectivityFresnelBias = draw.getUniform("xeo_uReflectivityFresnelBias");
+                this._uReflectivityFresnelPower = draw.getUniform("xeo_uReflectivityFresnelPower");
+                this._uReflectivityFresnelLeftColor = draw.getUniform("xeo_uReflectivityFresnelLeftColor");
+                this._uReflectivityFresnelRightColor = draw.getUniform("xeo_uReflectivityFresnelRightColor");
             }
 
             if (state.emissiveFresnel) {
-                this._uEmissiveFresnelBias = draw.getUniform("XEO_uEmissiveFresnelBias");
-                this._uEmissiveFresnelPower = draw.getUniform("XEO_uEmissiveFresnelPower");
-                this._uEmissiveFresnelLeftColor = draw.getUniform("XEO_uEmissiveFresnelLeftColor");
-                this._uEmissiveFresnelRightColor = draw.getUniform("XEO_uEmissiveFresnelRightColor");
+                this._uEmissiveFresnelBias = draw.getUniform("xeo_uEmissiveFresnelBias");
+                this._uEmissiveFresnelPower = draw.getUniform("xeo_uEmissiveFresnelPower");
+                this._uEmissiveFresnelLeftColor = draw.getUniform("xeo_uEmissiveFresnelLeftColor");
+                this._uEmissiveFresnelRightColor = draw.getUniform("xeo_uEmissiveFresnelRightColor");
             }
         },
 
