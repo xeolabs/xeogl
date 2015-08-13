@@ -5,7 +5,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Boundary3D",
         "Camera",
         "CameraControl",
-        "CameraFlyAnimation",
+        "CameraFlight",
         "Canvas",
         "Clip",
         "Clips",
@@ -63,6 +63,7 @@ YUI.add("yuidoc-meta", function(Y) {
     "modules": [
         "XEO",
         "animation",
+        "camera",
         "clipping",
         "configuration",
         "culling",
@@ -86,6 +87,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "animation",
             "name": "animation",
             "description": "Components for animating state within Scenes."
+        },
+        {
+            "displayName": "camera",
+            "name": "camera",
+            "description": "Camera components."
         },
         {
             "displayName": "clipping",
@@ -170,7 +176,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "transforms",
             "name": "transforms",
-            "description": "Components for Modelling, View and Projection transformation."
+            "description": "Modelling transform components."
         },
         {
             "displayName": "XEO",

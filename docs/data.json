@@ -16,11 +16,11 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/core/animation/cameraFlyAnimation.js": {
-            "name": "src/core/animation/cameraFlyAnimation.js",
+        "src/core/animation/cameraFlight.js": {
+            "name": "src/core/animation/cameraFlight.js",
             "modules": {},
             "classes": {
-                "CameraFlyAnimation": 1
+                "CameraFlight": 1
             },
             "fors": {},
             "namespaces": {}
@@ -30,6 +30,60 @@
             "modules": {},
             "classes": {
                 "MorphTargets": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/camera/_module.js": {
+            "name": "src/core/camera/_module.js",
+            "modules": {
+                "camera": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/camera/camera.js": {
+            "name": "src/core/camera/camera.js",
+            "modules": {},
+            "classes": {
+                "Camera": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/camera/frustum.js": {
+            "name": "src/core/camera/frustum.js",
+            "modules": {},
+            "classes": {
+                "Frustum": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/camera/lookat.js": {
+            "name": "src/core/camera/lookat.js",
+            "modules": {},
+            "classes": {
+                "Lookat": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/camera/ortho.js": {
+            "name": "src/core/camera/ortho.js",
+            "modules": {},
+            "classes": {
+                "Ortho": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/camera/perspective.js": {
+            "name": "src/core/camera/perspective.js",
+            "modules": {},
+            "classes": {
+                "Perspective": 1
             },
             "fors": {},
             "namespaces": {}
@@ -588,51 +642,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/core/transforms/camera.js": {
-            "name": "src/core/transforms/camera.js",
-            "modules": {},
-            "classes": {
-                "Camera": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/transforms/frustum.js": {
-            "name": "src/core/transforms/frustum.js",
-            "modules": {},
-            "classes": {
-                "Frustum": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/transforms/lookat.js": {
-            "name": "src/core/transforms/lookat.js",
-            "modules": {},
-            "classes": {
-                "Lookat": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/transforms/ortho.js": {
-            "name": "src/core/transforms/ortho.js",
-            "modules": {},
-            "classes": {
-                "Ortho": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/transforms/perspective.js": {
-            "name": "src/core/transforms/perspective.js",
-            "modules": {},
-            "classes": {
-                "Perspective": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/core/transforms/quaternion.js": {
             "name": "src/core/transforms/quaternion.js",
             "modules": {},
@@ -722,6 +731,7 @@
             "name": "XEO",
             "submodules": {
                 "animation": 1,
+                "camera": 1,
                 "clipping": 1,
                 "configuration": 1,
                 "culling": 1,
@@ -741,8 +751,13 @@
                 "transforms": 1
             },
             "classes": {
-                "CameraFlyAnimation": 1,
+                "CameraFlight": 1,
                 "MorphTargets": 1,
+                "Camera": 1,
+                "Frustum": 1,
+                "Lookat": 1,
+                "Ortho": 1,
+                "Perspective": 1,
                 "Clip": 1,
                 "Clips": 1,
                 "Configs": 1,
@@ -786,11 +801,6 @@
                 "Shader": 1,
                 "ShaderParams": 1,
                 "Boundary3D": 1,
-                "Camera": 1,
-                "Frustum": 1,
-                "Lookat": 1,
-                "Ortho": 1,
-                "Perspective": 1,
                 "Quaternion": 1,
                 "Rotate": 1,
                 "Scale": 1,
@@ -814,7 +824,7 @@
             "name": "animation",
             "submodules": {},
             "classes": {
-                "CameraFlyAnimation": 1,
+                "CameraFlight": 1,
                 "MorphTargets": 1
             },
             "fors": {},
@@ -825,6 +835,25 @@
             "file": "src/core/animation/morphTargets.js",
             "line": 6,
             "description": "Components for animating state within Scenes."
+        },
+        "camera": {
+            "name": "camera",
+            "submodules": {},
+            "classes": {
+                "Camera": 1,
+                "Frustum": 1,
+                "Lookat": 1,
+                "Ortho": 1,
+                "Perspective": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/camera/perspective.js",
+            "line": 1,
+            "description": "Camera components."
         },
         "clipping": {
             "name": "clipping",
@@ -1096,11 +1125,6 @@
             "name": "transforms",
             "submodules": {},
             "classes": {
-                "Camera": 1,
-                "Frustum": 1,
-                "Lookat": 1,
-                "Ortho": 1,
-                "Perspective": 1,
                 "Quaternion": 1,
                 "Rotate": 1,
                 "Scale": 1,
@@ -1114,13 +1138,13 @@
             "namespace": "",
             "file": "src/core/transforms/translate.js",
             "line": 1,
-            "description": "Components for Modelling, View and Projection transformation."
+            "description": "Modelling transform components."
         }
     },
     "classes": {
-        "CameraFlyAnimation": {
-            "name": "CameraFlyAnimation",
-            "shortname": "CameraFlyAnimation",
+        "CameraFlight": {
+            "name": "CameraFlight",
+            "shortname": "CameraFlight",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -1128,9 +1152,9 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/core/animation/cameraFlyAnimation.js",
+            "file": "src/core/animation/cameraFlight.js",
             "line": 1,
-            "description": "A **CameraFlyAnimation** flies a {{#crossLink \"Camera\"}}{{/crossLink}} to given eye, look and up positions.\n\n## Overview\n\n<ul>\n<li>A CameraFlyAnimation animates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to the target {{#crossLink \"Camera\"}}{{/crossLink}}.\n</ul>\n\n## Example\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar camera = new XEO.Camera(scene);\n\nvar object = new XEO.GameObject(scene);\n\nvar animation = new XEO.CameraFlyAnimation(scene, {\n   camera: camera\n});\n\nanimation.flyTo({\n   eye: [-5,-5,-5],\n   look: [0,0,0]\n   up: [0,1,0]\n}, function() {\n   // Arrived\n});\n````",
+            "description": "A **CameraFlight** flies a {{#crossLink \"Camera\"}}{{/crossLink}} to a given target component, AABB or eye/look/up position.\n\n## Overview\n\n<ul>\n<li>A CameraFlight animates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to the {{#crossLink \"Camera\"}}{{/crossLink}}.\n</ul>\n\n## Example\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar camera = new XEO.Camera(scene);\n\nvar object = new XEO.GameObject(scene);\n\nvar animation = new XEO.CameraFlight(scene, {\n   camera: camera\n});\n\nanimation.flyTo({\n   eye: [-5,-5,-5],\n   look: [0,0,0]\n   up: [0,1,0]\n}, function() {\n   // Arrived\n});\n````",
             "submodule": "animation",
             "is_constructor": 1,
             "params": [
@@ -1154,13 +1178,13 @@
                         },
                         {
                             "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this CameraFlyAnimation.",
+                            "description": "Optional map of user-defined metadata to attach to this CameraFlight.",
                             "type": "String:Object",
                             "optional": true
                         },
                         {
                             "name": "camera",
-                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} to control.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this CameraFlyAnimation. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
+                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} to control.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
                             "type": "String|Camera",
                             "optional": true
                         }
@@ -1222,6 +1246,377 @@
                             "type": "Number",
                             "optional": true,
                             "optdefault": "0"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "Camera": {
+            "name": "Camera",
+            "shortname": "Camera",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/camera/camera.js",
+            "line": 3,
+            "description": "A **Camera** defines a viewpoint on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li> A Camera is composed of a viewing transform and a projection transform.</li>\n\n<li>The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.</li>\n\n<li>The projection transform may be an {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}}\nor {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.</li>\n\n<li> By default, each Camera is composed of its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Example\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/camera_perspective.html\"></iframe>\n\nIn this example we have\n\n<ul>\n<li>a {{#crossLink \"Lookat\"}}{{/crossLink}} view transform,</li>\n<li>a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform,</li>\n<li>a Camera attached to the {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -10],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar perspective = new XEO.Lookat(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
+            "submodule": "camera",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Camera within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.\nYou only need to supply an ID if you need to be able to find the Camera by ID within its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} later.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Camera.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "view",
+                            "description": "ID or instance of a view transform within the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\nwhich is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.",
+                            "type": "String|XEO.Lookat",
+                            "optional": true
+                        },
+                        {
+                            "name": "project",
+                            "description": "ID or instance of a projection transform\nwithin the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform,\nwhich is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.",
+                            "type": "String|XEO.Perspective|XEO.Ortho|XEO.Frustum",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "Frustum": {
+            "name": "Frustum",
+            "shortname": "Frustum",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/camera/frustum.js",
+            "line": 1,
+            "description": "A **Frustum** defines a perspective projection as a frustum-shaped view volume.\n\n## Overview\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Frustum.png\"></img>\n\n## Example\n\n## Example\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/camera_frustum.html\"></iframe>\n\nIn this example we have a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that's attached to a\n{{#crossLink \"Camera\"}}Camera{{/crossLink}} that has a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} view transform and a Frustum\nprojection transform.\n\n````Javascript\n\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -4],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar frustum = new XEO.Frustum(scene, {\n       left: -0.1,\n       right: 0.1,\n       bottom: -0.1,\n       top: 0.1,\n       near: 0.15,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: frustum\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
+            "submodule": "camera",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Frustum within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Frustum.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "left",
+                            "description": "Position of the Frustum's left plane on the View-space X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "right",
+                            "description": "Position of the Frustum's right plane on the View-space X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "bottom",
+                            "description": "Position of the Frustum's bottom plane on the View-space Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "top",
+                            "description": "Position of the Frustum's top plane on the View-space Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "near",
+                            "description": "Position of the Frustum's near plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.1"
+                        },
+                        {
+                            "name": "far",
+                            "description": "Position of the Frustum's far plane on the positive View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1000"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "Lookat": {
+            "name": "Lookat",
+            "shortname": "Lookat",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/camera/lookat.js",
+            "line": 1,
+            "description": "A **Lookat** defines a viewing transform as an {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}} position, a\n{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} position and an {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}\nvector.\n\n## Overview\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with projection transforms such as\n{{#crossLink \"Perspective\"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Lookat.png\"></img>\n\n## Example\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/camera_perspective.html\"></iframe>\n\nIn this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.\nThen we attach our Lookat to a {{#crossLink \"Camera\"}}{{/crossLink}}. which we attach to a {{#crossLink \"GameObject\"}}{{/crossLink}}.\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -4],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar perspective = new XEO.Perspective(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
+            "submodule": "camera",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Lookat in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Lookat.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "eye",
+                            "description": "Eye position.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[0,0,-10]"
+                        },
+                        {
+                            "name": "look",
+                            "description": "The position of the point-of-interest we're looking at.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[0,0,0]"
+                        },
+                        {
+                            "name": "up",
+                            "description": "The \"up\" vector.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[0,1,0]"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component",
+            "author": "xeolabs / http://xeolabs.com/"
+        },
+        "Ortho": {
+            "name": "Ortho",
+            "shortname": "Ortho",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/camera/ortho.js",
+            "line": 1,
+            "description": "An **Ortho** component defines an orthographic projection transform.\n\n## Overview\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Alternatively, use {{#crossLink \"Perspective\"}}{{/crossLink}} if you need perspective projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Ortho.png\"></img>\n\n## Example\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/camera_ortho.html\"></iframe>\n\nIn this example we have a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that's attached to a\n{{#crossLink \"Camera\"}}Camera{{/crossLink}} that has a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} view transform and an Ortho\nprojection transform.\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -4],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar ortho = new XEO.Ortho(scene, {\n       left: -3.0,\n       right: 3.0,\n       bottom: -3.0,\n       top: 3.0,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: ortho\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\",\n   function () {\n               camera.view.rotateEyeY(0.5);\n               camera.view.rotateEyeX(0.3);\n           });\n````",
+            "submodule": "camera",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Ortho within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Ortho.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "left",
+                            "description": "Position of the left plane on the View-space X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1.0"
+                        },
+                        {
+                            "name": "right",
+                            "description": "Position of the right plane on the View-space X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1.0"
+                        },
+                        {
+                            "name": "top",
+                            "description": "Position of the top plane on the View-space Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1.0"
+                        },
+                        {
+                            "name": "bottom",
+                            "description": "Position of the bottom plane on the View-space Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1.0"
+                        },
+                        {
+                            "name": "near",
+                            "description": "Position of the near plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.1"
+                        },
+                        {
+                            "name": "far",
+                            "description": "Position of the far plane on the positive View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "10000"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "Perspective": {
+            "name": "Perspective",
+            "shortname": "Perspective",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/camera/perspective.js",
+            "line": 1,
+            "description": "A **Perspective** component defines a perspective projection transform.\n\n## Overview\n\n<ul>\n\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Alternatively, use {{#crossLink \"Ortho\"}}{{/crossLink}} if you need a orthographic projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Perspective components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Perspective.png\"></img>\n\n## Example\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/camera_perspective.html\"></iframe>\n\nIn this example we have a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that's attached to a\n{{#crossLink \"Camera\"}}Camera{{/crossLink}} that has a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} view transform and a Perspective\nprojection transform.\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -4],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar perspective = new XEO.Perspective(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
+            "submodule": "camera",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Perspective within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Perspective.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "fovy",
+                            "description": "Field-of-view angle, in degrees, on Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "60.0"
+                        },
+                        {
+                            "name": "aspect",
+                            "description": "Aspect ratio.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1.0"
+                        },
+                        {
+                            "name": "near",
+                            "description": "Position of the near plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.1"
+                        },
+                        {
+                            "name": "far",
+                            "description": "Position of the far plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "10000"
                         }
                     ]
                 }
@@ -1631,7 +2026,7 @@
             "namespace": "",
             "file": "src/core/input/cameraControl.js",
             "line": 1,
-            "description": "A **CameraControl** pans, rotates and zooms a {{#crossLink \"Camera\"}}{{/crossLink}} using the mouse and keyboard,\nas well as switches it between preset left, right, anterior, posterior, superior and inferior views.\n\nA CameraControl is comprised of the following control components, which each handle an aspect of interaction:\n\n<ul>\n<li>panning - {{#crossLink \"KeyboardPanCamera\"}}{{/crossLink}} and {{#crossLink \"MousePanCamera\"}}{{/crossLink}}</li>\n<li>rotation - {{#crossLink \"KeyboardOrbitCamera\"}}{{/crossLink}} and {{#crossLink \"MouseOrbitCamera\"}}{{/crossLink}}</li>\n<li>zooming - {{#crossLink \"KeyboardZoomCamera\"}}{{/crossLink}} and {{#crossLink \"MouseZoomCamera\"}}{{/crossLink}}</li>\n<li>switching preset views - {{#crossLink \"KeyboardAxisCamera\"}}{{/crossLink}}</li>\n<li>picking - {{#crossLink \"MousePickObject\"}}{{/crossLink}}</li>\n<li>camera flight animation - {{#crossLink \"CameraFlyAnimation\"}}{{/crossLink}}</li>\n</ul>\n\nA CameraControl provides the controls as read-only properties, in case you need to configure or deactivate\nthem individually.\n\n<ul>\n<li>Activating or deactivating the CameraControl will activate/deactivate all the controls in unison.</li>\n<li>Attaching a different {{#crossLink \"Camera\"}}{{/crossLink}} to the CameraControl will also attach that\n{{#crossLink \"Camera\"}}{{/crossLink}} to all the controls.</li>\n<li>The controls are not intended to be attached to a different {{#crossLink \"Camera\"}}{{/crossLink}} than the owner CameraControl.</li>\n<li>The CameraControl manages the lifecycles of the controls, destroying them when the CameraControl is destroyed.</li>\n</ul>\n\n## Example\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar camera = new XEO.Camera(scene);\n\nvar cameraControl = new XEO.CameraControl(scene, {\n\n       camera: camera,\n\n       // \"First person\" mode rotates look about eye.\n       // By default however, we orbit eye about look.\n       firstPerson: false\n   });\n\n// Reduce the sensitivity of mouse rotation\ncameraControl.mouseOrbit.sensitivity = 0.7;\n\n// Deactivate switching between preset views\ncameraControl.axisCamera.active = false;\n\n// Create a GameObject\nvar object = new XEO.GameObject(scene);\n````",
+            "description": "A **CameraControl** pans, rotates and zooms a {{#crossLink \"Camera\"}}{{/crossLink}} using the mouse and keyboard,\nas well as switches it between preset left, right, anterior, posterior, superior and inferior views.\n\nA CameraControl is comprised of the following control components, which each handle an aspect of interaction:\n\n<ul>\n<li>panning - {{#crossLink \"KeyboardPanCamera\"}}{{/crossLink}} and {{#crossLink \"MousePanCamera\"}}{{/crossLink}}</li>\n<li>rotation - {{#crossLink \"KeyboardOrbitCamera\"}}{{/crossLink}} and {{#crossLink \"MouseOrbitCamera\"}}{{/crossLink}}</li>\n<li>zooming - {{#crossLink \"KeyboardZoomCamera\"}}{{/crossLink}} and {{#crossLink \"MouseZoomCamera\"}}{{/crossLink}}</li>\n<li>switching preset views - {{#crossLink \"KeyboardAxisCamera\"}}{{/crossLink}}</li>\n<li>picking - {{#crossLink \"MousePickObject\"}}{{/crossLink}}</li>\n<li>camera flight animation - {{#crossLink \"CameraFlight\"}}{{/crossLink}}</li>\n</ul>\n\nA CameraControl provides the controls as read-only properties, in case you need to configure or deactivate\nthem individually.\n\n<ul>\n<li>Activating or deactivating the CameraControl will activate/deactivate all the controls in unison.</li>\n<li>Attaching a different {{#crossLink \"Camera\"}}{{/crossLink}} to the CameraControl will also attach that\n{{#crossLink \"Camera\"}}{{/crossLink}} to all the controls.</li>\n<li>The controls are not intended to be attached to a different {{#crossLink \"Camera\"}}{{/crossLink}} than the owner CameraControl.</li>\n<li>The CameraControl manages the lifecycles of the controls, destroying them when the CameraControl is destroyed.</li>\n</ul>\n\n## Example\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar camera = new XEO.Camera(scene);\n\nvar cameraControl = new XEO.CameraControl(scene, {\n\n       camera: camera,\n\n       // \"First person\" mode rotates look about eye.\n       // By default however, we orbit eye about look.\n       firstPerson: false\n   });\n\n// Reduce the sensitivity of mouse rotation\ncameraControl.mouseOrbit.sensitivity = 0.7;\n\n// Deactivate switching between preset views\ncameraControl.axisCamera.active = false;\n\n// Create a GameObject\nvar object = new XEO.GameObject(scene);\n````",
             "submodule": "input",
             "is_constructor": 1,
             "params": [
@@ -3844,377 +4239,6 @@
             ],
             "extends": "Component"
         },
-        "Camera": {
-            "name": "Camera",
-            "shortname": "Camera",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/transforms/camera.js",
-            "line": 3,
-            "description": "A **Camera** defines a viewpoint on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li> A Camera is composed of a viewing transform and a projection transform.</li>\n\n<li>The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.</li>\n\n<li>The projection transform may be an {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}}\nor {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.</li>\n\n<li> By default, each Camera is composed of its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Example\n\nIn this example we have\n\n<ul>\n<li>a {{#crossLink \"Lookat\"}}{{/crossLink}} view transform,</li>\n<li>a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform,</li>\n<li>a Camera attached to the {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0,0,-10],\n       look: [0,0,0],\n       up: [0,1,0]\n    });\n\nvar perspective = new XEO.Lookat(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n    });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n    });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n       camera: camera,\n       geometry: geometry\n    });\n\n````",
-            "submodule": "transforms",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Camera within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.\nYou only need to supply an ID if you need to be able to find the Camera by ID within its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} later.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Camera.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "view",
-                            "description": "ID or instance of a view transform within the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\nwhich is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.",
-                            "type": "String|XEO.Lookat",
-                            "optional": true
-                        },
-                        {
-                            "name": "project",
-                            "description": "ID or instance of a projection transform\nwithin the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform,\nwhich is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.",
-                            "type": "String|XEO.Perspective|XEO.Ortho|XEO.Frustum",
-                            "optional": true
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
-        "Frustum": {
-            "name": "Frustum",
-            "shortname": "Frustum",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/transforms/frustum.js",
-            "line": 1,
-            "description": "A **Frustum** defines a perspective projection as a frustum-shaped view volume.\n\n## Overview\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Frustum.png\"></img>\n\n## Example\n\nIn this example we have a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that's attached to a\n{{#crossLink \"Camera\"}}Camera{{/crossLink}} that has a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} view transform and a Frustum\nprojection transform.\n\n````Javascript\nvar scene = new XEO.Scene(engine);\n\n// Create a Frustum with default values\nvar frustum = new XEO.Frustum(scene, {\n   left:       1.0,    // Position of the left plane on the View-space X-axis\n   right:      1.0,    // Position of the right plane on the View-space X-axis\n   top:        1.0,    // Position of the top plane on the View-space Y-axis.\n   bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.\n   near:       0.1,    // Position of the near plane on the View-space Z-axis.\n   far:        10000   // Position of the far plane on the positive View-space Z-axis.\n});\n\n// Camera the includes our Frustum and falls back on\n// the Scene's default view transform, which is a Lookat\nvar camera = new XEO.Camera(scene, {\n   project: frustum\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\n// Object which uses the Camera to render the Geometry\nvar object = new XEO.GameObject(scene, {\n   camera: camera,\n   geometry: geometry\n});\n\n// Subscribe to changes to one of the properties of our Frustum\nfrustum.on(\"near\", function(value) {\n   console.log(\"Frustum 'near' updated: \" + value);\n});\n\n// Set the value of a property on our Frustum component,\n// which fires the event we just subscribed to\nfrustum.near = 45.0;\n\n// Get the value of a property on our Frustum component\nvar value = frustum.near;\n\n// Destroy ths Frustum component, causing the Camera to\n// fall back on the Scene's default projection transform,\n// which is a Perspective\nfrustum.destroy();\n````",
-            "submodule": "transforms",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Frustum within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Frustum.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "left",
-                            "description": "Position of the Frustum's left plane on the View-space X-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "-1"
-                        },
-                        {
-                            "name": "right",
-                            "description": "Position of the Frustum's right plane on the View-space X-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1"
-                        },
-                        {
-                            "name": "top",
-                            "description": "Position of the Frustum's top plane on the View-space Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1"
-                        },
-                        {
-                            "name": "bottom",
-                            "description": "Position of the Frustum's bottom plane on the View-space Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "-1"
-                        },
-                        {
-                            "name": "near",
-                            "description": "Position of the Frustum's near plane on the View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0.1"
-                        },
-                        {
-                            "name": "far",
-                            "description": "Position of the Frustum's far plane on the positive View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1000"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
-        "Lookat": {
-            "name": "Lookat",
-            "shortname": "Lookat",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/transforms/lookat.js",
-            "line": 1,
-            "description": "A **Lookat** defines a viewing transform as an {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}} position, a\n{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} position and an {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}\nvector.\n\n## Overview\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with projection transforms such as\n{{#crossLink \"Perspective\"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Lookat.png\"></img>\n\n## Example\n\nIn this example we have a Lookat that positions the eye at -10 on the World-space Z-axis, while looking at the origin.\nThen we aattach our Lookat to a {{#crossLink \"Camera\"}}{{/crossLink}}. which we attach to a {{#crossLink \"GameObject\"}}{{/crossLink}}.\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar myLookat = new XEO.Lookat(scene, {\n   eye: [0,0,-10],\n   look: [0,0,0],\n   up: [0,1,0]\n});\n\nvar camera = new XEO.Camera(scene, {\n   view: myLookat\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n   camera: camera,\n   geometry: geometry\n});\n\n// Subscribe to changes on a camera property\nlookat.on(\"eye\", function(value) {\n   console.log(\"eye updated: \" + value[0] + \", \" + value[1] + \", \" + value[2]);\n});\n\n// Set the value of a camera property, which fires the event we just subscribed to\nlookat.eye = [-5, 0, -10];\n\n// Get the value of a camera property\nvar value = lookat.eye;\n\n// Destroy ths lookat, causing the camera to fall back on the scene's default viewing transform\nlookat.destroy();\n````",
-            "submodule": "transforms",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Lookat in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Lookat.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "eye",
-                            "description": "Eye position.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[0,0,-10]"
-                        },
-                        {
-                            "name": "look",
-                            "description": "The position of the point-of-interest we're looking at.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[0,0,0]"
-                        },
-                        {
-                            "name": "up",
-                            "description": "The \"up\" vector.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[0,1,0]"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component",
-            "author": "xeolabs / http://xeolabs.com/"
-        },
-        "Ortho": {
-            "name": "Ortho",
-            "shortname": "Ortho",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/transforms/ortho.js",
-            "line": 1,
-            "description": "An **Ortho** component defines an orthographic projection transform.\n\n## Overview\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Alternatively, use {{#crossLink \"Perspective\"}}{{/crossLink}} if you need perspective projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Ortho.png\"></img>\n\n## Example\n\nIn this example we have a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that's attached to a\n{{#crossLink \"Camera\"}}Camera{{/crossLink}} that has a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} view transform and an Ortho\nprojection transform.\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar ortho = new XEO.Ortho(scene, {\n   left:       1.0,    // Position of the left plane on the View-space X-axis\n   right:      1.0,    // Position of the right plane on the View-space X-axis\n   top:        1.0,    // Position of the top plane on the View-space Y-axis.\n   bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.\n   near:       0.1,    // Position of the near plane on the View-space Z-axis.\n   far:        10000   // Position of the far plane on the positive View-space Z-axis.\n});\n\nvar camera = new XEO.Camera(scene, {\n      project: ortho\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n   camera: camera,\n   geometry: geometry\n});\n````",
-            "submodule": "transforms",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Ortho within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Ortho.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "left",
-                            "description": "Position of the left plane on the View-space X-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "-1.0"
-                        },
-                        {
-                            "name": "right",
-                            "description": "Position of the right plane on the View-space X-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1.0"
-                        },
-                        {
-                            "name": "top",
-                            "description": "Position of the top plane on the View-space Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1.0"
-                        },
-                        {
-                            "name": "bottom",
-                            "description": "Position of the bottom plane on the View-space Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "-1.0"
-                        },
-                        {
-                            "name": "near",
-                            "description": "Position of the near plane on the View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0.1"
-                        },
-                        {
-                            "name": "far",
-                            "description": "Position of the far plane on the positive View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "10000"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
-        "Perspective": {
-            "name": "Perspective",
-            "shortname": "Perspective",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/transforms/perspective.js",
-            "line": 1,
-            "description": "A **Perspective** component defines a perspective projection transform.\n\n## Overview\n\n<ul>\n\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Alternatively, use {{#crossLink \"Ortho\"}}{{/crossLink}} if you need a orthographic projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Perspective components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Perspective.png\"></img>\n\n## Example\n\nIn this example we have a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that's attached to a\n{{#crossLink \"Camera\"}}Camera{{/crossLink}} that has a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} view transform and a Perspective\nprojection transform.\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar perspective = new XEO.Perspective(scene, {\n   fovy: 60,\n   near: 0.1,\n   far: 1000\n});\n\nvar camera = new XEO.Camera(scene, {\n   project: perspective\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n   camera: camera,\n   geometry: geometry\n});\n````",
-            "submodule": "transforms",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Perspective within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Perspective.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "fovy",
-                            "description": "Field-of-view angle, in degrees, on Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "60.0"
-                        },
-                        {
-                            "name": "aspect",
-                            "description": "Aspect ratio.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1.0"
-                        },
-                        {
-                            "name": "near",
-                            "description": "Position of the near plane on the View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0.1"
-                        },
-                        {
-                            "name": "far",
-                            "description": "Position of the far plane on the View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "10000"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
         "Quaternion": {
             "name": "Quaternion",
             "shortname": "Quaternion",
@@ -4311,7 +4335,7 @@
             "namespace": "",
             "file": "src/core/transforms/transform.js",
             "line": 1,
-            "description": "A **Transform** defines a modelling transform matrix for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Sub-classes of Transform are: {{#crossLink \"Translate\"}}{{/crossLink}},\n{{#crossLink \"Scale\"}}{{/crossLink}}, {{#crossLink \"Rotate\"}}{{/crossLink}}, and {{#crossLink \"Quaternion\"}}{{/crossLink}}</li>\n<li>Can be connected into hierarchies with other {{#crossLink \"Transform\"}}Transforms{{/crossLink}} and sub-classes</li>\n<li>{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are connected to leaf Transforms\nin the hierarchy, and will be transformed by each Transform on the path up to the\nroot, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Transform.png\"></img>\n\n## Example\n\nTODO",
+            "description": "A **Transform** defines a modelling matrix to transform attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Sub-classes of Transform are: {{#crossLink \"Translate\"}}{{/crossLink}},\n{{#crossLink \"Scale\"}}{{/crossLink}}, {{#crossLink \"Rotate\"}}{{/crossLink}}, and {{#crossLink \"Quaternion\"}}{{/crossLink}}</li>\n<li>Can be connected into hierarchies with other {{#crossLink \"Transform\"}}Transforms{{/crossLink}} and sub-classes</li>\n<li>{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are connected to leaf Transforms\nin the hierarchy, and will be transformed by each Transform on the path up to the\nroot, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Transform.png\"></img>\n\n## Example\n\nTODO",
             "submodule": "transforms",
             "is_constructor": 1,
             "params": [
@@ -4525,21 +4549,21 @@
     },
     "classitems": [
         {
-            "file": "src/core/animation/cameraFlyAnimation.js",
+            "file": "src/core/animation/cameraFlight.js",
             "line": 51,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
             "type": "String",
             "final": 1,
-            "class": "CameraFlyAnimation",
+            "class": "CameraFlight",
             "module": "XEO",
             "submodule": "animation"
         },
         {
-            "file": "src/core/animation/cameraFlyAnimation.js",
+            "file": "src/core/animation/cameraFlight.js",
             "line": 99,
-            "description": "Begins flying this CameraFlyAnimation's {{#crossLink \"Camera\"}}{{/crossLink}} to the given target.\n\n<ul>\n    <li>When the target is a boundary, the {{#crossLink \"Camera\"}}{{/crossLink}} will fly towards the target\n    and stop when the target fills most of the canvas.</li>\n    <li>When the target is an explicit {{#crossLink \"Camera\"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````\n     vectors, then this CameraFlyAnimation will interpolate the {{#crossLink \"Camera\"}}{{/crossLink}} to that target and stop there.</li>",
+            "description": "Begins flying this CameraFlight's {{#crossLink \"Camera\"}}{{/crossLink}} to the given target.\n\n<ul>\n    <li>When the target is a boundary, the {{#crossLink \"Camera\"}}{{/crossLink}} will fly towards the target\n    and stop when the target fills most of the canvas.</li>\n    <li>When the target is an explicit {{#crossLink \"Camera\"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````\n     vectors, then this CameraFlight will interpolate the {{#crossLink \"Camera\"}}{{/crossLink}} to that target and stop there.</li>",
             "itemtype": "method",
             "name": "flyTo",
             "params": [
@@ -4556,26 +4580,32 @@
                             "optdefault": "0]   Factor in range [0..1"
                         },
                         {
-                            "name": "worldAABB",
-                            "description": "}  World-space axis-aligned bounding box (AABB) target to fly to.",
-                            "type": "Xmin:Number, ymin:Number, zmin: Number, xmax: Number, ymax: Number, zmax: Number",
+                            "name": "component",
+                            "description": "ID or instance of a component to fly to.",
+                            "type": "String|Component",
+                            "optional": true
+                        },
+                        {
+                            "name": "aabb",
+                            "description": "World-space axis-aligned bounding box (AABB) target to fly to.",
+                            "type": "*",
                             "optional": true
                         },
                         {
                             "name": "eye",
-                            "description": "Position to fly the {{#crossLink \"Camera/eye:property\"}}Camera's eye{{/crossLink}} position to.",
+                            "description": "Position to fly the eye position to.",
                             "type": "Array of Number",
                             "optional": true
                         },
                         {
                             "name": "look",
-                            "description": "Position to fly the {{#crossLink \"Camera/look:property\"}}Camera's look{{/crossLink}} position to.",
+                            "description": "Position to fly the look position to.",
                             "type": "Array of Number",
                             "optional": true
                         },
                         {
                             "name": "up",
-                            "description": "Position to fly the {{#crossLink \"Camera/up:property\"}}Camera's up{{/crossLink}} vector to.",
+                            "description": "Position to fly the up vector to.",
                             "type": "Array of Number",
                             "optional": true
                         }
@@ -4588,7 +4618,7 @@
                     "optional": true
                 }
             ],
-            "class": "CameraFlyAnimation",
+            "class": "CameraFlight",
             "module": "XEO",
             "submodule": "animation"
         },
@@ -4658,6 +4688,788 @@
             "class": "MorphTargets",
             "module": "XEO",
             "submodule": "animation"
+        },
+        {
+            "file": "src/core/camera/camera.js",
+            "line": 109,
+            "description": "The projection transform component for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/project:property\"}}project{{/crossLink}}, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/project:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "project",
+            "type": "Perspective|XEO.Ortho|XEO.Frustum",
+            "class": "Camera",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/camera.js",
+            "line": 125,
+            "description": "Fired whenever this Camera's {{#crossLink \"Camera/project:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "project",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Camera",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/camera.js",
+            "line": 138,
+            "description": "The viewing transform component for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/view:property\"}}view{{/crossLink}}, which is\na {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/view:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "view",
+            "type": "Lookat",
+            "class": "Camera",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/camera.js",
+            "line": 154,
+            "description": "Fired whenever this Camera's {{#crossLink \"Camera/view:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "view",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Camera",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 143,
+            "description": "Fired whenever this Frustum's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is regenerated.",
+            "itemtype": "event",
+            "name": "matrix",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 153,
+            "description": "Position of this Frustum's left plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/left:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "left",
+            "default": "-1.0",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 172,
+            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/left:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "left",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 186,
+            "description": "Position of this Frustum's right plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/right:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "right",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 205,
+            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/right:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "right",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 219,
+            "description": "Position of this Frustum's top plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Frustum/top:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "top",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 238,
+            "description": "Fired whenever this Frustum's   {{#crossLink \"Frustum/top:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "top",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 252,
+            "description": "Position of this Frustum's bottom plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Frustum/bottom:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "bottom",
+            "default": "-1.0",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 271,
+            "description": "Fired whenever this Frustum's   {{#crossLink \"Frustum/bottom:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "bottom",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 285,
+            "description": "Position of this Frustum's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Frustum/near:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "near",
+            "default": "0.1",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 304,
+            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/near:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "near",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 318,
+            "description": "Position of this Frustum's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Frustum/far:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "far",
+            "default": "10000.0",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 337,
+            "description": "Fired whenever this Frustum's  {{#crossLink \"Frustum/far:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "far",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/frustum.js",
+            "line": 351,
+            "description": "The elements of this Frustum's projection transform matrix.\n\nFires a {{#crossLink \"Frustum/matrix:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "matrix",
+            "type": "{Float64Array}",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 125,
+            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is updated.",
+            "itemtype": "event",
+            "name": "matrix",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 134,
+            "description": "Rotate 'eye' about 'look', around the 'up' vector",
+            "params": [
+                {
+                    "name": "angle",
+                    "description": "Angle of rotation in degrees",
+                    "type": "Number"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 152,
+            "description": "Rotate 'eye' about 'look' around the X-axis",
+            "params": [
+                {
+                    "name": "angle",
+                    "description": "Angle of rotation in degrees",
+                    "type": "Number"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 176,
+            "description": "Rotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
+            "params": [
+                {
+                    "name": "angle",
+                    "description": "Angle of rotation in degrees",
+                    "type": "Number"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 196,
+            "description": "Rotate 'eye' about 'look' around the X-axis",
+            "params": [
+                {
+                    "name": "angle",
+                    "description": "Angle of rotation in degrees",
+                    "type": "Number"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 220,
+            "description": "Pans the camera along X and Y axis.",
+            "params": [
+                {
+                    "name": "pan",
+                    "description": "The pan vector"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 272,
+            "description": "Increments/decrements zoom factor, ie. distance between eye and look.",
+            "params": [
+                {
+                    "name": "delta",
+                    "description": ""
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 289,
+            "description": "Position of this Lookat's eye.\n\nFires an {{#crossLink \"Lookat/eye:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "eye",
+            "default": "[0,0,-10]",
+            "type": "Array(Number)",
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 314,
+            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "eye",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 328,
+            "description": "Position of this Lookat's point-of-interest.\n\nFires a {{#crossLink \"Lookat/look:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "look",
+            "default": "[0,0,0]",
+            "type": "Array(Number)",
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 353,
+            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "look",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 367,
+            "description": "Direction of the \"up\" vector.\nFires an {{#crossLink \"Lookat/up:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "up",
+            "default": "[0,1,0]",
+            "type": "Array(Number)",
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 390,
+            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/up:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "up",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/lookat.js",
+            "line": 404,
+            "description": "The elements of this Lookat's view transform matrix.\n\nFires a {{#crossLink \"Lookat/matrix:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "matrix",
+            "type": "{Float64Array}",
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 128,
+            "description": "Fired whenever this Frustum's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is regenerated.",
+            "itemtype": "event",
+            "name": "matrix",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 138,
+            "description": "Position of this Ortho's left plane on the View-space X-axis.\n\nFires a {{#crossLink \"Ortho/left:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "left",
+            "default": "-1.0",
+            "type": "Number",
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 157,
+            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/left:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "left",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 171,
+            "description": "Position of this Ortho's right plane on the View-space X-axis.\n\nFires a {{#crossLink \"Ortho/right:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "right",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 190,
+            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/right:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "right",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 204,
+            "description": "Position of this Ortho's top plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Ortho/top:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "top",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 223,
+            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/top:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "top",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 237,
+            "description": "Position of this Ortho's bottom plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Ortho/bottom:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "bottom",
+            "default": "-1.0",
+            "type": "Number",
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 256,
+            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/bottom:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "bottom",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 270,
+            "description": "Position of this Ortho's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Ortho/near:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "near",
+            "default": "0.1",
+            "type": "Number",
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 289,
+            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/near:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "near",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 303,
+            "description": "Position of this Ortho's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Ortho/far:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "far",
+            "default": "10000.0",
+            "type": "Number",
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 322,
+            "description": "Fired whenever this Ortho's {{#crossLink \"Ortho/far:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "far",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/ortho.js",
+            "line": 336,
+            "description": "The elements of this Ortho's projection transform matrix.\n\nFires a {{#crossLink \"Ortho/matrix:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "matrix",
+            "type": "{Float64Array}",
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/perspective.js",
+            "line": 132,
+            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/matrix:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "matrix",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/perspective.js",
+            "line": 143,
+            "description": "The angle, in degrees on the Y-axis, of this Perspective's field-of-view.\n\nFires a {{#crossLink \"Perspective/fovy:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "fovy",
+            "default": "60.0",
+            "type": "Number",
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/perspective.js",
+            "line": 162,
+            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/fovy:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "fovy",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/perspective.js",
+            "line": 176,
+            "description": "Aspect ratio of this Perspective frustum. This is effectively the height of the frustum divided by the width.\n\nFires an {{#crossLink \"Perspective/aspect:property\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "aspect",
+            "default": "60.0",
+            "type": "Number",
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/perspective.js",
+            "line": 195,
+            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/aspect:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "aspect",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/perspective.js",
+            "line": 209,
+            "description": "Position of this Perspective's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/near:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "near",
+            "default": "0.1",
+            "type": "Number",
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/perspective.js",
+            "line": 228,
+            "description": "Fired whenever this Perspective's   {{#crossLink \"Perspective/near:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "near",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/perspective.js",
+            "line": 241,
+            "description": "Position of this Perspective's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/far:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "far",
+            "default": "10000.0",
+            "type": "Number",
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/perspective.js",
+            "line": 260,
+            "description": "Fired whenever this Perspective's  {{#crossLink \"Perspective/far:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "far",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/core/camera/perspective.js",
+            "line": 274,
+            "description": "The elements of this Perspective's projection transform matrix.\n\nFires a {{#crossLink \"Perspective/matrix:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "matrix",
+            "type": "{Float64Array}",
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
         },
         {
             "file": "src/core/clipping/clip.js",
@@ -5317,11 +6129,11 @@
         {
             "file": "src/core/input/cameraControl.js",
             "line": 195,
-            "description": "The {{#crossLink \"CameraFlyAnimation\"}}{{/crossLink}} within this CameraControl.",
+            "description": "The {{#crossLink \"CameraFlight\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "cameraFly",
             "final": 1,
-            "type": "CameraFlyAnimation",
+            "type": "CameraFlight",
             "class": "CameraControl",
             "module": "XEO",
             "submodule": "input"
@@ -12281,788 +13093,6 @@
             "submodule": "spatial"
         },
         {
-            "file": "src/core/transforms/camera.js",
-            "line": 103,
-            "description": "The projection transform component for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/project:property\"}}project{{/crossLink}}, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/project:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "project",
-            "type": "Perspective|XEO.Ortho|XEO.Frustum",
-            "class": "Camera",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/camera.js",
-            "line": 119,
-            "description": "Fired whenever this Camera's {{#crossLink \"Camera/project:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "project",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Camera",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/camera.js",
-            "line": 132,
-            "description": "The viewing transform component for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/view:property\"}}view{{/crossLink}}, which is\na {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/view:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "view",
-            "type": "Lookat",
-            "class": "Camera",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/camera.js",
-            "line": 148,
-            "description": "Fired whenever this Camera's {{#crossLink \"Camera/view:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "view",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Camera",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 141,
-            "description": "Fired whenever this Frustum's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is regenerated.",
-            "itemtype": "event",
-            "name": "matrix",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 151,
-            "description": "Position of this Frustum's left plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/left:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "left",
-            "default": "-1.0",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 170,
-            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/left:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "left",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 184,
-            "description": "Position of this Frustum's right plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/right:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "right",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 203,
-            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/right:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "right",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 217,
-            "description": "Position of this Frustum's top plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Frustum/top:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "top",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 236,
-            "description": "Fired whenever this Frustum's   {{#crossLink \"Frustum/top:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "top",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 250,
-            "description": "Position of this Frustum's bottom plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Frustum/bottom:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "bottom",
-            "default": "-1.0",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 269,
-            "description": "Fired whenever this Frustum's   {{#crossLink \"Frustum/bottom:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "bottom",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 283,
-            "description": "Position of this Frustum's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Frustum/near:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "near",
-            "default": "0.1",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 302,
-            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/near:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "near",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 316,
-            "description": "Position of this Frustum's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Frustum/far:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "far",
-            "default": "10000.0",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 335,
-            "description": "Fired whenever this Frustum's  {{#crossLink \"Frustum/far:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "far",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/frustum.js",
-            "line": 349,
-            "description": "The elements of this Frustum's projection transform matrix.\n\nFires a {{#crossLink \"Frustum/matrix:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "matrix",
-            "type": "{Float64Array}",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 125,
-            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is updated.",
-            "itemtype": "event",
-            "name": "matrix",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 134,
-            "description": "Rotate 'eye' about 'look', around the 'up' vector",
-            "params": [
-                {
-                    "name": "angle",
-                    "description": "Angle of rotation in degrees",
-                    "type": "Number"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 152,
-            "description": "Rotate 'eye' about 'look' around the X-axis",
-            "params": [
-                {
-                    "name": "angle",
-                    "description": "Angle of rotation in degrees",
-                    "type": "Number"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 176,
-            "description": "Rotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
-            "params": [
-                {
-                    "name": "angle",
-                    "description": "Angle of rotation in degrees",
-                    "type": "Number"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 196,
-            "description": "Rotate 'eye' about 'look' around the X-axis",
-            "params": [
-                {
-                    "name": "angle",
-                    "description": "Angle of rotation in degrees",
-                    "type": "Number"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 220,
-            "description": "Pans the camera along X and Y axis.",
-            "params": [
-                {
-                    "name": "pan",
-                    "description": "The pan vector"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 272,
-            "description": "Increments/decrements zoom factor, ie. distance between eye and look.",
-            "params": [
-                {
-                    "name": "delta",
-                    "description": ""
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 289,
-            "description": "Position of this Lookat's eye.\n\nFires an {{#crossLink \"Lookat/eye:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "eye",
-            "default": "[0,0,-10]",
-            "type": "Array(Number)",
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 314,
-            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "eye",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 328,
-            "description": "Position of this Lookat's point-of-interest.\n\nFires a {{#crossLink \"Lookat/look:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "look",
-            "default": "[0,0,0]",
-            "type": "Array(Number)",
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 353,
-            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "look",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 367,
-            "description": "Direction of the \"up\" vector.\nFires an {{#crossLink \"Lookat/up:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "up",
-            "default": "[0,1,0]",
-            "type": "Array(Number)",
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 390,
-            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/up:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "up",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/lookat.js",
-            "line": 404,
-            "description": "The elements of this Lookat's view transform matrix.\n\nFires a {{#crossLink \"Lookat/matrix:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "matrix",
-            "type": "{Float64Array}",
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 113,
-            "description": "Fired whenever this Frustum's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is regenerated.",
-            "itemtype": "event",
-            "name": "matrix",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 123,
-            "description": "Position of this Ortho's left plane on the View-space X-axis.\n\nFires a {{#crossLink \"Ortho/left:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "left",
-            "default": "-1.0",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 142,
-            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/left:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "left",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 156,
-            "description": "Position of this Ortho's right plane on the View-space X-axis.\n\nFires a {{#crossLink \"Ortho/right:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "right",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 175,
-            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/right:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "right",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 189,
-            "description": "Position of this Ortho's top plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Ortho/top:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "top",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 208,
-            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/top:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "top",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 222,
-            "description": "Position of this Ortho's bottom plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Ortho/bottom:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "bottom",
-            "default": "-1.0",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 241,
-            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/bottom:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "bottom",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 255,
-            "description": "Position of this Ortho's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Ortho/near:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "near",
-            "default": "0.1",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 274,
-            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/near:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "near",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 288,
-            "description": "Position of this Ortho's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Ortho/far:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "far",
-            "default": "10000.0",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 307,
-            "description": "Fired whenever this Ortho's {{#crossLink \"Ortho/far:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "far",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/ortho.js",
-            "line": 321,
-            "description": "The elements of this Ortho's projection transform matrix.\n\nFires a {{#crossLink \"Ortho/matrix:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "matrix",
-            "type": "{Float64Array}",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/perspective.js",
-            "line": 118,
-            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/matrix:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "matrix",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/perspective.js",
-            "line": 129,
-            "description": "The angle, in degrees on the Y-axis, of this Perspective's field-of-view.\n\nFires a {{#crossLink \"Perspective/fovy:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "fovy",
-            "default": "60.0",
-            "type": "Number",
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/perspective.js",
-            "line": 148,
-            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/fovy:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "fovy",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/perspective.js",
-            "line": 162,
-            "description": "Aspect ratio of this Perspective frustum. This is effectively the height of the frustum divided by the width.\n\nFires an {{#crossLink \"Perspective/aspect:property\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "aspect",
-            "default": "60.0",
-            "type": "Number",
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/perspective.js",
-            "line": 181,
-            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/aspect:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "aspect",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/perspective.js",
-            "line": 195,
-            "description": "Position of this Perspective's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/near:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "near",
-            "default": "0.1",
-            "type": "Number",
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/perspective.js",
-            "line": 214,
-            "description": "Fired whenever this Perspective's   {{#crossLink \"Perspective/near:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "near",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/perspective.js",
-            "line": 227,
-            "description": "Position of this Perspective's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/far:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "far",
-            "default": "10000.0",
-            "type": "Number",
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/perspective.js",
-            "line": 246,
-            "description": "Fired whenever this Perspective's  {{#crossLink \"Perspective/far:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "far",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/core/transforms/perspective.js",
-            "line": 260,
-            "description": "The elements of this Perspective's projection transform matrix.\n\nFires a {{#crossLink \"Perspective/matrix:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "matrix",
-            "type": "{Float64Array}",
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
             "file": "src/core/transforms/quaternion.js",
             "line": 106,
             "description": "The quaternion elements\nFires an {{#crossLink \"Quaternion/xyzw:event\"}}{{/crossLink}} event on change.",
@@ -14327,6 +14357,30 @@
             "line": " src/core/xeo.js:288"
         },
         {
+            "message": "Missing item type\nRotate 'eye' about 'look', around the 'up' vector",
+            "line": " src/core/camera/lookat.js:134"
+        },
+        {
+            "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
+            "line": " src/core/camera/lookat.js:152"
+        },
+        {
+            "message": "Missing item type\nRotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
+            "line": " src/core/camera/lookat.js:176"
+        },
+        {
+            "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
+            "line": " src/core/camera/lookat.js:196"
+        },
+        {
+            "message": "Missing item type\nPans the camera along X and Y axis.",
+            "line": " src/core/camera/lookat.js:220"
+        },
+        {
+            "message": "Missing item type\nIncrements/decrements zoom factor, ie. distance between eye and look.",
+            "line": " src/core/camera/lookat.js:272"
+        },
+        {
             "message": "Missing item type",
             "line": " src/core/input/input.js:115"
         },
@@ -14381,30 +14435,6 @@
         {
             "message": "Missing item type\nLookup GL depth function enums",
             "line": " src/core/rendering/depthBuf.js:166"
-        },
-        {
-            "message": "Missing item type\nRotate 'eye' about 'look', around the 'up' vector",
-            "line": " src/core/transforms/lookat.js:134"
-        },
-        {
-            "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
-            "line": " src/core/transforms/lookat.js:152"
-        },
-        {
-            "message": "Missing item type\nRotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
-            "line": " src/core/transforms/lookat.js:176"
-        },
-        {
-            "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
-            "line": " src/core/transforms/lookat.js:196"
-        },
-        {
-            "message": "Missing item type\nPans the camera along X and Y axis.",
-            "line": " src/core/transforms/lookat.js:220"
-        },
-        {
-            "message": "Missing item type\nIncrements/decrements zoom factor, ie. distance between eye and look.",
-            "line": " src/core/transforms/lookat.js:272"
         },
         {
             "message": "Missing item type\nGeneric map of IDs to items - can generate own IDs or accept given IDs. IDs should be strings in order to not\nclash with internally generated IDs, which are numbers.",

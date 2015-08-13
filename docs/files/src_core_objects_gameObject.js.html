@@ -42,7 +42,7 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -100,6 +100,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
@@ -1082,17 +1083,17 @@
             this._worldBoundaryDirty = true;
             this._viewBoundaryDirty = true;
             if (this._worldBoundary) {
-                this._worldBoundary.set(&quot;updated&quot;, true);
+                this._worldBoundary.fire(&quot;updated&quot;, true);
             }
             if (this._viewBoundary) {
-                this._viewBoundary.set(&quot;updated&quot;, true);
+                this._viewBoundary.fire(&quot;updated&quot;, true);
             }
         },
 
         _setViewBoundaryDirty: function () {
             this._viewBoundaryDirty = true;
             if (this._viewBoundary) {
-                this._viewBoundary.set(&quot;updated&quot;, true);
+                this._viewBoundary.fire(&quot;updated&quot;, true);
             }
         },
 

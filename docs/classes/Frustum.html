@@ -42,7 +42,7 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -100,6 +100,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
@@ -159,10 +160,10 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_transforms_frustum.js.html#l1"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:1</code></a>
+            Defined in: <a href="../files/src_core_camera_frustum.js.html#l1"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/transforms.html">transforms</a><br>
+            Module: <a href="../modules/camera.html">camera</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
@@ -179,51 +180,46 @@
 
 <p><img src="../../../assets/images/Frustum.png"></img></p>
 <h2 id="example">Example</h2>
+<h2 id="example">Example</h2>
+<iframe style="width: 600px; height: 400px" src="../../examples/camera_frustum.html"></iframe>
+
 <p>In this example we have a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s attached to a
 <a href="../classes/Camera.html" class="crosslink">Camera</a> that has a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform and a Frustum
 projection transform.</p>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene(engine);
+<pre class="code prettyprint"><code class="lang-Javascript">
+var scene = new XEO.Scene();
 
-// Create a Frustum with default values
+var lookat = new XEO.Lookat(scene, {
+       eye: [0, 0, -4],
+       look: [0, 0, 0],
+       up: [0, 1, 0]
+   });
+
 var frustum = new XEO.Frustum(scene, {
-   left:       1.0,    // Position of the left plane on the View-space X-axis
-   right:      1.0,    // Position of the right plane on the View-space X-axis
-   top:        1.0,    // Position of the top plane on the View-space Y-axis.
-   bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.
-   near:       0.1,    // Position of the near plane on the View-space Z-axis.
-   far:        10000   // Position of the far plane on the positive View-space Z-axis.
-});
+       left: -0.1,
+       right: 0.1,
+       bottom: -0.1,
+       top: 0.1,
+       near: 0.15,
+       far: 1000
+   });
 
-// Camera the includes our Frustum and falls back on
-// the Scene&#39;s default view transform, which is a Lookat
 var camera = new XEO.Camera(scene, {
-   project: frustum
-});
+       view: lookat,
+       project: frustum
+   });
 
 var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
-// Object which uses the Camera to render the Geometry
 var object = new XEO.GameObject(scene, {
-   camera: camera,
-   geometry: geometry
-});
+       camera: camera,
+       geometry: geometry
+   });
 
-// Subscribe to changes to one of the properties of our Frustum
-frustum.on("near", function(value) {
-   console.log("Frustum &#39;near&#39; updated: " + value);
-});
-
-// Set the value of a property on our Frustum component,
-// which fires the event we just subscribed to
-frustum.near = 45.0;
-
-// Get the value of a property on our Frustum component
-var value = frustum.near;
-
-// Destroy ths Frustum component, causing the Camera to
-// fall back on the Scene&#39;s default projection transform,
-// which is a Perspective
-frustum.destroy();
+scene.on("tick", function () {
+      camera.view.rotateEyeY(0.5);
+      camera.view.rotateEyeX(0.3);
+   });
 </code></pre>
 
 </div>
@@ -254,7 +250,7 @@ frustum.destroy();
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_transforms_frustum.js.html#l1"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:1</code></a>
+                <a href="../files/src_core_camera_frustum.js.html#l1"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:1</code></a>
                 </p>
         
         
@@ -339,23 +335,23 @@ frustum.destroy();
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[top=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Position of the Frustum&#39;s top plane on the View-space Y-axis.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
                                             <code class="param-name optional">[bottom=-1]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
                                             <p>Position of the Frustum&#39;s bottom plane on the View-space Y-axis.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[top=1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Position of the Frustum&#39;s top plane on the View-space Y-axis.</p>
         
                                         </div>
         
@@ -1089,7 +1085,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l250"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:250</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l252"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:252</code></a>
                             </p>
                     
                     
@@ -1141,7 +1137,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l316"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:316</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l318"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:318</code></a>
                             </p>
                     
                     
@@ -1218,7 +1214,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l151"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:151</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l153"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:153</code></a>
                             </p>
                     
                     
@@ -1245,7 +1241,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l349"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:349</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l351"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:351</code></a>
                             </p>
                     
                     
@@ -1296,7 +1292,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l283"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:283</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l285"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:285</code></a>
                             </p>
                     
                     
@@ -1323,7 +1319,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l184"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:184</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l186"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:186</code></a>
                             </p>
                     
                     
@@ -1376,7 +1372,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l217"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:217</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l219"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:219</code></a>
                             </p>
                     
                     
@@ -1438,7 +1434,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l269"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:269</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l271"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:271</code></a>
                             </p>
                     
                     
@@ -1505,7 +1501,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l335"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:335</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l337"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:337</code></a>
                             </p>
                     
                     
@@ -1547,7 +1543,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l170"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:170</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l172"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:172</code></a>
                             </p>
                     
                     
@@ -1589,7 +1585,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l141"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:141</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l143"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:143</code></a>
                             </p>
                     
                     
@@ -1631,7 +1627,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l302"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:302</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l304"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:304</code></a>
                             </p>
                     
                     
@@ -1673,7 +1669,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l203"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:203</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l205"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:205</code></a>
                             </p>
                     
                     
@@ -1715,7 +1711,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_frustum.js.html#l236"><code>src&#x2F;core&#x2F;transforms&#x2F;frustum.js:236</code></a>
+                            <a href="../files/src_core_camera_frustum.js.html#l238"><code>src&#x2F;core&#x2F;camera&#x2F;frustum.js:238</code></a>
                             </p>
                     
                     

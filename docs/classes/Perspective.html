@@ -42,7 +42,7 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -100,6 +100,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
@@ -159,10 +160,10 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_transforms_perspective.js.html#l1"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:1</code></a>
+            Defined in: <a href="../files/src_core_camera_perspective.js.html#l1"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/transforms.html">transforms</a><br>
+            Module: <a href="../modules/camera.html">camera</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
@@ -181,27 +182,41 @@
 
 <p><img src="../../../assets/images/Perspective.png"></img></p>
 <h2 id="example">Example</h2>
+<iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
+
 <p>In this example we have a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> that&#39;s attached to a
 <a href="../classes/Camera.html" class="crosslink">Camera</a> that has a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform and a Perspective
 projection transform.</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
 
+var lookat = new XEO.Lookat(scene, {
+       eye: [0, 0, -4],
+       look: [0, 0, 0],
+       up: [0, 1, 0]
+   });
+
 var perspective = new XEO.Perspective(scene, {
-   fovy: 60,
-   near: 0.1,
-   far: 1000
-});
+       fovy: 60,
+       near: 0.1,
+       far: 1000
+   });
 
 var camera = new XEO.Camera(scene, {
-   project: perspective
-});
+       view: lookat,
+       project: perspective
+   });
 
 var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
 var object = new XEO.GameObject(scene, {
-   camera: camera,
-   geometry: geometry
-});
+       camera: camera,
+       geometry: geometry
+   });
+
+scene.on("tick", function () {
+      camera.view.rotateEyeY(0.5);
+      camera.view.rotateEyeX(0.3);
+   });
 </code></pre>
 
 </div>
@@ -232,7 +247,7 @@ var object = new XEO.GameObject(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_transforms_perspective.js.html#l1"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:1</code></a>
+                <a href="../files/src_core_camera_perspective.js.html#l1"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:1</code></a>
                 </p>
         
         
@@ -1029,7 +1044,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_perspective.js.html#l162"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:162</code></a>
+                            <a href="../files/src_core_camera_perspective.js.html#l176"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:176</code></a>
                             </p>
                     
                     
@@ -1081,7 +1096,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_perspective.js.html#l227"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:227</code></a>
+                            <a href="../files/src_core_camera_perspective.js.html#l241"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:241</code></a>
                             </p>
                     
                     
@@ -1108,7 +1123,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_perspective.js.html#l129"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:129</code></a>
+                            <a href="../files/src_core_camera_perspective.js.html#l143"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:143</code></a>
                             </p>
                     
                     
@@ -1185,7 +1200,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_perspective.js.html#l260"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:260</code></a>
+                            <a href="../files/src_core_camera_perspective.js.html#l274"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:274</code></a>
                             </p>
                     
                     
@@ -1236,7 +1251,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_perspective.js.html#l195"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:195</code></a>
+                            <a href="../files/src_core_camera_perspective.js.html#l209"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:209</code></a>
                             </p>
                     
                     
@@ -1324,7 +1339,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_perspective.js.html#l181"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:181</code></a>
+                            <a href="../files/src_core_camera_perspective.js.html#l195"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:195</code></a>
                             </p>
                     
                     
@@ -1391,7 +1406,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_perspective.js.html#l246"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:246</code></a>
+                            <a href="../files/src_core_camera_perspective.js.html#l260"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:260</code></a>
                             </p>
                     
                     
@@ -1433,7 +1448,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_perspective.js.html#l148"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:148</code></a>
+                            <a href="../files/src_core_camera_perspective.js.html#l162"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:162</code></a>
                             </p>
                     
                     
@@ -1475,7 +1490,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_perspective.js.html#l118"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:118</code></a>
+                            <a href="../files/src_core_camera_perspective.js.html#l132"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:132</code></a>
                             </p>
                     
                     
@@ -1517,7 +1532,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_perspective.js.html#l214"><code>src&#x2F;core&#x2F;transforms&#x2F;perspective.js:214</code></a>
+                            <a href="../files/src_core_camera_perspective.js.html#l228"><code>src&#x2F;core&#x2F;camera&#x2F;perspective.js:228</code></a>
                             </p>
                     
                     

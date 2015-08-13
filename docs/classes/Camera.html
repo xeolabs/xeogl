@@ -42,7 +42,7 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -100,6 +100,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
@@ -159,10 +160,10 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_transforms_camera.js.html#l3"><code>src&#x2F;core&#x2F;transforms&#x2F;camera.js:3</code></a>
+            Defined in: <a href="../files/src_core_camera_camera.js.html#l3"><code>src&#x2F;core&#x2F;camera&#x2F;camera.js:3</code></a>
         </div>
 
-            Module: <a href="../modules/transforms.html">transforms</a><br>
+            Module: <a href="../modules/camera.html">camera</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
@@ -189,6 +190,8 @@ You would override those with your own transform components as necessary.</li>
 
 <p><img src="../../../assets/images/Camera.png"></img></p>
 <h2 id="example">Example</h2>
+<iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
+
 <p>In this example we have</p>
 <ul>
 <li>a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform,</li>
@@ -202,28 +205,33 @@ You would override those with your own transform components as necessary.</li>
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
 var lookat = new XEO.Lookat(scene, {
-       eye: [0,0,-10],
-       look: [0,0,0],
-       up: [0,1,0]
-    });
+       eye: [0, 0, -10],
+       look: [0, 0, 0],
+       up: [0, 1, 0]
+   });
 
 var perspective = new XEO.Lookat(scene, {
        fovy: 60,
        near: 0.1,
        far: 1000
-    });
+   });
 
 var camera = new XEO.Camera(scene, {
        view: lookat,
        project: perspective
-    });
+   });
 
 var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
 var object = new XEO.GameObject(scene, {
        camera: camera,
        geometry: geometry
-    });
+   });
+
+scene.on("tick", function () {
+      camera.view.rotateEyeY(0.5);
+      camera.view.rotateEyeX(0.3);
+   });
 </code></pre>
 
 </div>
@@ -254,7 +262,7 @@ var object = new XEO.GameObject(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_transforms_camera.js.html#l3"><code>src&#x2F;core&#x2F;transforms&#x2F;camera.js:3</code></a>
+                <a href="../files/src_core_camera_camera.js.html#l3"><code>src&#x2F;core&#x2F;camera&#x2F;camera.js:3</code></a>
                 </p>
         
         
@@ -1111,7 +1119,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_camera.js.html#l103"><code>src&#x2F;core&#x2F;transforms&#x2F;camera.js:103</code></a>
+                            <a href="../files/src_core_camera_camera.js.html#l109"><code>src&#x2F;core&#x2F;camera&#x2F;camera.js:109</code></a>
                             </p>
                     
                     
@@ -1195,7 +1203,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_camera.js.html#l132"><code>src&#x2F;core&#x2F;transforms&#x2F;camera.js:132</code></a>
+                            <a href="../files/src_core_camera_camera.js.html#l138"><code>src&#x2F;core&#x2F;camera&#x2F;camera.js:138</code></a>
                             </p>
                     
                     
@@ -1255,7 +1263,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_camera.js.html#l119"><code>src&#x2F;core&#x2F;transforms&#x2F;camera.js:119</code></a>
+                            <a href="../files/src_core_camera_camera.js.html#l125"><code>src&#x2F;core&#x2F;camera&#x2F;camera.js:125</code></a>
                             </p>
                     
                     
@@ -1297,7 +1305,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_camera.js.html#l148"><code>src&#x2F;core&#x2F;transforms&#x2F;camera.js:148</code></a>
+                            <a href="../files/src_core_camera_camera.js.html#l154"><code>src&#x2F;core&#x2F;camera&#x2F;camera.js:154</code></a>
                             </p>
                     
                     

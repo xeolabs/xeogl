@@ -42,7 +42,7 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -100,6 +100,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
@@ -167,7 +168,7 @@
  &lt;li&gt;zooming - {{#crossLink &quot;KeyboardZoomCamera&quot;}}{{/crossLink}} and {{#crossLink &quot;MouseZoomCamera&quot;}}{{/crossLink}}&lt;/li&gt;
  &lt;li&gt;switching preset views - {{#crossLink &quot;KeyboardAxisCamera&quot;}}{{/crossLink}}&lt;/li&gt;
  &lt;li&gt;picking - {{#crossLink &quot;MousePickObject&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;camera flight animation - {{#crossLink &quot;CameraFlyAnimation&quot;}}{{/crossLink}}&lt;/li&gt;
+ &lt;li&gt;camera flight animation - {{#crossLink &quot;CameraFlight&quot;}}{{/crossLink}}&lt;/li&gt;
  &lt;/ul&gt;
 
  A CameraControl provides the controls as read-only properties, in case you need to configure or deactivate
@@ -350,13 +351,13 @@
             });
 
             /**
-             * The {{#crossLink &quot;CameraFlyAnimation&quot;}}{{/crossLink}} within this CameraControl.
+             * The {{#crossLink &quot;CameraFlight&quot;}}{{/crossLink}} within this CameraControl.
              *
              * @property cameraFly
              * @final
-             * @type CameraFlyAnimation
+             * @type CameraFlight
              */
-            this.cameraFly = new XEO.CameraFlyAnimation(scene, {
+            this.cameraFly = new XEO.CameraFlight(scene, {
                 camera: cfg.camera
             });
 

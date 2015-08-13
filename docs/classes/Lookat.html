@@ -42,7 +42,7 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -100,6 +100,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
@@ -159,10 +160,10 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_transforms_lookat.js.html#l1"><code>src&#x2F;core&#x2F;transforms&#x2F;lookat.js:1</code></a>
+            Defined in: <a href="../files/src_core_camera_lookat.js.html#l1"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/transforms.html">transforms</a><br>
+            Module: <a href="../modules/camera.html">camera</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
@@ -181,40 +182,40 @@ vector.</p>
 
 <p><img src="../../../assets/images/Lookat.png"></img></p>
 <h2 id="example">Example</h2>
-<p>In this example we have a Lookat that positions the eye at -10 on the World-space Z-axis, while looking at the origin.
-Then we aattach our Lookat to a <a href="../classes/Camera.html" class="crosslink">Camera</a>. which we attach to a <a href="../classes/GameObject.html" class="crosslink">GameObject</a>.</p>
+<iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
+
+<p>In this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.
+Then we attach our Lookat to a <a href="../classes/Camera.html" class="crosslink">Camera</a>. which we attach to a <a href="../classes/GameObject.html" class="crosslink">GameObject</a>.</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
 
-var myLookat = new XEO.Lookat(scene, {
-   eye: [0,0,-10],
-   look: [0,0,0],
-   up: [0,1,0]
-});
+var lookat = new XEO.Lookat(scene, {
+       eye: [0, 0, -4],
+       look: [0, 0, 0],
+       up: [0, 1, 0]
+   });
+
+var perspective = new XEO.Perspective(scene, {
+       fovy: 60,
+       near: 0.1,
+       far: 1000
+   });
 
 var camera = new XEO.Camera(scene, {
-   view: myLookat
-});
+       view: lookat,
+       project: perspective
+   });
 
 var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
 var object = new XEO.GameObject(scene, {
-   camera: camera,
-   geometry: geometry
-});
+       camera: camera,
+       geometry: geometry
+   });
 
-// Subscribe to changes on a camera property
-lookat.on("eye", function(value) {
-   console.log("eye updated: " + value[0] + ", " + value[1] + ", " + value[2]);
-});
-
-// Set the value of a camera property, which fires the event we just subscribed to
-lookat.eye = [-5, 0, -10];
-
-// Get the value of a camera property
-var value = lookat.eye;
-
-// Destroy ths lookat, causing the camera to fall back on the scene&#39;s default viewing transform
-lookat.destroy();
+scene.on("tick", function () {
+      camera.view.rotateEyeY(0.5);
+      camera.view.rotateEyeX(0.3);
+   });
 </code></pre>
 
 </div>
@@ -245,7 +246,7 @@ lookat.destroy();
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_transforms_lookat.js.html#l1"><code>src&#x2F;core&#x2F;transforms&#x2F;lookat.js:1</code></a>
+                <a href="../files/src_core_camera_lookat.js.html#l1"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:1</code></a>
                 </p>
         
         
@@ -1048,7 +1049,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_lookat.js.html#l289"><code>src&#x2F;core&#x2F;transforms&#x2F;lookat.js:289</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l289"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:289</code></a>
                             </p>
                     
                     
@@ -1125,7 +1126,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_lookat.js.html#l328"><code>src&#x2F;core&#x2F;transforms&#x2F;lookat.js:328</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l328"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:328</code></a>
                             </p>
                     
                     
@@ -1152,7 +1153,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_lookat.js.html#l404"><code>src&#x2F;core&#x2F;transforms&#x2F;lookat.js:404</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l404"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:404</code></a>
                             </p>
                     
                     
@@ -1258,7 +1259,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_lookat.js.html#l367"><code>src&#x2F;core&#x2F;transforms&#x2F;lookat.js:367</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l367"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:367</code></a>
                             </p>
                     
                     
@@ -1316,7 +1317,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_lookat.js.html#l314"><code>src&#x2F;core&#x2F;transforms&#x2F;lookat.js:314</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l314"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:314</code></a>
                             </p>
                     
                     
@@ -1358,7 +1359,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_lookat.js.html#l353"><code>src&#x2F;core&#x2F;transforms&#x2F;lookat.js:353</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l353"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:353</code></a>
                             </p>
                     
                     
@@ -1400,7 +1401,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_lookat.js.html#l125"><code>src&#x2F;core&#x2F;transforms&#x2F;lookat.js:125</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l125"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:125</code></a>
                             </p>
                     
                     
@@ -1442,7 +1443,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_lookat.js.html#l390"><code>src&#x2F;core&#x2F;transforms&#x2F;lookat.js:390</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l390"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:390</code></a>
                             </p>
                     
                     
