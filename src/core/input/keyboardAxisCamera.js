@@ -70,7 +70,7 @@
 
             // Animations
 
-            this._cameraFly = new XEO.CameraFlyAnimation(this.scene, {
+            this._cameraFly = new XEO.CameraFlight(this.scene, {
             });
 
             // Init properties

@@ -10,7 +10,7 @@
  <li>zooming - {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} and {{#crossLink "MouseZoomCamera"}}{{/crossLink}}</li>
  <li>switching preset views - {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}}</li>
  <li>picking - {{#crossLink "MousePickObject"}}{{/crossLink}}</li>
- <li>camera flight animation - {{#crossLink "CameraFlyAnimation"}}{{/crossLink}}</li>
+ <li>camera flight animation - {{#crossLink "CameraFlight"}}{{/crossLink}}</li>
  </ul>
 
  A CameraControl provides the controls as read-only properties, in case you need to configure or deactivate
@@ -193,13 +193,13 @@
             });
 
             /**
-             * The {{#crossLink "CameraFlyAnimation"}}{{/crossLink}} within this CameraControl.
+             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
              *
              * @property cameraFly
              * @final
-             * @type CameraFlyAnimation
+             * @type CameraFlight
              */
-            this.cameraFly = new XEO.CameraFlyAnimation(scene, {
+            this.cameraFly = new XEO.CameraFlight(scene, {
                 camera: cfg.camera
             });
 

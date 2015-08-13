@@ -1,5 +1,5 @@
 /**
- * Components for Modelling, View and Projection transformation.
+ * Modelling transform components.
  *
  * @module XEO
  * @submodule transforms

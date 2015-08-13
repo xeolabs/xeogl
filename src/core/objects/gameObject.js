@@ -925,17 +925,17 @@
             this._worldBoundaryDirty = true;
             this._viewBoundaryDirty = true;
             if (this._worldBoundary) {
-                this._worldBoundary.set("updated", true);
+                this._worldBoundary.fire("updated", true);
             }
             if (this._viewBoundary) {
-                this._viewBoundary.set("updated", true);
+                this._viewBoundary.fire("updated", true);
             }
         },
 
         _setViewBoundaryDirty: function () {
             this._viewBoundaryDirty = true;
             if (this._viewBoundary) {
-                this._viewBoundary.set("updated", true);
+                this._viewBoundary.fire("updated", true);
             }
         },
 

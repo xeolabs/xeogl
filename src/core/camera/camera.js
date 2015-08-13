@@ -25,6 +25,8 @@
 
  ## Example
 
+ <iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
+
  In this example we have
 
  <ul>
@@ -40,33 +42,37 @@
  var scene = new XEO.Scene();
 
  var lookat = new XEO.Lookat(scene, {
-        eye: [0,0,-10],
-        look: [0,0,0],
-        up: [0,1,0]
-     });
+        eye: [0, 0, -10],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
 
  var perspective = new XEO.Lookat(scene, {
         fovy: 60,
         near: 0.1,
         far: 1000
-     });
+    });
 
  var camera = new XEO.Camera(scene, {
         view: lookat,
         project: perspective
-     });
+    });
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
  var object = new XEO.GameObject(scene, {
         camera: camera,
         geometry: geometry
-     });
+    });
 
+ scene.on("tick", function () {
+       camera.view.rotateEyeY(0.5);
+       camera.view.rotateEyeX(0.3);
+    });
  ````
  @class Camera
  @module XEO
- @submodule transforms
+ @submodule camera
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Camera within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.

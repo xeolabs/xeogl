@@ -9,8 +9,14 @@
         "src/core/scene.js",
 
         "src/core/animation/_module.js",
-        "src/core/animation/cameraFlyAnimation.js",
+        "src/core/animation/cameraFlight.js",
         "src/core/animation/morphTargets.js",
+
+        "src/core/camera/camera.js",
+        "src/core/camera/frustum.js",
+        "src/core/camera/lookat.js",
+        "src/core/camera/ortho.js",
+        "src/core/camera/perspective.js",
 
         "src/core/clipping/_module.js",
         "src/core/clipping/clip.js",
@@ -126,12 +132,7 @@
         "src/core/spatial/boundary3d.js",
 
         "src/core/transforms/_module.js",
-        "src/core/transforms/camera.js",
-        "src/core/transforms/frustum.js",
-        "src/core/transforms/lookat.js",
         "src/core/transforms/matrix.js",
-        "src/core/transforms/ortho.js",
-        "src/core/transforms/perspective.js",
         "src/core/transforms/transform.js",
         "src/core/transforms/rotate.js",
         "src/core/transforms/translate.js",

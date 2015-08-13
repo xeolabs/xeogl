@@ -779,7 +779,7 @@
                             },
 
                             getPositions: function () {
-                                return this._positions
+                                return self._positions
                             }
                         });
 
@@ -799,7 +799,7 @@
         _setModelBoundaryDirty: function () {
             this._modelBoundaryDirty = true;
             if (this._modelBoundary) {
-                this._modelBoundary.set("updated", true);
+                this._modelBoundary.fire("updated", true);
             }
         },
 

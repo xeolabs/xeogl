@@ -14,6 +14,8 @@
 
  ## Example
 
+ <iframe style="width: 600px; height: 400px" src="../../examples/camera_ortho.html"></iframe>
+
  In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
  {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and an Ortho
  projection transform.
@@ -21,30 +23,43 @@
  ````Javascript
  var scene = new XEO.Scene();
 
+ var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -4],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
  var ortho = new XEO.Ortho(scene, {
-    left:       1.0,    // Position of the left plane on the View-space X-axis
-    right:      1.0,    // Position of the right plane on the View-space X-axis
-    top:        1.0,    // Position of the top plane on the View-space Y-axis.
-    bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.
-    near:       0.1,    // Position of the near plane on the View-space Z-axis.
-    far:        10000   // Position of the far plane on the positive View-space Z-axis.
- });
+        left: -3.0,
+        right: 3.0,
+        bottom: -3.0,
+        top: 3.0,
+        near: 0.1,
+        far: 1000
+    });
 
  var camera = new XEO.Camera(scene, {
-       project: ortho
- });
+        view: lookat,
+        project: ortho
+    });
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
  var object = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry
- });
+        camera: camera,
+        geometry: geometry
+    });
+
+ scene.on("tick",
+    function () {
+                camera.view.rotateEyeY(0.5);
+                camera.view.rotateEyeX(0.3);
+            });
  ````
 
  @class Ortho
  @module XEO
- @submodule transforms
+ @submodule camera
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Ortho within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -345,7 +360,7 @@
                 this._build();
             }
 
-            this._renderer.projectTransform = this._state;
+            this._renderer.projTransform = this._state;
         },
 
         _getJSON: function () {

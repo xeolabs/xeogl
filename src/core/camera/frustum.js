@@ -13,58 +13,54 @@
 
  ## Example
 
+ ## Example
+
+ <iframe style="width: 600px; height: 400px" src="../../examples/camera_frustum.html"></iframe>
+
  In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
  {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Frustum
  projection transform.
 
  ````Javascript
- var scene = new XEO.Scene(engine);
 
- // Create a Frustum with default values
+ var scene = new XEO.Scene();
+
+ var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -4],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
  var frustum = new XEO.Frustum(scene, {
-    left:       1.0,    // Position of the left plane on the View-space X-axis
-    right:      1.0,    // Position of the right plane on the View-space X-axis
-    top:        1.0,    // Position of the top plane on the View-space Y-axis.
-    bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.
-    near:       0.1,    // Position of the near plane on the View-space Z-axis.
-    far:        10000   // Position of the far plane on the positive View-space Z-axis.
-});
+        left: -0.1,
+        right: 0.1,
+        bottom: -0.1,
+        top: 0.1,
+        near: 0.15,
+        far: 1000
+    });
 
- // Camera the includes our Frustum and falls back on
- // the Scene's default view transform, which is a Lookat
  var camera = new XEO.Camera(scene, {
-    project: frustum
-});
+        view: lookat,
+        project: frustum
+    });
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- // Object which uses the Camera to render the Geometry
  var object = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry
-});
+        camera: camera,
+        geometry: geometry
+    });
 
- // Subscribe to changes to one of the properties of our Frustum
- frustum.on("near", function(value) {
-    console.log("Frustum 'near' updated: " + value);
-});
-
- // Set the value of a property on our Frustum component,
- // which fires the event we just subscribed to
- frustum.near = 45.0;
-
- // Get the value of a property on our Frustum component
- var value = frustum.near;
-
- // Destroy ths Frustum component, causing the Camera to
- // fall back on the Scene's default projection transform,
- // which is a Perspective
- frustum.destroy();
+ scene.on("tick", function () {
+       camera.view.rotateEyeY(0.5);
+       camera.view.rotateEyeX(0.3);
+    });
  ````
 
  @class Frustum
  @module XEO
- @submodule transforms
+ @submodule camera
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Frustum within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -73,8 +69,8 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Frustum.
  @param [cfg.left=-1] {Number} Position of the Frustum's left plane on the View-space X-axis.
  @param [cfg.right=1] {Number} Position of the Frustum's right plane on the View-space X-axis.
- @param [cfg.top=1] {Number} Position of the Frustum's top plane on the View-space Y-axis.
  @param [cfg.bottom=-1] {Number} Position of the Frustum's bottom plane on the View-space Y-axis.
+ @param [cfg.top=1] {Number} Position of the Frustum's top plane on the View-space Y-axis.
  @param [cfg.near=0.1] {Number} Position of the Frustum's near plane on the View-space Z-axis.
  @param [cfg.far=1000] {Number} Position of the Frustum's far plane on the positive View-space Z-axis.
  @extends Component
@@ -97,8 +93,8 @@
 
             this._left = -1.0;
             this._right = 1.0;
-            this._top = 1.0;
             this._bottom = -1.0;
+            this._top = 1.0;
             this._near = 0.1;
             this._far = 10000.0;
 
@@ -106,8 +102,8 @@
 
             this.left = cfg.left;
             this.right = cfg.right;
-            this.top = cfg.top;
             this.bottom = cfg.bottom;
+            this.top = cfg.top;
             this.near = cfg.near;
             this.far = cfg.far;
         },
@@ -134,7 +130,13 @@
         _build: function () {
 
             this._state.matrix = XEO.math.frustumMat4(
-                this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
+                this._left,
+                this._right,
+                this._bottom,
+                this._top,
+                this._near,
+                this._far,
+                this._state.matrix);
 
             this._dirty = false;
 
@@ -227,7 +229,7 @@
 
                 set: function (value) {
 
-                    this._top  = (value !== undefined && value !== null) ? value : 1.0;
+                    this._top = (value !== undefined && value !== null) ? value : 1.0;
 
                     this._renderer.imageDirty = true;
 
@@ -368,7 +370,7 @@
         },
 
         _compile: function () {
-            this._renderer.projectTransform = this._state;
+            this._renderer.projTransform = this._state;
         },
 
         _getJSON: function () {

@@ -1,5 +1,5 @@
 /**
- A **Transform** defines a modelling transform matrix for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Transform** defines a modelling matrix to transform attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
 

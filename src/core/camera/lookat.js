@@ -15,47 +15,47 @@
 
  ## Example
 
- In this example we have a Lookat that positions the eye at -10 on the World-space Z-axis, while looking at the origin.
- Then we aattach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to a {{#crossLink "GameObject"}}{{/crossLink}}.
+ <iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
+
+ In this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.
+ Then we attach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to a {{#crossLink "GameObject"}}{{/crossLink}}.
 
  ````Javascript
  var scene = new XEO.Scene();
 
- var myLookat = new XEO.Lookat(scene, {
-    eye: [0,0,-10],
-    look: [0,0,0],
-    up: [0,1,0]
- });
+ var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -4],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
+ var perspective = new XEO.Perspective(scene, {
+        fovy: 60,
+        near: 0.1,
+        far: 1000
+    });
 
  var camera = new XEO.Camera(scene, {
-    view: myLookat
- });
+        view: lookat,
+        project: perspective
+    });
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
  var object = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry
- });
+        camera: camera,
+        geometry: geometry
+    });
 
- // Subscribe to changes on a camera property
- lookat.on("eye", function(value) {
-    console.log("eye updated: " + value[0] + ", " + value[1] + ", " + value[2]);
- });
-
- // Set the value of a camera property, which fires the event we just subscribed to
- lookat.eye = [-5, 0, -10];
-
- // Get the value of a camera property
- var value = lookat.eye;
-
- // Destroy ths lookat, causing the camera to fall back on the scene's default viewing transform
- lookat.destroy();
+ scene.on("tick", function () {
+       camera.view.rotateEyeY(0.5);
+       camera.view.rotateEyeX(0.3);
+    });
  ````
 
  @class Lookat
  @module XEO
- @submodule transforms
+ @submodule camera
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Lookat in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
