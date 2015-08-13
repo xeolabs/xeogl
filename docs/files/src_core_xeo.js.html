@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -54,7 +57,13 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Group.html">Group</a></li>
+                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -62,6 +71,10 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -86,6 +99,24 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/configuration.html">configuration</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/grouping.html">grouping</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/objects.html">objects</a></li>
+                                <li><a href="../modules/ordering.html">ordering</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/reporting.html">reporting</a></li>
+                                <li><a href="../modules/rtt.html">rtt</a></li>
+                                <li><a href="../modules/shading.html">shading</a></li>
+                                <li><a href="../modules/spatial.html">spatial</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -127,7 +158,6 @@
 /**
  The xeoEngine namespace.
 
-
  @class XEO
  @main XEO
  @static
@@ -138,6 +168,10 @@
     &quot;use strict&quot;;
 
     var XEO = function () {
+
+        // Ensures unique scene IDs
+        // Lazy-instantiated because class won&#x27;t be defined yet
+        this._sceneIDMap = null;
 
         // Default singleton Scene, lazy-initialized in getter
         this._scene = null;
@@ -156,10 +190,22 @@
         var self = this;
 
         // Called on each animation frame
-        // fires a &quot;tick&quot; on each scene, recompiles scenes as needed
+        // fires a &quot;tick&quot; event on each scene, recompiles scenes as needed
+
+        var tickEvent = {
+            sceneId: null,
+            time: null,
+            startTime: null,
+            prevTime: null,
+            deltaTime: null
+        };
+
         var frame = function () {
 
-            var tick = {}; // Publish this on every scene
+            var time = (new Date()).getTime() * 0.001;
+
+            tickEvent.time = time;
+
             var scene;
 
             for (var id in self.scenes) {
@@ -167,15 +213,27 @@
 
                     scene = self.scenes[id];
 
-                    scene.fire(&quot;tick&quot;, tick);
+                    // Fire the tick event on the scene
 
-                    // If scene dirty, then recompile it
-                    if (self._dirtyScenes[id]) {
-                        scene._compile();
-                        self._dirtyScenes[id] = false;
-                    }
+                    tickEvent.sceneId = id;
+                    tickEvent.startTime = scene.startTime;
+                    tickEvent.deltaTime = tickEvent.prevTime != null ? time - tickEvent.prevTime : 0;
+
+                    scene.fire(&quot;tick&quot;, tickEvent);
+
+                    // Recompile the scene if it&#x27;s now dirty
+                    // after handling the tick event
+
+                    // if (self._dirtyScenes[id]) {
+
+                    scene._compile();
+
+                    self._dirtyScenes[id] = false;
+                    // }
                 }
             }
+
+            tickEvent.prevTime = time;
 
             window.requestAnimationFrame(frame);
         };
@@ -203,29 +261,61 @@
          @type Scene
          */
         get scene() {
-            return this._scene || (this._scene = new XEO.Scene());
+
+            // XEO.Scene constructor will call this._addScene
+            // to register itself on XEO
+
+            return this._scene || (this._scene = new window.XEO.Scene({
+                    id: &quot;default.scene&quot;
+                }));
         },
 
         /**
-         * Registers a scene on xeoEngine
+         * Registers a scene on xeoEngine.
+         * This is called within the XEO.Scene constructor.
+         *
          * @method _addScene
          * @param {Scene} scene The scene
          * @private
          */
         _addScene: function (scene) {
 
+            this._sceneIDMap = this._sceneIDMap || new window.XEO.utils.Map();
+
+            if (scene.id) {
+
+                // User-supplied ID
+
+                if (this.scenes[scene.id]) {
+                    console.error(&quot;[ERROR] Scene &quot; + XEO._inQuotes(scene.id) + &quot; already exists&quot;);
+                    return;
+                }
+
+            } else {
+
+                // Auto-generated ID
+
+                scene.id = this._sceneIDMap.addItem(scene);
+            }
+
             this.scenes[scene.id] = scene;
 
             var self = this;
 
             // Unregister destroyed scenes
+
             scene.on(&quot;destroyed&quot;,
                 function () {
+
+                    self._sceneIDMap.removeItem(scene.id);
+
                     delete self.scenes[scene.id];
+
                     delete self._dirtyScenes[scene.id];
                 });
 
             // Schedule recompilation of dirty scenes for next animation frame
+
             scene.on(&quot;dirty&quot;,
                 function () {
                     self._dirtyScenes[scene.id] = true;
@@ -233,13 +323,28 @@
         },
 
         /**
-         * Destroys all scenes
+         * Destroys all user-created {{#crossLink &quot;Scene&quot;}}Scenes{{/crossLink}} and
+         * clears the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+         *
          * @method clear
          */
         clear: function () {
+
+            var scene;
+
             for (var id in this.scenes) {
                 if (this.scenes.hasOwnProperty(id)) {
-                    this.scenes[id].destroy();
+
+                    scene = this.scenes[id];
+
+                    // Only clear the default Scene
+                    // but destroy all the others
+
+                    if (id === &quot;default.scene&quot;) {
+                        scene.clear();
+                    } else {
+                        scene.destroy();
+                    }
                 }
             }
             this.scenes = {};
@@ -262,6 +367,17 @@
          */
         _isString: function (value) {
             return (typeof value === &#x27;string&#x27; || value instanceof String);
+        },
+
+
+        /**
+         * Tests if the given value is a number
+         * @param value
+         * @returns {boolean}
+         * @private
+         */
+        _isNumeric: function (value) {
+            return !isNaN(parseFloat(value)) &amp;&amp; isFinite(value);
         },
 
         /** Returns a shallow copy
@@ -288,7 +404,7 @@
         _apply2: function (o, o2) {
             for (var name in o) {
                 if (o.hasOwnProperty(name)) {
-                    if (o[name] === undefined || o[name] === null) {
+                    if (o[name] !== undefined &amp;&amp; o[name] !== null) {
                         o2[name] = o[name];
                     }
                 }
@@ -309,13 +425,43 @@
                 }
             }
             return o2;
+        },
+
+        /**
+         * Returns true if the given map is empty.
+         * @param obj
+         * @returns {boolean}
+         * @private
+         */
+        _isEmptyObject: function (obj) {
+            for (var name in obj) {
+                if (obj.hasOwnProperty(name)) {
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        /**
+         * Returns the given ID as a string, in quotes if the ID was a string to begin with.
+         *
+         * This is useful for logging IDs.
+         *
+         * @param {Number| String} id The ID
+         * @returns {String}
+         * @private
+         */
+        _inQuotes: function (id) {
+            return this._isNumeric(id) ? (&quot;&quot; + id) : (&quot;&#x27;&quot; + id + &quot;&#x27;&quot;);
         }
     };
 
-    window.XEO = new XEO();
+    // Have a lower-case XEO namespace as well,
+    // just because it&#x27;s easier to type when live-coding
+
+    window.XEO = window.XEO = new XEO();
 
 })();
-
 
     </pre>
 </div>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/core/lighting/dirLight.js - xeoengine</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/GameObject.html">GameObject</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Group.html">Group</a></li>
+                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/math.html">math</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stats.html">Stats</a></li>
+                                <li><a href="../classes/Task.html">Task</a></li>
+                                <li><a href="../classes/Tasks.html">Tasks</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/XEO.html">XEO</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/configuration.html">configuration</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/grouping.html">grouping</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/objects.html">objects</a></li>
+                                <li><a href="../modules/ordering.html">ordering</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/reporting.html">reporting</a></li>
+                                <li><a href="../modules/rtt.html">rtt</a></li>
+                                <li><a href="../modules/shading.html">shading</a></li>
+                                <li><a href="../modules/spatial.html">spatial</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
+                                <li><a href="../modules/XEO.html">XEO</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src/core/lighting/dirLight.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **DirLight** is a directional light source that illuminates all attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} equally
+ from a given direction.
+
+ ## Overview
+
+ &lt;ul&gt;
+ &lt;li&gt;DirLights are grouped, along with other light source types, within {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components,
+ which are attached to {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;DirLights have a direction, but no position.&lt;/li&gt;
+ &lt;li&gt;DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
+ is relative to the World coordinate system, and will appear to move as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.
+ When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer&#x27;s
+ head as the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} moves.&lt;/li&gt;
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that DirLights create within xeoEngine&#x27;s shaders.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;../../../assets/images/DirLight.png&quot;&gt;&lt;/img&gt;
+
+ ## Example
+
+ In this example we have:
+
+ &lt;ul&gt;
+ &lt;li&gt;a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a DirLight that points along the negative diagonal of the View coordinate system,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing the DirLight,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &lt;iframe style=&quot;width: 600px; height: 400px&quot; src=&quot;../../examples/light_DirLight.html&quot;&gt;&lt;/iframe&gt;
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ var scene = new XEO.Scene();
+
+ // A shiny PhongMaterial with quantities of reflected
+ // ambient, diffuse and specular color
+ var material = new XEO.PhongMaterial(scene, {
+    ambient:    [0.3, 0.3, 0.3],
+    diffuse:    [0.7, 0.7, 0.7],
+    specular:   [1. 1, 1],
+    shininess:  30
+});
+
+ // DirLight with color and intensity, pointing along
+ // the negative diagonal within the View coordinate system
+ var dirLight = new XEO.DirLight(scene, {
+    dir:         [-1, -1, -1],
+    color:       [0.5, 0.7, 0.5],
+    intensity:   1.0,
+    space:      &quot;view&quot;  // Other option is &quot;world&quot;, for World-space
+});
+
+ // Lights which contains our DirLight
+ var lights = new XEO.Lights(scene, {
+    lights: [
+        dirLight
+    ]
+});
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ // Object which renders our Geometry, colored with
+ // the Material and illuminated with the DirLight
+ var object = new XEO.GameObject(scene, {
+    lights: lights,
+    material: material,
+    geometry: geometry
+});
+ &#x60;&#x60;&#x60;&#x60;
+
+ As with all components, we can observe and change properties on a DirLights, like so:
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+ // Attach a change listener to a property
+ var handle = dirLight.on(&quot;color&quot;,
+ function(value) {
+        // Property value has changed
+    });
+
+ // Set the property, which fires our change listener
+ dirLight.color = [0.0, 0.3, 0.3];
+
+ // Detach the change listener
+ dirLight.off(handle);
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class DirLight
+ @module XEO
+ @submodule lighting
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this DirLight within the
+ default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} The DirLight configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DirLight.
+ @param [cfg.dir=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.
+ @param [cfg.color=[0.7, 0.7, 0.8 ]] {Array(Number)} The color of this DirLight.
+ @param [cfg.intensity=1.0 ] {Number} The intensity of this DirLight.
+ @param [cfg.space=&quot;view&quot;] {String} The coordinate system the DirLight is defined in - &quot;view&quot; or &quot;space&quot;.
+
+ @extends Component
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    XEO.DirLight = XEO.Component.extend({
+
+        type: &quot;XEO.DirLight&quot;,
+
+        _init: function (cfg) {
+
+            this._state = {
+                type: &quot;dir&quot;,
+                dir: [0,0,-1],
+                color: [0.7, 0.7, 0.8],
+                intensity: 1.0,
+                space: &quot;view&quot;
+            };
+
+            this.dir = cfg.dir;
+            this.color = cfg.color;
+            this.intensity = cfg.intensity;
+            this.space = cfg.space;
+        },
+
+        _props: {
+
+            /**
+             The direction of this DirLight.
+
+             Fires a {{#crossLink &quot;DirLight/dir:event&quot;}}{{/crossLink}} event on change.
+
+             @property dir
+             @default [1.0, 1.0, 1.0]
+             @type Array(Number)
+             */
+            dir: {
+
+                set: function (value) {
+
+                    value = value || [ 1.0, 1.0, 1.0 ];
+
+                    var dir = this._state.dir;
+
+                    dir[0] = value[0];
+                    dir[1] = value[1];
+                    dir[2] = value[2];
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this DirLight&#x27;s  {{#crossLink &quot;DirLight/dir:property&quot;}}{{/crossLink}} property changes.
+                     * @event dir
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;dir&quot;, dir);
+                },
+
+                get: function () {
+                    return this._state.dir;
+                }
+            },
+
+            /**
+             The color of this DirLight.
+
+             Fires a {{#crossLink &quot;DirLight/color:event&quot;}}{{/crossLink}} event on change.
+
+             @property color
+             @default [0.7, 0.7, 0.8]
+             @type Array(Number)
+             */
+            color: {
+
+                set: function (value) {
+
+                    value = value || [0.7, 0.7, 0.8 ];
+
+                    var color = this._state.color;
+
+                    color[0] = value[0];
+                    color[1] = value[1];
+                    color[2] = value[2];
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this DirLight&#x27;s  {{#crossLink &quot;DirLight/color:property&quot;}}{{/crossLink}} property changes.
+                     * @event color
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;color&quot;, color);
+                },
+
+                get: function () {
+                    return this._state.color;
+                }
+            },
+
+            /**
+             The intensity of this DirLight.
+
+             Fires a {{#crossLink &quot;DirLight/intensity:event&quot;}}{{/crossLink}} event on change.
+
+             @property intensity
+             @default 1.0
+             @type Number
+             */
+            intensity: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value :  1.0;
+
+                    this._state.intensity = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this DirLight&#x27;s  {{#crossLink &quot;DirLight/intensity:property&quot;}}{{/crossLink}} property changes.
+                     * @event intensity
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;intensity&quot;, this._state.intensity);
+                },
+
+                get: function () {
+                    return this._state.intensity;
+                }
+            },
+
+            /**
+             Specifies which coordinate space this DirLight is in.
+
+             Supported values are:
+
+             &lt;ul&gt;
+             &lt;li&gt;&quot;view&quot; - View space, aligned within the view volume as if fixed to the viewer&#x27;s head&lt;/li&gt;
+             &lt;li&gt;&quot;world&quot; - World space, fixed within the world, moving within the view volume with respect to camera&lt;/li&gt;
+             &lt;/ul&gt;
+
+             Fires a {{#crossLink &quot;DirLight/space:event&quot;}}{{/crossLink}} event on change.
+
+             @property space
+             @default &quot;view&quot;
+             @type String
+             */
+            space: {
+
+                set: function (value) {
+
+                    this._state.space = value || &quot;view&quot;;
+
+                    this.fire(&quot;dirty&quot;, true); // Need to rebuild shader
+
+                    /**
+                     * Fired whenever this DirLight&#x27;s {{#crossLink &quot;DirLight/space:property&quot;}}{{/crossLink}} property changes.
+                     * @event space
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;space&quot;, this._state.space);
+                },
+
+                get: function () {
+                    return this._state.space;
+                }
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                type: this._state.type,
+                dir: this._state.dir,
+                color: this._state.color,
+                intensity: this._state.intensity,
+                space: this._state.space
+            };
+        }
+    });
+
+})();
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

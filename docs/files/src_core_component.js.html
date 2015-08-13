@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -54,7 +57,13 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Group.html">Group</a></li>
+                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -62,6 +71,10 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -86,6 +99,24 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/configuration.html">configuration</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/grouping.html">grouping</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/objects.html">objects</a></li>
+                                <li><a href="../modules/ordering.html">ordering</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/reporting.html">reporting</a></li>
+                                <li><a href="../modules/rtt.html">rtt</a></li>
+                                <li><a href="../modules/shading.html">shading</a></li>
+                                <li><a href="../modules/spatial.html">spatial</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -131,11 +162,11 @@
  ## Contents
 
  &lt;Ul&gt;
-    &lt;li&gt;&lt;a href=&quot;#ids&quot;&gt;Component IDs&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#componentProps&quot;&gt;Properties&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#metadata&quot;&gt;Metadata&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#logging&quot;&gt;Logging&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#destruction&quot;&gt;Destruction&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#ids&quot;&gt;Component IDs&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#componentProps&quot;&gt;Properties&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#metadata&quot;&gt;Metadata&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#logging&quot;&gt;Logging&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#destruction&quot;&gt;Destruction&lt;/a&gt;&lt;/li&gt;
  &lt;/ul&gt;
 
  ## &lt;a name=&quot;ids&quot;&gt;Component IDs&lt;/a&gt;
@@ -147,54 +178,54 @@
  the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
-// The Scene is a Component too
-var scene = new XEO.Scene({
+ // The Scene is a Component too
+ var scene = new XEO.Scene({
     id: &quot;myScene&quot;
 });
 
-var material = new XEO.PhongMaterial(scene, {
+ var material = new XEO.PhongMaterial(scene, {
     id: &quot;myMaterial&quot;
 });
 
-var geometry = new XEO.Geometry(scene, {
+ var geometry = new XEO.Geometry(scene, {
     id: &quot;myGeometry&quot;
 });
 
-// Let xeoEngine automatically generated the ID for our Object
-var object = new XEO.GameObject(scene, {
+ // Let xeoEngine automatically generated the ID for our Object
+ var object = new XEO.GameObject(scene, {
     material: material,
     geometry: geometry
 });
  &#x60;&#x60;&#x60;&#x60;
 
-We can then find those components like this:
+ We can then find those components like this:
 
  &#x60;&#x60;&#x60;&#x60;javascript
-// Find the Scene
-var theScene = XEO.scenes[&quot;myScene&quot;];
+ // Find the Scene
+ var theScene = XEO.scenes[&quot;myScene&quot;];
 
-// Find the Material
-var theMaterial = theScene.components[&quot;myMaterial&quot;];
+ // Find the Material
+ var theMaterial = theScene.components[&quot;myMaterial&quot;];
  &#x60;&#x60;&#x60;&#x60;
 
-## &lt;a name=&quot;componentProps&quot;&gt;Properties&lt;/a&gt;
+ ## &lt;a name=&quot;componentProps&quot;&gt;Properties&lt;/a&gt;
 
-Almost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe
+ Almost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe
  to the {{#crossLink &quot;PhongMaterial/diffuse:event&quot;}}{{/crossLink}} event that a
-{{#crossLink &quot;Material&quot;}}{{/crossLink}} fires when its {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}}
-property is updated, like so:
+ {{#crossLink &quot;Material&quot;}}{{/crossLink}} fires when its {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}}
+ property is updated, like so:
 
  &#x60;&#x60;&#x60;&#x60;javascript
-// Bind a change callback to a property
-var handle = material.on(&quot;diffuse&quot;, function(diffuse) {
+ // Bind a change callback to a property
+ var handle = material.on(&quot;diffuse&quot;, function(diffuse) {
     console.log(&quot;Material diffuse color has changed to: [&quot; + diffuse[0] + &quot;, &quot; + diffuse[1] + &quot;,&quot; + diffuse[2] + &quot;]&quot;);
 });
 
-// Change the property value, which fires the callback
-material.diffuse = [ 0.0, 0.5, 0.5 ];
+ // Change the property value, which fires the callback
+ material.diffuse = [ 0.0, 0.5, 0.5 ];
 
-// Unsubscribe from the property change event
-material.off(handle);
+ // Unsubscribe from the property change event
+ material.off(handle);
  &#x60;&#x60;&#x60;&#x60;
 
  We can also subscribe to changes in the way components are attached to each other, since components are properties
@@ -203,28 +234,28 @@ material.off(handle);
  property is set to a different {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60; javascript
-// Bind a change callback to the Object&#x27;s Material
-object1.on(&quot;material&quot;, function(material) {
+ // Bind a change callback to the Object&#x27;s Material
+ object1.on(&quot;material&quot;, function(material) {
     console.log(&quot;Object&#x27;s Material has changed to: &quot; + material.id);
 });
 
-// Now replace that Material with another
-object1.material = new XEO.PhongMaterial({
+ // Now replace that Material with another
+ object1.material = new XEO.PhongMaterial({
     id: &quot;myOtherMaterial&quot;,
     diffuse: [ 0.3, 0.3, 0.6 ]
     //..
 });
-&#x60;&#x60;&#x60;&#x60;
+ &#x60;&#x60;&#x60;&#x60;
 
-## &lt;a name=&quot;metadata&quot;&gt;Metadata&lt;/a&gt;
+ ## &lt;a name=&quot;metadata&quot;&gt;Metadata&lt;/a&gt;
 
  You can set optional **metadata** on your Components, which can be anything you like. These are intended
  to help manage your components within your application code or content pipeline. You could use metadata to attach
  authoring or version information, like this:
 
  &#x60;&#x60;&#x60;&#x60;javascript
-// Scene with authoring metadata
-var scene = new XEO.Scene({
+ // Scene with authoring metadata
+ var scene = new XEO.Scene({
     id: &quot;myScene&quot;,
     metadata: {
         title: &quot;My awesome 3D scene&quot;,
@@ -233,8 +264,8 @@ var scene = new XEO.Scene({
     }
 });
 
-// Material with descriptive metadata
-var material = new XEO.PhongMaterial(scene, {
+ // Material with descriptive metadata
+ var material = new XEO.PhongMaterial(scene, {
     id: &quot;myMaterial&quot;,
     diffuse: [1, 0, 0],
     metadata: {
@@ -243,67 +274,67 @@ var material = new XEO.PhongMaterial(scene, {
         foo: &quot;bar&quot;
     }
 });
-&#x60;&#x60;&#x60;&#x60;
+ &#x60;&#x60;&#x60;&#x60;
 
-As with all properties, you can subscribe and change the metadata like this:
+ As with all properties, you can subscribe and change the metadata like this:
 
-&#x60;&#x60;&#x60;&#x60;javascript
-// Subscribe to changes to the Material&#x27;s metadata
+ &#x60;&#x60;&#x60;&#x60;javascript
+ // Subscribe to changes to the Material&#x27;s metadata
  material.on(&quot;metadata&quot;, function(value) {
     console.log(&quot;Metadata changed: &quot; + JSON.stringify(value));
 });
 
-// Change the Material&#x27;s metadata, firing our change handler
-material.metadata = {
+ // Change the Material&#x27;s metadata, firing our change handler
+ material.metadata = {
     description: &quot;Bright red color with no textures&quot;,
     version: &quot;0.2&quot;,
     foo: &quot;baz&quot;
 };
  &#x60;&#x60;&#x60;&#x60;
 
-## &lt;a name=&quot;logging&quot;&gt;Logging&lt;/a&gt;
+ ## &lt;a name=&quot;logging&quot;&gt;Logging&lt;/a&gt;
 
-Components have methods to log ID-prefixed messages to the JavaScript console:
-
-&#x60;&#x60;&#x60;&#x60;javascript
-material.log(&quot;Everything is fine, situation normal.&quot;);
-material.warn(&quot;Wait, whats that red light?&quot;);
-material.error(&quot;Aw, snap!&quot;);
-&#x60;&#x60;&#x60;&#x60;
-
-The logged messages will look like this in the console:
-
-&#x60;&#x60;&#x60;&#x60;text
-[LOG]   myMaterial: Everything is fine, situation normal.
-[WARN]  myMaterial: Wait, whats that red light..
-[ERROR] myMaterial: Aw, snap!
-&#x60;&#x60;&#x60;&#x60;
-
-## &lt;a name=&quot;destruction&quot;&gt;Destruction&lt;/a&gt;
-
-Get notification of destruction directly on the Components:
-
-&#x60;&#x60;&#x60;&#x60;javascript
-material.on(&quot;destroyed&quot;, function() {
-    this.log(&quot;Component was destroyed: &quot; + this.id);
-});
-&#x60;&#x60;&#x60;&#x60;
-
-Or get notification of destruction of any Component within its {{#crossLink &quot;Scene&quot;}}{{/crossLink}}, indiscriminately:
+ Components have methods to log ID-prefixed messages to the JavaScript console:
 
  &#x60;&#x60;&#x60;&#x60;javascript
-scene.on(&quot;componentDestroyed&quot;, function(component) {
+ material.log(&quot;Everything is fine, situation normal.&quot;);
+ material.warn(&quot;Wait, whats that red light?&quot;);
+ material.error(&quot;Aw, snap!&quot;);
+ &#x60;&#x60;&#x60;&#x60;
+
+ The logged messages will look like this in the console:
+
+ &#x60;&#x60;&#x60;&#x60;text
+ [LOG]   myMaterial: Everything is fine, situation normal.
+ [WARN]  myMaterial: Wait, whats that red light..
+ [ERROR] myMaterial: Aw, snap!
+ &#x60;&#x60;&#x60;&#x60;
+
+ ## &lt;a name=&quot;destruction&quot;&gt;Destruction&lt;/a&gt;
+
+ Get notification of destruction directly on the Components:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ material.on(&quot;destroyed&quot;, function() {
+    this.log(&quot;Component was destroyed: &quot; + this.id);
+});
+ &#x60;&#x60;&#x60;&#x60;
+
+ Or get notification of destruction of any Component within its {{#crossLink &quot;Scene&quot;}}{{/crossLink}}, indiscriminately:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ scene.on(&quot;componentDestroyed&quot;, function(component) {
     this.log(&quot;Component was destroyed: &quot; + component.id);
 });
  &#x60;&#x60;&#x60;&#x60;
 
-Then destroy a component like this:
+ Then destroy a component like this:
 
-&#x60;&#x60;&#x60;&#x60;javascript
-material.destroy();
-&#x60;&#x60;&#x60;&#x60;
+ &#x60;&#x60;&#x60;&#x60;javascript
+ material.destroy();
+ &#x60;&#x60;&#x60;&#x60;
 
-Other Components that are linked to it will fall back on a default of some sort. For example, any
+ Other Components that are linked to it will fall back on a default of some sort. For example, any
  {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} that were linked to our {{#crossLink &quot;Material&quot;}}{{/crossLink}}
  will then automatically link to the {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} default {{#crossLink &quot;Scene/material:property&quot;}}{{/crossLink}}.
 
@@ -341,8 +372,7 @@ Other Components that are linked to it will fall back on a default of some sort.
              */
             this.scene = null;
 
-
-            if (this.className === &quot;XEO.Scene&quot;) {
+            if (this.type === &quot;XEO.Scene&quot;) {
 
                 this.scene = this;
 
@@ -354,7 +384,7 @@ Other Components that are linked to it will fall back on a default of some sort.
 
                 if (arg1) {
 
-                    if (arg1.className === &quot;XEO.Scene&quot;) {
+                    if (arg1.type === &quot;XEO.Scene&quot;) {
 
                         this.scene = arg1;
 
@@ -364,10 +394,17 @@ Other Components that are linked to it will fall back on a default of some sort.
 
                     } else {
 
+                        // Create this component within the default XEO Scene
+
                         this.scene = XEO.scene;
 
                         cfg = arg1;
                     }
+                } else {
+
+                    // Create this component within the default XEO Scene
+
+                    this.scene = XEO.scene;
                 }
 
                 this._renderer = this.scene._renderer;
@@ -398,7 +435,7 @@ Other Components that are linked to it will fall back on a default of some sort.
              */
             this.destroyed = false;
 
-            // Child components, one of each type
+            // Child components keyed to arbitrary names
             this._children = {};
 
             // Subscriptions for child component destructions
@@ -411,30 +448,23 @@ Other Components that are linked to it will fall back on a default of some sort.
             this._handleMap = new XEO.utils.Map(); // Subscription handle pool
             this._eventSubs = {}; // A [handle -&gt; callback] map for each location name
             this._handleLocs = {}; // Maps handles to loc names
+
             this.props = {}; // Maps locations to publications
 
-            // Initialize
+            if (this.scene &amp;&amp; this.type !== &quot;XEO.Scene&quot;) { // HACK: Don&#x27;t add scene to itself
+
+                // Register this component on its scene
+                // Assigns this component an automatic ID if not yet assigned
+
+                this.scene._addComponent(this);
+            }
+
+            // Initialize this component using the configs
+
             if (this._init) {
                 this._init(cfg);
             }
-
-            if (this.scene) {
-                // Register this component on its scene
-                // Assigns this component an automatic ID if not yet assigned
-                this.scene._addComponent(this);
-            }
         },
-
-
-        /**
-         Type code for this Component.
-
-         @property type
-         @type String
-         @final
-         @public
-         */
-        type: &quot;component&quot;,
 
         /**
          JavaScript class name for this Component.
@@ -444,11 +474,11 @@ Other Components that are linked to it will fall back on a default of some sort.
 
          For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.
 
-         @property className
+         @property type
          @type String
          @final
          */
-        className: &quot;XEO.Component&quot;,
+        type: &quot;XEO.Component&quot;,
 
         /**
          * Initializes this component
@@ -466,19 +496,25 @@ Other Components that are linked to it will fall back on a default of some sort.
          *
          * @method fire
          * @param {String} event The event type name
-         * @param {Object} value The event
+         * @param {Object} value The event parameters
          * @param {Boolean} [forget=false] When true, does not retain for subsequent subscribers
          */
         fire: function (event, value, forget) {
+
             if (forget !== true) {
                 this.props[event] = value; // Save notification
             }
+
             var subs = this._eventSubs[event];
             var sub;
+
             if (subs) { // Notify subscriptions
+
                 for (var handle in subs) {
                     if (subs.hasOwnProperty(handle)) {
+
                         sub = subs[handle];
+
                         sub.callback.call(sub.scope, value);
                     }
                 }
@@ -492,7 +528,7 @@ Other Components that are linked to it will fall back on a default of some sort.
          *
          * @method on
          * @param {String} event The event
-         * @param {Function} callback Called fired on the event 
+         * @param {Function} callback Called fired on the event
          * @param {Object} [scope=this] Scope for the callback
          * @return {String} Handle to the subscription, which may be used to unsubscribe with {@link #off}.
          */
@@ -523,6 +559,9 @@ Other Components that are linked to it will fall back on a default of some sort.
          * @param {String} handle Publication handle
          */
         off: function (handle) {
+            if (handle === undefined || handle === null) {
+                return;
+            }
             var event = this._handleLocs[handle];
             if (event) {
                 delete this._handleLocs[handle];
@@ -558,7 +597,7 @@ Other Components that are linked to it will fall back on a default of some sort.
         /**
          * Logs a console debugging message for this component.
          *
-         * The console message will have this format: *&#x60;&#x60;&#x60;&#x60;[LOG] &lt;component id&gt;: &lt;message&gt;&#x60;&#x60;&#x60;&#x60;*
+         * The console message will have this format: *&#x60;&#x60;&#x60;&#x60;[LOG] [&lt;component type&gt; &lt;component id&gt;: &lt;message&gt;&#x60;&#x60;&#x60;&#x60;*
          *
          * Also fires the message as a {{#crossLink &quot;Scene/log:event&quot;}}{{/crossLink}} event on the
          * parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
@@ -567,15 +606,21 @@ Other Components that are linked to it will fall back on a default of some sort.
          * @param {String} message The message to log
          */
         log: function (message) {
-            window.console.log(&quot;[LOG] &quot; + this.id + &quot;: &quot; + message);
+
+            window.console.log(&quot;[LOG]&quot; + this._message(message));
 
             this.scene.fire(&quot;log&quot;, message);
+        },
+
+        _message: function (message) {
+            // return &quot; [&quot; + (this.type.indexOf(&quot;XEO.&quot;) &gt; -1 ? this.type.substring(4) : this.type) + &quot; &quot; + XEO._inQuotes(this.id) + &quot;]: &quot; + message;
+            return &quot; [&quot; + this.type + &quot; &quot; + XEO._inQuotes(this.id) + &quot;]: &quot; + message;
         },
 
         /**
          * Logs an error for this component to the JavaScript console.
          *
-         * The console message will have this format: *&#x60;&#x60;&#x60;&#x60;[ERROR] &lt;component id&gt;: &lt;message&gt;&#x60;&#x60;&#x60;&#x60;*
+         * The console message will have this format: *&#x60;&#x60;&#x60;&#x60;[ERROR] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;&#x60;&#x60;&#x60;&#x60;*
          *
          * Also fires the message as an {{#crossLink &quot;Scene/error:event&quot;}}{{/crossLink}} event on the
          * parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
@@ -584,7 +629,8 @@ Other Components that are linked to it will fall back on a default of some sort.
          * @param {String} message The message to log
          */
         error: function (message) {
-            window.console.error(&quot;[ERROR] &quot; + this.id + &quot;: &quot; + message);
+
+            window.console.error(&quot;[ERROR]&quot; + this._message(message));
 
             this.scene.fire(&quot;error&quot;, message);
         },
@@ -592,7 +638,7 @@ Other Components that are linked to it will fall back on a default of some sort.
         /**
          * Logs a warning for this component to the JavaScript console.
          *
-         * The console message will have this format: *&#x60;&#x60;&#x60;&#x60;[WARN] &lt;component id&gt;: &lt;message&gt;&#x60;&#x60;&#x60;&#x60;*
+         * The console message will have this format: *&#x60;&#x60;&#x60;&#x60;[WARN] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;&#x60;&#x60;&#x60;&#x60;*
          *
          * Also fires the message as a {{#crossLink &quot;Scene/warn:event&quot;}}{{/crossLink}} event on the
          * parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
@@ -601,30 +647,63 @@ Other Components that are linked to it will fall back on a default of some sort.
          * @param {String} message The message to log
          */
         warn: function (message) {
-            window.console.warn(&quot;[WARN] &quot; + this.id + &quot;: &quot; + message);
+
+            window.console.warn(&quot;[WARN]&quot; + this._message(message));
 
             this.scene.fire(&quot;warn&quot;, message);
         },
 
         /**
-         * Adds a child component to this.
-         * When component not given, attaches the scene&#x27;s default instance for the given type.
-         * Publishes the new child component on this component, keyed to the given type.
+         * Creates a clone of this component.
          *
-         * @param {string} type component type
+         * The clone will have the same properties as the original, except where
+         * overridden in the given optional configs.
+         *
+         * The clone will share (by reference) the components of the original, unless overridden.
+         *
+         * For example, if this component is a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}, then the clone
+         * will be attached to the **same** instances of {{#crossLink &quot;PhoneMaterial&quot;}}{{/crossLink}},
+         * {{#crossLink &quot;Camera&quot;}}{{/crossLink}} etc as this component, unless it supplies its own
+         * instances for those via the configs.
+         *
+         * @param {*} [cfg] Configurations to override.
+         * @returns {Component} The shallow clone
+         */
+        clone: function (cfg) {
+
+            if (this.destroyed) {
+                this.error(&quot;Component has been destroyed - cloning not allowed&quot;);
+                return;
+            }
+
+            cfg = cfg || {};
+
+            var json = this.json;
+
+            delete json.id;
+
+            return new this.constructor(this.scene, XEO._apply(cfg, json));
+        },
+
+        /**
+         * Adds a child component to this.
+         * When component not given, attaches the scene&#x27;s default instance for the given name.
+         * Publishes the new child component on this component, keyed to the given name.
+         *
+         * @param {string} name component name
          * @param {Component} child The component
          * @private
          */
-        _setChild: function (type, child) {
+        _setChild: function (name, child) {
 
             if (!child) {
 
-                // No child given, fall back on default component class for the given type
+                // No child given, fall back on default component class for the given name
 
-                child = this.scene[type];
+                child = this.scene[name];
 
                 if (!child) {
-                    this.error(&quot;Default component not found for type &#x27;&quot; + type + &quot;&#x27;&quot;);
+                    this.error(&quot;No default component for name &#x27;&quot; + name + &quot;&#x27;&quot;);
                     return;
                 }
 
@@ -632,7 +711,9 @@ Other Components that are linked to it will fall back on a default of some sort.
 
                 // Child ID or instance given
 
-                if (XEO._isString(child)) {
+                // Both numeric and string IDs are supported
+
+                if (XEO._isNumeric(child) || XEO._isString(child)) {
 
                     // Child ID given
 
@@ -641,68 +722,73 @@ Other Components that are linked to it will fall back on a default of some sort.
                     child = this.scene.components[id];
 
                     if (!child) {
-                        this.error(&quot;component not found for ID: &#x27;&quot; + id + &quot;&#x27;&quot;);
+
+                        // Quote string IDs in errors
+
+                        this.error(&quot;Component not found: &quot; + XEO._inQuotes(id));
                         return;
                     }
                 }
-
-                if (!child.type || child.type !== type) {
-                    this.error(&quot;Failed to add component &#x27;&quot; + child.id + &quot;&#x27; to object - component expected to be a &#x27;&quot; + type + &quot;&#x27; type&quot;);
-                    return;
-                }
             }
 
-            var oldChild = this._children[type];
+            var oldChild = this._children[name];
 
-            if (oldChild) { // child of given type already attached
+            if (oldChild) {
 
-                if (oldChild.id === child.id) { // Attempt to reattach same child
+                // Child of given name already attached
+
+                if (oldChild.id === child.id) {
+
+                    // Reject attempt to reattach same child
                     return;
                 }
 
                 // Unsubscribe from old child&#x27;s destruction
 
-                oldChild.off(this._childDestroySubs[type]);
-                oldChild.off(this._childDirtySubs[type]);
+                oldChild.off(this._childDestroySubs[name]);
+                oldChild.off(this._childDirtySubs[name]);
             }
 
-            // Set and publish new child on this object
+            // Set and publish the new child on this component
 
-            this._children[type] = child;
+            this._children[name] = child;
 
             var self = this;
 
-            // Bind destruct listener to new child to remove it from this one when destroyed
-            this._childDestroySubs[type] = child.on(&quot;destroyed&quot;,
+            // Bind destruct listener to new child to remove it
+            // from this component when destroyed
+
+            this._childDestroySubs[name] = child.on(&quot;destroyed&quot;,
                 function () {
 
-                    // child destroyed
-                    delete self._children[type];
+                    // Child destroyed
+                    delete self._children[name];
 
                     // Try to fall back on default child
-                    var defaultComponent = self.scene[type];
-                    if (child.id === defaultComponent.id) {
+                    var defaultComponent = self.scene[name];
+
+                    if (!defaultComponent || child.id === defaultComponent.id) {
 
                         // Old child was the default,
                         // so publish null child and bail
-                        self.set(type, null);
+
+                        self.fire(name, null);
+
                         return;
                     }
 
                     // Set default child
-                    self._setChild(type, defaultComponent);
-
-                    // TODO: Flag object recompile
+                    self._setChild(name, defaultComponent);
                 });
 
-            this._childDirtySubs[type] = child.on(&quot;dirty&quot;,
+            this._childDirtySubs[name] = child.on(&quot;dirty&quot;,
                 function () {
                     self.fire(&quot;dirty&quot;, true);
                 });
 
             this.fire(&quot;dirty&quot;, true);
 
-            this.fire(type, child);
+            this.fire(name, child);
 
             return child;
         },
@@ -713,18 +799,40 @@ Other Components that are linked to it will fall back on a default of some sort.
 
         _props: {
 
-            &quot;json&quot;: {
+            json: {
 
                 get: function () {
+
                     // Return component&#x27;s type-specific properties,
                     // augmented with the base component properties
-                    var props = {
-                        id: this.id, // Only output user-defined IDs
-                        className: this.className,
+
+                    var json = {
                         type: this.type,
-                        metadata: this.metadata
+                        id: this.id // Only output user-defined IDs
                     };
-                    return this._getJSON ? XEO._apply(props, this._getJSON()) : props;
+
+                    if (!XEO._isEmptyObject(this.metadata)) {
+                        json.metadata = this.metadata;
+                    }
+
+                    return this._getJSON ? XEO._apply(this._getJSON(), json) : json;
+                }
+            },
+
+            // Experimental - serializes this component to JS code
+            // that can be evaluated to recreate this component.
+
+            js: {
+
+                get: function () {
+                    return &quot;new &quot; + this.type + &quot;(&quot; + this.string + &quot;);&quot;;
+                }
+            },
+
+            string: {
+
+                get: function () {
+                    return JSON.stringify(this.json, null, 4);
                 }
             }
         },
@@ -742,16 +850,21 @@ Other Components that are linked to it will fall back on a default of some sort.
         destroy: function () {
 
             // Unsubscribe from child components
+
             var child;
-            for (var type in this._children) {
-                if (this._children.hasOwnProperty(type)) {
-                    child = this._children[type];
-                    child.off(this._childDestroySubs[type]);
-                    child.off(this._childDirtySubs[type]);
+
+            for (var name in this._children) {
+                if (this._children.hasOwnProperty(name)) {
+
+                    child = this._children[name];
+
+                    child.off(this._childDestroySubs[name]);
+                    child.off(this._childDirtySubs[name]);
                 }
             }
 
             // Execute subclass behaviour
+
             if (this._destroy) {
                 this._destroy();
             }

@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -54,7 +57,13 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Group.html">Group</a></li>
+                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -62,6 +71,10 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -86,6 +99,24 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/configuration.html">configuration</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/grouping.html">grouping</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/objects.html">objects</a></li>
+                                <li><a href="../modules/ordering.html">ordering</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/reporting.html">reporting</a></li>
+                                <li><a href="../modules/rtt.html">rtt</a></li>
+                                <li><a href="../modules/shading.html">shading</a></li>
+                                <li><a href="../modules/spatial.html">spatial</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -128,10 +159,11 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_pbrMaterial.js.html#l1"><code>src&#x2F;core&#x2F;pbrMaterial.js:1</code></a>
+            Defined in: <a href="../files/src_core_materials_pbrMaterial.js.html#l1"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/XEO.html">XEO</a>
+            Module: <a href="../modules/materials.html">materials</a><br>
+            Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
@@ -236,7 +268,7 @@ var material3 = new XEO.PBRMaterial(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_pbrMaterial.js.html#l1"><code>src&#x2F;core&#x2F;pbrMaterial.js:1</code></a>
+                <a href="../files/src_core_materials_pbrMaterial.js.html#l1"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:1</code></a>
                 </p>
         
         
@@ -496,10 +528,6 @@ var material3 = new XEO.PBRMaterial(scene, {
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property inherited">
-                                <a href="#property_className">className</a>
-
-                            </li>
                             <li class="index-item property">
                                 <a href="#property_color">color</a>
 
@@ -522,6 +550,10 @@ var material3 = new XEO.PBRMaterial(scene, {
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_Items in this map">Items in this map</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -564,7 +596,7 @@ var material3 = new XEO.PBRMaterial(scene, {
                                 <a href="#property_specularMap">specularMap</a>
 
                             </li>
-                            <li class="index-item property public inherited">
+                            <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
 
                             </li>
@@ -650,7 +682,7 @@ var material3 = new XEO.PBRMaterial(scene, {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l606"><code>src&#x2F;core&#x2F;component.js:606</code></a>
+        <a href="../files/src_core_component.js.html#l683"><code>src&#x2F;core&#x2F;component.js:683</code></a>
         </p>
 
 
@@ -690,7 +722,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l449"><code>src&#x2F;core&#x2F;component.js:449</code></a>
+        <a href="../files/src_core_component.js.html#l463"><code>src&#x2F;core&#x2F;component.js:463</code></a>
         </p>
 
 
@@ -699,7 +731,7 @@ defaults that this component overrode on them.</p>
 
     <div class="description">
         <p>Logs an error for this component to the JavaScript console.</p>
-<p>The console message will have this format: <em><code>[ERROR] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>The console message will have this format: <em><code>[ERROR] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
 <p>Also fires the message as an <a href="../classes/Scene.html#event_error" class="crosslink">error</a> event on the
 parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
@@ -753,7 +785,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l335"><code>src&#x2F;core&#x2F;component.js:335</code></a>
+        <a href="../files/src_core_component.js.html#l334"><code>src&#x2F;core&#x2F;component.js:334</code></a>
         </p>
 
 
@@ -788,7 +820,7 @@ any subsequent notifications on that location as they are made.</p>
 
 
                     <div class="param-description">
-                        <p>The event</p>
+                        <p>The event parameters</p>
 
                     </div>
 
@@ -832,7 +864,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l432"><code>src&#x2F;core&#x2F;component.js:432</code></a>
+        <a href="../files/src_core_component.js.html#l440"><code>src&#x2F;core&#x2F;component.js:440</code></a>
         </p>
 
 
@@ -841,7 +873,7 @@ any subsequent notifications on that location as they are made.</p>
 
     <div class="description">
         <p>Logs a console debugging message for this component.</p>
-<p>The console message will have this format: <em><code>[LOG] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>The console message will have this format: <em><code>[LOG] [&lt;component type&gt; &lt;component id&gt;: &lt;message&gt;</code></em></p>
 <p>Also fires the message as a <a href="../classes/Scene.html#event_log" class="crosslink">log</a> event on the
 parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
@@ -889,7 +921,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l392"><code>src&#x2F;core&#x2F;component.js:392</code></a>
+        <a href="../files/src_core_component.js.html#l397"><code>src&#x2F;core&#x2F;component.js:397</code></a>
         </p>
 
 
@@ -953,7 +985,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l362"><code>src&#x2F;core&#x2F;component.js:362</code></a>
+        <a href="../files/src_core_component.js.html#l367"><code>src&#x2F;core&#x2F;component.js:367</code></a>
         </p>
 
 
@@ -1046,7 +1078,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l411"><code>src&#x2F;core&#x2F;component.js:411</code></a>
+        <a href="../files/src_core_component.js.html#l419"><code>src&#x2F;core&#x2F;component.js:419</code></a>
         </p>
 
 
@@ -1125,7 +1157,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l466"><code>src&#x2F;core&#x2F;component.js:466</code></a>
+        <a href="../files/src_core_component.js.html#l481"><code>src&#x2F;core&#x2F;component.js:481</code></a>
         </p>
 
 
@@ -1134,7 +1166,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
     <div class="description">
         <p>Logs a warning for this component to the JavaScript console.</p>
-<p>The console message will have this format: <em><code>[WARN] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>The console message will have this format: <em><code>[WARN] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
 <p>Also fires the message as a <a href="../classes/Scene.html#event_warn" class="crosslink">warn</a> event on the
 parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
@@ -1166,35 +1198,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_className" class="property item inherited">
-                        <h3 class="name"><code>className</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l313"><code>src&#x2F;core&#x2F;component.js:313</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>JavaScript class name for this Component.</p>
-                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
-                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
-                    <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_color" class="property item">
                         <h3 class="name"><code>color</code></h3>
                         <span class="type">Array(Number)</span>
@@ -1206,7 +1209,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l219"><code>src&#x2F;core&#x2F;pbrMaterial.js:219</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l218"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:218</code></a>
                             </p>
                     
                     
@@ -1234,7 +1237,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l252"><code>src&#x2F;core&#x2F;pbrMaterial.js:252</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l251"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:251</code></a>
                             </p>
                     
                     
@@ -1261,7 +1264,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l267"><code>src&#x2F;core&#x2F;component.js:267</code></a>
+                            <a href="../files/src_core_component.js.html#l273"><code>src&#x2F;core&#x2F;component.js:273</code></a>
                             </p>
                     
                     
@@ -1286,7 +1289,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l279"><code>src&#x2F;core&#x2F;pbrMaterial.js:279</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l278"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:278</code></a>
                             </p>
                     
                     
@@ -1314,7 +1317,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l312"><code>src&#x2F;core&#x2F;pbrMaterial.js:312</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l311"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:311</code></a>
                             </p>
                     
                     
@@ -1342,7 +1345,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l258"><code>src&#x2F;core&#x2F;component.js:258</code></a>
+                            <a href="../files/src_core_component.js.html#l264"><code>src&#x2F;core&#x2F;component.js:264</code></a>
                             </p>
                     
                     
@@ -1351,6 +1354,30 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_Items in this map" class="property item inherited">
+                        <h3 class="name"><code>Items in this map</code></h3>
+                        <span class="type">Unknown</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_Items in this map">Component</a>:
+                            <a href="../files/src_core_utils_map.js.html#l13"><code>src&#x2F;core&#x2F;utils&#x2F;map.js:13</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
                         </div>
                     
                     
@@ -1367,7 +1394,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l250"><code>src&#x2F;core&#x2F;component.js:250</code></a>
+                            <a href="../files/src_core_component.js.html#l256"><code>src&#x2F;core&#x2F;component.js:256</code></a>
                             </p>
                     
                     
@@ -1392,7 +1419,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l183"><code>src&#x2F;core&#x2F;pbrMaterial.js:183</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l182"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:182</code></a>
                             </p>
                     
                     
@@ -1423,7 +1450,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l467"><code>src&#x2F;core&#x2F;pbrMaterial.js:467</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l466"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:466</code></a>
                             </p>
                     
                     
@@ -1450,7 +1477,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l339"><code>src&#x2F;core&#x2F;pbrMaterial.js:339</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l338"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:338</code></a>
                             </p>
                     
                     
@@ -1482,7 +1509,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l378"><code>src&#x2F;core&#x2F;pbrMaterial.js:378</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l377"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:377</code></a>
                             </p>
                     
                     
@@ -1509,7 +1536,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l405"><code>src&#x2F;core&#x2F;pbrMaterial.js:405</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l404"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:404</code></a>
                             </p>
                     
                     
@@ -1538,7 +1565,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l440"><code>src&#x2F;core&#x2F;pbrMaterial.js:440</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l439"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:439</code></a>
                             </p>
                     
                     
@@ -1591,7 +1618,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l494"><code>src&#x2F;core&#x2F;pbrMaterial.js:494</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l493"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:493</code></a>
                             </p>
                     
                     
@@ -1619,7 +1646,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l528"><code>src&#x2F;core&#x2F;pbrMaterial.js:528</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l527"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:527</code></a>
                             </p>
                     
                     
@@ -1635,12 +1662,11 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_type" class="property item public inherited">
+                    <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
                     
                     
-                            <span class="flag public">public</span>
                     
                             <span class="flag final">final</span>
                     
@@ -1648,14 +1674,17 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l303"><code>src&#x2F;core&#x2F;component.js:303</code></a>
+                            <a href="../files/src_core_component.js.html#l312"><code>src&#x2F;core&#x2F;component.js:312</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Type code for this Component.</p>
+                            <p>JavaScript class name for this Component.</p>
+                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
+                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
+                    <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
                     
                         </div>
                     
@@ -1679,7 +1708,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l238"><code>src&#x2F;core&#x2F;pbrMaterial.js:238</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l237"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:237</code></a>
                             </p>
                     
                     
@@ -1721,7 +1750,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l265"><code>src&#x2F;core&#x2F;pbrMaterial.js:265</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l264"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:264</code></a>
                             </p>
                     
                     
@@ -1763,7 +1792,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l633"><code>src&#x2F;core&#x2F;component.js:633</code></a>
+                            <a href="../files/src_core_component.js.html#l715"><code>src&#x2F;core&#x2F;component.js:715</code></a>
                             </p>
                     
                     
@@ -1788,7 +1817,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l298"><code>src&#x2F;core&#x2F;pbrMaterial.js:298</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l297"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:297</code></a>
                             </p>
                     
                     
@@ -1830,7 +1859,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l325"><code>src&#x2F;core&#x2F;pbrMaterial.js:325</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l324"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:324</code></a>
                             </p>
                     
                     
@@ -1872,7 +1901,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l205"><code>src&#x2F;core&#x2F;pbrMaterial.js:205</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l204"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:204</code></a>
                             </p>
                     
                     
@@ -1914,7 +1943,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l480"><code>src&#x2F;core&#x2F;pbrMaterial.js:480</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l479"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:479</code></a>
                             </p>
                     
                     
@@ -1956,7 +1985,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l364"><code>src&#x2F;core&#x2F;pbrMaterial.js:364</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l363"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:363</code></a>
                             </p>
                     
                     
@@ -1998,7 +2027,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l391"><code>src&#x2F;core&#x2F;pbrMaterial.js:391</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l390"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:390</code></a>
                             </p>
                     
                     
@@ -2040,7 +2069,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l426"><code>src&#x2F;core&#x2F;pbrMaterial.js:426</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l425"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:425</code></a>
                             </p>
                     
                     
@@ -2082,7 +2111,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l453"><code>src&#x2F;core&#x2F;pbrMaterial.js:453</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l452"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:452</code></a>
                             </p>
                     
                     
@@ -2124,7 +2153,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l513"><code>src&#x2F;core&#x2F;pbrMaterial.js:513</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l512"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:512</code></a>
                             </p>
                     
                     
@@ -2166,7 +2195,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_pbrMaterial.js.html#l541"><code>src&#x2F;core&#x2F;pbrMaterial.js:541</code></a>
+                            <a href="../files/src_core_materials_pbrMaterial.js.html#l540"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:540</code></a>
                             </p>
                     
                     

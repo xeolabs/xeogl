@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -54,7 +57,13 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Group.html">Group</a></li>
+                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -62,6 +71,10 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -86,6 +99,24 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/configuration.html">configuration</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/grouping.html">grouping</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/objects.html">objects</a></li>
+                                <li><a href="../modules/ordering.html">ordering</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/reporting.html">reporting</a></li>
+                                <li><a href="../modules/rtt.html">rtt</a></li>
+                                <li><a href="../modules/shading.html">shading</a></li>
+                                <li><a href="../modules/spatial.html">spatial</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -160,6 +191,7 @@
      * This utility object provides math functions that are used within xeoEngine. These functions are also part xeoEngine&#x27;s
      * public API and are therefore available for you to use within your application code.
      * @module XEO
+     * @submodule math
      * @class math
      * @static
      */
@@ -169,50 +201,50 @@
          * Returns a new, uninitialized two-element vector.
          * @method vec2
          * @static
-         * @returns {Float64Array}
+         * @returns {Float32Array}
          */
         vec2: function () {
-            return new Float64Array(2);
+            return new Float32Array(2);
         },
 
         /**
          * Returns a new, uninitialized three-element vector.
          * @method vec3
          * @static
-         * @returns {Float64Array}
+         * @returns {Float32Array}
          */
         vec3: function () {
-            return new Float64Array(3);
+            return new Float32Array(3);
         },
 
         /**
          * Returns a new, uninitialized four-element vector.
          * @method vec4
          * @static
-         * @returns {Float64Array}
+         * @returns {Float32Array}
          */
         vec4: function () {
-            return new Float64Array(4);
+            return new Float32Array(4);
         },
 
         /**
          * Returns a new, uninitialized 3x3 matrix.
          * @method mat3
          * @static
-         * @returns {Float64Array}
+         * @returns {Float32Array}
          */
         mat3: function () {
-            return new Float64Array(9);
+            return new Float32Array(9);
         },
 
         /**
          * Returns a new, uninitialized 4x4 matrix.
          * @method mat4
          * @static
-         * @returns {Float64Array}
+         * @returns {Float32Array}
          */
         mat4: function () {
-            return new Float64Array(16);
+            return new Float32Array(16);
         },
 
         /**
@@ -229,19 +261,18 @@
             return function () {
                 for (var i = 0; i &lt; 36; i++) {
                     if (i === 8 || i === 13 || i === 18 || i === 23) {
-                        uuid[ i ] = &#x27;-&#x27;;
+                        uuid[i] = &#x27;-&#x27;;
                     } else if (i === 14) {
-                        uuid[ i ] = &#x27;4&#x27;;
+                        uuid[i] = &#x27;4&#x27;;
                     } else {
                         if (rnd &lt;= 0x02) rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
                         r = rnd &amp; 0xf;
                         rnd = rnd &gt;&gt; 4;
-                        uuid[ i ] = chars[ ( i === 19 ) ? ( r &amp; 0x3 ) | 0x8 : r ];
+                        uuid[i] = chars[( i === 19 ) ? ( r &amp; 0x3 ) | 0x8 : r];
                     }
                 }
                 return uuid.join(&#x27;&#x27;);
             };
-
         }(),
 
         /**
@@ -676,9 +707,9 @@
             var u0 = u[0], u1 = u[1], u2 = u[2];
             var v0 = v[0], v1 = v[1], v2 = v[2];
             return [
-                    u1 * v2 - u2 * v1,
-                    u2 * v0 - u0 * v2,
-                    u0 * v1 - u1 * v0,
+                u1 * v2 - u2 * v1,
+                u2 * v0 - u0 * v2,
+                u0 * v1 - u1 * v0,
                 0.0];
         },
 
@@ -1184,10 +1215,10 @@
         mulMat4v4: function (m, v) {
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
             return [
-                    m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3,
-                    m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3,
-                    m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3,
-                    m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3
+                m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3,
+                m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3,
+                m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3,
+                m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3
             ];
         },
 
@@ -1672,10 +1703,10 @@
         transformPoint3: function (m, p) {
             var p0 = p[0], p1 = p[1], p2 = p[2];
             return [
-                    (m[0] * p0) + (m[4] * p1) + (m[8] * p2) + m[12],
-                    (m[1] * p0) + (m[5] * p1) + (m[9] * p2) + m[13],
-                    (m[2] * p0) + (m[6] * p1) + (m[10] * p2) + m[14],
-                    (m[3] * p0) + (m[7] * p1) + (m[11] * p2) + m[15]
+                (m[0] * p0) + (m[4] * p1) + (m[8] * p2) + m[12],
+                (m[1] * p0) + (m[5] * p1) + (m[9] * p2) + m[13],
+                (m[2] * p0) + (m[6] * p1) + (m[10] * p2) + m[14],
+                (m[3] * p0) + (m[7] * p1) + (m[11] * p2) + m[15]
             ];
         },
 
@@ -1684,8 +1715,8 @@
          * Transforms an array of three-element positions by a 4x4 matrix.
          * @method transformPoints3
          */
-        transformPoints3: function (m, points) {
-            var result = new Float64Array(points.length);
+        transformPoints3: function (m, points, points2) {
+            var result = points2 || [];
             var len = points.length;
             var p0, p1, p2;
             var pi;
@@ -1704,10 +1735,10 @@
                 p2 = pi[2];
 
                 result[i] = [
-                        (m0 * p0) + (m4 * p1) + (m8 * p2) + m12,
-                        (m1 * p0) + (m5 * p1) + (m9 * p2) + m13,
-                        (m2 * p0) + (m6 * p1) + (m10 * p2) + m14,
-                        (m3 * p0) + (m7 * p1) + (m11 * p2) + m15
+                    (m0 * p0) + (m4 * p1) + (m8 * p2) + m12,
+                    (m1 * p0) + (m5 * p1) + (m9 * p2) + m13,
+                    (m2 * p0) + (m6 * p1) + (m10 * p2) + m14,
+                    (m3 * p0) + (m7 * p1) + (m11 * p2) + m15
                 ];
             }
 
@@ -1721,9 +1752,9 @@
         transformVec3: function (m, v) {
             var v0 = v[0], v1 = v[1], v2 = v[2];
             return [
-                    (m[0] * v0) + (m[4] * v1) + (m[8] * v2),
-                    (m[1] * v0) + (m[5] * v1) + (m[9] * v2),
-                    (m[2] * v0) + (m[6] * v1) + (m[10] * v2)
+                (m[0] * v0) + (m[4] * v1) + (m[8] * v2),
+                (m[1] * v0) + (m[5] * v1) + (m[9] * v2),
+                (m[2] * v0) + (m[6] * v1) + (m[10] * v2)
             ];
         },
 
@@ -1734,10 +1765,10 @@
         transformVec4: function (m, v) {
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
             return [
-                    m[ 0] * v0 + m[ 4] * v1 + m[ 8] * v2 + m[12] * v3,
-                    m[ 1] * v0 + m[ 5] * v1 + m[ 9] * v2 + m[13] * v3,
-                    m[ 2] * v0 + m[ 6] * v1 + m[10] * v2 + m[14] * v3,
-                    m[ 3] * v0 + m[ 7] * v1 + m[11] * v2 + m[15] * v3
+                m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3,
+                m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3,
+                m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3,
+                m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3
             ];
         },
 
@@ -1748,6 +1779,274 @@
         projectVec4: function (v) {
             var f = 1.0 / v[3];
             return [v[0] * f, v[1] * f, v[2] * f, 1.0];
+        },
+
+        /**
+         * Linearly interpolates between two 3D vectors.
+         * @method lerpVec3
+         */
+        lerpVec3: function (t, t1, t2, p1, p2, dest) {
+            var result = dest || this.vec3();
+            var f = (t - t1) / (t2 - t1);
+            result[0] = p1[0] + (f * (p2[0] - p1[0]));
+            result[1] = p1[1] + (f * (p2[1] - p1[1]));
+            result[2] = p1[2] + (f * (p2[2] - p1[2]));
+            return result;
+        },
+
+        /**
+         * Gets the diagonal size of a boundary given as minima and maxima.
+         * @method getAABBDiag
+         */
+        getAABBDiag: function (boundary) {
+
+            var min = this.vec3();
+            var max = this.vec3();
+
+            min[0] = boundary.xmin;
+            min[1] = boundary.ymin;
+            min[2] = boundary.zmin;
+
+            max[0] = boundary.xmax;
+            max[1] = boundary.ymax;
+            max[2] = boundary.zmax;
+
+            var tempVec = this.vec3();
+            this.subVec3(max, min, tempVec);
+
+            return Math.abs(this.lenVec3(tempVec));
+        },
+
+        /**
+         * Gets the center of a boundary given as minima and maxima.
+         * @method getAABBCenter
+         */
+        getAABBCenter: function (boundary, dest) {
+            var r = dest || this.vec3();
+
+            r[0] = (boundary.xmax + boundary.xmin ) * 0.5;
+            r[1] = (boundary.ymax + boundary.ymin ) * 0.5;
+            r[2] = (boundary.zmax + boundary.zmin ) * 0.5;
+
+            return r;
+        },
+
+        /**
+         * Converts an axis-aligned boundary into an oriented boundary consisting of
+         * an array of eight 3D positions, one for each corner of the boundary.
+         *
+         * @method AABB3ToOBB3
+         * @param {*} aabb Axis-aligned boundary.
+         * @param {Array} [obb] Oriented bounding box.
+         * @returns {*} Oriented bounding box.
+         */
+        AABB3ToOBB3: function (aabb, obb) {
+
+            obb = obb || [];
+
+            if (!obb[0]) {
+                obb[0] = [];
+            }
+
+            obb[0][0] = aabb.xmin;
+            obb[0][1] = aabb.ymin;
+            obb[0][2] = aabb.zmin;
+
+            if (!obb[1]) {
+                obb[1] = [];
+            }
+
+            obb[1][0] = aabb.xmax;
+            obb[1][1] = aabb.ymin;
+            obb[1][2] = aabb.zmin;
+
+            if (!obb[2]) {
+                obb[2] = [];
+            }
+
+            obb[2][0] = aabb.xmax;
+            obb[2][1] = aabb.ymax;
+            obb[2][2] = aabb.zmin;
+
+            if (!obb[3]) {
+                obb[3] = [];
+            }
+
+            obb[3][0] = aabb.xmin;
+            obb[3][1] = aabb.ymax;
+            obb[3][2] = aabb.zmin;
+
+            if (!obb[4]) {
+                obb[4] = [];
+            }
+
+            obb[4][0] = aabb.xmin;
+            obb[4][1] = aabb.ymin;
+            obb[4][2] = aabb.zmax;
+
+            if (!obb[5]) {
+                obb[5] = [];
+            }
+
+            obb[5][0] = aabb.xmax;
+            obb[5][1] = aabb.ymin;
+            obb[5][2] = aabb.zmax;
+
+            if (!obb[6]) {
+                obb[6] = [];
+            }
+
+            obb[6][0] = aabb.xmax;
+            obb[6][1] = aabb.ymax;
+            obb[6][2] = aabb.zmax;
+
+            if (!obb[7]) {
+                obb[7] = [];
+            }
+
+            obb[7][0] = aabb.xmin;
+            obb[7][1] = aabb.ymax;
+            obb[7][2] = aabb.zmax;
+
+            return obb;
+        },
+
+        /**
+         * Finds the minimum axis-aligned boundary enclosing the 3D points given in a flattened,  1-dimensional array.
+         *
+         * @method positions3ToAABB3
+         * @param {Array} positions Oriented bounding box.
+         * @param {*} [aabb] Axis-aligned bounding box.
+         * @returns {*} Axis-aligned bounding box.
+         */
+        positions3ToAABB3: function (points, aabb) {
+
+            aabb = aabb || {
+                    xmin: 0,
+                    ymin: 0,
+                    zmin: 0,
+                    xmax: 0,
+                    ymax: 0,
+                    zmax: 0
+                };
+
+            var xmin = 100000;
+            var ymin = 100000;
+            var zmin = 100000;
+            var xmax = -100000;
+            var ymax = -100000;
+            var zmax = -100000;
+
+            var x, y, z;
+
+            for (var i = 0, len = points.length; i &lt; len; i += 3) {
+
+                x = points[i + 0];
+                y = points[i + 1];
+                z = points[i + 2];
+
+                if (x &lt; xmin) {
+                    xmin = x;
+                }
+
+                if (y &lt; ymin) {
+                    ymin = y;
+                }
+
+                if (z &lt; zmin) {
+                    zmin = z;
+                }
+
+                if (x &gt; xmax) {
+                    xmax = x;
+                }
+
+                if (y &gt; ymax) {
+                    ymax = y;
+                }
+
+                if (z &gt; zmax) {
+                    zmax = z;
+                }
+            }
+
+            aabb.xmin = xmin;
+            aabb.ymin = ymin;
+            aabb.zmin = zmin;
+            aabb.xmax = xmax;
+            aabb.ymax = ymax;
+            aabb.zmax = zmax;
+
+            return aabb;
+        },
+
+        /**
+         * Finds the minimum axis-aligned boundary enclosing the given 3D points.
+         *
+         * @method points3ToAABB3
+         * @param {Array} points Oriented bounding box.
+         * @param {*} [aabb] Axis-aligned bounding box.
+         * @returns {*} Axis-aligned bounding box.
+         */
+        points3ToAABB3: function (points, aabb) {
+
+            aabb = aabb || {
+                    xmin: 0,
+                    ymin: 0,
+                    zmin: 0,
+                    xmax: 0,
+                    ymax: 0,
+                    zmax: 0
+                };
+
+            var xmin = 100000;
+            var ymin = 100000;
+            var zmin = 100000;
+            var xmax = -100000;
+            var ymax = -100000;
+            var zmax = -100000;
+
+            var x, y, z;
+
+            for (var i = 0, len = points.length; i &lt; len; i++) {
+
+                x = points[i][0];
+                y = points[i][1];
+                z = points[i][2];
+
+                if (x &lt; xmin) {
+                    xmin = x;
+                }
+
+                if (y &lt; ymin) {
+                    ymin = y;
+                }
+
+                if (z &lt; zmin) {
+                    zmin = z;
+                }
+
+                if (x &gt; xmax) {
+                    xmax = x;
+                }
+
+                if (y &gt; ymax) {
+                    ymax = y;
+                }
+
+                if (z &gt; zmax) {
+                    zmax = z;
+                }
+            }
+
+            aabb.xmin = xmin;
+            aabb.ymin = ymin;
+            aabb.zmin = zmin;
+            aabb.xmax = xmax;
+            aabb.ymax = ymax;
+            aabb.zmax = zmax;
+
+            return aabb;
         }
     };
 

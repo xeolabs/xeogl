@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraFlyAnimation.html">CameraFlyAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -54,7 +57,13 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Group.html">Group</a></li>
+                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -62,6 +71,10 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -86,6 +99,24 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/configuration.html">configuration</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/grouping.html">grouping</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/objects.html">objects</a></li>
+                                <li><a href="../modules/ordering.html">ordering</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/reporting.html">reporting</a></li>
+                                <li><a href="../modules/rtt.html">rtt</a></li>
+                                <li><a href="../modules/shading.html">shading</a></li>
+                                <li><a href="../modules/spatial.html">spatial</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -128,10 +159,11 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_shader.js.html#l1"><code>src&#x2F;core&#x2F;shader.js:1</code></a>
+            Defined in: <a href="../files/src_core_shading_shader.js.html#l1"><code>src&#x2F;core&#x2F;shading&#x2F;shader.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/XEO.html">XEO</a>
+            Module: <a href="../modules/shading.html">shading</a><br>
+            Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
@@ -161,7 +193,7 @@ Finally, we animate the rippling by periodically updating the Shader&#39;s "time
 <pre class="code prettyprint"><code class="lang-javascript">
 var scene = new XEO.Scene();
 
-// Shader that&#39;s used by our Object. Note the &#39;XEO_aGeometryPosition&#39; and &#39;XEO_aGeometryUV attributes&#39;,
+// Shader that&#39;s used by our Object. Note the &#39;xeo_aPosition&#39; and &#39;xeo_aUV attributes&#39;,
 // which will receive the positions and UVs from the Geometry. Also note the &#39;time&#39;
 // uniform, which we&#39;ll be animating via Shader#setParams.
 
@@ -169,12 +201,12 @@ var shader = new XEO.Shader(scene, {
 
       // Vertex shading stage
       vertex: [
-          "attribute vec3 XEO_aGeometryPosition;",
-          "attribute vec2 XEO_aGeometryUV;",
+          "attribute vec3 xeo_aPosition;",
+          "attribute vec2 xeo_aUV;",
           "varying vec2 vUv;",
           "void main () {",
-          "    gl_Position = vec4(XEO_aGeometryPosition, 1.0);",
-          "    vUv = XEO_aGeometryUV;",
+          "    gl_Position = vec4(xeo_aPosition, 1.0);",
+          "    vUv = xeo_aUV;",
           "}"
       ],
 
@@ -243,27 +275,27 @@ var object = new XEO.GameObject(scene, {
 </thead>
 <tbody>
 <tr>
-<td>attribute vec3 XEO_aGeometryPosition</td>
+<td>attribute vec3 xeo_aPosition</td>
 <td>Geometry vertex positions</td>
 <td><a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a></td>
 </tr>
 <tr>
-<td>attribute vec2 XEO_aGeometryUV</td>
+<td>attribute vec2 xeo_aUV</td>
 <td>Geometry vertex UV coordinates</td>
 <td><a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a></td>
 </tr>
 <tr>
-<td>attribute vec3 XEO_aGeometryNormal</td>
+<td>attribute vec3 xeo_aNormal</td>
 <td>Geometry vertex normals</td>
 <td><a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a></td>
 </tr>
 <tr>
-<td>attribute vec4 XEO_aGeometryColor</td>
+<td>attribute vec4 xeo_aColor</td>
 <td>Geometry vertex colors</td>
 <td><a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_colors" class="crosslink">colors</a></td>
 </tr>
 <tr>
-<td>attribute vec4 XEO_aGeometryTangent</td>
+<td>attribute vec4 xeo_aTangent</td>
 <td>Geometry vertex tangents, for normal mapping</td>
 <td><a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> and <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a></td>
 </tr>
@@ -281,37 +313,37 @@ var object = new XEO.GameObject(scene, {
 </thead>
 <tbody>
 <tr>
-<td>uniform mat4  XEO_uModelMatrix</td>
+<td>uniform mat4  xeo_uModelMatrix</td>
 <td>Modelling transform matrix</td>
 <td><a href="../classes/Transform.html" class="crosslink">Transform</a></td>
 </tr>
 <tr>
-<td>uniform mat4  XEO_uModelNormalMatrix</td>
+<td>uniform mat4  xeo_uModelNormalMatrix</td>
 <td>Modelling transform normal matrix</td>
 <td><a href="../classes/Geometry.html#property_normals" class="crosslink">Geometry normals</a> and <a href="../classes/Transform.html" class="crosslink">Transform</a></td>
 </tr>
 <tr>
-<td>uniform mat4  XEO_uViewMatrix</td>
+<td>uniform mat4  xeo_uViewMatrix</td>
 <td>View transform matrix</td>
 <td><a href="../classes/Lookat.html" class="crosslink">Lookat</a></td>
 </tr>
 <tr>
-<td>uniform mat4  XEO_uViewNormalMatrix</td>
+<td>uniform mat4  xeo_uViewNormalMatrix</td>
 <td>View transform normal matrix</td>
 <td><a href="../classes/Geometry.html#property_normals" class="crosslink">Geometry normals</a> and <a href="../classes/Lookat.html" class="crosslink">Lookat</a></td>
 </tr>
 <tr>
-<td>uniform mat4  XEO_uProjMatrix</td>
+<td>uniform mat4  xeo_uProjMatrix</td>
 <td>Projection transform matrix</td>
 <td><a href="../classes/Ortho.html" class="crosslink">Ortho</a>, <a href="../classes/Frustum.html" class="crosslink">Frustum</a> or <a href="../classes/Perspective.html" class="crosslink">Perspective</a></td>
 </tr>
 <tr>
-<td>uniform float XEO_uZNear</td>
+<td>uniform float xeo_uZNear</td>
 <td>Near clipping plane</td>
 <td><a href="../classes/Ortho.html" class="crosslink">Ortho</a>, <a href="../classes/Frustum.html" class="crosslink">Frustum</a> or <a href="../classes/Perspective.html" class="crosslink">Perspective</a></td>
 </tr>
 <tr>
-<td>uniform float XEO_uZFar</td>
+<td>uniform float xeo_uZFar</td>
 <td>Far clipping plane</td>
 <td><a href="../classes/Ortho.html" class="crosslink">Ortho</a>, <a href="../classes/Frustum.html" class="crosslink">Frustum</a> or <a href="../classes/Perspective.html" class="crosslink">Perspective</a></td>
 </tr>
@@ -320,42 +352,42 @@ var object = new XEO.GameObject(scene, {
 <td>---</td>
 </tr>
 <tr>
-<td>uniform vec3  XEO_uLightAmbientColor</td>
+<td>uniform vec3  xeo_uLightAmbientColor</td>
 <td>Color of the first <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uLightColor&lt;<strong><em>N</em></strong>&gt;</td>
+<td>uniform vec3 xeo_uLightColor&lt;<strong><em>N</em></strong>&gt;</td>
 <td>Diffuse color of <a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uLightIntensity&lt;<strong><em>N</em></strong>&gt;</td>
+<td>uniform vec3 xeo_uLightIntensity&lt;<strong><em>N</em></strong>&gt;</td>
 <td>Specular color of <a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uLightDir&lt;<strong><em>N</em></strong>&gt;</td>
+<td>uniform vec3 xeo_uLightDir&lt;<strong><em>N</em></strong>&gt;</td>
 <td>Direction of <a href="../classes/DirLight.html" class="crosslink">DirLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/DirLight.html" class="crosslink">DirLight</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uLightPos&lt;<strong><em>N</em></strong>&gt;</td>
+<td>uniform vec3 xeo_uLightPos&lt;<strong><em>N</em></strong>&gt;</td>
 <td>Position of <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uLightConstantAttenuation&lt;<strong><em>N</em></strong>&gt;</td>
+<td>uniform vec3 xeo_uLightConstantAttenuation&lt;<strong><em>N</em></strong>&gt;</td>
 <td>Constant attenuation factor for <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uLightLinearAttenuation&lt;<strong><em>N</em></strong>&gt;</td>
+<td>uniform vec3 xeo_uLightLinearAttenuation&lt;<strong><em>N</em></strong>&gt;</td>
 <td>Linear attenuation factor for <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uLightQuadraticAttenuation&lt;<strong><em>N</em></strong>&gt;</td>
+<td>uniform vec3 xeo_uLightQuadraticAttenuation&lt;<strong><em>N</em></strong>&gt;</td>
 <td>Quadratic attenuation factor for <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
 <td><a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
 </tr>
@@ -364,32 +396,32 @@ var object = new XEO.GameObject(scene, {
 <td>---</td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uMaterialDiffuse;</td>
+<td>uniform vec3 xeo_uMaterialDiffuse;</td>
 <td></td>
 <td><a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uMaterialSpecular;</td>
+<td>uniform vec3 xeo_uMaterialSpecular;</td>
 <td></td>
 <td><a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a></td>
 </tr>
 <tr>
-<td>uniform vec3 XEO_uMaterialEmissive;</td>
+<td>uniform vec3 xeo_uMaterialEmissive;</td>
 <td></td>
 <td><a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a></td>
 </tr>
 <tr>
-<td>uniform float XEO_uMaterialOpacity;</td>
+<td>uniform float xeo_uMaterialOpacity;</td>
 <td></td>
 <td><a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a></td>
 </tr>
 <tr>
-<td>uniform float XEO_uMaterialShininess;</td>
+<td>uniform float xeo_uMaterialShininess;</td>
 <td></td>
 <td><a href="../classes/PhongMaterial.html#property_shininess" class="crosslink">shininess</a></td>
 </tr>
 <tr>
-<td>uniform float XEO_uMaterialDiffuseFresnelBias;</td>
+<td>uniform float xeo_uMaterialDiffuseFresnelBias;</td>
 <td></td>
 <td><a href="../classes/Fresnel.html#property_bias" class="crosslink">bias</a></td>
 </tr>
@@ -407,15 +439,15 @@ var object = new XEO.GameObject(scene, {
 </thead>
 <tbody>
 <tr>
-<td>varying vec4 XEO_vWorldPosition</td>
+<td>varying vec4 xeo_vWorldPosition</td>
 <td></td>
 </tr>
 <tr>
-<td>varying vec4 XEO_vViewPosition</td>
+<td>varying vec4 xeo_vViewPosition</td>
 <td></td>
 </tr>
 <tr>
-<td>varying vec4 XEO_vColor</td>
+<td>varying vec4 xeo_vColor</td>
 </tr>
 </tbody>
 </table>
@@ -452,7 +484,7 @@ var object = new XEO.GameObject(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_shader.js.html#l1"><code>src&#x2F;core&#x2F;shader.js:1</code></a>
+                <a href="../files/src_core_shading_shader.js.html#l1"><code>src&#x2F;core&#x2F;shading&#x2F;shader.js:1</code></a>
                 </p>
         
         
@@ -618,10 +650,6 @@ var object = new XEO.GameObject(scene, {
 
                     <ul class="index-list properties extends">
                             <li class="index-item property inherited">
-                                <a href="#property_className">className</a>
-
-                            </li>
-                            <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
                             </li>
@@ -631,6 +659,10 @@ var object = new XEO.GameObject(scene, {
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_Items in this map">Items in this map</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -645,7 +677,7 @@ var object = new XEO.GameObject(scene, {
                                 <a href="#property_scene">scene</a>
 
                             </li>
-                            <li class="index-item property public inherited">
+                            <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
 
                             </li>
@@ -699,7 +731,7 @@ var object = new XEO.GameObject(scene, {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l606"><code>src&#x2F;core&#x2F;component.js:606</code></a>
+        <a href="../files/src_core_component.js.html#l683"><code>src&#x2F;core&#x2F;component.js:683</code></a>
         </p>
 
 
@@ -739,7 +771,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l449"><code>src&#x2F;core&#x2F;component.js:449</code></a>
+        <a href="../files/src_core_component.js.html#l463"><code>src&#x2F;core&#x2F;component.js:463</code></a>
         </p>
 
 
@@ -748,7 +780,7 @@ defaults that this component overrode on them.</p>
 
     <div class="description">
         <p>Logs an error for this component to the JavaScript console.</p>
-<p>The console message will have this format: <em><code>[ERROR] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>The console message will have this format: <em><code>[ERROR] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
 <p>Also fires the message as an <a href="../classes/Scene.html#event_error" class="crosslink">error</a> event on the
 parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
@@ -802,7 +834,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l335"><code>src&#x2F;core&#x2F;component.js:335</code></a>
+        <a href="../files/src_core_component.js.html#l334"><code>src&#x2F;core&#x2F;component.js:334</code></a>
         </p>
 
 
@@ -837,7 +869,7 @@ any subsequent notifications on that location as they are made.</p>
 
 
                     <div class="param-description">
-                        <p>The event</p>
+                        <p>The event parameters</p>
 
                     </div>
 
@@ -881,7 +913,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l432"><code>src&#x2F;core&#x2F;component.js:432</code></a>
+        <a href="../files/src_core_component.js.html#l440"><code>src&#x2F;core&#x2F;component.js:440</code></a>
         </p>
 
 
@@ -890,7 +922,7 @@ any subsequent notifications on that location as they are made.</p>
 
     <div class="description">
         <p>Logs a console debugging message for this component.</p>
-<p>The console message will have this format: <em><code>[LOG] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>The console message will have this format: <em><code>[LOG] [&lt;component type&gt; &lt;component id&gt;: &lt;message&gt;</code></em></p>
 <p>Also fires the message as a <a href="../classes/Scene.html#event_log" class="crosslink">log</a> event on the
 parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
@@ -938,7 +970,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l392"><code>src&#x2F;core&#x2F;component.js:392</code></a>
+        <a href="../files/src_core_component.js.html#l397"><code>src&#x2F;core&#x2F;component.js:397</code></a>
         </p>
 
 
@@ -1002,7 +1034,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l362"><code>src&#x2F;core&#x2F;component.js:362</code></a>
+        <a href="../files/src_core_component.js.html#l367"><code>src&#x2F;core&#x2F;component.js:367</code></a>
         </p>
 
 
@@ -1095,7 +1127,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l411"><code>src&#x2F;core&#x2F;component.js:411</code></a>
+        <a href="../files/src_core_component.js.html#l419"><code>src&#x2F;core&#x2F;component.js:419</code></a>
         </p>
 
 
@@ -1174,7 +1206,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_shader.js.html#l292"><code>src&#x2F;core&#x2F;shader.js:292</code></a>
+        <a href="../files/src_core_shading_shader.js.html#l291"><code>src&#x2F;core&#x2F;shading&#x2F;shader.js:291</code></a>
         </p>
 
 
@@ -1232,7 +1264,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l466"><code>src&#x2F;core&#x2F;component.js:466</code></a>
+        <a href="../files/src_core_component.js.html#l481"><code>src&#x2F;core&#x2F;component.js:481</code></a>
         </p>
 
 
@@ -1241,7 +1273,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
     <div class="description">
         <p>Logs a warning for this component to the JavaScript console.</p>
-<p>The console message will have this format: <em><code>[WARN] &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>The console message will have this format: <em><code>[WARN] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
 <p>Also fires the message as a <a href="../classes/Scene.html#event_warn" class="crosslink">warn</a> event on the
 parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
@@ -1273,35 +1305,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_className" class="property item inherited">
-                        <h3 class="name"><code>className</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_className">Component</a>:
-                            <a href="../files/src_core_component.js.html#l313"><code>src&#x2F;core&#x2F;component.js:313</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>JavaScript class name for this Component.</p>
-                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
-                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
-                    <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1313,7 +1316,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l267"><code>src&#x2F;core&#x2F;component.js:267</code></a>
+                            <a href="../files/src_core_component.js.html#l273"><code>src&#x2F;core&#x2F;component.js:273</code></a>
                             </p>
                     
                     
@@ -1338,7 +1341,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l243"><code>src&#x2F;core&#x2F;shader.js:243</code></a>
+                            <a href="../files/src_core_shading_shader.js.html#l242"><code>src&#x2F;core&#x2F;shading&#x2F;shader.js:242</code></a>
                             </p>
                     
                     
@@ -1366,7 +1369,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_core_component.js.html#l258"><code>src&#x2F;core&#x2F;component.js:258</code></a>
+                            <a href="../files/src_core_component.js.html#l264"><code>src&#x2F;core&#x2F;component.js:264</code></a>
                             </p>
                     
                     
@@ -1375,6 +1378,30 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_Items in this map" class="property item inherited">
+                        <h3 class="name"><code>Items in this map</code></h3>
+                        <span class="type">Unknown</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_Items in this map">Component</a>:
+                            <a href="../files/src_core_utils_map.js.html#l13"><code>src&#x2F;core&#x2F;utils&#x2F;map.js:13</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
                         </div>
                     
                     
@@ -1391,7 +1418,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_core_component.js.html#l250"><code>src&#x2F;core&#x2F;component.js:250</code></a>
+                            <a href="../files/src_core_component.js.html#l256"><code>src&#x2F;core&#x2F;component.js:256</code></a>
                             </p>
                     
                     
@@ -1416,7 +1443,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l275"><code>src&#x2F;core&#x2F;shader.js:275</code></a>
+                            <a href="../files/src_core_shading_shader.js.html#l274"><code>src&#x2F;core&#x2F;shading&#x2F;shader.js:274</code></a>
                             </p>
                     
                     
@@ -1458,12 +1485,11 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_type" class="property item public inherited">
+                    <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
                     
                     
-                            <span class="flag public">public</span>
                     
                             <span class="flag final">final</span>
                     
@@ -1471,14 +1497,17 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_core_component.js.html#l303"><code>src&#x2F;core&#x2F;component.js:303</code></a>
+                            <a href="../files/src_core_component.js.html#l312"><code>src&#x2F;core&#x2F;component.js:312</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Type code for this Component.</p>
+                            <p>JavaScript class name for this Component.</p>
+                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
+                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
+                    <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
                     
                         </div>
                     
@@ -1496,7 +1525,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l211"><code>src&#x2F;core&#x2F;shader.js:211</code></a>
+                            <a href="../files/src_core_shading_shader.js.html#l210"><code>src&#x2F;core&#x2F;shading&#x2F;shader.js:210</code></a>
                             </p>
                     
                     
@@ -1529,7 +1558,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l633"><code>src&#x2F;core&#x2F;component.js:633</code></a>
+                            <a href="../files/src_core_component.js.html#l715"><code>src&#x2F;core&#x2F;component.js:715</code></a>
                             </p>
                     
                     
@@ -1554,7 +1583,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l261"><code>src&#x2F;core&#x2F;shader.js:261</code></a>
+                            <a href="../files/src_core_shading_shader.js.html#l260"><code>src&#x2F;core&#x2F;shading&#x2F;shader.js:260</code></a>
                             </p>
                     
                     
@@ -1596,14 +1625,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l313"><code>src&#x2F;core&#x2F;shader.js:313</code></a>
+                            <a href="../files/src_core_shading_shader.js.html#l312"><code>src&#x2F;core&#x2F;shading&#x2F;shader.js:312</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Shader&#39;s  <a href="../classes/Shader.html#property_params" class="crosslink">params</a> property has been updated.</p>
+                            <p>Fired whenever this Shader&#39;s  <a href="../classes/Shader.html#property_params" class="crosslink">params</a>
+                    property has been updated.</p>
                     
                         </div>
                     
@@ -1638,7 +1668,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_shader.js.html#l229"><code>src&#x2F;core&#x2F;shader.js:229</code></a>
+                            <a href="../files/src_core_shading_shader.js.html#l228"><code>src&#x2F;core&#x2F;shading&#x2F;shader.js:228</code></a>
                             </p>
                     
                     
