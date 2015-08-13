@@ -2416,12 +2416,12 @@
  * @module XEO
  * @submodule animation
  */;/**
- A **CameraFlyAnimation** flies a {{#crossLink "Camera"}}{{/crossLink}} to given eye, look and up positions.
+ A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target component, AABB or eye/look/up position.
 
  ## Overview
 
  <ul>
- <li>A CameraFlyAnimation animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.
  </ul>
 
  ## Example
@@ -2433,7 +2433,7 @@
 
  var object = new XEO.GameObject(scene);
 
- var animation = new XEO.CameraFlyAnimation(scene, {
+ var animation = new XEO.CameraFlight(scene, {
     camera: camera
  });
 
@@ -2446,16 +2446,16 @@
  });
  ````
 
- @class CameraFlyAnimation
+ @class CameraFlight
  @module XEO
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg] {*} Fly configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlyAnimation.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlyAnimation. Defaults to the
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @extends Component
  */
@@ -2463,7 +2463,7 @@
 
     "use strict";
 
-    XEO.CameraFlyAnimation = XEO.Component.extend({
+    XEO.CameraFlight = XEO.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -2472,7 +2472,7 @@
          @type String
          @final
          */
-        type: "XEO.CameraFlyAnimation",
+        type: "XEO.CameraFlight",
 
         _init: function (cfg) {
 
@@ -2514,22 +2514,23 @@
         },
 
         /**
-         * Begins flying this CameraFlyAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
+         * Begins flying this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
          *
          * <ul>
          *     <li>When the target is a boundary, the {{#crossLink "Camera"}}{{/crossLink}} will fly towards the target
          *     and stop when the target fills most of the canvas.</li>
          *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlyAnimation will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.</li>
+         *      vectors, then this CameraFlight will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.</li>
          * @method flyTo
          * @param params  {*} Flight parameters
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
          * {{#crossLink "Camera/eye:property"}}Camera's eye{{/crossLink}} position will
          * swing away from its {{#crossLink "Camera/eye:property"}}look{{/crossLink}} position as it flies to the target.
-         * @param [params.worldAABB] {{xmin:Number, ymin:Number, zmin: Number, xmax: Number, ymax: Number, zmax: Number }}  World-space axis-aligned bounding box (AABB) target to fly to.
-         * @param [params.eye] {Array of Number} Position to fly the {{#crossLink "Camera/eye:property"}}Camera's eye{{/crossLink}} position to.
-         * @param [params.look] {Array of Number} Position to fly the {{#crossLink "Camera/look:property"}}Camera's look{{/crossLink}} position to.
-         * @param [params.up] {Array of Number} Position to fly the {{#crossLink "Camera/up:property"}}Camera's up{{/crossLink}} vector to.
+         * @param [params.component] {String|Component} ID or instance of a component to fly to.
+         * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
+         * @param [params.eye] {Array of Number} Position to fly the eye position to.
+         * @param [params.look] {Array of Number} Position to fly the look position to.
+         * @param [params.up] {Array of Number} Position to fly the up vector to.
          * @param [ok] {Function} Callback fired on arrival
          */
         flyTo: function (params, ok) {
@@ -2567,15 +2568,12 @@
 
             backOff = 1 - backOff;
 
-            // Set up final camera state
+            var component = params.component;
+            var aabb = params.aabb;
 
-            if (params.component || params.worldAABB) {
+            if (component || aabb) {
 
-                var worldAABB;
-
-                if (params.component) {
-
-                    var component = params.component;
+                if (component) {
 
                     if (XEO._isNumeric(component) || XEO._isString(component)) {
 
@@ -2589,30 +2587,27 @@
                         }
                     }
 
-                    worldAABB = component.worldAABB;
+                    var worldBoundary = component.worldBoundary;
 
-                    if (!worldAABB) {
-                        this.error("Can't fly to component " + XEO._inQuotes(componentId) + " - does not have a worldAABB");
+                    if (!worldBoundary) {
+                        this.error("Can't fly to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
                         return;
                     }
-                } else {
 
-                    // Zooming to look and eye computed from boundary
-
-                    worldAABB = params.worldAABB;
+                    aabb = worldBoundary.aabb;
                 }
 
-                if (worldAABB.xmax <= worldAABB.xmin || worldAABB.ymax <= worldAABB.ymin || worldAABB.zmax <= worldAABB.zmin) {
+                if (aabb.xmax <= aabb.xmin || aabb.ymax <= aabb.ymin || aabb.zmax <= aabb.zmin) {
                     return;
                 }
 
                 var dist = params.dist || 2.5;
                 var lenVec = Math.abs(XEO.math.lenVec3(this._vec));
-                var diag = XEO.math.getAABBDiag(worldAABB);
+                var diag = XEO.math.getAABBDiag(aabb);
                 var len = Math.abs((diag / (1.0 + (backOff * 0.8))) / Math.tan(this._stopFOV / 2));  /// Tweak this to set final camera distance on arrival
                 var sca = (len / lenVec) * dist;
 
-                this._look2 = XEO.math.getAABBCenter(worldAABB);
+                this._look2 = XEO.math.getAABBCenter(aabb);
                 this._look2 = [this._look2[0], this._look2[1], this._look2[2]];
 
                 if (params.offset) {
@@ -2763,8 +2758,7 @@
 
         _getJSON: function () {
 
-            var json = {
-            };
+            var json = {};
 
             if (this._children.camera) {
                 json.camera = this._children.camera.id;
@@ -2896,6 +2890,1737 @@
 })();
 
 
+;
+
+/**
+ A **Camera** defines a viewpoint on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+
+ <li> A Camera is composed of a viewing transform and a projection transform.</li>
+
+ <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.</li>
+
+ <li>The projection transform may be an {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}}
+ or {{#crossLink "Perspective"}}Perspective{{/crossLink}}.</li>
+
+ <li> By default, each Camera is composed of its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
+ (which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}) and default
+ {{#crossLink "Scene/project:property"}}{{/crossLink}} transform (which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}).
+ You would override those with your own transform components as necessary.</li>
+
+ </ul>
+
+ <img src="../../../assets/images/Camera.png"></img>
+
+ ## Example
+
+ <iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
+
+ In this example we have
+
+ <ul>
+ <li>a {{#crossLink "Lookat"}}{{/crossLink}} view transform,</li>
+ <li>a {{#crossLink "Perspective"}}{{/crossLink}} projection transform,</li>
+ <li>a Camera attached to the {{#crossLink "Lookat"}}{{/crossLink}} and {{#crossLink "Perspective"}}{{/crossLink}},</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
+
+
+ ```` javascript
+ var scene = new XEO.Scene();
+
+ var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -10],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
+ var perspective = new XEO.Lookat(scene, {
+        fovy: 60,
+        near: 0.1,
+        far: 1000
+    });
+
+ var camera = new XEO.Camera(scene, {
+        view: lookat,
+        project: perspective
+    });
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ var object = new XEO.GameObject(scene, {
+        camera: camera,
+        geometry: geometry
+    });
+
+ scene.on("tick", function () {
+       camera.view.rotateEyeY(0.5);
+       camera.view.rotateEyeX(0.3);
+    });
+ ````
+ @class Camera
+ @module XEO
+ @submodule camera
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Camera within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ You only need to supply an ID if you need to be able to find the Camera by ID within its parent {{#crossLink "Scene"}}Scene{{/crossLink}} later.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Camera.
+ @param [cfg.view] {String|XEO.Lookat} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
+ which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
+ @param [cfg.project] {String|XEO.Perspective|XEO.Ortho|XEO.Frustum} ID or instance of a projection transform
+ within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the parent
+ {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/project:property"}}{{/crossLink}} transform,
+ which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Camera = XEO.Component.extend({
+
+        type: "XEO.Camera",
+
+        _init: function (cfg) {
+
+            this.project = cfg.project;
+
+            this.view = cfg.view;
+        },
+
+        _props: {
+
+            /**
+             * The projection transform component for this Camera.
+             *
+             * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
+             * default {{#crossLink "Scene/project:property"}}project{{/crossLink}}, which is
+             * a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
+             *
+             * Fires a {{#crossLink "Camera/project:event"}}{{/crossLink}} event on change.
+             *
+             * @property project
+             * @type Perspective|XEO.Ortho|XEO.Frustum
+             */
+            project: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Camera's {{#crossLink "Camera/project:property"}}{{/crossLink}} property changes.
+                     * @event project
+                     * @param value The property's new value
+                     */
+                    this._setChild("project", value);
+                },
+
+                get: function () {
+                    return this._children.project;
+                }
+            },
+
+            /**
+             * The viewing transform component for this Camera.
+             *
+             * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
+             * default {{#crossLink "Scene/view:property"}}view{{/crossLink}}, which is
+             * a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
+             *
+             * Fires a {{#crossLink "Camera/view:event"}}{{/crossLink}} event on change.
+             *
+             * @property view
+             * @type Lookat
+             */
+            view: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Camera's {{#crossLink "Camera/view:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event view
+                     * @param value The property's new value
+                     */
+                    this._setChild("view", value);
+                },
+
+                get: function () {
+                    return this._children.view;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._children.project._compile();
+            this._children.view._compile();
+        },
+
+        _getJSON: function () {
+
+            var json = {};
+
+            if (this._children.project) {
+                json.project = this._children.project.id;
+            }
+
+            if (this._children.view) {
+                json.view = this._children.view.id;
+            }
+
+            return json;
+        }
+    });
+
+})();
+;/**
+ A **Frustum** defines a perspective projection as a frustum-shaped view volume.
+
+ ## Overview
+
+ <ul>
+ <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
+ </ul>
+
+ <img src="../../../assets/images/Frustum.png"></img>
+
+ ## Example
+
+ ## Example
+
+ <iframe style="width: 600px; height: 400px" src="../../examples/camera_frustum.html"></iframe>
+
+ In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
+ {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Frustum
+ projection transform.
+
+ ````Javascript
+
+ var scene = new XEO.Scene();
+
+ var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -4],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
+ var frustum = new XEO.Frustum(scene, {
+        left: -0.1,
+        right: 0.1,
+        bottom: -0.1,
+        top: 0.1,
+        near: 0.15,
+        far: 1000
+    });
+
+ var camera = new XEO.Camera(scene, {
+        view: lookat,
+        project: frustum
+    });
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ var object = new XEO.GameObject(scene, {
+        camera: camera,
+        geometry: geometry
+    });
+
+ scene.on("tick", function () {
+       camera.view.rotateEyeY(0.5);
+       camera.view.rotateEyeX(0.3);
+    });
+ ````
+
+ @class Frustum
+ @module XEO
+ @submodule camera
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Frustum within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Frustum.
+ @param [cfg.left=-1] {Number} Position of the Frustum's left plane on the View-space X-axis.
+ @param [cfg.right=1] {Number} Position of the Frustum's right plane on the View-space X-axis.
+ @param [cfg.bottom=-1] {Number} Position of the Frustum's bottom plane on the View-space Y-axis.
+ @param [cfg.top=1] {Number} Position of the Frustum's top plane on the View-space Y-axis.
+ @param [cfg.near=0.1] {Number} Position of the Frustum's near plane on the View-space Z-axis.
+ @param [cfg.far=1000] {Number} Position of the Frustum's far plane on the positive View-space Z-axis.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Frustum = XEO.Component.extend({
+
+        type: "XEO.Frustum",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.ProjTransform({
+                matrix: null
+            });
+
+            this._dirty = false;
+
+            this._left = -1.0;
+            this._right = 1.0;
+            this._bottom = -1.0;
+            this._top = 1.0;
+            this._near = 0.1;
+            this._far = 10000.0;
+
+            // Set component properties
+
+            this.left = cfg.left;
+            this.right = cfg.right;
+            this.bottom = cfg.bottom;
+            this.top = cfg.top;
+            this.near = cfg.near;
+            this.far = cfg.far;
+        },
+
+        // Schedules state rebuild on the next "tick"
+
+        _scheduleBuild: function () {
+
+            if (!this._dirty) {
+
+                this._dirty = true;
+
+                var self = this;
+
+                this.scene.once("tick",
+                    function () {
+                        self._build();
+                    });
+            }
+        },
+
+        // Rebuilds state
+
+        _build: function () {
+
+            this._state.matrix = XEO.math.frustumMat4(
+                this._left,
+                this._right,
+                this._bottom,
+                this._top,
+                this._near,
+                this._far,
+                this._state.matrix);
+
+            this._dirty = false;
+
+            /**
+             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
+             * @event matrix
+             * @param value The property's new value
+             */
+            this.fire("matrix", this._state.matrix);
+        },
+
+        _props: {
+
+            /**
+             Position of this Frustum's left plane on the View-space X-axis.
+
+             Fires a {{#crossLink "Frustum/left:event"}}{{/crossLink}} event on change.
+
+             @property left
+             @default -1.0
+             @type Number
+             */
+            left: {
+
+                set: function (value) {
+
+                    this._left = (value !== undefined && value !== null) ? value : -1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Frustum's {{#crossLink "Frustum/left:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event left
+                     * @param value The property's new value
+                     */
+                    this.fire("left", this._left);
+                },
+
+                get: function () {
+                    return this._left;
+                }
+            },
+
+            /**
+             * Position of this Frustum's right plane on the View-space X-axis.
+             *
+             * Fires a {{#crossLink "Frustum/right:event"}}{{/crossLink}} event on change.
+             *
+             * @property right
+             * @default 1.0
+             * @type Number
+             */
+            right: {
+
+                set: function (value) {
+
+                    this._right = (value !== undefined && value !== null) ? value : 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Frustum's {{#crossLink "Frustum/right:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event right
+                     * @param value The property's new value
+                     */
+                    this.fire("right", this._right);
+                },
+
+                get: function () {
+                    return this._right;
+                }
+            },
+
+            /**
+             * Position of this Frustum's top plane on the View-space Y-axis.
+             *
+             * Fires a {{#crossLink "Frustum/top:event"}}{{/crossLink}} event on change.
+             *
+             * @property top
+             * @default 1.0
+             * @type Number
+             */
+            top: {
+
+                set: function (value) {
+
+                    this._top = (value !== undefined && value !== null) ? value : 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Frustum's   {{#crossLink "Frustum/top:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event top
+                     * @param value The property's new value
+                     */
+                    this.fire("top", this._top);
+                },
+
+                get: function () {
+                    return this._top;
+                }
+            },
+
+            /**
+             * Position of this Frustum's bottom plane on the View-space Y-axis.
+             *
+             * Fires a {{#crossLink "Frustum/bottom:event"}}{{/crossLink}} event on change.
+             *
+             * @property bottom
+             * @default -1.0
+             * @type Number
+             */
+            bottom: {
+
+                set: function (value) {
+
+                    this._bottom = (value !== undefined && value !== null) ? value : -1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Frustum's   {{#crossLink "Frustum/bottom:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event bottom
+                     * @param value The property's new value
+                     */
+                    this.fire("bottom", this._bottom);
+                },
+
+                get: function () {
+                    return this._bottom;
+                }
+            },
+
+            /**
+             * Position of this Frustum's near plane on the positive View-space Z-axis.
+             *
+             * Fires a {{#crossLink "Frustum/near:event"}}{{/crossLink}} event on change.
+             *
+             * @property near
+             * @default 0.1
+             * @type Number
+             */
+            near: {
+
+                set: function (value) {
+
+                    this._near = (value !== undefined && value !== null) ? value : 0.1;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event near
+                     * @param value The property's new value
+                     */
+                    this.fire("near", this._near);
+                },
+
+                get: function () {
+                    return this._near;
+                }
+            },
+
+            /**
+             * Position of this Frustum's far plane on the positive View-space Z-axis.
+             *
+             * Fires a {{#crossLink "Frustum/far:event"}}{{/crossLink}} event on change.
+             *
+             * @property far
+             * @default 10000.0
+             * @type Number
+             */
+            far: {
+
+                set: function (value) {
+
+                    this._far = (value !== undefined && value !== null) ? value : 10000.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Frustum's  {{#crossLink "Frustum/far:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event far
+                     * @param value The property's new value
+                     */
+                    this.fire("far", this._far);
+                },
+
+                get: function () {
+                    return this._far;
+                }
+            },
+
+            /**
+             * The elements of this Frustum's projection transform matrix.
+             *
+             * Fires a {{#crossLink "Frustum/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property matrix
+             * @type {Float64Array}
+             */
+            matrix: {
+
+                get: function () {
+
+                    if (this._dirty) {
+                        this._build();
+                    }
+
+                    return this._state.matrix;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.projTransform = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                left: this._left,
+                right: this._right,
+                top: this._top,
+                bottom: this._bottom,
+                near: this._near,
+                far: this._far
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+;/**
+ A **Lookat** defines a viewing transform as an {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}} position, a
+ {{#crossLink "Lookat/look:property"}}look{{/crossLink}} position and an {{#crossLink "Lookat/up:property"}}up{{/crossLink}}
+ vector.
+
+ ## Overview
+
+ <ul>
+ <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
+ {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>
+ </ul>
+
+ <img src="../../../assets/images/Lookat.png"></img>
+
+ ## Example
+
+ <iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
+
+ In this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.
+ Then we attach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to a {{#crossLink "GameObject"}}{{/crossLink}}.
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -4],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
+ var perspective = new XEO.Perspective(scene, {
+        fovy: 60,
+        near: 0.1,
+        far: 1000
+    });
+
+ var camera = new XEO.Camera(scene, {
+        view: lookat,
+        project: perspective
+    });
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ var object = new XEO.GameObject(scene, {
+        camera: camera,
+        geometry: geometry
+    });
+
+ scene.on("tick", function () {
+       camera.view.rotateEyeY(0.5);
+       camera.view.rotateEyeX(0.3);
+    });
+ ````
+
+ @class Lookat
+ @module XEO
+ @submodule camera
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Lookat in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lookat.
+ @param [cfg.eye=[0,0,-10]] {Array of Number} Eye position.
+ @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
+ @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
+ @extends Component
+ @author xeolabs / http://xeolabs.com/
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Lookat = XEO.Component.extend({
+
+        type: "XEO.Lookat",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.ViewTransform({
+                matrix: XEO.math.mat4(),
+                normalMatrix: XEO.math.mat4(),
+                eye: [0, 0, -10.0],
+                look: [0, 0, 0],
+                up: [0, 1, 0]
+            });
+
+            this._dirty = true;
+
+            this.eye = cfg.eye;
+            this.look = cfg.look;
+            this.up = cfg.up;
+        },
+
+        // Schedules a call to #_build on the next "tick"
+        _scheduleBuild: function () {
+
+            if (!this._dirty) {
+
+                this._dirty = true;
+
+                var self = this;
+
+                this.scene.once("tick",
+                    function () {
+                        self._build();
+                    });
+            }
+        },
+
+        // Rebuilds rendering state
+        _build: function () {
+
+            this._state.matrix = new Float32Array(XEO.math.lookAtMat4c(
+                this._state.eye[0], this._state.eye[1], this._state.eye[2],
+                this._state.look[0], this._state.look[1], this._state.look[2],
+                this._state.up[0], this._state.up[1], this._state.up[2],
+                this._state.matrix));
+
+            this._state.normalMatrix = new Float32Array(XEO.math.transposeMat4(new Float32Array(XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
+
+            this._dirty = false;
+
+            /**
+             * Fired whenever this Lookat's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is updated.
+             *
+             * @event matrix
+             * @param value The property's new value
+             */
+            this.fire("matrix", this._state.matrix);
+        },
+
+        /**
+         * Rotate 'eye' about 'look', around the 'up' vector
+         *
+         * @param {Number} angle Angle of rotation in degrees
+         */
+        rotateEyeY: function (angle) {
+
+            // Get 'look' -> 'eye' vector
+            var eye2 = XEO.math.subVec3(this._state.eye, this._state.look, []);
+
+            // Rotate 'eye' vector about 'up' vector
+            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._state.up);
+            eye2 = XEO.math.transformPoint3(mat, eye2, []);
+
+            // Set eye position as 'look' plus 'eye' vector
+            this.eye = XEO.math.addVec3(eye2, this._state.look, []);
+        },
+
+        /**
+         * Rotate 'eye' about 'look' around the X-axis
+         *
+         * @param {Number} angle Angle of rotation in degrees
+         */
+        rotateEyeX: function (angle) {
+
+            // Get 'look' -> 'eye' vector
+            var eye2 = XEO.math.subVec3(this._state.eye, this._state.look, []);
+
+            // Get orthogonal vector from 'eye' and 'up'
+            var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(eye2, []), XEO.math.normalizeVec3(this._state.up, []));
+
+            // Rotate 'eye' vector about orthogonal vector
+            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, left);
+            eye2 = XEO.math.transformPoint3(mat, eye2, []);
+
+            // Set eye position as 'look' plus 'eye' vector
+            this.eye = XEO.math.addVec3(eye2, this._state.look, []);
+
+            // Rotate 'up' vector about orthogonal vector
+            this.up = XEO.math.transformPoint3(mat, this._state.up, []);
+        },
+
+        /**
+         * Rotate 'look' about 'eye', around the 'up' vector
+         *
+         * <p>Applies constraints added with {@link #addConstraint}.</p>
+         *
+         * @param {Number} angle Angle of rotation in degrees
+         */
+        rotateLookY: function (angle) {
+
+            // Get 'look' -> 'eye' vector
+            var look2 = XEO.math.subVec3(this._state.look, this._state.eye, []);
+
+            // Rotate 'look' vector about 'up' vector
+            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._state.up);
+            look2 = XEO.math.transformPoint3(mat, look2, []);
+
+            // Set look position as 'look' plus 'eye' vector
+            this.look = XEO.math.addVec3(look2, this._state.eye, []);
+        },
+
+        /**
+         * Rotate 'eye' about 'look' around the X-axis
+         *
+         * @param {Number} angle Angle of rotation in degrees
+         */
+        rotateLookX: function (angle) {
+
+            // Get 'look' -> 'eye' vector
+            var look2 = XEO.math.subVec3(this._state.look, this._state.eye, []);
+
+            // Get orthogonal vector from 'eye' and 'up'
+            var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(look2, []), XEO.math.normalizeVec3(this._state.up, []));
+
+            // Rotate 'look' vector about orthogonal vector
+            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, left);
+            look2 = XEO.math.transformPoint3(mat, look2, []);
+
+            // Set eye position as 'look' plus 'eye' vector
+            this.look = XEO.math.addVec3(look2, this._state.eye, []);
+
+            // Rotate 'up' vector about orthogonal vector
+            this.up = XEO.math.transformPoint3(mat, this._state.up, []);
+        },
+
+        /**
+         * Pans the camera along X and Y axis.
+         * @param pan The pan vector
+         */
+        pan: function (pan) {
+
+            // Get 'look' -> 'eye' vector
+            var eye2 = XEO.math.subVec3(this._state.eye, this._state.look, []);
+
+            // Building this pan vector
+            var vec = [0, 0, 0];
+            var v;
+
+            if (pan[0] !== 0) {
+
+                // Pan along orthogonal vector to 'look' and 'up'
+
+                var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(eye2, []), XEO.math.normalizeVec3(this._state.up, []));
+
+                v = XEO.math.mulVec3Scalar(left, pan[0]);
+
+                vec[0] += v[0];
+                vec[1] += v[1];
+                vec[2] += v[2];
+            }
+
+            if (pan[1] !== 0) {
+
+                // Pan along 'up' vector
+
+                v = XEO.math.mulVec3Scalar(XEO.math.normalizeVec3(this._state.up, []), pan[1]);
+
+                vec[0] += v[0];
+                vec[1] += v[1];
+                vec[2] += v[2];
+            }
+
+            if (pan[2] !== 0) {
+
+                // Pan along 'eye'- -> 'look' vector
+
+                v = XEO.math.mulVec3Scalar(XEO.math.normalizeVec3(eye2, []), pan[2]);
+
+                vec[0] += v[0];
+                vec[1] += v[1];
+                vec[2] += v[2];
+            }
+
+            this.eye = XEO.math.addVec3(this._state.eye, vec, []);
+            this.look = XEO.math.addVec3(this._state.look, vec, []);
+        },
+
+        /**
+         * Increments/decrements zoom factor, ie. distance between eye and look.
+         * @param delta
+         */
+        zoom: function (delta) {
+
+            var vec = XEO.math.subVec3(this._state.eye, this._state.look, []); // Get vector from eye to look
+            var lenLook = Math.abs(XEO.math.lenVec3(vec, []));    // Get len of that vector
+            var newLenLook = Math.abs(lenLook + delta);         // Get new len after zoom
+
+            var dir = XEO.math.normalizeVec3(vec, []);  // Get normalised vector
+
+            this.eye = XEO.math.addVec3(this._state.look, XEO.math.mulVec3Scalar(dir, newLenLook), []);
+        },
+        
+        _props: {
+
+            /**
+             * Position of this Lookat's eye.
+             *
+             * Fires an {{#crossLink "Lookat/eye:event"}}{{/crossLink}} event on change.
+             *
+             * @property eye
+             * @default [0,0,-10]
+             * @type Array(Number)
+             */
+            eye: {
+
+                set: function (value) {
+
+                    value = value || [0, 0, -10];
+
+                    var eye = this._state.eye;
+
+                    eye[0] = value[0];
+                    eye[1] = value[1];
+                    eye[2] = value[2];
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Lookat's  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event eye
+                     * @param value The property's new value
+                     */
+                    this.fire("eye", this._state.eye);
+                },
+
+                get: function () {
+                    return this._state.eye;
+                }
+            },
+
+            /**
+             * Position of this Lookat's point-of-interest.
+             *
+             * Fires a {{#crossLink "Lookat/look:event"}}{{/crossLink}} event on change.
+             *
+             * @property look
+             * @default [0,0,0]
+             * @type Array(Number)
+             */
+            look: {
+
+                set: function (value) {
+
+                    value = value || [0, 0, 0];
+
+                    var look = this._state.look;
+
+                    look[0] = value[0];
+                    look[1] = value[1];
+                    look[2] = value[2];
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Lookat's  {{#crossLink "Lookat/look:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event look
+                     * @param value The property's new value
+                     */
+                    this.fire("look", this._state.look);
+                },
+
+                get: function () {
+                    return this._state.look;
+                }
+            },
+
+            /**
+             * Direction of the "up" vector.
+             * Fires an {{#crossLink "Lookat/up:event"}}{{/crossLink}} event on change.
+             * @property up
+             * @default [0,1,0]
+             * @type Array(Number)
+             */
+            up: {
+
+                set: function (value) {
+
+                    value = value || [0, 1, 0];
+
+                    var up = this._state.up;
+
+                    up[0] = value[0];
+                    up[1] = value[1];
+                    up[2] = value[2];
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Lookat's  {{#crossLink "Lookat/up:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event up
+                     * @param value The property's new value
+                     */
+                    this.fire("up", this._state.up);
+                },
+
+                get: function () {
+                    return this._state.up;
+                }
+            },
+
+            /**
+             * The elements of this Lookat's view transform matrix.
+             *
+             * Fires a {{#crossLink "Lookat/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property matrix
+             * @type {Float64Array}
+             */
+            matrix: {
+
+                get: function () {
+
+                    if (this._dirty) {
+                        this._build();
+                    }
+
+                    return this._state.matrix;
+                }
+            }
+        },
+
+        _compile: function () {
+
+            if (this._dirty) {
+                this._build();
+            }
+
+            this._renderer.viewTransform = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                eye: this._state.eye,
+                look: this._state.look,
+                up: this._state.up
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+;/**
+ An **Ortho** component defines an orthographic projection transform.
+
+ ## Overview
+
+ <ul>
+ <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>Alternatively, use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
+ </ul>
+
+ <img src="../../../assets/images/Ortho.png"></img>
+
+ ## Example
+
+ <iframe style="width: 600px; height: 400px" src="../../examples/camera_ortho.html"></iframe>
+
+ In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
+ {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and an Ortho
+ projection transform.
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -4],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
+ var ortho = new XEO.Ortho(scene, {
+        left: -3.0,
+        right: 3.0,
+        bottom: -3.0,
+        top: 3.0,
+        near: 0.1,
+        far: 1000
+    });
+
+ var camera = new XEO.Camera(scene, {
+        view: lookat,
+        project: ortho
+    });
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ var object = new XEO.GameObject(scene, {
+        camera: camera,
+        geometry: geometry
+    });
+
+ scene.on("tick",
+    function () {
+                camera.view.rotateEyeY(0.5);
+                camera.view.rotateEyeX(0.3);
+            });
+ ````
+
+ @class Ortho
+ @module XEO
+ @submodule camera
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Ortho within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Ortho.
+ @param [cfg.left=-1.0] {Number} Position of the left plane on the View-space X-axis.
+ @param [cfg.right=1.0] {Number} Position of the right plane on the View-space X-axis.
+ @param [cfg.top=1.0] {Number} Position of the top plane on the View-space Y-axis.
+ @param [cfg.bottom=-1.0] {Number} Position of the bottom plane on the View-space Y-axis.
+ @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
+ @param [cfg.far=10000] {Number} Position of the far plane on the positive View-space Z-axis.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Ortho = XEO.Component.extend({
+
+        type: "XEO.Ortho",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.ProjTransform({
+                matrix: null
+            });
+
+            // Ortho view volume
+            this._dirty = false;
+            this._left = -1.0;
+            this._right = 1.0;
+            this._top = 1.0;
+            this._bottom = -1.0;
+            this._near = 0.1;
+            this._far = 10000.0;
+
+            // Set properties on this component
+            this.left = cfg.left;
+            this.right = cfg.right;
+            this.top = cfg.top;
+            this.bottom = cfg.bottom;
+            this.near = cfg.near;
+            this.far = cfg.far;
+        },
+
+        // Schedules a call to #_build on the next "tick"
+        _scheduleBuild: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                var self = this;
+                this.scene.once("tick",
+                    function () {
+                        self._build();
+                    });
+            }
+        },
+
+        // Rebuilds the rendering state from this component
+        _build: function () {
+
+            this._state.matrix = XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
+
+            this._dirty = false;
+
+            /**
+             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
+             * @event matrix
+             * @param value The property's new value
+             */
+            this.fire("matrix", this._state.matrix);
+        },
+
+        _props: {
+
+            /**
+             * Position of this Ortho's left plane on the View-space X-axis.
+             *
+             * Fires a {{#crossLink "Ortho/left:event"}}{{/crossLink}} event on change.
+             *
+             * @property left
+             * @default -1.0
+             * @type Number
+             */
+            left: {
+
+                set: function (value) {
+
+                    this._left = (value !== undefined && value !== null) ? value : -1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Ortho's  {{#crossLink "Ortho/left:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event left
+                     * @param value The property's new value
+                     */
+                    this.fire("left", this._left);
+                },
+
+                get: function () {
+                    return this._left;
+                }
+            },
+
+            /**
+             * Position of this Ortho's right plane on the View-space X-axis.
+             *
+             * Fires a {{#crossLink "Ortho/right:event"}}{{/crossLink}} event on change.
+             *
+             * @property right
+             * @default 1.0
+             * @type Number
+             */
+            right: {
+
+                set: function (value) {
+
+                    this._right = (value !== undefined && value !== null) ? value : 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Ortho's  {{#crossLink "Ortho/right:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event right
+                     * @param value The property's new value
+                     */
+                    this.fire("right", this._right);
+                },
+
+                get: function () {
+                    return this._right;
+                }
+            },
+
+            /**
+             * Position of this Ortho's top plane on the View-space Y-axis.
+             *
+             * Fires a {{#crossLink "Ortho/top:event"}}{{/crossLink}} event on change.
+             *
+             * @property top
+             * @default 1.0
+             * @type Number
+             */
+            top: {
+
+                set: function (value) {
+
+                    this._top = (value !== undefined && value !== null) ? value : 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Ortho's  {{#crossLink "Ortho/top:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event top
+                     * @param value The property's new value
+                     */
+                    this.fire("top", this._top);
+                },
+
+                get: function () {
+                    return this._top;
+                }
+            },
+
+            /**
+             * Position of this Ortho's bottom plane on the View-space Y-axis.
+             *
+             * Fires a {{#crossLink "Ortho/bottom:event"}}{{/crossLink}} event on change.
+             *
+             * @property bottom
+             * @default -1.0
+             * @type Number
+             */
+            bottom: {
+
+                set: function (value) {
+
+                    this._bottom = (value !== undefined && value !== null) ? value : -1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Ortho's  {{#crossLink "Ortho/bottom:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event bottom
+                     * @param value The property's new value
+                     */
+                    this.fire("bottom", this._bottom);
+                },
+
+                get: function () {
+                    return this._bottom;
+                }
+            },
+
+            /**
+             * Position of this Ortho's near plane on the positive View-space Z-axis.
+             *
+             * Fires a {{#crossLink "Ortho/near:event"}}{{/crossLink}} event on change.
+             *
+             * @property near
+             * @default 0.1
+             * @type Number
+             */
+            near: {
+
+                set: function (value) {
+
+                    this._near = (value !== undefined && value !== null) ? value :  0.1;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event near
+                     * @param value The property's new value
+                     */
+                    this.fire("near", this._near);
+                },
+
+                get: function () {
+                    return this._near;
+                }
+            },
+
+            /**
+             * Position of this Ortho's far plane on the positive View-space Z-axis.
+             *
+             * Fires a {{#crossLink "Ortho/far:event"}}{{/crossLink}} event on change.
+             *
+             * @property far
+             * @default 10000.0
+             * @type Number
+             */
+            far: {
+
+                set: function (value) {
+
+                    this._far = (value !== undefined && value !== null) ? value :  10000.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event far
+                     * @param value The property's new value
+                     */
+                    this.fire("far", this._far);
+                },
+
+                get: function () {
+                    return this._far;
+                }
+            },
+
+            /**
+             * The elements of this Ortho's projection transform matrix.
+             *
+             * Fires a {{#crossLink "Ortho/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property matrix
+             * @type {Float64Array}
+             */
+            matrix: {
+
+                get: function () {
+
+                    if (this._dirty) {
+                        this._build();
+                    }
+
+                    return this._state.matrix;
+                }
+            }
+        },
+
+        _compile: function () {
+
+            if (this._dirty) {
+                this._build();
+            }
+
+            this._renderer.projTransform = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                left: this._left,
+                right: this._right,
+                top: this._top,
+                bottom: this._bottom,
+                near: this._near,
+                far: this._far
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+;/**
+ A **Perspective** component defines a perspective projection transform.
+
+ ## Overview
+
+ <ul>
+
+ <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Perspective components create within xeoEngine's shaders.</li>
+ </ul>
+
+ <img src="../../../assets/images/Perspective.png"></img>
+
+ ## Example
+
+ <iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
+
+ In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
+ {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Perspective
+ projection transform.
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -4],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
+ var perspective = new XEO.Perspective(scene, {
+        fovy: 60,
+        near: 0.1,
+        far: 1000
+    });
+
+ var camera = new XEO.Camera(scene, {
+        view: lookat,
+        project: perspective
+    });
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ var object = new XEO.GameObject(scene, {
+        camera: camera,
+        geometry: geometry
+    });
+
+ scene.on("tick", function () {
+       camera.view.rotateEyeY(0.5);
+       camera.view.rotateEyeX(0.3);
+    });
+ ````
+ @class Perspective
+ @module XEO
+ @submodule camera
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Perspective within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
+ @param [cfg.fovy=60.0] {Number} Field-of-view angle, in degrees, on Y-axis.
+ @param [cfg.aspect=1.0] {Number} Aspect ratio.
+ @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
+ @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Perspective = XEO.Component.extend({
+
+        type: "XEO.Perspective",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.ProjTransform({
+                matrix: null
+            });
+
+            this._dirty = false;
+            this._fovy = 60.0;
+            this._aspect = 1.0;
+            this._near = 0.1;
+            this._far = 10000.0;
+
+            var self = this;
+            var canvas = this.scene.canvas;
+
+            // Recompute aspect from change in canvas size
+            this._canvasResized = canvas.on("resized",
+                function () {
+                    self._aspect = canvas.width / canvas.height;
+                });
+
+            this.fovy = cfg.fovy;
+            this.aspect = canvas.width / canvas.height;
+            this.near = cfg.near;
+            this.far = cfg.far;
+        },
+
+        // Schedules a call to #_build on the next "tick"
+        _scheduleBuild: function () {
+
+            if (!this._dirty) {
+
+                this._dirty = true;
+
+                var self = this;
+
+                this.scene.once("tick",
+                    function () {
+                        self._build();
+                    });
+            }
+        },
+
+        // Rebuilds renderer state from component state
+        _build: function () {
+
+            var canvas = this.scene.canvas.canvas;
+            var aspect = canvas.width / canvas.height;
+
+            this._state.matrix = XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far);
+
+            this._dirty = false;
+
+            /**
+             * Fired whenever this Perspective's {{#crossLink "Perspective/matrix:property"}}{{/crossLink}} property changes.
+             *
+             * @event matrix
+             * @param value The property's new value
+             */
+            this.fire("matrix", this._state.matrix);
+        },
+
+        _props: {
+
+            /**
+             * The angle, in degrees on the Y-axis, of this Perspective's field-of-view.
+             *
+             * Fires a {{#crossLink "Perspective/fovy:event"}}{{/crossLink}} event on change.
+             *
+             * @property fovy
+             * @default 60.0
+             * @type Number
+             */
+            fovy: {
+
+                set: function (value) {
+
+                    this._fovy = (value !== undefined && value !== null) ? value : 60.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Perspective's {{#crossLink "Perspective/fovy:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event fovy
+                     * @param value The property's new value
+                     */
+                    this.fire("fovy", this._fovy);
+                },
+
+                get: function () {
+                    return this._fovy;
+                }
+            },
+
+            /**
+             * Aspect ratio of this Perspective frustum. This is effectively the height of the frustum divided by the width.
+             *
+             * Fires an {{#crossLink "Perspective/aspect:property"}}{{/crossLink}} event on change.
+             *
+             * @property aspect
+             * @default 60.0
+             * @type Number
+             */
+            aspect: {
+
+                set: function (value) {
+
+                    this._aspect = (value !== undefined && value !== null) ? value : 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Perspective's {{#crossLink "Perspective/aspect:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event aspect
+                     * @param value The property's new value
+                     */
+                    this.fire("aspect", this._aspect);
+                },
+
+                get: function () {
+                    return this._aspect;
+                }
+            },
+
+            /**
+             * Position of this Perspective's near plane on the positive View-space Z-axis.
+             *
+             * Fires a {{#crossLink "Perspective/near:event"}}{{/crossLink}} event on change.
+             *
+             * @property near
+             * @default 0.1
+             * @type Number
+             */
+            near: {
+
+                set: function (value) {
+
+                    this._near = (value !== undefined && value !== null) ? value : 0.1;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Perspective's   {{#crossLink "Perspective/near:property"}}{{/crossLink}} property changes.
+                     * @event near
+                     * @param value The property's new value
+                     */
+                    this.fire("near", this._near);
+                },
+
+                get: function () {
+                    return this._near;
+                }
+            },
+
+            /**
+             * Position of this Perspective's far plane on the positive View-space Z-axis.
+             *
+             * Fires a {{#crossLink "Perspective/far:event"}}{{/crossLink}} event on change.
+             *
+             * @property far
+             * @default 10000.0
+             * @type Number
+             */
+            far: {
+
+                set: function (value) {
+
+                    this._far = (value !== undefined && value !== null) ? value : 10000;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Perspective's  {{#crossLink "Perspective/far:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event far
+                     * @param value The property's new value
+                     */
+                    this.fire("far", this._far);
+                },
+
+                get: function () {
+                    return this._far;
+                }
+            },
+
+            /**
+             * The elements of this Perspective's projection transform matrix.
+             *
+             * Fires a {{#crossLink "Perspective/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property matrix
+             * @type {Float64Array}
+             */
+            matrix: {
+
+                get: function () {
+
+                    if (this._dirty) {
+                        this._build();
+                    }
+
+                    return this._state.matrix;
+                }
+            }
+        },
+
+        _compile: function () {
+
+            if (this._dirty) {
+                this._build();
+            }
+
+            this._renderer.projTransform = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                fovy: this._fovy,
+                near: this._near,
+                far: this._far
+            };
+        },
+
+        _destroy: function () {
+
+            this.scene.canvas.off(this._canvasResized);
+
+            this._state.destroy();
+        }
+    });
+
+})();
 ;/**
  * Components for cross-section views of GameObjects.
  *
@@ -4502,7 +6227,7 @@ visibility.destroy();
                             },
 
                             getPositions: function () {
-                                return this._positions
+                                return self._positions
                             }
                         });
 
@@ -4522,7 +6247,7 @@ visibility.destroy();
         _setModelBoundaryDirty: function () {
             this._modelBoundaryDirty = true;
             if (this._modelBoundary) {
-                this._modelBoundary.set("updated", true);
+                this._modelBoundary.fire("updated", true);
             }
         },
 
@@ -5168,17 +6893,17 @@ visibility.destroy();
             this._worldBoundaryDirty = true;
             this._viewBoundaryDirty = true;
             if (this._worldBoundary) {
-                this._worldBoundary.set("updated", true);
+                this._worldBoundary.fire("updated", true);
             }
             if (this._viewBoundary) {
-                this._viewBoundary.set("updated", true);
+                this._viewBoundary.fire("updated", true);
             }
         },
 
         _setViewBoundaryDirty: function () {
             this._viewBoundaryDirty = true;
             if (this._viewBoundary) {
-                this._viewBoundary.set("updated", true);
+                this._viewBoundary.fire("updated", true);
             }
         },
         
@@ -6434,7 +8159,7 @@ var myScene = new XEO.Scene();
  <li>zooming - {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} and {{#crossLink "MouseZoomCamera"}}{{/crossLink}}</li>
  <li>switching preset views - {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}}</li>
  <li>picking - {{#crossLink "MousePickObject"}}{{/crossLink}}</li>
- <li>camera flight animation - {{#crossLink "CameraFlyAnimation"}}{{/crossLink}}</li>
+ <li>camera flight animation - {{#crossLink "CameraFlight"}}{{/crossLink}}</li>
  </ul>
 
  A CameraControl provides the controls as read-only properties, in case you need to configure or deactivate
@@ -6617,13 +8342,13 @@ var myScene = new XEO.Scene();
             });
 
             /**
-             * The {{#crossLink "CameraFlyAnimation"}}{{/crossLink}} within this CameraControl.
+             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
              *
              * @property cameraFly
              * @final
-             * @type CameraFlyAnimation
+             * @type CameraFlight
              */
-            this.cameraFly = new XEO.CameraFlyAnimation(scene, {
+            this.cameraFly = new XEO.CameraFlight(scene, {
                 camera: cfg.camera
             });
 
@@ -6882,7 +8607,7 @@ var myScene = new XEO.Scene();
 
             // Animations
 
-            this._cameraFly = new XEO.CameraFlyAnimation(this.scene, {
+            this._cameraFly = new XEO.CameraFlight(this.scene, {
             });
 
             // Init properties
@@ -15644,17 +17369,17 @@ XEO.math.buildTangents = function (positions, indices, uv) {
             this._worldBoundaryDirty = true;
             this._viewBoundaryDirty = true;
             if (this._worldBoundary) {
-                this._worldBoundary.set("updated", true);
+                this._worldBoundary.fire("updated", true);
             }
             if (this._viewBoundary) {
-                this._viewBoundary.set("updated", true);
+                this._viewBoundary.fire("updated", true);
             }
         },
 
         _setViewBoundaryDirty: function () {
             this._viewBoundaryDirty = true;
             if (this._viewBoundary) {
-                this._viewBoundary.set("updated", true);
+                this._viewBoundary.fire("updated", true);
             }
         },
 
@@ -24175,1706 +25900,12 @@ myTask2.setFailed();
 
 })();
 ;/**
- * Components for Modelling, View and Projection transformation.
+ * Modelling transform components.
  *
  * @module XEO
  * @submodule transforms
- */;
-
-/**
- A **Camera** defines a viewpoint on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
- ## Overview
-
- <ul>
-
- <li> A Camera is composed of a viewing transform and a projection transform.</li>
-
- <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.</li>
-
- <li>The projection transform may be an {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}}
- or {{#crossLink "Perspective"}}Perspective{{/crossLink}}.</li>
-
- <li> By default, each Camera is composed of its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
- (which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}) and default
- {{#crossLink "Scene/project:property"}}{{/crossLink}} transform (which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}).
- You would override those with your own transform components as necessary.</li>
-
- </ul>
-
- <img src="../../../assets/images/Camera.png"></img>
-
- ## Example
-
- In this example we have
-
- <ul>
- <li>a {{#crossLink "Lookat"}}{{/crossLink}} view transform,</li>
- <li>a {{#crossLink "Perspective"}}{{/crossLink}} projection transform,</li>
- <li>a Camera attached to the {{#crossLink "Lookat"}}{{/crossLink}} and {{#crossLink "Perspective"}}{{/crossLink}},</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
-
-
- ```` javascript
- var scene = new XEO.Scene();
-
- var lookat = new XEO.Lookat(scene, {
-        eye: [0,0,-10],
-        look: [0,0,0],
-        up: [0,1,0]
-     });
-
- var perspective = new XEO.Lookat(scene, {
-        fovy: 60,
-        near: 0.1,
-        far: 1000
-     });
-
- var camera = new XEO.Camera(scene, {
-        view: lookat,
-        project: perspective
-     });
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var object = new XEO.GameObject(scene, {
-        camera: camera,
-        geometry: geometry
-     });
-
- ````
- @class Camera
- @module XEO
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Camera within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- You only need to supply an ID if you need to be able to find the Camera by ID within its parent {{#crossLink "Scene"}}Scene{{/crossLink}} later.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Camera.
- @param [cfg.view] {String|XEO.Lookat} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
- which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
- @param [cfg.project] {String|XEO.Perspective|XEO.Ortho|XEO.Frustum} ID or instance of a projection transform
- within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the parent
- {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/project:property"}}{{/crossLink}} transform,
- which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Camera = XEO.Component.extend({
-
-        type: "XEO.Camera",
-
-        _init: function (cfg) {
-
-            this.project = cfg.project;
-
-            this.view = cfg.view;
-        },
-
-        _props: {
-
-            /**
-             * The projection transform component for this Camera.
-             *
-             * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
-             * default {{#crossLink "Scene/project:property"}}project{{/crossLink}}, which is
-             * a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
-             *
-             * Fires a {{#crossLink "Camera/project:event"}}{{/crossLink}} event on change.
-             *
-             * @property project
-             * @type Perspective|XEO.Ortho|XEO.Frustum
-             */
-            project: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Camera's {{#crossLink "Camera/project:property"}}{{/crossLink}} property changes.
-                     * @event project
-                     * @param value The property's new value
-                     */
-                    this._setChild("project", value);
-                },
-
-                get: function () {
-                    return this._children.project;
-                }
-            },
-
-            /**
-             * The viewing transform component for this Camera.
-             *
-             * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
-             * default {{#crossLink "Scene/view:property"}}view{{/crossLink}}, which is
-             * a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
-             *
-             * Fires a {{#crossLink "Camera/view:event"}}{{/crossLink}} event on change.
-             *
-             * @property view
-             * @type Lookat
-             */
-            view: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Camera's {{#crossLink "Camera/view:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event view
-                     * @param value The property's new value
-                     */
-                    this._setChild("view", value);
-                },
-
-                get: function () {
-                    return this._children.view;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._children.project._compile();
-            this._children.view._compile();
-        },
-
-        _getJSON: function () {
-
-            var json = {};
-
-            if (this._children.project) {
-                json.project = this._children.project.id;
-            }
-
-            if (this._children.view) {
-                json.view = this._children.view.id;
-            }
-
-            return json;
-        }
-    });
-
-})();
-;/**
- A **Frustum** defines a perspective projection as a frustum-shaped view volume.
-
- ## Overview
-
- <ul>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
- </ul>
-
- <img src="../../../assets/images/Frustum.png"></img>
-
- ## Example
-
- In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
- {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Frustum
- projection transform.
-
- ````Javascript
- var scene = new XEO.Scene(engine);
-
- // Create a Frustum with default values
- var frustum = new XEO.Frustum(scene, {
-    left:       1.0,    // Position of the left plane on the View-space X-axis
-    right:      1.0,    // Position of the right plane on the View-space X-axis
-    top:        1.0,    // Position of the top plane on the View-space Y-axis.
-    bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.
-    near:       0.1,    // Position of the near plane on the View-space Z-axis.
-    far:        10000   // Position of the far plane on the positive View-space Z-axis.
-});
-
- // Camera the includes our Frustum and falls back on
- // the Scene's default view transform, which is a Lookat
- var camera = new XEO.Camera(scene, {
-    project: frustum
-});
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- // Object which uses the Camera to render the Geometry
- var object = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry
-});
-
- // Subscribe to changes to one of the properties of our Frustum
- frustum.on("near", function(value) {
-    console.log("Frustum 'near' updated: " + value);
-});
-
- // Set the value of a property on our Frustum component,
- // which fires the event we just subscribed to
- frustum.near = 45.0;
-
- // Get the value of a property on our Frustum component
- var value = frustum.near;
-
- // Destroy ths Frustum component, causing the Camera to
- // fall back on the Scene's default projection transform,
- // which is a Perspective
- frustum.destroy();
- ````
-
- @class Frustum
- @module XEO
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Frustum within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Frustum.
- @param [cfg.left=-1] {Number} Position of the Frustum's left plane on the View-space X-axis.
- @param [cfg.right=1] {Number} Position of the Frustum's right plane on the View-space X-axis.
- @param [cfg.top=1] {Number} Position of the Frustum's top plane on the View-space Y-axis.
- @param [cfg.bottom=-1] {Number} Position of the Frustum's bottom plane on the View-space Y-axis.
- @param [cfg.near=0.1] {Number} Position of the Frustum's near plane on the View-space Z-axis.
- @param [cfg.far=1000] {Number} Position of the Frustum's far plane on the positive View-space Z-axis.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Frustum = XEO.Component.extend({
-
-        type: "XEO.Frustum",
-
-        _init: function (cfg) {
-
-            this._state = new XEO.renderer.ProjTransform({
-                matrix: null
-            });
-
-            this._dirty = false;
-
-            this._left = -1.0;
-            this._right = 1.0;
-            this._top = 1.0;
-            this._bottom = -1.0;
-            this._near = 0.1;
-            this._far = 10000.0;
-
-            // Set component properties
-
-            this.left = cfg.left;
-            this.right = cfg.right;
-            this.top = cfg.top;
-            this.bottom = cfg.bottom;
-            this.near = cfg.near;
-            this.far = cfg.far;
-        },
-
-        // Schedules state rebuild on the next "tick"
-
-        _scheduleBuild: function () {
-
-            if (!this._dirty) {
-
-                this._dirty = true;
-
-                var self = this;
-
-                this.scene.once("tick",
-                    function () {
-                        self._build();
-                    });
-            }
-        },
-
-        // Rebuilds state
-
-        _build: function () {
-
-            this._state.matrix = XEO.math.frustumMat4(
-                this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
-
-            this._dirty = false;
-
-            /**
-             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
-        },
-
-        _props: {
-
-            /**
-             Position of this Frustum's left plane on the View-space X-axis.
-
-             Fires a {{#crossLink "Frustum/left:event"}}{{/crossLink}} event on change.
-
-             @property left
-             @default -1.0
-             @type Number
-             */
-            left: {
-
-                set: function (value) {
-
-                    this._left = (value !== undefined && value !== null) ? value : -1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Frustum's {{#crossLink "Frustum/left:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event left
-                     * @param value The property's new value
-                     */
-                    this.fire("left", this._left);
-                },
-
-                get: function () {
-                    return this._left;
-                }
-            },
-
-            /**
-             * Position of this Frustum's right plane on the View-space X-axis.
-             *
-             * Fires a {{#crossLink "Frustum/right:event"}}{{/crossLink}} event on change.
-             *
-             * @property right
-             * @default 1.0
-             * @type Number
-             */
-            right: {
-
-                set: function (value) {
-
-                    this._right = (value !== undefined && value !== null) ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Frustum's {{#crossLink "Frustum/right:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event right
-                     * @param value The property's new value
-                     */
-                    this.fire("right", this._right);
-                },
-
-                get: function () {
-                    return this._right;
-                }
-            },
-
-            /**
-             * Position of this Frustum's top plane on the View-space Y-axis.
-             *
-             * Fires a {{#crossLink "Frustum/top:event"}}{{/crossLink}} event on change.
-             *
-             * @property top
-             * @default 1.0
-             * @type Number
-             */
-            top: {
-
-                set: function (value) {
-
-                    this._top  = (value !== undefined && value !== null) ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Frustum's   {{#crossLink "Frustum/top:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event top
-                     * @param value The property's new value
-                     */
-                    this.fire("top", this._top);
-                },
-
-                get: function () {
-                    return this._top;
-                }
-            },
-
-            /**
-             * Position of this Frustum's bottom plane on the View-space Y-axis.
-             *
-             * Fires a {{#crossLink "Frustum/bottom:event"}}{{/crossLink}} event on change.
-             *
-             * @property bottom
-             * @default -1.0
-             * @type Number
-             */
-            bottom: {
-
-                set: function (value) {
-
-                    this._bottom = (value !== undefined && value !== null) ? value : -1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Frustum's   {{#crossLink "Frustum/bottom:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event bottom
-                     * @param value The property's new value
-                     */
-                    this.fire("bottom", this._bottom);
-                },
-
-                get: function () {
-                    return this._bottom;
-                }
-            },
-
-            /**
-             * Position of this Frustum's near plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Frustum/near:event"}}{{/crossLink}} event on change.
-             *
-             * @property near
-             * @default 0.1
-             * @type Number
-             */
-            near: {
-
-                set: function (value) {
-
-                    this._near = (value !== undefined && value !== null) ? value : 0.1;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event near
-                     * @param value The property's new value
-                     */
-                    this.fire("near", this._near);
-                },
-
-                get: function () {
-                    return this._near;
-                }
-            },
-
-            /**
-             * Position of this Frustum's far plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Frustum/far:event"}}{{/crossLink}} event on change.
-             *
-             * @property far
-             * @default 10000.0
-             * @type Number
-             */
-            far: {
-
-                set: function (value) {
-
-                    this._far = (value !== undefined && value !== null) ? value : 10000.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Frustum's  {{#crossLink "Frustum/far:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event far
-                     * @param value The property's new value
-                     */
-                    this.fire("far", this._far);
-                },
-
-                get: function () {
-                    return this._far;
-                }
-            },
-
-            /**
-             * The elements of this Frustum's projection transform matrix.
-             *
-             * Fires a {{#crossLink "Frustum/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @type {Float64Array}
-             */
-            matrix: {
-
-                get: function () {
-
-                    if (this._dirty) {
-                        this._build();
-                    }
-
-                    return this._state.matrix;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.projectTransform = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                left: this._left,
-                right: this._right,
-                top: this._top,
-                bottom: this._bottom,
-                near: this._near,
-                far: this._far
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- A **Lookat** defines a viewing transform as an {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}} position, a
- {{#crossLink "Lookat/look:property"}}look{{/crossLink}} position and an {{#crossLink "Lookat/up:property"}}up{{/crossLink}}
- vector.
-
- ## Overview
-
- <ul>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
- {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>
- </ul>
-
- <img src="../../../assets/images/Lookat.png"></img>
-
- ## Example
-
- In this example we have a Lookat that positions the eye at -10 on the World-space Z-axis, while looking at the origin.
- Then we aattach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to a {{#crossLink "GameObject"}}{{/crossLink}}.
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var myLookat = new XEO.Lookat(scene, {
-    eye: [0,0,-10],
-    look: [0,0,0],
-    up: [0,1,0]
- });
-
- var camera = new XEO.Camera(scene, {
-    view: myLookat
- });
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var object = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry
- });
-
- // Subscribe to changes on a camera property
- lookat.on("eye", function(value) {
-    console.log("eye updated: " + value[0] + ", " + value[1] + ", " + value[2]);
- });
-
- // Set the value of a camera property, which fires the event we just subscribed to
- lookat.eye = [-5, 0, -10];
-
- // Get the value of a camera property
- var value = lookat.eye;
-
- // Destroy ths lookat, causing the camera to fall back on the scene's default viewing transform
- lookat.destroy();
- ````
-
- @class Lookat
- @module XEO
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Lookat in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lookat.
- @param [cfg.eye=[0,0,-10]] {Array of Number} Eye position.
- @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
- @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
- @extends Component
- @author xeolabs / http://xeolabs.com/
- */
-(function () {
-
-    "use strict";
-
-    XEO.Lookat = XEO.Component.extend({
-
-        type: "XEO.Lookat",
-
-        _init: function (cfg) {
-
-            this._state = new XEO.renderer.ViewTransform({
-                matrix: XEO.math.mat4(),
-                normalMatrix: XEO.math.mat4(),
-                eye: [0, 0, -10.0],
-                look: [0, 0, 0],
-                up: [0, 1, 0]
-            });
-
-            this._dirty = true;
-
-            this.eye = cfg.eye;
-            this.look = cfg.look;
-            this.up = cfg.up;
-        },
-
-        // Schedules a call to #_build on the next "tick"
-        _scheduleBuild: function () {
-
-            if (!this._dirty) {
-
-                this._dirty = true;
-
-                var self = this;
-
-                this.scene.once("tick",
-                    function () {
-                        self._build();
-                    });
-            }
-        },
-
-        // Rebuilds rendering state
-        _build: function () {
-
-            this._state.matrix = new Float32Array(XEO.math.lookAtMat4c(
-                this._state.eye[0], this._state.eye[1], this._state.eye[2],
-                this._state.look[0], this._state.look[1], this._state.look[2],
-                this._state.up[0], this._state.up[1], this._state.up[2],
-                this._state.matrix));
-
-            this._state.normalMatrix = new Float32Array(XEO.math.transposeMat4(new Float32Array(XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
-
-            this._dirty = false;
-
-            /**
-             * Fired whenever this Lookat's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is updated.
-             *
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
-        },
-
-        /**
-         * Rotate 'eye' about 'look', around the 'up' vector
-         *
-         * @param {Number} angle Angle of rotation in degrees
-         */
-        rotateEyeY: function (angle) {
-
-            // Get 'look' -> 'eye' vector
-            var eye2 = XEO.math.subVec3(this._state.eye, this._state.look, []);
-
-            // Rotate 'eye' vector about 'up' vector
-            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._state.up);
-            eye2 = XEO.math.transformPoint3(mat, eye2, []);
-
-            // Set eye position as 'look' plus 'eye' vector
-            this.eye = XEO.math.addVec3(eye2, this._state.look, []);
-        },
-
-        /**
-         * Rotate 'eye' about 'look' around the X-axis
-         *
-         * @param {Number} angle Angle of rotation in degrees
-         */
-        rotateEyeX: function (angle) {
-
-            // Get 'look' -> 'eye' vector
-            var eye2 = XEO.math.subVec3(this._state.eye, this._state.look, []);
-
-            // Get orthogonal vector from 'eye' and 'up'
-            var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(eye2, []), XEO.math.normalizeVec3(this._state.up, []));
-
-            // Rotate 'eye' vector about orthogonal vector
-            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, left);
-            eye2 = XEO.math.transformPoint3(mat, eye2, []);
-
-            // Set eye position as 'look' plus 'eye' vector
-            this.eye = XEO.math.addVec3(eye2, this._state.look, []);
-
-            // Rotate 'up' vector about orthogonal vector
-            this.up = XEO.math.transformPoint3(mat, this._state.up, []);
-        },
-
-        /**
-         * Rotate 'look' about 'eye', around the 'up' vector
-         *
-         * <p>Applies constraints added with {@link #addConstraint}.</p>
-         *
-         * @param {Number} angle Angle of rotation in degrees
-         */
-        rotateLookY: function (angle) {
-
-            // Get 'look' -> 'eye' vector
-            var look2 = XEO.math.subVec3(this._state.look, this._state.eye, []);
-
-            // Rotate 'look' vector about 'up' vector
-            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._state.up);
-            look2 = XEO.math.transformPoint3(mat, look2, []);
-
-            // Set look position as 'look' plus 'eye' vector
-            this.look = XEO.math.addVec3(look2, this._state.eye, []);
-        },
-
-        /**
-         * Rotate 'eye' about 'look' around the X-axis
-         *
-         * @param {Number} angle Angle of rotation in degrees
-         */
-        rotateLookX: function (angle) {
-
-            // Get 'look' -> 'eye' vector
-            var look2 = XEO.math.subVec3(this._state.look, this._state.eye, []);
-
-            // Get orthogonal vector from 'eye' and 'up'
-            var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(look2, []), XEO.math.normalizeVec3(this._state.up, []));
-
-            // Rotate 'look' vector about orthogonal vector
-            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, left);
-            look2 = XEO.math.transformPoint3(mat, look2, []);
-
-            // Set eye position as 'look' plus 'eye' vector
-            this.look = XEO.math.addVec3(look2, this._state.eye, []);
-
-            // Rotate 'up' vector about orthogonal vector
-            this.up = XEO.math.transformPoint3(mat, this._state.up, []);
-        },
-
-        /**
-         * Pans the camera along X and Y axis.
-         * @param pan The pan vector
-         */
-        pan: function (pan) {
-
-            // Get 'look' -> 'eye' vector
-            var eye2 = XEO.math.subVec3(this._state.eye, this._state.look, []);
-
-            // Building this pan vector
-            var vec = [0, 0, 0];
-            var v;
-
-            if (pan[0] !== 0) {
-
-                // Pan along orthogonal vector to 'look' and 'up'
-
-                var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(eye2, []), XEO.math.normalizeVec3(this._state.up, []));
-
-                v = XEO.math.mulVec3Scalar(left, pan[0]);
-
-                vec[0] += v[0];
-                vec[1] += v[1];
-                vec[2] += v[2];
-            }
-
-            if (pan[1] !== 0) {
-
-                // Pan along 'up' vector
-
-                v = XEO.math.mulVec3Scalar(XEO.math.normalizeVec3(this._state.up, []), pan[1]);
-
-                vec[0] += v[0];
-                vec[1] += v[1];
-                vec[2] += v[2];
-            }
-
-            if (pan[2] !== 0) {
-
-                // Pan along 'eye'- -> 'look' vector
-
-                v = XEO.math.mulVec3Scalar(XEO.math.normalizeVec3(eye2, []), pan[2]);
-
-                vec[0] += v[0];
-                vec[1] += v[1];
-                vec[2] += v[2];
-            }
-
-            this.eye = XEO.math.addVec3(this._state.eye, vec, []);
-            this.look = XEO.math.addVec3(this._state.look, vec, []);
-        },
-
-        /**
-         * Increments/decrements zoom factor, ie. distance between eye and look.
-         * @param delta
-         */
-        zoom: function (delta) {
-
-            var vec = XEO.math.subVec3(this._state.eye, this._state.look, []); // Get vector from eye to look
-            var lenLook = Math.abs(XEO.math.lenVec3(vec, []));    // Get len of that vector
-            var newLenLook = Math.abs(lenLook + delta);         // Get new len after zoom
-
-            var dir = XEO.math.normalizeVec3(vec, []);  // Get normalised vector
-
-            this.eye = XEO.math.addVec3(this._state.look, XEO.math.mulVec3Scalar(dir, newLenLook), []);
-        },
-        
-        _props: {
-
-            /**
-             * Position of this Lookat's eye.
-             *
-             * Fires an {{#crossLink "Lookat/eye:event"}}{{/crossLink}} event on change.
-             *
-             * @property eye
-             * @default [0,0,-10]
-             * @type Array(Number)
-             */
-            eye: {
-
-                set: function (value) {
-
-                    value = value || [0, 0, -10];
-
-                    var eye = this._state.eye;
-
-                    eye[0] = value[0];
-                    eye[1] = value[1];
-                    eye[2] = value[2];
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Lookat's  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event eye
-                     * @param value The property's new value
-                     */
-                    this.fire("eye", this._state.eye);
-                },
-
-                get: function () {
-                    return this._state.eye;
-                }
-            },
-
-            /**
-             * Position of this Lookat's point-of-interest.
-             *
-             * Fires a {{#crossLink "Lookat/look:event"}}{{/crossLink}} event on change.
-             *
-             * @property look
-             * @default [0,0,0]
-             * @type Array(Number)
-             */
-            look: {
-
-                set: function (value) {
-
-                    value = value || [0, 0, 0];
-
-                    var look = this._state.look;
-
-                    look[0] = value[0];
-                    look[1] = value[1];
-                    look[2] = value[2];
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Lookat's  {{#crossLink "Lookat/look:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event look
-                     * @param value The property's new value
-                     */
-                    this.fire("look", this._state.look);
-                },
-
-                get: function () {
-                    return this._state.look;
-                }
-            },
-
-            /**
-             * Direction of the "up" vector.
-             * Fires an {{#crossLink "Lookat/up:event"}}{{/crossLink}} event on change.
-             * @property up
-             * @default [0,1,0]
-             * @type Array(Number)
-             */
-            up: {
-
-                set: function (value) {
-
-                    value = value || [0, 1, 0];
-
-                    var up = this._state.up;
-
-                    up[0] = value[0];
-                    up[1] = value[1];
-                    up[2] = value[2];
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Lookat's  {{#crossLink "Lookat/up:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event up
-                     * @param value The property's new value
-                     */
-                    this.fire("up", this._state.up);
-                },
-
-                get: function () {
-                    return this._state.up;
-                }
-            },
-
-            /**
-             * The elements of this Lookat's view transform matrix.
-             *
-             * Fires a {{#crossLink "Lookat/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @type {Float64Array}
-             */
-            matrix: {
-
-                get: function () {
-
-                    if (this._dirty) {
-                        this._build();
-                    }
-
-                    return this._state.matrix;
-                }
-            }
-        },
-
-        _compile: function () {
-
-            if (this._dirty) {
-                this._build();
-            }
-
-            this._renderer.viewTransform = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                eye: this._state.eye,
-                look: this._state.look,
-                up: this._state.up
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- An **Ortho** component defines an orthographic projection transform.
-
- ## Overview
-
- <ul>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
- <li>Alternatively, use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
- </ul>
-
- <img src="../../../assets/images/Ortho.png"></img>
-
- ## Example
-
- In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
- {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and an Ortho
- projection transform.
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var ortho = new XEO.Ortho(scene, {
-    left:       1.0,    // Position of the left plane on the View-space X-axis
-    right:      1.0,    // Position of the right plane on the View-space X-axis
-    top:        1.0,    // Position of the top plane on the View-space Y-axis.
-    bottom :   -1.0,    // Position of the bottom plane on the View-space Y-axis.
-    near:       0.1,    // Position of the near plane on the View-space Z-axis.
-    far:        10000   // Position of the far plane on the positive View-space Z-axis.
- });
-
- var camera = new XEO.Camera(scene, {
-       project: ortho
- });
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var object = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry
- });
- ````
-
- @class Ortho
- @module XEO
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Ortho within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Ortho.
- @param [cfg.left=-1.0] {Number} Position of the left plane on the View-space X-axis.
- @param [cfg.right=1.0] {Number} Position of the right plane on the View-space X-axis.
- @param [cfg.top=1.0] {Number} Position of the top plane on the View-space Y-axis.
- @param [cfg.bottom=-1.0] {Number} Position of the bottom plane on the View-space Y-axis.
- @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
- @param [cfg.far=10000] {Number} Position of the far plane on the positive View-space Z-axis.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Ortho = XEO.Component.extend({
-
-        type: "XEO.Ortho",
-
-        _init: function (cfg) {
-
-            this._state = new XEO.renderer.ProjTransform({
-                matrix: null
-            });
-
-            // Ortho view volume
-            this._dirty = false;
-            this._left = -1.0;
-            this._right = 1.0;
-            this._top = 1.0;
-            this._bottom = -1.0;
-            this._near = 0.1;
-            this._far = 10000.0;
-
-            // Set properties on this component
-            this.left = cfg.left;
-            this.right = cfg.right;
-            this.top = cfg.top;
-            this.bottom = cfg.bottom;
-            this.near = cfg.near;
-            this.far = cfg.far;
-        },
-
-        // Schedules a call to #_build on the next "tick"
-        _scheduleBuild: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                var self = this;
-                this.scene.once("tick",
-                    function () {
-                        self._build();
-                    });
-            }
-        },
-
-        // Rebuilds the rendering state from this component
-        _build: function () {
-
-            this._state.matrix = XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
-
-            this._dirty = false;
-
-            /**
-             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
-        },
-
-        _props: {
-
-            /**
-             * Position of this Ortho's left plane on the View-space X-axis.
-             *
-             * Fires a {{#crossLink "Ortho/left:event"}}{{/crossLink}} event on change.
-             *
-             * @property left
-             * @default -1.0
-             * @type Number
-             */
-            left: {
-
-                set: function (value) {
-
-                    this._left = (value !== undefined && value !== null) ? value : -1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Ortho's  {{#crossLink "Ortho/left:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event left
-                     * @param value The property's new value
-                     */
-                    this.fire("left", this._left);
-                },
-
-                get: function () {
-                    return this._left;
-                }
-            },
-
-            /**
-             * Position of this Ortho's right plane on the View-space X-axis.
-             *
-             * Fires a {{#crossLink "Ortho/right:event"}}{{/crossLink}} event on change.
-             *
-             * @property right
-             * @default 1.0
-             * @type Number
-             */
-            right: {
-
-                set: function (value) {
-
-                    this._right = (value !== undefined && value !== null) ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Ortho's  {{#crossLink "Ortho/right:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event right
-                     * @param value The property's new value
-                     */
-                    this.fire("right", this._right);
-                },
-
-                get: function () {
-                    return this._right;
-                }
-            },
-
-            /**
-             * Position of this Ortho's top plane on the View-space Y-axis.
-             *
-             * Fires a {{#crossLink "Ortho/top:event"}}{{/crossLink}} event on change.
-             *
-             * @property top
-             * @default 1.0
-             * @type Number
-             */
-            top: {
-
-                set: function (value) {
-
-                    this._top = (value !== undefined && value !== null) ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Ortho's  {{#crossLink "Ortho/top:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event top
-                     * @param value The property's new value
-                     */
-                    this.fire("top", this._top);
-                },
-
-                get: function () {
-                    return this._top;
-                }
-            },
-
-            /**
-             * Position of this Ortho's bottom plane on the View-space Y-axis.
-             *
-             * Fires a {{#crossLink "Ortho/bottom:event"}}{{/crossLink}} event on change.
-             *
-             * @property bottom
-             * @default -1.0
-             * @type Number
-             */
-            bottom: {
-
-                set: function (value) {
-
-                    this._bottom = (value !== undefined && value !== null) ? value : -1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Ortho's  {{#crossLink "Ortho/bottom:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event bottom
-                     * @param value The property's new value
-                     */
-                    this.fire("bottom", this._bottom);
-                },
-
-                get: function () {
-                    return this._bottom;
-                }
-            },
-
-            /**
-             * Position of this Ortho's near plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Ortho/near:event"}}{{/crossLink}} event on change.
-             *
-             * @property near
-             * @default 0.1
-             * @type Number
-             */
-            near: {
-
-                set: function (value) {
-
-                    this._near = (value !== undefined && value !== null) ? value :  0.1;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event near
-                     * @param value The property's new value
-                     */
-                    this.fire("near", this._near);
-                },
-
-                get: function () {
-                    return this._near;
-                }
-            },
-
-            /**
-             * Position of this Ortho's far plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Ortho/far:event"}}{{/crossLink}} event on change.
-             *
-             * @property far
-             * @default 10000.0
-             * @type Number
-             */
-            far: {
-
-                set: function (value) {
-
-                    this._far = (value !== undefined && value !== null) ? value :  10000.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event far
-                     * @param value The property's new value
-                     */
-                    this.fire("far", this._far);
-                },
-
-                get: function () {
-                    return this._far;
-                }
-            },
-
-            /**
-             * The elements of this Ortho's projection transform matrix.
-             *
-             * Fires a {{#crossLink "Ortho/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @type {Float64Array}
-             */
-            matrix: {
-
-                get: function () {
-
-                    if (this._dirty) {
-                        this._build();
-                    }
-
-                    return this._state.matrix;
-                }
-            }
-        },
-
-        _compile: function () {
-
-            if (this._dirty) {
-                this._build();
-            }
-
-            this._renderer.projectTransform = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                left: this._left,
-                right: this._right,
-                top: this._top,
-                bottom: this._bottom,
-                near: this._near,
-                far: this._far
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- A **Perspective** component defines a perspective projection transform.
-
- ## Overview
-
- <ul>
-
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
- <li>Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Perspective components create within xeoEngine's shaders.</li>
- </ul>
-
- <img src="../../../assets/images/Perspective.png"></img>
-
- ## Example
-
- In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
- {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Perspective
- projection transform.
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var perspective = new XEO.Perspective(scene, {
-    fovy: 60,
-    near: 0.1,
-    far: 1000
- });
-
- var camera = new XEO.Camera(scene, {
-    project: perspective
- });
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var object = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry
- });
- ````
- @class Perspective
- @module XEO
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Perspective within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
- @param [cfg.fovy=60.0] {Number} Field-of-view angle, in degrees, on Y-axis.
- @param [cfg.aspect=1.0] {Number} Aspect ratio.
- @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
- @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Perspective = XEO.Component.extend({
-
-        type: "XEO.Perspective",
-
-        _init: function (cfg) {
-
-            this._state = new XEO.renderer.ProjTransform({
-                matrix: null
-            });
-
-            this._dirty = false;
-            this._fovy = 60.0;
-            this._aspect = 1.0;
-            this._near = 0.1;
-            this._far = 10000.0;
-
-            var self = this;
-            var canvas = this.scene.canvas;
-
-            // Recompute aspect from change in canvas size
-            this._canvasResized = canvas.on("resized",
-                function () {
-                    self._aspect = canvas.width / canvas.height;
-                });
-
-            this.fovy = cfg.fovy;
-            this.aspect = canvas.width / canvas.height;
-            this.near = cfg.near;
-            this.far = cfg.far;
-        },
-
-        // Schedules a call to #_build on the next "tick"
-        _scheduleBuild: function () {
-
-            if (!this._dirty) {
-
-                this._dirty = true;
-
-                var self = this;
-
-                this.scene.once("tick",
-                    function () {
-                        self._build();
-                    });
-            }
-        },
-
-        // Rebuilds renderer state from component state
-        _build: function () {
-
-            var canvas = this.scene.canvas.canvas;
-            var aspect = canvas.width / canvas.height;
-
-            this._state.matrix = XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far);
-
-            this._dirty = false;
-
-            /**
-             * Fired whenever this Perspective's {{#crossLink "Perspective/matrix:property"}}{{/crossLink}} property changes.
-             *
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
-        },
-
-        _props: {
-
-            /**
-             * The angle, in degrees on the Y-axis, of this Perspective's field-of-view.
-             *
-             * Fires a {{#crossLink "Perspective/fovy:event"}}{{/crossLink}} event on change.
-             *
-             * @property fovy
-             * @default 60.0
-             * @type Number
-             */
-            fovy: {
-
-                set: function (value) {
-
-                    this._fovy = (value !== undefined && value !== null) ? value : 60.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Perspective's {{#crossLink "Perspective/fovy:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event fovy
-                     * @param value The property's new value
-                     */
-                    this.fire("fovy", this._fovy);
-                },
-
-                get: function () {
-                    return this._fovy;
-                }
-            },
-
-            /**
-             * Aspect ratio of this Perspective frustum. This is effectively the height of the frustum divided by the width.
-             *
-             * Fires an {{#crossLink "Perspective/aspect:property"}}{{/crossLink}} event on change.
-             *
-             * @property aspect
-             * @default 60.0
-             * @type Number
-             */
-            aspect: {
-
-                set: function (value) {
-
-                    this._aspect = (value !== undefined && value !== null) ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Perspective's {{#crossLink "Perspective/aspect:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event aspect
-                     * @param value The property's new value
-                     */
-                    this.fire("aspect", this._aspect);
-                },
-
-                get: function () {
-                    return this._aspect;
-                }
-            },
-
-            /**
-             * Position of this Perspective's near plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Perspective/near:event"}}{{/crossLink}} event on change.
-             *
-             * @property near
-             * @default 0.1
-             * @type Number
-             */
-            near: {
-
-                set: function (value) {
-
-                    this._near = (value !== undefined && value !== null) ? value : 0.1;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Perspective's   {{#crossLink "Perspective/near:property"}}{{/crossLink}} property changes.
-                     * @event near
-                     * @param value The property's new value
-                     */
-                    this.fire("near", this._near);
-                },
-
-                get: function () {
-                    return this._near;
-                }
-            },
-
-            /**
-             * Position of this Perspective's far plane on the positive View-space Z-axis.
-             *
-             * Fires a {{#crossLink "Perspective/far:event"}}{{/crossLink}} event on change.
-             *
-             * @property far
-             * @default 10000.0
-             * @type Number
-             */
-            far: {
-
-                set: function (value) {
-
-                    this._far = (value !== undefined && value !== null) ? value : 10000;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Perspective's  {{#crossLink "Perspective/far:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event far
-                     * @param value The property's new value
-                     */
-                    this.fire("far", this._far);
-                },
-
-                get: function () {
-                    return this._far;
-                }
-            },
-
-            /**
-             * The elements of this Perspective's projection transform matrix.
-             *
-             * Fires a {{#crossLink "Perspective/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @type {Float64Array}
-             */
-            matrix: {
-
-                get: function () {
-
-                    if (this._dirty) {
-                        this._build();
-                    }
-
-                    return this._state.matrix;
-                }
-            }
-        },
-
-        _compile: function () {
-
-            if (this._dirty) {
-                this._build();
-            }
-
-            this._renderer.projTransform = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                fovy: this._fovy,
-                near: this._near,
-                far: this._far
-            };
-        },
-
-        _destroy: function () {
-
-            this.scene.canvas.off(this._canvasResized);
-
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- A **Transform** defines a modelling transform matrix for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ */;/**
+ A **Transform** defines a modelling matrix to transform attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
 
