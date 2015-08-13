@@ -5,7 +5,7 @@
     "description": "A WebGL-based 3D Engine from XeoLabs",
     "main": "build/xeoengine.js",
     "keywords": [
-        "xeo",
+        "XEO",
         "xeoengine",
         "xeolabs",
         "3D",

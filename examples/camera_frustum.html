@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Camera.html"
+                                                                      target="_other">Camera</a> with <a
+        href="../docs/classes/Frustum.html" target="_other">Frustum</a>
+</div>
+
+<script>
+
+    var scene = new XEO.Scene();
+
+    var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -4],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
+    var frustum = new XEO.Frustum(scene, {
+        left: -0.1,
+        right: 0.1,
+        bottom: -0.1,
+        top: 0.1,
+        near: 0.15,
+        far: 1000
+    });
+
+    var camera = new XEO.Camera(scene, {
+        view: lookat,
+        project: frustum
+    });
+
+    var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+    var object = new XEO.GameObject(scene, {
+        camera: camera,
+        geometry: geometry
+    });
+
+    scene.on("tick",
+            function () {
+                camera.view.rotateEyeY(0.5);
+                camera.view.rotateEyeX(0.3);
+            });
+
+</script>
+</body>
+</html>

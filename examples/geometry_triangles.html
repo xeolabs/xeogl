@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Geometry.html" target="_other">Geometry</a> triangles
+</div>
+
+<script>
+
+    // Create a Scene
+    var scene = new XEO.Scene();
+
+    // Create a 2x2x2 box centered at the World-space origin
+    var geometry = new XEO.Geometry(scene, {
+
+        // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',
+        // 'triangle-strip' and 'triangle-fan'.primitive: "triangles",
+        primitive: "triangles",
+
+        // Vertex positions
+        positions: [
+
+            // Front face
+            -1.0, -1.0, 1.0,
+            1.0, -1.0, 1.0,
+            1.0, 1.0, 1.0,
+            -1.0, 1.0, 1.0,
+
+            // Back face
+            -1.0, -1.0, -1.0,
+            -1.0, 1.0, -1.0,
+            1.0, 1.0, -1.0,
+            1.0, -1.0, -1.0,
+
+            // Top face
+            -1.0, 1.0, -1.0,
+            -1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0,
+            1.0, 1.0, -1.0,
+
+            // Bottom face
+            -1.0, -1.0, -1.0,
+            1.0, -1.0, -1.0,
+            1.0, -1.0, 1.0,
+            -1.0, -1.0, 1.0,
+
+            // Right face
+            1.0, -1.0, -1.0,
+            1.0, 1.0, -1.0,
+            1.0, 1.0, 1.0,
+            1.0, -1.0, 1.0,
+
+            // Left face
+            -1.0, -1.0, -1.0,
+            -1.0, -1.0, 1.0,
+            -1.0, 1.0, 1.0,
+            -1.0, 1.0, -1.0
+        ],
+
+        // Vertex colors
+        colors: [
+            1.0, 1.0, 1.0, 1.0,    // Front face: white
+            1.0, 0.0, 0.0, 1.0,    // Back face: red
+            0.0, 1.0, 0.0, 1.0,    // Top face: green
+            0.0, 0.0, 1.0, 1.0,    // Bottom face: blue
+            1.0, 1.0, 0.0, 1.0,    // Right face: yellow
+            1.0, 0.0, 1.0, 1.0     // Left face: purple
+        ],
+
+        // Vertex normals
+        normals: [
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+            1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+            0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+            -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
+            0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
+            0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+        ],
+
+        // UV coordinates
+        uv: [
+            1, 1, 0, 1, 0, 0, 1, 0,
+            0, 1, 0, 0, 1, 0, 1, 1,
+            1, 0, 1, 1, 0, 1, 0, 0,
+            1, 1, 0, 1, 0, 0, 1, 0,
+            0, 0, 1, 0, 1, 1, 0, 1,
+            0, 0, 1, 0, 1, 1, 0, 1
+        ],
+
+        // Triangle indices
+        indices: [
+            0, 1, 2, 0, 2, 3,    // front
+            4, 5, 6, 4, 6, 7,    // back
+            8, 9, 10, 8, 10, 11,   // top
+            12, 13, 14, 12, 14, 15,   // bottom
+            16, 17, 18, 16, 18, 19,   // right
+            20, 21, 22, 20, 22, 23    // left
+        ]
+    });
+
+    var object = new XEO.GameObject(scene, {
+        geometry: geometry
+    });
+
+    scene.on("tick",
+            function () {
+                scene.view.rotateEyeY(0.6);
+                scene.view.rotateEyeX(0.3);
+            });
+
+</script>
+</body>
+</html>

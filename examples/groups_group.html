@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Group.html"
+                                                                      target="_other">Group</a>
+</div>
+
+<script>
+
+    // Create multiple GameObjects, each with their own Translate transform
+
+    for (var i = 0; i < 10; i++) {
+
+        new XEO.GameObject({
+            transform: new XEO.Translate()
+        });
+    }
+
+    // Put all GameObjects into a Group
+
+    var group = new XEO.Group({
+        components: ["XEO.GameObject"]
+    });
+
+    // On each tick, iterate over each GameObject in the Group and set it's Translate to random values
+
+    var c = 0;
+
+    XEO.scene.on("tick",
+            function () {
+
+                if (c++ > 10) {
+
+                    c = 0;
+
+                    group.iterate(
+                            function (component) {
+
+                                var transform = component.transform;
+
+                                if (transform) {
+
+                                    transform.xyz = [
+                                        Math.random() * 5 - 2,
+                                        Math.random() * 5 - 2,
+                                        Math.random() * 5 - 2
+                                    ]
+                                }
+                            });
+                }
+            });
+
+</script>
+</body>
+</html>

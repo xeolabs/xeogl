@@ -1,0 +1,317 @@
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    display: block !important;
+    height: 100%;
+    min-height: 740px;
+    font-family: Arial;
+    background-color: #fff;
+    color: #444;
+    text-decoration: none;
+    word-spacing: normal;
+    text-align: left;
+    letter-spacing: 0;
+    font-size: 0.9em;
+
+    -webkit-font-smoothing: antialiased;
+
+    overflow: hidden;
+}
+
+.xeolabsLogo {
+    background-image: url("./images/a-xeolabs-project.png");
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 900;
+    height: auto;
+    width: auto;
+}
+
+#info {
+    position: relative;
+    top: 0px;
+    padding: 5px;
+    padding-top:20px;
+    z-index: 100;
+    font-size:16px;
+    text-align:center;
+}
+
+#info a {
+    font-size:16px;
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+#infoLight {
+    position: relative;
+    top: 0px;
+    padding: 5px;
+    padding-top:20px;
+    z-index: 1000;
+    font-size:16px;
+    text-align:center;
+    color: #ffffff;
+}
+
+#infoLight a {
+    font-size:16px;
+    color: #ffffff;
+    text-decoration: underline !important;
+}
+
+
+#infoDark {
+    position: absolute;
+    top: 0px;
+    padding: 5px;
+    padding-top:20px;
+    z-index: 1000;
+    font-size:16px;
+    text-align:center;
+    color: black;
+    width:100%;
+
+}
+
+#infoDark a {
+    font-size:16px;
+    color: #000000;
+    text-decoration: underline !important;
+}
+
+#infoTxt {
+    position: relative;
+    top: 0px;
+    padding: 5px;
+    padding-top:20px;
+    z-index: 100;
+    font-size:20px;
+    text-align:center;
+    color: yellow;
+}
+
+
+#header {
+    background: white;
+    width: 100%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+#image {
+    background: white;
+    width: 100%;
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+}
+
+#container {
+    background: white;
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 40px;
+    overflow: auto;
+}
+
+a {
+    color: rgb(0, 102, 204);
+    font: 14px Helvetica, arial, freesans, clean, sans-serif;
+    text-decoration: none !important;
+}
+
+a:visited {
+    color: rgba(0, 102, 204, .75);
+}
+
+a:hover {
+    color: #1dceff;
+}
+
+a.button {
+    font-weight: bold;
+    font-size: 15px;
+    background: #98fb98;
+    padding: 5px;
+    border: 1px grey solid;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+    margin-top: 15px;
+    color: #333;
+    line-height: 190%;
+    font: 14px Helvetica, arial, freesans, sans-serif;
+}
+
+span {
+    line-height: 190%;
+    font: 14px Helvetica, arial, freesans, sans-serif;
+}
+
+p:first-child {
+    margin-top: 0;
+}
+
+h1, h2, h3 {
+    font-weight: normal;
+    -webkit-transform-origin: 0% 100%;
+}
+
+h1 {
+    font-size: 80px;
+    line-height: 1.5;
+    padding: 0;
+    padding-top: 20px;
+    margin: 0;
+    color: #0075ba;
+}
+
+h1 a {
+    font-size: 80px;
+    font-weight: normal;
+    -webkit-transform-origin: 0% 100%;
+}
+
+h2 {
+    font-size: 18px;
+    line-height: 1.2;
+    padding-top: 30px;
+    padding-left: 0px;
+    font-weight: bold;
+    margin-top: 0px;
+    padding-bottom: 0px;
+    margin-bottom: 0;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+    border-bottom: 2px solid #d4d4d4;
+    color: #4E7A4A;
+}
+
+h3 {
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: bold;
+    color: #8F3434;
+    padding: 0;
+    margin: 0;
+    padding-left: 0px;
+    padding-right: 40px;
+    padding-top: 14px;
+    padding-bottom: 6px;
+}
+
+p.sectionTip {
+    padding-left: 10px;
+}
+
+p.subSectionTip {
+    padding-left: 10px;
+}
+
+a.subSubSection {
+    padding-left: 22px;
+    background: url("../images/bullet-point.png") no-repeat 8px 2px !important;
+}
+
+#tagsContainer {
+    width: 380px;
+    background: #ffffff;
+}
+
+#tagsContainer p.operation {
+    padding-bottom: 15px;
+    padding-top: 10px;
+    padding-left: 2px;
+}
+
+#tagsContainer span.selected {
+    background: #63FF4D;
+    padding-right: 5px;
+    padding-left: 5px;
+    border: 1px solid rgb(101, 184, 101);
+}
+
+#tagsContainer span.unselected {
+    background: #F0EEEE;
+    padding-right: 5px;
+    padding-left: 5px;
+    border: 1px solid #DDDADA;
+}
+
+#pageMenuContainer {
+    width: 380px;
+    /*height: 10000px;*/
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 5px;
+    margin-top: 5px;
+}
+
+p.containerTitle {
+    margin-top: -15px;
+    background: #f5f5f5;
+    border: 1px solid lightGrey;
+    width: 120px;
+    padding-left: 10px;
+    border-radius: 2px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    font-size: 10px;
+    border-bottom: 2px solid darkgrey;
+    border-right: 2px solid darkgrey;
+}
+
+hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: lightgray;
+    background-color: lightgray;
+    height: 1px;
+}
+
+article.fill h3 {
+    background: rgba(255, 255, 255, .75);
+    padding-top: .2em;
+    padding-bottom: .3em;
+    margin-top: -.2em;
+    margin-left: -60px;
+    padding-left: 60px;
+    margin-right: -60px;
+    padding-right: 60px;
+}
+
+ul {
+    /*list-style: none;*/
+    margin: 0;
+    padding: 0;
+    margin-top: 0;
+    margin-left: .75em;
+}
+
+ul:first-child {
+    margin-top: 0;
+}
+
+ul ul {
+    margin-top: 0;
+}
+
