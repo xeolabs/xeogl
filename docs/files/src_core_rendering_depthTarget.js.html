@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>shading - xeoengine</title>
+    <title>src/core/rendering/depthTarget.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -111,11 +111,8 @@
                                 <li><a href="../modules/materials.html">materials</a></li>
                                 <li><a href="../modules/math.html">math</a></li>
                                 <li><a href="../modules/objects.html">objects</a></li>
-                                <li><a href="../modules/ordering.html">ordering</a></li>
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
-                                <li><a href="../modules/rtt.html">rtt</a></li>
-                                <li><a href="../modules/shading.html">shading</a></li>
                                 <li><a href="../modules/spatial.html">spatial</a></li>
                                 <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
@@ -152,43 +149,144 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>shading Module</h1>
-<div class="box clearfix meta">
+<h1 class="file-heading">File: src/core/rendering/depthTarget.js</h1>
 
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **DepthTarget** captures the Z-depths of the pixels that xeoEngine renders for the attached
+ {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}. These provide a virtual, software-based
+ &lt;a href=&quot;http://en.wikipedia.org/wiki/Render_Target&quot; target=&quot;other&quot;&gt;render target&lt;/a&gt; that is typically used when
+ performing *render-to-texture* as part of some post-processing effect that requires the pixel depth values.
 
-        <div class="foundat">
-            Defined in: <a href="../files/src_core_shading_shaderParams.js.html#l1"><code>src&#x2F;core&#x2F;shading&#x2F;shaderParams.js:1</code></a>
-        </div>
+ ## Overview
 
-</div>
+ &lt;ul&gt;
+ &lt;li&gt;A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;DepthTarget is not to be confused with {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.&lt;/li&gt;
+ &lt;li&gt;Use {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
+ the {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} that consume it.&lt;/li&gt;
+ &lt;li&gt;For special effects, we often use DepthTargets and {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in combination
+ with {{#crossLink &quot;ColorTarget&quot;}}ColorTargets{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.&lt;/li&gt;
+ &lt;/ul&gt;
 
+ &lt;img src=&quot;../../../assets/images/DepthTarget.png&quot;&gt;&lt;/img&gt;
 
-<div class="box intro">
-    <p>Components for custom shading.</p>
+ ## Example
 
-</div>
+ In the example below, we essentially have one {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}
+ that renders its pixel Z-depth values to a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, which is then applied
+ to a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
 
+ The scene contains:
 
-<div class="yui3-g">
-    <div class="yui3-u-1-2">
-            <p>This module provides the following classes:</p>
+ &lt;ul&gt;
+ &lt;li&gt;a DepthTarget,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape,
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} fragment depth values to the DepthTarget,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that sources its pixels from the DepthTarget,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} that includes the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, and&lt;/li&gt;
+ &lt;li&gt;a second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} that renders the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, with the {{#crossLink &quot;Material&quot;}}{{/crossLink}} applied to it.&lt;/li&gt;
+ &lt;/ul&gt;
 
-            <ul class="module-classes">
-                <li class="module-class">
-                    <a href="../classes/Shader.html">
-                        Shader
-                    </a>
-                </li>
-                <li class="module-class">
-                    <a href="../classes/ShaderParams.html">
-                        ShaderParams
-                    </a>
-                </li>
-            </ul>
-    </div>
+ The pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second
+ {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} as a {{#crossLink &quot;Texture&quot;}}{{/crossLink}}. In practice the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}
+ would carry the depth values into a custom {{#crossLink &quot;Shader&quot;}}{{/crossLink}}, which would then be applied to the second {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
 
-    <div class="yui3-u-1-2">
-    </div>
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var scene = new XEO.Scene();
+
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box.
+
+ var depthTarget = new XEO.DepthTarget(scene);
+
+ // First Object renders its pixel depth values to our DepthTarget
+ var object1 = new XEO.GameObject(scene, {
+    depthTarget: depthTarget
+});
+
+ // Texture consumes our DepthTarget
+ var texture = new XEO.Texture(scene, {
+    target: depthTarget
+});
+
+ // Material contains our Texture
+ var material = new XEO.PhongMaterial(scene, {
+    textures: [
+        texture
+    ]
+});
+
+ // Second Object is effectively textured with the color-encoded
+ // pixel depths of the first Object
+ var object2 = new XEO.GameObject(scene, {
+    geometry: geometry,  // Reuse our simple box geometry
+    material: material
+});
+ &#x60;&#x60;&#x60;&#x60;
+ @class DepthTarget
+ @module XEO
+ @submodule rendering
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this DepthTarget within the
+ default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} DepthTarget configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthTarget.
+
+ @extends Component
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    XEO.DepthTarget = XEO.Component.extend({
+
+        type: &quot;XEO.DepthTarget&quot;,
+
+        _init: function () {
+
+            var canvas = this.scene.canvas;
+
+            this._state = new XEO.renderer.RenderTarget({
+
+                type: XEO.renderer.RenderTarget.DEPTH,
+
+                renderBuf: new XEO.renderer.webgl.RenderBuffer({
+                    canvas: canvas.canvas,
+                    gl: canvas.gl
+                })
+            });
+
+            var self = this;
+
+            this._webglContextRestored = canvas.on(&quot;webglContextRestored&quot;,
+                function () {
+                    self._state.renderBuf.webglRestored(canvas.gl);
+                });
+        },
+
+        _compile: function () {
+            this._renderer.depthTarget = this._state;
+        },
+
+        _getJSON: function () {
+            return {};
+        },
+
+        _destroy: function () {
+
+            this.scene.canvas.off(this._webglContextRestored);
+
+            this._state.renderBuf.destroy();
+
+            this._state.destroy();
+        }
+    });
+
+})();
+
+    </pre>
 </div>
                     </div>
                 </div>

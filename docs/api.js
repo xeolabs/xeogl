@@ -74,11 +74,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "materials",
         "math",
         "objects",
-        "ordering",
         "rendering",
         "reporting",
-        "rtt",
-        "shading",
         "spatial",
         "transforms"
     ],
@@ -144,11 +141,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Game object components."
         },
         {
-            "displayName": "ordering",
-            "name": "ordering",
-            "description": "Components for controlling the rendering order of GameObjects."
-        },
-        {
             "displayName": "rendering",
             "name": "rendering",
             "description": "Components that influence the way objects are rendered on WebGL."
@@ -157,16 +149,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "reporting",
             "name": "reporting",
             "description": "Components for reporting Scene statistics."
-        },
-        {
-            "displayName": "rtt",
-            "name": "rtt",
-            "description": "Components to support render-to-texture (RTT) effects."
-        },
-        {
-            "displayName": "shading",
-            "name": "shading",
-            "description": "Components for custom shading."
         },
         {
             "displayName": "spatial",

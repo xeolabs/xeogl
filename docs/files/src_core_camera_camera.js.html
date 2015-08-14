@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/core/rtt/_module.js - xeoengine</title>
+    <title>src/core/camera/camera.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -111,11 +111,8 @@
                                 <li><a href="../modules/materials.html">materials</a></li>
                                 <li><a href="../modules/math.html">math</a></li>
                                 <li><a href="../modules/objects.html">objects</a></li>
-                                <li><a href="../modules/ordering.html">ordering</a></li>
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
-                                <li><a href="../modules/rtt.html">rtt</a></li>
-                                <li><a href="../modules/shading.html">shading</a></li>
                                 <li><a href="../modules/spatial.html">spatial</a></li>
                                 <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
@@ -152,16 +149,201 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/core/rtt/_module.js</h1>
+<h1 class="file-heading">File: src/core/camera/camera.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
+
+
 /**
- * Components to support render-to-texture (RTT) effects.
- *
- * @module XEO
- * @submodule rtt
+ A **Camera** defines a viewpoint on attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+
+ ## Overview
+
+ &lt;ul&gt;
+
+ &lt;li&gt; A Camera is composed of a viewing transform and a projection transform.&lt;/li&gt;
+
+ &lt;li&gt;The viewing transform is usually a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}.&lt;/li&gt;
+
+ &lt;li&gt;The projection transform may be an {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}}
+ or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}.&lt;/li&gt;
+
+ &lt;li&gt; By default, each Camera is composed of its parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/view:property&quot;}}{{/crossLink}} transform,
+ (which is a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}) and default
+ {{#crossLink &quot;Scene/project:property&quot;}}{{/crossLink}} transform (which is a {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}).
+ You would override those with your own transform components as necessary.&lt;/li&gt;
+
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;../../../assets/images/Camera.png&quot;&gt;&lt;/img&gt;
+
+ ## Example
+
+ &lt;iframe style=&quot;width: 600px; height: 400px&quot; src=&quot;../../examples/camera_perspective.html&quot;&gt;&lt;/iframe&gt;
+
+ In this example we have
+
+ &lt;ul&gt;
+ &lt;li&gt;a {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} view transform,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Perspective&quot;}}{{/crossLink}} projection transform,&lt;/li&gt;
+ &lt;li&gt;a Camera attached to the {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} and {{#crossLink &quot;Perspective&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
+
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ var scene = new XEO.Scene();
+
+ var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -10],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
+ var perspective = new XEO.Lookat(scene, {
+        fovy: 60,
+        near: 0.1,
+        far: 1000
+    });
+
+ var camera = new XEO.Camera(scene, {
+        view: lookat,
+        project: perspective
+    });
+
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+ var object = new XEO.GameObject(scene, {
+        camera: camera,
+        geometry: geometry
+    });
+
+ scene.on(&quot;tick&quot;, function () {
+       camera.view.rotateEyeY(0.5);
+       camera.view.rotateEyeX(0.3);
+    });
+ &#x60;&#x60;&#x60;&#x60;
+ @class Camera
+ @module XEO
+ @submodule camera
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this Camera within the
+ default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ You only need to supply an ID if you need to be able to find the Camera by ID within its parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} later.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Camera.
+ @param [cfg.view] {String|XEO.Lookat} ID or instance of a view transform within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
+ parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/view:property&quot;}}{{/crossLink}} transform,
+ which is a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}.
+ @param [cfg.project] {String|XEO.Perspective|XEO.Ortho|XEO.Frustum} ID or instance of a projection transform
+ within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the parent
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/project:property&quot;}}{{/crossLink}} transform,
+ which is a {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}.
+ @extends Component
  */
+(function () {
+
+    &quot;use strict&quot;;
+
+    XEO.Camera = XEO.Component.extend({
+
+        type: &quot;XEO.Camera&quot;,
+
+        _init: function (cfg) {
+
+            this.project = cfg.project;
+
+            this.view = cfg.view;
+        },
+
+        _props: {
+
+            /**
+             * The projection transform component for this Camera.
+             *
+             * When set to a null or undefined value, will default to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s
+             * default {{#crossLink &quot;Scene/project:property&quot;}}project{{/crossLink}}, which is
+             * a {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}.
+             *
+             * Fires a {{#crossLink &quot;Camera/project:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property project
+             * @type Perspective|XEO.Ortho|XEO.Frustum
+             */
+            project: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Camera&#x27;s {{#crossLink &quot;Camera/project:property&quot;}}{{/crossLink}} property changes.
+                     * @event project
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;project&quot;, value);
+                },
+
+                get: function () {
+                    return this._children.project;
+                }
+            },
+
+            /**
+             * The viewing transform component for this Camera.
+             *
+             * When set to a null or undefined value, will default to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s
+             * default {{#crossLink &quot;Scene/view:property&quot;}}view{{/crossLink}}, which is
+             * a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}.
+             *
+             * Fires a {{#crossLink &quot;Camera/view:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property view
+             * @type Lookat
+             */
+            view: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Camera&#x27;s {{#crossLink &quot;Camera/view:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event view
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;view&quot;, value);
+                },
+
+                get: function () {
+                    return this._children.view;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._children.project._compile();
+            this._children.view._compile();
+        },
+
+        _getJSON: function () {
+
+            var json = {};
+
+            if (this._children.project) {
+                json.project = this._children.project.id;
+            }
+
+            if (this._children.view) {
+                json.view = this._children.view.id;
+            }
+
+            return json;
+        }
+    });
+
+})();
+
     </pre>
 </div>
                     </div>

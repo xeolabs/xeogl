@@ -453,33 +453,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/core/ordering/_module.js": {
-            "name": "src/core/ordering/_module.js",
-            "modules": {
-                "ordering": 1
-            },
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/ordering/layer.js": {
-            "name": "src/core/ordering/layer.js",
-            "modules": {},
-            "classes": {
-                "Layer": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/ordering/stage.js": {
-            "name": "src/core/ordering/stage.js",
-            "modules": {},
-            "classes": {
-                "Stage": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/core/rendering/_module.js": {
             "name": "src/core/rendering/_module.js",
             "modules": {
@@ -507,6 +480,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/core/rendering/colorTarget.js": {
+            "name": "src/core/rendering/colorTarget.js",
+            "modules": {},
+            "classes": {
+                "ColorTarget": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/core/rendering/depthBuf.js": {
             "name": "src/core/rendering/depthBuf.js",
             "modules": {},
@@ -516,11 +498,56 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/core/rendering/depthTarget.js": {
+            "name": "src/core/rendering/depthTarget.js",
+            "modules": {},
+            "classes": {
+                "DepthTarget": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/rendering/layer.js": {
+            "name": "src/core/rendering/layer.js",
+            "modules": {},
+            "classes": {
+                "Layer": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/core/rendering/modes.js": {
             "name": "src/core/rendering/modes.js",
             "modules": {},
             "classes": {
                 "Modes": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/rendering/shader.js": {
+            "name": "src/core/rendering/shader.js",
+            "modules": {},
+            "classes": {
+                "Shader": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/rendering/shaderParams.js": {
+            "name": "src/core/rendering/shaderParams.js",
+            "modules": {},
+            "classes": {
+                "ShaderParams": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/rendering/stage.js": {
+            "name": "src/core/rendering/stage.js",
+            "modules": {},
+            "classes": {
+                "Stage": 1
             },
             "fors": {},
             "namespaces": {}
@@ -557,60 +584,6 @@
             "modules": {},
             "classes": {
                 "Tasks": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/rtt/_module.js": {
-            "name": "src/core/rtt/_module.js",
-            "modules": {
-                "rtt": 1
-            },
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/rtt/colorTarget.js": {
-            "name": "src/core/rtt/colorTarget.js",
-            "modules": {},
-            "classes": {
-                "ColorTarget": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/rtt/depthTarget.js": {
-            "name": "src/core/rtt/depthTarget.js",
-            "modules": {},
-            "classes": {
-                "DepthTarget": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/shading/_module.js": {
-            "name": "src/core/shading/_module.js",
-            "modules": {
-                "shading": 1
-            },
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/shading/shader.js": {
-            "name": "src/core/shading/shader.js",
-            "modules": {},
-            "classes": {
-                "Shader": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/core/shading/shaderParams.js": {
-            "name": "src/core/shading/shaderParams.js",
-            "modules": {},
-            "classes": {
-                "ShaderParams": 1
             },
             "fors": {},
             "namespaces": {}
@@ -742,11 +715,8 @@
                 "materials": 1,
                 "math": 1,
                 "objects": 1,
-                "ordering": 1,
                 "rendering": 1,
                 "reporting": 1,
-                "rtt": 1,
-                "shading": 1,
                 "spatial": 1,
                 "transforms": 1
             },
@@ -787,19 +757,19 @@
                 "Texture": 1,
                 "math": 1,
                 "GameObject": 1,
-                "Layer": 1,
-                "Stage": 1,
                 "Canvas": 1,
                 "ColorBuf": 1,
+                "ColorTarget": 1,
                 "DepthBuf": 1,
+                "DepthTarget": 1,
+                "Layer": 1,
                 "Modes": 1,
+                "Shader": 1,
+                "ShaderParams": 1,
+                "Stage": 1,
                 "Stats": 1,
                 "Task": 1,
                 "Tasks": 1,
-                "ColorTarget": 1,
-                "DepthTarget": 1,
-                "Shader": 1,
-                "ShaderParams": 1,
                 "Boundary3D": 1,
                 "Quaternion": 1,
                 "Rotate": 1,
@@ -1023,11 +993,19 @@
             "line": 1,
             "description": "Game object components."
         },
-        "ordering": {
-            "name": "ordering",
+        "rendering": {
+            "name": "rendering",
             "submodules": {},
             "classes": {
+                "Canvas": 1,
+                "ColorBuf": 1,
+                "ColorTarget": 1,
+                "DepthBuf": 1,
+                "DepthTarget": 1,
                 "Layer": 1,
+                "Modes": 1,
+                "Shader": 1,
+                "ShaderParams": 1,
                 "Stage": 1
             },
             "fors": {},
@@ -1035,25 +1013,7 @@
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "src/core/ordering/stage.js",
-            "line": 1,
-            "description": "Components for controlling the rendering order of GameObjects."
-        },
-        "rendering": {
-            "name": "rendering",
-            "submodules": {},
-            "classes": {
-                "Canvas": 1,
-                "ColorBuf": 1,
-                "DepthBuf": 1,
-                "Modes": 1
-            },
-            "fors": {},
-            "is_submodule": 1,
-            "namespaces": {},
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/rendering/modes.js",
+            "file": "src/core/rendering/stage.js",
             "line": 1,
             "description": "Components that influence the way objects are rendered on WebGL."
         },
@@ -1073,38 +1033,6 @@
             "file": "src/core/reporting/tasks.js",
             "line": 1,
             "description": "Components for reporting Scene statistics."
-        },
-        "rtt": {
-            "name": "rtt",
-            "submodules": {},
-            "classes": {
-                "ColorTarget": 1,
-                "DepthTarget": 1
-            },
-            "fors": {},
-            "is_submodule": 1,
-            "namespaces": {},
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/rtt/depthTarget.js",
-            "line": 1,
-            "description": "Components to support render-to-texture (RTT) effects."
-        },
-        "shading": {
-            "name": "shading",
-            "submodules": {},
-            "classes": {
-                "Shader": 1,
-                "ShaderParams": 1
-            },
-            "fors": {},
-            "is_submodule": 1,
-            "namespaces": {},
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/shading/shaderParams.js",
-            "line": 1,
-            "description": "Components for custom shading."
         },
         "spatial": {
             "name": "spatial",
@@ -3607,117 +3535,6 @@
             ],
             "extends": "Component"
         },
-        "Layer": {
-            "name": "Layer",
-            "shortname": "Layer",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/ordering/layer.js",
-            "line": 2,
-            "description": "A **Layer** specifies the render order of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within their {{#crossLink \"Stage\"}}Stages{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>When xeoEngine renders a {{#crossLink \"Scene\"}}Scene{{/crossLink}}, each {{#crossLink \"Stage\"}}Stage{{/crossLink}} within that will render its bin\nof {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} in turn, from the lowest priority {{#crossLink \"Stage\"}}Stage{{/crossLink}} to the highest.</li>\n\n<li>{{#crossLink \"Stage\"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>\n\n<li>You can control the render order of the individual {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} ***within*** a {{#crossLink \"Stage\"}}Stage{{/crossLink}}\nby associating them with {{#crossLink \"Layer\"}}Layers{{/crossLink}}.</li>\n\n<li>{{#crossLink \"Layer\"}}Layers{{/crossLink}} are typically used to <a href=\"https://www.opengl.org/wiki/Transparency_Sorting\" target=\"_other\">transparency-sort</a> the\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within {{#crossLink \"Stage\"}}Stages{{/crossLink}}.</li>\n\n\n<li>{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly\nattached to the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/layer:property\"}}layer{{/crossLink}}. which has\na {{#crossLink \"Layer/priority:property\"}}{{/crossLink}} value of zero.</li>\n\n<li>You can use Layers without defining any {{#crossLink \"Stage\"}}Stages{{/crossLink}} if you simply let your\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} fall back on the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/stage:property\"}}stage{{/crossLink}}. which has a {{#crossLink \"Stage/priority:property\"}}{{/crossLink}} value of zero.</li>\n</ul>\n\n<img src=\"../../../assets/images/Layer.png\"></img>\n\n## Example\n\nIn this example we'll use Layers to perform <a href=\"https://www.opengl.org/wiki/Transparency_Sorting\" target=\"_other\">transparency sorting</a>,\nwhich ensures that transparent objects are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.\n\nWe want to render the three nested boxes shown below, in which the innermost box is opaque and blue,\nthe box enclosing that is transparent and yellow, and the outermost box is transparent and green. We need the boxes to\nrender in order innermost-to-outermost, in order to blend transparencies correctly.\n\n<img src=\"../../assets/images/transparencySort.jpg\"></img>\n\nOur scene has one {{#crossLink \"Stage\"}}{{/crossLink}}, just for completeness. As mentioned earlier, you don't have to\ncreate this because the {{#crossLink \"Scene\"}}{{/crossLink}} will provide its default {{#crossLink \"Stage\"}}{{/crossLink}}.\nThen, within that {{#crossLink \"Stage\"}}{{/crossLink}}, we create a {{#crossLink \"GameObject\"}}{{/crossLink}} for each box,\neach assigned to a different prioritised {{#crossLink \"Layer\"}}{{/crossLink}} to ensure that they are rendered in the right order.\n\n````javascript\nvar scene = new XEO.Scene();\n\n// View transform\nvar lookat = new XEO.Lookat(scene, {\n   eye: [0,0,10]\n});\n\n// Camera, using Scene's default projection transform\nvar camera = new XEO.Camera(scene, {\n   view: lookat\n});\n\n// A Stage, just for completeness\n// We could instead just implicitly use the Scene's default Stage\nvar stage = new XEO.Stage(scene, {\n   priority: 0\n});\n\n// Geometry with no parameters defaults to a 2x2x2 box\nvar geometry = new XEO.Geometry(scene);\n\n//-----------------------------------------------------------------------------\n// Innermost box\n// Blue and opaque, in Layer with render order 0, renders first\n//-----------------------------------------------------------------------------\n\nvar layer1 = new XEO.Layer(scene, {\n   priority: 1\n});\n\nvar material1 = new XEO.PhongMaterial(scene, {\n   diffuse: [0.2, 0.2, 1.0],\n   opacity: 1.0\n});\n\nvar object1 = new XEO.GameObject(scene, {\n   camera: camera,\n   geometry: geometry,\n   stage: stage,\n   layer: layer1,\n   material: material1\n});\n\n//-----------------------------------------------------------------------------\n// Middle box\n// Red and transparent, in Layer with render order 2, renders next\n//-----------------------------------------------------------------------------\n\nvar layer2 = new XEO.Layer(scene, {\n   priority: 2\n});\n\nvar material2 = new XEO.PhongMaterial(scene, {\n   diffuse: [1, 0.2, 0.2],\n   opacity: 0.2\n});\n\nvar scale2 = new XEO.Scale(scene, {\n   xyz: [6, 6, 6]\n});\n\nvar object2 = new XEO.GameObject(scene, {\n   camera: camera,\n   geometry: geometry,\n   stage: stage,\n   layer: layer2,\n   material: material2,\n   scale: scale2\n});\n\n//-----------------------------------------------------------------------------\n// Outermost box\n// Green and transparent, in Layer with render order 3, renders last\n//-----------------------------------------------------------------------------\n\nvar layer3 = new XEO.Layer(scene, {\n   priority: 3\n});\n\nvar material3 = new XEO.PhongMaterial(scene, {\n   diffuse: [0.2, 1, 0.2],\n   opacity: 0.2\n});\n\nvar scale3 = new XEO.Scale(scene, {\n   xyz: [9, 9, 9]\n});\n\nvar object3 = new XEO.GameObject(scene, {\n   camera: camera,\n   geometry: geometry,\n   stage: stage,\n   layer: layer3,\n   material: material3,\n   scale: scale3\n});\n\n````",
-            "submodule": "ordering",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Geometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Layer.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "priority",
-                            "description": "The rendering priority,",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
-        "Stage": {
-            "name": "Stage",
-            "shortname": "Stage",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/ordering/stage.js",
-            "line": 1,
-            "description": "A **Stage** is a bin of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that is rendered in a specified priority with respect to\nother Stages in the same {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>When the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} renders, each Stage renders its bin\nof {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>\n\n<li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>\n\n<li>You can control the render order of the individual {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} ***within*** a Stage\nby associating them with {{#crossLink \"Layer\"}}Layers{{/crossLink}}.</li>\n\n<li>{{#crossLink \"Layer\"}}Layers{{/crossLink}} are typically used to <a href=\"https://www.opengl.org/wiki/Transparency_Sorting\" target=\"_other\">transparency-sort</a> the\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within Stages.</li>\n\n<li>{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly\nattached to the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/stage:property\"}}stage{{/crossLink}}. which has\na {{#crossLink \"Stage/priority:property\"}}{{/crossLink}} value of zero.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Stage.png\"></img>\n\n## Example\n\nIn this example we're performing render-to-texture using {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} and\n{{#crossLink \"Texture\"}}Texture{{/crossLink}} components.\n\nNote how we use two prioritized Stages, to ensure that the {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} is\nrendered ***before*** the {{#crossLink \"Texture\"}}Texture{{/crossLink}} that consumes it.\n\n````javascript\nvar scene = new XEO.Scene();\n\n// First stage: an Object that renders to a ColorTarget\n\nvar stage1 = new XEO.Stage(scene, {\n      priority: 0\n });\n\nvar geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box\n\nvar colorTarget = new XEO.ColorTarget(scene);\n\nvar object1 = new XEO.GameObject(scene, {\n      stage: stage1,\n      geometry: geometry,\n      colorTarget: colorTarget\n });\n\n\n// Second stage: an Object with a Texture that sources from the ColorTarget\n\nvar stage2 = new XEO.Stage(scene, {\n      priority: 1\n });\n\nvar texture = new XEO.Texture(scene, {\n      target: colorTarget\n });\n\nvar material = new XEO.PhongMaterial(scene, {\n      textures: [\n          texture\n      ]\n });\n\nvar geometry2 = new XEO.Geometry(scene);\n\nvar object2 = new XEO.GameObject(scene, {\n      stage: stage2,\n      material: material,\n      geometry: geometry2\n });\n````",
-            "submodule": "ordering",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Stage in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Stage.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "priority",
-                            "description": "The rendering priority for the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0"
-                        },
-                        {
-                            "name": "pickable",
-                            "description": "Indicates whether attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are pickable.",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "true"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
         "Canvas": {
             "name": "Canvas",
             "shortname": "Canvas",
@@ -3801,6 +3618,51 @@
             ],
             "extends": "Component"
         },
+        "ColorTarget": {
+            "name": "ColorTarget",
+            "shortname": "ColorTarget",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/rendering/colorTarget.js",
+            "line": 1,
+            "description": "A **ColorTarget** captures the colors of the pixels that xeoEngine renders for the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\nThese provide a virtual, software-based <a href=\"http://en.wikipedia.org/wiki/Render_Target\" target=\"other\">render target</a> that is typically used when performing *render-to-texture*.\n\n## Overview\n\n<ul>\n<li>A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink \"Texture\"}}Textures{{/crossLink}}.</li>\n<li>ColorTarget is not to be confused with {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.</li>\n<li>Use {{#crossLink \"Stage\"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before\nthe {{#crossLink \"Texture\"}}Textures{{/crossLink}} that consume it.</li>\n<li>For special effects, we often use ColorTargets and {{#crossLink \"Texture\"}}Textures{{/crossLink}} in combination\nwith {{#crossLink \"DepthTarget\"}}DepthTargets{{/crossLink}} and {{#crossLink \"Shader\"}}Shaders{{/crossLink}}.</li>\n</ul>\n\n<img src=\"../../../assets/images/ColorTarget.png\"></img>\n\n## Example\n\nIn this example we essentially have one {{#crossLink \"GameObject\"}}{{/crossLink}}\nthat's rendered to a {{#crossLink \"Texture\"}}{{/crossLink}}, which is then applied to a second {{#crossLink \"GameObject\"}}{{/crossLink}}.\n\nThe scene contains:\n\n<ul>\n<li>a ColorTarget,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape,\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} that renders the {{#crossLink \"Geometry\"}}{{/crossLink}} pixel color values to the ColorTarget,</li>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}} that sources its pixels from the ColorTarget,</li>\n<li>a {{#crossLink \"Material\"}}{{/crossLink}} that includes the {{#crossLink \"Texture\"}}{{/crossLink}}, and</li>\n<li>a second {{#crossLink \"GameObject\"}}{{/crossLink}} that renders the {{#crossLink \"Geometry\"}}{{/crossLink}}, with the {{#crossLink \"Material\"}}{{/crossLink}} applied to it.</li>\n</ul>\n\n\n````javascript\nvar scene = new XEO.Scene();\n\nvar colorTarget = new XEO.ColorTarget(scene);\n\nvar geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box\n\n// First Object renders to the ColorTarget\n\nvar object1 = new XEO.GameObject(scene, {\n   geometry: geometry,\n   colorTarget: colorTarget\n});\n\nvar texture = new XEO.Texture(scene, {\n   target: colorTarget\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   textures: [\n       texture\n   ]\n});\n\n// Second Object is textured with the\n// image of the first Object\n\nvar object2 = new XEO.GameObject(scene, {\n   geometry: geometry,  // Reuse our simple box geometry\n   material: material\n});\n````",
+            "submodule": "rendering",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this ColorTarget within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "ColorTarget configuration",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this ColorTarget.",
+                            "type": "String:Object",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
         "DepthBuf": {
             "name": "DepthBuf",
             "shortname": "DepthBuf",
@@ -3854,6 +3716,103 @@
                             "type": "String",
                             "optional": true,
                             "optdefault": "\"less\""
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "DepthTarget": {
+            "name": "DepthTarget",
+            "shortname": "DepthTarget",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/rendering/depthTarget.js",
+            "line": 1,
+            "description": "A **DepthTarget** captures the Z-depths of the pixels that xeoEngine renders for the attached\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}. These provide a virtual, software-based\n<a href=\"http://en.wikipedia.org/wiki/Render_Target\" target=\"other\">render target</a> that is typically used when\nperforming *render-to-texture* as part of some post-processing effect that requires the pixel depth values.\n\n## Overview\n\n<ul>\n<li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink \"Texture\"}}Textures{{/crossLink}}.</li>\n<li>DepthTarget is not to be confused with {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.</li>\n<li>Use {{#crossLink \"Stage\"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before\nthe {{#crossLink \"Texture\"}}Textures{{/crossLink}} that consume it.</li>\n<li>For special effects, we often use DepthTargets and {{#crossLink \"Texture\"}}Textures{{/crossLink}} in combination\nwith {{#crossLink \"ColorTarget\"}}ColorTargets{{/crossLink}} and {{#crossLink \"Shader\"}}Shaders{{/crossLink}}.</li>\n</ul>\n\n<img src=\"../../../assets/images/DepthTarget.png\"></img>\n\n## Example\n\nIn the example below, we essentially have one {{#crossLink \"GameObject\"}}{{/crossLink}}\nthat renders its pixel Z-depth values to a {{#crossLink \"Texture\"}}{{/crossLink}}, which is then applied\nto a second {{#crossLink \"GameObject\"}}{{/crossLink}}.\n\nThe scene contains:\n\n<ul>\n<li>a DepthTarget,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape,\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} that renders the {{#crossLink \"Geometry\"}}{{/crossLink}} fragment depth values to the DepthTarget,</li>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}} that sources its pixels from the DepthTarget,</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} that includes the {{#crossLink \"Texture\"}}{{/crossLink}}, and</li>\n<li>a second {{#crossLink \"GameObject\"}}{{/crossLink}} that renders the {{#crossLink \"Geometry\"}}{{/crossLink}}, with the {{#crossLink \"Material\"}}{{/crossLink}} applied to it.</li>\n</ul>\n\nThe pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second\n{{#crossLink \"GameObject\"}}{{/crossLink}} as a {{#crossLink \"Texture\"}}{{/crossLink}}. In practice the {{#crossLink \"Texture\"}}{{/crossLink}}\nwould carry the depth values into a custom {{#crossLink \"Shader\"}}{{/crossLink}}, which would then be applied to the second {{#crossLink \"GameObject\"}}{{/crossLink}}.\n\n````javascript\nvar scene = new XEO.Scene();\n\nvar geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box.\n\nvar depthTarget = new XEO.DepthTarget(scene);\n\n// First Object renders its pixel depth values to our DepthTarget\nvar object1 = new XEO.GameObject(scene, {\n   depthTarget: depthTarget\n});\n\n// Texture consumes our DepthTarget\nvar texture = new XEO.Texture(scene, {\n   target: depthTarget\n});\n\n// Material contains our Texture\nvar material = new XEO.PhongMaterial(scene, {\n   textures: [\n       texture\n   ]\n});\n\n// Second Object is effectively textured with the color-encoded\n// pixel depths of the first Object\nvar object2 = new XEO.GameObject(scene, {\n   geometry: geometry,  // Reuse our simple box geometry\n   material: material\n});\n````",
+            "submodule": "rendering",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this DepthTarget within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "DepthTarget configuration",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this DepthTarget.",
+                            "type": "String:Object",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "Layer": {
+            "name": "Layer",
+            "shortname": "Layer",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/rendering/layer.js",
+            "line": 2,
+            "description": "A **Layer** specifies the render order of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within their {{#crossLink \"Stage\"}}Stages{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>When xeoEngine renders a {{#crossLink \"Scene\"}}Scene{{/crossLink}}, each {{#crossLink \"Stage\"}}Stage{{/crossLink}} within that will render its bin\nof {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} in turn, from the lowest priority {{#crossLink \"Stage\"}}Stage{{/crossLink}} to the highest.</li>\n\n<li>{{#crossLink \"Stage\"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>\n\n<li>You can control the render order of the individual {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} ***within*** a {{#crossLink \"Stage\"}}Stage{{/crossLink}}\nby associating them with {{#crossLink \"Layer\"}}Layers{{/crossLink}}.</li>\n\n<li>{{#crossLink \"Layer\"}}Layers{{/crossLink}} are typically used to <a href=\"https://www.opengl.org/wiki/Transparency_Sorting\" target=\"_other\">transparency-sort</a> the\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within {{#crossLink \"Stage\"}}Stages{{/crossLink}}.</li>\n\n\n<li>{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly\nattached to the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/layer:property\"}}layer{{/crossLink}}. which has\na {{#crossLink \"Layer/priority:property\"}}{{/crossLink}} value of zero.</li>\n\n<li>You can use Layers without defining any {{#crossLink \"Stage\"}}Stages{{/crossLink}} if you simply let your\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} fall back on the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/stage:property\"}}stage{{/crossLink}}. which has a {{#crossLink \"Stage/priority:property\"}}{{/crossLink}} value of zero.</li>\n</ul>\n\n<img src=\"../../../assets/images/Layer.png\"></img>\n\n## Example\n\nIn this example we'll use Layers to perform <a href=\"https://www.opengl.org/wiki/Transparency_Sorting\" target=\"_other\">transparency sorting</a>,\nwhich ensures that transparent objects are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.\n\nWe want to render the three nested boxes shown below, in which the innermost box is opaque and blue,\nthe box enclosing that is transparent and yellow, and the outermost box is transparent and green. We need the boxes to\nrender in order innermost-to-outermost, in order to blend transparencies correctly.\n\n<img src=\"../../assets/images/transparencySort.jpg\"></img>\n\nOur scene has one {{#crossLink \"Stage\"}}{{/crossLink}}, just for completeness. As mentioned earlier, you don't have to\ncreate this because the {{#crossLink \"Scene\"}}{{/crossLink}} will provide its default {{#crossLink \"Stage\"}}{{/crossLink}}.\nThen, within that {{#crossLink \"Stage\"}}{{/crossLink}}, we create a {{#crossLink \"GameObject\"}}{{/crossLink}} for each box,\neach assigned to a different prioritised {{#crossLink \"Layer\"}}{{/crossLink}} to ensure that they are rendered in the right order.\n\n````javascript\nvar scene = new XEO.Scene();\n\n// View transform\nvar lookat = new XEO.Lookat(scene, {\n   eye: [0,0,10]\n});\n\n// Camera, using Scene's default projection transform\nvar camera = new XEO.Camera(scene, {\n   view: lookat\n});\n\n// A Stage, just for completeness\n// We could instead just implicitly use the Scene's default Stage\nvar stage = new XEO.Stage(scene, {\n   priority: 0\n});\n\n// Geometry with no parameters defaults to a 2x2x2 box\nvar geometry = new XEO.Geometry(scene);\n\n//-----------------------------------------------------------------------------\n// Innermost box\n// Blue and opaque, in Layer with render order 0, renders first\n//-----------------------------------------------------------------------------\n\nvar layer1 = new XEO.Layer(scene, {\n   priority: 1\n});\n\nvar material1 = new XEO.PhongMaterial(scene, {\n   diffuse: [0.2, 0.2, 1.0],\n   opacity: 1.0\n});\n\nvar object1 = new XEO.GameObject(scene, {\n   camera: camera,\n   geometry: geometry,\n   stage: stage,\n   layer: layer1,\n   material: material1\n});\n\n//-----------------------------------------------------------------------------\n// Middle box\n// Red and transparent, in Layer with render order 2, renders next\n//-----------------------------------------------------------------------------\n\nvar layer2 = new XEO.Layer(scene, {\n   priority: 2\n});\n\nvar material2 = new XEO.PhongMaterial(scene, {\n   diffuse: [1, 0.2, 0.2],\n   opacity: 0.2\n});\n\nvar scale2 = new XEO.Scale(scene, {\n   xyz: [6, 6, 6]\n});\n\nvar object2 = new XEO.GameObject(scene, {\n   camera: camera,\n   geometry: geometry,\n   stage: stage,\n   layer: layer2,\n   material: material2,\n   scale: scale2\n});\n\n//-----------------------------------------------------------------------------\n// Outermost box\n// Green and transparent, in Layer with render order 3, renders last\n//-----------------------------------------------------------------------------\n\nvar layer3 = new XEO.Layer(scene, {\n   priority: 3\n});\n\nvar material3 = new XEO.PhongMaterial(scene, {\n   diffuse: [0.2, 1, 0.2],\n   opacity: 0.2\n});\n\nvar scale3 = new XEO.Scale(scene, {\n   xyz: [9, 9, 9]\n});\n\nvar object3 = new XEO.GameObject(scene, {\n   camera: camera,\n   geometry: geometry,\n   stage: stage,\n   layer: layer3,\n   material: material3,\n   scale: scale3\n});\n\n````",
+            "submodule": "rendering",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Geometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Layer.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "priority",
+                            "description": "The rendering priority,",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
                         }
                     ]
                 }
@@ -3940,146 +3899,6 @@
             ],
             "extends": "Component"
         },
-        "Stats": {
-            "name": "Stats",
-            "shortname": "Stats",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/reporting/stats.js",
-            "line": 1,
-            "description": "A **Stats** provides statistics on the parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Each {{#crossLink \"Scene\"}}Scene{{/crossLink}} provides a Stats instance on itself.</li>\n<li>You can manage your own statistics properties in a Stats, but take care not to clobber the properties that are\nprovided by the {{#crossLink \"Scene\"}}{{/crossLink}} (see table below).</li>\n</ul>\n\n<img src=\"../../../assets/images/Stats.png\"></img>\n\n## Example\n\nThis example shows how to subscribe to the \"numGeometries' statistic, which indicates\nhow many {{#crossLink \"Geometry\"}}{{/crossLink}} components are in the parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n````Javascript\nvar scene = new XEO.Scene();\n\n// Get the statistics for a Scene\nvar stats = scene.stats;\n\n// Subscribe to change of a statistic\n// The subscriber is also immediately notified of the current value via the callback.\nvar handle = configs.on(\"numGeometries\", function(value) {\n    console.log(\"Number of Geometry components in the Scene is now \" + value);\n});\n\n// Unsubscribe\nconfigs.off(handle);\n\n// Read the current value of a statistic\n// Normally we would asynchronously subscribe with #on though, to be sure that\n// we're getting the latest changes to the statistic.\nvar numGeometries = configs.props[\"numGeometries\"];\n````\n\nAs mentioned, we can manage our own statistics as well (perhaps if we're extending xeoEngine):\n\n````Javascript\n// Create a statistic\nconfigs.zero(\"myStatistic\");\n\n// Increment our statistic\nconfigs.inc(\"myStatistic\");\n\n// Decrement our statistic\nconfigs.dec(\"myStatistic\");\n\n// Subscribe to change of our statistic\nhandle2 = configs.on(\"myStatistic\", function(value) {\n   console.log(\"Value of myStatistic is now \" + value);\n});\n\n// Unsubscribe\nconfigs.off(handle2);\n\n// Read the current value of our statistic\nvar myStatistic = configs.props[\"myStatistic\"];\n````\n\n## Native xeoEngine statistics\n\nListed below are are the statistics provided by the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\nDon't use these names for your own custom statistics properties.\n\n| Name  | Description|\n|---|---|\n| \"numGeometries\" | Number of {{#crossLink \"Geometry\"}}Geometrys{{/crossLink}} in the {{#crossLink \"Scene\"}}Scene{{/crossLink}} |\n| \"numTextures\"  | Number of {{#crossLink \"Texture\"}}Textures{{/crossLink}} in the {{#crossLink \"Scene\"}}Scene{{/crossLink}}  |\n| \"numGameObjects\"  | Number of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} in the {{#crossLink \"Scene\"}}Scene{{/crossLink}}  |",
-            "submodule": "reporting",
-            "is_constructor": 1,
-            "extends": "Component"
-        },
-        "Task": {
-            "name": "Task",
-            "shortname": "Task",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/reporting/task.js",
-            "line": 1,
-            "description": "A **Task** represents an asynchronously-running process within a {{#crossLink \"Tasks\"}}Tasks{{/crossLink}}.\n\n## Overview\n\nSee the {{#crossLink \"Tasks\"}}{{/crossLink}} documentation for more information.</li>\n\n<img src=\"../../../assets/images/Task.png\"></img>",
-            "submodule": "reporting",
-            "extends": "Component"
-        },
-        "Tasks": {
-            "name": "Tasks",
-            "shortname": "Tasks",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/reporting/tasks.js",
-            "line": 1,
-            "description": "A **Tasks** tracks general asynchronous tasks running within a {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Each {{#crossLink \"Scene\"}}Scene{{/crossLink}} has a Tasks component, available via the\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Scene/tasks:property\"}}tasks{{/crossLink}} property,\nwithin which it will create and destroy {{#crossLink \"Task\"}}Task{{/crossLink}} components to indicate what processes\nit's running internally.</li>\n\n<li>You can also manage your own {{#crossLink \"Task\"}}Task{{/crossLink}} components within that, to indicate what\napplication-level processes you are running.</li>\n</ul>\n\n<img src=\"../../../assets/images/Tasks.png\"></img>\n\n## Example\n\nThis example shows how to manage tasks and subscribe to their life cycles.\n\n````Javascript\n// Create a Scene\nvar scene = new XEO.Scene();\n\n// Get the Tasks tracker\nvar tasks = scene.tasks;\n\n// Subscribe to all task creations\ntasks.on(\"started\", function(task) {\n    console.log(\"Task started: \" + task.id +\", \" + task.description);\n});\n\n// Subscribe to all task completions\ntasks.on(\"completed\", function(task) {\n     console.log(\"Task completed: \" + task.id +\", \" + task.description);\n});\n\n// Subscribe to all task failures\ntasks.on(\"failed\", function(task) {\n    console.log(\"Task failed: \" + task.id +\", \" + task.description);\n});\n\n// Create and start Task \"foo\"\nvar taskFoo = tasks.create({\n    id: \"foo\", // Optional, unique ID generated automatically when omitted\n    description: \"Loading something\"\n});\n\n// Create and start Task \"bar\"\nvar taskBar = tasks.create({\n    id: \"bar\",\n    description: \"Loading something else\"\n});\n\n// Subscribe to completion of Task \"foo\"\ntaskFoo.on(\"completed\", function(task) {\n    console.log(\"Task completed: \" + task.id +\", \" + task.description);\n});\n\n// Subscribe to failure of a specific task\ntaskFoo.on(\"failed\", function(task) {\n    console.log(\"Task failed: \" + task.id +\", \" + task.description);\n});\n\n// Set Task \"foo\" as completed, via the Tasks\n// Fires the \"completed\" handler we registered above, also fires \"completed\" on the Task itself\ntasks.setCompleted(\"foo\");\n\n// Set Task \"bar\" as failed, this time directly on the Task in question\nmyTask2.setFailed();\n\n````",
-            "submodule": "reporting",
-            "is_constructor": 1,
-            "extends": "Component"
-        },
-        "ColorTarget": {
-            "name": "ColorTarget",
-            "shortname": "ColorTarget",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/rtt/colorTarget.js",
-            "line": 1,
-            "description": "A **ColorTarget** captures the colors of the pixels that xeoEngine renders for the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\nThese provide a virtual, software-based <a href=\"http://en.wikipedia.org/wiki/Render_Target\" target=\"other\">render target</a> that is typically used when performing *render-to-texture*.\n\n## Overview\n\n<ul>\n<li>A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink \"Texture\"}}Textures{{/crossLink}}.</li>\n<li>ColorTarget is not to be confused with {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.</li>\n<li>Use {{#crossLink \"Stage\"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before\nthe {{#crossLink \"Texture\"}}Textures{{/crossLink}} that consume it.</li>\n<li>For special effects, we often use ColorTargets and {{#crossLink \"Texture\"}}Textures{{/crossLink}} in combination\nwith {{#crossLink \"DepthTarget\"}}DepthTargets{{/crossLink}} and {{#crossLink \"Shader\"}}Shaders{{/crossLink}}.</li>\n</ul>\n\n<img src=\"../../../assets/images/ColorTarget.png\"></img>\n\n## Example\n\nIn this example we essentially have one {{#crossLink \"GameObject\"}}{{/crossLink}}\nthat's rendered to a {{#crossLink \"Texture\"}}{{/crossLink}}, which is then applied to a second {{#crossLink \"GameObject\"}}{{/crossLink}}.\n\nThe scene contains:\n\n<ul>\n<li>a ColorTarget,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape,\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} that renders the {{#crossLink \"Geometry\"}}{{/crossLink}} pixel color values to the ColorTarget,</li>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}} that sources its pixels from the ColorTarget,</li>\n<li>a {{#crossLink \"Material\"}}{{/crossLink}} that includes the {{#crossLink \"Texture\"}}{{/crossLink}}, and</li>\n<li>a second {{#crossLink \"GameObject\"}}{{/crossLink}} that renders the {{#crossLink \"Geometry\"}}{{/crossLink}}, with the {{#crossLink \"Material\"}}{{/crossLink}} applied to it.</li>\n</ul>\n\n\n````javascript\nvar scene = new XEO.Scene();\n\nvar colorTarget = new XEO.ColorTarget(scene);\n\nvar geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box\n\n// First Object renders to the ColorTarget\n\nvar object1 = new XEO.GameObject(scene, {\n   geometry: geometry,\n   colorTarget: colorTarget\n});\n\nvar texture = new XEO.Texture(scene, {\n   target: colorTarget\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   textures: [\n       texture\n   ]\n});\n\n// Second Object is textured with the\n// image of the first Object\n\nvar object2 = new XEO.GameObject(scene, {\n   geometry: geometry,  // Reuse our simple box geometry\n   material: material\n});\n````",
-            "submodule": "rtt",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this ColorTarget within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "ColorTarget configuration",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this ColorTarget.",
-                            "type": "String:Object",
-                            "optional": true
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
-        "DepthTarget": {
-            "name": "DepthTarget",
-            "shortname": "DepthTarget",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/core/rtt/depthTarget.js",
-            "line": 1,
-            "description": "A **DepthTarget** captures the Z-depths of the pixels that xeoEngine renders for the attached\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}. These provide a virtual, software-based\n<a href=\"http://en.wikipedia.org/wiki/Render_Target\" target=\"other\">render target</a> that is typically used when\nperforming *render-to-texture* as part of some post-processing effect that requires the pixel depth values.\n\n## Overview\n\n<ul>\n<li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink \"Texture\"}}Textures{{/crossLink}}.</li>\n<li>DepthTarget is not to be confused with {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.</li>\n<li>Use {{#crossLink \"Stage\"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before\nthe {{#crossLink \"Texture\"}}Textures{{/crossLink}} that consume it.</li>\n<li>For special effects, we often use DepthTargets and {{#crossLink \"Texture\"}}Textures{{/crossLink}} in combination\nwith {{#crossLink \"ColorTarget\"}}ColorTargets{{/crossLink}} and {{#crossLink \"Shader\"}}Shaders{{/crossLink}}.</li>\n</ul>\n\n<img src=\"../../../assets/images/DepthTarget.png\"></img>\n\n## Example\n\nIn the example below, we essentially have one {{#crossLink \"GameObject\"}}{{/crossLink}}\nthat renders its pixel Z-depth values to a {{#crossLink \"Texture\"}}{{/crossLink}}, which is then applied\nto a second {{#crossLink \"GameObject\"}}{{/crossLink}}.\n\nThe scene contains:\n\n<ul>\n<li>a DepthTarget,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape,\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} that renders the {{#crossLink \"Geometry\"}}{{/crossLink}} fragment depth values to the DepthTarget,</li>\n<li>a {{#crossLink \"Texture\"}}{{/crossLink}} that sources its pixels from the DepthTarget,</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} that includes the {{#crossLink \"Texture\"}}{{/crossLink}}, and</li>\n<li>a second {{#crossLink \"GameObject\"}}{{/crossLink}} that renders the {{#crossLink \"Geometry\"}}{{/crossLink}}, with the {{#crossLink \"Material\"}}{{/crossLink}} applied to it.</li>\n</ul>\n\nThe pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second\n{{#crossLink \"GameObject\"}}{{/crossLink}} as a {{#crossLink \"Texture\"}}{{/crossLink}}. In practice the {{#crossLink \"Texture\"}}{{/crossLink}}\nwould carry the depth values into a custom {{#crossLink \"Shader\"}}{{/crossLink}}, which would then be applied to the second {{#crossLink \"GameObject\"}}{{/crossLink}}.\n\n````javascript\nvar scene = new XEO.Scene();\n\nvar geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box.\n\nvar depthTarget = new XEO.DepthTarget(scene);\n\n// First Object renders its pixel depth values to our DepthTarget\nvar object1 = new XEO.GameObject(scene, {\n   depthTarget: depthTarget\n});\n\n// Texture consumes our DepthTarget\nvar texture = new XEO.Texture(scene, {\n   target: depthTarget\n});\n\n// Material contains our Texture\nvar material = new XEO.PhongMaterial(scene, {\n   textures: [\n       texture\n   ]\n});\n\n// Second Object is effectively textured with the color-encoded\n// pixel depths of the first Object\nvar object2 = new XEO.GameObject(scene, {\n   geometry: geometry,  // Reuse our simple box geometry\n   material: material\n});\n````",
-            "submodule": "rtt",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this DepthTarget within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "DepthTarget configuration",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this DepthTarget.",
-                            "type": "String:Object",
-                            "optional": true
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
         "Shader": {
             "name": "Shader",
             "shortname": "Shader",
@@ -4090,10 +3909,10 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/core/shading/shader.js",
+            "file": "src/core/rendering/shader.js",
             "line": 1,
             "description": "A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>\n<li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other\ncomponents on the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Use Shaders in combination with {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} components when you need to share\nthe same Shaders among multiple {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms\ndifferently for each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.</li>\n<li>Use {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}}, {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}}\nand {{#crossLink \"Texture\"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>\n</ul>\n\n<img src=\"../../../assets/images/Shader.png\"></img>\n\n## Example\n\nThis example shows the simplest way to use a Shader, where we're just going to render a ripply water\npattern to a screen-aligned quad.\n\n<img src=\"../../assets/images/shaderExample1.png\"></img>\n\nIn our scene definition, we have an  {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that has a {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} that is our\nscreen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.\nFinally, we animate the rippling by periodically updating the Shader's \"time\" uniform.\n\n````javascript\n\nvar scene = new XEO.Scene();\n\n// Shader that's used by our Object. Note the 'xeo_aPosition' and 'xeo_aUV attributes',\n// which will receive the positions and UVs from the Geometry. Also note the 'time'\n// uniform, which we'll be animating via Shader#setParams.\n\nvar shader = new XEO.Shader(scene, {\n\n      // Vertex shading stage\n      vertex: [\n          \"attribute vec3 xeo_aPosition;\",\n          \"attribute vec2 xeo_aUV;\",\n          \"varying vec2 vUv;\",\n          \"void main () {\",\n          \"    gl_Position = vec4(xeo_aPosition, 1.0);\",\n          \"    vUv = xeo_aUV;\",\n          \"}\"\n      ],\n\n      // Fragment shading stage\n      fragment: [\n          \"precision mediump float;\",\n\n          \"uniform float time;\",\n          \"varying vec2 vUv;\",\n\n          \"void main( void ) {\",\n          \"    vec2 sp = vUv;\",\n          \"    vec2 p = sp*5.0 - vec2(10.0);\",\n          \"    vec2 i = p;\",\n          \"    float c = 1.0;\",\n          \"    float inten = 0.10;\",\n          \"    for (int n = 0; n < 10; n++) {\",\n          \"        float t = time * (1.0 - (3.0 / float(n+1)));\",\n          \"        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));\",\n          \"        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));\",\n          \"    }\",\n          \"    c /= float(10);\",\n          \"    c = 1.5-sqrt(c);\",\n          \"    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);\",\n          \"}\"\n      ],\n\n      // Initial value for the 'time' uniform in the fragment stage.\n      params: {\n          time: 0.0\n      }\n });\n\n// A screen-aligned quad\nvar quad = new XEO.Geometry(scene, {\n      primitive:\"triangles\",\n      positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],\n      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n      indices:[ 0, 1, 2, 0, 2, 3 ]\n });\n\nvar object = new XEO.GameObject(scene, {\n      shader: shader,\n      geometry: quad\n });\n\n````\nNow let's animate the \"time\" parameter on the Shader, to make the water ripple:\n\n```` javascript\nscene.on(\"tick\", function(params) {\n           shader.setParams({\n               time: params.timeElapsed\n           });\n       });\n````\n\n## <a name=\"inputs\">Shader Inputs</a>\n\nxeoEngine provides the following inputs for your shaders.\n\n#### Attributes\n\n*Attributes are used only in vertex shaders*\n\n| Attribute  | Description | Depends on  |\n|---|---|\n| attribute vec3 xeo_aPosition   | Geometry vertex positions | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} |\n| attribute vec2 xeo_aUV         | Geometry vertex UV coordinates | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n| attribute vec3 xeo_aNormal     | Geometry vertex normals | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}}  |\n| attribute vec4 xeo_aColor      | Geometry vertex colors  | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}}  |\n| attribute vec4 xeo_aTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n\n#### Uniforms\n\n*Uniforms are used in vertex and fragment shaders*\n\n| Uniform  | Description | Depends on  |\n|---|---|\n| uniform mat4  xeo_uModelMatrix                                   | Modelling transform matrix | {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  xeo_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  xeo_uViewMatrix                                    | View transform matrix | {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  xeo_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n|---|---|\n| uniform vec3  xeo_uLightAmbientColor                             | Color of the first {{#crossLink \"AmbientLight\"}}{{/crossLink}} in {{#crossLink \"Lights\"}}{{/crossLink}}| {{#crossLink \"AmbientLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightColor&lt;***N***&gt;                    | Diffuse color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightIntensity&lt;***N***&gt;                   | Specular color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink \"DirLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n|---|---|\n| uniform vec3 xeo_uMaterialDiffuse;       |  | {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} |\n| uniform vec3 xeo_uMaterialSpecular;       |  | {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} |\n| uniform vec3 xeo_uMaterialEmissive;       |  | {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} |\n| uniform float xeo_uMaterialOpacity;       |  | {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} |\n| uniform float xeo_uMaterialShininess;       |  | {{#crossLink \"PhongMaterial/shininess:property\"}}{{/crossLink}} |\n| uniform float xeo_uMaterialDiffuseFresnelBias;       |  | {{#crossLink \"Fresnel/bias:property\"}}{{/crossLink}} |\n\n#### Varying\n\n*Varying types are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|\n| varying vec4 xeo_vWorldPosition | |\n| varying vec4 xeo_vViewPosition | |\n| varying vec4 xeo_vColor | |\n\n#### Samplers\n\n*Samplers are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|",
-            "submodule": "shading",
+            "submodule": "rendering",
             "is_constructor": 1,
             "params": [
                 {
@@ -4154,10 +3973,10 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/core/shading/shaderParams.js",
+            "file": "src/core/rendering/shaderParams.js",
             "line": 1,
             "description": "A **ShaderParams** sets uniform values for {{#crossLink \"Shader\"}}Shaders{{/crossLink}} on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Use ShaderParams components when you need to share the same {{#crossLink \"Shader\"}}Shaders{{/crossLink}} among multiple {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}},\nwhile setting the {{#crossLink \"Shader\"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.</li>\n</ul>\n\n<img src=\"../../../assets/images/ShaderParams.png\"></img>\n\n## Example\n\nThis example shows the simplest way to use a {{#crossLink \"Shader\"}}Shader{{/crossLink}}, where we're just going to render a ripply water\npattern to a screen-aligned quad. As with all our examples, we're just creating the\nessential components while falling back on the <a href=\"XEO.Scene.html#defaults\" class=\"crosslink\">Scene's default components</a>\nfor everything else.\n\n<img src=\"../../assets/images/shaderParamsExample1.png\"></img>\n\nIn our scene definition, we have an  {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that has a {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} that is our\nscreen-aligned quad, plus a {{#crossLink \"Shader\"}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.\nFinally, we animate the rippling by periodically updating the {{#crossLink \"Shader\"}}Shader{{/crossLink}}'s \"time\" uniform.\n\n````javascript\nvar scene = new XEO.Scene();\n\n// Shader that's shared by both our GameObjects. Note the 'xeo_aPosition' and 'xeo_aUV attributes',\n// which will receive the positions and UVs from the Geometry components. Also note the 'time'\n// uniform, which we'll be animating via the ShaderParams components.\n\nvar shader = new XEO.Shader(scene, {\n\n      // Vertex shading stage\n      vertex: [\n          \"attribute vec3 xeo_aPosition;\",\n          \"attribute vec2 xeo_aUV;\",\n          \"varying vec2 vUv;\",\n          \"void main () {\",\n          \"    gl_Position = vec4(xeo_aPosition, 1.0);\",\n          \"    vUv = xeo_aUV;\",\n          \"}\"\n      ],\n\n      // Fragment shading stage\n      fragment: [\n          \"precision mediump float;\",\n\n          \"uniform float time;\",\n          \"varying vec2 vUv;\",\n\n          \"void main( void ) {\",\n          \"    vec2 sp = vUv;\",\n          \"    vec2 p = sp*5.0 - vec2(10.0);\",\n          \"    vec2 i = p;\",\n          \"    float c = 1.0;\",\n          \"    float inten = 0.10;\",\n          \"    for (int n = 0; n < 10; n++) {\",\n          \"        float t = time * (1.0 - (3.0 / float(n+1)));\",\n          \"        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));\",\n          \"        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));\",\n          \"    }\",\n          \"    c /= float(10);\",\n          \"    c = 1.5-sqrt(c);\",\n          \"    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);\",\n          \"}\"\n      ],\n\n      // Initial values for the 'time' uniform in the fragment stage.\n      params: {\n          time: 0.0\n      }\n });\n\n// First Object using our Shader, with a quad covering the left half of the canvas,\n// along with its own ShaderParams to independently set its own values for the Shader's uniforms.\n\nvar quad1 = new XEO.Geometry(scene, {\n      primitive:\"triangles\",\n      positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],\n      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n      indices:[ 0, 1, 2, 0, 2, 3 ]\n });\n\nvar shaderParams1 = new XEO.ShaderParams(scene, {\n      params: {\n          time: 0.0\n      }\n });\n\nvar object1 = new XEO.GameObject(scene, {\n      shader: shader,\n      geometry: quad1,\n      shaderParams1: shaderParams1\n });\n\n// Second Object using the Shader, with a quad covering the right half of the canvas,\n// along with its own ShaderParams to independently set its own values for the Shader's uniforms.\n\nvar quad2 = new XEO.Geometry(scene, {\n      primitive:\"triangles\",\n      positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],\n      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n      indices:[ 0, 1, 2, 0, 2, 3 ]\n });\n\nvar shaderParams2 = new XEO.ShaderParams(scene, {\n      params: {\n          time: 0.0\n      }\n });\n\nvar object2 = new XEO.GameObject(scene, {\n      shader: shader,\n      geometry2: quad2,\n      shaderParams2: shaderParams2\n });\n\n````\nNow let's animate the \"time\" parameter on the Shader, for each Object independently:\n\n```` javascript\nscene.on(\"tick\", function(params) {\n\n           shaderParams1.setParams({\n               time: params.timeElapsed\n           });\n\n           shaderParams2.setParams({\n               time: params.timeElapsed  * 0.5\n           });\n       });\n````",
-            "submodule": "shading",
+            "submodule": "rendering",
             "is_constructor": 1,
             "params": [
                 {
@@ -4192,6 +4011,115 @@
                     ]
                 }
             ],
+            "extends": "Component"
+        },
+        "Stage": {
+            "name": "Stage",
+            "shortname": "Stage",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/rendering/stage.js",
+            "line": 1,
+            "description": "A **Stage** is a bin of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that is rendered in a specified priority with respect to\nother Stages in the same {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>When the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} renders, each Stage renders its bin\nof {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>\n\n<li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>\n\n<li>You can control the render order of the individual {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} ***within*** a Stage\nby associating them with {{#crossLink \"Layer\"}}Layers{{/crossLink}}.</li>\n\n<li>{{#crossLink \"Layer\"}}Layers{{/crossLink}} are typically used to <a href=\"https://www.opengl.org/wiki/Transparency_Sorting\" target=\"_other\">transparency-sort</a> the\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within Stages.</li>\n\n<li>{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly\nattached to the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/stage:property\"}}stage{{/crossLink}}. which has\na {{#crossLink \"Stage/priority:property\"}}{{/crossLink}} value of zero.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Stage.png\"></img>\n\n## Example\n\nIn this example we're performing render-to-texture using {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} and\n{{#crossLink \"Texture\"}}Texture{{/crossLink}} components.\n\nNote how we use two prioritized Stages, to ensure that the {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} is\nrendered ***before*** the {{#crossLink \"Texture\"}}Texture{{/crossLink}} that consumes it.\n\n````javascript\nvar scene = new XEO.Scene();\n\n// First stage: an Object that renders to a ColorTarget\n\nvar stage1 = new XEO.Stage(scene, {\n      priority: 0\n });\n\nvar geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box\n\nvar colorTarget = new XEO.ColorTarget(scene);\n\nvar object1 = new XEO.GameObject(scene, {\n      stage: stage1,\n      geometry: geometry,\n      colorTarget: colorTarget\n });\n\n\n// Second stage: an Object with a Texture that sources from the ColorTarget\n\nvar stage2 = new XEO.Stage(scene, {\n      priority: 1\n });\n\nvar texture = new XEO.Texture(scene, {\n      target: colorTarget\n });\n\nvar material = new XEO.PhongMaterial(scene, {\n      textures: [\n          texture\n      ]\n });\n\nvar geometry2 = new XEO.Geometry(scene);\n\nvar object2 = new XEO.GameObject(scene, {\n      stage: stage2,\n      material: material,\n      geometry: geometry2\n });\n````",
+            "submodule": "rendering",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Stage in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Stage.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "priority",
+                            "description": "The rendering priority for the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        },
+                        {
+                            "name": "pickable",
+                            "description": "Indicates whether attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are pickable.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "Stats": {
+            "name": "Stats",
+            "shortname": "Stats",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/reporting/stats.js",
+            "line": 1,
+            "description": "A **Stats** provides statistics on the parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Each {{#crossLink \"Scene\"}}Scene{{/crossLink}} provides a Stats instance on itself.</li>\n<li>You can manage your own statistics properties in a Stats, but take care not to clobber the properties that are\nprovided by the {{#crossLink \"Scene\"}}{{/crossLink}} (see table below).</li>\n</ul>\n\n<img src=\"../../../assets/images/Stats.png\"></img>\n\n## Example\n\nThis example shows how to subscribe to the \"numGeometries' statistic, which indicates\nhow many {{#crossLink \"Geometry\"}}{{/crossLink}} components are in the parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n````Javascript\nvar scene = new XEO.Scene();\n\n// Get the statistics for a Scene\nvar stats = scene.stats;\n\n// Subscribe to change of a statistic\n// The subscriber is also immediately notified of the current value via the callback.\nvar handle = configs.on(\"numGeometries\", function(value) {\n    console.log(\"Number of Geometry components in the Scene is now \" + value);\n});\n\n// Unsubscribe\nconfigs.off(handle);\n\n// Read the current value of a statistic\n// Normally we would asynchronously subscribe with #on though, to be sure that\n// we're getting the latest changes to the statistic.\nvar numGeometries = configs.props[\"numGeometries\"];\n````\n\nAs mentioned, we can manage our own statistics as well (perhaps if we're extending xeoEngine):\n\n````Javascript\n// Create a statistic\nconfigs.zero(\"myStatistic\");\n\n// Increment our statistic\nconfigs.inc(\"myStatistic\");\n\n// Decrement our statistic\nconfigs.dec(\"myStatistic\");\n\n// Subscribe to change of our statistic\nhandle2 = configs.on(\"myStatistic\", function(value) {\n   console.log(\"Value of myStatistic is now \" + value);\n});\n\n// Unsubscribe\nconfigs.off(handle2);\n\n// Read the current value of our statistic\nvar myStatistic = configs.props[\"myStatistic\"];\n````\n\n## Native xeoEngine statistics\n\nListed below are are the statistics provided by the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\nDon't use these names for your own custom statistics properties.\n\n| Name  | Description|\n|---|---|\n| \"numGeometries\" | Number of {{#crossLink \"Geometry\"}}Geometrys{{/crossLink}} in the {{#crossLink \"Scene\"}}Scene{{/crossLink}} |\n| \"numTextures\"  | Number of {{#crossLink \"Texture\"}}Textures{{/crossLink}} in the {{#crossLink \"Scene\"}}Scene{{/crossLink}}  |\n| \"numGameObjects\"  | Number of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} in the {{#crossLink \"Scene\"}}Scene{{/crossLink}}  |",
+            "submodule": "reporting",
+            "is_constructor": 1,
+            "extends": "Component"
+        },
+        "Task": {
+            "name": "Task",
+            "shortname": "Task",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/reporting/task.js",
+            "line": 1,
+            "description": "A **Task** represents an asynchronously-running process within a {{#crossLink \"Tasks\"}}Tasks{{/crossLink}}.\n\n## Overview\n\nSee the {{#crossLink \"Tasks\"}}{{/crossLink}} documentation for more information.</li>\n\n<img src=\"../../../assets/images/Task.png\"></img>",
+            "submodule": "reporting",
+            "extends": "Component"
+        },
+        "Tasks": {
+            "name": "Tasks",
+            "shortname": "Tasks",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/core/reporting/tasks.js",
+            "line": 1,
+            "description": "A **Tasks** tracks general asynchronous tasks running within a {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Each {{#crossLink \"Scene\"}}Scene{{/crossLink}} has a Tasks component, available via the\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Scene/tasks:property\"}}tasks{{/crossLink}} property,\nwithin which it will create and destroy {{#crossLink \"Task\"}}Task{{/crossLink}} components to indicate what processes\nit's running internally.</li>\n\n<li>You can also manage your own {{#crossLink \"Task\"}}Task{{/crossLink}} components within that, to indicate what\napplication-level processes you are running.</li>\n</ul>\n\n<img src=\"../../../assets/images/Tasks.png\"></img>\n\n## Example\n\nThis example shows how to manage tasks and subscribe to their life cycles.\n\n````Javascript\n// Create a Scene\nvar scene = new XEO.Scene();\n\n// Get the Tasks tracker\nvar tasks = scene.tasks;\n\n// Subscribe to all task creations\ntasks.on(\"started\", function(task) {\n    console.log(\"Task started: \" + task.id +\", \" + task.description);\n});\n\n// Subscribe to all task completions\ntasks.on(\"completed\", function(task) {\n     console.log(\"Task completed: \" + task.id +\", \" + task.description);\n});\n\n// Subscribe to all task failures\ntasks.on(\"failed\", function(task) {\n    console.log(\"Task failed: \" + task.id +\", \" + task.description);\n});\n\n// Create and start Task \"foo\"\nvar taskFoo = tasks.create({\n    id: \"foo\", // Optional, unique ID generated automatically when omitted\n    description: \"Loading something\"\n});\n\n// Create and start Task \"bar\"\nvar taskBar = tasks.create({\n    id: \"bar\",\n    description: \"Loading something else\"\n});\n\n// Subscribe to completion of Task \"foo\"\ntaskFoo.on(\"completed\", function(task) {\n    console.log(\"Task completed: \" + task.id +\", \" + task.description);\n});\n\n// Subscribe to failure of a specific task\ntaskFoo.on(\"failed\", function(task) {\n    console.log(\"Task failed: \" + task.id +\", \" + task.description);\n});\n\n// Set Task \"foo\" as completed, via the Tasks\n// Fires the \"completed\" handler we registered above, also fires \"completed\" on the Task itself\ntasks.setCompleted(\"foo\");\n\n// Set Task \"bar\" as failed, this time directly on the Task in question\nmyTask2.setFailed();\n\n````",
+            "submodule": "reporting",
+            "is_constructor": 1,
             "extends": "Component"
         },
         "Boundary3D": {
@@ -12228,90 +12156,6 @@
             "submodule": "objects"
         },
         {
-            "file": "src/core/ordering/layer.js",
-            "line": 179,
-            "description": "Indicates this Layer's rendering priority for the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nEach {{#crossLink \"GameObject\"}}{{/crossLink}} is also attached to a {{#crossLink \"Stage\"}}Stage{{/crossLink}}, which sets a *stage* rendering\npriority via its {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} property.\n\nFires a {{#crossLink \"Layer/priority:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "priority",
-            "default": "0",
-            "type": "Number",
-            "class": "Layer",
-            "module": "XEO",
-            "submodule": "ordering"
-        },
-        {
-            "file": "src/core/ordering/layer.js",
-            "line": 199,
-            "description": "Fired whenever this Layer's  {{#crossLink \"Layer/priority:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "priority",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Layer",
-            "module": "XEO",
-            "submodule": "ordering"
-        },
-        {
-            "file": "src/core/ordering/stage.js",
-            "line": 117,
-            "description": "Indicates the rendering priority for the\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} in\nthis Stage.\n\nFires a {{#crossLink \"Stage/priority:event\"}}{{/crossLink}}\nevent on change.",
-            "itemtype": "property",
-            "name": "priority",
-            "default": "0",
-            "type": "Number",
-            "class": "Stage",
-            "module": "XEO",
-            "submodule": "ordering"
-        },
-        {
-            "file": "src/core/ordering/stage.js",
-            "line": 135,
-            "description": "Fired whenever this Stage's\n{{#crossLink \"Stage/priority:property\"}}{{/crossLink}}\nproperty changes.",
-            "itemtype": "event",
-            "name": "priority",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Stage",
-            "module": "XEO",
-            "submodule": "ordering"
-        },
-        {
-            "file": "src/core/ordering/stage.js",
-            "line": 151,
-            "description": "Indicates whether the attached\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are\npickable (see {{#crossLink \"Canvas/pick:method\"}}Canvas#pick{{/crossLink}}).\n\nFires a {{#crossLink \"Stage/pickable:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "pickable",
-            "default": "true",
-            "type": "Boolean",
-            "class": "Stage",
-            "module": "XEO",
-            "submodule": "ordering"
-        },
-        {
-            "file": "src/core/ordering/stage.js",
-            "line": 170,
-            "description": "Fired whenever this Stage's\n{{#crossLink \"Stage/pickable:pickable\"}}{{/crossLink}}\nproperty changes.",
-            "itemtype": "event",
-            "name": "pickable",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Stage",
-            "module": "XEO",
-            "submodule": "ordering"
-        },
-        {
             "file": "src/core/rendering/canvas.js",
             "line": 110,
             "description": "The HTML canvas. When the {{#crossLink \"Viewer\"}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,\nthen this property will be that element, otherwise it will be a full-page canvas that this Canvas has\ncreated by default.",
@@ -12552,6 +12396,34 @@
             "submodule": "rendering"
         },
         {
+            "file": "src/core/rendering/layer.js",
+            "line": 179,
+            "description": "Indicates this Layer's rendering priority for the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nEach {{#crossLink \"GameObject\"}}{{/crossLink}} is also attached to a {{#crossLink \"Stage\"}}Stage{{/crossLink}}, which sets a *stage* rendering\npriority via its {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} property.\n\nFires a {{#crossLink \"Layer/priority:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "priority",
+            "default": "0",
+            "type": "Number",
+            "class": "Layer",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/layer.js",
+            "line": 199,
+            "description": "Fired whenever this Layer's  {{#crossLink \"Layer/priority:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "priority",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Layer",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
             "file": "src/core/rendering/modes.js",
             "line": 112,
             "description": "Whether this Modes enables picking of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nPicking is performed via calls to {{#crossLink \"Canvas/pick:method\"}}Canvas#pick{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/picking:event\"}}{{/crossLink}} event on change.",
@@ -12688,6 +12560,210 @@
                 }
             ],
             "class": "Modes",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/shader.js",
+            "line": 210,
+            "description": "GLSL source code for this Shader's vertex stage.\n\nFires a {{#crossLink \"Shader/vertex:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "vertex",
+            "default": "null",
+            "type": "String",
+            "class": "Shader",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/shader.js",
+            "line": 228,
+            "description": "Fired whenever this Shader's {{#crossLink \"Shader/vertex:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "vertex",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Shader",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/shader.js",
+            "line": 242,
+            "description": "GLSL source code for this Shader's fragment stage.\n\nFires a {{#crossLink \"Shader/fragment:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "fragment",
+            "default": "null",
+            "type": "String",
+            "class": "Shader",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/shader.js",
+            "line": 260,
+            "description": "Fired whenever this Shader's {{#crossLink \"Shader/fragment:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "fragment",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Shader",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/shader.js",
+            "line": 274,
+            "description": "Params for this Shader.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "params",
+            "default": "{}",
+            "type": "{}",
+            "class": "Shader",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/shader.js",
+            "line": 291,
+            "description": "Sets one or more params for this Shader.\n\nThese will be individually overridden by any {{#crossLink \"ShaderParams/setParams:method\"}}params subsequently specified{{/crossLink}} on\n{{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "method",
+            "name": "setParams",
+            "params": [
+                {
+                    "name": "params",
+                    "description": "Values for params to set on this Shader, keyed to their names.",
+                    "optional": true,
+                    "optdefault": "{}"
+                }
+            ],
+            "class": "Shader",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/shader.js",
+            "line": 312,
+            "description": "Fired whenever this Shader's  {{#crossLink \"Shader/params:property\"}}{{/crossLink}}\nproperty has been updated.",
+            "itemtype": "event",
+            "name": "params",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Shader",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/shaderParams.js",
+            "line": 168,
+            "description": "Params for {{#crossLink \"Shader\"}}Shaders{{/crossLink}} on attached\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "params",
+            "default": "{}",
+            "type": "{}",
+            "class": "ShaderParams",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/shaderParams.js",
+            "line": 186,
+            "description": "Sets one or more params for {{#crossLink \"Shader\"}}Shaders{{/crossLink}} on attached\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nThese will individually override any params of the same names that are {{#crossLink \"Shader/setParams:method\"}}already specified{{/crossLink}} on\nthose {{#crossLink \"Shader\"}}Shaders{{/crossLink}}.\n\nFires a {{#crossLink \"ShaderParams/params:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "method",
+            "name": "setParams",
+            "params": [
+                {
+                    "name": "params",
+                    "description": "Values for params to set on the {{#crossLink \"Shader\"}}Shaders{{/crossLink}}, keyed to their names.",
+                    "optional": true,
+                    "optdefault": "{}"
+                }
+            ],
+            "class": "ShaderParams",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/shaderParams.js",
+            "line": 208,
+            "description": "Fired whenever this ShaderParams' {{#crossLink \"ShaderParams/params:property\"}}{{/crossLink}} property has been updated.",
+            "itemtype": "event",
+            "name": "params",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "ShaderParams",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/stage.js",
+            "line": 117,
+            "description": "Indicates the rendering priority for the\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} in\nthis Stage.\n\nFires a {{#crossLink \"Stage/priority:event\"}}{{/crossLink}}\nevent on change.",
+            "itemtype": "property",
+            "name": "priority",
+            "default": "0",
+            "type": "Number",
+            "class": "Stage",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/stage.js",
+            "line": 135,
+            "description": "Fired whenever this Stage's\n{{#crossLink \"Stage/priority:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "priority",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Stage",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/stage.js",
+            "line": 151,
+            "description": "Indicates whether the attached\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are\npickable (see {{#crossLink \"Canvas/pick:method\"}}Canvas#pick{{/crossLink}}).\n\nFires a {{#crossLink \"Stage/pickable:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "pickable",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Stage",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/core/rendering/stage.js",
+            "line": 170,
+            "description": "Fired whenever this Stage's\n{{#crossLink \"Stage/pickable:pickable\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "pickable",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Stage",
             "module": "XEO",
             "submodule": "rendering"
         },
@@ -12897,154 +12973,6 @@
             "class": "Tasks",
             "module": "XEO",
             "submodule": "reporting"
-        },
-        {
-            "file": "src/core/shading/shader.js",
-            "line": 210,
-            "description": "GLSL source code for this Shader's vertex stage.\n\nFires a {{#crossLink \"Shader/vertex:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "vertex",
-            "default": "null",
-            "type": "String",
-            "class": "Shader",
-            "module": "XEO",
-            "submodule": "shading"
-        },
-        {
-            "file": "src/core/shading/shader.js",
-            "line": 228,
-            "description": "Fired whenever this Shader's {{#crossLink \"Shader/vertex:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "vertex",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Shader",
-            "module": "XEO",
-            "submodule": "shading"
-        },
-        {
-            "file": "src/core/shading/shader.js",
-            "line": 242,
-            "description": "GLSL source code for this Shader's fragment stage.\n\nFires a {{#crossLink \"Shader/fragment:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "fragment",
-            "default": "null",
-            "type": "String",
-            "class": "Shader",
-            "module": "XEO",
-            "submodule": "shading"
-        },
-        {
-            "file": "src/core/shading/shader.js",
-            "line": 260,
-            "description": "Fired whenever this Shader's {{#crossLink \"Shader/fragment:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "fragment",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Shader",
-            "module": "XEO",
-            "submodule": "shading"
-        },
-        {
-            "file": "src/core/shading/shader.js",
-            "line": 274,
-            "description": "Params for this Shader.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "params",
-            "default": "{}",
-            "type": "{}",
-            "class": "Shader",
-            "module": "XEO",
-            "submodule": "shading"
-        },
-        {
-            "file": "src/core/shading/shader.js",
-            "line": 291,
-            "description": "Sets one or more params for this Shader.\n\nThese will be individually overridden by any {{#crossLink \"ShaderParams/setParams:method\"}}params subsequently specified{{/crossLink}} on\n{{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "method",
-            "name": "setParams",
-            "params": [
-                {
-                    "name": "params",
-                    "description": "Values for params to set on this Shader, keyed to their names.",
-                    "optional": true,
-                    "optdefault": "{}"
-                }
-            ],
-            "class": "Shader",
-            "module": "XEO",
-            "submodule": "shading"
-        },
-        {
-            "file": "src/core/shading/shader.js",
-            "line": 312,
-            "description": "Fired whenever this Shader's  {{#crossLink \"Shader/params:property\"}}{{/crossLink}}\nproperty has been updated.",
-            "itemtype": "event",
-            "name": "params",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Shader",
-            "module": "XEO",
-            "submodule": "shading"
-        },
-        {
-            "file": "src/core/shading/shaderParams.js",
-            "line": 168,
-            "description": "Params for {{#crossLink \"Shader\"}}Shaders{{/crossLink}} on attached\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "params",
-            "default": "{}",
-            "type": "{}",
-            "class": "ShaderParams",
-            "module": "XEO",
-            "submodule": "shading"
-        },
-        {
-            "file": "src/core/shading/shaderParams.js",
-            "line": 186,
-            "description": "Sets one or more params for {{#crossLink \"Shader\"}}Shaders{{/crossLink}} on attached\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nThese will individually override any params of the same names that are {{#crossLink \"Shader/setParams:method\"}}already specified{{/crossLink}} on\nthose {{#crossLink \"Shader\"}}Shaders{{/crossLink}}.\n\nFires a {{#crossLink \"ShaderParams/params:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "method",
-            "name": "setParams",
-            "params": [
-                {
-                    "name": "params",
-                    "description": "Values for params to set on the {{#crossLink \"Shader\"}}Shaders{{/crossLink}}, keyed to their names.",
-                    "optional": true,
-                    "optdefault": "{}"
-                }
-            ],
-            "class": "ShaderParams",
-            "module": "XEO",
-            "submodule": "shading"
-        },
-        {
-            "file": "src/core/shading/shaderParams.js",
-            "line": 208,
-            "description": "Fired whenever this ShaderParams' {{#crossLink \"ShaderParams/params:property\"}}{{/crossLink}} property has been updated.",
-            "itemtype": "event",
-            "name": "params",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "ShaderParams",
-            "module": "XEO",
-            "submodule": "shading"
         },
         {
             "file": "src/core/spatial/boundary3d.js",

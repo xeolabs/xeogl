@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/core/ordering/stage.js - xeoengine</title>
+    <title>src/core/camera/frustum.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -111,11 +111,8 @@
                                 <li><a href="../modules/materials.html">materials</a></li>
                                 <li><a href="../modules/math.html">math</a></li>
                                 <li><a href="../modules/objects.html">objects</a></li>
-                                <li><a href="../modules/ordering.html">ordering</a></li>
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
-                                <li><a href="../modules/rtt.html">rtt</a></li>
-                                <li><a href="../modules/shading.html">shading</a></li>
                                 <li><a href="../modules/spatial.html">spatial</a></li>
                                 <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
@@ -152,204 +149,393 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/core/ordering/stage.js</h1>
+<h1 class="file-heading">File: src/core/camera/frustum.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Stage** is a bin of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} that is rendered in a specified priority with respect to
- other Stages in the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
+ A **Frustum** defines a perspective projection as a frustum-shaped view volume.
 
  ## Overview
 
  &lt;ul&gt;
- &lt;li&gt;When the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} renders, each Stage renders its bin
- of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.&lt;/li&gt;
-
- &lt;li&gt;Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.&lt;/li&gt;
-
- &lt;li&gt;You can control the render order of the individual {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} ***within*** a Stage
- by associating them with {{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}}.&lt;/li&gt;
-
- &lt;li&gt;{{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}} are typically used to &lt;a href=&quot;https://www.opengl.org/wiki/Transparency_Sorting&quot; target=&quot;_other&quot;&gt;transparency-sort&lt;/a&gt; the
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within Stages.&lt;/li&gt;
-
- &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
- attached to the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
- {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}. which has
- a {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
-
+ &lt;li&gt;{{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Ortho components create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
- &lt;img src=&quot;../../../assets/images/Stage.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/Frustum.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
- In this example we&#x27;re performing render-to-texture using {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} and
- {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} components.
+ ## Example
 
- Note how we use two prioritized Stages, to ensure that the {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} is
- rendered ***before*** the {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}} that consumes it.
+ &lt;iframe style=&quot;width: 600px; height: 400px&quot; src=&quot;../../examples/camera_frustum.html&quot;&gt;&lt;/iframe&gt;
 
- &#x60;&#x60;&#x60;&#x60;javascript
+ In this example we have a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} that&#x27;s attached to a
+ {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} that has a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} view transform and a Frustum
+ projection transform.
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+
  var scene = new XEO.Scene();
 
- // First stage: an Object that renders to a ColorTarget
+ var lookat = new XEO.Lookat(scene, {
+        eye: [0, 0, -4],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
 
- var stage1 = new XEO.Stage(scene, {
-       priority: 0
-  });
+ var frustum = new XEO.Frustum(scene, {
+        left: -0.1,
+        right: 0.1,
+        bottom: -0.1,
+        top: 0.1,
+        near: 0.15,
+        far: 1000
+    });
 
- var geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box
+ var camera = new XEO.Camera(scene, {
+        view: lookat,
+        project: frustum
+    });
 
- var colorTarget = new XEO.ColorTarget(scene);
+ var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object1 = new XEO.GameObject(scene, {
-       stage: stage1,
-       geometry: geometry,
-       colorTarget: colorTarget
-  });
+ var object = new XEO.GameObject(scene, {
+        camera: camera,
+        geometry: geometry
+    });
 
-
- // Second stage: an Object with a Texture that sources from the ColorTarget
-
- var stage2 = new XEO.Stage(scene, {
-       priority: 1
-  });
-
- var texture = new XEO.Texture(scene, {
-       target: colorTarget
-  });
-
- var material = new XEO.PhongMaterial(scene, {
-       textures: [
-           texture
-       ]
-  });
-
- var geometry2 = new XEO.Geometry(scene);
-
- var object2 = new XEO.GameObject(scene, {
-       stage: stage2,
-       material: material,
-       geometry: geometry2
-  });
+ scene.on(&quot;tick&quot;, function () {
+       camera.view.rotateEyeY(0.5);
+       camera.view.rotateEyeX(0.3);
+    });
  &#x60;&#x60;&#x60;&#x60;
 
- @class Stage
+ @class Frustum
  @module XEO
- @submodule ordering
+ @submodule camera
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Stage in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this Frustum within the
+ default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
- @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
- @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are pickable.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Frustum.
+ @param [cfg.left=-1] {Number} Position of the Frustum&#x27;s left plane on the View-space X-axis.
+ @param [cfg.right=1] {Number} Position of the Frustum&#x27;s right plane on the View-space X-axis.
+ @param [cfg.bottom=-1] {Number} Position of the Frustum&#x27;s bottom plane on the View-space Y-axis.
+ @param [cfg.top=1] {Number} Position of the Frustum&#x27;s top plane on the View-space Y-axis.
+ @param [cfg.near=0.1] {Number} Position of the Frustum&#x27;s near plane on the View-space Z-axis.
+ @param [cfg.far=1000] {Number} Position of the Frustum&#x27;s far plane on the positive View-space Z-axis.
  @extends Component
  */
 (function () {
 
     &quot;use strict&quot;;
 
-    XEO.Stage = XEO.Component.extend({
+    XEO.Frustum = XEO.Component.extend({
 
-        type: &quot;XEO.Stage&quot;,
+        type: &quot;XEO.Frustum&quot;,
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.Stage({
-                priority: 0,
-                pickable: true
+            this._state = new XEO.renderer.ProjTransform({
+                matrix: null
             });
 
-            this.priority = cfg.priority;
-            this.pickable = cfg.pickable;
+            this._dirty = false;
+
+            this._left = -1.0;
+            this._right = 1.0;
+            this._bottom = -1.0;
+            this._top = 1.0;
+            this._near = 0.1;
+            this._far = 10000.0;
+
+            // Set component properties
+
+            this.left = cfg.left;
+            this.right = cfg.right;
+            this.bottom = cfg.bottom;
+            this.top = cfg.top;
+            this.near = cfg.near;
+            this.far = cfg.far;
+        },
+
+        // Schedules state rebuild on the next &quot;tick&quot;
+
+        _scheduleBuild: function () {
+
+            if (!this._dirty) {
+
+                this._dirty = true;
+
+                var self = this;
+
+                this.scene.once(&quot;tick&quot;,
+                    function () {
+                        self._build();
+                    });
+            }
+        },
+
+        // Rebuilds state
+
+        _build: function () {
+
+            this._state.matrix = XEO.math.frustumMat4(
+                this._left,
+                this._right,
+                this._bottom,
+                this._top,
+                this._near,
+                this._far,
+                this._state.matrix);
+
+            this._dirty = false;
+
+            /**
+             * Fired whenever this Frustum&#x27;s  {{#crossLink &quot;Lookat/matrix:property&quot;}}{{/crossLink}} property is regenerated.
+             * @event matrix
+             * @param value The property&#x27;s new value
+             */
+            this.fire(&quot;matrix&quot;, this._state.matrix);
         },
 
         _props: {
 
-            priority: {
+            /**
+             Position of this Frustum&#x27;s left plane on the View-space X-axis.
 
-                /**
-                 * Indicates the rendering priority for the
-                 * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in
-                 * this Stage.
-                 *
-                 * Fires a {{#crossLink &quot;Stage/priority:event&quot;}}{{/crossLink}}
-                 * event on change.
-                 *
-                 * @property priority
-                 * @default 0
-                 * @type Number
-                 */
+             Fires a {{#crossLink &quot;Frustum/left:event&quot;}}{{/crossLink}} event on change.
+
+             @property left
+             @default -1.0
+             @type Number
+             */
+            left: {
+
                 set: function (value) {
 
-                    this._state.priority = value || 0;
+                    this._left = (value !== undefined &amp;&amp; value !== null) ? value : -1.0;
 
-                    this._renderer.stateOrderDirty = true;
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
-                     * Fired whenever this Stage&#x27;s
-                     * {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}}
-                     * property changes.
+                     * Fired whenever this Frustum&#x27;s {{#crossLink &quot;Frustum/left:property&quot;}}{{/crossLink}} property changes.
                      *
-                     * @event priority
+                     * @event left
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;priority&quot;, this._state.priority);
+                    this.fire(&quot;left&quot;, this._left);
                 },
 
                 get: function () {
-                    return this._state.priority;
+                    return this._left;
                 }
             },
 
             /**
-             * Indicates whether the attached
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are
-             * pickable (see {{#crossLink &quot;Canvas/pick:method&quot;}}Canvas#pick{{/crossLink}}).
+             * Position of this Frustum&#x27;s right plane on the View-space X-axis.
              *
-             * Fires a {{#crossLink &quot;Stage/pickable:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;Frustum/right:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property pickable
-             * @default true
-             * @type Boolean
+             * @property right
+             * @default 1.0
+             * @type Number
              */
-            pickable: {
+            right: {
 
                 set: function (value) {
 
-                    this._state.pickable = value !== false;
+                    this._right = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
 
-                    this._renderer.drawListDirty = true;
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
 
                     /**
-                     * Fired whenever this Stage&#x27;s
-                     * {{#crossLink &quot;Stage/pickable:pickable&quot;}}{{/crossLink}}
-                     * property changes.
+                     * Fired whenever this Frustum&#x27;s {{#crossLink &quot;Frustum/right:property&quot;}}{{/crossLink}} property changes.
                      *
-                     * @event pickable
+                     * @event right
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;pickable&quot;, this._state.pickable);
+                    this.fire(&quot;right&quot;, this._right);
                 },
 
                 get: function () {
-                    return this._state.pickable;
+                    return this._right;
+                }
+            },
+
+            /**
+             * Position of this Frustum&#x27;s top plane on the View-space Y-axis.
+             *
+             * Fires a {{#crossLink &quot;Frustum/top:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property top
+             * @default 1.0
+             * @type Number
+             */
+            top: {
+
+                set: function (value) {
+
+                    this._top = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Frustum&#x27;s   {{#crossLink &quot;Frustum/top:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event top
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;top&quot;, this._top);
+                },
+
+                get: function () {
+                    return this._top;
+                }
+            },
+
+            /**
+             * Position of this Frustum&#x27;s bottom plane on the View-space Y-axis.
+             *
+             * Fires a {{#crossLink &quot;Frustum/bottom:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property bottom
+             * @default -1.0
+             * @type Number
+             */
+            bottom: {
+
+                set: function (value) {
+
+                    this._bottom = (value !== undefined &amp;&amp; value !== null) ? value : -1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Frustum&#x27;s   {{#crossLink &quot;Frustum/bottom:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event bottom
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;bottom&quot;, this._bottom);
+                },
+
+                get: function () {
+                    return this._bottom;
+                }
+            },
+
+            /**
+             * Position of this Frustum&#x27;s near plane on the positive View-space Z-axis.
+             *
+             * Fires a {{#crossLink &quot;Frustum/near:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property near
+             * @default 0.1
+             * @type Number
+             */
+            near: {
+
+                set: function (value) {
+
+                    this._near = (value !== undefined &amp;&amp; value !== null) ? value : 0.1;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Frustum&#x27;s {{#crossLink &quot;Frustum/near:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event near
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;near&quot;, this._near);
+                },
+
+                get: function () {
+                    return this._near;
+                }
+            },
+
+            /**
+             * Position of this Frustum&#x27;s far plane on the positive View-space Z-axis.
+             *
+             * Fires a {{#crossLink &quot;Frustum/far:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property far
+             * @default 10000.0
+             * @type Number
+             */
+            far: {
+
+                set: function (value) {
+
+                    this._far = (value !== undefined &amp;&amp; value !== null) ? value : 10000.0;
+
+                    this._renderer.imageDirty = true;
+
+                    this._scheduleBuild();
+
+                    /**
+                     * Fired whenever this Frustum&#x27;s  {{#crossLink &quot;Frustum/far:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event far
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;far&quot;, this._far);
+                },
+
+                get: function () {
+                    return this._far;
+                }
+            },
+
+            /**
+             * The elements of this Frustum&#x27;s projection transform matrix.
+             *
+             * Fires a {{#crossLink &quot;Frustum/matrix:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property matrix
+             * @type {Float64Array}
+             */
+            matrix: {
+
+                get: function () {
+
+                    if (this._dirty) {
+                        this._build();
+                    }
+
+                    return this._state.matrix;
                 }
             }
         },
 
         _compile: function () {
-            this._renderer.stage = this._state;
+            this._renderer.projTransform = this._state;
         },
 
         _getJSON: function () {
             return {
-                priority: this.priority,
-                pickable: this.pickable
+                left: this._left,
+                right: this._right,
+                top: this._top,
+                bottom: this._bottom,
+                near: this._near,
+                far: this._far
             };
         },
 
