@@ -198,8 +198,8 @@
 
                         var type = light.type;
 
-                        if (type !== "XEO.AmbientLight" && type != "XEO.DirLight" && type != "XEO.PosLight") {
-                            this.error("Component " + XEO._inQuotes(light.id) + " is not an XEO.AmbientLight, XEO.DirLight or XEO.PosLight ");
+                        if (type !== "XEO.AmbientLight" && type != "XEO.DirLight" && type != "XEO.PointLight") {
+                            this.error("Component " + XEO._inQuotes(light.id) + " is not an XEO.AmbientLight, XEO.DirLight or XEO.PointLight ");
                             continue;
                         }
 
