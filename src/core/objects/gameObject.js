@@ -194,7 +194,7 @@
 
                     var oldCamera = this._children.camera;
 
-                    if (oldCamera && (!value || value.id !== oldCamera.id)) {
+                    if (oldCamera && (!value || (value.id !== undefined ? value.id : value) !== oldCamera.id)) {
                         oldCamera.off(this._onCameraDestroyed);
                         oldCamera.off(this._onCameraView);
                         oldCamera.off(this._onCameraViewMatrix);
@@ -471,9 +471,14 @@
 
                     var oldGeometry = this._children.geometry;
 
-                    if (oldGeometry && (!value || value.id !== oldGeometry.id)) {
-                        oldGeometry.off(this._onGeometryPositions);
-                        oldGeometry.off(this._onGeometryDestroyed);
+                    if (oldGeometry) {
+
+                        if (!value || (value.id !== undefined ? value.id : value) != oldGeometry.id) {
+
+                            oldGeometry.off(this._onGeometryDirty);
+                            oldGeometry.off(this._onGeometryPositions);
+                            oldGeometry.off(this._onGeometryDestroyed);
+                        }
                     }
 
                     /**
@@ -494,6 +499,11 @@
                         // positions are updated or Geometry is destroyed.
 
                         var self = this;
+
+                        this._onGeometryDirty = newGeometry.on("dirty",
+                            function () {
+                                self.fire("dirty", true);
+                            });
 
                         this._onGeometryPositions = newGeometry.on("positions",
                             function () {
@@ -998,6 +1008,7 @@
             }
 
             if (this._children.geometry) {
+                this._children.geometry.off(this._onGeometryDirty);
                 this._children.geometry.off(this._onGeometryPositions);
                 this._children.geometry.off(this._onGeometryDestroyed);
             }
