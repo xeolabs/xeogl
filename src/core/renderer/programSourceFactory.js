@@ -672,7 +672,7 @@
                     add("uniform float xeo_uLightIntensity" + i + ";");
 
                     if (light.type === "point") {
-                        add("uniform vec3 xeo_uLightConstantAttenuation" + i + ";");
+                        add("uniform vec3 xeo_uLightAttenuation" + i + ";");
                     }
 
                     add("varying vec4 xeo_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
@@ -860,9 +860,9 @@
                             add("lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
 
                             add("attenuation = 1.0 - (" +
-                                "  xeo_uLightConstantAttenuation" + i + "[0] + " +
-                                "  xeo_uLightConstantAttenuation" + i + "[1] * lightDist + " +
-                                "  xeo_uLightConstantAttenuation" + i + "[2] * lightDist * lightDist);");
+                                "  xeo_uLightAttenuation" + i + "[0] + " +
+                                "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
+                                "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
 
                             add("diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
 
