@@ -62,7 +62,7 @@
                     tickEvent.startTime = scene.startTime;
                     tickEvent.deltaTime = tickEvent.prevTime != null ? time - tickEvent.prevTime : 0;
 
-                    scene.fire("tick", tickEvent);
+                    scene.fire("tick", tickEvent, true);
 
                     // Recompile the scene if it's now dirty
                     // after handling the tick event
