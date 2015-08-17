@@ -384,7 +384,6 @@
             this.view;
             this.project;
             this.camera;
-            this.cameraControl;
             this.clips;
             this.colorTarget;
             this.colorBuf;
@@ -595,28 +594,6 @@
             },
 
             /**
-             * The default {{#crossLink "CameraControl"}}{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "CameraControl"}}{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.cameraControl",
-             * and controls this Scene's default {{#crossLink "Scene/camera:property"}}{{/crossLink}} by default.
-             *
-             * @property cameraControl
-             * @final
-             * @type CameraControl
-             */
-            cameraControl: {
-
-                get: function () {
-                    return this.components["default.cameraControl"] ||
-                        new XEO.CameraControl(this, {
-                            id: "default.cameraControl",
-                            camera: this.camera
-                        });
-                }
-            },
-
-            /**
              * The default modelling {{#crossLink "Transform"}}{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Transform"}}{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.transform",
@@ -721,7 +698,8 @@
                 get: function () {
                     return this.components["default.depthBuf"] ||
                         new XEO.DepthBuf(this, {
-                            id: "default.depthBuf"
+                            id: "default.depthBuf",
+                            active: false // Null Object pattern
                         });
                 }
             },
@@ -742,7 +720,8 @@
                 get: function () {
                     return this.components["default.depthTarget"] ||
                         new XEO.DepthTarget(this, {
-                            id: "default.depthTarget"
+                            id: "default.depthTarget",
+                            active: false // Null Object pattern
                         });
                 }
             },
