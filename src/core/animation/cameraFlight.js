@@ -237,19 +237,19 @@
 
             this._tick = this.scene.on("tick",
                 function (params) {
-                    self._update(params.time * 1000.0);
+                    self._update();
                 });
 
             this._flying = true;
         },
 
-        _update: function (time) {
+        _update: function () {
 
             if (!this._flying) {
                 return;
             }
 
-            time = (new Date()).getTime();
+            var time = (new Date()).getTime();
 
             var t = (time - this._time1) / (this._time2 - this._time1);
 
