@@ -17,9 +17,7 @@
             this._uLightDir = this._uLightDir || [];
             this._uLightPos = this._uLightPos || [];
 
-            this._uLightConstantAttenuation = this._uLightConstantAttenuation || [];
-            this._uLightLinearAttenuation = this._uLightLinearAttenuation || [];
-            this._uLightQuadraticAttenuation = this._uLightQuadraticAttenuation || [];
+            this._uLightAttenuation = this._uLightAttenuation || [];
 
             var lights = this.state.lights;
             var program = this.program;
@@ -45,9 +43,7 @@
                         this._uLightIntensity[i] = program.draw.getUniform("xeo_uLightIntensity" + i);
                         this._uLightPos[i] = program.draw.getUniform("xeo_uLightPos" + i);
                         this._uLightDir[i] = null;
-                        this._uLightConstantAttenuation[i] = program.draw.getUniform("xeo_uLightConstantAttenuation" + i);
-                        this._uLightLinearAttenuation[i] = program.draw.getUniform("xeo_uLightLinearAttenuation" + i);
-                        this._uLightQuadraticAttenuation[i] = program.draw.getUniform("xeo_uLightQuadraticAttenuation" + i);
+                        this._uLightAttenuation[i] = program.draw.getUniform("xeo_uLightAttenuation" + i);
                         break;
                 }
             }
@@ -93,16 +89,8 @@
 
                         // Attenuation
 
-                        if (this._uLightConstantAttenuation[i]) {
-                            this._uLightConstantAttenuation[i].setValue(light.constantAttenuation);
-                        }
-
-                        if (this._uLightLinearAttenuation[i]) {
-                            this._uLightLinearAttenuation[i].setValue(light.linearAttenuation);
-                        }
-
-                        if (this._uLightQuadraticAttenuation[i]) {
-                            this._uLightQuadraticAttenuation[i].setValue(light.quadraticAttenuation);
+                        if (this._uLightAttenuation[i]) {
+                            this._uLightAttenuation[i].setValue(light.attenuation);
                         }
                     }
 
