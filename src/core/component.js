@@ -574,6 +574,11 @@
                 }
             }
 
+            if (child.scene.id !== this.scene.id) {
+                this.error("Not in same scene: " + child.type + " " + XEO._inQuotes(child.id));
+                return;
+            }
+
             var oldChild = this._children[name];
 
             if (oldChild) {
