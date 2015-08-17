@@ -50,7 +50,9 @@
                 //    this._aTangentDraw.bindFloatArrayBuffer(state2.tangentBuf || state2.getTangentBuf());
             }
 
-            state.indices.bind();
+            if (state.indices) {
+                state.indices.bind();
+            }
         },
 
         pick: function () {
@@ -61,7 +63,9 @@
                 this._aPositionPick.bindFloatArrayBuffer(state.positions);
             }
 
-            state.indices.bind();
+            if (state.indices) {
+                state.indices.bind();
+            }
         }
     });
 

@@ -26,6 +26,8 @@
 
         drawAndPick: function (frameCtx) {
 
+            var state = this.state;
+
             var gl = this.program.gl;
 
             if (frameCtx.pick) {
@@ -54,7 +56,9 @@
                 }
             }
 
-            gl.drawElements(this.state.primitive, this.state.indices.numItems, this.state.indices.itemType, 0);
+            if (state.indices) {
+                gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+            }
         }
     });
 
