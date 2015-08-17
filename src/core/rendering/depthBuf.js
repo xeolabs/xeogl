@@ -54,6 +54,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthBuf.
  @param [cfg.clearDepth=1.0] {Number} The clear depth.
  @param [cfg.depthFunc="less"] {String} The depth function.
+ @param [cfg.active=true] {Boolean} True when this DepthBuf is active.
  @extends Component
  */
 (function () {
@@ -67,12 +68,14 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.DepthBuf({
-                clearDepth: 1.0,
-                depthFunc: "less"
+                clearDepth: null,
+                depthFunc: null,
+                active: null
             });
 
             this.clearDepth = cfg.clearDepth;
             this.depthFunc = cfg.depthFunc;
+            this.active = cfg.active;
         },
 
         _props: {
@@ -160,6 +163,37 @@
                 get: function () {
                     return this._state.depthFuncName;
                 }
+            },
+
+            /**
+             * Flag which indicates whether this DepthBuf is active or not.
+             *
+             * Fires an {{#crossLink "DepthBuf/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    if (this._state.active === value) {
+                        return;
+                    }
+                    
+                    this._state.active = value;
+                    
+                    /**
+                     * Fired whenever this DepthBuf's {{#crossLink "DepthBuf/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._state.active);
+                },
+
+                get: function () {
+                    return this._state.active;
+                }
             }
         },
 
@@ -183,7 +217,8 @@
         _getJSON: function () {
             return {
                 clearDepth: this._state.clearDepth,
-                depthFunc: this._state.depthFuncName
+                depthFunc: this._state.depthFuncName,
+                active: this._state.active
             };
         },
 
