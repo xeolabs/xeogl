@@ -382,35 +382,6 @@
                 continue;
             }
 
-            //if (name === "_children") {
-            //
-            //    var children = prop[name];
-            //    var descriptor;
-            //
-            //    for (var key in children) {
-            //
-            //        descriptor = children[key];
-            //
-            //        if (descriptor.events) {
-            //            (function () {
-            //
-            //                var name = key;
-            //
-            //                descriptor.set = function () {
-            //                    this.warn("Property '" + name + "' is read-only, ignoring assignment");
-            //                };
-            //            })();
-            //        }
-            //
-            //
-            //        // Want property to show up in inspectors
-            //        descriptor.enumerable = true;
-            //
-            //        Object.defineProperty(prototype, key, descriptor);
-            //    }
-            //    continue;
-            //}
-
             // Check if we're overwriting an existing function
             prototype[name] = typeof prop[name] === "function" && typeof _super[name] === "function" && fnTest.test(prop[name]) ?
                 (function (name, fn) {
@@ -2032,7 +2003,7 @@
             geometry: {
                 get: function () {
                     return this.components["default.geometry"] ||
-                        new XEO.Geometry(this, {
+                        new XEO.Torus(this, {
                             id: "default.geometry"
                         });
                 }
@@ -6532,14 +6503,14 @@ visibility.destroy();
              * Fires a {{#crossLink "Torus/tube:event"}}{{/crossLink}} event on change.
              *
              * @property tube
-             * @default 1
+             * @default 0.3
              * @type Number
              */
             tube: {
 
                 set: function (value) {
 
-                    value = value || 1;
+                    value = value || 0.3;
 
                     if (this._tube === value) {
                         return;
@@ -6566,133 +6537,133 @@ visibility.destroy();
                 get: function () {
                     return this._tube;
                 }
-            }
-        },
-
-        /**
-         * The Torus's segmentsR.
-         *
-         * Fires a {{#crossLink "Torus/segmentsR:event"}}{{/crossLink}} event on change.
-         *
-         * @property segmentsR
-         * @default 32
-         * @type Number
-         */
-        segmentsR: {
-
-            set: function (value) {
-
-                value = value || 32;
-
-                if (this._segmentsR === value) {
-                    return;
-                }
-
-                if (value < 0) {
-                    this.warn("negative segmentsR not allowed - will invert");
-                    value = value * -1;
-                }
-
-                this._segmentsR = value;
-
-                /**
-                 * Fired whenever this Torus's {{#crossLink "Torus/segmentsR:property"}}{{/crossLink}} property changes.
-                 * @event segmentsR
-                 * @type Number
-                 * @param value The property's new value
-                 */
-                this.fire("segmentsR", this._segmentsR);
-
-                this._scheduleBuild2();
             },
 
-            get: function () {
-                return this._segmentsR;
-            }
-        },
+            /**
+             * The Torus's segmentsR.
+             *
+             * Fires a {{#crossLink "Torus/segmentsR:event"}}{{/crossLink}} event on change.
+             *
+             * @property segmentsR
+             * @default 32
+             * @type Number
+             */
+            segmentsR: {
 
+                set: function (value) {
 
-        /**
-         * The Torus's segmentsT.
-         *
-         * Fires a {{#crossLink "Torus/segmentsT:event"}}{{/crossLink}} event on change.
-         *
-         * @property segmentsT
-         * @default 24
-         * @type Number
-         */
-        segmentsT: {
+                    value = value || 32;
 
-            set: function (value) {
+                    if (this._segmentsR === value) {
+                        return;
+                    }
 
-                value = value || 24;
+                    if (value < 0) {
+                        this.warn("negative segmentsR not allowed - will invert");
+                        value = value * -1;
+                    }
 
-                if (this._segmentsT === value) {
-                    return;
+                    this._segmentsR = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/segmentsR:property"}}{{/crossLink}} property changes.
+                     * @event segmentsR
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("segmentsR", this._segmentsR);
+
+                    this._scheduleBuild2();
+                },
+
+                get: function () {
+                    return this._segmentsR;
                 }
-
-                if (value < 0) {
-                    this.warn("negative segmentsT not allowed - will invert");
-                    value = value * -1;
-                }
-
-                this._segmentsT = value;
-
-                /**
-                 * Fired whenever this Torus's {{#crossLink "Torus/segmentsT:property"}}{{/crossLink}} property changes.
-                 * @event segmentsT
-                 * @type Number
-                 * @param value The property's new value
-                 */
-                this.fire("segmentsT", this._segmentsT);
-
-                this._scheduleBuild2();
             },
 
-            get: function () {
-                return this._segmentsT;
-            }
-        },
 
-        /**
-         * The Torus's arc.
-         *
-         * Fires a {{#crossLink "Torus/arc:event"}}{{/crossLink}} event on change.
-         *
-         * @property arc
-         * @default Math.PI * 2
-         * @type Number
-         */
-        arc: {
+            /**
+             * The Torus's segmentsT.
+             *
+             * Fires a {{#crossLink "Torus/segmentsT:event"}}{{/crossLink}} event on change.
+             *
+             * @property segmentsT
+             * @default 24
+             * @type Number
+             */
+            segmentsT: {
 
-            set: function (value) {
+                set: function (value) {
 
-                value = value || Math.PI * 2;
+                    value = value || 24;
 
-                if (this._arc === value) {
-                    return;
+                    if (this._segmentsT === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative segmentsT not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._segmentsT = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/segmentsT:property"}}{{/crossLink}} property changes.
+                     * @event segmentsT
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("segmentsT", this._segmentsT);
+
+                    this._scheduleBuild2();
+                },
+
+                get: function () {
+                    return this._segmentsT;
                 }
-
-                if (value < 0) {
-                    this.warn("negative arc not allowed - will invert");
-                    value = value * -1;
-                }
-
-                this._arc = value;
-
-                /**
-                 * Fired whenever this Torus's {{#crossLink "Torus/arc:property"}}{{/crossLink}} property changes.
-                 * @event arc
-                 * @type Number
-                 * @param value The property's new value
-                 */
-                this.fire("arc", this._arc);
-
-                this._scheduleBuild2();
             },
 
-            get: function () {
-                return this._arc;
+            /**
+             * The Torus's arc.
+             *
+             * Fires a {{#crossLink "Torus/arc:event"}}{{/crossLink}} event on change.
+             *
+             * @property arc
+             * @default Math.PI * 2
+             * @type Number
+             */
+            arc: {
+
+                set: function (value) {
+
+                    value = value || Math.PI * 2;
+
+                    if (this._arc === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative arc not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._arc = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/arc:property"}}{{/crossLink}} property changes.
+                     * @event arc
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("arc", this._arc);
+
+                    this._scheduleBuild2();
+                },
+
+                get: function () {
+                    return this._arc;
+                }
             }
         },
 
@@ -7330,9 +7301,6 @@ visibility.destroy();
 
  In this example, we're subscribing to some mouse and key events that will occur on
  a {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-
- <p data-height="622" data-theme-id="11815" data-slug-hash="doERqg" data-default-tab="result" data-user="xeolabs" class='codepen'>See the Pen <a href='http://codepen.io/xeolabs/pen/doERqg/'>doERqg</a> by xeolabs (<a href='http://codepen.io/xeolabs'>@xeolabs</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
- <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
  ````javascript
 var myScene = new XEO.Scene();
