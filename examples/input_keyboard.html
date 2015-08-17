@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - handling keyboard events via <a
+        href="../docs/classes/Input.html"
+        target="_other">Input</a>
+</div>
+
+<script>
+
+    var object = new XEO.GameObject();
+
+    var scene = object.scene;
+
+    var input = scene.input;
+
+    scene.on("tick",
+            function (params) {
+
+                var elapsed = params.deltaTime;
+
+                var yawRate = 50;
+                var pitchRate = 50;
+
+                if (!input.ctrlDown && !input.altDown) {
+
+                    var left = input.keyDown[input.KEY_LEFT_ARROW];
+                    var right = input.keyDown[input.KEY_RIGHT_ARROW];
+                    var up = input.keyDown[input.KEY_UP_ARROW];
+                    var down = input.keyDown[input.KEY_DOWN_ARROW];
+
+                    if (left || right || up || down) {
+
+                        var yaw = 0;
+                        var pitch = 0;
+
+                        if (right) {
+                            yaw = -elapsed * yawRate;
+
+                        } else if (left) {
+                            yaw = elapsed * yawRate;
+                        }
+
+                        if (down) {
+                            pitch = elapsed * pitchRate;
+
+                        } else if (up) {
+                            pitch = -elapsed * pitchRate;
+                        }
+
+                        if (Math.abs(yaw) > Math.abs(pitch)) {
+                            pitch = 0;
+                        } else {
+                            yaw = 0;
+                        }
+
+                        if (yaw != 0) {
+                            camera.view.rotateEyeY(yaw);
+                        }
+
+                        if (pitch != 0) {
+                            camera.view.rotateEyeX(pitch);
+                        }
+                    }
+                }
+            });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <p>demonstrates some change events fired by components</p>
+    <pre id="infoTxt" style="text-align: left;"></pre>
+</div>
+
+<script>
+
+    // Create a GameObject with all defaults
+    var object = new XEO.GameObject();
+
+    // Subscribe to change of material on our GameObject.
+    // This will immediately fire a change event for the current value of that property.
+
+    object.on("material", function (material) {
+        log("GameObject's material is: " + material.id);
+    });
+
+    // Attach a new Material to the GameObject.
+    // This will fire another
+
+    object.material = new XEO.PhongMaterial({
+        id: "myMaterial",
+        diffuse: [1.0, 1.0, 0.0]
+    });
+
+    // Subscribe to change of diffuse color on our material
+    object.material.on("diffuse", function (diffuse) {
+        log("GameObject's material's diffuse color is: " + JSON.stringify(diffuse));
+    });
+
+    // Change the material's diffuse color
+    object.material.diffuse = [1.0, 0.0, 0.0];
+
+    // Logs text to the page
+    function log(msg) {
+        document.getElementById("infoTxt").innerText += msg + "\n";
+    }
+
+</script>
+</body>
+</html>

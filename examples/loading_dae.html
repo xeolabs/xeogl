@@ -19,36 +19,36 @@
     <script src="../build/xeoengine.min.js"></script>
 
     <script src="lib/loaders/k3d.js"></script>
-    <script src="lib/loaders/objGeometry.js"></script>
+    <script src="lib/loaders/daeModel.js"></script>
 
 <body>
 
 <div id="infoDark">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - loading .OBJ geometry
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - loading .DAE
 </div>
 
 <script>
 
-    var control = new XEO.CameraControl();
-
-    var object = new XEO.GameObject({
-
-        geometry: new XEO.OBJGeometry({
-            src: "models/obj/raptor.obj"
-        })
+    var model = new XEO.DAEModel({
+        src: "models/dae/sportCar.dae"
     });
 
-    var animation = new XEO.CameraFlight();
+    model.on("loaded",
+            function () {
 
-    object.geometry.on("loaded", function () {
+            });
 
-        var look = object.worldBoundary.center;
+    // Iterate over XEO.GameObjects that were loaded
 
-        animation.flyTo({
-            eye: [look[0] - 10, look[1] - 10, look[2] - 10],
-            look: look
-        });
+    model.iterate(function (c) {
+
     });
+
+    // Clear by un-setting 'src'
+    //model.src = null;
+
+    //model.destroy();
+
 
 </script>
 </body>

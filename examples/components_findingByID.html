@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    creating a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a>, then finding it by ID within
+    its <a href="../docs/classes/Scene.html" target="_other">Scene</a> and attaching a red <a
+        href="../docs/classes/PhongMaterial.html" target="_other">PhongMaterial</a> to it
+</div>
+
+<script>
+
+    // For this example we'll create our own Scene
+    var scene = new XEO.Scene();
+
+    // Create a GameObject with all defaults
+    new XEO.GameObject(scene, {
+        id: "myObject"
+    });
+
+    // Find the GameObject by ID
+    var object = scene.components["myObject"];
+
+    // Attach a new Material to it
+    object.material = new XEO.PhongMaterial(scene, {
+        diffuse: [1.0, 0.0, 0.0]
+    });
+
+</script>
+</body>
+</html>

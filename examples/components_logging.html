@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+
+    <p>demonstrates how to log messages on components</p>
+    <pre id="infoTxt" style="text-align: left;"></pre>
+</div>
+
+<script>
+
+    // Create a GameObject
+    var object = new XEO.GameObject({
+        id: "myObject"
+    });
+
+    // Log a message in context of this GameObject
+    // Message will appear in console as "[LOG] myObject: Everything is fine, situation normal."
+    object.log("Everything is fine, situation normal.");
+
+    // Attach a new Material to the GameObject.
+    object.material = new XEO.PhongMaterial({
+        id: "myMaterial",
+        diffuse: [1.0, 1.0, 0.0]
+    });
+
+    // Log a warning message in context of the Material
+    // Message will appear in console as "[WARN] myMaterial: Wait, what's that red light?."
+    object.material.warn("Wait, what's that red light?");
+
+    // Log an error message in context of the Material
+    // Message will appear in console as "[ERROR] myMaterial: Aw, snap!."
+    object.material.error("Aw, snap!")
+
+</script>
+</body>
+</html>

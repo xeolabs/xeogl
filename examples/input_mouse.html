@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - handling mouse events via <a
+        href="../docs/classes/Input.html"
+        target="_other">Input</a>
+</div>
+
+<script>
+
+    var camera = new XEO.Camera({
+        view: new XEO.Lookat()
+    });
+
+    var object = new XEO.GameObject({
+        camera: camera
+    });
+
+    var scene = object.scene;
+
+    var input = scene.input;
+
+    var lastX;
+    var lastY;
+    var xDelta = 0;
+    var yDelta = 0;
+    var down = false;
+
+    scene.on("tick",
+            function () {
+
+                if (xDelta != 0) {
+                    camera.view.rotateEyeY(-xDelta);
+                    xDelta = 0;
+                }
+
+                if (yDelta != 0) {
+                    camera.view.rotateEyeX(yDelta);
+                    yDelta = 0;
+                }
+            });
+
+    input.on("mousedown",
+            function (e) {
+
+                if (input.mouseDownLeft && !input.mouseDownRight && !input.mouseDownMiddle) {
+
+                    down = true;
+
+                    lastX = e[0];
+                    lastY = e[1];
+
+                } else {
+
+                    down = false;
+                }
+            });
+
+    input.on("mouseup",
+            function () {
+                down = false;
+            });
+
+    input.on("mousemove",
+            function (e) {
+
+                if (down) {
+
+                    xDelta += (e[0] - lastX);
+                    yDelta += (e[1] - lastY);
+
+                    lastX = e[0];
+                    lastY = e[1];
+                }
+            });
+
+</script>
+</body>
+</html>

@@ -20,9 +20,9 @@
 <body>
 
 <div id="infoDark">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Camera.html"
-                                                                      target="_other">Camera</a> with <a
-        href="../docs/classes/Perspective.html" target="_other">Perspective</a>
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> <br><br>rotating a <a href="../docs/classes/Camera.html"
+                                                                      target="_other">Camera</a> on each <a
+        href="../docs/classes/Scene.html" target="_other">Scene</a> "tick" event
 </div>
 
 <script>
@@ -46,8 +46,11 @@
         project: perspective
     });
 
+    var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
     var object = new XEO.GameObject(scene, {
-        camera: camera
+        camera: camera,
+        geometry: geometry
     });
 
     scene.on("tick",

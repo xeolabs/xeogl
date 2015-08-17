@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+
+    <p>example of how to attach user-defined metadata to components</p>
+    <pre id="infoTxt" style="text-align: left;"></pre>
+</div>
+
+<script>
+
+    // Create a GameObject
+
+    var object = new XEO.GameObject({
+        metadata: {
+            description: "This is my GameObject!",
+            version: "0.1",
+            foo: "bar"
+        }
+    });
+
+    // Attach a new Material to the GameObject.
+
+    object.material = new XEO.PhongMaterial({
+        id: "myMaterial",
+        diffuse: [1.0, 1.0, 0.0],
+        metadata: {
+            description: "This is my PhongMaterial!",
+            version: "0.1",
+            foo: "bar"
+        }
+    });
+
+    object.metadata.version = "0.2";
+    object.metadata.bar = "foo";
+
+</script>
+</body>
+</html>

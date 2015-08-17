@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    - serializing a component to JSON
+    <pre id="infoTxt" style="text-align: left">
+    </pre>
+</div>
+
+<script>
+
+    // Create a material
+
+    var material = new XEO.PhongMaterial({
+        id: "myMaterial",
+        diffuse: [1.0, 0.0, 0.0]
+    });
+
+    // Create a GameObject with the Material and all other defaults
+
+    var object = new XEO.GameObject({
+        material: material
+    });
+
+    // Log JSON for the Material
+
+    json = object.material.json;
+
+    logJSON(json);
+
+    function logJSON(json) {
+        document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+    }
+
+</script>
+</body>
+</html>

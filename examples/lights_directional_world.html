@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a> - <a href="../docs/classes/DirLight.html"
+                          target="_other">DirLight</a> in View-scape
+</div>
+
+<script>
+
+    var dirLight = new XEO.DirLight({
+        dir: [0,0,-1],
+        color: [0.7, 0.7, 0.8],
+        intensity: 1.0,
+        space: "world"
+    });
+
+    var lights = new XEO.Lights({
+        lights: [
+            dirLight
+        ]
+    });
+
+    var object = new XEO.GameObject({
+        lights: lights
+    });
+
+    object.scene.on("tick",
+            function () {
+                object.scene.view.rotateEyeY(0.6);
+                object.scene.view.rotateEyeX(0.3);
+            });
+</script>
+</body>
+</html>

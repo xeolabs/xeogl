@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a> <br><br>
+    basic non-textured <a href="../docs/classes/PhongMaterial.html"
+                          target="_other">PhongMaterial</a>
+</div>
+
+<script>
+
+    var material = new XEO.PhongMaterial({
+        ambient: [0.7, 0.7, 0.7],
+        diffuse: [1.0, 0.5, 0.5],
+        specular: [1, 1, 1],
+        emissive: [0,0,0],
+        shininess: 30,
+        reflectivity: 1,
+        opacity: 0
+    });
+
+    var object = new XEO.GameObject({
+        material: material
+    });
+
+    object.scene.on("tick",
+            function () {
+                object.scene.view.rotateEyeY(0.6);
+                object.scene.view.rotateEyeX(0.3);
+            });
+
+</script>
+</body>
+</html>
