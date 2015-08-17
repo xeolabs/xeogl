@@ -170,7 +170,7 @@
 
  @class Shader
  @module XEO
- @submodule shading
+ @submodule rendering
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Shader in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.

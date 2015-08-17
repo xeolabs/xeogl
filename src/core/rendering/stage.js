@@ -80,7 +80,7 @@
 
  @class Stage
  @module XEO
- @submodule ordering
+ @submodule rendering
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stage in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.

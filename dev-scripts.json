@@ -30,6 +30,7 @@
 
         "src/core/geometry/_module.js",
         "src/core/geometry/geometry.js",
+        "src/core/geometry/torus.js",
 
         "src/core/grouping/_module.js",
         "src/core/grouping/group.js",
@@ -67,15 +68,17 @@
         "src/core/objects/_module.js",
         "src/core/objects/gameObject.js",
 
-        "src/core/ordering/_module.js",
-        "src/core/ordering/layer.js",
-        "src/core/ordering/stage.js",
-
         "src/core/rendering/_module.js",
         "src/core/rendering/canvas.js",
         "src/core/rendering/colorBuf.js",
         "src/core/rendering/depthBuf.js",
+        "src/core/rendering/layer.js",
+        "src/core/rendering/colorTarget.js",
+        "src/core/rendering/depthTarget.js",
         "src/core/rendering/modes.js",
+        "src/core/rendering/shader.js",
+        "src/core/rendering/shaderParams.js",
+        "src/core/rendering/stage.js",
 
         "src/core/renderer/renderer.js",
         "src/core/renderer/states.js",
@@ -119,14 +122,6 @@
         "src/core/reporting/stats.js",
         "src/core/reporting/task.js",
         "src/core/reporting/tasks.js",
-
-        "src/core/rtt/_module.js",
-        "src/core/rtt/colorTarget.js",
-        "src/core/rtt/depthTarget.js",
-
-        "src/core/shading/_module.js",
-        "src/core/shading/shader.js",
-        "src/core/shading/shaderParams.js",
 
         "src/core/spatial/_module.js",
         "src/core/spatial/boundary3d.js",

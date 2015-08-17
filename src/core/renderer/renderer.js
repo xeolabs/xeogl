@@ -1115,6 +1115,8 @@
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
+        gl.enable(gl.DEPTH_TEST);
+
         if (this.transparent) {
 
             // Canvas is transparent - set clear color with zero alpha

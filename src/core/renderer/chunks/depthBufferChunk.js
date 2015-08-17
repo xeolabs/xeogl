@@ -17,18 +17,18 @@
             var gl = this.program.gl;
 
             var state = this.state;
-            var enabled = state.enabled;
+            var active = state.active;
 
-            if (frameCtx.depthbufEnabled !== enabled) {
+            if (frameCtx.depthbufEnabled !== active) {
 
-                if (enabled) {
+                if (!active) {
                     gl.enable(gl.DEPTH_TEST);
 
                 } else {
                     gl.disable(gl.DEPTH_TEST);
                 }
 
-                frameCtx.depthbufEnabled = enabled;
+                frameCtx.depthbufEnabled = active;
             }
 
             var clearDepth = state.clearDepth;

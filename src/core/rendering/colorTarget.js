@@ -67,7 +67,7 @@
 
  @class ColorTarget
  @module XEO
- @submodule rtt
+ @submodule rendering
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this ColorTarget within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
