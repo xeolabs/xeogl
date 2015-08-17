@@ -119,9 +119,10 @@
                 pos: [1.0, 1.0, 1.0],
                 color: [0.7, 0.7, 0.8],
                 intensity:   1.0,
-                constantAttenuation: 0.0,
-                linearAttenuation: 0.0,
-                quadraticAttenuation: 0.0,
+
+                // Packaging constant, linear and quadratic attenuation terms
+                // into an array for easy insertion into shaders as a vec3
+                attenuation: [0.0, 0.0, 0.0],
                 space: "view"
             };
 
@@ -243,7 +244,7 @@
 
                 set: function (value) {
 
-                    this._state.constantAttenuation = value || 0.0;
+                    this._state.attenuation[0] = value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -253,11 +254,11 @@
                      @event constantAttenuation
                      @param value The property's new value
                      */
-                    this.fire("constantAttenuation", this._state.constantAttenuation);
+                    this.fire("constantAttenuation", this._state.attenuation[0]);
                 },
 
                 get: function () {
-                    return this._state.constantAttenuation;
+                    return this._state.attenuation[0];
                 }
             },
 
@@ -274,7 +275,7 @@
 
                 set: function (value) {
 
-                    this._state.linearAttenuation = value || 0.0;
+                    this._state.attenuation[1] = value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -284,11 +285,11 @@
                      @event linearAttenuation
                      @param value The property's new value
                      */
-                    this.fire("linearAttenuation", this._state.linearAttenuation);
+                    this.fire("linearAttenuation", this._state.attenuation[1]);
                 },
 
                 get: function () {
-                    return this._state.linearAttenuation;
+                    return this._state.attenuation[1];
                 }
             },
 
@@ -305,7 +306,7 @@
 
                 set: function (value) {
 
-                    this._state.quadraticAttenuation =  value || 0.0;
+                    this._state.attenuation[2] =  value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -315,11 +316,11 @@
                      @event quadraticAttenuation
                      @param value The property's new value
                      */
-                    this.fire("quadraticAttenuation", this._state.quadraticAttenuation);
+                    this.fire("quadraticAttenuation", this._state.attenuation[2]);
                 },
 
                 get: function () {
-                    return this._state.quadraticAttenuation;
+                    return this._state.attenuation[2];
                 }
             },
 
@@ -368,9 +369,9 @@
                 pos: this._state.pos,
                 color: this._state.color,
                 intensity: this._state.intensity,
-                constantAttenuation: this._state.constantAttenuation,
-                linearAttenuation: this._state.linearAttenuation,
-                quadraticAttenuation: this._state.quadraticAttenuation,
+                constantAttenuation: this._state.attenuation[0],
+                linearAttenuation: this._state.attenuation[1],
+                quadraticAttenuation: this._state.attenuation[2],
                 space: this._state.space
             };
         }
