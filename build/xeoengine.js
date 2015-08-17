@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-08-13
+ * Built on 2015-08-17
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -76,7 +76,7 @@
                     tickEvent.startTime = scene.startTime;
                     tickEvent.deltaTime = tickEvent.prevTime != null ? time - tickEvent.prevTime : 0;
 
-                    scene.fire("tick", tickEvent);
+                    scene.fire("tick", tickEvent, true);
 
                     // Recompile the scene if it's now dirty
                     // after handling the tick event
@@ -381,6 +381,35 @@
                 }
                 continue;
             }
+
+            //if (name === "_children") {
+            //
+            //    var children = prop[name];
+            //    var descriptor;
+            //
+            //    for (var key in children) {
+            //
+            //        descriptor = children[key];
+            //
+            //        if (descriptor.events) {
+            //            (function () {
+            //
+            //                var name = key;
+            //
+            //                descriptor.set = function () {
+            //                    this.warn("Property '" + name + "' is read-only, ignoring assignment");
+            //                };
+            //            })();
+            //        }
+            //
+            //
+            //        // Want property to show up in inspectors
+            //        descriptor.enumerable = true;
+            //
+            //        Object.defineProperty(prototype, key, descriptor);
+            //    }
+            //    continue;
+            //}
 
             // Check if we're overwriting an existing function
             prototype[name] = typeof prop[name] === "function" && typeof _super[name] === "function" && fnTest.test(prop[name]) ?
@@ -1062,6 +1091,11 @@
                 }
             }
 
+            if (child.scene.id !== this.scene.id) {
+                this.error("Not in same scene: " + child.type + " " + XEO._inQuotes(child.id));
+                return;
+            }
+
             var oldChild = this._children[name];
 
             if (oldChild) {
@@ -1599,7 +1633,6 @@
             this.view;
             this.project;
             this.camera;
-            this.cameraControl;
             this.clips;
             this.colorTarget;
             this.colorBuf;
@@ -1810,28 +1843,6 @@
             },
 
             /**
-             * The default {{#crossLink "CameraControl"}}{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "CameraControl"}}{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.cameraControl",
-             * and controls this Scene's default {{#crossLink "Scene/camera:property"}}{{/crossLink}} by default.
-             *
-             * @property cameraControl
-             * @final
-             * @type CameraControl
-             */
-            cameraControl: {
-
-                get: function () {
-                    return this.components["default.cameraControl"] ||
-                        new XEO.CameraControl(this, {
-                            id: "default.cameraControl",
-                            camera: this.camera
-                        });
-                }
-            },
-
-            /**
              * The default modelling {{#crossLink "Transform"}}{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Transform"}}{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.transform",
@@ -1936,7 +1947,8 @@
                 get: function () {
                     return this.components["default.depthBuf"] ||
                         new XEO.DepthBuf(this, {
-                            id: "default.depthBuf"
+                            id: "default.depthBuf",
+                            active: false // Null Object pattern
                         });
                 }
             },
@@ -1957,7 +1969,8 @@
                 get: function () {
                     return this.components["default.depthTarget"] ||
                         new XEO.DepthTarget(this, {
-                            id: "default.depthTarget"
+                            id: "default.depthTarget",
+                            active: false // Null Object pattern
                         });
                 }
             },
@@ -2654,19 +2667,19 @@
 
             this._tick = this.scene.on("tick",
                 function (params) {
-                    self._update(params.time * 1000.0);
+                    self._update();
                 });
 
             this._flying = true;
         },
 
-        _update: function (time) {
+        _update: function () {
 
             if (!this._flying) {
                 return;
             }
 
-            time = (new Date()).getTime();
+            var time = (new Date()).getTime();
 
             var t = (time - this._time1) / (this._time2 - this._time1);
 
@@ -5733,7 +5746,7 @@ visibility.destroy();
             this._tangents = null;
             this._indices = null;
 
-            this._dirty = true;
+            this._dirty = false;
             this._positionsDirty = true;
             this._colorsDirty = true;
             this._normalsDirty = true;
@@ -5831,9 +5844,12 @@ visibility.destroy();
         },
 
         _scheduleBuild: function () {
+
             if (!this._dirty) {
+
                 this._dirty = true;
                 var self = this;
+
                 this.scene.once("tick",
                     function () {
                         self._build();
@@ -5969,7 +5985,6 @@ visibility.destroy();
                     }
 
                     this._primitive = value;
-                    this._dirty = true;
 
                     this.fire("dirty", true);
 
@@ -6002,16 +6017,15 @@ visibility.destroy();
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._positions !== !value);
-
                     this._positions = value;
-                    this._positionsDirty = value;
-                    this._dirty = true;
+                    this._positionsDirty = true;
 
                     this._scheduleBuild();
 
                     this._setModelBoundaryDirty();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._positions !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -6035,6 +6049,8 @@ visibility.destroy();
                      * @param value The property's new value
                      */
                     this.fire("boundary", true);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -6055,14 +6071,13 @@ visibility.destroy();
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._normals !== !value);
-
                     this._normals = value;
-                    this._normalsDirty = value;
-                    this._dirty = true;
+                    this._normalsDirty = true;
 
                     this._scheduleBuild();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._normals !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -6074,6 +6089,8 @@ visibility.destroy();
                      * @param value The property's new value
                      */
                     this.fire(" normals", this._normals);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -6094,14 +6111,13 @@ visibility.destroy();
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._uv !== !value);
-
                     this._uv = value;
-                    this._uvDirty = value;
-                    this._dirty = true;
+                    this._uvDirty = true;
 
                     this._scheduleBuild();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._uv !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -6113,6 +6129,8 @@ visibility.destroy();
                      * @param value The property's new value
                      */
                     this.fire("uv", this._uv);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -6133,14 +6151,13 @@ visibility.destroy();
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colors != !value);
-
                     this._colors = value;
-                    this._colorsDirty = value;
-                    this._dirty = true;
+                    this._colorsDirty = true;
 
                     this._scheduleBuild();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._colors != !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -6152,6 +6169,8 @@ visibility.destroy();
                      * @param value The property's new value
                      */
                     this.fire("colors", this._colors);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -6172,14 +6191,14 @@ visibility.destroy();
 
                 set: function (value) {
 
+                    this._indices = value;
+                    this._indicesDirty = true;
+
+                    this._scheduleBuild();
+
                     // Only recompile when adding or removing this property, not when modifying
                     var dirty = (!this._indices && !value);
 
-                    this._indices = value;
-                    this._indicesDirty = value;
-                    this._dirty = true;
-
-                    this._scheduleBuild();
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -6191,6 +6210,8 @@ visibility.destroy();
                      * @param value The property's new value
                      */
                     this.fire("indices", this._indices);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -6313,6 +6334,376 @@ visibility.destroy();
             // Decrement geometry statistic
 
             this.scene.stats.dec("geometries");
+        }
+    });
+
+})();
+;/**
+ A **Torus** defines toroid geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Example
+
+ ````javascript
+
+ ````
+
+ @class Torus
+ @module XEO
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Torus in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Torus.
+ @param [cfg.radius=1] {Number}
+ @param [cfg.tube=0.3] {Number}
+ @param [cfg.segmentsR=32] {Number}
+ @param [cfg.segmentsT=24] {Number}
+ @param [cfg.arc=Math.PI / 2.0] {Number}
+ @extends Geometry
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Torus = XEO.Geometry.extend({
+
+        type: "XEO.Torus",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.radius = cfg.radius;
+            this.tube = cfg.tube;
+            this.segmentsR = cfg.segmentsR;
+            this.segmentsT = cfg.segmentsT;
+            this.arc = cfg.arc;
+
+            this._build2();
+        },
+
+        _scheduleBuild2: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                var self = this;
+                this.scene.once("tick",
+                    function () {
+                        self._build2();
+                    });
+            }
+        },
+
+        _build2: function () {
+
+            var radius = this._radius;
+            var tube = this._tube;
+            var segmentsR = this._segmentsR;
+            var segmentsT = this._segmentsT;
+            var arc = this._arc;
+
+            var positions = [];
+            var normals = [];
+            var uvs = [];
+            var indices = [];
+
+            var u;
+            var v;
+            var centerX;
+            var centerY;
+            var centerZ = 0;
+            var x;
+            var y;
+            var z;
+            var vec;
+
+            var i;
+            var j;
+
+            for (j = 0; j <= segmentsR; j++) {
+                for (i = 0; i <= segmentsT; i++) {
+
+                    u = i / segmentsT * arc;
+                    v = j / segmentsR * Math.PI * 2;
+
+                    centerX = radius * Math.cos(u);
+                    centerY = radius * Math.sin(u);
+
+                    x = (radius + tube * Math.cos(v) ) * Math.cos(u);
+                    y = (radius + tube * Math.cos(v) ) * Math.sin(u);
+                    z = tube * Math.sin(v);
+
+                    positions.push(x);
+                    positions.push(y);
+                    positions.push(z);
+
+                    uvs.push(i / segmentsT);
+                    uvs.push(1 - j / segmentsR);
+
+                    vec = XEO.math.normalizeVec3(XEO.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
+
+                    normals.push(vec[0]);
+                    normals.push(vec[1]);
+                    normals.push(vec[2]);
+                }
+            }
+
+            var a;
+            var b;
+            var c;
+            var d;
+
+            for (j = 1; j <= segmentsR; j++) {
+                for (i = 1; i <= segmentsT; i++) {
+
+                    a = ( segmentsT + 1 ) * j + i - 1;
+                    b = ( segmentsT + 1 ) * ( j - 1 ) + i - 1;
+                    c = ( segmentsT + 1 ) * ( j - 1 ) + i;
+                    d = ( segmentsT + 1 ) * j + i;
+
+                    indices.push(a);
+                    indices.push(b);
+                    indices.push(c);
+
+                    indices.push(c);
+                    indices.push(d);
+                    indices.push(a);
+                }
+            }
+
+            this.positions = positions;
+            this.normals = normals;
+            this.uv = uvs;
+            this.indices = indices;
+
+            this._dirty = false;
+        },
+
+        _props: {
+
+            /**
+             * The Torus's radius.
+             *
+             * Fires a {{#crossLink "Torus/radius:event"}}{{/crossLink}} event on change.
+             *
+             * @property radius
+             * @default 1
+             * @type Number
+             */
+            radius: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._radius === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative radius not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._radius = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/radius:property"}}{{/crossLink}} property changes.
+                     * @event radius
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("radius", this._radius);
+
+                    this._scheduleBuild2();
+                },
+
+                get: function () {
+                    return this._radius;
+                }
+            },
+
+
+            /**
+             * The Torus's tube.
+             *
+             * Fires a {{#crossLink "Torus/tube:event"}}{{/crossLink}} event on change.
+             *
+             * @property tube
+             * @default 1
+             * @type Number
+             */
+            tube: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._tube === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative tube not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._tube = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/tube:property"}}{{/crossLink}} property changes.
+                     * @event tube
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("tube", this._tube);
+
+                    this._scheduleBuild2();
+                },
+
+                get: function () {
+                    return this._tube;
+                }
+            }
+        },
+
+        /**
+         * The Torus's segmentsR.
+         *
+         * Fires a {{#crossLink "Torus/segmentsR:event"}}{{/crossLink}} event on change.
+         *
+         * @property segmentsR
+         * @default 32
+         * @type Number
+         */
+        segmentsR: {
+
+            set: function (value) {
+
+                value = value || 32;
+
+                if (this._segmentsR === value) {
+                    return;
+                }
+
+                if (value < 0) {
+                    this.warn("negative segmentsR not allowed - will invert");
+                    value = value * -1;
+                }
+
+                this._segmentsR = value;
+
+                /**
+                 * Fired whenever this Torus's {{#crossLink "Torus/segmentsR:property"}}{{/crossLink}} property changes.
+                 * @event segmentsR
+                 * @type Number
+                 * @param value The property's new value
+                 */
+                this.fire("segmentsR", this._segmentsR);
+
+                this._scheduleBuild2();
+            },
+
+            get: function () {
+                return this._segmentsR;
+            }
+        },
+
+
+        /**
+         * The Torus's segmentsT.
+         *
+         * Fires a {{#crossLink "Torus/segmentsT:event"}}{{/crossLink}} event on change.
+         *
+         * @property segmentsT
+         * @default 24
+         * @type Number
+         */
+        segmentsT: {
+
+            set: function (value) {
+
+                value = value || 24;
+
+                if (this._segmentsT === value) {
+                    return;
+                }
+
+                if (value < 0) {
+                    this.warn("negative segmentsT not allowed - will invert");
+                    value = value * -1;
+                }
+
+                this._segmentsT = value;
+
+                /**
+                 * Fired whenever this Torus's {{#crossLink "Torus/segmentsT:property"}}{{/crossLink}} property changes.
+                 * @event segmentsT
+                 * @type Number
+                 * @param value The property's new value
+                 */
+                this.fire("segmentsT", this._segmentsT);
+
+                this._scheduleBuild2();
+            },
+
+            get: function () {
+                return this._segmentsT;
+            }
+        },
+
+        /**
+         * The Torus's arc.
+         *
+         * Fires a {{#crossLink "Torus/arc:event"}}{{/crossLink}} event on change.
+         *
+         * @property arc
+         * @default Math.PI * 2
+         * @type Number
+         */
+        arc: {
+
+            set: function (value) {
+
+                value = value || Math.PI * 2;
+
+                if (this._arc === value) {
+                    return;
+                }
+
+                if (value < 0) {
+                    this.warn("negative arc not allowed - will invert");
+                    value = value * -1;
+                }
+
+                this._arc = value;
+
+                /**
+                 * Fired whenever this Torus's {{#crossLink "Torus/arc:property"}}{{/crossLink}} property changes.
+                 * @event arc
+                 * @type Number
+                 * @param value The property's new value
+                 */
+                this.fire("arc", this._arc);
+
+                this._scheduleBuild2();
+            },
+
+            get: function () {
+                return this._arc;
+            }
+        },
+
+        _getJSON: function () {
+            return XEO._apply2({
+                radius: this._radius,
+                tube: this._tube,
+                segmentsR: this._segmentsR,
+                segmentsT: this._segmentsT,
+                arc: this._arc
+            }, {});
         }
     });
 
@@ -6761,11 +7152,11 @@ visibility.destroy();
         _props: {
 
             /**
-             * The {{#crossLink "Collection"}}Collection{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GameObject.
              *
-             * Defaults to an empty internally-managed {{#crossLink "Collection"}}{{/crossLink}}. 
+             * Defaults to an empty internally-managed {{#crossLink "Group"}}{{/crossLink}}.
              *
-             * Fires a {{#crossLink "GameObject/group:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "GroupBoundary/group:event"}}{{/crossLink}} event on change.
              *
              * @property group
              * @type Group
@@ -6939,6 +7330,9 @@ visibility.destroy();
 
  In this example, we're subscribing to some mouse and key events that will occur on
  a {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+
+ <p data-height="622" data-theme-id="11815" data-slug-hash="doERqg" data-default-tab="result" data-user="xeolabs" class='codepen'>See the Pen <a href='http://codepen.io/xeolabs/pen/doERqg/'>doERqg</a> by xeolabs (<a href='http://codepen.io/xeolabs'>@xeolabs</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
+ <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
  ````javascript
 var myScene = new XEO.Scene();
@@ -10818,8 +11212,8 @@ TODO
 
                         var type = light.type;
 
-                        if (type !== "XEO.AmbientLight" && type != "XEO.DirLight" && type != "XEO.PosLight") {
-                            this.error("Component " + XEO._inQuotes(light.id) + " is not an XEO.AmbientLight, XEO.DirLight or XEO.PosLight ");
+                        if (type !== "XEO.AmbientLight" && type != "XEO.DirLight" && type != "XEO.PointLight") {
+                            this.error("Component " + XEO._inQuotes(light.id) + " is not an XEO.AmbientLight, XEO.DirLight or XEO.PointLight ");
                             continue;
                         }
 
@@ -11497,9 +11891,10 @@ TODO
                 pos: [1.0, 1.0, 1.0],
                 color: [0.7, 0.7, 0.8],
                 intensity:   1.0,
-                constantAttenuation: 0.0,
-                linearAttenuation: 0.0,
-                quadraticAttenuation: 0.0,
+
+                // Packaging constant, linear and quadratic attenuation terms
+                // into an array for easy insertion into shaders as a vec3
+                attenuation: [0.0, 0.0, 0.0],
                 space: "view"
             };
 
@@ -11621,7 +12016,7 @@ TODO
 
                 set: function (value) {
 
-                    this._state.constantAttenuation = value || 0.0;
+                    this._state.attenuation[0] = value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -11631,11 +12026,11 @@ TODO
                      @event constantAttenuation
                      @param value The property's new value
                      */
-                    this.fire("constantAttenuation", this._state.constantAttenuation);
+                    this.fire("constantAttenuation", this._state.attenuation[0]);
                 },
 
                 get: function () {
-                    return this._state.constantAttenuation;
+                    return this._state.attenuation[0];
                 }
             },
 
@@ -11652,7 +12047,7 @@ TODO
 
                 set: function (value) {
 
-                    this._state.linearAttenuation = value || 0.0;
+                    this._state.attenuation[1] = value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -11662,11 +12057,11 @@ TODO
                      @event linearAttenuation
                      @param value The property's new value
                      */
-                    this.fire("linearAttenuation", this._state.linearAttenuation);
+                    this.fire("linearAttenuation", this._state.attenuation[1]);
                 },
 
                 get: function () {
-                    return this._state.linearAttenuation;
+                    return this._state.attenuation[1];
                 }
             },
 
@@ -11683,7 +12078,7 @@ TODO
 
                 set: function (value) {
 
-                    this._state.quadraticAttenuation =  value || 0.0;
+                    this._state.attenuation[2] =  value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -11693,11 +12088,11 @@ TODO
                      @event quadraticAttenuation
                      @param value The property's new value
                      */
-                    this.fire("quadraticAttenuation", this._state.quadraticAttenuation);
+                    this.fire("quadraticAttenuation", this._state.attenuation[2]);
                 },
 
                 get: function () {
-                    return this._state.quadraticAttenuation;
+                    return this._state.attenuation[2];
                 }
             },
 
@@ -11746,9 +12141,9 @@ TODO
                 pos: this._state.pos,
                 color: this._state.color,
                 intensity: this._state.intensity,
-                constantAttenuation: this._state.constantAttenuation,
-                linearAttenuation: this._state.linearAttenuation,
-                quadraticAttenuation: this._state.quadraticAttenuation,
+                constantAttenuation: this._state.attenuation[0],
+                linearAttenuation: this._state.attenuation[1],
+                quadraticAttenuation: this._state.attenuation[2],
                 space: this._state.space
             };
         }
@@ -16638,7 +17033,7 @@ XEO.math.buildTangents = function (positions, indices, uv) {
 
                     var oldCamera = this._children.camera;
 
-                    if (oldCamera && (!value || value.id !== oldCamera.id)) {
+                    if (oldCamera && (!value || (value.id !== undefined ? value.id : value) !== oldCamera.id)) {
                         oldCamera.off(this._onCameraDestroyed);
                         oldCamera.off(this._onCameraView);
                         oldCamera.off(this._onCameraViewMatrix);
@@ -16915,9 +17310,14 @@ XEO.math.buildTangents = function (positions, indices, uv) {
 
                     var oldGeometry = this._children.geometry;
 
-                    if (oldGeometry && (!value || value.id !== oldGeometry.id)) {
-                        oldGeometry.off(this._onGeometryPositions);
-                        oldGeometry.off(this._onGeometryDestroyed);
+                    if (oldGeometry) {
+
+                        if (!value || (value.id !== undefined ? value.id : value) != oldGeometry.id) {
+
+                            oldGeometry.off(this._onGeometryDirty);
+                            oldGeometry.off(this._onGeometryPositions);
+                            oldGeometry.off(this._onGeometryDestroyed);
+                        }
                     }
 
                     /**
@@ -16938,6 +17338,11 @@ XEO.math.buildTangents = function (positions, indices, uv) {
                         // positions are updated or Geometry is destroyed.
 
                         var self = this;
+
+                        this._onGeometryDirty = newGeometry.on("dirty",
+                            function () {
+                                self.fire("dirty", true);
+                            });
 
                         this._onGeometryPositions = newGeometry.on("positions",
                             function () {
@@ -17442,6 +17847,7 @@ XEO.math.buildTangents = function (positions, indices, uv) {
             }
 
             if (this._children.geometry) {
+                this._children.geometry.off(this._onGeometryDirty);
                 this._children.geometry.off(this._onGeometryPositions);
                 this._children.geometry.off(this._onGeometryDestroyed);
             }
@@ -17455,443 +17861,6 @@ XEO.math.buildTangents = function (positions, indices, uv) {
             }
 
             this._renderer.removeObject(this.id);
-        }
-    });
-
-})();
-;/**
- * Components for controlling the rendering order of GameObjects.
- *
- * @module XEO
- * @submodule ordering
- */;
-/**
- A **Layer** specifies the render order of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
-
- ## Overview
-
- <ul>
- <li>When xeoEngine renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
- of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
-
- <li>{{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
-
- <li>You can control the render order of the individual {{#crossLink "GameObject"}}GameObjects{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
- by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
-
- <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
-
-
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly
- attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
- {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
- a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.</li>
-
- <li>You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
- {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
- </ul>
-
- <img src="../../../assets/images/Layer.png"></img>
-
- ## Example
-
- In this example we'll use Layers to perform <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency sorting</a>,
- which ensures that transparent objects are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.
-
- We want to render the three nested boxes shown below, in which the innermost box is opaque and blue,
- the box enclosing that is transparent and yellow, and the outermost box is transparent and green. We need the boxes to
- render in order innermost-to-outermost, in order to blend transparencies correctly.
-
- <img src="../../assets/images/transparencySort.jpg"></img>
-
- Our scene has one {{#crossLink "Stage"}}{{/crossLink}}, just for completeness. As mentioned earlier, you don't have to
- create this because the {{#crossLink "Scene"}}{{/crossLink}} will provide its default {{#crossLink "Stage"}}{{/crossLink}}.
- Then, within that {{#crossLink "Stage"}}{{/crossLink}}, we create a {{#crossLink "GameObject"}}{{/crossLink}} for each box,
- each assigned to a different prioritised {{#crossLink "Layer"}}{{/crossLink}} to ensure that they are rendered in the right order.
-
- ````javascript
-var scene = new XEO.Scene();
-
-// View transform
-var lookat = new XEO.Lookat(scene, {
-    eye: [0,0,10]
-});
-
-// Camera, using Scene's default projection transform
-var camera = new XEO.Camera(scene, {
-    view: lookat
-});
-
-// A Stage, just for completeness
-// We could instead just implicitly use the Scene's default Stage
-var stage = new XEO.Stage(scene, {
-    priority: 0
-});
-
-// Geometry with no parameters defaults to a 2x2x2 box
-var geometry = new XEO.Geometry(scene);
-
-//-----------------------------------------------------------------------------
-// Innermost box
-// Blue and opaque, in Layer with render order 0, renders first
- //-----------------------------------------------------------------------------
-
-var layer1 = new XEO.Layer(scene, {
-    priority: 1
-});
-
-var material1 = new XEO.PhongMaterial(scene, {
-    diffuse: [0.2, 0.2, 1.0],
-    opacity: 1.0
-});
-
-var object1 = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry,
-    stage: stage,
-    layer: layer1,
-    material: material1
-});
-
-//-----------------------------------------------------------------------------
-// Middle box
-// Red and transparent, in Layer with render order 2, renders next
- //-----------------------------------------------------------------------------
-
-var layer2 = new XEO.Layer(scene, {
-    priority: 2
-});
-
-var material2 = new XEO.PhongMaterial(scene, {
-    diffuse: [1, 0.2, 0.2],
-    opacity: 0.2
-});
-
-var scale2 = new XEO.Scale(scene, {
-    xyz: [6, 6, 6]
-});
-
-var object2 = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry,
-    stage: stage,
-    layer: layer2,
-    material: material2,
-    scale: scale2
-});
-
-//-----------------------------------------------------------------------------
-// Outermost box
-// Green and transparent, in Layer with render order 3, renders last
-//-----------------------------------------------------------------------------
-
-var layer3 = new XEO.Layer(scene, {
-    priority: 3
-});
-
-var material3 = new XEO.PhongMaterial(scene, {
-    diffuse: [0.2, 1, 0.2],
-    opacity: 0.2
-});
-
-var scale3 = new XEO.Scale(scene, {
-    xyz: [9, 9, 9]
-});
-
-var object3 = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry,
-    stage: stage,
-    layer: layer3,
-    material: material3,
-    scale: scale3
-});
-
- ````
-
- @class Layer
- @module XEO
- @submodule ordering
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Geometry in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Layer.
- @param [cfg.priority=0] {Number} The rendering priority,
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Layer = XEO.Component.extend({
-
-        type: "XEO.Layer",
-
-        _init: function (cfg) {
-
-            this._state = new XEO.renderer.Layer({
-                priority: 0
-            });
-
-            this.priority = cfg.priority;
-        },
-
-        _props: {
-
-            /**
-             * Indicates this Layer's rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-             *
-             * Each {{#crossLink "GameObject"}}{{/crossLink}} is also attached to a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
-             * priority via its {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} property.
-             *
-             * Fires a {{#crossLink "Layer/priority:event"}}{{/crossLink}} event on change.
-             *
-             * @property priority
-             * @default 0
-             * @type Number
-             */
-            priority: {
-
-                set: function (value) {
-
-                    this._state.priority = value || 0;
-
-                    this._renderer.stateOrderDirty = true;
-
-                    /**
-                     * Fired whenever this Layer's  {{#crossLink "Layer/priority:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event priority
-                     * @param value The property's new value
-                     */
-                    this.fire("priority", this._state.priority);
-                },
-
-                get: function () {
-                    return this._state.priority;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.layer = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                priority: this._state.priority
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- A **Stage** is a bin of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that is rendered in a specified priority with respect to
- other Stages in the same {{#crossLink "Scene"}}{{/crossLink}}.
-
- ## Overview
-
- <ul>
- <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
- of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
-
- <li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
-
- <li>You can control the render order of the individual {{#crossLink "GameObject"}}GameObjects{{/crossLink}} ***within*** a Stage
- by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
-
- <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within Stages.</li>
-
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
- attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
- {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
- a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
-
- </ul>
-
- <img src="../../../assets/images/Stage.png"></img>
-
- ## Example
-
- In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
- {{#crossLink "Texture"}}Texture{{/crossLink}} components.
-
- Note how we use two prioritized Stages, to ensure that the {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} is
- rendered ***before*** the {{#crossLink "Texture"}}Texture{{/crossLink}} that consumes it.
-
- ````javascript
- var scene = new XEO.Scene();
-
- // First stage: an Object that renders to a ColorTarget
-
- var stage1 = new XEO.Stage(scene, {
-       priority: 0
-  });
-
- var geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box
-
- var colorTarget = new XEO.ColorTarget(scene);
-
- var object1 = new XEO.GameObject(scene, {
-       stage: stage1,
-       geometry: geometry,
-       colorTarget: colorTarget
-  });
-
-
- // Second stage: an Object with a Texture that sources from the ColorTarget
-
- var stage2 = new XEO.Stage(scene, {
-       priority: 1
-  });
-
- var texture = new XEO.Texture(scene, {
-       target: colorTarget
-  });
-
- var material = new XEO.PhongMaterial(scene, {
-       textures: [
-           texture
-       ]
-  });
-
- var geometry2 = new XEO.Geometry(scene);
-
- var object2 = new XEO.GameObject(scene, {
-       stage: stage2,
-       material: material,
-       geometry: geometry2
-  });
- ````
-
- @class Stage
- @module XEO
- @submodule ordering
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stage in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
- @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
- @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Stage = XEO.Component.extend({
-
-        type: "XEO.Stage",
-
-        _init: function (cfg) {
-
-            this._state = new XEO.renderer.Stage({
-                priority: 0,
-                pickable: true
-            });
-
-            this.priority = cfg.priority;
-            this.pickable = cfg.pickable;
-        },
-
-        _props: {
-
-            priority: {
-
-                /**
-                 * Indicates the rendering priority for the
-                 * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in
-                 * this Stage.
-                 *
-                 * Fires a {{#crossLink "Stage/priority:event"}}{{/crossLink}}
-                 * event on change.
-                 *
-                 * @property priority
-                 * @default 0
-                 * @type Number
-                 */
-                set: function (value) {
-
-                    this._state.priority = value || 0;
-
-                    this._renderer.stateOrderDirty = true;
-
-                    /**
-                     * Fired whenever this Stage's
-                     * {{#crossLink "Stage/priority:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event priority
-                     * @param value The property's new value
-                     */
-                    this.fire("priority", this._state.priority);
-                },
-
-                get: function () {
-                    return this._state.priority;
-                }
-            },
-
-            /**
-             * Indicates whether the attached
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are
-             * pickable (see {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}).
-             *
-             * Fires a {{#crossLink "Stage/pickable:event"}}{{/crossLink}} event on change.
-             *
-             * @property pickable
-             * @default true
-             * @type Boolean
-             */
-            pickable: {
-
-                set: function (value) {
-
-                    this._state.pickable = value !== false;
-
-                    this._renderer.drawListDirty = true;
-
-                    /**
-                     * Fired whenever this Stage's
-                     * {{#crossLink "Stage/pickable:pickable"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event pickable
-                     * @param value The property's new value
-                     */
-                    this.fire("pickable", this._state.pickable);
-                },
-
-                get: function () {
-                    return this._state.pickable;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.stage = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                priority: this.priority,
-                pickable: this.pickable
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
         }
     });
 
@@ -18431,6 +18400,7 @@ var object3 = new XEO.GameObject(scene, {
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthBuf.
  @param [cfg.clearDepth=1.0] {Number} The clear depth.
  @param [cfg.depthFunc="less"] {String} The depth function.
+ @param [cfg.active=true] {Boolean} True when this DepthBuf is active.
  @extends Component
  */
 (function () {
@@ -18444,12 +18414,14 @@ var object3 = new XEO.GameObject(scene, {
         _init: function (cfg) {
 
             this._state = new XEO.renderer.DepthBuf({
-                clearDepth: 1.0,
-                depthFunc: "less"
+                clearDepth: null,
+                depthFunc: null,
+                active: null
             });
 
             this.clearDepth = cfg.clearDepth;
             this.depthFunc = cfg.depthFunc;
+            this.active = cfg.active;
         },
 
         _props: {
@@ -18537,6 +18509,37 @@ var object3 = new XEO.GameObject(scene, {
                 get: function () {
                     return this._state.depthFuncName;
                 }
+            },
+
+            /**
+             * Flag which indicates whether this DepthBuf is active or not.
+             *
+             * Fires an {{#crossLink "DepthBuf/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    if (this._state.active === value) {
+                        return;
+                    }
+                    
+                    this._state.active = value;
+                    
+                    /**
+                     * Fired whenever this DepthBuf's {{#crossLink "DepthBuf/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._state.active);
+                },
+
+                get: function () {
+                    return this._state.active;
+                }
             }
         },
 
@@ -18560,11 +18563,500 @@ var object3 = new XEO.GameObject(scene, {
         _getJSON: function () {
             return {
                 clearDepth: this._state.clearDepth,
-                depthFunc: this._state.depthFuncName
+                depthFunc: this._state.depthFuncName,
+                active: this._state.active
             };
         },
 
         _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+;
+/**
+ A **Layer** specifies the render order of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+ <li>When xeoEngine renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
+ of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
+
+ <li>{{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
+
+ <li>You can control the render order of the individual {{#crossLink "GameObject"}}GameObjects{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
+ by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
+
+ <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
+
+
+ <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly
+ attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
+ a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.</li>
+
+ <li>You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
+ </ul>
+
+ <img src="../../../assets/images/Layer.png"></img>
+
+ ## Example
+
+ In this example we'll use Layers to perform <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency sorting</a>,
+ which ensures that transparent objects are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.
+
+ We want to render the three nested boxes shown below, in which the innermost box is opaque and blue,
+ the box enclosing that is transparent and yellow, and the outermost box is transparent and green. We need the boxes to
+ render in order innermost-to-outermost, in order to blend transparencies correctly.
+
+ <img src="../../assets/images/transparencySort.jpg"></img>
+
+ Our scene has one {{#crossLink "Stage"}}{{/crossLink}}, just for completeness. As mentioned earlier, you don't have to
+ create this because the {{#crossLink "Scene"}}{{/crossLink}} will provide its default {{#crossLink "Stage"}}{{/crossLink}}.
+ Then, within that {{#crossLink "Stage"}}{{/crossLink}}, we create a {{#crossLink "GameObject"}}{{/crossLink}} for each box,
+ each assigned to a different prioritised {{#crossLink "Layer"}}{{/crossLink}} to ensure that they are rendered in the right order.
+
+ ````javascript
+var scene = new XEO.Scene();
+
+// View transform
+var lookat = new XEO.Lookat(scene, {
+    eye: [0,0,10]
+});
+
+// Camera, using Scene's default projection transform
+var camera = new XEO.Camera(scene, {
+    view: lookat
+});
+
+// A Stage, just for completeness
+// We could instead just implicitly use the Scene's default Stage
+var stage = new XEO.Stage(scene, {
+    priority: 0
+});
+
+// Geometry with no parameters defaults to a 2x2x2 box
+var geometry = new XEO.Geometry(scene);
+
+//-----------------------------------------------------------------------------
+// Innermost box
+// Blue and opaque, in Layer with render order 0, renders first
+ //-----------------------------------------------------------------------------
+
+var layer1 = new XEO.Layer(scene, {
+    priority: 1
+});
+
+var material1 = new XEO.PhongMaterial(scene, {
+    diffuse: [0.2, 0.2, 1.0],
+    opacity: 1.0
+});
+
+var object1 = new XEO.GameObject(scene, {
+    camera: camera,
+    geometry: geometry,
+    stage: stage,
+    layer: layer1,
+    material: material1
+});
+
+//-----------------------------------------------------------------------------
+// Middle box
+// Red and transparent, in Layer with render order 2, renders next
+ //-----------------------------------------------------------------------------
+
+var layer2 = new XEO.Layer(scene, {
+    priority: 2
+});
+
+var material2 = new XEO.PhongMaterial(scene, {
+    diffuse: [1, 0.2, 0.2],
+    opacity: 0.2
+});
+
+var scale2 = new XEO.Scale(scene, {
+    xyz: [6, 6, 6]
+});
+
+var object2 = new XEO.GameObject(scene, {
+    camera: camera,
+    geometry: geometry,
+    stage: stage,
+    layer: layer2,
+    material: material2,
+    scale: scale2
+});
+
+//-----------------------------------------------------------------------------
+// Outermost box
+// Green and transparent, in Layer with render order 3, renders last
+//-----------------------------------------------------------------------------
+
+var layer3 = new XEO.Layer(scene, {
+    priority: 3
+});
+
+var material3 = new XEO.PhongMaterial(scene, {
+    diffuse: [0.2, 1, 0.2],
+    opacity: 0.2
+});
+
+var scale3 = new XEO.Scale(scene, {
+    xyz: [9, 9, 9]
+});
+
+var object3 = new XEO.GameObject(scene, {
+    camera: camera,
+    geometry: geometry,
+    stage: stage,
+    layer: layer3,
+    material: material3,
+    scale: scale3
+});
+
+ ````
+
+ @class Layer
+ @module XEO
+ @submodule rendering
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Geometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Layer.
+ @param [cfg.priority=0] {Number} The rendering priority,
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Layer = XEO.Component.extend({
+
+        type: "XEO.Layer",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.Layer({
+                priority: 0
+            });
+
+            this.priority = cfg.priority;
+        },
+
+        _props: {
+
+            /**
+             * Indicates this Layer's rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             *
+             * Each {{#crossLink "GameObject"}}{{/crossLink}} is also attached to a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
+             * priority via its {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} property.
+             *
+             * Fires a {{#crossLink "Layer/priority:event"}}{{/crossLink}} event on change.
+             *
+             * @property priority
+             * @default 0
+             * @type Number
+             */
+            priority: {
+
+                set: function (value) {
+
+                    this._state.priority = value || 0;
+
+                    this._renderer.stateOrderDirty = true;
+
+                    /**
+                     * Fired whenever this Layer's  {{#crossLink "Layer/priority:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event priority
+                     * @param value The property's new value
+                     */
+                    this.fire("priority", this._state.priority);
+                },
+
+                get: function () {
+                    return this._state.priority;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.layer = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                priority: this._state.priority
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+;/**
+ A **ColorTarget** captures the colors of the pixels that xeoEngine renders for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ These provide a virtual, software-based <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a> that is typically used when performing *render-to-texture*.
+
+ ## Overview
+
+ <ul>
+ <li>A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
+ <li>ColorTarget is not to be confused with {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.</li>
+ <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
+ the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
+ <li>For special effects, we often use ColorTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
+ with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
+ </ul>
+
+ <img src="../../../assets/images/ColorTarget.png"></img>
+
+ ## Example
+
+ In this example we essentially have one {{#crossLink "GameObject"}}{{/crossLink}}
+ that's rendered to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied to a second {{#crossLink "GameObject"}}{{/crossLink}}.
+
+ The scene contains:
+
+ <ul>
+ <li>a ColorTarget,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} pixel color values to the ColorTarget,</li>
+ <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the ColorTarget,</li>
+ <li>a {{#crossLink "Material"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
+ <li>a second {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
+ </ul>
+
+
+ ````javascript
+ var scene = new XEO.Scene();
+
+ var colorTarget = new XEO.ColorTarget(scene);
+
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+ // First Object renders to the ColorTarget
+
+ var object1 = new XEO.GameObject(scene, {
+    geometry: geometry,
+    colorTarget: colorTarget
+});
+
+ var texture = new XEO.Texture(scene, {
+    target: colorTarget
+});
+
+ var material = new XEO.PhongMaterial(scene, {
+    textures: [
+        texture
+    ]
+});
+
+ // Second Object is textured with the
+ // image of the first Object
+
+ var object2 = new XEO.GameObject(scene, {
+    geometry: geometry,  // Reuse our simple box geometry
+    material: material
+});
+ ````
+
+ @class ColorTarget
+ @module XEO
+ @submodule rendering
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this ColorTarget within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} ColorTarget configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.ColorTarget = XEO.Component.extend({
+
+        type: "XEO.ColorTarget",
+
+        _init: function () {
+
+          var canvas = this.scene.canvas;
+
+          this._state = new XEO.renderer.RenderTarget({
+
+              type: XEO.renderer.RenderTarget.COLOR,
+
+              renderBuf: new XEO.renderer.webgl.RenderBuffer({
+                  canvas: canvas.canvas,
+                  gl: canvas.gl
+              })
+          });
+
+          var self = this;
+
+          this._webglContextRestored = canvas.on("webglContextRestored",
+              function () {
+                  self._state.renderBuf.webglRestored(canvas.gl);
+              });
+        },
+
+        _compile: function () {
+            this._renderer.colorTarget = this._state;
+        },
+
+        _getJSON: function () {
+            return {};
+        },
+
+        _destroy: function () {
+
+            this.scene.canvas.off(this._webglContextRestored);
+
+            this._state.renderBuf.destroy();
+
+            this._state.destroy();
+        }
+    });
+
+})();
+;/**
+ A **DepthTarget** captures the Z-depths of the pixels that xeoEngine renders for the attached
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. These provide a virtual, software-based
+ <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a> that is typically used when
+ performing *render-to-texture* as part of some post-processing effect that requires the pixel depth values.
+
+ ## Overview
+
+ <ul>
+ <li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
+ <li>DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.</li>
+ <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
+ the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
+ <li>For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
+ with {{#crossLink "ColorTarget"}}ColorTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
+ </ul>
+
+ <img src="../../../assets/images/DepthTarget.png"></img>
+
+ ## Example
+
+ In the example below, we essentially have one {{#crossLink "GameObject"}}{{/crossLink}}
+ that renders its pixel Z-depth values to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied
+ to a second {{#crossLink "GameObject"}}{{/crossLink}}.
+
+ The scene contains:
+
+ <ul>
+ <li>a DepthTarget,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} fragment depth values to the DepthTarget,</li>
+ <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the DepthTarget,</li>
+ <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
+ <li>a second {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
+ </ul>
+
+ The pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second
+ {{#crossLink "GameObject"}}{{/crossLink}} as a {{#crossLink "Texture"}}{{/crossLink}}. In practice the {{#crossLink "Texture"}}{{/crossLink}}
+ would carry the depth values into a custom {{#crossLink "Shader"}}{{/crossLink}}, which would then be applied to the second {{#crossLink "GameObject"}}{{/crossLink}}.
+
+ ````javascript
+ var scene = new XEO.Scene();
+
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box.
+
+ var depthTarget = new XEO.DepthTarget(scene);
+
+ // First Object renders its pixel depth values to our DepthTarget
+ var object1 = new XEO.GameObject(scene, {
+    depthTarget: depthTarget
+});
+
+ // Texture consumes our DepthTarget
+ var texture = new XEO.Texture(scene, {
+    target: depthTarget
+});
+
+ // Material contains our Texture
+ var material = new XEO.PhongMaterial(scene, {
+    textures: [
+        texture
+    ]
+});
+
+ // Second Object is effectively textured with the color-encoded
+ // pixel depths of the first Object
+ var object2 = new XEO.GameObject(scene, {
+    geometry: geometry,  // Reuse our simple box geometry
+    material: material
+});
+ ````
+ @class DepthTarget
+ @module XEO
+ @submodule rendering
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this DepthTarget within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} DepthTarget configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthTarget.
+
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.DepthTarget = XEO.Component.extend({
+
+        type: "XEO.DepthTarget",
+
+        _init: function () {
+
+            var canvas = this.scene.canvas;
+
+            this._state = new XEO.renderer.RenderTarget({
+
+                type: XEO.renderer.RenderTarget.DEPTH,
+
+                renderBuf: new XEO.renderer.webgl.RenderBuffer({
+                    canvas: canvas.canvas,
+                    gl: canvas.gl
+                })
+            });
+
+            var self = this;
+
+            this._webglContextRestored = canvas.on("webglContextRestored",
+                function () {
+                    self._state.renderBuf.webglRestored(canvas.gl);
+                });
+        },
+
+        _compile: function () {
+            this._renderer.depthTarget = this._state;
+        },
+
+        _getJSON: function () {
+            return {};
+        },
+
+        _destroy: function () {
+
+            this.scene.canvas.off(this._webglContextRestored);
+
+            this._state.renderBuf.destroy();
+
             this._state.destroy();
         }
     });
@@ -18864,6 +19356,780 @@ var object3 = new XEO.GameObject(scene, {
                 transparent: this._state.transparent,
                 backfaces: this._state.backfaces,
                 frontface: this._state.frontface
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+;/**
+ A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+ <li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
+ <li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
+ components on the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
+ the same Shaders among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms
+ differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
+ <li>Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
+ and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>
+ </ul>
+
+ <img src="../../../assets/images/Shader.png"></img>
+
+ ## Example
+
+ This example shows the simplest way to use a Shader, where we're just going to render a ripply water
+ pattern to a screen-aligned quad.
+
+ <img src="../../assets/images/shaderExample1.png"></img>
+
+ In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
+ screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
+ Finally, we animate the rippling by periodically updating the Shader's "time" uniform.
+
+ ````javascript
+
+ var scene = new XEO.Scene();
+
+ // Shader that's used by our Object. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
+ // which will receive the positions and UVs from the Geometry. Also note the 'time'
+ // uniform, which we'll be animating via Shader#setParams.
+
+ var shader = new XEO.Shader(scene, {
+
+       // Vertex shading stage
+       vertex: [
+           "attribute vec3 xeo_aPosition;",
+           "attribute vec2 xeo_aUV;",
+           "varying vec2 vUv;",
+           "void main () {",
+           "    gl_Position = vec4(xeo_aPosition, 1.0);",
+           "    vUv = xeo_aUV;",
+           "}"
+       ],
+
+       // Fragment shading stage
+       fragment: [
+           "precision mediump float;",
+
+           "uniform float time;",
+           "varying vec2 vUv;",
+
+           "void main( void ) {",
+           "    vec2 sp = vUv;",
+           "    vec2 p = sp*5.0 - vec2(10.0);",
+           "    vec2 i = p;",
+           "    float c = 1.0;",
+           "    float inten = 0.10;",
+           "    for (int n = 0; n < 10; n++) {",
+           "        float t = time * (1.0 - (3.0 / float(n+1)));",
+           "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
+           "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
+           "    }",
+           "    c /= float(10);",
+           "    c = 1.5-sqrt(c);",
+           "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
+           "}"
+       ],
+
+       // Initial value for the 'time' uniform in the fragment stage.
+       params: {
+           time: 0.0
+       }
+  });
+
+ // A screen-aligned quad
+ var quad = new XEO.Geometry(scene, {
+       primitive:"triangles",
+       positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
+       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+       indices:[ 0, 1, 2, 0, 2, 3 ]
+  });
+
+ var object = new XEO.GameObject(scene, {
+       shader: shader,
+       geometry: quad
+  });
+
+ ````
+ Now let's animate the "time" parameter on the Shader, to make the water ripple:
+
+ ```` javascript
+ scene.on("tick", function(params) {
+            shader.setParams({
+                time: params.timeElapsed
+            });
+        });
+ ````
+
+ ## <a name="inputs">Shader Inputs</a>
+
+ xeoEngine provides the following inputs for your shaders.
+
+ #### Attributes
+
+ *Attributes are used only in vertex shaders*
+
+ | Attribute  | Description | Depends on  |
+ |---|---|
+ | attribute vec3 xeo_aPosition   | Geometry vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
+ | attribute vec2 xeo_aUV         | Geometry vertex UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
+ | attribute vec3 xeo_aNormal     | Geometry vertex normals | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
+ | attribute vec4 xeo_aColor      | Geometry vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
+ | attribute vec4 xeo_aTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
+
+ #### Uniforms
+
+ *Uniforms are used in vertex and fragment shaders*
+
+ | Uniform  | Description | Depends on  |
+ |---|---|
+ | uniform mat4  xeo_uModelMatrix                                   | Modelling transform matrix | {{#crossLink "Transform"}}{{/crossLink}} |
+ | uniform mat4  xeo_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Transform"}}{{/crossLink}} |
+ | uniform mat4  xeo_uViewMatrix                                    | View transform matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
+ | uniform mat4  xeo_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
+ | uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
+ | uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
+ | uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
+ |---|---|
+ | uniform vec3  xeo_uLightAmbientColor                             | Color of the first {{#crossLink "AmbientLight"}}{{/crossLink}} in {{#crossLink "Lights"}}{{/crossLink}}| {{#crossLink "AmbientLight"}}{{/crossLink}} |
+ | uniform vec3 xeo_uLightColor&lt;***N***&gt;                    | Diffuse color of {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} |
+ | uniform vec3 xeo_uLightIntensity&lt;***N***&gt;                   | Specular color of {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} |
+ | uniform vec3 xeo_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink "DirLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} |
+ | uniform vec3 xeo_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
+ | uniform vec3 xeo_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
+ | uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
+ | uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
+ |---|---|
+ | uniform vec3 xeo_uMaterialDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
+ | uniform vec3 xeo_uMaterialSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
+ | uniform vec3 xeo_uMaterialEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
+ | uniform float xeo_uMaterialOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
+ | uniform float xeo_uMaterialShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
+ | uniform float xeo_uMaterialDiffuseFresnelBias;       |  | {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} |
+
+ #### Varying
+
+ *Varying types are used in fragment shaders*
+
+ | Varying | Description | Depends on  |
+ |---|---|
+ | varying vec4 xeo_vWorldPosition | |
+ | varying vec4 xeo_vViewPosition | |
+ | varying vec4 xeo_vColor | |
+
+ #### Samplers
+
+ *Samplers are used in fragment shaders*
+
+ | Varying | Description | Depends on  |
+ |---|---|
+
+
+
+ @class Shader
+ @module XEO
+ @submodule rendering
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Shader in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
+ @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
+ @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
+ @param [cfg.params={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Shader = XEO.Component.extend({
+
+        type: "XEO.Shader",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.Shader({
+                vertex: null,
+                fragment: null,
+                params: {}
+            });
+
+            this.vertex = cfg.vertex;
+
+            this.fragment = cfg.fragment;
+
+            this.setParams(cfg.params);
+        },
+
+        _props: {
+
+            /**
+             * GLSL source code for this Shader's vertex stage.
+             *
+             * Fires a {{#crossLink "Shader/vertex:event"}}{{/crossLink}} event on change.
+             *
+             * @property vertex
+             * @default null
+             * @type String
+             */
+            vertex: {
+
+                set: function (value) {
+
+                    this._state.vertex = value;
+
+                    // Trigger recompile
+                    this.fire("dirty", true);
+
+                    /**
+                     * Fired whenever this Shader's {{#crossLink "Shader/vertex:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event vertex
+                     * @param value The property's new value
+                     */
+                    this.fire("vertex", this._state.vertex);
+                },
+
+                get: function () {
+                    return this._state.vertex;
+                }
+            },
+
+            /**
+             * GLSL source code for this Shader's fragment stage.
+             *
+             * Fires a {{#crossLink "Shader/fragment:event"}}{{/crossLink}} event on change.
+             *
+             * @property fragment
+             * @default null
+             * @type String
+             */
+            fragment: {
+
+                set: function (value) {
+
+                    this._state.fragment = value;
+
+                    // Trigger recompile
+                    this.fire("dirty", true);
+
+                    /**
+                     * Fired whenever this Shader's {{#crossLink "Shader/fragment:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event fragment
+                     * @param value The property's new value
+                     */
+                    this.fire("fragment", this._state.fragment);
+                },
+
+                get: function () {
+                    return this._state.fragment;
+                }
+            },
+
+            /**
+             * Params for this Shader.
+             *
+             * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+             *
+             * @property params
+             * @default {}
+             * @type {}
+             */
+            params: {
+
+                get: function () {
+                    return this._state.params;
+                }
+            }
+        },
+
+        /**
+         * Sets one or more params for this Shader.
+         *
+         * These will be individually overridden by any {{#crossLink "ShaderParams/setParams:method"}}params subsequently specified{{/crossLink}} on
+         * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+         *
+         * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+         *
+         * @method setParams
+         * @param {} [params={}] Values for params to set on this Shader, keyed to their names.
+         */
+        setParams: function (params) {
+
+            for (var name in params) {
+                if (params.hasOwnProperty(name)) {
+                    this._state.params[name] = params[name];
+                }
+            }
+
+            this._renderer.imageDirty = true;
+
+            /**
+             * Fired whenever this Shader's  {{#crossLink "Shader/params:property"}}{{/crossLink}}
+             * property has been updated.
+             *
+             * @event params
+             * @param value The property's new value
+             */
+            this.fire("params", this._state.params);
+        },
+
+        _compile: function () {
+            this._renderer.shader = this._state;
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                params: this._state.params
+            };
+
+            if (this._state.vertex) {
+                json.vertex = this._state.vertex;
+            }
+
+            if (this._state.fragment) {
+                json.fragment = this._state.fragment;
+            }
+
+            return json;
+        }
+    });
+
+})();
+;/**
+ A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+ <li>Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
+ while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
+ </ul>
+
+ <img src="../../../assets/images/ShaderParams.png"></img>
+
+ ## Example
+
+ This example shows the simplest way to use a {{#crossLink "Shader"}}Shader{{/crossLink}}, where we're just going to render a ripply water
+ pattern to a screen-aligned quad. As with all our examples, we're just creating the
+ essential components while falling back on the <a href="XEO.Scene.html#defaults" class="crosslink">Scene's default components</a>
+ for everything else.
+
+ <img src="../../assets/images/shaderParamsExample1.png"></img>
+
+ In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
+ screen-aligned quad, plus a {{#crossLink "Shader"}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
+ Finally, we animate the rippling by periodically updating the {{#crossLink "Shader"}}Shader{{/crossLink}}'s "time" uniform.
+
+ ````javascript
+ var scene = new XEO.Scene();
+
+ // Shader that's shared by both our GameObjects. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
+ // which will receive the positions and UVs from the Geometry components. Also note the 'time'
+ // uniform, which we'll be animating via the ShaderParams components.
+
+ var shader = new XEO.Shader(scene, {
+
+       // Vertex shading stage
+       vertex: [
+           "attribute vec3 xeo_aPosition;",
+           "attribute vec2 xeo_aUV;",
+           "varying vec2 vUv;",
+           "void main () {",
+           "    gl_Position = vec4(xeo_aPosition, 1.0);",
+           "    vUv = xeo_aUV;",
+           "}"
+       ],
+
+       // Fragment shading stage
+       fragment: [
+           "precision mediump float;",
+
+           "uniform float time;",
+           "varying vec2 vUv;",
+
+           "void main( void ) {",
+           "    vec2 sp = vUv;",
+           "    vec2 p = sp*5.0 - vec2(10.0);",
+           "    vec2 i = p;",
+           "    float c = 1.0;",
+           "    float inten = 0.10;",
+           "    for (int n = 0; n < 10; n++) {",
+           "        float t = time * (1.0 - (3.0 / float(n+1)));",
+           "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
+           "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
+           "    }",
+           "    c /= float(10);",
+           "    c = 1.5-sqrt(c);",
+           "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
+           "}"
+       ],
+
+       // Initial values for the 'time' uniform in the fragment stage.
+       params: {
+           time: 0.0
+       }
+  });
+
+ // First Object using our Shader, with a quad covering the left half of the canvas,
+ // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
+
+ var quad1 = new XEO.Geometry(scene, {
+       primitive:"triangles",
+       positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
+       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+       indices:[ 0, 1, 2, 0, 2, 3 ]
+  });
+
+ var shaderParams1 = new XEO.ShaderParams(scene, {
+       params: {
+           time: 0.0
+       }
+  });
+
+ var object1 = new XEO.GameObject(scene, {
+       shader: shader,
+       geometry: quad1,
+       shaderParams1: shaderParams1
+  });
+
+ // Second Object using the Shader, with a quad covering the right half of the canvas,
+ // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
+
+ var quad2 = new XEO.Geometry(scene, {
+       primitive:"triangles",
+       positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
+       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+       indices:[ 0, 1, 2, 0, 2, 3 ]
+  });
+
+ var shaderParams2 = new XEO.ShaderParams(scene, {
+       params: {
+           time: 0.0
+       }
+  });
+
+ var object2 = new XEO.GameObject(scene, {
+       shader: shader,
+       geometry2: quad2,
+       shaderParams2: shaderParams2
+  });
+
+ ````
+ Now let's animate the "time" parameter on the Shader, for each Object independently:
+
+ ```` javascript
+ scene.on("tick", function(params) {
+
+            shaderParams1.setParams({
+                time: params.timeElapsed
+            });
+
+            shaderParams2.setParams({
+                time: params.timeElapsed  * 0.5
+            });
+        });
+ ````
+ @class ShaderParams
+ @module XEO
+ @submodule rendering
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ShaderParams in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
+ @param [cfg.params={}] {Object} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.ShaderParams = XEO.Component.extend({
+
+        type: "XEO.ShaderParams",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.ShaderParams({
+                params: {}
+            });
+
+            this.setParams(cfg.params);
+        },
+
+        _props: {
+
+            /**
+             * Params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             *
+             * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+             *
+             * @property params
+             * @default {}
+             * @type {}
+             */
+            params: {
+
+                get: function () {
+                    return this._state.params;
+                }
+            }
+        },
+
+        /**
+         * Sets one or more params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
+         * {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+         *
+         * These will individually override any params of the same names that are {{#crossLink "Shader/setParams:method"}}already specified{{/crossLink}} on
+         * those {{#crossLink "Shader"}}Shaders{{/crossLink}}.
+         *
+         * Fires a {{#crossLink "ShaderParams/params:event"}}{{/crossLink}} event on change.
+         *
+         * @method setParams
+         * @param {} [params={}] Values for params to set on the {{#crossLink "Shader"}}Shaders{{/crossLink}}, keyed to their names.
+         */
+        setParams: function (params) {
+
+            for (var name in params) {
+                if (params.hasOwnProperty(name)) {
+                    this._state.params[name] = params[name];
+                }
+            }
+
+            this._renderer.imageDirty = true;
+
+            /**
+             * Fired whenever this ShaderParams' {{#crossLink "ShaderParams/params:property"}}{{/crossLink}} property has been updated.
+             * @event params
+             * @param value The property's new value
+             */
+            this.fire("params", this._state.params);
+        },
+
+        _compile: function () {
+            this._renderer.shaderParams = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                params: this._state.params
+            };
+        }
+    });
+
+})();
+;/**
+ A **Stage** is a bin of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that is rendered in a specified priority with respect to
+ other Stages in the same {{#crossLink "Scene"}}{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+ <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
+ of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
+
+ <li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
+
+ <li>You can control the render order of the individual {{#crossLink "GameObject"}}GameObjects{{/crossLink}} ***within*** a Stage
+ by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
+
+ <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within Stages.</li>
+
+ <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
+ attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
+ a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
+
+ </ul>
+
+ <img src="../../../assets/images/Stage.png"></img>
+
+ ## Example
+
+ In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
+ {{#crossLink "Texture"}}Texture{{/crossLink}} components.
+
+ Note how we use two prioritized Stages, to ensure that the {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} is
+ rendered ***before*** the {{#crossLink "Texture"}}Texture{{/crossLink}} that consumes it.
+
+ ````javascript
+ var scene = new XEO.Scene();
+
+ // First stage: an Object that renders to a ColorTarget
+
+ var stage1 = new XEO.Stage(scene, {
+       priority: 0
+  });
+
+ var geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box
+
+ var colorTarget = new XEO.ColorTarget(scene);
+
+ var object1 = new XEO.GameObject(scene, {
+       stage: stage1,
+       geometry: geometry,
+       colorTarget: colorTarget
+  });
+
+
+ // Second stage: an Object with a Texture that sources from the ColorTarget
+
+ var stage2 = new XEO.Stage(scene, {
+       priority: 1
+  });
+
+ var texture = new XEO.Texture(scene, {
+       target: colorTarget
+  });
+
+ var material = new XEO.PhongMaterial(scene, {
+       textures: [
+           texture
+       ]
+  });
+
+ var geometry2 = new XEO.Geometry(scene);
+
+ var object2 = new XEO.GameObject(scene, {
+       stage: stage2,
+       material: material,
+       geometry: geometry2
+  });
+ ````
+
+ @class Stage
+ @module XEO
+ @submodule rendering
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stage in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
+ @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Stage = XEO.Component.extend({
+
+        type: "XEO.Stage",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.Stage({
+                priority: 0,
+                pickable: true
+            });
+
+            this.priority = cfg.priority;
+            this.pickable = cfg.pickable;
+        },
+
+        _props: {
+
+            priority: {
+
+                /**
+                 * Indicates the rendering priority for the
+                 * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in
+                 * this Stage.
+                 *
+                 * Fires a {{#crossLink "Stage/priority:event"}}{{/crossLink}}
+                 * event on change.
+                 *
+                 * @property priority
+                 * @default 0
+                 * @type Number
+                 */
+                set: function (value) {
+
+                    this._state.priority = value || 0;
+
+                    this._renderer.stateOrderDirty = true;
+
+                    /**
+                     * Fired whenever this Stage's
+                     * {{#crossLink "Stage/priority:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event priority
+                     * @param value The property's new value
+                     */
+                    this.fire("priority", this._state.priority);
+                },
+
+                get: function () {
+                    return this._state.priority;
+                }
+            },
+
+            /**
+             * Indicates whether the attached
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are
+             * pickable (see {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}).
+             *
+             * Fires a {{#crossLink "Stage/pickable:event"}}{{/crossLink}} event on change.
+             *
+             * @property pickable
+             * @default true
+             * @type Boolean
+             */
+            pickable: {
+
+                set: function (value) {
+
+                    this._state.pickable = value !== false;
+
+                    this._renderer.drawListDirty = true;
+
+                    /**
+                     * Fired whenever this Stage's
+                     * {{#crossLink "Stage/pickable:pickable"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event pickable
+                     * @param value The property's new value
+                     */
+                    this.fire("pickable", this._state.pickable);
+                },
+
+                get: function () {
+                    return this._state.pickable;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.stage = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                priority: this.priority,
+                pickable: this.pickable
             };
         },
 
@@ -19989,6 +21255,8 @@ var object3 = new XEO.GameObject(scene, {
         // Set the viewport to the extents of the drawing buffer
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+        gl.enable(gl.DEPTH_TEST);
 
         if (this.transparent) {
 
@@ -21342,7 +22610,7 @@ var object3 = new XEO.GameObject(scene, {
                     add("uniform float xeo_uLightIntensity" + i + ";");
 
                     if (light.type === "point") {
-                        add("uniform vec3 xeo_uLightConstantAttenuation" + i + ";");
+                        add("uniform vec3 xeo_uLightAttenuation" + i + ";");
                     }
 
                     add("varying vec4 xeo_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
@@ -21530,9 +22798,9 @@ var object3 = new XEO.GameObject(scene, {
                             add("lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
 
                             add("attenuation = 1.0 - (" +
-                                "  xeo_uLightConstantAttenuation" + i + "[0] + " +
-                                "  xeo_uLightConstantAttenuation" + i + "[1] * lightDist + " +
-                                "  xeo_uLightConstantAttenuation" + i + "[2] * lightDist * lightDist);");
+                                "  xeo_uLightAttenuation" + i + "[0] + " +
+                                "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
+                                "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
 
                             add("diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
 
@@ -23094,18 +24362,18 @@ var object3 = new XEO.GameObject(scene, {
             var gl = this.program.gl;
 
             var state = this.state;
-            var enabled = state.enabled;
+            var active = state.active;
 
-            if (frameCtx.depthbufEnabled !== enabled) {
+            if (frameCtx.depthbufEnabled !== active) {
 
-                if (enabled) {
+                if (!active) {
                     gl.enable(gl.DEPTH_TEST);
 
                 } else {
                     gl.disable(gl.DEPTH_TEST);
                 }
 
-                frameCtx.depthbufEnabled = enabled;
+                frameCtx.depthbufEnabled = active;
             }
 
             var clearDepth = state.clearDepth;
@@ -23157,6 +24425,8 @@ var object3 = new XEO.GameObject(scene, {
 
         drawAndPick: function (frameCtx) {
 
+            var state = this.state;
+
             var gl = this.program.gl;
 
             if (frameCtx.pick) {
@@ -23185,7 +24455,9 @@ var object3 = new XEO.GameObject(scene, {
                 }
             }
 
-            gl.drawElements(this.state.primitive, this.state.indices.numItems, this.state.indices.itemType, 0);
+            if (state.indices) {
+                gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+            }
         }
     });
 
@@ -23242,7 +24514,9 @@ var object3 = new XEO.GameObject(scene, {
                 //    this._aTangentDraw.bindFloatArrayBuffer(state2.tangentBuf || state2.getTangentBuf());
             }
 
-            state.indices.bind();
+            if (state.indices) {
+                state.indices.bind();
+            }
         },
 
         pick: function () {
@@ -23253,7 +24527,9 @@ var object3 = new XEO.GameObject(scene, {
                 this._aPositionPick.bindFloatArrayBuffer(state.positions);
             }
 
-            state.indices.bind();
+            if (state.indices) {
+                state.indices.bind();
+            }
         }
     });
 
@@ -23276,9 +24552,7 @@ var object3 = new XEO.GameObject(scene, {
             this._uLightDir = this._uLightDir || [];
             this._uLightPos = this._uLightPos || [];
 
-            this._uLightConstantAttenuation = this._uLightConstantAttenuation || [];
-            this._uLightLinearAttenuation = this._uLightLinearAttenuation || [];
-            this._uLightQuadraticAttenuation = this._uLightQuadraticAttenuation || [];
+            this._uLightAttenuation = this._uLightAttenuation || [];
 
             var lights = this.state.lights;
             var program = this.program;
@@ -23304,9 +24578,7 @@ var object3 = new XEO.GameObject(scene, {
                         this._uLightIntensity[i] = program.draw.getUniform("xeo_uLightIntensity" + i);
                         this._uLightPos[i] = program.draw.getUniform("xeo_uLightPos" + i);
                         this._uLightDir[i] = null;
-                        this._uLightConstantAttenuation[i] = program.draw.getUniform("xeo_uLightConstantAttenuation" + i);
-                        this._uLightLinearAttenuation[i] = program.draw.getUniform("xeo_uLightLinearAttenuation" + i);
-                        this._uLightQuadraticAttenuation[i] = program.draw.getUniform("xeo_uLightQuadraticAttenuation" + i);
+                        this._uLightAttenuation[i] = program.draw.getUniform("xeo_uLightAttenuation" + i);
                         break;
                 }
             }
@@ -23352,16 +24624,8 @@ var object3 = new XEO.GameObject(scene, {
 
                         // Attenuation
 
-                        if (this._uLightConstantAttenuation[i]) {
-                            this._uLightConstantAttenuation[i].setValue(light.constantAttenuation);
-                        }
-
-                        if (this._uLightLinearAttenuation[i]) {
-                            this._uLightLinearAttenuation[i].setValue(light.linearAttenuation);
-                        }
-
-                        if (this._uLightQuadraticAttenuation[i]) {
-                            this._uLightQuadraticAttenuation[i].setValue(light.quadraticAttenuation);
+                        if (this._uLightAttenuation[i]) {
+                            this._uLightAttenuation[i].setValue(light.attenuation);
                         }
                     }
 
@@ -24746,846 +26010,6 @@ myTask2.setFailed();
         }
     });
 
-
-})();
-;/**
- * Components to support render-to-texture (RTT) effects.
- *
- * @module XEO
- * @submodule rtt
- */;/**
- A **ColorTarget** captures the colors of the pixels that xeoEngine renders for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
- These provide a virtual, software-based <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a> that is typically used when performing *render-to-texture*.
-
- ## Overview
-
- <ul>
- <li>A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
- <li>ColorTarget is not to be confused with {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.</li>
- <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
- the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
- <li>For special effects, we often use ColorTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
- </ul>
-
- <img src="../../../assets/images/ColorTarget.png"></img>
-
- ## Example
-
- In this example we essentially have one {{#crossLink "GameObject"}}{{/crossLink}}
- that's rendered to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied to a second {{#crossLink "GameObject"}}{{/crossLink}}.
-
- The scene contains:
-
- <ul>
- <li>a ColorTarget,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} pixel color values to the ColorTarget,</li>
- <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the ColorTarget,</li>
- <li>a {{#crossLink "Material"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
- <li>a second {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
- </ul>
-
-
- ````javascript
- var scene = new XEO.Scene();
-
- var colorTarget = new XEO.ColorTarget(scene);
-
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
- // First Object renders to the ColorTarget
-
- var object1 = new XEO.GameObject(scene, {
-    geometry: geometry,
-    colorTarget: colorTarget
-});
-
- var texture = new XEO.Texture(scene, {
-    target: colorTarget
-});
-
- var material = new XEO.PhongMaterial(scene, {
-    textures: [
-        texture
-    ]
-});
-
- // Second Object is textured with the
- // image of the first Object
-
- var object2 = new XEO.GameObject(scene, {
-    geometry: geometry,  // Reuse our simple box geometry
-    material: material
-});
- ````
-
- @class ColorTarget
- @module XEO
- @submodule rtt
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this ColorTarget within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} ColorTarget configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.ColorTarget = XEO.Component.extend({
-
-        type: "XEO.ColorTarget",
-
-        _init: function () {
-
-          var canvas = this.scene.canvas;
-
-          this._state = new XEO.renderer.RenderTarget({
-
-              type: XEO.renderer.RenderTarget.COLOR,
-
-              renderBuf: new XEO.renderer.webgl.RenderBuffer({
-                  canvas: canvas.canvas,
-                  gl: canvas.gl
-              })
-          });
-
-          var self = this;
-
-          this._webglContextRestored = canvas.on("webglContextRestored",
-              function () {
-                  self._state.renderBuf.webglRestored(canvas.gl);
-              });
-        },
-
-        _compile: function () {
-            this._renderer.colorTarget = this._state;
-        },
-
-        _getJSON: function () {
-            return {};
-        },
-
-        _destroy: function () {
-
-            this.scene.canvas.off(this._webglContextRestored);
-
-            this._state.renderBuf.destroy();
-
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- A **DepthTarget** captures the Z-depths of the pixels that xeoEngine renders for the attached
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. These provide a virtual, software-based
- <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a> that is typically used when
- performing *render-to-texture* as part of some post-processing effect that requires the pixel depth values.
-
- ## Overview
-
- <ul>
- <li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
- <li>DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.</li>
- <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
- the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
- <li>For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "ColorTarget"}}ColorTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
- </ul>
-
- <img src="../../../assets/images/DepthTarget.png"></img>
-
- ## Example
-
- In the example below, we essentially have one {{#crossLink "GameObject"}}{{/crossLink}}
- that renders its pixel Z-depth values to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied
- to a second {{#crossLink "GameObject"}}{{/crossLink}}.
-
- The scene contains:
-
- <ul>
- <li>a DepthTarget,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} fragment depth values to the DepthTarget,</li>
- <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the DepthTarget,</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
- <li>a second {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
- </ul>
-
- The pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second
- {{#crossLink "GameObject"}}{{/crossLink}} as a {{#crossLink "Texture"}}{{/crossLink}}. In practice the {{#crossLink "Texture"}}{{/crossLink}}
- would carry the depth values into a custom {{#crossLink "Shader"}}{{/crossLink}}, which would then be applied to the second {{#crossLink "GameObject"}}{{/crossLink}}.
-
- ````javascript
- var scene = new XEO.Scene();
-
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box.
-
- var depthTarget = new XEO.DepthTarget(scene);
-
- // First Object renders its pixel depth values to our DepthTarget
- var object1 = new XEO.GameObject(scene, {
-    depthTarget: depthTarget
-});
-
- // Texture consumes our DepthTarget
- var texture = new XEO.Texture(scene, {
-    target: depthTarget
-});
-
- // Material contains our Texture
- var material = new XEO.PhongMaterial(scene, {
-    textures: [
-        texture
-    ]
-});
-
- // Second Object is effectively textured with the color-encoded
- // pixel depths of the first Object
- var object2 = new XEO.GameObject(scene, {
-    geometry: geometry,  // Reuse our simple box geometry
-    material: material
-});
- ````
- @class DepthTarget
- @module XEO
- @submodule rtt
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this DepthTarget within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} DepthTarget configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthTarget.
-
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.DepthTarget = XEO.Component.extend({
-
-        type: "XEO.DepthTarget",
-
-        _init: function () {
-
-            var canvas = this.scene.canvas;
-
-            this._state = new XEO.renderer.RenderTarget({
-
-                type: XEO.renderer.RenderTarget.DEPTH,
-
-                renderBuf: new XEO.renderer.webgl.RenderBuffer({
-                    canvas: canvas.canvas,
-                    gl: canvas.gl
-                })
-            });
-
-            var self = this;
-
-            this._webglContextRestored = canvas.on("webglContextRestored",
-                function () {
-                    self._state.renderBuf.webglRestored(canvas.gl);
-                });
-        },
-
-        _compile: function () {
-            this._renderer.depthTarget = this._state;
-        },
-
-        _getJSON: function () {
-            return {};
-        },
-
-        _destroy: function () {
-
-            this.scene.canvas.off(this._webglContextRestored);
-
-            this._state.renderBuf.destroy();
-
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- * Components for custom shading.
- *
- * @module XEO
- * @submodule shading
- */;/**
- A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
- ## Overview
-
- <ul>
- <li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
- <li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
- components on the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
- <li>Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
- the same Shaders among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms
- differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
- <li>Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
- and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>
- </ul>
-
- <img src="../../../assets/images/Shader.png"></img>
-
- ## Example
-
- This example shows the simplest way to use a Shader, where we're just going to render a ripply water
- pattern to a screen-aligned quad.
-
- <img src="../../assets/images/shaderExample1.png"></img>
-
- In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
- screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
- Finally, we animate the rippling by periodically updating the Shader's "time" uniform.
-
- ````javascript
-
- var scene = new XEO.Scene();
-
- // Shader that's used by our Object. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
- // which will receive the positions and UVs from the Geometry. Also note the 'time'
- // uniform, which we'll be animating via Shader#setParams.
-
- var shader = new XEO.Shader(scene, {
-
-       // Vertex shading stage
-       vertex: [
-           "attribute vec3 xeo_aPosition;",
-           "attribute vec2 xeo_aUV;",
-           "varying vec2 vUv;",
-           "void main () {",
-           "    gl_Position = vec4(xeo_aPosition, 1.0);",
-           "    vUv = xeo_aUV;",
-           "}"
-       ],
-
-       // Fragment shading stage
-       fragment: [
-           "precision mediump float;",
-
-           "uniform float time;",
-           "varying vec2 vUv;",
-
-           "void main( void ) {",
-           "    vec2 sp = vUv;",
-           "    vec2 p = sp*5.0 - vec2(10.0);",
-           "    vec2 i = p;",
-           "    float c = 1.0;",
-           "    float inten = 0.10;",
-           "    for (int n = 0; n < 10; n++) {",
-           "        float t = time * (1.0 - (3.0 / float(n+1)));",
-           "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
-           "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
-           "    }",
-           "    c /= float(10);",
-           "    c = 1.5-sqrt(c);",
-           "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
-           "}"
-       ],
-
-       // Initial value for the 'time' uniform in the fragment stage.
-       params: {
-           time: 0.0
-       }
-  });
-
- // A screen-aligned quad
- var quad = new XEO.Geometry(scene, {
-       primitive:"triangles",
-       positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
-       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-       indices:[ 0, 1, 2, 0, 2, 3 ]
-  });
-
- var object = new XEO.GameObject(scene, {
-       shader: shader,
-       geometry: quad
-  });
-
- ````
- Now let's animate the "time" parameter on the Shader, to make the water ripple:
-
- ```` javascript
- scene.on("tick", function(params) {
-            shader.setParams({
-                time: params.timeElapsed
-            });
-        });
- ````
-
- ## <a name="inputs">Shader Inputs</a>
-
- xeoEngine provides the following inputs for your shaders.
-
- #### Attributes
-
- *Attributes are used only in vertex shaders*
-
- | Attribute  | Description | Depends on  |
- |---|---|
- | attribute vec3 xeo_aPosition   | Geometry vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
- | attribute vec2 xeo_aUV         | Geometry vertex UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
- | attribute vec3 xeo_aNormal     | Geometry vertex normals | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
- | attribute vec4 xeo_aColor      | Geometry vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
- | attribute vec4 xeo_aTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
-
- #### Uniforms
-
- *Uniforms are used in vertex and fragment shaders*
-
- | Uniform  | Description | Depends on  |
- |---|---|
- | uniform mat4  xeo_uModelMatrix                                   | Modelling transform matrix | {{#crossLink "Transform"}}{{/crossLink}} |
- | uniform mat4  xeo_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Transform"}}{{/crossLink}} |
- | uniform mat4  xeo_uViewMatrix                                    | View transform matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
- | uniform mat4  xeo_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
- | uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
- | uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
- | uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
- |---|---|
- | uniform vec3  xeo_uLightAmbientColor                             | Color of the first {{#crossLink "AmbientLight"}}{{/crossLink}} in {{#crossLink "Lights"}}{{/crossLink}}| {{#crossLink "AmbientLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightColor&lt;***N***&gt;                    | Diffuse color of {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightIntensity&lt;***N***&gt;                   | Specular color of {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink "DirLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
- |---|---|
- | uniform vec3 xeo_uMaterialDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
- | uniform vec3 xeo_uMaterialSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
- | uniform vec3 xeo_uMaterialEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
- | uniform float xeo_uMaterialOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
- | uniform float xeo_uMaterialShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
- | uniform float xeo_uMaterialDiffuseFresnelBias;       |  | {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} |
-
- #### Varying
-
- *Varying types are used in fragment shaders*
-
- | Varying | Description | Depends on  |
- |---|---|
- | varying vec4 xeo_vWorldPosition | |
- | varying vec4 xeo_vViewPosition | |
- | varying vec4 xeo_vColor | |
-
- #### Samplers
-
- *Samplers are used in fragment shaders*
-
- | Varying | Description | Depends on  |
- |---|---|
-
-
-
- @class Shader
- @module XEO
- @submodule shading
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Shader in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
- @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
- @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
- @param [cfg.params={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Shader = XEO.Component.extend({
-
-        type: "XEO.Shader",
-
-        _init: function (cfg) {
-
-            this._state = new XEO.renderer.Shader({
-                vertex: null,
-                fragment: null,
-                params: {}
-            });
-
-            this.vertex = cfg.vertex;
-
-            this.fragment = cfg.fragment;
-
-            this.setParams(cfg.params);
-        },
-
-        _props: {
-
-            /**
-             * GLSL source code for this Shader's vertex stage.
-             *
-             * Fires a {{#crossLink "Shader/vertex:event"}}{{/crossLink}} event on change.
-             *
-             * @property vertex
-             * @default null
-             * @type String
-             */
-            vertex: {
-
-                set: function (value) {
-
-                    this._state.vertex = value;
-
-                    // Trigger recompile
-                    this.fire("dirty", true);
-
-                    /**
-                     * Fired whenever this Shader's {{#crossLink "Shader/vertex:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event vertex
-                     * @param value The property's new value
-                     */
-                    this.fire("vertex", this._state.vertex);
-                },
-
-                get: function () {
-                    return this._state.vertex;
-                }
-            },
-
-            /**
-             * GLSL source code for this Shader's fragment stage.
-             *
-             * Fires a {{#crossLink "Shader/fragment:event"}}{{/crossLink}} event on change.
-             *
-             * @property fragment
-             * @default null
-             * @type String
-             */
-            fragment: {
-
-                set: function (value) {
-
-                    this._state.fragment = value;
-
-                    // Trigger recompile
-                    this.fire("dirty", true);
-
-                    /**
-                     * Fired whenever this Shader's {{#crossLink "Shader/fragment:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event fragment
-                     * @param value The property's new value
-                     */
-                    this.fire("fragment", this._state.fragment);
-                },
-
-                get: function () {
-                    return this._state.fragment;
-                }
-            },
-
-            /**
-             * Params for this Shader.
-             *
-             * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
-             *
-             * @property params
-             * @default {}
-             * @type {}
-             */
-            params: {
-
-                get: function () {
-                    return this._state.params;
-                }
-            }
-        },
-
-        /**
-         * Sets one or more params for this Shader.
-         *
-         * These will be individually overridden by any {{#crossLink "ShaderParams/setParams:method"}}params subsequently specified{{/crossLink}} on
-         * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-         *
-         * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
-         *
-         * @method setParams
-         * @param {} [params={}] Values for params to set on this Shader, keyed to their names.
-         */
-        setParams: function (params) {
-
-            for (var name in params) {
-                if (params.hasOwnProperty(name)) {
-                    this._state.params[name] = params[name];
-                }
-            }
-
-            this._renderer.imageDirty = true;
-
-            /**
-             * Fired whenever this Shader's  {{#crossLink "Shader/params:property"}}{{/crossLink}}
-             * property has been updated.
-             *
-             * @event params
-             * @param value The property's new value
-             */
-            this.fire("params", this._state.params);
-        },
-
-        _compile: function () {
-            this._renderer.shader = this._state;
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                params: this._state.params
-            };
-
-            if (this._state.vertex) {
-                json.vertex = this._state.vertex;
-            }
-
-            if (this._state.fragment) {
-                json.fragment = this._state.fragment;
-            }
-
-            return json;
-        }
-    });
-
-})();
-;/**
- A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
- ## Overview
-
- <ul>
- <li>Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
- while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
- </ul>
-
- <img src="../../../assets/images/ShaderParams.png"></img>
-
- ## Example
-
- This example shows the simplest way to use a {{#crossLink "Shader"}}Shader{{/crossLink}}, where we're just going to render a ripply water
- pattern to a screen-aligned quad. As with all our examples, we're just creating the
- essential components while falling back on the <a href="XEO.Scene.html#defaults" class="crosslink">Scene's default components</a>
- for everything else.
-
- <img src="../../assets/images/shaderParamsExample1.png"></img>
-
- In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
- screen-aligned quad, plus a {{#crossLink "Shader"}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
- Finally, we animate the rippling by periodically updating the {{#crossLink "Shader"}}Shader{{/crossLink}}'s "time" uniform.
-
- ````javascript
- var scene = new XEO.Scene();
-
- // Shader that's shared by both our GameObjects. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
- // which will receive the positions and UVs from the Geometry components. Also note the 'time'
- // uniform, which we'll be animating via the ShaderParams components.
-
- var shader = new XEO.Shader(scene, {
-
-       // Vertex shading stage
-       vertex: [
-           "attribute vec3 xeo_aPosition;",
-           "attribute vec2 xeo_aUV;",
-           "varying vec2 vUv;",
-           "void main () {",
-           "    gl_Position = vec4(xeo_aPosition, 1.0);",
-           "    vUv = xeo_aUV;",
-           "}"
-       ],
-
-       // Fragment shading stage
-       fragment: [
-           "precision mediump float;",
-
-           "uniform float time;",
-           "varying vec2 vUv;",
-
-           "void main( void ) {",
-           "    vec2 sp = vUv;",
-           "    vec2 p = sp*5.0 - vec2(10.0);",
-           "    vec2 i = p;",
-           "    float c = 1.0;",
-           "    float inten = 0.10;",
-           "    for (int n = 0; n < 10; n++) {",
-           "        float t = time * (1.0 - (3.0 / float(n+1)));",
-           "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
-           "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
-           "    }",
-           "    c /= float(10);",
-           "    c = 1.5-sqrt(c);",
-           "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
-           "}"
-       ],
-
-       // Initial values for the 'time' uniform in the fragment stage.
-       params: {
-           time: 0.0
-       }
-  });
-
- // First Object using our Shader, with a quad covering the left half of the canvas,
- // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
-
- var quad1 = new XEO.Geometry(scene, {
-       primitive:"triangles",
-       positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-       indices:[ 0, 1, 2, 0, 2, 3 ]
-  });
-
- var shaderParams1 = new XEO.ShaderParams(scene, {
-       params: {
-           time: 0.0
-       }
-  });
-
- var object1 = new XEO.GameObject(scene, {
-       shader: shader,
-       geometry: quad1,
-       shaderParams1: shaderParams1
-  });
-
- // Second Object using the Shader, with a quad covering the right half of the canvas,
- // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
-
- var quad2 = new XEO.Geometry(scene, {
-       primitive:"triangles",
-       positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-       indices:[ 0, 1, 2, 0, 2, 3 ]
-  });
-
- var shaderParams2 = new XEO.ShaderParams(scene, {
-       params: {
-           time: 0.0
-       }
-  });
-
- var object2 = new XEO.GameObject(scene, {
-       shader: shader,
-       geometry2: quad2,
-       shaderParams2: shaderParams2
-  });
-
- ````
- Now let's animate the "time" parameter on the Shader, for each Object independently:
-
- ```` javascript
- scene.on("tick", function(params) {
-
-            shaderParams1.setParams({
-                time: params.timeElapsed
-            });
-
-            shaderParams2.setParams({
-                time: params.timeElapsed  * 0.5
-            });
-        });
- ````
- @class ShaderParams
- @module XEO
- @submodule shading
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ShaderParams in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
- @param [cfg.params={}] {Object} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.ShaderParams = XEO.Component.extend({
-
-        type: "XEO.ShaderParams",
-
-        _init: function (cfg) {
-
-            this._state = new XEO.renderer.ShaderParams({
-                params: {}
-            });
-
-            this.setParams(cfg.params);
-        },
-
-        _props: {
-
-            /**
-             * Params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-             *
-             * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
-             *
-             * @property params
-             * @default {}
-             * @type {}
-             */
-            params: {
-
-                get: function () {
-                    return this._state.params;
-                }
-            }
-        },
-
-        /**
-         * Sets one or more params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
-         * {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-         *
-         * These will individually override any params of the same names that are {{#crossLink "Shader/setParams:method"}}already specified{{/crossLink}} on
-         * those {{#crossLink "Shader"}}Shaders{{/crossLink}}.
-         *
-         * Fires a {{#crossLink "ShaderParams/params:event"}}{{/crossLink}} event on change.
-         *
-         * @method setParams
-         * @param {} [params={}] Values for params to set on the {{#crossLink "Shader"}}Shaders{{/crossLink}}, keyed to their names.
-         */
-        setParams: function (params) {
-
-            for (var name in params) {
-                if (params.hasOwnProperty(name)) {
-                    this._state.params[name] = params[name];
-                }
-            }
-
-            this._renderer.imageDirty = true;
-
-            /**
-             * Fired whenever this ShaderParams' {{#crossLink "ShaderParams/params:property"}}{{/crossLink}} property has been updated.
-             * @event params
-             * @param value The property's new value
-             */
-            this.fire("params", this._state.params);
-        },
-
-        _compile: function () {
-            this._renderer.shaderParams = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                params: this._state.params
-            };
-        }
-    });
 
 })();
 ;/**

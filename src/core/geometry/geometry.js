@@ -285,7 +285,7 @@
             this._tangents = null;
             this._indices = null;
 
-            this._dirty = true;
+            this._dirty = false;
             this._positionsDirty = true;
             this._colorsDirty = true;
             this._normalsDirty = true;
@@ -383,9 +383,12 @@
         },
 
         _scheduleBuild: function () {
+
             if (!this._dirty) {
+
                 this._dirty = true;
                 var self = this;
+
                 this.scene.once("tick",
                     function () {
                         self._build();
@@ -521,7 +524,6 @@
                     }
 
                     this._primitive = value;
-                    this._dirty = true;
 
                     this.fire("dirty", true);
 
@@ -554,16 +556,15 @@
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._positions !== !value);
-
                     this._positions = value;
-                    this._positionsDirty = value;
-                    this._dirty = true;
+                    this._positionsDirty = true;
 
                     this._scheduleBuild();
 
                     this._setModelBoundaryDirty();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._positions !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -587,6 +588,8 @@
                      * @param value The property's new value
                      */
                     this.fire("boundary", true);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -607,14 +610,13 @@
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._normals !== !value);
-
                     this._normals = value;
-                    this._normalsDirty = value;
-                    this._dirty = true;
+                    this._normalsDirty = true;
 
                     this._scheduleBuild();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._normals !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -626,6 +628,8 @@
                      * @param value The property's new value
                      */
                     this.fire(" normals", this._normals);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -646,14 +650,13 @@
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._uv !== !value);
-
                     this._uv = value;
-                    this._uvDirty = value;
-                    this._dirty = true;
+                    this._uvDirty = true;
 
                     this._scheduleBuild();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._uv !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -665,6 +668,8 @@
                      * @param value The property's new value
                      */
                     this.fire("uv", this._uv);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -685,14 +690,13 @@
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colors != !value);
-
                     this._colors = value;
-                    this._colorsDirty = value;
-                    this._dirty = true;
+                    this._colorsDirty = true;
 
                     this._scheduleBuild();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._colors != !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -704,6 +708,8 @@
                      * @param value The property's new value
                      */
                     this.fire("colors", this._colors);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -724,14 +730,14 @@
 
                 set: function (value) {
 
+                    this._indices = value;
+                    this._indicesDirty = true;
+
+                    this._scheduleBuild();
+
                     // Only recompile when adding or removing this property, not when modifying
                     var dirty = (!this._indices && !value);
 
-                    this._indices = value;
-                    this._indicesDirty = value;
-                    this._dirty = true;
-
-                    this._scheduleBuild();
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -743,6 +749,8 @@
                      * @param value The property's new value
                      */
                     this.fire("indices", this._indices);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
