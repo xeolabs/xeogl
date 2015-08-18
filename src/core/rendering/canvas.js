@@ -262,8 +262,8 @@
             var div = document.createElement('div');
 
             var style = div.style;
-            style.height = "100%";
-            style.width = "100%";
+            style.height = "600px";
+            style.width = "600px";
             style.padding = "0";
             style.margin = "0";
             style.background = "black";

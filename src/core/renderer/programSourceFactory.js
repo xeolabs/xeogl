@@ -882,7 +882,8 @@
                     }
 
                     add("fragColor = vec4(diffuse * diffuseLight, opacity);");
-                    //add("fragColor = vec4((specularLight + diffuse * (diffuseLight + ambient)) + emissive, opacity);");
+                //    add("fragColor = vec4((specularLight + diffuse * (diffuseLight + ambient)) + emissive, opacity);");
+
 
                 } else { // No normals
                     add("fragColor = vec4((diffuse.rgb + (emissive * color.rgb)) * (vec3(1.0, 1.0, 1.0) + ambient.rgb), opacity);");

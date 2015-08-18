@@ -281,6 +281,20 @@
 
     /**
 
+     Texture state.
+
+     @class renderer.Texture
+     @module XEO
+     @submodule renderer
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Texture = XEO.renderer.State.extend({});
+
+
+    /**
+
      Geometry state.
 
      @class renderer.Geometry

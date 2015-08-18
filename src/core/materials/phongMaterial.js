@@ -772,7 +772,7 @@
                 }
             }
 
-            if (component && component.type !== "texture" && component.type !== "fresnel") {
+            if (component && component.type !== "XEO.Texture" && component.type !== "XEO.Fresnel") {
                 this.error("Component " + XEO._inQuotes(id) + " is not a XEO.Texture or XEO.Fresnel");
                 return;
             }

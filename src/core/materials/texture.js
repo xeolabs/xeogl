@@ -407,7 +407,7 @@
              */
             src: {
 
-                set  function (value) {
+                set: function(value) {
 
                     this._image = null;
                     this._src = value;
@@ -428,7 +428,7 @@
                     this.fire("src", this._src);
                 },
 
-                get  function () {
+                get: function() {
                     return this._src;
                 }
             },
@@ -451,7 +451,7 @@
              */
             target: {
 
-                set  function (value) {
+                set: function (value) {
 
                     this._image = null;
                     this._src = null;
@@ -472,7 +472,7 @@
                     this.fire("target", this._target);
                 },
 
-                get  function () {
+                get: function () {
                     return this._target; // Created by this._setChild()
                 }
             },
@@ -488,7 +488,7 @@
              */
             translate: {
 
-                set  function (value) {
+                set: function (value) {
 
                     value = value || [0, 0];
 
@@ -841,7 +841,7 @@
                 json.target = this._target.id;
 
             } else if (this._image) {
-               // TODO: Image data
+                // TODO: Image data
                 // json.src = image.src;
             }
 
