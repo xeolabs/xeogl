@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-08-17
+ * Built on 2015-08-18
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -2003,7 +2003,7 @@
             geometry: {
                 get: function () {
                     return this.components["default.geometry"] ||
-                        new XEO.Torus(this, {
+                        new XEO.Geometry(this, {
                             id: "default.geometry"
                         });
                 }
@@ -12930,7 +12930,7 @@ TODO
                 }
             }
 
-            if (component && component.type !== "texture" && component.type !== "fresnel") {
+            if (component && component.type !== "XEO.Texture" && component.type !== "XEO.Fresnel") {
                 this.error("Component " + XEO._inQuotes(id) + " is not a XEO.Texture or XEO.Fresnel");
                 return;
             }
@@ -14274,7 +14274,7 @@ TODO
              */
             src: {
 
-                set  function (value) {
+                set: function(value) {
 
                     this._image = null;
                     this._src = value;
@@ -14295,7 +14295,7 @@ TODO
                     this.fire("src", this._src);
                 },
 
-                get  function () {
+                get: function() {
                     return this._src;
                 }
             },
@@ -14318,7 +14318,7 @@ TODO
              */
             target: {
 
-                set  function (value) {
+                set: function (value) {
 
                     this._image = null;
                     this._src = null;
@@ -14339,7 +14339,7 @@ TODO
                     this.fire("target", this._target);
                 },
 
-                get  function () {
+                get: function () {
                     return this._target; // Created by this._setChild()
                 }
             },
@@ -14355,7 +14355,7 @@ TODO
              */
             translate: {
 
-                set  function (value) {
+                set: function (value) {
 
                     value = value || [0, 0];
 
@@ -14708,7 +14708,7 @@ TODO
                 json.target = this._target.id;
 
             } else if (this._image) {
-               // TODO: Image data
+                // TODO: Image data
                 // json.src = image.src;
             }
 
@@ -18100,6 +18100,9 @@ XEO.math.buildTangents = function (positions, indices, uv) {
             var canvasId = "XEO-canvas-" + XEO.math.createUUID();
             var body = document.getElementsByTagName("body")[0];
             var div = document.createElement('div');
+
+            div.style.width = window.innerWidth + "px";
+            div.style.height = window.innerHeight + "px";
 
             var style = div.style;
             style.height = "100%";
@@ -21591,6 +21594,20 @@ var object3 = new XEO.GameObject(scene, {
 
     /**
 
+     Texture state.
+
+     @class renderer.Texture
+     @module XEO
+     @submodule renderer
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Texture = XEO.renderer.State.extend({});
+
+
+    /**
+
      Geometry state.
 
      @class renderer.Geometry
@@ -22788,7 +22805,8 @@ var object3 = new XEO.GameObject(scene, {
                     }
 
                     add("fragColor = vec4(diffuse * diffuseLight, opacity);");
-                    //add("fragColor = vec4((specularLight + diffuse * (diffuseLight + ambient)) + emissive, opacity);");
+                //    add("fragColor = vec4((specularLight + diffuse * (diffuseLight + ambient)) + emissive, opacity);");
+
 
                 } else { // No normals
                     add("fragColor = vec4((diffuse.rgb + (emissive * color.rgb)) * (vec3(1.0, 1.0, 1.0) + ambient.rgb), opacity);");
