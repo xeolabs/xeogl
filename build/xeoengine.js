@@ -18101,12 +18101,9 @@ XEO.math.buildTangents = function (positions, indices, uv) {
             var body = document.getElementsByTagName("body")[0];
             var div = document.createElement('div');
 
-            div.style.width = window.innerWidth + "px";
-            div.style.height = window.innerHeight + "px";
-
             var style = div.style;
-            style.height = "100%";
-            style.width = "100%";
+            style.height = window.innerHeight + "px";
+            style.width = window.innerWidth + "px";
             style.padding = "0";
             style.margin = "0";
             style.background = "black";
