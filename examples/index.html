@@ -7,6 +7,9 @@
     <!--Examples viewer adapted from the one over at THREE.js -->
     <!-- threejs.com -->
 
+    <link href="../assets/css/prettify.css" rel="stylesheet"/>
+    <script src="../assets/js/prettify.js"></script>
+
     <style>
 
         @font-face {
@@ -185,7 +188,7 @@
 </div>
 
 <div id="source">
-  <pre id="source-field">  
+  <pre id="source-field" class="prettyprint lang-javascript">
   </pre>
 </div>
 <iframe id="viewer"></iframe>
@@ -393,7 +396,7 @@
             if (this.readyState!==4) return;
             if (this.status!==200) return;
             
-            source = this.responseText;
+            var source = this.responseText;
             var lines = source.split('\n');
             var start = 0, end = lines.length;
             for(var i = 0; i< lines.length; i++){
@@ -409,11 +412,14 @@
       
             var  srcField = document.getElementById('source-field');
             srcField.innerHTML = source;
+
+            prettyPrint();
         };
         xhr.send();
         
         //window.open('view-source:' + htmlfile);
-    }
+    };
+
     var load = function (file) {
         if (selected !== null) divs[selected].className = 'link';
         divs[file].className = 'link selected';
@@ -428,9 +434,6 @@
     if (window.location.hash !== '') {
         load(window.location.hash.substring(1));
     }
-    
-    
-
 
 </script>
 

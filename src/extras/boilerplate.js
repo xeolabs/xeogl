@@ -40,7 +40,7 @@ var MyComponent = XEO.Component.extend({
 
     // The JavaScript class we'll instantiate whenever we load this component from JSON
 
-    className: "MyComponent",
+    type: "MyComponent",
 
     // Constructor
 

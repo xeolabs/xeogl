@@ -8,7 +8,7 @@
  */
 XEO.Geometry.Quad = XEO.Geometry.extend({
 
-    className: "XEO.Geometry.Quad",
+    type: "XEO.Geometry.Quad",
 
     // Constructor
 

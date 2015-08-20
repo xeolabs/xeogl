@@ -7,7 +7,7 @@
  */
 XEO.Geometry.Box = XEO.Geometry.extend({
 
-    className: "XEO.Geometry.Box",
+    type: "XEO.Geometry.Box",
 
     // Constructor
 

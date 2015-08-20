@@ -71,11 +71,11 @@
         _props: {
 
             /**
-             * The {{#crossLink "Collection"}}Collection{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GameObject.
              *
-             * Defaults to an empty internally-managed {{#crossLink "Collection"}}{{/crossLink}}. 
+             * Defaults to an empty internally-managed {{#crossLink "Group"}}{{/crossLink}}.
              *
-             * Fires a {{#crossLink "GameObject/group:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "GroupBoundary/group:event"}}{{/crossLink}} event on change.
              *
              * @property group
              * @type Group

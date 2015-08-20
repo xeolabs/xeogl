@@ -7,7 +7,7 @@
  */
 XEO.Shader.Water = XEO.Geometry.extend({
 
-    className: "XEO.Shader.Water",
+    type: "XEO.Shader.Water",
 
     // Constructor
 
@@ -18,12 +18,12 @@ XEO.Shader.Water = XEO.Geometry.extend({
 
             // Vertex shading stage
             vertex: [
-                "attribute vec3 XEO_aPosition;",
-                "attribute vec2 XEO_aUV;",
+                "attribute vec3 xeo_aPosition;",
+                "attribute vec2 xeo_aUV;",
                 "varying vec2 vUv;",
                 "void main () {",
-                "    gl_Position = vec4(XEO_aPosition, 1.0);",
-                "    vUv = XEO_aUV;",
+                "    gl_Position = vec4(xeo_aPosition, 1.0);",
+                "    vUv = xeo_aUV;",
                 "}"
             ],
 

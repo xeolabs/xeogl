@@ -1,6 +1,6 @@
 XEO.Clips.Show = XEO.Component.extend({
 
-    className: "XEO.Clips.Show",
+    type: "XEO.Clips.Show",
 
     type: "clips.show",
 

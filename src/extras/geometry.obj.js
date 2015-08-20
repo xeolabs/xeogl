@@ -18,7 +18,7 @@
  */
 XEO.Geometry.OBJ = XEO.Geometry.extend({
 
-    className: "XEO.Geometry.OBJ",
+    type: "XEO.Geometry.OBJ",
 
     // Constructor
 
