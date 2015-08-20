@@ -29,6 +29,7 @@ It's currently at **alpha** status, where in order to get the design right, the 
  
  ````
  npm install grunt --save-dev
+ npm install grunt-cli --save-dev
  ````
  
  Install Grunt task plugins:
@@ -40,11 +41,13 @@ It's currently at **alpha** status, where in order to get the design right, the 
  npm install grunt-contrib-qunit --save-dev
  npm install grunt-contrib-clean --save-dev
  npm install grunt-contrib-yuidoc --save-dev
+ npm install grunt-contrib-copy --save-dev
+
 
  ````
 
 Build all:
 
 ````
-grunt all
+grunt
 ````
