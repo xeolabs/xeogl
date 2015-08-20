@@ -122,7 +122,40 @@
             padding-top: 0px;
             padding-bottom: 0px;
         }
-
+  
+        #source{
+          position:fixed;
+          top: 10px;
+          left: 320px;          
+          padding: 10px;
+          margin: 0;        
+          height: -webkit-calc(100% - 120px); /* Safari */
+          height: calc(100% - 120px);
+          width: -webkit-calc(100% - 350px); /* Safari */
+          width: calc(100% - 350px);
+          
+          z-index: 900;
+          overflow-y: scroll;
+                    
+          background: white;
+          border-radius: 2px;
+          border: 1px solid #aaa;
+        }
+        #closeButton{
+          position: fixed;
+          right: 30px;
+          top: 20px;
+          padding: 8px;
+          color: #fff;
+          background-color: #02550b;
+          opacity: 0.7;
+        }
+        #closeButton:hover {
+            cursor: pointer;
+            opacity: 1;
+        }
+        #source-field{
+        }
     </style>
 </head>
 <body>
@@ -149,6 +182,11 @@
 
         <p>v0.1.0</p>
     </div>
+</div>
+
+<div id="source">
+  <pre id="source-field">  
+  </pre>
 </div>
 <iframe id="viewer"></iframe>
 
@@ -248,15 +286,27 @@
 
     var container = document.createElement('div');
     list.appendChild(container);
-
+    
+    var closeButton = document.createElement('div');
+      closeButton.id = 'closeButton';
+      closeButton.textContent = 'Close';
+      closeButton.addEventListener('click', function (event) {
+      document.getElementById('source').style.display = 'none'
+    }, false);
+    
+    var  sourceWindow = document.getElementById('source');
+    sourceWindow.appendChild(closeButton);
+    sourceWindow.style.display = 'none';
+    
     var sourceButton = document.createElement('div');
     sourceButton.id = 'sourceButton';
     sourceButton.textContent = 'Source code';
+    
     sourceButton.addEventListener('click', function (event) {
-        var array = location.href.split('/');
-        array.pop();
-        window.open('view-source:' + array.join('/') + '/' + selected + '.html');
+      updateSource();
+      document.getElementById('source').style.display = '';
     }, false);
+    
     sourceButton.style.display = 'none';
     document.body.appendChild(sourceButton);
 
@@ -330,7 +380,40 @@
             return " " + $1.toLowerCase();
         });
     }
-
+    var updateSource = function ( change){
+        var array = location.href.split('/');
+        
+        array.pop();
+        var htmlfile = array.join('/') + '/' + selected + '.html';
+        var srcReg = /<script[^<]*<\/script>/mg;
+        
+        var xhr= new XMLHttpRequest();
+        xhr.open('GET', htmlfile, true);
+        xhr.onreadystatechange= function() {
+            if (this.readyState!==4) return;
+            if (this.status!==200) return;
+            
+            source = this.responseText;
+            var lines = source.split('\n');
+            var start = 0, end = lines.length;
+            for(var i = 0; i< lines.length; i++){
+              if(lines[i].trim() == '<script>' ){
+                start = i;
+              }
+              if(lines[i].trim() == '<\/script>' ){
+                end = i;
+              }
+            }
+            
+            source = lines.splice(start+1, end-1).join('\n');
+      
+            var  srcField = document.getElementById('source-field');
+            srcField.innerHTML = source;
+        };
+        xhr.send();
+        
+        //window.open('view-source:' + htmlfile);
+    }
     var load = function (file) {
         if (selected !== null) divs[selected].className = 'link';
         divs[file].className = 'link selected';
@@ -339,11 +422,14 @@
         viewer.focus();
         sourceButton.style.display = '';
         selected = file;
+        updateSource();
     };
 
     if (window.location.hash !== '') {
         load(window.location.hash.substring(1));
     }
+    
+    
 
 
 </script>

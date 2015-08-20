@@ -1,14 +1,5 @@
-html {
-    height: 100%;
-    overflow: hidden;
-}
-
 body {
-    padding: 0;
-    margin: 0;
-    display: block !important;
-    height: 100%;
-    min-height: 740px;
+    padding: 10px;
     font-family: Arial;
     background-color: #fff;
     color: #444;
@@ -17,14 +8,13 @@ body {
     text-align: left;
     letter-spacing: 0;
     font-size: 0.9em;
-
     -webkit-font-smoothing: antialiased;
-
-    overflow: hidden;
+		overflow: auto;
+    overflow-x: hidden;
 }
 
 .xeolabsLogo {
-    background-image: url("./images/a-xeolabs-project.png");
+    background-image: url("images/a-xeolabs-project.png");
     position: absolute;
     left: 0;
     top: 0;
@@ -68,15 +58,16 @@ body {
 
 
 #infoDark {
-    position: absolute;
-    top: 0px;
-    padding: 5px;
-    padding-top:20px;
-    z-index: 1000;
-    font-size:16px;
-    text-align:center;
-    color: black;
-    width:100%;
+/*position: absolute; */
+  top: 0px;
+  /* padding: 5px; */
+  padding: 20px;
+  z-index: 1000;
+  font-size: 16px;
+  /* text-align: right; */
+  color: black;
+  width: 100%;
+  float: left;
 
 }
 
@@ -94,7 +85,7 @@ body {
     z-index: 100;
     font-size:20px;
     text-align:center;
-    color: yellow;
+    color: #333;
 }
 
 
