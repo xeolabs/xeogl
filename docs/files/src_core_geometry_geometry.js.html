@@ -41,8 +41,6 @@
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
-                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -57,13 +55,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -71,10 +63,6 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
-                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -87,6 +75,9 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/Sound.html">Sound</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
@@ -101,11 +92,11 @@
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -440,7 +431,7 @@
             this._tangents = null;
             this._indices = null;
 
-            this._dirty = true;
+            this._dirty = false;
             this._positionsDirty = true;
             this._colorsDirty = true;
             this._normalsDirty = true;
@@ -459,9 +450,9 @@
 
             if (defaultGeometry) {
 
-                this.primitive = &quot;triangles&quot;;
-
                 // Call property setters
+
+                this.primitive = cfg.primitive;
 
                 this.positions = [
                     -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, // Front face
@@ -515,15 +506,33 @@
 
             } else {
 
-                // Custom geometry
+                var defaultLineStripGeometry = ((!cfg.primitive || cfg.primitive === &quot;line-strip&quot;) &amp;&amp; cfg.positions &amp;&amp; !cfg.indices);
 
-                this.primitive = cfg.primitive;
-                this.positions = cfg.positions;
-                this.colors = cfg.colors;
-                this.normals = cfg.normals;
-                this.uv = cfg.uv;
-                this.tangents = cfg.tangents;
-                this.indices = cfg.indices;
+                if (defaultLineStripGeometry) {
+
+                    // Line strip when only positions are given and no primitive
+
+                    var indices = [];
+                    for (var i = 0, len = cfg.positions.length / 3; i &lt; len; i++) {
+                        indices.push(i);
+                    }
+
+                    this.primitive = &quot;line-strip&quot;;
+                    this.positions = cfg.positions;
+                    this.indices = indices;
+
+                } else {
+
+                    // Custom geometry
+
+                    this.primitive = cfg.primitive;
+                    this.positions = cfg.positions;
+                    this.colors = cfg.colors;
+                    this.normals = cfg.normals;
+                    this.uv = cfg.uv;
+                    this.tangents = cfg.tangents;
+                    this.indices = cfg.indices;
+                }
             }
 
             var self = this;
@@ -538,10 +547,13 @@
         },
 
         _scheduleBuild: function () {
+
             if (!this._dirty) {
+
                 this._dirty = true;
                 var self = this;
-                this.scene.once(&quot;tick&quot;,
+
+                this.scene.once(&quot;tick2&quot;,
                     function () {
                         self._build();
                     });
@@ -676,7 +688,6 @@
                     }
 
                     this._primitive = value;
-                    this._dirty = true;
 
                     this.fire(&quot;dirty&quot;, true);
 
@@ -699,6 +710,9 @@
             /**
              * The Geometry&#x27;s positions array.
              *
+             * This property is a one-dimensional array - use  {{#crossLink &quot;XEO.math/flatten:method&quot;}}{{/crossLink}} to
+             * convert two-dimensional arrays for assignment to this property.
+             *
              * Fires a {{#crossLink &quot;Geometry/positions:event&quot;}}{{/crossLink}} event on change.
              *
              * @property positions
@@ -709,16 +723,15 @@
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._positions !== !value);
-
                     this._positions = value;
-                    this._positionsDirty = value;
-                    this._dirty = true;
+                    this._positionsDirty = true;
 
                     this._scheduleBuild();
 
                     this._setModelBoundaryDirty();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._positions !== !value);
 
                     if (dirty) {
                         this.fire(&quot;dirty&quot;, true);
@@ -742,6 +755,8 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;boundary&quot;, true);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -762,14 +777,13 @@
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._normals !== !value);
-
                     this._normals = value;
-                    this._normalsDirty = value;
-                    this._dirty = true;
+                    this._normalsDirty = true;
 
                     this._scheduleBuild();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._normals !== !value);
 
                     if (dirty) {
                         this.fire(&quot;dirty&quot;, true);
@@ -781,6 +795,8 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot; normals&quot;, this._normals);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -801,14 +817,13 @@
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._uv !== !value);
-
                     this._uv = value;
-                    this._uvDirty = value;
-                    this._dirty = true;
+                    this._uvDirty = true;
 
                     this._scheduleBuild();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._uv !== !value);
 
                     if (dirty) {
                         this.fire(&quot;dirty&quot;, true);
@@ -820,6 +835,8 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;uv&quot;, this._uv);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -840,14 +857,13 @@
 
                 set: function (value) {
 
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colors != !value);
-
                     this._colors = value;
-                    this._colorsDirty = value;
-                    this._dirty = true;
+                    this._colorsDirty = true;
 
                     this._scheduleBuild();
+
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._colors != !value);
 
                     if (dirty) {
                         this.fire(&quot;dirty&quot;, true);
@@ -859,6 +875,8 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;colors&quot;, this._colors);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {
@@ -879,14 +897,14 @@
 
                 set: function (value) {
 
+                    this._indices = value;
+                    this._indicesDirty = true;
+
+                    this._scheduleBuild();
+
                     // Only recompile when adding or removing this property, not when modifying
                     var dirty = (!this._indices &amp;&amp; !value);
 
-                    this._indices = value;
-                    this._indicesDirty = value;
-                    this._dirty = true;
-
-                    this._scheduleBuild();
 
                     if (dirty) {
                         this.fire(&quot;dirty&quot;, true);
@@ -898,6 +916,8 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;indices&quot;, this._indices);
+
+                    this._renderer.imageDirty = true;
                 },
 
                 get: function () {

@@ -41,8 +41,6 @@
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
-                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -57,13 +55,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -71,10 +63,6 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
-                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -87,6 +75,9 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/Sound.html">Sound</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
@@ -101,11 +92,11 @@
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -499,10 +490,6 @@ pointLight.off(handle); // Detach the change listener
                                 <a href="#property_intensity">intensity</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_Items in this map">Items in this map</a>
-
-                            </li>
                             <li class="index-item property">
                                 <a href="#property_linearAttenuation">linearAttenuation</a>
 
@@ -593,7 +580,7 @@ pointLight.off(handle); // Detach the change listener
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l683"><code>src&#x2F;core&#x2F;component.js:683</code></a>
+        <a href="../files/src_core_component.js.html#l699"><code>src&#x2F;core&#x2F;component.js:699</code></a>
         </p>
 
 
@@ -633,7 +620,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l463"><code>src&#x2F;core&#x2F;component.js:463</code></a>
+        <a href="../files/src_core_component.js.html#l474"><code>src&#x2F;core&#x2F;component.js:474</code></a>
         </p>
 
 
@@ -696,7 +683,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l334"><code>src&#x2F;core&#x2F;component.js:334</code></a>
+        <a href="../files/src_core_component.js.html#l345"><code>src&#x2F;core&#x2F;component.js:345</code></a>
         </p>
 
 
@@ -775,7 +762,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l440"><code>src&#x2F;core&#x2F;component.js:440</code></a>
+        <a href="../files/src_core_component.js.html#l451"><code>src&#x2F;core&#x2F;component.js:451</code></a>
         </p>
 
 
@@ -832,7 +819,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l397"><code>src&#x2F;core&#x2F;component.js:397</code></a>
+        <a href="../files/src_core_component.js.html#l408"><code>src&#x2F;core&#x2F;component.js:408</code></a>
         </p>
 
 
@@ -896,7 +883,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l367"><code>src&#x2F;core&#x2F;component.js:367</code></a>
+        <a href="../files/src_core_component.js.html#l378"><code>src&#x2F;core&#x2F;component.js:378</code></a>
         </p>
 
 
@@ -989,7 +976,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l419"><code>src&#x2F;core&#x2F;component.js:419</code></a>
+        <a href="../files/src_core_component.js.html#l430"><code>src&#x2F;core&#x2F;component.js:430</code></a>
         </p>
 
 
@@ -1068,7 +1055,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l481"><code>src&#x2F;core&#x2F;component.js:481</code></a>
+        <a href="../files/src_core_component.js.html#l492"><code>src&#x2F;core&#x2F;component.js:492</code></a>
         </p>
 
 
@@ -1120,7 +1107,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l171"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:171</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l172"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:172</code></a>
                             </p>
                     
                     
@@ -1147,7 +1134,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l233"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:233</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l234"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:234</code></a>
                             </p>
                     
                     
@@ -1225,7 +1212,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l201"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:201</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l202"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:202</code></a>
                             </p>
                     
                     
@@ -1241,30 +1228,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_Items in this map" class="property item inherited">
-                        <h3 class="name"><code>Items in this map</code></h3>
-                        <span class="type">Unknown</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_Items in this map">Component</a>:
-                            <a href="../files/src_core_utils_map.js.html#l13"><code>src&#x2F;core&#x2F;utils&#x2F;map.js:13</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_linearAttenuation" class="property item">
                         <h3 class="name"><code>linearAttenuation</code></h3>
                         <span class="type">Number</span>
@@ -1276,7 +1239,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l264"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:264</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l265"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:265</code></a>
                             </p>
                     
                     
@@ -1328,7 +1291,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l139"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:139</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l140"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:140</code></a>
                             </p>
                     
                     
@@ -1356,7 +1319,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l295"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:295</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l296"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:296</code></a>
                             </p>
                     
                     
@@ -1409,7 +1372,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l326"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:326</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l327"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:327</code></a>
                             </p>
                     
                     
@@ -1477,7 +1440,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l188"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:188</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l189"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:189</code></a>
                             </p>
                     
                     
@@ -1519,7 +1482,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l250"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:250</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l251"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:251</code></a>
                             </p>
                     
                     
@@ -1561,7 +1524,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l715"><code>src&#x2F;core&#x2F;component.js:715</code></a>
+                            <a href="../files/src_core_component.js.html#l731"><code>src&#x2F;core&#x2F;component.js:731</code></a>
                             </p>
                     
                     
@@ -1586,7 +1549,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l220"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:220</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l221"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:221</code></a>
                             </p>
                     
                     
@@ -1628,7 +1591,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l281"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:281</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l282"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:282</code></a>
                             </p>
                     
                     
@@ -1670,7 +1633,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l158"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:158</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l159"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:159</code></a>
                             </p>
                     
                     
@@ -1712,7 +1675,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l312"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:312</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l313"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:313</code></a>
                             </p>
                     
                     
@@ -1754,7 +1717,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_lighting_pointLight.js.html#l350"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:350</code></a>
+                            <a href="../files/src_core_lighting_pointLight.js.html#l351"><code>src&#x2F;core&#x2F;lighting&#x2F;pointLight.js:351</code></a>
                             </p>
                     
                     

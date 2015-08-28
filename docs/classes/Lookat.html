@@ -41,8 +41,6 @@
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
-                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -57,13 +55,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -71,10 +63,6 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
-                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -87,6 +75,9 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/Sound.html">Sound</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
@@ -101,11 +92,11 @@
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -179,8 +170,6 @@ vector.</p>
 
 <p><img src="../../../assets/images/Lookat.png"></img></p>
 <h2 id="example">Example</h2>
-<iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
-
 <p>In this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.
 Then we attach our Lookat to a <a href="../classes/Camera.html" class="crosslink">Camera</a>. which we attach to a <a href="../classes/GameObject.html" class="crosslink">GameObject</a>.</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
@@ -416,10 +405,6 @@ scene.on("tick", function () {
                                 <a href="#property_id">id</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_Items in this map">Items in this map</a>
-
-                            </li>
                             <li class="index-item property">
                                 <a href="#property_look">look</a>
 
@@ -494,7 +479,7 @@ scene.on("tick", function () {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l683"><code>src&#x2F;core&#x2F;component.js:683</code></a>
+        <a href="../files/src_core_component.js.html#l699"><code>src&#x2F;core&#x2F;component.js:699</code></a>
         </p>
 
 
@@ -534,7 +519,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l463"><code>src&#x2F;core&#x2F;component.js:463</code></a>
+        <a href="../files/src_core_component.js.html#l474"><code>src&#x2F;core&#x2F;component.js:474</code></a>
         </p>
 
 
@@ -597,7 +582,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l334"><code>src&#x2F;core&#x2F;component.js:334</code></a>
+        <a href="../files/src_core_component.js.html#l345"><code>src&#x2F;core&#x2F;component.js:345</code></a>
         </p>
 
 
@@ -676,7 +661,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l440"><code>src&#x2F;core&#x2F;component.js:440</code></a>
+        <a href="../files/src_core_component.js.html#l451"><code>src&#x2F;core&#x2F;component.js:451</code></a>
         </p>
 
 
@@ -733,7 +718,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l397"><code>src&#x2F;core&#x2F;component.js:397</code></a>
+        <a href="../files/src_core_component.js.html#l408"><code>src&#x2F;core&#x2F;component.js:408</code></a>
         </p>
 
 
@@ -797,7 +782,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l367"><code>src&#x2F;core&#x2F;component.js:367</code></a>
+        <a href="../files/src_core_component.js.html#l378"><code>src&#x2F;core&#x2F;component.js:378</code></a>
         </p>
 
 
@@ -890,7 +875,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l419"><code>src&#x2F;core&#x2F;component.js:419</code></a>
+        <a href="../files/src_core_component.js.html#l430"><code>src&#x2F;core&#x2F;component.js:430</code></a>
         </p>
 
 
@@ -969,7 +954,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l481"><code>src&#x2F;core&#x2F;component.js:481</code></a>
+        <a href="../files/src_core_component.js.html#l492"><code>src&#x2F;core&#x2F;component.js:492</code></a>
         </p>
 
 
@@ -1088,30 +1073,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_Items in this map" class="property item inherited">
-                        <h3 class="name"><code>Items in this map</code></h3>
-                        <span class="type">Unknown</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_Items in this map">Component</a>:
-                            <a href="../files/src_core_utils_map.js.html#l13"><code>src&#x2F;core&#x2F;utils&#x2F;map.js:13</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_look" class="property item">
                         <h3 class="name"><code>look</code></h3>
                         <span class="type">Array(Number)</span>
@@ -1123,7 +1084,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_camera_lookat.js.html#l328"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:328</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l326"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:326</code></a>
                             </p>
                     
                     
@@ -1150,7 +1111,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_camera_lookat.js.html#l404"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:404</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l398"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:398</code></a>
                             </p>
                     
                     
@@ -1256,7 +1217,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_camera_lookat.js.html#l367"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:367</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l363"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:363</code></a>
                             </p>
                     
                     
@@ -1289,7 +1250,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l715"><code>src&#x2F;core&#x2F;component.js:715</code></a>
+                            <a href="../files/src_core_component.js.html#l731"><code>src&#x2F;core&#x2F;component.js:731</code></a>
                             </p>
                     
                     
@@ -1314,7 +1275,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_camera_lookat.js.html#l314"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:314</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l312"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:312</code></a>
                             </p>
                     
                     
@@ -1356,7 +1317,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_camera_lookat.js.html#l353"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:353</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l349"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:349</code></a>
                             </p>
                     
                     
@@ -1440,7 +1401,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_camera_lookat.js.html#l390"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:390</code></a>
+                            <a href="../files/src_core_camera_lookat.js.html#l384"><code>src&#x2F;core&#x2F;camera&#x2F;lookat.js:384</code></a>
                             </p>
                     
                     

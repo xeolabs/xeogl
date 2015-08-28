@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>CameraControl - xeoengine</title>
+    <title>ShowBoundary - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,8 +41,6 @@
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
-                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -57,13 +55,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -71,10 +63,6 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
-                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -87,6 +75,9 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/Sound.html">Sound</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
@@ -101,11 +92,11 @@
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -149,76 +140,36 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>CameraControl Class</h1>
+<h1>ShowBoundary Class</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+            Extends <a href="../classes/Geometry.html" class="crosslink">Geometry</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_input_cameraControl.js.html#l1"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:1</code></a>
+            Defined in: <a href="../files/src_core_spatial_showBoundary.js.html#l1"><code>src&#x2F;core&#x2F;spatial&#x2F;showBoundary.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/input.html">input</a><br>
+            Module: <a href="../modules/geometry.html">geometry</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>CameraControl</strong> pans, rotates and zooms a <a href="../classes/Camera.html" class="crosslink">Camera</a> using the mouse and keyboard,
-as well as switches it between preset left, right, anterior, posterior, superior and inferior views.</p>
-<p>A CameraControl is comprised of the following control components, which each handle an aspect of interaction:</p>
-<ul>
-<li>panning - <a href="../classes/KeyboardPanCamera.html" class="crosslink">KeyboardPanCamera</a> and <a href="../classes/MousePanCamera.html" class="crosslink">MousePanCamera</a></li>
-<li>rotation - <a href="../classes/KeyboardOrbitCamera.html" class="crosslink">KeyboardOrbitCamera</a> and <a href="../classes/MouseOrbitCamera.html" class="crosslink">MouseOrbitCamera</a></li>
-<li>zooming - <a href="../classes/KeyboardZoomCamera.html" class="crosslink">KeyboardZoomCamera</a> and <a href="../classes/MouseZoomCamera.html" class="crosslink">MouseZoomCamera</a></li>
-<li>switching preset views - <a href="../classes/KeyboardAxisCamera.html" class="crosslink">KeyboardAxisCamera</a></li>
-<li>picking - <a href="../classes/MousePickObject.html" class="crosslink">MousePickObject</a></li>
-<li>camera flight animation - <a href="../classes/CameraFlight.html" class="crosslink">CameraFlight</a></li>
-</ul>
-
-<p>A CameraControl provides the controls as read-only properties, in case you need to configure or deactivate
-them individually.</p>
-<ul>
-<li>Activating or deactivating the CameraControl will activate/deactivate all the controls in unison.</li>
-<li>Attaching a different <a href="../classes/Camera.html" class="crosslink">Camera</a> to the CameraControl will also attach that
-<a href="../classes/Camera.html" class="crosslink">Camera</a> to all the controls.</li>
-<li>The controls are not intended to be attached to a different <a href="../classes/Camera.html" class="crosslink">Camera</a> than the owner CameraControl.</li>
-<li>The CameraControl manages the lifecycles of the controls, destroying them when the CameraControl is destroyed.</li>
-</ul>
-
+    <p>A <strong>ShowBoundary</strong> defines toroid geometry for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <h2 id="example">Example</h2>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
+<pre class="code prettyprint"><code class="lang-javascript">
 
-var camera = new XEO.Camera(scene);
-
-var cameraControl = new XEO.CameraControl(scene, {
-
-       camera: camera,
-
-       // "First person" mode rotates look about eye.
-       // By default however, we orbit eye about look.
-       firstPerson: false
-   });
-
-// Reduce the sensitivity of mouse rotation
-cameraControl.mouseOrbit.sensitivity = 0.7;
-
-// Deactivate switching between preset views
-cameraControl.axisCamera.active = false;
-
-// Create a GameObject
-var object = new XEO.GameObject(scene);
 </code></pre>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_CameraControl" class="method item">
-            <h3 class="name"><code>CameraControl</code></h3>
+        <div id="method_ShowBoundary" class="method item">
+            <h3 class="name"><code>ShowBoundary</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -227,9 +178,6 @@ var object = new XEO.GameObject(scene);
                         </li>
                         <li class="arg">
                                 <code class="optional">[cfg]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[firstPerson=false]</code>
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
@@ -244,7 +192,7 @@ var object = new XEO.GameObject(scene);
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_input_cameraControl.js.html#l1"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:1</code></a>
+                <a href="../files/src_core_spatial_showBoundary.js.html#l1"><code>src&#x2F;core&#x2F;spatial&#x2F;showBoundary.js:1</code></a>
                 </p>
         
         
@@ -266,7 +214,8 @@ var object = new XEO.GameObject(scene);
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this ShowBoundary in the default
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -289,7 +238,8 @@ var object = new XEO.GameObject(scene);
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent scene, generated automatically when omitted.</p>
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
+        generated automatically when omitted.</p>
         
                                         </div>
         
@@ -300,48 +250,62 @@ var object = new XEO.GameObject(scene);
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this CameraControl.</p>
+                                            <p>Optional map of user-defined metadata to attach to this ShowBoundary.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[camera]</code>
-                                            <span class="type">String | <a href="../classes/Camera.html" class="crosslink">Camera</a></span>
+                                            <code class="param-name optional">[radius=1]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Camera.html" class="crosslink">Camera</a> to control.
-        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this CameraControl. Defaults to the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a>.</p>
-        
+                                            
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[active=true]</code>
-                                            <span class="type">Boolean</span>
+                                            <code class="param-name optional">[tube=0.3]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Whether or not this CameraControl is active.</p>
+                                            
+                                        </div>
         
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[segmentsR=32]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[segmentsT=24]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[arc=Math.PI / 2.0]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
                                         </div>
         
                                     </li>
                                 </ul>
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[firstPerson=false]</code>
-                                <span class="type">Boolean</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>Whether or not this CameraControl is in &quot;first person&quot; mode.</p>
-        
-                            </div>
-        
                         </li>
                     </ul>
                 </div>
@@ -408,27 +372,15 @@ var object = new XEO.GameObject(scene);
 
                     <ul class="index-list properties extends">
                             <li class="index-item property">
-                                <a href="#property_active">active</a>
+                                <a href="#property_Boundary3D">Boundary3D</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_camera">camera</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_cameraFly">cameraFly</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_colors">colors</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_exclusive">exclusive</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_firstPerson">firstPerson</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -436,43 +388,27 @@ var object = new XEO.GameObject(scene);
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_Items in this map">Items in this map</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_keyboardAxis">keyboardAxis</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_keyboardOrbit">keyboardOrbit</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_keyboardPan">keyboardPan</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_keyboardZoom">keyboardZoom</a>
+                                <a href="#property_indices">indices</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_mouseOrbit">mouseOrbit</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_modelBoundary">modelBoundary</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_mousePan">mousePan</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_normals">normals</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_mousePickObject">mousePickObject</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_positions">positions</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_mouseZoom">mouseZoom</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_primitive">primitive</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -481,6 +417,10 @@ var object = new XEO.GameObject(scene);
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_uv">uv</a>
 
                             </li>
                     </ul>
@@ -492,19 +432,35 @@ var object = new XEO.GameObject(scene);
 
                     <ul class="index-list events extends">
                             <li class="index-item event">
-                                <a href="#event_active">active</a>
+                                <a href="#event_boundary">boundary</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_camera">camera</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_colors">colors</a>
 
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_firstPerson">firstPerson</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_indices">indices</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_normals">normals</a>
+
+                            </li>
+                            <li class="index-item event inherited inherited">
+                                <a href="#event_positions">positions</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_primitive">primitive</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_uv">uv</a>
 
                             </li>
                     </ul>
@@ -529,7 +485,7 @@ var object = new XEO.GameObject(scene);
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l683"><code>src&#x2F;core&#x2F;component.js:683</code></a>
+        <a href="../files/src_core_component.js.html#l699"><code>src&#x2F;core&#x2F;component.js:699</code></a>
         </p>
 
 
@@ -569,7 +525,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l463"><code>src&#x2F;core&#x2F;component.js:463</code></a>
+        <a href="../files/src_core_component.js.html#l474"><code>src&#x2F;core&#x2F;component.js:474</code></a>
         </p>
 
 
@@ -632,7 +588,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l334"><code>src&#x2F;core&#x2F;component.js:334</code></a>
+        <a href="../files/src_core_component.js.html#l345"><code>src&#x2F;core&#x2F;component.js:345</code></a>
         </p>
 
 
@@ -711,7 +667,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l440"><code>src&#x2F;core&#x2F;component.js:440</code></a>
+        <a href="../files/src_core_component.js.html#l451"><code>src&#x2F;core&#x2F;component.js:451</code></a>
         </p>
 
 
@@ -768,7 +724,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l397"><code>src&#x2F;core&#x2F;component.js:397</code></a>
+        <a href="../files/src_core_component.js.html#l408"><code>src&#x2F;core&#x2F;component.js:408</code></a>
         </p>
 
 
@@ -832,7 +788,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l367"><code>src&#x2F;core&#x2F;component.js:367</code></a>
+        <a href="../files/src_core_component.js.html#l378"><code>src&#x2F;core&#x2F;component.js:378</code></a>
         </p>
 
 
@@ -925,7 +881,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l419"><code>src&#x2F;core&#x2F;component.js:419</code></a>
+        <a href="../files/src_core_component.js.html#l430"><code>src&#x2F;core&#x2F;component.js:430</code></a>
         </p>
 
 
@@ -1004,7 +960,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l481"><code>src&#x2F;core&#x2F;component.js:481</code></a>
+        <a href="../files/src_core_component.js.html#l492"><code>src&#x2F;core&#x2F;component.js:492</code></a>
         </p>
 
 
@@ -1045,9 +1001,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_active" class="property item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type">Boolean</span>
+                    <div id="property_Boundary3D" class="property item">
+                        <h3 class="name"><code>Boundary3D</code></h3>
+                        <span class="type"><a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
                     
                     
                     
@@ -1056,72 +1012,45 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l314"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:314</code></a>
+                            <a href="../files/src_core_spatial_showBoundary.js.html#l48"><code>src&#x2F;core&#x2F;spatial&#x2F;showBoundary.js:48</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Flag which indicates whether this CameraControl is active or not.</p>
-                    <p>Fires an <a href="../classes/CameraControl.html#event_active" class="crosslink">active</a> event on change.</p>
+                            <p>The <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> we are showing.</p>
+                    <p>Fires a <a href="../classes/ShowBoundary.html#event_boundary" class="crosslink">boundary</a> event on change.</p>
                     
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_camera" class="property item">
-                        <h3 class="name"><code>camera</code></h3>
-                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
+                    <div id="property_colors" class="property item inherited">
+                        <h3 class="name"><code>colors</code></h3>
+                        <span class="type">Array of Number</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l272"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:272</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_colors">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l701"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:701</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Camera.html" class="crosslink">Camera</a> being controlled by this CameraControl.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this CameraControl. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> when set to
-                    a null or undefined value.</p>
+                            <p>The Geometry&#39;s vertex colors array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_colors" class="crosslink">colors</a> event on change.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_cameraFly" class="property item">
-                        <h3 class="name"><code>cameraFly</code></h3>
-                        <span class="type"><a href="../classes/CameraFlight.html" class="crosslink">CameraFlight</a></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l195"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:195</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/CameraFlight.html" class="crosslink">CameraFlight</a> within this CameraControl.</p>
-                    
-                        </div>
-                    
+                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
@@ -1147,63 +1076,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_exclusive" class="property item">
-                        <h3 class="name"><code>exclusive</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l83"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:83</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Indicates that only one instance of a CameraControl may be active within
-                    its <a href="../classes/Scene.html" class="crosslink">Scene</a> at a time. When a CameraControl is activated, that has
-                    a true value for this flag, then any other active CameraControl will be deactivated first.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_firstPerson" class="property item">
-                        <h3 class="name"><code>firstPerson</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l236"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:236</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Flag which indicates whether this CameraControl is in "first person" mode.</p>
-                    <p>In "first person" mode (disabled by default) the look position rotates about the eye position. Otherwise,
-                    the eye rotates about the look.</p>
-                    <p>Fires a <a href="../classes/KeyboardOrbitCamera.html#event_firstPerson" class="crosslink">firstPerson</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
                     
                     
                     </div>
@@ -1233,9 +1105,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_Items in this map" class="property item inherited">
-                        <h3 class="name"><code>Items in this map</code></h3>
-                        <span class="type">Unknown</span>
+                    <div id="property_indices" class="property item inherited">
+                        <h3 class="name"><code>indices</code></h3>
+                        <span class="type">Array of Number</span>
                     
                     
                     
@@ -1243,121 +1115,20 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Component.html#property_Items in this map">Component</a>:
-                            <a href="../files/src_core_utils_map.js.html#l13"><code>src&#x2F;core&#x2F;utils&#x2F;map.js:13</code></a>
+                                    <a href="../classes/Geometry.html#property_indices">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l741"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:741</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_keyboardAxis" class="property item">
-                        <h3 class="name"><code>keyboardAxis</code></h3>
-                        <span class="type"><a href="../classes/KeyboardAxisCamera.html" class="crosslink">KeyboardAxisCamera</a></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l100"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:100</code></a>
-                            </p>
-                    
+                            <p>The Geometry&#39;s indices array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_indices" class="crosslink">indices</a> event on change.</p>
                     
                         </div>
                     
-                        <div class="description">
-                            <p>The <a href="../classes/KeyboardAxisCamera.html" class="crosslink">KeyboardAxisCamera</a> within this CameraControl.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_keyboardOrbit" class="property item">
-                        <h3 class="name"><code>keyboardOrbit</code></h3>
-                        <span class="type"><a href="../classes/KeyboardOrbitCamera.html" class="crosslink">KeyboardOrbitCamera</a></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l111"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:111</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/KeyboardOrbitCamera.html" class="crosslink">KeyboardOrbitCamera</a> within this CameraControl.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_keyboardPan" class="property item">
-                        <h3 class="name"><code>keyboardPan</code></h3>
-                        <span class="type"><a href="../classes/KeyboardPanCamera.html" class="crosslink">KeyboardPanCamera</a></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l135"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:135</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/KeyboardPanCamera.html" class="crosslink">KeyboardPanCamera</a> within this CameraControl.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_keyboardZoom" class="property item">
-                        <h3 class="name"><code>keyboardZoom</code></h3>
-                        <span class="type"><a href="../classes/KeyboardZoomCamera.html" class="crosslink">KeyboardZoomCamera</a></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l159"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:159</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/KeyboardZoomCamera.html" class="crosslink">KeyboardZoomCamera</a> within this CameraControl.</p>
-                    
-                        </div>
-                    
+                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
@@ -1386,9 +1157,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_mouseOrbit" class="property item">
-                        <h3 class="name"><code>mouseOrbit</code></h3>
-                        <span class="type"><a href="../classes/MouseOrbitCamera.html" class="crosslink">MouseOrbitCamera</a></span>
+                    <div id="property_modelBoundary" class="property item inherited">
+                        <h3 class="name"><code>modelBoundary</code></h3>
+                        <span class="type"><a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
                     
                     
                     
@@ -1396,97 +1167,106 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l123"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:123</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_modelBoundary">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l782"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:782</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/MouseOrbitCamera.html" class="crosslink">MouseOrbitCamera</a> within this CameraControl.</p>
+                            <p>Model-space 3D boundary.</p>
+                    <p>If you call <a href="../classes/Component.html#method_destroy" class="crosslink">destroy</a> on this boundary, then
+                    this property will be assigned to a fresh <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> instance next
+                    time you reference it.</p>
                     
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_mousePan" class="property item">
-                        <h3 class="name"><code>mousePan</code></h3>
-                        <span class="type"><a href="../classes/MousePanCamera.html" class="crosslink">MousePanCamera</a></span>
+                    <div id="property_normals" class="property item inherited">
+                        <h3 class="name"><code>normals</code></h3>
+                        <span class="type">Array of Number</span>
                     
                     
                     
-                            <span class="flag final">final</span>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l147"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:147</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_normals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l621"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:621</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/MousePanCamera.html" class="crosslink">MousePanCamera</a> within this CameraControl.</p>
+                            <p>The Geometry&#39;s normal vectors array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_normals" class="crosslink">normals</a> event on change.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
-                    <div id="property_mousePickObject" class="property item">
-                        <h3 class="name"><code>mousePickObject</code></h3>
-                        <span class="type"><a href="../classes/MousePickObject.html" class="crosslink">MousePickObject</a></span>
+                    <div id="property_positions" class="property item inherited">
+                        <h3 class="name"><code>positions</code></h3>
+                        <span class="type">Array of Number</span>
                     
                     
                     
-                            <span class="flag final">final</span>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l183"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:183</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_positions">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l564"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:564</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/MousePickObject.html" class="crosslink">MousePickObject</a> within this CameraControl.</p>
+                            <p>The Geometry&#39;s positions array.</p>
+                    <p>This property is a one-dimensional array - use  XEO.math/flatten:method to
+                    convert two-dimensional arrays for assignment to this property.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_positions" class="crosslink">positions</a> event on change.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
-                    <div id="property_mouseZoom" class="property item">
-                        <h3 class="name"><code>mouseZoom</code></h3>
-                        <span class="type"><a href="../classes/MouseZoomCamera.html" class="crosslink">MouseZoomCamera</a></span>
+                    <div id="property_primitive" class="property item inherited">
+                        <h3 class="name"><code>primitive</code></h3>
+                        <span class="type">String</span>
                     
                     
                     
-                            <span class="flag final">final</span>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l171"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:171</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_primitive">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l512"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:512</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/MouseZoomCamera.html" class="crosslink">MouseZoomCamera</a> within this CameraControl.</p>
+                            <p>The Geometry&#39;s primitive type.</p>
+                    <p>Valid types are: &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_primitive" class="crosslink">primitive</a> event on change.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> &quot;triangles&quot;</p>
                     
                     
                     </div>
@@ -1516,7 +1296,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_type" class="property item">
+                    <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
                     
@@ -1526,12 +1306,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_type">
-                                    Component
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_core_input_cameraControl.js.html#l74"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:74</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_type">Component</a>:
+                            <a href="../files/src_core_component.js.html#l312"><code>src&#x2F;core&#x2F;component.js:312</code></a>
                             </p>
                     
                     
@@ -1539,9 +1316,39 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>JavaScript class name for this Component.</p>
+                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
+                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
+                    <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_uv" class="property item inherited">
+                        <h3 class="name"><code>uv</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_uv">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l661"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:661</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s UV coordinate array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_uv" class="crosslink">uv</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
@@ -1551,8 +1358,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_active" class="events item">
-                        <h3 class="name"><code>active</code></h3>
+                    <div id="event_boundary" class="events item">
+                        <h3 class="name"><code>boundary</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1562,14 +1369,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l344"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:344</code></a>
+                            <a href="../files/src_core_spatial_showBoundary.js.html#l71"><code>src&#x2F;core&#x2F;spatial&#x2F;showBoundary.js:71</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this CameraControl&#39;s <a href="../classes/CameraControl.html#property_active" class="crosslink">active</a> property changes.</p>
+                            <p>Fired whenever this ShowBoundary&#39;s  ShowBoundary/boundary:property property changes.</p>
                     
                         </div>
                     
@@ -1593,8 +1400,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_camera" class="events item">
-                        <h3 class="name"><code>camera</code></h3>
+                    <div id="event_colors" class="events item inherited">
+                        <h3 class="name"><code>colors</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1602,17 +1409,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l286"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:286</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_colors">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l726"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:726</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this CameraControl&#39;s <a href="../classes/CameraControl.html#property_camera" class="crosslink">camera</a>
-                    property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_colors" class="crosslink">colors</a> property changes.</p>
                     
                         </div>
                     
@@ -1647,7 +1453,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l715"><code>src&#x2F;core&#x2F;component.js:715</code></a>
+                            <a href="../files/src_core_component.js.html#l731"><code>src&#x2F;core&#x2F;component.js:731</code></a>
                             </p>
                     
                     
@@ -1661,8 +1467,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_firstPerson" class="events item">
-                        <h3 class="name"><code>firstPerson</code></h3>
+                    <div id="event_indices" class="events item inherited">
+                        <h3 class="name"><code>indices</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1670,16 +1476,187 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_input_cameraControl.js.html#l259"><code>src&#x2F;core&#x2F;input&#x2F;cameraControl.js:259</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_indices">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l767"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:767</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this CameraControl&#39;s <a href="../classes/CameraControl.html#property_firstPerson" class="crosslink">firstPerson</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_normals" class="events item inherited">
+                        <h3 class="name"><code>normals</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_normals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l646"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:646</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s Geometry/ normals:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_positions" class="events item inherited">
+                        <h3 class="name"><code>positions</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Geometry.html#event_positions">
+                                    Geometry
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_core_geometry_geometry.js.html#l594"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:594</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_primitive" class="events item inherited">
+                        <h3 class="name"><code>primitive</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_primitive">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l548"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:548</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_primitive" class="crosslink">primitive</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_uv" class="events item inherited">
+                        <h3 class="name"><code>uv</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_uv">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l686"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:686</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a> property changes.</p>
                     
                         </div>
                     

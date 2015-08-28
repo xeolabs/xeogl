@@ -4,8 +4,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "AmbientLight",
         "Boundary3D",
         "Camera",
-        "CameraControl",
-        "CameraFlight",
         "Canvas",
         "Clip",
         "Clips",
@@ -20,23 +18,13 @@ YUI.add("yuidoc-meta", function(Y) {
         "Frustum",
         "GameObject",
         "Geometry",
-        "Group",
-        "GroupBoundary",
         "Input",
-        "KeyboardAxisCamera",
-        "KeyboardOrbitCamera",
-        "KeyboardPanCamera",
-        "KeyboardZoomCamera",
         "Layer",
         "Lights",
         "Lookat",
         "Material",
         "Modes",
         "MorphTargets",
-        "MouseOrbitCamera",
-        "MousePanCamera",
-        "MousePickObject",
-        "MouseZoomCamera",
         "Ortho",
         "PBRMaterial",
         "Perspective",
@@ -49,6 +37,9 @@ YUI.add("yuidoc-meta", function(Y) {
         "Scene",
         "Shader",
         "ShaderParams",
+        "ShowBoundary",
+        "Sound",
+        "SplineCurveHelper",
         "Stage",
         "Stats",
         "Task",
@@ -64,11 +55,11 @@ YUI.add("yuidoc-meta", function(Y) {
         "XEO",
         "animation",
         "camera",
+        "canvas",
         "clipping",
         "configuration",
         "culling",
         "geometry",
-        "grouping",
         "input",
         "lighting",
         "materials",
@@ -91,6 +82,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Camera components."
         },
         {
+            "displayName": "canvas",
+            "name": "canvas",
+            "description": "Canvas-related things."
+        },
+        {
             "displayName": "clipping",
             "name": "clipping",
             "description": "Components for cross-section views of GameObjects."
@@ -109,11 +105,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "geometry",
             "name": "geometry",
             "description": "Components for defining geometry."
-        },
-        {
-            "displayName": "grouping",
-            "name": "grouping",
-            "description": "Components for managing groups of components."
         },
         {
             "displayName": "input",
@@ -138,7 +129,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "objects",
             "name": "objects",
-            "description": "Game object components."
+            "description": "Shows the shape and control points of {{#crossLink \"SplineCurve\"}}{{/crossLink}}"
         },
         {
             "displayName": "rendering",

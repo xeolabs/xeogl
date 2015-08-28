@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>CameraFlight - xeoengine</title>
+    <title>Sound - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,8 +41,6 @@
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
-                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -57,13 +55,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -71,10 +63,6 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
-                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -87,6 +75,9 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/Sound.html">Sound</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
@@ -101,11 +92,11 @@
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -149,7 +140,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>CameraFlight Class</h1>
+<h1>Sound Class</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -157,48 +148,100 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_animation_cameraFlight.js.html#l1"><code>src&#x2F;core&#x2F;animation&#x2F;cameraFlight.js:1</code></a>
+            Defined in: <a href="../files/src_core_sound_sound.js.html#l1"><code>src&#x2F;core&#x2F;sound&#x2F;sound.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/animation.html">animation</a><br>
+            Module: <a href="../modules/lighting.html">lighting</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>CameraFlight</strong> flies a <a href="../classes/Camera.html" class="crosslink">Camera</a> to a given target component, AABB or eye/look/up position.</p>
+    <p>A <strong>Sound</strong> is a directional light source that illuminates all attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> equally
+from a given direction.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A CameraFlight animates the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> attached to the <a href="../classes/Camera.html" class="crosslink">Camera</a>.
+<li>DirLights are grouped, along with other light source types, within <a href="../classes/Lights.html" class="crosslink">Lights</a> components,
+which are attached to <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+<li>DirLights have a direction, but no position.</li>
+<li>DirLights may be defined in either <strong>World</strong> or <strong>View</strong> coordinate space. When in World-space, their direction
+is relative to the World coordinate system, and will appear to move as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
+When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer&#39;s
+head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.</li>
+<li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that DirLights create within xeoEngine&#39;s shaders.</li>
 </ul>
 
+<p><img src="../../../assets/images/Sound.png"></img></p>
 <h2 id="example">Example</h2>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
+<p>In this example we have:</p>
+<ul>
+<li>a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>,</li>
+<li>a Sound that points along the negative diagonal of the View coordinate system,</li>
+<li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing the Sound,</li>
+<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
+<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
+</ul>
 
-var camera = new XEO.Camera(scene);
+<iframe style="width: 600px; height: 400px" src="../../examples/light_DirLight.html"></iframe>
 
-var object = new XEO.GameObject(scene);
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
-var animation = new XEO.CameraFlight(scene, {
-   camera: camera
+// A shiny PhongMaterial with quantities of reflected
+// ambient, diffuse and specular color
+var material = new XEO.PhongMaterial(scene, {
+   ambient:    [0.3, 0.3, 0.3],
+   diffuse:    [0.7, 0.7, 0.7],
+   specular:   [1. 1, 1],
+   shininess:  30
 });
 
-animation.flyTo({
-   eye: [-5,-5,-5],
-   look: [0,0,0]
-   up: [0,1,0]
-}, function() {
-   // Arrived
+// Sound with color and intensity, pointing along
+// the negative diagonal within the View coordinate system
+var dirLight = new XEO.Sound(scene, {
+   dir:         [-1, -1, -1],
+   color:       [0.5, 0.7, 0.5],
+   intensity:   1.0,
+   space:      "view"  // Other option is "world", for World-space
 });
+
+// Lights which contains our Sound
+var lights = new XEO.Lights(scene, {
+   lights: [
+       dirLight
+   ]
+});
+
+var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
+
+// Object which renders our Geometry, colored with
+// the Material and illuminated with the Sound
+var object = new XEO.GameObject(scene, {
+   lights: lights,
+   material: material,
+   geometry: geometry
+});
+</code></pre>
+<p>As with all components, we can observe and change properties on a DirLights, like so:</p>
+<pre class="code prettyprint"><code class="lang-Javascript">// Attach a change listener to a property
+var handle = dirLight.on("color",
+function(value) {
+       // Property value has changed
+   });
+
+// Set the property, which fires our change listener
+dirLight.color = [0.0, 0.3, 0.3];
+
+// Detach the change listener
+dirLight.off(handle);
 </code></pre>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_CameraFlight" class="method item">
-            <h3 class="name"><code>CameraFlight</code></h3>
+        <div id="method_Sound" class="method item">
+            <h3 class="name"><code>Sound</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -221,7 +264,7 @@ animation.flyTo({
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_animation_cameraFlight.js.html#l1"><code>src&#x2F;core&#x2F;animation&#x2F;cameraFlight.js:1</code></a>
+                <a href="../files/src_core_sound_sound.js.html#l1"><code>src&#x2F;core&#x2F;sound&#x2F;sound.js:1</code></a>
                 </p>
         
         
@@ -243,7 +286,8 @@ animation.flyTo({
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this Sound within the
+        default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
         
                             </div>
         
@@ -255,7 +299,7 @@ animation.flyTo({
         
         
                             <div class="param-description">
-                                <p>Fly configuration</p>
+                                <p>The Sound configuration</p>
         
                             </div>
         
@@ -277,20 +321,51 @@ animation.flyTo({
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this CameraFlight.</p>
+                                            <p>Optional map of user-defined metadata to attach to this Sound.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[camera]</code>
-                                            <span class="type">String | <a href="../classes/Camera.html" class="crosslink">Camera</a></span>
+                                            <code class="param-name optional">[dir=[1.0, 1.0, 1.0]]</code>
+                                            <span class="type">Array(Number)</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Camera.html" class="crosslink">Camera</a> to control.
-        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this CameraFlight. Defaults to the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a>.</p>
+                                            <p>A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the <strong>space</strong> parameter.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[color=[0.7, 0.7, 0.8 ]]</code>
+                                            <span class="type">Array(Number)</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The color of this Sound.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[intensity=1.0]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The intensity of this Sound.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[space=&quot;view&quot;]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The coordinate system the Sound is defined in - &quot;view&quot; or &quot;space&quot;.</p>
         
                                         </div>
         
@@ -334,10 +409,6 @@ animation.flyTo({
                                 <a href="#method_fire">fire</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_flyTo">flyTo</a>
-
-                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_log">log</a>
 
@@ -365,16 +436,24 @@ animation.flyTo({
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_color">color</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_dir">dir</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_Items in this map">Items in this map</a>
+                            <li class="index-item property">
+                                <a href="#property_intensity">intensity</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -383,6 +462,10 @@ animation.flyTo({
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_space">space</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -397,8 +480,24 @@ animation.flyTo({
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_color">color</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_dir">dir</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_intensity">intensity</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_space">space</a>
 
                             </li>
                     </ul>
@@ -423,7 +522,7 @@ animation.flyTo({
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l683"><code>src&#x2F;core&#x2F;component.js:683</code></a>
+        <a href="../files/src_core_component.js.html#l699"><code>src&#x2F;core&#x2F;component.js:699</code></a>
         </p>
 
 
@@ -463,7 +562,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l463"><code>src&#x2F;core&#x2F;component.js:463</code></a>
+        <a href="../files/src_core_component.js.html#l474"><code>src&#x2F;core&#x2F;component.js:474</code></a>
         </p>
 
 
@@ -526,7 +625,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_core_component.js.html#l334"><code>src&#x2F;core&#x2F;component.js:334</code></a>
+        <a href="../files/src_core_component.js.html#l345"><code>src&#x2F;core&#x2F;component.js:345</code></a>
         </p>
 
 
@@ -584,150 +683,6 @@ any subsequent notifications on that location as they are made.</p>
 
 
 </div>
-<div id="method_flyTo" class="method item">
-    <h3 class="name"><code>flyTo</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>params</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[ok]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_core_animation_cameraFlight.js.html#l99"><code>src&#x2F;core&#x2F;animation&#x2F;cameraFlight.js:99</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Begins flying this CameraFlight&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> to the given target.</p>
-<p><ul>
-    <li>When the target is a boundary, the <a href="../classes/Camera.html" class="crosslink">Camera</a> will fly towards the target
-    and stop when the target fills most of the canvas.</li>
-    <li>When the target is an explicit <a href="../classes/Camera.html" class="crosslink">Camera</a> position, given as <code>eye</code>, <code>look</code> and <code>up</code>
-     vectors, then this CameraFlight will interpolate the <a href="../classes/Camera.html" class="crosslink">Camera</a> to that target and stop there.</li></p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">params</code>
-                        <span class="type"></span>
-
-
-                    <div class="param-description">
-                        <p>Flight parameters</p>
-
-                    </div>
-
-                        <ul class="params-list">
-                            <li class="param">
-                                    <code class="param-name optional">[arc=0]   Factor in range [0..1]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>indicating how much the
-Camera/eye:property position will
-swing away from its Camera/eye:property position as it flies to the target.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[component]</code>
-                                    <span class="type">String | <a href="../classes/Component.html" class="crosslink">Component</a></span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>ID or instance of a component to fly to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[aabb]</code>
-                                    <span class="type"></span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>World-space axis-aligned bounding box (AABB) target to fly to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[eye]</code>
-                                    <span class="type">Array of Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the eye position to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[look]</code>
-                                    <span class="type">Array of Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the look position to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[up]</code>
-                                    <span class="type">Array of Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the up vector to.</p>
-
-                                </div>
-
-                            </li>
-                        </ul>
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[ok]</code>
-                        <span class="type">Function</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Callback fired on arrival</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_log" class="method item inherited">
     <h3 class="name"><code>log</code></h3>
 
@@ -749,7 +704,7 @@ swing away from its Camera/eye:property position as it flies to the target.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_core_component.js.html#l440"><code>src&#x2F;core&#x2F;component.js:440</code></a>
+        <a href="../files/src_core_component.js.html#l451"><code>src&#x2F;core&#x2F;component.js:451</code></a>
         </p>
 
 
@@ -806,7 +761,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_core_component.js.html#l397"><code>src&#x2F;core&#x2F;component.js:397</code></a>
+        <a href="../files/src_core_component.js.html#l408"><code>src&#x2F;core&#x2F;component.js:408</code></a>
         </p>
 
 
@@ -870,7 +825,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_core_component.js.html#l367"><code>src&#x2F;core&#x2F;component.js:367</code></a>
+        <a href="../files/src_core_component.js.html#l378"><code>src&#x2F;core&#x2F;component.js:378</code></a>
         </p>
 
 
@@ -963,7 +918,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_core_component.js.html#l419"><code>src&#x2F;core&#x2F;component.js:419</code></a>
+        <a href="../files/src_core_component.js.html#l430"><code>src&#x2F;core&#x2F;component.js:430</code></a>
         </p>
 
 
@@ -1042,7 +997,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l481"><code>src&#x2F;core&#x2F;component.js:481</code></a>
+        <a href="../files/src_core_component.js.html#l492"><code>src&#x2F;core&#x2F;component.js:492</code></a>
         </p>
 
 
@@ -1083,6 +1038,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_color" class="property item">
+                        <h3 class="name"><code>color</code></h3>
+                        <span class="type">Array(Number)</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_sound_sound.js.html#l167"><code>src&#x2F;core&#x2F;sound&#x2F;sound.js:167</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The color of this Sound.</p>
+                    <p>Fires a <a href="../classes/Sound.html#event_color" class="crosslink">color</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [0.7, 0.7, 0.8]</p>
+                    
+                    
+                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1105,6 +1087,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_dir" class="property item">
+                        <h3 class="name"><code>dir</code></h3>
+                        <span class="type">Array(Number)</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_sound_sound.js.html#l131"><code>src&#x2F;core&#x2F;sound&#x2F;sound.js:131</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The direction of this Sound.</p>
+                    <p>Fires a <a href="../classes/Sound.html#event_dir" class="crosslink">dir</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
                     
                     
                     </div>
@@ -1134,27 +1143,30 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_Items in this map" class="property item inherited">
-                        <h3 class="name"><code>Items in this map</code></h3>
-                        <span class="type">Unknown</span>
+                    <div id="property_intensity" class="property item">
+                        <h3 class="name"><code>intensity</code></h3>
+                        <span class="type">Number</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_Items in this map">Component</a>:
-                            <a href="../files/src_core_utils_map.js.html#l13"><code>src&#x2F;core&#x2F;utils&#x2F;map.js:13</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_sound_sound.js.html#l203"><code>src&#x2F;core&#x2F;sound&#x2F;sound.js:203</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
+                            <p>The intensity of this Sound.</p>
+                    <p>Fires a <a href="../classes/Sound.html#event_intensity" class="crosslink">intensity</a> event on change.</p>
+                    
                         </div>
                     
+                            <p><strong>Default:</strong> 1.0</p>
                     
                     
                     </div>
@@ -1209,7 +1221,40 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_type" class="property item">
+                    <div id="property_space" class="property item">
+                        <h3 class="name"><code>space</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_sound_sound.js.html#l235"><code>src&#x2F;core&#x2F;sound&#x2F;sound.js:235</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Specifies which coordinate space this Sound is in.</p>
+                    <p>Supported values are:</p>
+                    <ul>
+                    <li>"view" - View space, aligned within the view volume as if fixed to the viewer&#39;s head</li>
+                    <li>"world" - World space, fixed within the world, moving within the view volume with respect to camera</li>
+                    </ul>
+                    
+                    <p>Fires a <a href="../classes/Sound.html#event_space" class="crosslink">space</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> &quot;view&quot;</p>
+                    
+                    
+                    </div>
+                    <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
                     
@@ -1219,12 +1264,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_type">
-                                    Component
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_core_animation_cameraFlight.js.html#l51"><code>src&#x2F;core&#x2F;animation&#x2F;cameraFlight.js:51</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_type">Component</a>:
+                            <a href="../files/src_core_component.js.html#l312"><code>src&#x2F;core&#x2F;component.js:312</code></a>
                             </p>
                     
                     
@@ -1232,6 +1274,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>JavaScript class name for this Component.</p>
+                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
+                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
+                    <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
                     
                         </div>
                     
@@ -1244,6 +1289,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_color" class="events item">
+                        <h3 class="name"><code>color</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_sound_sound.js.html#l190"><code>src&#x2F;core&#x2F;sound&#x2F;sound.js:190</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Sound&#39;s  <a href="../classes/Sound.html#property_color" class="crosslink">color</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1255,7 +1342,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l715"><code>src&#x2F;core&#x2F;component.js:715</code></a>
+                            <a href="../files/src_core_component.js.html#l731"><code>src&#x2F;core&#x2F;component.js:731</code></a>
                             </p>
                     
                     
@@ -1266,6 +1353,132 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="event_dir" class="events item">
+                        <h3 class="name"><code>dir</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_sound_sound.js.html#l154"><code>src&#x2F;core&#x2F;sound&#x2F;sound.js:154</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Sound&#39;s  <a href="../classes/Sound.html#property_dir" class="crosslink">dir</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_intensity" class="events item">
+                        <h3 class="name"><code>intensity</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_sound_sound.js.html#l222"><code>src&#x2F;core&#x2F;sound&#x2F;sound.js:222</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Sound&#39;s  <a href="../classes/Sound.html#property_intensity" class="crosslink">intensity</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_space" class="events item">
+                        <h3 class="name"><code>space</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_sound_sound.js.html#l259"><code>src&#x2F;core&#x2F;sound&#x2F;sound.js:259</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Sound&#39;s <a href="../classes/Sound.html#property_space" class="crosslink">space</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
                     
                     
                     </div>

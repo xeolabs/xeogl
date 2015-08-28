@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/core/input/mousePickObject.js - xeoengine</title>
+    <title>src/core/objects/splineCurveHelper.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,8 +41,6 @@
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
-                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -57,13 +55,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -71,10 +63,6 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
-                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -87,6 +75,9 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/Sound.html">Sound</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
@@ -101,11 +92,11 @@
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -149,229 +140,153 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/core/input/mousePickObject.js</h1>
+<h1 class="file-heading">File: src/core/objects/splineCurveHelper.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **MousePickObject** picks {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} with mouse clicks.
+ Shows the shape and control points of {{#crossLink &quot;SplineCurve&quot;}}{{/crossLink}}
 
- ## Overview
-
-TODO
-
- ## Example
-
- &#x60;&#x60;&#x60;&#x60;Javascript
- var scene = new XEO.Scene({ element: &quot;myDiv&quot; });
-
- // Create some GameObjects
-
- var object1 = new XEO.GameObject(scene, {
-    id: &quot;object1&quot;,
-    transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })
- });
-
- var object2 = new XEO.GameObject(scene, {
-    id: &quot;object2&quot;,
-    transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })
- });
-
- var object3 = new XEO.GameObject(scene, {
-    id: &quot;object3&quot;,
-    transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })
- });
-
- // Create a MousePickObject
- var mousePickObject = new XEO.MousePickObject(scene, {
-
-    // We want the 3D World-space coordinates
-    // of each location we pick
-
-    rayPick: true
- });
-
- // Handle picked GameObjects
- mousePickObject.on(&quot;pick&quot;, function(e) {
-    var object = e.object;
-    var canvasPos = e.canvasPos;
-    var worldPos = e.worldPos;
- });
-
- // Handle nothing picked
- mousePickObject.on(&quot;nopick&quot;, function(e) {
-    var canvasPos = e.canvasPos;
- });
- &#x60;&#x60;&#x60;&#x60;
-
- @class MousePickObject
- @module XEO
- @submodule input
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickObject.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
- {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
- @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickObject is active.
+ @class SplineCurveHelper
+ @module objects
  @extends Component
  */
-(function () {
+XEO.SplineCurveHelper = XEO.Component.extend({
 
-    &quot;use strict&quot;;
+    type: &quot;XEO.SplineCurveHelper&quot;,
 
-    XEO.MousePickObject = XEO.Component.extend({
+    _init: function (cfg) {
+
+        this._super(cfg);
+
+        this._divisions = 100;
+
+        this._line = new XEO.GameObject(this.scene, {
+            geometry: new XEO.Geometry(this.scene, {
+                primitive: &quot;lines&quot;,
+                positions: [0, 0, 0],
+                indices: [0, 1]
+            }),
+            material: new XEO.PhongMaterial(this.scene, {
+                diffuse: [1, 0, 0]
+            })
+        });
+
+        this.splineCurve = cfg.splineCurve;
+    },
+
+    __scheduleBuild: function () {
+        if (!this.__dirty) {
+            this.__dirty = true;
+            var self = this;
+            this.scene.once(&quot;tick2&quot;,
+                function () {
+                    self.__build();
+                    self.__dirty = false;
+                });
+        }
+    },
+
+    __build: function () {
+
+        var splineCurve = this._children.splineCurve;
+
+        if (!splineCurve) {
+            return;
+        }
+
+        var points = splineCurve.getPoints(this._divisions);
+
+        var positions = [];
+        var point;
+
+        for (var i = 0, len = points.length; i &lt; len; i++) {
+
+            point = points[i];
+
+            positions.push(point[0]);
+            positions.push(point[1]);
+            positions.push(point[2]);
+        }
+
+        var indices = [];
+
+        for (var i = 0, len = points.length - 1; i &lt; len; i++) {
+            indices.push(i);
+            indices.push(i + 1);
+        }
+
+        this._line.geometry.positions = positions;
+        this._line.geometry.indices = indices;
+    },
+
+    _props: {
 
         /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
+         * The SplineCurve for this SplineCurveHelper.
+         *
+         * Fires a {{#crossLink &quot;SplineCurveHelper/splineCurve:event&quot;}}{{/crossLink}} event on change.
+         *
+         * @property splinecurve
+         * @type {Splinecurve}
          */
-        type: &quot;XEO.MousePickObject&quot;,
+        splineCurve: {
 
-        _init: function (cfg) {
+            set: function (value) {
 
-            this.rayPick = cfg.rayPick;
+                // Unsubscribe from old Curves&#x27;s events
 
-            this.active = cfg.active !== false;
-        },
+                var oldSplineCurve = this._children.splineCurve;
 
-        _props: {
+                if (oldSplineCurve &amp;&amp; (!value || (value.id !== undefined ? value.id : value) !== oldSplinecurve.id)) {
+                    oldSplineCurve.off(this._onSplinecurveCurves);
+                }
 
-            /**
-             * Flag which indicates whether this MousePickObject is active or not.
-             *
-             * Fires a {{#crossLink &quot;MousePickObject/active:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
+                /**
+                 * Fired whenever this CameraPaths&#x27;s {{#crossLink &quot;CameraPath/path:property&quot;}}{{/crossLink}} property changes.
+                 * @event path
+                 * @param value The property&#x27;s new value
+                 */
+                this._setChild(&quot;path&quot;, value);
 
-                set: function (value) {
+                var newPath = this._children.path;
 
-                    if (this._active === value) {
-                        return;
-                    }
+                if (newPath) {
 
-                    var input = this.scene.input;
+                    // Subscribe to new Path&#x27;s curves
 
-                    if (value) {
+                    var self = this;
 
-                        var self = this;
-
-                        this._onMouseUp = input.on(&quot;dblclick&quot;,
-                            function (canvasPos) {
-
-                                var hit = self.scene.pick(canvasPos, {
-                                    rayPick: self._rayPick
-                                });
-
-                                if (hit) {
-
-                                    /**
-                                     * Fired whenever a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} is picked.
-                                     * @event picked
-                                     * @param {String} objectId The ID of the picked {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
-                                     * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                     * @param {Array of Number} worldPos When {{#crossLink &quot;MousePickObject/rayPick&quot;}}{{/crossLink}} is true,
-                                     * provides the World-space coordinate that was ray-picked on the surface of the
-                                     * {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.
-                                     */
-                                    self.fire(&quot;pick&quot;, hit);
-
-                                } else {
-
-                                    /**
-                                     * Fired whenever an attempt to pick {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} picks empty space.
-                                     * @event nopick
-                                     * @param {Array of Number} canvasPos The Canvas-space coordinate at which the pick was attempted.
-                                     */
-                                    self.fire(&quot;nopick&quot;, {
-                                        canvasPos: canvasPos
-                                    });
-                                }
-                            });
-
-                    } else {
-
-                        input.off(this._onMouseDown);
-                        input.off(this._onMouseUp);
-                    }
-
-                    /**
-                     * Fired whenever this MousePickObject&#x27;s {{#crossLink &quot;MousePickObject/active:property&quot;}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&#x27;active&#x27;, this._active = value);
-                },
-
-                get: function () {
-                    return this._active;
+                    this._onPathCurves = newPath.on(&quot;curves&quot;,
+                        function () {
+                            self.__scheduleBuild();
+                        });
                 }
             },
 
-            /**
-             * Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
-             * {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
-             *
-             * When true, this MousePickObject returns the 3D World-space intersection in each
-             * {{#crossLink &quot;MousePickObject/picked:event&quot;}}{{/crossLink}} event.
-             *
-             * Fires a {{#crossLink &quot;MousePickObject/rayPick:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property rayPick
-             * @type Boolean
-             */
-            rayPick: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._rayPick === value) {
-                        return;
-                    }
-
-                    this._dirty = false;
-
-                    /**
-                     * Fired whenever this MousePickObject&#x27;s {{#crossLink &quot;MousePickObject/rayPick:property&quot;}}{{/crossLink}} property changes.
-                     * @event rayPick
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&#x27;rayPick&#x27;, this._rayPick = value);
-                },
-
-                get: function () {
-                    return this._rayPick;
-                }
+            get: function () {
+                return this._children.path;
             }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                rayPick: this._rayPick,
-                active: this._active
-            };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this.active = false;
         }
-    });
-})();
+    },
+
+    _getJSON: function () {
+
+        var json = {
+            divisions: this._divisions
+        };
+
+        if (this._children.path) {
+            json.path = this._children.path.id;
+        }
+
+        return json;
+    },
+
+    _destroy: function () {
+        this._line.destroy();
+    }
+});
     </pre>
 </div>
                     </div>

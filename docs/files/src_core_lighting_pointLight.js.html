@@ -41,8 +41,6 @@
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
-                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -57,13 +55,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -71,10 +63,6 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
-                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -87,6 +75,9 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/Sound.html">Sound</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
@@ -101,11 +92,11 @@
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -274,9 +265,10 @@
                 pos: [1.0, 1.0, 1.0],
                 color: [0.7, 0.7, 0.8],
                 intensity:   1.0,
-                constantAttenuation: 0.0,
-                linearAttenuation: 0.0,
-                quadraticAttenuation: 0.0,
+
+                // Packaging constant, linear and quadratic attenuation terms
+                // into an array for easy insertion into shaders as a vec3
+                attenuation: [0.0, 0.0, 0.0],
                 space: &quot;view&quot;
             };
 
@@ -398,7 +390,7 @@
 
                 set: function (value) {
 
-                    this._state.constantAttenuation = value || 0.0;
+                    this._state.attenuation[0] = value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -408,11 +400,11 @@
                      @event constantAttenuation
                      @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;constantAttenuation&quot;, this._state.constantAttenuation);
+                    this.fire(&quot;constantAttenuation&quot;, this._state.attenuation[0]);
                 },
 
                 get: function () {
-                    return this._state.constantAttenuation;
+                    return this._state.attenuation[0];
                 }
             },
 
@@ -429,7 +421,7 @@
 
                 set: function (value) {
 
-                    this._state.linearAttenuation = value || 0.0;
+                    this._state.attenuation[1] = value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -439,11 +431,11 @@
                      @event linearAttenuation
                      @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;linearAttenuation&quot;, this._state.linearAttenuation);
+                    this.fire(&quot;linearAttenuation&quot;, this._state.attenuation[1]);
                 },
 
                 get: function () {
-                    return this._state.linearAttenuation;
+                    return this._state.attenuation[1];
                 }
             },
 
@@ -460,7 +452,7 @@
 
                 set: function (value) {
 
-                    this._state.quadraticAttenuation =  value || 0.0;
+                    this._state.attenuation[2] =  value || 0.0;
 
                     this._renderer.imageDirty = true;
 
@@ -470,11 +462,11 @@
                      @event quadraticAttenuation
                      @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;quadraticAttenuation&quot;, this._state.quadraticAttenuation);
+                    this.fire(&quot;quadraticAttenuation&quot;, this._state.attenuation[2]);
                 },
 
                 get: function () {
-                    return this._state.quadraticAttenuation;
+                    return this._state.attenuation[2];
                 }
             },
 
@@ -523,9 +515,9 @@
                 pos: this._state.pos,
                 color: this._state.color,
                 intensity: this._state.intensity,
-                constantAttenuation: this._state.constantAttenuation,
-                linearAttenuation: this._state.linearAttenuation,
-                quadraticAttenuation: this._state.quadraticAttenuation,
+                constantAttenuation: this._state.attenuation[0],
+                linearAttenuation: this._state.attenuation[1],
+                quadraticAttenuation: this._state.attenuation[2],
                 space: this._state.space
             };
         }

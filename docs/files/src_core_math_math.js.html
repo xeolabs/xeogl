@@ -41,8 +41,6 @@
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
-                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -57,13 +55,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -71,10 +63,6 @@
                                 <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
-                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -87,6 +75,9 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/Sound.html">Sound</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stats.html">Stats</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
@@ -101,11 +92,11 @@
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
                                 <li><a href="../modules/configuration.html">configuration</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -1565,6 +1556,7 @@
         /**
          * Returns a 4x4 &#x27;lookat&#x27; viewing transform matrix.
          * @method lookAtMat4c
+         * @static
          */
         lookAtMat4c: function (posx, posy, posz, targetx, targety, targetz, upx, upy, upz) {
             return XEO.math.lookAtMat4v([posx, posy, posz], [targetx, targety, targetz], [upx, upy, upz], []);
@@ -1573,6 +1565,7 @@
         /**
          * Returns a 4x4 orthographic projection matrix.
          * @method orthoMat4c
+         * @static
          */
         orthoMat4c: function (left, right, bottom, top, near, far, dest) {
             if (!dest) {
@@ -1608,6 +1601,7 @@
         /**
          * Returns a 4x4 perspective projection matrix.
          * @method frustumMat4v
+         * @static
          */
         frustumMat4v: function (fmin, fmax) {
             var fmin4 = [fmin[0], fmin[1], fmin[2], 0.0];
@@ -1647,6 +1641,7 @@
         /**
          * Returns a 4x4 perspective projection matrix.
          * @method frustumMat4v
+         * @static
          */
         frustumMat4: function (left, right, bottom, top, near, far, dest) {
             if (!dest) {
@@ -1677,6 +1672,7 @@
         /**
          * Returns a 4x4 perspective projection matrix.
          * @method perspectiveMatrix4v
+         * @static
          */
         perspectiveMatrix4: function (fovyrad, aspectratio, znear, zfar) {
             var pmin = [];
@@ -1697,6 +1693,7 @@
         /**
          * Transforms a three-element position by a 4x4 matrix.
          * @method transformPoint3
+         * @static
          */
         transformPoint3: function (m, p) {
             var p0 = p[0], p1 = p[1], p2 = p[2];
@@ -1712,6 +1709,7 @@
         /**
          * Transforms an array of three-element positions by a 4x4 matrix.
          * @method transformPoints3
+         * @static
          */
         transformPoints3: function (m, points, points2) {
             var result = points2 || [];
@@ -1746,6 +1744,7 @@
         /**
          * Transforms a three-element vector by a 4x4 matrix.
          * @method transformVec3
+         * @static
          */
         transformVec3: function (m, v) {
             var v0 = v[0], v1 = v[1], v2 = v[2];
@@ -1759,6 +1758,7 @@
         /**
          * Transforms a four-element vector by a 4x4 matrix.
          * @method transformVec4
+         * @static
          */
         transformVec4: function (m, v) {
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
@@ -1773,6 +1773,7 @@
         /**
          * Transforms a four-element vector by a 4x4 projection matrix.
          * @method projectVec4
+         * @static
          */
         projectVec4: function (v) {
             var f = 1.0 / v[3];
@@ -1782,6 +1783,7 @@
         /**
          * Linearly interpolates between two 3D vectors.
          * @method lerpVec3
+         * @static
          */
         lerpVec3: function (t, t1, t2, p1, p2, dest) {
             var result = dest || this.vec3();
@@ -1795,6 +1797,7 @@
         /**
          * Gets the diagonal size of a boundary given as minima and maxima.
          * @method getAABBDiag
+         * @static
          */
         getAABBDiag: function (boundary) {
 
@@ -1818,6 +1821,7 @@
         /**
          * Gets the center of a boundary given as minima and maxima.
          * @method getAABBCenter
+         * @static
          */
         getAABBCenter: function (boundary, dest) {
             var r = dest || this.vec3();
@@ -1834,6 +1838,7 @@
          * an array of eight 3D positions, one for each corner of the boundary.
          *
          * @method AABB3ToOBB3
+         * @static
          * @param {*} aabb Axis-aligned boundary.
          * @param {Array} [obb] Oriented bounding box.
          * @returns {*} Oriented bounding box.
@@ -1913,6 +1918,7 @@
          * Finds the minimum axis-aligned boundary enclosing the 3D points given in a flattened,  1-dimensional array.
          *
          * @method positions3ToAABB3
+         * @static
          * @param {Array} positions Oriented bounding box.
          * @param {*} [aabb] Axis-aligned bounding box.
          * @returns {*} Axis-aligned bounding box.
@@ -1982,6 +1988,7 @@
          * Finds the minimum axis-aligned boundary enclosing the given 3D points.
          *
          * @method points3ToAABB3
+         * @static
          * @param {Array} points Oriented bounding box.
          * @param {*} [aabb] Axis-aligned bounding box.
          * @returns {*} Axis-aligned bounding box.
@@ -2045,7 +2052,177 @@
             aabb.zmax = zmax;
 
             return aabb;
+        },
+
+
+        /**
+         * Builds normal vectors from positions and indices.
+         *
+         * @method buildTangents
+         * @static
+         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
+         * @param {{Array of Number}} indices One-dimensional flattened array of indices.*
+         * @returns {{Array of Number}} One-dimensional flattened array of normal vectors.
+         */
+        buildNormals: function (positions, indices) {
+
+            var nvecs = new Array(positions.length / 3);
+            var j0;
+            var j1;
+            var j2;
+            var v1;
+            var v2;
+            var v3;
+
+            for (var i = 0, len = indices.length - 3; i &lt; len; i += 3) {
+                j0 = indices[i + 0];
+                j1 = indices[i + 1];
+                j2 = indices[i + 2];
+
+                v1 = [positions[j0 * 3 + 0], positions[j0 * 3 + 1], positions[j0 * 3 + 2]];
+                v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
+                v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
+
+                v2 = XEO.math.subVec4(v2, v1, [0, 0, 0, 0]);
+                v3 = XEO.math.subVec4(v3, v1, [0, 0, 0, 0]);
+
+                var n = XEO.math.normalizeVec4(XEO.math.cross3Vec4(v2, v3, [0, 0, 0, 0]), [0, 0, 0, 0]);
+
+                if (!nvecs[j0]) nvecs[j0] = [];
+                if (!nvecs[j1]) nvecs[j1] = [];
+                if (!nvecs[j2]) nvecs[j2] = [];
+
+                nvecs[j0].push(n);
+                nvecs[j1].push(n);
+                nvecs[j2].push(n);
+            }
+
+            var normals = new Array(positions.length);
+
+            // now go through and average out everything
+            for (var i = 0, len = nvecs.length; i &lt; len; i++) {
+                var count = nvecs[i].length;
+                var x = 0;
+                var y = 0;
+                var z = 0;
+                for (var j = 0; j &lt; count; j++) {
+                    x += nvecs[i][j][0];
+                    y += nvecs[i][j][1];
+                    z += nvecs[i][j][2];
+                }
+                normals[i * 3 + 0] = (x / count);
+                normals[i * 3 + 1] = (y / count);
+                normals[i * 3 + 2] = (z / count);
+            }
+
+            return normals;
+        },
+
+
+        /**
+         * Builds vertex tangent vectors from positions, UVs and indices
+         *
+         * @method buildTangents
+         * @static
+         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
+         * @param {{Array of Number}} indices One-dimensional flattened array of indices.
+         * @param {{Array of Number}} uv One-dimensional flattened array of UV coordinates.
+         * @returns {{Array of Number}} One-dimensional flattened array of tangents.
+         */
+        buildTangents: function (positions, indices, uv) {
+
+            var tangents = [];
+
+            // The vertex arrays needs to be calculated
+            // before the calculation of the tangents
+
+            for (var location = 0; location &lt; indices.length; location += 3) {
+
+                // Recontructing each vertex and UV coordinate into the respective vectors
+
+                var index = indices[location];
+
+                var v0 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
+                var uv0 = [uv[index * 2], uv[(index * 2) + 1]];
+
+                index = indices[location + 1];
+
+                var v1 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
+                var uv1 = [uv[index * 2], uv[(index * 2) + 1]];
+
+                index = indices[location + 2];
+
+                var v2 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
+                var uv2 = [uv[index * 2], uv[(index * 2) + 1]];
+
+                var deltaPos1 = XEO.math.subVec3(v1, v0, []);
+                var deltaPos2 = XEO.math.subVec3(v2, v0, []);
+
+                var deltaUV1 = XEO.math.subVec2(uv1, uv0, []);
+                var deltaUV2 = XEO.math.subVec2(uv2, uv0, []);
+
+                var r = 1.0 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
+
+                var tangent = XEO.math.mulVec3Scalar(
+                    XEO.math.subVec3(
+                        XEO.math.mulVec3Scalar(deltaPos1, deltaUV2[1], []),
+                        XEO.math.mulVec3Scalar(deltaPos2, deltaUV1[1], []),
+                        []
+                    ),
+                    r,
+                    []
+                );
+
+                // Average the value of the vectors outs
+                for (var v = 0; v &lt; 3; v++) {
+                    var addTo = indices[location + v];
+                    if (typeof tangents[addTo] !== &quot;undefined&quot;) {
+                        tangents[addTo] = XEO.math.addVec3(tangents[addTo], tangent, []);
+                    } else {
+                        tangents[addTo] = tangent;
+                    }
+                }
+            }
+
+            // Deconstruct the vectors back into 1D arrays for WebGL
+
+            var tangents2 = [];
+
+            for (var i = 0; i &lt; tangents.length; i++) {
+                tangents2 = tangents2.concat(tangents[i]);
+            }
+
+            return tangents2;
+        },
+
+        /**
+         * Flattens a two-dimensional array into a one-dimensional array.
+         *
+         * @method flatten
+         * @static
+         * @param {Array of Arrays} a A 2D array
+         * @returns Flattened 1D array
+         */
+        flatten: function (a) {
+
+            var result = [];
+
+            var i;
+            var leni;
+            var j;
+            var lenj;
+            var item;
+
+            for (i = 0, leni = a.length; i &lt; leni; i++) {
+                item = a[i];
+                for (j = 0, lenj = item.length; j &lt; lenj; j++) {
+                    result.push(item[j]);
+                }
+            }
+
+            return result;
         }
+
     };
 
 })();
