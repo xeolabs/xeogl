@@ -304,9 +304,9 @@
 
             if (defaultGeometry) {
 
-                this.primitive = "triangles";
-
                 // Call property setters
+
+                this.primitive = cfg.primitive;
 
                 this.positions = [
                     -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, // Front face
@@ -360,15 +360,33 @@
 
             } else {
 
-                // Custom geometry
+                var defaultLineStripGeometry = ((!cfg.primitive || cfg.primitive === "line-strip") && cfg.positions && !cfg.indices);
 
-                this.primitive = cfg.primitive;
-                this.positions = cfg.positions;
-                this.colors = cfg.colors;
-                this.normals = cfg.normals;
-                this.uv = cfg.uv;
-                this.tangents = cfg.tangents;
-                this.indices = cfg.indices;
+                if (defaultLineStripGeometry) {
+
+                    // Line strip when only positions are given and no primitive
+
+                    var indices = [];
+                    for (var i = 0, len = cfg.positions.length / 3; i < len; i++) {
+                        indices.push(i);
+                    }
+
+                    this.primitive = "line-strip";
+                    this.positions = cfg.positions;
+                    this.indices = indices;
+
+                } else {
+
+                    // Custom geometry
+
+                    this.primitive = cfg.primitive;
+                    this.positions = cfg.positions;
+                    this.colors = cfg.colors;
+                    this.normals = cfg.normals;
+                    this.uv = cfg.uv;
+                    this.tangents = cfg.tangents;
+                    this.indices = cfg.indices;
+                }
             }
 
             var self = this;
@@ -389,7 +407,7 @@
                 this._dirty = true;
                 var self = this;
 
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
                         self._build();
                     });
@@ -545,6 +563,9 @@
 
             /**
              * The Geometry's positions array.
+             *
+             * This property is a one-dimensional array - use  {{#crossLink "XEO.math/flatten:method"}}{{/crossLink}} to
+             * convert two-dimensional arrays for assignment to this property.
              *
              * Fires a {{#crossLink "Geometry/positions:event"}}{{/crossLink}} event on change.
              *

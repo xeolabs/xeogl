@@ -134,10 +134,12 @@
                     value = value || [];
 
                     var light;
+                    var i;
+                    var len;
 
                     // Unsubscribe from events on old lights
 
-                    for (var i = 0, len = this._lights.length; i < len; i++) {
+                    for (i = 0, len = this._lights.length; i < len; i++) {
 
                         light = this._lights[i];
 
@@ -178,7 +180,7 @@
                         }
                     }
 
-                    for (var i = 0, len = value.length; i < len; i++) {
+                    for (i = 0, len = value.length; i < len; i++) {
 
                         light = value[i];
 
@@ -217,7 +219,7 @@
                 },
 
                 get: function () {
-                    return this._lights.slice(0, this._lights.length);
+                    return this._lights;
                 }
             }
         },
@@ -280,6 +282,19 @@
         },
 
         _destroy: function () {
+
+            var i;
+            var len;
+            var light;
+
+            for (i = 0, len = this._lights.length; i < len; i++) {
+
+                light = this._lights[i];
+
+                light.off(this._dirtySubs[i]);
+                light.off(this._destroyedSubs[i]);
+            }
+
             this._state.destroy();
         }
     });

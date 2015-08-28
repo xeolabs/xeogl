@@ -79,7 +79,7 @@
  ````
  @class Canvas
  @module XEO
- @submodule rendering
+ @submodule canvas
  @static
  @param {Scene} scene Parent scene
  @extends Component
@@ -119,7 +119,7 @@
             this.canvas = null;
 
             /**
-             * The WebGL rendering context, obtained by this Canvas from the HTML 5 canvas.
+             * The WebGL rendering context.
              *
              * @property gl
              * @type {WebGLRenderingContext}
@@ -218,19 +218,21 @@
 
             // Publish canvas size changes on each scene tick
 
-            var lastWidth = this.canvas.width;
-            var lastHeight = this.canvas.height;
+            var lastWidth = null;
+            var lastHeight = null;
 
             this._tick = this.scene.on("tick",
                 function () {
 
                     var canvas = self.canvas;
 
-                    if (canvas.width !== lastWidth || canvas.height !== lastHeight) {
+                    if (canvas.clientWidth !== lastWidth || canvas.clientHeight !== lastHeight) {
 
-                        lastWidth = canvas.width;
-                        lastHeight = canvas.height;
+                        var newWidth = canvas.clientWidth;
+                        var newHeight = canvas.clientHeight;
 
+                        //canvas.width = canvas.clientWidth;
+                        //canvas.height = canvas.clientHeight;
                         /**
                          * Fired whenever the canvas has resized
                          * @event resized
@@ -238,11 +240,15 @@
                          * @param height {Number} The new canvas height
                          * @param aspect {Number} The new canvas aspect ratio
                          */
-                        self.fire("resized", {
-                            width: canvas.width,
-                            height: canvas.height,
-                            aspect: canvas.height / canvas.width
+                        self.fire("size", {
+                            width: newWidth,
+                            height: newHeight,
+                            aspect: newHeight / newWidth
                         });
+
+                        lastWidth = newWidth;
+                        lastHeight = newHeight;
+
                     }
                 });
 
@@ -262,16 +268,16 @@
             var div = document.createElement('div');
 
             var style = div.style;
-            style.height = "600px";
-            style.width = "600px";
+            style.height = "100%";
+            style.width = "100%";
             style.padding = "0";
             style.margin = "0";
             style.background = "black";
             style.float = "left";
-            //style.left = "0";
-            //style.top = "0";
-            // style.position = "absolute";
-            // style["z-index"] = "10000";
+            style.left = "0";
+            style.top = "0";
+             style.position = "absolute";
+             style["z-index"] = "10000";
 
             div.innerHTML += '<canvas id="' + canvasId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0;"></canvas>';
 

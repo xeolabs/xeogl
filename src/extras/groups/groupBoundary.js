@@ -44,7 +44,7 @@
 
  @class GroupBoundary
  @module XEO
- @submodule grouping
+ @submodule groups
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this GroupBoundary within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.

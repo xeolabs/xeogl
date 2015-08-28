@@ -15,8 +15,6 @@
 
  ## Example
 
- <iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
-
  In this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.
  Then we attach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to a {{#crossLink "GameObject"}}{{/crossLink}}.
 
@@ -102,7 +100,7 @@
 
                 var self = this;
 
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
                         self._build();
                     });
@@ -121,6 +119,8 @@
             this._state.normalMatrix = new Float32Array(XEO.math.transposeMat4(new Float32Array(XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
 
             this._dirty = false;
+
+            this._renderer.imageDirty = true;
 
             /**
              * Fired whenever this Lookat's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is updated.
@@ -307,8 +307,6 @@
                     eye[1] = value[1];
                     eye[2] = value[2];
 
-                    this._renderer.imageDirty = true;
-
                     this._scheduleBuild();
 
                     /**
@@ -346,8 +344,6 @@
                     look[1] = value[1];
                     look[2] = value[2];
 
-                    this._renderer.imageDirty = true;
-
                     this._scheduleBuild();
 
                     /**
@@ -382,8 +378,6 @@
                     up[0] = value[0];
                     up[1] = value[1];
                     up[2] = value[2];
-
-                    this._renderer.imageDirty = true;
 
                     this._scheduleBuild();
 

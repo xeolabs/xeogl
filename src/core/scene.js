@@ -470,8 +470,6 @@
                         delete self.objects[c.id];
 
                         delete self._dirtyObjects[c.id];
-
-                        self.fire("dirty", true);
                     }
 
                     /**
@@ -497,8 +495,6 @@
                         if (!self._dirtyObjects[c.id]) {
                             self._dirtyObjects[c.id] = c;
                         }
-
-                        self.fire("dirty", true);
                     });
 
                 this.objects[c.id] = c;

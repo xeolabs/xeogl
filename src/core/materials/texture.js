@@ -212,7 +212,7 @@
 
                 var self = this;
 
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
                         self._build();
                     });

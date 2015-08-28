@@ -11,7 +11,7 @@
     XEO.utils.Map = function (items, baseId) {
 
         /**
-         * @property Items in this map
+         * Items in this map
          */
         this.items = items || [];
 

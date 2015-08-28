@@ -92,13 +92,13 @@
             var canvas = this.scene.canvas;
 
             // Recompute aspect from change in canvas size
-            this._canvasResized = canvas.on("resized",
-                function () {
-                    self._aspect = canvas.width / canvas.height;
+            this._canvasResized = canvas.on("size",
+                function (e) {
+                    self.aspect = e.width / e.height;
                 });
 
             this.fovy = cfg.fovy;
-            this.aspect = canvas.width / canvas.height;
+         //   this.aspect = canvas.width / canvas.height;
             this.near = cfg.near;
             this.far = cfg.far;
         },
@@ -112,7 +112,7 @@
 
                 var self = this;
 
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
                         self._build();
                     });
@@ -123,7 +123,9 @@
         _build: function () {
 
             var canvas = this.scene.canvas.canvas;
-            var aspect = canvas.width / canvas.height;
+            var aspect = canvas.clientWidth / canvas.clientHeight;
+
+            aspect = this._aspect;
 
             this._state.matrix = XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far);
 

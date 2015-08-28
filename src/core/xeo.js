@@ -27,9 +27,6 @@
          */
         this.scenes = {};
 
-        // Map of Scenes needing recompilation
-        this._dirtyScenes = {};
-
         var self = this;
 
         // Called on each animation frame
@@ -45,7 +42,7 @@
 
         var frame = function () {
 
-            var time = (new Date()).getTime() * 0.001;
+            var time = (new Date()).getTime();
 
             tickEvent.time = time;
 
@@ -63,16 +60,13 @@
                     tickEvent.deltaTime = tickEvent.prevTime != null ? time - tickEvent.prevTime : 0;
 
                     scene.fire("tick", tickEvent, true);
+                    scene.fire("tick2", tickEvent, true);
+                    scene.fire("tick3", tickEvent, true);
 
-                    // Recompile the scene if it's now dirty
-                    // after handling the tick event
-
-                    // if (self._dirtyScenes[id]) {
+                    // Compile also means "render".
+                    // It only actually "compiles" anything if it needs recomiplation.
 
                     scene._compile();
-
-                    self._dirtyScenes[id] = false;
-                    // }
                 }
             }
 
@@ -153,15 +147,6 @@
                     self._sceneIDMap.removeItem(scene.id);
 
                     delete self.scenes[scene.id];
-
-                    delete self._dirtyScenes[scene.id];
-                });
-
-            // Schedule recompilation of dirty scenes for next animation frame
-
-            scene.on("dirty",
-                function () {
-                    self._dirtyScenes[scene.id] = true;
                 });
         },
 
@@ -191,7 +176,6 @@
                 }
             }
             this.scenes = {};
-            this._dirtyScenes = {};
         },
 
         /**

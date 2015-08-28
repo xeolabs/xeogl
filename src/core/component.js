@@ -34,7 +34,7 @@
     id: "myGeometry"
 });
 
- // Let xeoEngine automatically generated the ID for our Object
+ // Let xeoEngine automatically generate the ID for our Object
  var object = new XEO.GameObject(scene, {
     material: material,
     geometry: geometry
@@ -329,6 +329,17 @@
          * @private
          */
         _init: function (cfg) {
+        },
+
+        /**
+         * Schedules rebuild on the next Scene tick
+         * @private
+         */
+        _nextTick: function (callback) {
+            if (!this.__needBuild) {
+                this.__needBuild = true;
+                this.scene.once("tick2", callback);
+            }
         },
 
         /**

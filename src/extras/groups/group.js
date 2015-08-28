@@ -79,7 +79,7 @@
 
  @class Group
  @module XEO
- @submodule grouping
+ @submodule groups
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configs
