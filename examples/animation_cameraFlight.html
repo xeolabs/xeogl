@@ -25,41 +25,36 @@
 
 <script>
 
-    // Create a prototype GameObject with all defaults.
+    var objects = [];
+    var object;
 
-    var object = new XEO.GameObject();
+    for (var i = 0; i < 10; i++) {
 
-    // Make a bunch of clones of the GameObject,
-    // each with their own randomized Translate.
-
-    for (var i = 0; i < 3000; i++) {
-
-        object.clone({
+        object = new XEO.GameObject({
 
             transform: new XEO.Translate({
                 xyz: [
-                    Math.random() * 50 - 25,
-                    Math.random() * 50 - 25,
-                    Math.random() * 50 - 25
+                    Math.random() * 10 - 5,
+                    Math.random() * 10 - 5,
+                    Math.random() * 10 - 5
                 ]
             })
         });
+
+        objects.push(object);
     }
 
-    object.camera.view.zoom(40);
+    var flight = new XEO.CameraFlight();
 
-    // Orbit the eye position about the look position.
+    setInterval(function () {
 
-    object.scene.on("tick",
-            function () {
+        object = objects[Math.round(Math.random() * 10)];
 
-                var view = object.camera.view;
+        flight.flyTo({
+            component: object
+        });
 
-                view.rotateEyeY(0.5);
-                view.rotateEyeX(0.3);
-            });
-
-
+    }, 5000);
 
 </script>
 </body>

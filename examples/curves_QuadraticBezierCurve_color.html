@@ -19,40 +19,45 @@
 
 <body>
 
+
 <div id="infoDark">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
 
-    <p>example of how to attach user-defined metadata to components</p>
-    <pre id="infoTxt" style="text-align: left;"></pre>
+    <p>QuadraticBezierCurve</p>
 </div>
 
 <script>
 
-    // Create a GameObject
+    var curve = new XEO.QuadraticBezierCurve({
+        v0: [1, 0, 0],
+        v1: [0, 1, 0],
+        v2: [0, 0, 1]
+    });
+
+    var material = new XEO.PhongMaterial({
+        diffuse: [0, 0, 0]
+    });
 
     var object = new XEO.GameObject({
-        metadata: {
-            description: "This is my GameObject!",
-            version: "0.1",
-            foo: "bar"
-        }
+        material: material
     });
 
-    // Attach a new Material to the GameObject.
-
-    object.material = new XEO.PhongMaterial({
-        id: "myMaterial",
-        diffuse: [1.0, 1.0, 0.0],
-        metadata: {
-            description: "This is my PhongMaterial!",
-            version: "0.1",
-            foo: "bar"
-        }
+    curve.on("t", function() {
+        material.diffuse = curve.point;
     });
 
-    object.metadata.version = "0.2";
-    object.metadata.bar = "foo";
+    var tick = object.scene.on("tick",
+            function (e) {
+
+                // Update the QuadraticBezierCurve
+                curve.t = (e.time - e.startTime) * 0.00005;
+
+                // Spin the camera
+                var view = object.scene.camera.view;
+                view.rotateEyeY(0.5);
+                view.rotateEyeX(0.2);
+            });
 
 </script>
 </body>

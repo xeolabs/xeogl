@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+
+    <p>SplineCurve</p>
+</div>
+
+<script>
+
+    var curve = new XEO.SplineCurve({
+        points: [
+            [-10, 0, 0],
+            [-5, 15, 0],
+            [20, 15, 0],
+            [10, 0, 0]]
+    });
+
+    // GameObject to show a smooth line through the SplineCurve's control points
+
+    var lineObject = new XEO.GameObject({
+        geometry: new XEO.Geometry({
+            positions: XEO.math.flatten(curve.getPoints(50))
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 0, 0]
+        })
+    });
+
+    var pointObject = new XEO.GameObject({
+        geometry: new XEO.Geometry(),
+        transform: new XEO.Translate(),
+        material: new XEO.PhongMaterial({
+            diffuse: [0, 1, 0]
+        })
+    });
+
+    var tangentObject = new XEO.GameObject({
+        geometry: new XEO.Geometry({}),
+        transform: new XEO.Translate(),
+        material: new XEO.PhongMaterial({
+            diffuse: [0, 0, 1]
+        })
+    });
+
+    // Move the eye back a bit to
+    // fit the whole curve in view
+
+    var scene = XEO.scene;
+
+    scene.camera.view.zoom(25);
+
+    // Spin the camera
+
+    var tick = scene.on("tick",
+            function (e) {
+
+                curve.t = (e.time - e.startTime) * 0.00005;
+
+                var point = curve.point;
+                var tangent = curve.tangent;
+
+                pointObject.transform.xyz = point;
+                tangentObject.transform.xyz = [point[0] + tangent[0], point[1] + tangent[1], point[2] + tangent[2]];
+
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.5);
+                view.rotateEyeX(0.2);
+            });
+
+</script>
+</body>
+</html>

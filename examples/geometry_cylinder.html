@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Cylinder.html"
+                                                                      target="_other">Sphere</a>
+</div>
+
+<script>
+
+    new XEO.GameObject({
+        geometry: new XEO.Cylinder({
+            radiusTop: 1.0,
+            radiusBottom: 1.0,
+            height: 1.0,
+            radialSegments: 20,
+            heightSegments: 1,
+            openEnded: false
+        }),
+        transform: new XEO.Translate({
+            xyz: [-5, 0, 0]
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 0, 0]
+        })
+    });
+
+    new XEO.GameObject({
+        geometry: new XEO.Cylinder({
+            radiusTop: 0.1,
+            radiusBottom: 1.0,
+            height: 1.0,
+            radialSegments: 20,
+            heightSegments: 1,
+            openEnded: false
+        }),
+        transform: new XEO.Translate({
+            xyz: [-2, 0, 0]
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0, 1, 0]
+        })
+    });
+
+    new XEO.GameObject({
+        geometry: new XEO.Cylinder({
+            radiusTop: 1.0,
+            radiusBottom: 0.1,
+            height: 1.0,
+            radialSegments: 20,
+            heightSegments: 1,
+            openEnded: false
+        }),
+        transform: new XEO.Translate({
+            xyz: [0, 0, 0]
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0, 0, 1]
+        })
+    });
+
+    new XEO.GameObject({
+        geometry: new XEO.Cylinder({
+            radiusTop: 1.0,
+            radiusBottom: 1.0,
+            height: 1.0,
+            radialSegments: 20,
+            heightSegments: 1,
+            openEnded: true
+        }),
+        transform: new XEO.Translate({
+            xyz: [2, 0, 0]
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 1, 0]
+        })
+    });
+
+    XEO.scene.on("tick",
+            function () {
+
+                var view = XEO.scene.camera.view;
+
+                view.rotateEyeY(0.6);
+                view.rotateEyeX(0.3);
+            });
+
+</script>
+</body>
+</html>

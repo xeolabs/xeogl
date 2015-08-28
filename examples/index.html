@@ -126,39 +126,42 @@
             padding-top: 0px;
             padding-bottom: 0px;
         }
-  
-        #source{
-          position:fixed;
-          top: 10px;
-          left: 320px;          
-          padding: 10px;
-          margin: 0;        
-          height: -webkit-calc(100% - 120px); /* Safari */
-          height: calc(100% - 120px);
-          width: -webkit-calc(100% - 350px); /* Safari */
-          width: calc(100% - 350px);
-          
-          z-index: 900;
-          overflow-y: scroll;
-                    
-          background: white;
-          border-radius: 2px;
-          border: 1px solid #aaa;
+
+        #source {
+            position: fixed;
+            top: 10px;
+            left: 320px;
+            padding: 10px;
+            margin: 0;
+            height: -webkit-calc(100% - 120px); /* Safari */
+            height: calc(100% - 120px);
+            width: -webkit-calc(100% - 350px); /* Safari */
+            width: calc(100% - 350px);
+
+            z-index: 900;
+            overflow-y: scroll;
+
+            background: white;
+            border-radius: 2px;
+            border: 1px solid #aaa;
         }
-        #closeButton{
-          position: fixed;
-          right: 30px;
-          top: 20px;
-          padding: 8px;
-          color: #fff;
-          background-color: #02550b;
-          opacity: 0.7;
+
+        #closeButton {
+            position: fixed;
+            right: 30px;
+            top: 20px;
+            padding: 8px;
+            color: #fff;
+            background-color: #02550b;
+            opacity: 0.7;
         }
+
         #closeButton:hover {
             cursor: pointer;
             opacity: 1;
         }
-        #source-field{
+
+        #source-field {
         }
     </style>
 </head>
@@ -198,14 +201,11 @@
 
     var files = {
 
-        "Scene": [
-            "scene_events_tick"
-        ],
-
         "Camera": [
             "camera_perspective",
             "camera_frustum",
-            "camera_ortho"
+            "camera_ortho",
+            "animation_cameraPath"
         ],
 
         "Components": [
@@ -228,7 +228,43 @@
             "components_metadata"
         ],
 
-        "Input": [
+        "Curves": [
+            "curves_CubicBezierCurve",
+            "curves_QuadraticBezierCurve",
+            "curves_QuadraticBezierCurve_color",
+            "curves_SplineCurve",
+            "curves_Path"
+        ],
+
+        "GameObjects": [
+            "#xeoEngine entities",
+            "gameObjects_minimal"
+        ],
+
+        "Geometry": [
+
+            "#defining",
+            "geometry_triangles",
+            "geometry_lines",
+            "geometry_modifying",
+
+            "#primitives",
+            "geometry_torus",
+            "geometry_sphere",
+            "geometry_cylinder",
+
+            "#level-of-detail",
+            "geometry_torus_lod",
+            "geometry_sphere_lod",
+            "geometry_cylinder_lod"
+        ],
+
+        "Groups": [
+            "#operations on groups of components",
+            "groups_group"
+        ],
+
+        "Interaction": [
             "#interacting with xeoEngine",
             "input_mouse",
             "input_keyboard",
@@ -244,32 +280,6 @@
             "input_MouseZoomCamera"
         ],
 
-        "Loading": [
-            "#loading models into xeoEngine",
-            "loading_obj",
-            "loading_obj_loop"
-        ],
-
-        "GameObjects": [
-            "#xeoEngine entities",
-            "gameObjects_minimal"
-        ],
-
-        "Geometry": [
-
-            "#defining",
-            "geometry_triangles",
-            "geometry_modifying",
-
-            "#primitives",
-            "geometry_torus"
-        ],
-
-        "Groups": [
-            "#operations on groups of components",
-            "groups_group"
-        ],
-
         "Lights": [
             "lights_ambient",
             "lights_directional_view",
@@ -278,8 +288,18 @@
             "lights_point_world"
         ],
 
+        "Loading": [
+            "#loading models into xeoEngine",
+            "loading_obj",
+            "loading_obj_loop"
+        ],
+
         "Materials": [
             "materials_phong"
+        ],
+
+        "Scene": [
+            "scene_events_tick"
         ]
     };
 
@@ -290,27 +310,27 @@
 
     var container = document.createElement('div');
     list.appendChild(container);
-    
+
     var closeButton = document.createElement('div');
-      closeButton.id = 'closeButton';
-      closeButton.textContent = 'Close';
-      closeButton.addEventListener('click', function (event) {
-      document.getElementById('source').style.display = 'none'
+    closeButton.id = 'closeButton';
+    closeButton.textContent = 'Close';
+    closeButton.addEventListener('click', function (event) {
+        document.getElementById('source').style.display = 'none'
     }, false);
-    
-    var  sourceWindow = document.getElementById('source');
+
+    var sourceWindow = document.getElementById('source');
     sourceWindow.appendChild(closeButton);
     sourceWindow.style.display = 'none';
-    
+
     var sourceButton = document.createElement('div');
     sourceButton.id = 'sourceButton';
     sourceButton.textContent = 'Source code';
-    
+
     sourceButton.addEventListener('click', function (event) {
-      updateSource();
-      document.getElementById('source').style.display = '';
+        updateSource();
+        document.getElementById('source').style.display = '';
     }, false);
-    
+
     sourceButton.style.display = 'none';
     document.body.appendChild(sourceButton);
 
@@ -384,40 +404,40 @@
             return " " + $1.toLowerCase();
         });
     }
-    var updateSource = function ( change){
+    var updateSource = function (change) {
         var array = location.href.split('/');
-        
+
         array.pop();
         var htmlfile = array.join('/') + '/' + selected + '.html';
         var srcReg = /<script[^<]*<\/script>/mg;
-        
-        var xhr= new XMLHttpRequest();
+
+        var xhr = new XMLHttpRequest();
         xhr.open('GET', htmlfile, true);
-        xhr.onreadystatechange= function() {
-            if (this.readyState!==4) return;
-            if (this.status!==200) return;
-            
+        xhr.onreadystatechange = function () {
+            if (this.readyState !== 4) return;
+            if (this.status !== 200) return;
+
             var source = this.responseText;
             var lines = source.split('\n');
             var start = 0, end = lines.length;
-            for(var i = 0; i< lines.length; i++){
-              if(lines[i].trim() == '<script>' ){
-                start = i;
-              }
-              if(lines[i].trim() == '<\/script>' ){
-                end = i;
-              }
+            for (var i = 0; i < lines.length; i++) {
+                if (lines[i].trim() == '<script>') {
+                    start = i;
+                }
+                if (lines[i].trim() == '<\/script>') {
+                    end = i;
+                }
             }
-            
-            source = lines.splice(start+1, end-1).join('\n');
-      
-            var  srcField = document.getElementById('source-field');
+
+            source = lines.splice(start + 1, end - 1).join('\n');
+
+            var srcField = document.getElementById('source-field');
             srcField.innerHTML = source;
 
             prettyPrint();
         };
         xhr.send();
-        
+
         //window.open('view-source:' + htmlfile);
     };
 

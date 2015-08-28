@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - Dynamic scene rebuild
+</div>
+
+<script>
+
+    // Holds randomly-created GameObjects
+    var objects = [];
+
+    // Move eye back a bit
+    XEO.scene.camera.view.zoom(10);
+
+    // On each tick, rebuild the scene and rotate the camera
+
+    XEO.scene.on("tick",
+            function () {
+
+                buildScene();
+
+                XEO.scene.camera.view.rotateEyeY(1.0);
+            });
+
+    function buildScene() {
+
+        // Destroy objects
+
+        while (objects.length) {
+            objects.pop().destroy();
+        }
+
+        // Recreate objects
+
+        var object;
+
+        for (var i = 0; i < 100; i++) {
+
+            // Each object uses defaults for everything
+            // except for its modelling transform
+
+            object = new XEO.GameObject({
+                transform: new XEO.Translate({
+                    xyz: [
+                        Math.random() * 10 - 5,
+                        Math.random() * 10 - 5,
+                        Math.random() * 10 - 5
+                    ]
+                })
+            });
+
+            objects.push(object);
+        }
+    }
+
+</script>
+</body>
+</html>
