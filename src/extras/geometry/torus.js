@@ -22,6 +22,7 @@
  @param [cfg.segmentsR=32] {Number}
  @param [cfg.segmentsT=24] {Number}
  @param [cfg.arc=Math.PI / 2.0] {Number}
+ @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
 (function () {
@@ -36,33 +37,41 @@
 
             this._super(cfg);
 
+            this.lod = cfg.lod;
             this.radius = cfg.radius;
             this.tube = cfg.tube;
             this.segmentsR = cfg.segmentsR;
             this.segmentsT = cfg.segmentsT;
             this.arc = cfg.arc;
-
-            this._build2();
         },
 
-        _scheduleBuild2: function () {
-            if (!this._dirty) {
-                this._dirty = true;
+        _torusDirty: function () {
+            if (!this.__dirty) {
+                this.__dirty = true;
                 var self = this;
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
-                        self._build2();
+                        self._buildTorus();
+                        self.__dirty = false;
                     });
             }
         },
 
-        _build2: function () {
+        _buildTorus: function () {
 
             var radius = this._radius;
             var tube = this._tube;
-            var segmentsR = this._segmentsR;
-            var segmentsT = this._segmentsT;
+            var segmentsR = Math.floor(this._segmentsR * this._lod);
+            var segmentsT = Math.floor(this._segmentsT * this._lod);
             var arc = this._arc;
+
+            if (segmentsR < 4) {
+                segmentsR = 4;
+            }
+
+            if (segmentsT < 4) {
+                segmentsT = 4;
+            }
 
             var positions = [];
             var normals = [];
@@ -137,11 +146,51 @@
             this.normals = normals;
             this.uv = uvs;
             this.indices = indices;
-
-            this._dirty = false;
         },
 
         _props: {
+
+            /**
+             * The Torus's level-of-detail factor.
+             *
+             * Fires a {{#crossLink "Torus/lod:event"}}{{/crossLink}} event on change.
+             *
+             * @property lod
+             * @default 1
+             * @type Number
+             */
+            lod: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._lod === value) {
+                        return;
+                    }
+
+                    if (value < 0 || value > 1) {
+                        this.warn("clamping lod to [0..1]");
+                        value = value < 0 ? 0 : 1;
+                    }
+
+                    this._lod = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/lod:property"}}{{/crossLink}} property changes.
+                     * @event lod
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("lod", this._lod);
+
+                    this._torusDirty();
+                },
+
+                get: function () {
+                    return this._lod;
+                }
+            },
 
             /**
              * The Torus's radius.
@@ -177,7 +226,7 @@
                      */
                     this.fire("radius", this._radius);
 
-                    this._scheduleBuild2();
+                    this._torusDirty();
                 },
 
                 get: function () {
@@ -220,7 +269,7 @@
                      */
                     this.fire("tube", this._tube);
 
-                    this._scheduleBuild2();
+                    this._torusDirty();
                 },
 
                 get: function () {
@@ -262,7 +311,7 @@
                      */
                     this.fire("segmentsR", this._segmentsR);
 
-                    this._scheduleBuild2();
+                    this._torusDirty();
                 },
 
                 get: function () {
@@ -305,7 +354,7 @@
                      */
                     this.fire("segmentsT", this._segmentsT);
 
-                    this._scheduleBuild2();
+                    this._torusDirty();
                 },
 
                 get: function () {
@@ -347,7 +396,7 @@
                      */
                     this.fire("arc", this._arc);
 
-                    this._scheduleBuild2();
+                    this._torusDirty();
                 },
 
                 get: function () {
@@ -358,6 +407,7 @@
 
         _getJSON: function () {
             return XEO._apply2({
+                // Don't save lod
                 radius: this._radius,
                 tube: this._tube,
                 segmentsR: this._segmentsR,
