@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-08-18
+ * Built on 2015-08-28
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -41,9 +41,6 @@
          */
         this.scenes = {};
 
-        // Map of Scenes needing recompilation
-        this._dirtyScenes = {};
-
         var self = this;
 
         // Called on each animation frame
@@ -59,7 +56,7 @@
 
         var frame = function () {
 
-            var time = (new Date()).getTime() * 0.001;
+            var time = (new Date()).getTime();
 
             tickEvent.time = time;
 
@@ -77,16 +74,13 @@
                     tickEvent.deltaTime = tickEvent.prevTime != null ? time - tickEvent.prevTime : 0;
 
                     scene.fire("tick", tickEvent, true);
+                    scene.fire("tick2", tickEvent, true);
+                    scene.fire("tick3", tickEvent, true);
 
-                    // Recompile the scene if it's now dirty
-                    // after handling the tick event
-
-                    // if (self._dirtyScenes[id]) {
+                    // Compile also means "render".
+                    // It only actually "compiles" anything if it needs recomiplation.
 
                     scene._compile();
-
-                    self._dirtyScenes[id] = false;
-                    // }
                 }
             }
 
@@ -167,15 +161,6 @@
                     self._sceneIDMap.removeItem(scene.id);
 
                     delete self.scenes[scene.id];
-
-                    delete self._dirtyScenes[scene.id];
-                });
-
-            // Schedule recompilation of dirty scenes for next animation frame
-
-            scene.on("dirty",
-                function () {
-                    self._dirtyScenes[scene.id] = true;
                 });
         },
 
@@ -205,7 +190,6 @@
                 }
             }
             this.scenes = {};
-            this._dirtyScenes = {};
         },
 
         /**
@@ -436,7 +420,7 @@
     XEO.utils.Map = function (items, baseId) {
 
         /**
-         * @property Items in this map
+         * Items in this map
          */
         this.items = items || [];
 
@@ -522,7 +506,7 @@
     id: "myGeometry"
 });
 
- // Let xeoEngine automatically generated the ID for our Object
+ // Let xeoEngine automatically generate the ID for our Object
  var object = new XEO.GameObject(scene, {
     material: material,
     geometry: geometry
@@ -817,6 +801,17 @@
          * @private
          */
         _init: function (cfg) {
+        },
+
+        /**
+         * Schedules rebuild on the next Scene tick
+         * @private
+         */
+        _nextTick: function (callback) {
+            if (!this.__needBuild) {
+                this.__needBuild = true;
+                this.scene.once("tick2", callback);
+            }
         },
 
         /**
@@ -1690,8 +1685,6 @@
                         delete self.objects[c.id];
 
                         delete self._dirtyObjects[c.id];
-
-                        self.fire("dirty", true);
                     }
 
                     /**
@@ -1717,8 +1710,6 @@
                         if (!self._dirtyObjects[c.id]) {
                             self._dirtyObjects[c.id] = c;
                         }
-
-                        self.fire("dirty", true);
                     });
 
                 this.objects[c.id] = c;
@@ -2399,365 +2390,7 @@
  *
  * @module XEO
  * @submodule animation
- */;/**
- A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target component, AABB or eye/look/up position.
-
- ## Overview
-
- <ul>
- <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.
- </ul>
-
- ## Example
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var camera = new XEO.Camera(scene);
-
- var object = new XEO.GameObject(scene);
-
- var animation = new XEO.CameraFlight(scene, {
-    camera: camera
- });
-
- animation.flyTo({
-    eye: [-5,-5,-5],
-    look: [0,0,0]
-    up: [0,1,0]
- }, function() {
-    // Arrived
- });
- ````
-
- @class CameraFlight
- @module XEO
- @submodule animation
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg] {*} Fly configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.CameraFlight = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.CameraFlight",
-
-        _init: function (cfg) {
-
-            this._look1 = XEO.math.vec3();
-            this._eye1 = XEO.math.vec3();
-            this._up1 = XEO.math.vec3();
-
-            this._look2 = XEO.math.vec3();
-            this._eye2 = XEO.math.vec3();
-            this._up2 = XEO.math.vec3();
-
-            this._vec = XEO.math.vec3();
-
-            this._dist = 0;
-
-            this._flying = false;
-
-            this._ok = null;
-
-            this._onTick = null;
-
-            this._camera = cfg.camera;
-
-            this._tempVec = XEO.math.vec3();
-
-            this._eyeVec = XEO.math.vec3();
-            this._lookVec = XEO.math.vec3();
-
-            this._stopFOV = 55;
-
-            this._time1 = null;
-            this._time2 = null;
-
-            this.easing = cfg.easing !== false;
-
-            this.duration = cfg.duration || 0.5;
-
-            this.camera = cfg.camera;
-        },
-
-        /**
-         * Begins flying this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
-         *
-         * <ul>
-         *     <li>When the target is a boundary, the {{#crossLink "Camera"}}{{/crossLink}} will fly towards the target
-         *     and stop when the target fills most of the canvas.</li>
-         *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlight will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.</li>
-         * @method flyTo
-         * @param params  {*} Flight parameters
-         * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
-         * {{#crossLink "Camera/eye:property"}}Camera's eye{{/crossLink}} position will
-         * swing away from its {{#crossLink "Camera/eye:property"}}look{{/crossLink}} position as it flies to the target.
-         * @param [params.component] {String|Component} ID or instance of a component to fly to.
-         * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
-         * @param [params.eye] {Array of Number} Position to fly the eye position to.
-         * @param [params.look] {Array of Number} Position to fly the look position to.
-         * @param [params.up] {Array of Number} Position to fly the up vector to.
-         * @param [ok] {Function} Callback fired on arrival
-         */
-        flyTo: function (params, ok) {
-
-            if (this._flying) {
-                this.stop();
-            }
-
-            this._ok = ok;
-
-            this._arc = params.arc === undefined ? 0.0 : params.arc;
-
-            var lookat = this.camera.view;
-
-            // Set up initial camera state
-
-            this._look1 = lookat.look;
-            this._eye1 = lookat.eye;
-            this._up1 = lookat.up;
-
-            // Get normalized eye->look vector
-
-            this._vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, []));
-
-            // Back-off factor in range of [0..1], when 0 is close, 1 is far
-
-            var backOff = params.backOff || 0.5;
-
-            if (backOff < 0) {
-                backOff = 0;
-
-            } else if (backOff > 1) {
-                backOff = 1;
-            }
-
-            backOff = 1 - backOff;
-
-            var component = params.component;
-            var aabb = params.aabb;
-
-            if (component || aabb) {
-
-                if (component) {
-
-                    if (XEO._isNumeric(component) || XEO._isString(component)) {
-
-                        var componentId = component;
-
-                        component = this.scene.components[componentId];
-
-                        if (!component) {
-                            this.error("Component not found: " + XEO._inQuotes(componentId));
-                            return;
-                        }
-                    }
-
-                    var worldBoundary = component.worldBoundary;
-
-                    if (!worldBoundary) {
-                        this.error("Can't fly to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
-                        return;
-                    }
-
-                    aabb = worldBoundary.aabb;
-                }
-
-                if (aabb.xmax <= aabb.xmin || aabb.ymax <= aabb.ymin || aabb.zmax <= aabb.zmin) {
-                    return;
-                }
-
-                var dist = params.dist || 2.5;
-                var lenVec = Math.abs(XEO.math.lenVec3(this._vec));
-                var diag = XEO.math.getAABBDiag(aabb);
-                var len = Math.abs((diag / (1.0 + (backOff * 0.8))) / Math.tan(this._stopFOV / 2));  /// Tweak this to set final camera distance on arrival
-                var sca = (len / lenVec) * dist;
-
-                this._look2 = XEO.math.getAABBCenter(aabb);
-                this._look2 = [this._look2[0], this._look2[1], this._look2[2]];
-
-                if (params.offset) {
-
-                    this._look2[0] += params.offset[0];
-                    this._look2[1] += params.offset[1];
-                    this._look2[2] += params.offset[2];
-                }
-
-                this._eye2 = XEO.math.addVec3(this._look2, XEO.math.mulVec3Scalar(this._vec, sca, []));
-                this._up2 = XEO.math.vec3();
-                this._up2[1] = 1;
-
-            } else {
-
-                // Zooming to specific look and eye points
-
-                var lookat = params;
-
-                var look = params.look || this._camera.view.look;
-                var eye = params.eye || this._camera.view.eye;
-                var up = params.up || this._camera.view.up;
-
-                this._look2[0] = look[0];
-                this._look2[1] = look[1];
-                this._look2[2] = look[2];
-
-
-                this._eye2[0] = eye[0];
-                this._eye2[1] = eye[1];
-                this._eye2[2] = eye[2];
-
-                this._up2[0] = up[0];
-                this._up2[1] = up[1];
-                this._up2[2] = up[2];
-            }
-
-            this.fire("started", params, true);
-
-            var self = this;
-
-            this._time1 = (new Date()).getTime();
-            this._time2 = this._time1 + this._duration;
-
-            this._tick = this.scene.on("tick",
-                function (params) {
-                    self._update();
-                });
-
-            this._flying = true;
-        },
-
-        _update: function () {
-
-            if (!this._flying) {
-                return;
-            }
-
-            var time = (new Date()).getTime();
-
-            var t = (time - this._time1) / (this._time2 - this._time1);
-
-            if (t > 1) {
-                this.stop();
-                return;
-            }
-
-            t = this.easing ? this._ease(t, 0, 1, 1) : t;
-
-            var view = this._camera.view;
-
-            view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, []);
-            view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
-            view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, []);
-        },
-
-        // Quadratic easing out - decelerating to zero velocity
-        // http://gizma.com/easing
-
-        _ease: function (t, b, c, d) {
-            t /= d;
-            return -c * t * (t - 2) + b;
-        },
-
-        stop: function () {
-
-            if (!this._flying) {
-                return;
-            }
-
-            this.scene.off(this._tick);
-
-            this._flying = false;
-
-            this._time1 = null;
-            this._time2 = null;
-
-            this.fire("stopped", true, true);
-
-            var ok = this._ok;
-
-            if (ok) {
-                this._ok = false;
-                ok();
-            }
-        },
-
-        _props: {
-
-            camera: {
-
-                set: function (value) {
-                    var camera = value || this.scene.camera;
-                    if (camera) {
-                        if (XEO._isNumeric(camera) || XEO._isString(camera)) {
-                            camera = this.scene.components[camera];
-                            if (!camera) {
-                                this.error("Component not found: " + XEO._inQuotes(value));
-                                return;
-                            }
-                        }
-                        if (camera.type != "XEO.Camera") {
-                            this.error("Component " + XEO._inQuotes(camera.id) + " is not a XEO.Camera");
-                            return;
-                        }
-                        this._camera = value || this.scene.camera;
-                    }
-                    this.stop();
-                },
-
-                get: function () {
-                    return this._camera;
-                }
-            },
-
-            duration: {
-
-                set: function (value) {
-                    this._duration = value * 1000.0;
-                    this.stop();
-                },
-
-                get: function () {
-                    return this._duration * 0.001;
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {};
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this.stop();
-        }
-    });
-
-})();
-;(function () {
+ */;(function () {
 
     "use strict";
 
@@ -3184,7 +2817,7 @@
 
                 var self = this;
 
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
                         self._build();
                     });
@@ -3473,8 +3106,6 @@
 
  ## Example
 
- <iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
-
  In this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.
  Then we attach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to a {{#crossLink "GameObject"}}{{/crossLink}}.
 
@@ -3560,7 +3191,7 @@
 
                 var self = this;
 
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
                         self._build();
                     });
@@ -3579,6 +3210,8 @@
             this._state.normalMatrix = new Float32Array(XEO.math.transposeMat4(new Float32Array(XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
 
             this._dirty = false;
+
+            this._renderer.imageDirty = true;
 
             /**
              * Fired whenever this Lookat's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is updated.
@@ -3765,8 +3398,6 @@
                     eye[1] = value[1];
                     eye[2] = value[2];
 
-                    this._renderer.imageDirty = true;
-
                     this._scheduleBuild();
 
                     /**
@@ -3804,8 +3435,6 @@
                     look[1] = value[1];
                     look[2] = value[2];
 
-                    this._renderer.imageDirty = true;
-
                     this._scheduleBuild();
 
                     /**
@@ -3840,8 +3469,6 @@
                     up[0] = value[0];
                     up[1] = value[1];
                     up[2] = value[2];
-
-                    this._renderer.imageDirty = true;
 
                     this._scheduleBuild();
 
@@ -4016,7 +3643,7 @@
             if (!this._dirty) {
                 this._dirty = true;
                 var self = this;
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
                         self._build();
                     });
@@ -4379,13 +4006,13 @@
             var canvas = this.scene.canvas;
 
             // Recompute aspect from change in canvas size
-            this._canvasResized = canvas.on("resized",
-                function () {
-                    self._aspect = canvas.width / canvas.height;
+            this._canvasResized = canvas.on("size",
+                function (e) {
+                    self.aspect = e.width / e.height;
                 });
 
             this.fovy = cfg.fovy;
-            this.aspect = canvas.width / canvas.height;
+         //   this.aspect = canvas.width / canvas.height;
             this.near = cfg.near;
             this.far = cfg.far;
         },
@@ -4399,7 +4026,7 @@
 
                 var self = this;
 
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
                         self._build();
                     });
@@ -4410,7 +4037,9 @@
         _build: function () {
 
             var canvas = this.scene.canvas.canvas;
-            var aspect = canvas.width / canvas.height;
+            var aspect = canvas.clientWidth / canvas.clientHeight;
+
+            aspect = this._aspect;
 
             this._state.matrix = XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far);
 
@@ -4601,6 +4230,329 @@
             this.scene.canvas.off(this._canvasResized);
 
             this._state.destroy();
+        }
+    });
+
+})();
+;/**
+ A **Canvas** manages a {{#crossLink "Scene"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.
+
+ ## Overview
+
+ <ul>
+
+ <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.</li>
+
+ <li>When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
+ an existing <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>, then
+ the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
+
+ <li>A Canvas will fire a {{#crossLink "Canvas/resized:event"}}{{/crossLink}} event whenever
+ the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.</li>
+
+ <li>A Canvas is responsible for obtaining a WebGL context from
+ the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.</li>
+
+ <li>A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
+ lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.</li>
+
+ <li>The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
+ the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.</li>
+
+ </ul>
+
+ <img src="../../../assets/images/Canvas.png"></img>
+
+ ## Example
+
+ In the example below, we're creating a {{#crossLink "Scene"}}Scene{{/crossLink}} without specifying an HTML canvas element
+ for it. This causes the {{#crossLink "Scene"}}Scene{{/crossLink}}'s Canvas component to create its own default element
+ within the page. Then we subscribe to various events fired by that Canvas component.
+
+ ```` javascript
+ var scene = new XEO.Scene();
+
+ // Get the Canvas off the Scene
+ // Since we did not configure the Scene with the ID of a DOM canvas element,
+ // the Canvas will create its own canvas element in the DOM
+ var canvas = scene.canvas;
+
+ // Get the WebGL context off the Canvas
+ var gl = canvas.gl;
+
+ // Subscribe to Canvas resize events
+ canvas.on("resize", function(e) {
+        var width = e.width;
+        var height = e.height;
+        var aspect = e.aspect;
+        //...
+     });
+
+ // Subscribe to WebGL context loss events on the Canvas
+ canvas.on("webglContextLost", function() {
+        //...
+     });
+
+ // Subscribe to WebGL context restored events on the Canvas
+ canvas.on("webglContextRestored", function(gl) {
+        var newContext = gl;
+        //...
+     });
+ ````
+
+ When we want to bind the Canvas to an existing HTML canvas element, configure the
+ {{#crossLink "Scene"}}{{/crossLink}} with the ID of the element, like this:
+
+ ```` javascript
+ // Create a Scene, this time configuting it with the
+ // ID of an existing DOM canvas element
+ var scene = new XEO.Scene({
+          canvasId: "myCanvas"
+     });
+
+ // ..and the rest of this example can be the same as the previous example.
+
+ ````
+ @class Canvas
+ @module XEO
+ @submodule canvas
+ @static
+ @param {Scene} scene Parent scene
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    var canvases = {};
+
+    XEO.Canvas = XEO.Component.extend({
+
+        type: "XEO.Canvas",
+
+        serializable: false,
+
+        // Names of recognised WebGL contexts
+        _WEBGL_CONTEXT_NAMES: [
+            "webgl",
+            "experimental-webgl",
+            "webkit-3d",
+            "moz-webgl",
+            "moz-glweb20"
+        ],
+
+        _init: function (cfg) {
+
+            /**
+             * The HTML canvas. When the {{#crossLink "Viewer"}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,
+             * then this property will be that element, otherwise it will be a full-page canvas that this Canvas has
+             * created by default.
+             *
+             * @property canvas
+             * @type {HTMLCanvasElement}
+             * @final
+             */
+            this.canvas = null;
+
+            /**
+             * The WebGL rendering context.
+             *
+             * @property gl
+             * @type {WebGLRenderingContext}
+             * @final
+             */
+            this.gl = null;
+
+            /**
+             * Attributes for the WebGL context
+             *
+             * @type {{}|*}
+             */
+            this.contextAttr = cfg.contextAttr || {};
+
+            if (!cfg.canvas) {
+
+                // Canvas not supplied, create one automatically
+
+                this._createCanvas();
+
+            } else {
+
+                // Canvas supplied
+
+                if (XEO._isString(cfg.canvas)) {
+
+                    // Canvas ID supplied - find the canvas
+
+                    this.canvas = document.getElementById(cfg.canvas);
+
+                    if (!this.canvas) {
+
+                        // Canvas not found - create one automatically
+
+                        this.error("Canvas element not found: " + XEO._inQuotes(cfg.canvas)
+                            + " - creating default canvas instead.");
+
+                        this._createCanvas();
+                    }
+
+                } else {
+
+                    this.error("Config 'canvasId' should be a string - "
+                        + "creating default canvas instead.");
+
+                    this._createCanvas();
+                }
+            }
+
+            if (!this.canvas) {
+
+                this.error("Faied to create canvas");
+
+                return;
+            }
+
+            // If the canvas uses css styles to specify the sizes make sure the basic
+            // width and height attributes match or the WebGL context will use 300 x 150
+
+            this.canvas.width = this.canvas.clientWidth;
+            this.canvas.height = this.canvas.clientHeight;
+
+            // Get WebGL context
+
+            this._initWebGL();
+
+            // Bind context loss and recovery handlers
+
+            var self = this;
+
+            this.canvas.addEventListener("webglcontextlost",
+                function () {
+
+                    /**
+                     * Fired wheneber the WebGL context has been lost
+                     * @event webglContextLost
+                     */
+                    self.fire("webglContextLost");
+                },
+                false);
+
+            this.canvas.addEventListener("webglcontextrestored",
+                function () {
+                    self._initWebGL();
+                    if (self.gl) {
+
+                        /**
+                         * Fired whenever the WebGL context has been restored again after having previously being lost
+                         * @event webglContextRestored
+                         * @param value The WebGL context object
+                         */
+                        self.fire("webglContextRestored", self.gl);
+                    }
+                },
+                false);
+
+            // Publish canvas size changes on each scene tick
+
+            var lastWidth = null;
+            var lastHeight = null;
+
+            this._tick = this.scene.on("tick",
+                function () {
+
+                    var canvas = self.canvas;
+
+                    if (canvas.clientWidth !== lastWidth || canvas.clientHeight !== lastHeight) {
+
+                        var newWidth = canvas.clientWidth;
+                        var newHeight = canvas.clientHeight;
+
+                        //canvas.width = canvas.clientWidth;
+                        //canvas.height = canvas.clientHeight;
+                        /**
+                         * Fired whenever the canvas has resized
+                         * @event resized
+                         * @param width {Number} The new canvas width
+                         * @param height {Number} The new canvas height
+                         * @param aspect {Number} The new canvas aspect ratio
+                         */
+                        self.fire("size", {
+                            width: newWidth,
+                            height: newHeight,
+                            aspect: newHeight / newWidth
+                        });
+
+                        lastWidth = newWidth;
+                        lastHeight = newHeight;
+
+                    }
+                });
+
+            this.canvas.oncontextmenu = function (e) {
+                e.preventDefault();
+            };
+        },
+
+        /**
+         * Creates a canvas in the DOM
+         * @private
+         */
+        _createCanvas: function () {
+
+            var canvasId = "XEO-canvas-" + XEO.math.createUUID();
+            var body = document.getElementsByTagName("body")[0];
+            var div = document.createElement('div');
+
+            var style = div.style;
+            style.height = "100%";
+            style.width = "100%";
+            style.padding = "0";
+            style.margin = "0";
+            style.background = "black";
+            style.float = "left";
+            style.left = "0";
+            style.top = "0";
+             style.position = "absolute";
+             style["z-index"] = "10000";
+
+            div.innerHTML += '<canvas id="' + canvasId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0;"></canvas>';
+
+            body.appendChild(div);
+
+            this.canvas = document.getElementById(canvasId);
+        },
+
+        /**
+         * Initialises the WebGL context
+         */
+        _initWebGL: function () {
+
+            for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
+                try {
+                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
+                } catch (e) { // Try with next context name
+                }
+            }
+
+            if (!this.gl) {
+
+                this.error('Failed to get a WebGL context');
+
+                /**
+                 * Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL
+                 * is either unsupported or has been disabled.
+                 * @event webglContextFailed
+                 */
+                this.fire("webglContextFailed", true, true);
+
+                // TODO: render message in canvas
+
+
+            }
+        },
+
+        _destroy: function () {
+            this.scene.off(this._tick);
         }
     });
 
@@ -5736,9 +5688,9 @@ visibility.destroy();
 
             if (defaultGeometry) {
 
-                this.primitive = "triangles";
-
                 // Call property setters
+
+                this.primitive = cfg.primitive;
 
                 this.positions = [
                     -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, // Front face
@@ -5792,15 +5744,33 @@ visibility.destroy();
 
             } else {
 
-                // Custom geometry
+                var defaultLineStripGeometry = ((!cfg.primitive || cfg.primitive === "line-strip") && cfg.positions && !cfg.indices);
 
-                this.primitive = cfg.primitive;
-                this.positions = cfg.positions;
-                this.colors = cfg.colors;
-                this.normals = cfg.normals;
-                this.uv = cfg.uv;
-                this.tangents = cfg.tangents;
-                this.indices = cfg.indices;
+                if (defaultLineStripGeometry) {
+
+                    // Line strip when only positions are given and no primitive
+
+                    var indices = [];
+                    for (var i = 0, len = cfg.positions.length / 3; i < len; i++) {
+                        indices.push(i);
+                    }
+
+                    this.primitive = "line-strip";
+                    this.positions = cfg.positions;
+                    this.indices = indices;
+
+                } else {
+
+                    // Custom geometry
+
+                    this.primitive = cfg.primitive;
+                    this.positions = cfg.positions;
+                    this.colors = cfg.colors;
+                    this.normals = cfg.normals;
+                    this.uv = cfg.uv;
+                    this.tangents = cfg.tangents;
+                    this.indices = cfg.indices;
+                }
             }
 
             var self = this;
@@ -5821,7 +5791,7 @@ visibility.destroy();
                 this._dirty = true;
                 var self = this;
 
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
                         self._build();
                     });
@@ -5977,6 +5947,9 @@ visibility.destroy();
 
             /**
              * The Geometry's positions array.
+             *
+             * This property is a one-dimensional array - use  {{#crossLink "XEO.math/flatten:method"}}{{/crossLink}} to
+             * convert two-dimensional arrays for assignment to this property.
              *
              * Fires a {{#crossLink "Geometry/positions:event"}}{{/crossLink}} event on change.
              *
@@ -6305,978 +6278,6 @@ visibility.destroy();
             // Decrement geometry statistic
 
             this.scene.stats.dec("geometries");
-        }
-    });
-
-})();
-;/**
- A **Torus** defines toroid geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
- ## Example
-
- ````javascript
-
- ````
-
- @class Torus
- @module XEO
- @submodule geometry
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Torus in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
- generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Torus.
- @param [cfg.radius=1] {Number}
- @param [cfg.tube=0.3] {Number}
- @param [cfg.segmentsR=32] {Number}
- @param [cfg.segmentsT=24] {Number}
- @param [cfg.arc=Math.PI / 2.0] {Number}
- @extends Geometry
- */
-(function () {
-
-    "use strict";
-
-    XEO.Torus = XEO.Geometry.extend({
-
-        type: "XEO.Torus",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this.radius = cfg.radius;
-            this.tube = cfg.tube;
-            this.segmentsR = cfg.segmentsR;
-            this.segmentsT = cfg.segmentsT;
-            this.arc = cfg.arc;
-
-            this._build2();
-        },
-
-        _scheduleBuild2: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                var self = this;
-                this.scene.once("tick",
-                    function () {
-                        self._build2();
-                    });
-            }
-        },
-
-        _build2: function () {
-
-            var radius = this._radius;
-            var tube = this._tube;
-            var segmentsR = this._segmentsR;
-            var segmentsT = this._segmentsT;
-            var arc = this._arc;
-
-            var positions = [];
-            var normals = [];
-            var uvs = [];
-            var indices = [];
-
-            var u;
-            var v;
-            var centerX;
-            var centerY;
-            var centerZ = 0;
-            var x;
-            var y;
-            var z;
-            var vec;
-
-            var i;
-            var j;
-
-            for (j = 0; j <= segmentsR; j++) {
-                for (i = 0; i <= segmentsT; i++) {
-
-                    u = i / segmentsT * arc;
-                    v = j / segmentsR * Math.PI * 2;
-
-                    centerX = radius * Math.cos(u);
-                    centerY = radius * Math.sin(u);
-
-                    x = (radius + tube * Math.cos(v) ) * Math.cos(u);
-                    y = (radius + tube * Math.cos(v) ) * Math.sin(u);
-                    z = tube * Math.sin(v);
-
-                    positions.push(x);
-                    positions.push(y);
-                    positions.push(z);
-
-                    uvs.push(i / segmentsT);
-                    uvs.push(1 - j / segmentsR);
-
-                    vec = XEO.math.normalizeVec3(XEO.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
-
-                    normals.push(vec[0]);
-                    normals.push(vec[1]);
-                    normals.push(vec[2]);
-                }
-            }
-
-            var a;
-            var b;
-            var c;
-            var d;
-
-            for (j = 1; j <= segmentsR; j++) {
-                for (i = 1; i <= segmentsT; i++) {
-
-                    a = ( segmentsT + 1 ) * j + i - 1;
-                    b = ( segmentsT + 1 ) * ( j - 1 ) + i - 1;
-                    c = ( segmentsT + 1 ) * ( j - 1 ) + i;
-                    d = ( segmentsT + 1 ) * j + i;
-
-                    indices.push(a);
-                    indices.push(b);
-                    indices.push(c);
-
-                    indices.push(c);
-                    indices.push(d);
-                    indices.push(a);
-                }
-            }
-
-            this.positions = positions;
-            this.normals = normals;
-            this.uv = uvs;
-            this.indices = indices;
-
-            this._dirty = false;
-        },
-
-        _props: {
-
-            /**
-             * The Torus's radius.
-             *
-             * Fires a {{#crossLink "Torus/radius:event"}}{{/crossLink}} event on change.
-             *
-             * @property radius
-             * @default 1
-             * @type Number
-             */
-            radius: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._radius === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative radius not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._radius = value;
-
-                    /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/radius:property"}}{{/crossLink}} property changes.
-                     * @event radius
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("radius", this._radius);
-
-                    this._scheduleBuild2();
-                },
-
-                get: function () {
-                    return this._radius;
-                }
-            },
-
-
-            /**
-             * The Torus's tube.
-             *
-             * Fires a {{#crossLink "Torus/tube:event"}}{{/crossLink}} event on change.
-             *
-             * @property tube
-             * @default 0.3
-             * @type Number
-             */
-            tube: {
-
-                set: function (value) {
-
-                    value = value || 0.3;
-
-                    if (this._tube === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative tube not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._tube = value;
-
-                    /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/tube:property"}}{{/crossLink}} property changes.
-                     * @event tube
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("tube", this._tube);
-
-                    this._scheduleBuild2();
-                },
-
-                get: function () {
-                    return this._tube;
-                }
-            },
-
-            /**
-             * The Torus's segmentsR.
-             *
-             * Fires a {{#crossLink "Torus/segmentsR:event"}}{{/crossLink}} event on change.
-             *
-             * @property segmentsR
-             * @default 32
-             * @type Number
-             */
-            segmentsR: {
-
-                set: function (value) {
-
-                    value = value || 32;
-
-                    if (this._segmentsR === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative segmentsR not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._segmentsR = value;
-
-                    /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/segmentsR:property"}}{{/crossLink}} property changes.
-                     * @event segmentsR
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("segmentsR", this._segmentsR);
-
-                    this._scheduleBuild2();
-                },
-
-                get: function () {
-                    return this._segmentsR;
-                }
-            },
-
-
-            /**
-             * The Torus's segmentsT.
-             *
-             * Fires a {{#crossLink "Torus/segmentsT:event"}}{{/crossLink}} event on change.
-             *
-             * @property segmentsT
-             * @default 24
-             * @type Number
-             */
-            segmentsT: {
-
-                set: function (value) {
-
-                    value = value || 24;
-
-                    if (this._segmentsT === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative segmentsT not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._segmentsT = value;
-
-                    /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/segmentsT:property"}}{{/crossLink}} property changes.
-                     * @event segmentsT
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("segmentsT", this._segmentsT);
-
-                    this._scheduleBuild2();
-                },
-
-                get: function () {
-                    return this._segmentsT;
-                }
-            },
-
-            /**
-             * The Torus's arc.
-             *
-             * Fires a {{#crossLink "Torus/arc:event"}}{{/crossLink}} event on change.
-             *
-             * @property arc
-             * @default Math.PI * 2
-             * @type Number
-             */
-            arc: {
-
-                set: function (value) {
-
-                    value = value || Math.PI * 2;
-
-                    if (this._arc === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative arc not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._arc = value;
-
-                    /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/arc:property"}}{{/crossLink}} property changes.
-                     * @event arc
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("arc", this._arc);
-
-                    this._scheduleBuild2();
-                },
-
-                get: function () {
-                    return this._arc;
-                }
-            }
-        },
-
-        _getJSON: function () {
-            return XEO._apply2({
-                radius: this._radius,
-                tube: this._tube,
-                segmentsR: this._segmentsR,
-                segmentsT: this._segmentsT,
-                arc: this._arc
-            }, {});
-        }
-    });
-
-})();
-;/**
- * Components for managing groups of components.
- *
- * @module XEO
- * @submodule grouping
- */;/**
- A **Group** is a subset of the {{#crossLink "Component"}}Components{{/crossLink}} within a {{#crossLink "Scene"}}{{/crossLink}}.
-
- ## Overview
-
- <ul>
- <li>Supports addition and removal of {{#crossLink "Component"}}Components{{/crossLink}} by instance, ID or type.</li>
- </ul>
-
- <img src="../../../assets/images/Group.png"></img>
-
- ## Example
-
- In this example we have:
-
- <ul>
- <li>a {{#crossLink "Material"}}{{/crossLink}},
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} (that is the default box shape),
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above,</li>
- <li>two {{#crossLink "Group"}}Groups{{/crossLink}}, each containing a subset of all our components.</li>
- </ul>
-
- ````javascript
- var scene = new XEO.Scene();
-
- var material = new XEO.PhongMaterial(scene, {
-     id: "myMaterial",
-     diffuse: [0.5, 0.5, 0.0]
- });
-
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
- var gameObject = new XEO.GameObject(scene, {
-    id: "myObject",
-    material: material,
-    geometry: geometry
- });
-
- // Our first group contains the Material, added by ID,
- // plus the Geometry and GameObject, both added by instance.
-
- var group1 = new XEO.Group(scene, { // Initialize with three components
-    components: [
-        "myMaterial",
-        geometry,
-        gameObject
-    ]
- });
-
- // Our second Group includes the geometry, added by instance,
- // and the GameObject, added by type. If there were more than
- // one GameObject in the scene, then that type would ensure
- // that all the GameObjects were in the Group.
-
- var group2 = new XEO.Group(scene);
-
- group2.add([  // Add two components
-        geometry,
-        "XEO.GameObject",
-    ]);
-
- // We can iterate over the components in a Group like so:
-
- group1.iterate(
-    function(component) {
-        //..
-    });
-
- // And remove components from a Group
- // by instance, ID or type:
-
- group1.remove("myMaterial"); // Remove one component by ID
- group1.remove([geometry, gameObject]); // Remove two components by instance
-
- group2.remove("XEO.Geometry"); // Remove all Geometries
- ````
-
- TODO
-
- @class Group
- @module XEO
- @submodule grouping
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Component} Optional map of user-defined metadata to attach to this Group.
- @param [cfg.components] {{Array of String|Component}} Array of {{#crossLink "Component"}}{{/crossLink}} IDs or instances.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Group = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.Group",
-
-        _init: function (cfg) {
-
-            /**
-             * The {{#crossLink "Components"}}{{/crossLink}} within this Group, mapped to their IDs.
-             *
-             * Fires an {{#crossLink "Group/updated:event"}}{{/crossLink}} event on change.
-             *
-             * @property components
-             * @type {{String:Component}}
-             */
-            this.components = {};
-
-            /**
-             * The number of {{#crossLink "Components"}}{{/crossLink}} within this Group.
-             *
-             * @property numComponents
-             * @type Number
-             */
-            this.numComponents = 0;
-
-            /**
-             * For each {{#crossLink "Component"}}Component{{/crossLink}} type, a map of
-             * IDs to instances.
-             *
-             * @property types
-             * @type {String:{String:XEO.Component}}
-             */
-            this.types = {};
-
-            // Subscriptions to "destroyed" events from components
-            this._destroyedSubs = {};
-
-            if (cfg.components) {
-                this.add(cfg.components);
-            }
-        },
-
-        /**
-         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}}s to this Group.
-         *
-         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
-         *
-         * See class comment for usage examples.
-         *
-         * The {{#crossLink "Component"}}Components{{/crossLink}} must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Group.
-         *
-         * Fires an {{#crossLink "Group/updated:event"}}{{/crossLink}} event.
-         *
-         * @method add
-         * @param {Array of Component} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
-         */
-        add: function (components) {
-
-            components = XEO._isArray(components) ? components : [components];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                this._addComponent(components[i]);
-            }
-        },
-
-        _addComponent: function (c) {
-
-            var componentId;
-            var component;
-            var type;
-            var types;
-
-            if (c.type) {
-
-                // Component instance
-
-                component = c;
-
-            } else if (XEO._isNumeric(c) || XEO._isString(c)) {
-
-                if (this.scene.types[c]) {
-
-                    // Component type
-
-                    type = c;
-
-                    types = this.scene.types[type];
-
-                    if (!types) {
-                        this.warn("Component type not found: '" + type + "'");
-                        return;
-                    }
-
-                    for (componentId in types) {
-                        if (types.hasOwnProperty(componentId)) {
-                            this._addComponent(types[componentId]);
-                        }
-                    }
-
-                    return;
-
-                } else {
-
-                    // Component ID
-
-                    component = this.scene.components[c];
-
-                    if (!component) {
-                        this.warn("Component not found: " + XEO._inQuotes(c));
-                        return;
-                    }
-                }
-
-            } else {
-
-                return;
-            }
-
-            if (component.scene != this.scene) {
-
-                // Component in wrong Scene
-
-                this.warn("Attempted to add component from different XEO.Scene: " + XEO._inQuotes(component.id));
-                return;
-            }
-
-            // Add component to this map
-
-            this.components[component.id] = component;
-
-            // Register component for its type
-
-            types = this.types[component.type];
-
-            if (!types) {
-                types = this.types[type] = {};
-            }
-
-            types[component.id] = component;
-
-            this.numComponents++;
-
-            // Remove component when it's destroyed
-
-            var self = this;
-
-            this._destroyedSubs[component.id] = component.on("destroyed",
-                function(component) {
-                    self._removeComponent(component);
-                });
-
-            this.fire("added", component);
-        },
-
-        /**
-         * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Group.
-         *
-         * Fires an {{#crossLink "Group/updated:event"}}{{/crossLink}} event.
-         *
-         * @method clear
-         */
-        clear: function () {
-
-            this.iterate(function (component) {
-                this._removeComponent(component);
-            });
-        },
-
-        /**
-         * Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Group.
-         *
-         * @method destroyAll
-         */
-        destroyAll: function () {
-
-            this.iterate(function (component) {
-                component.destroy();
-            });
-        },
-
-        /**
-         * Removes one or more {{#crossLink "Component"}}Components{{/crossLink}} from this Group.
-         *
-         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
-         *
-         * See class comment for usage examples.
-         *
-         * Fires an {{#crossLink "Group/updated:event"}}{{/crossLink}} event.
-         *
-         * @method remove
-         * @param {Array of Components} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
-         */
-        remove: function (components) {
-
-            components = XEO._isArray(components) ? components : [components];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                this._removeComponent(components[i]);
-            }
-        },
-
-        _removeComponent: function (component) {
-
-            var componentId = component.id;
-
-            if (component.scene != this.scene) {
-                this.warn("Attempted to remove component that's not in same XEO.Scene: '" + componentId + "'");
-                return;
-            }
-
-            delete this.components[componentId];
-
-            // Unsubscribe from component destruction
-
-            component.off(this._destroyedSubs[componentId]);
-
-            delete this._destroyedSubs[componentId];
-
-            // Unregister component for its type
-
-            var types = this.types[component.type];
-
-            if (types) {
-                delete types[component.id];
-            }
-
-            this.numComponents--;
-
-            this.fire("removed", component);
-        },
-
-        /**
-         * Iterates with a callback over the {{#crossLink "Component"}}Components{{/crossLink}} in this Group.
-         *
-         * @method withComponents
-         * @param {Function} callback Callback called for each {{#crossLink "Component"}}{{/crossLink}}.
-         */
-        iterate: function (callback) {
-            for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId)) {
-                    callback.call(this, this.components[componentId]);
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var componentIds = [];
-
-            for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId)) {
-                    componentIds.push(this.components[componentId].id); // Don't convert numbers into strings
-                }
-            }
-
-            return {
-                components: componentIds
-            };
-        },
-
-        _destroy: function () {
-
-            this.clear();
-        }
-    });
-
-})();;
-/**
- A **GroupBoundary** configures the WebGL color buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
- ## Overview
-
- <ul>
-
- <li>A GroupBoundary configures **the way** that pixels are written to the WebGL color buffer.</li>
- <li>GroupBoundary is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
- colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
-
- </ul>
-
- <img src="../../../assets/images/GroupBoundary.png"></img>
-
- ## Example
-
- In this example we're configuring the WebGL color buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
-
- This example scene contains:
-
- <ul>
- <li>a GroupBoundary that enables blending and sets the color mask,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
-
- ````javascript
- var scene = new XEO.Scene();
-
- var GroupBoundary = new XEO.GroupBoundary(scene, {
-    blendEnabled: true,
-    colorMask: [true, true, true, true]
-});
-
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
- var gameObject = new XEO.GameObject(scene, {
-    GroupBoundary: GroupBoundary,
-    geometry: geometry
-});
- ````
-
- @class GroupBoundary
- @module XEO
- @submodule grouping
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this GroupBoundary within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} GroupBoundary configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GroupBoundary.
- @param [cfg.blendEnabled=false] {Boolean} Indicates if blending is enabled.
- @param [cfg.colorMask=[true, true, true, true]] {Array of Boolean} The color mask,
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.GroupBoundary = XEO.Component.extend({
-
-        type: "XEO.GroupBoundary",
-
-        _init: function (cfg) {
-
-            this.group = cfg.group;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GameObject.
-             *
-             * Defaults to an empty internally-managed {{#crossLink "Group"}}{{/crossLink}}.
-             *
-             * Fires a {{#crossLink "GroupBoundary/group:event"}}{{/crossLink}} event on change.
-             *
-             * @property group
-             * @type Group
-             */
-            group: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this GroupBoundary's  {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event group
-                     * @param value The property's new value
-                     */
-                    this._setChild("group", value);
-                },
-
-                get: function () {
-                    return this._children.group;
-                }
-            },
-            
-            /**
-             * World-space 3D boundary.
-             *
-             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
-             * time you reference it.
-             *
-             * @property worldBoundary
-             * @type Boundary3D
-             * @final
-             */
-            worldBoundary: {
-
-                get: function () {
-
-                    if (!this._worldBoundary) {
-
-                        var self = this;
-
-                        this._worldBoundary = new XEO.Boundary3D(this.scene, {
-
-                            getDirty: function () {
-                                return self._worldBoundaryDirty;
-                            },
-
-                            getOBB: function () {
-
-                                // Calls our Geometry's modelBoundary property,
-                                // lazy-inits the boundary and its obb
-
-                                return self._children.geometry.modelBoundary.obb;
-                            },
-
-                            getMatrix: function () {
-                                return self._children.transform.matrix;
-                            }
-                        });
-
-                        this._worldBoundary.on("destroyed",
-                            function () {
-                                self._worldBoundary = null;
-                            });
-
-                        this._setWorldBoundaryDirty();
-                    }
-
-                    return this._worldBoundary;
-                }
-            },
-
-            /**
-             * View-space 3D boundary.
-             *
-             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance
-             * next time you reference it.
-             *
-             * @property viewBoundary
-             * @type Boundary3D
-             * @final
-             */
-            viewBoundary: {
-
-                get: function () {
-
-                    if (!this._viewBoundary) {
-
-                        var self = this;
-
-                        this._viewBoundary = new XEO.Boundary3D(this.scene, {
-
-                            getDirty: function () {
-                                return self._viewBoundaryDirty;
-                            },
-
-                            getOBB: function () {
-
-                                // Calls our worldBoundary property,
-                                // lazy-inits the boundary and its obb
-
-                                return self.worldBoundary.obb;
-                            },
-
-                            getMatrix: function () {
-                                return self._children.camera.view.matrix;
-                            }
-                        });
-
-                        this._viewBoundary.on("destroyed",
-                            function () {
-                                self._viewBoundary = null;
-                            });
-
-                        this._setViewBoundaryDirty();
-                    }
-
-                    return this._viewBoundary;
-                }
-            }
-        },
-
-        _setWorldBoundaryDirty: function () {
-            this._worldBoundaryDirty = true;
-            this._viewBoundaryDirty = true;
-            if (this._worldBoundary) {
-                this._worldBoundary.fire("updated", true);
-            }
-            if (this._viewBoundary) {
-                this._viewBoundary.fire("updated", true);
-            }
-        },
-
-        _setViewBoundaryDirty: function () {
-            this._viewBoundaryDirty = true;
-            if (this._viewBoundary) {
-                this._viewBoundary.fire("updated", true);
-            }
-        },
-        
-        _getJSON: function () {
-            return {
-                
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
         }
     });
 
@@ -8510,2472 +7511,6 @@ var myScene = new XEO.Scene();
 
 })();
 ;/**
- A **CameraControl** pans, rotates and zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse and keyboard,
- as well as switches it between preset left, right, anterior, posterior, superior and inferior views.
-
- A CameraControl is comprised of the following control components, which each handle an aspect of interaction:
-
- <ul>
- <li>panning - {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} and {{#crossLink "MousePanCamera"}}{{/crossLink}}</li>
- <li>rotation - {{#crossLink "KeyboardOrbitCamera"}}{{/crossLink}} and {{#crossLink "MouseOrbitCamera"}}{{/crossLink}}</li>
- <li>zooming - {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} and {{#crossLink "MouseZoomCamera"}}{{/crossLink}}</li>
- <li>switching preset views - {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}}</li>
- <li>picking - {{#crossLink "MousePickObject"}}{{/crossLink}}</li>
- <li>camera flight animation - {{#crossLink "CameraFlight"}}{{/crossLink}}</li>
- </ul>
-
- A CameraControl provides the controls as read-only properties, in case you need to configure or deactivate
- them individually.
-
- <ul>
- <li>Activating or deactivating the CameraControl will activate/deactivate all the controls in unison.</li>
- <li>Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
- {{#crossLink "Camera"}}{{/crossLink}} to all the controls.</li>
- <li>The controls are not intended to be attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.</li>
- <li>The CameraControl manages the lifecycles of the controls, destroying them when the CameraControl is destroyed.</li>
- </ul>
-
- ## Example
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var camera = new XEO.Camera(scene);
-
- var cameraControl = new XEO.CameraControl(scene, {
-
-        camera: camera,
-
-        // "First person" mode rotates look about eye.
-        // By default however, we orbit eye about look.
-        firstPerson: false
-    });
-
- // Reduce the sensitivity of mouse rotation
- cameraControl.mouseOrbit.sensitivity = 0.7;
-
- // Deactivate switching between preset views
- cameraControl.axisCamera.active = false;
-
- // Create a GameObject
- var object = new XEO.GameObject(scene);
- ````
-
- @class CameraControl
- @module XEO
- @submodule input
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraControl.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraControl. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.active=true] {Boolean} Whether or not this CameraControl is active.
- @param [firstPerson=false] {Boolean} Whether or not this CameraControl is in "first person" mode.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.CameraControl = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.CameraControl",
-
-        /**
-         Indicates that only one instance of a CameraControl may be active within
-         its {{#crossLink "Scene"}}{{/crossLink}} at a time. When a CameraControl is activated, that has
-         a true value for this flag, then any other active CameraControl will be deactivated first.
-
-         @property exclusive
-         @type Boolean
-         @final
-         */
-        exclusive: true,
-
-        _init: function (cfg) {
-
-            var self = this;
-
-            var scene = this.scene;
-
-            /**
-             * The {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property keyboardAxis
-             * @final
-             * @type KeyboardAxisCamera
-             */
-            this.keyboardAxis = new XEO.KeyboardAxisCamera(scene, {
-                camera: cfg.camera
-            });
-
-            /**
-             * The {{#crossLink "KeyboardOrbitCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property keyboardOrbit
-             * @final
-             * @type KeyboardOrbitCamera
-             */
-            this.keyboardOrbit = new XEO.KeyboardOrbitCamera(scene, {
-                sensitivity: 1,
-                camera: cfg.camera
-            });
-
-            /**
-             * The {{#crossLink "MouseOrbitCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property mouseOrbit
-             * @final
-             * @type MouseOrbitCamera
-             */
-            this.mouseOrbit = new XEO.MouseOrbitCamera(scene, {
-                sensitivity: 1,
-                camera: cfg.camera
-            });
-
-            /**
-             * The {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property keyboardPan
-             * @final
-             * @type KeyboardPanCamera
-             */
-            this.keyboardPan = new XEO.KeyboardPanCamera(scene, {
-                sensitivity: 1,
-                camera: cfg.camera
-            });
-
-            /**
-             * The {{#crossLink "MousePanCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property mousePan
-             * @final
-             * @type MousePanCamera
-             */
-            this.mousePan = new XEO.MousePanCamera(scene, {
-                sensitivity: 1,
-                camera: cfg.camera
-            });
-
-            /**
-             * The {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property keyboardZoom
-             * @final
-             * @type KeyboardZoomCamera
-             */
-            this.keyboardZoom = new XEO.KeyboardZoomCamera(scene, {
-                sensitivity: 1,
-                camera: cfg.camera
-            });
-
-            /**
-             * The {{#crossLink "MouseZoomCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property mouseZoom
-             * @final
-             * @type MouseZoomCamera
-             */
-            this.mouseZoom = new XEO.MouseZoomCamera(scene, {
-                sensitivity: 1,
-                camera: cfg.camera
-            });
-
-            /**
-             * The {{#crossLink "MousePickObject"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property mousePickObject
-             * @final
-             * @type MousePickObject
-             */
-            this.mousePickObject = new XEO.MousePickObject(scene, {
-                rayPick: true,
-                camera: cfg.camera
-            });
-
-            /**
-             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property cameraFly
-             * @final
-             * @type CameraFlight
-             */
-            this.cameraFly = new XEO.CameraFlight(scene, {
-                camera: cfg.camera
-            });
-
-            this.mousePickObject.on("pick",
-                function (e) {
-
-                    var view = self.cameraFly.camera.view;
-
-                    var diff = XEO.math.subVec3(view.eye, view.look, []);
-
-                    self.cameraFly.flyTo({
-                        look: e.worldPos,
-                        eye: [
-                            e.worldPos[0] + diff[0],
-                            e.worldPos[1] + diff[1],
-                            e.worldPos[2] + diff[2]
-                        ]
-                    });
-                });
-
-            // Handle when nothing is picked
-            this.mousePickObject.on("nopick",
-                function (e) {
-                    // alert("Mothing picked");
-                });
-
-            this.firstPerson = cfg.firstPerson;
-            this.camera = cfg.camera;
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * Flag which indicates whether this CameraControl is in "first person" mode.
-             *
-             * In "first person" mode (disabled by default) the look position rotates about the eye position. Otherwise,
-             * the eye rotates about the look.
-             *
-             * Fires a {{#crossLink "KeyboardOrbitCamera/firstPerson:event"}}{{/crossLink}} event on change.
-             *
-             * @property firstPerson
-             * @default false
-             * @type Boolean
-             */
-            firstPerson: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    this._firstPerson = value;
-
-                    this.keyboardOrbit.firstPerson = value;
-                    this.mouseOrbit.firstPerson = value;
-
-                    /**
-                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/firstPerson:property"}}{{/crossLink}} property changes.
-                     * @event firstPerson
-                     * @param value The property's new value
-                     */
-                    this.fire('firstPerson', this._firstPerson);
-                },
-
-                get: function () {
-                    return this._firstPerson;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraControl.
-             *
-             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraControl. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property camera
-             * @type Camera
-             */
-            camera: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/camera:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event camera
-                     * @param value The property's new value
-                     */
-                    this._setChild("camera", value);
-
-                    // Update camera on child components
-
-                    var camera = this._children.camera;
-
-                    this.keyboardAxis.camera = camera;
-                    this.keyboardOrbit.camera = camera;
-                    this.mouseOrbit.camera = camera;
-                    this.keyboardPan.camera = camera;
-                    this.mousePan.camera = camera;
-                    this.keyboardZoom.camera = camera;
-                    this.mouseZoom.camera = camera;
-                    this.cameraFly.camera = camera;
-                },
-
-                get: function () {
-                    return this._camera;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this CameraControl is active or not.
-             *
-             * Fires an {{#crossLink "CameraControl/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    // Activate or deactivate child components
-
-                    this.keyboardAxis.active = value;
-                    this.keyboardOrbit.active = value;
-                    this.mouseOrbit.active = value;
-                    this.keyboardPan.active = value;
-                    this.mousePan.active = value;
-                    this.keyboardZoom.active = value;
-                    this.mouseZoom.active = value;
-                    this.mousePickObject.active = value;
-                    this.cameraFly.active = value;
-
-                    /**
-                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._active = value);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                sensitivity: this._sensitivity,
-                active: this._active
-            };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-
-            this.active = false;
-
-            this.keyboardAxis.destroy();
-            this.keyboardOrbit.destroy();
-            this.mouseOrbit.destroy();
-            this.keyboardPan.destroy();
-            this.mousePan.destroy();
-            this.keyboardZoom.destroy();
-            this.mouseZoom.destroy();
-            this.mousePickObject.destroy();
-            this.cameraFly.destroy();
-        }
-    });
-
-})();
-;/**
- A **KeyboardAxisCamera** switches a {{#crossLink "Camera"}}{{/crossLink}} between preset left, right, anterior,
- posterior, superior and inferior views using the keyboard.
-
- ## Overview
-
- <ul>
- <li>A KeyboardAxisCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- </ul>
-
- By default the views are selected by the following keys:
-
- <ul>
- <li>'1' - left side, viewing center from along -X axis</li>
- <li>'2' - right side, viewing center from along +X axis</li>
- <li>'3' - anterior, viewing center from along -Z axis</li>
- <li>'4' - posterior, viewing center from along +Z axis</li>
- <li>'5' - superior, viewing center from along -Y axis</li>
- <li>'6' - inferior, viewing center from along +Y axis</li>
- </ul>
-
- ## Example
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var camera = new XEO.Camera(scene);
-
- var control = new XEO.KeyboardAxisCamera(scene, {
-        camera: camera
-    });
-
- var object = new XEO.GameObject(scene);
- ````
-
- @class KeyboardAxisCamera
- @module XEO
- @submodule input
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardAxisCamera.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardAxisCamera. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.active=true] {Boolean} Whether or not this KeyboardAxisCamera is active.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.KeyboardAxisCamera = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.KeyboardAxisCamera",
-
-        _init: function (cfg) {
-
-            // Event handles
-
-            this._onKeyDown = null;
-
-            // Animations
-
-            this._cameraFly = new XEO.CameraFlight(this.scene, {
-            });
-
-            // Init properties
-
-            this.camera = cfg.camera;
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this KeyboardAxisCamera.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardAxisCamera. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires a {{#crossLink "KeyboardAxisCamera/camera:event"}}{{/crossLink}} event on change.
-             *
-             * @property camera
-             * @type Camera
-             */
-            camera: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this KeyboardAxisCamera's {{#crossLink "KeyboardAxisCamera/camera:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event camera
-                     * @param value The property's new value
-                     */
-                    this._setChild("camera", value);
-
-                    // Update animation
-
-                    this._cameraFly.camera = this._children.camera;
-                },
-
-                get: function () {
-                    return this._children.camera;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this KeyboardAxisCamera is active or not.
-             *
-             * Fires an {{#crossLink "KeyboardAxisCamera/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    this._cameraFly.active = value;
-
-                    var self = this;
-
-                    var input = this.scene.input;
-
-                    if (value) {
-
-                        this._onKeyDown = input.on("keydown",
-                            function (keyCode) {
-
-                                if (!self._children.camera) {
-                                    return;
-                                }
-
-                                var aabb = self.scene.worldAABB;
-                                var center = self.scene.worldCenter;
-
-                                switch (keyCode) {
-
-                                    case input.KEY_NUM_1:
-
-                                        // Right view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [-10, 0, 0],
-                                            up: [0, 1, 0]
-                                        });
-
-
-                                        break;
-
-                                    case input.KEY_NUM_2:
-
-                                        // Left view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [10, 0, 0],
-                                            up: [0, 1, 0]
-                                        });
-
-
-                                        break;
-
-                                    case input.KEY_NUM_3:
-
-                                        // Front view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [0, 0, -10],
-                                            up: [0, 1, 0]
-                                        });
-
-                                        break;
-
-                                    case input.KEY_NUM_4:
-
-                                        // Back view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [0, 0, 10],
-                                            up: [0, 1, 0]
-                                        });
-
-                                        break;
-
-                                    case input.KEY_NUM_5:
-
-                                        // Top view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [0, -10, 0],
-                                            up: [0, 0, -1]
-                                        });
-
-                                        break;
-
-                                    case input.KEY_NUM_6:
-
-                                        // Bottom view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [0, 10, 0],
-                                            up: [0, 0, 1]
-                                        });
-
-                                        break;
-                                }
-                            });
-
-                    } else {
-
-                        this.scene.off(this._onKeyDown);
-                    }
-
-                    /**
-                     * Fired whenever this KeyboardAxisCamera's {{#crossLink "KeyboardAxisCamera/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._active = value);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                active: this._active
-            };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-
-            this.active = false;
-
-            this._cameraFly.destroy();
-        }
-    });
-
-})();
-;/**
- A **KeyboardOrbitCamera** orbits a {{#crossLink "Camera"}}{{/crossLink}} about its point-of-interest using the keyboard's arrow keys.
-
- ## Overview
-
- <ul>
- <li>A KeyboardOrbitCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.</li>
- <li>In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
- position will orbit the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- </ul>
-
- ## Example
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var camera = new XEO.Camera(scene);
-
- var control = new XEO.KeyboardOrbitCamera(scene, {
-
-        camera: camera,
-
-        // "First person" mode rotates look about eye.
-        // By default however, we orbit eye about look.
-        firstPerson: false
-    });
-
- var object = new XEO.GameObject(scene);
- ````
-
-
- @class KeyboardOrbitCamera
- @module XEO
- @submodule input
- @constructor
- @param [viewer] {Viewer} Parent {{#crossLink "Viewer"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent viewer, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardAxisCamera.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardOrbitCamera. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Orbit sensitivity factor.
- @param [cfg.firstPerson=false] {Boolean}  Indicates whether this KeyboardOrbitCamera is in "first person" mode.
- @param [cfg.active=true] {Boolean} Whether or not this MousePanCamera is active.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.KeyboardOrbitCamera = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.KeyboardOrbitCamera",
-
-        _init: function (cfg) {
-
-            // Event handles
-            
-            this._onTick = null;
-
-            // Init properties
-            
-            this.camera = cfg.camera;
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this KeyboardOrbitCamera.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardOrbitCamera. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires a {{#crossLink "KeyboardOrbitCamera/camera:event"}}{{/crossLink}} event on change.
-             *
-             * @property camera
-             * @type Camera
-             */
-            camera: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this KeyboardOrbitCamera's {{#crossLink "KeyboardOrbitCamera/camera:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event camera
-                     * @param value The property's new value
-                     */
-                    this._setChild("camera", value);
-                },
-
-                get: function () {
-                    return this._children.camera;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this KeyboardOrbitCamera is in "first person" mode.
-             *
-             * A KeyboardOrbitCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its
-             * target {{#crossLink "Camera"}}{{/crossLink}}. In 'first person' mode, the
-             * {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
-             * position orbits the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise
-             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
-             *
-             * Fires a {{#crossLink "KeyboardOrbitCamera/firstPerson:event"}}{{/crossLink}} event on change.
-             *
-             * @property firstPerson
-             * @default false
-             * @type Boolean
-             */
-            firstPerson: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    this._firstPerson = value;
-
-                    /**
-                     * Fired whenever this KeyboardOrbitCamera's {{#crossLink "KeyboardOrbitCamera/firstPerson:property"}}{{/crossLink}} property changes.
-                     * @event firstPerson
-                     * @param value The property's new value
-                     */
-                    this.fire('firstPerson', this._firstPerson);
-                },
-
-                get: function () {
-                    return this._firstPerson;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this KeyboardOrbitCamera is active or not.
-             *
-             * Fires an {{#crossLink "KeyboardOrbitCamera/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    var input = this.scene.input;
-
-                    if (value) {
-
-                        var self = this;
-
-                        this._onTick = this.scene.on("tick",
-                            function (params) {
-
-                                var camera = self._children.camera;
-                                
-                                if (!camera) {
-                                    return;
-                                }
-
-                                var elapsed = params.deltaTime;
-
-                                var yawRate = 50;
-                                var pitchRate = 50;
-
-                                if (!input.ctrlDown && !input.altDown) {
-
-                                    var left = input.keyDown[input.KEY_LEFT_ARROW];
-                                    var right = input.keyDown[input.KEY_RIGHT_ARROW];
-                                    var up = input.keyDown[input.KEY_UP_ARROW];
-                                    var down = input.keyDown[input.KEY_DOWN_ARROW];
-
-                                    if (left || right || up || down) {
-
-                                        var yaw = 0;
-                                        var pitch = 0;
-
-                                        if (right) {
-                                            yaw = -elapsed * yawRate;
-
-                                        } else if (left) {
-                                            yaw = elapsed * yawRate;
-                                        }
-
-                                        if (down) {
-                                            pitch = elapsed * pitchRate;
-
-                                        } else if (up) {
-                                            pitch = -elapsed * pitchRate;
-                                        }
-
-                                        if (Math.abs(yaw) > Math.abs(pitch)) {
-                                            pitch = 0;
-                                        } else {
-                                            yaw = 0;
-                                        }
-
-                                        if (yaw != 0) {
-                                            camera.view.rotateEyeY(yaw);
-                                        }
-
-                                        if (pitch != 0) {
-                                            camera.view.rotateEyeX(pitch);
-                                        }
-                                    }
-                                }
-                            });
-
-                    } else {
-
-                        this.scene.off(this._onTick);
-                    }
-
-                    /**
-                     * Fired whenever this KeyboardOrbitCamera's {{#crossLink "KeyboardOrbitCamera/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._active = value);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                sensitivity: this._sensitivity,
-                active: this._active
-            };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this.active = false; // Unbinds events
-        }
-    });
-
-})();
-;/**
- A **KeyboardPanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the W, S, A and D keys.
-
- ## Overview
-
- <ul>
- <li>A KeyboardPanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Panning forwards and backwards involves translating
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth along the
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
- {{#crossLink "Lookat/look:property"}}{{/crossLink}} along the the vector perpendicular to the {{#crossLink "Lookat/up:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
- </ul>
-
- ## Example
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var camera = new XEO.Camera(scene);
-
- var control = new XEO.KeyboardPanCamera(scene, {
-        camera: camera
-    });
-
- var object = new XEO.GameObject(scene);
- ````
-
- @class KeyboardPanCamera
- @module XEO
- @submodule input
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardOrbitCamera.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardPanCamera. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Pan sensitivity factor.
- @param [cfg.active=true] {Boolean} Whether or not this KeyboardPanCamera is active.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.KeyboardPanCamera = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.KeyboardPanCamera",
-
-        _init: function (cfg) {
-
-            // Event handles
-
-            this._onTick = null;
-
-            // Init properties
-
-            this.camera = cfg.camera;
-            this.sensitivity = cfg.sensitivity;
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this KeyboardPanCamera.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardPanCamera. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires a {{#crossLink "KeyboardPanCamera/camera:event"}}{{/crossLink}} event on change.
-             *
-             * @property camera
-             * @type Camera
-             */
-            camera: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this KeyboardPanCamera's {{#crossLink "KeyboardPanCamera/camera:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event camera
-                     * @param value The property's new value
-                     */
-                    this._setChild("camera", value);
-                },
-
-                get: function () {
-                    return this._children.camera;
-                }
-            },
-
-            /**
-             * The sensitivity of this KeyboardPanCamera.
-             *
-             * Fires a {{#crossLink "KeyboardPanCamera/sensitivity:event"}}{{/crossLink}} event on change.
-             *
-             * @property sensitivity
-             * @type Number
-             * @default 1.0
-             */
-            sensitivity: {
-
-                set: function (value) {
-
-                    this._sensitivity = value || 1.0;
-
-                    /**
-                     * Fired whenever this KeyboardPanCamera's  {{#crossLink "KeyboardPanCamera/sensitivity:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event sensitivity
-                     * @param value The property's new value
-                     */
-                    this.fire("sensitivity", this._sensitivity);
-                },
-
-                get: function () {
-                    return this._sensitivity;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this KeyboardPanCamera is active or not.
-             *
-             * Fires an {{#crossLink "KeyboardPanCamera/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    var input = this.scene.input;
-
-                    if (value) {
-
-                        var self = this;
-
-                        this._onTick = this.scene.on("tick",
-                            function (params) {
-
-                                var camera = self._children.camera;
-
-                                if (!camera) {
-                                    return;
-                                }
-
-                                var elapsed = params.deltaTime;
-
-                                if (!input.ctrlDown && !input.altDown) {
-
-                                    var wkey = input.keyDown[input.KEY_W];
-                                    var skey = input.keyDown[input.KEY_S];
-                                    var akey = input.keyDown[input.KEY_A];
-                                    var dkey = input.keyDown[input.KEY_D];
-                                    var zkey = input.keyDown[input.KEY_Z];
-                                    var xkey = input.keyDown[input.KEY_X];
-
-                                    if (wkey || skey || akey || dkey || xkey || zkey) {
-
-                                        var x = 0;
-                                        var y = 0;
-                                        var z = 0;
-
-                                        var sensitivity = self.sensitivity;
-
-                                        if (skey) {
-                                            y = elapsed * sensitivity;
-
-                                        } else if (wkey) {
-                                            y = -elapsed * sensitivity;
-                                        }
-
-                                        if (dkey) {
-                                            x = elapsed * sensitivity;
-
-                                        } else if (akey) {
-                                            x = -elapsed * sensitivity;
-                                        }
-
-                                        if (xkey) {
-                                            z = elapsed * sensitivity;
-
-                                        } else if (zkey) {
-                                            z = -elapsed * sensitivity;
-                                        }
-
-                                        camera.view.pan([x, y, z]);
-                                    }
-                                }
-                            });
-
-                    } else {
-
-                        if (this._onTick) {
-                            this.scene.off(this._onTick);
-                        }
-                    }
-
-                    /**
-                     * Fired whenever this KeyboardPanCamera's {{#crossLink "KeyboardPanCamera/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._active = value);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                sensitivity: this._sensitivity,
-                active: this._active
-            };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this.active = false;
-        }
-    });
-
-})();
-;/**
- A **KeyboardZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the + and - keys.
-
- ## Overview
-
- <ul>
- <li>A KeyboardZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- </ul>
-
- ## Example
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var camera = new XEO.Camera(scene);
-
- var control = new XEO.KeyboardZoomCamera(scene, {
-        camera: camera
-    });
-
- var object = new XEO.GameObject(scene);
- ````
-
- @class KeyboardZoomCamera
- @module XEO
- @submodule input
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardZoomCamera.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardZoomCamera. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Zoom sensitivity factor.
- @param [cfg.active=true] {Boolean} Whether or not this KeyboardZoomCamera is active.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.KeyboardZoomCamera = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.KeyboardZoomCamera",
-
-        _init: function (cfg) {
-
-            // Event handles
-
-            this._onTick = null;
-
-            // Init properties
-
-            this.camera = cfg.camera;
-            this.sensitivity = cfg.sensitivity;
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this KeyboardZoomCamera.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardZoomCamera. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires a {{#crossLink "KeyboardZoomCamera/camera:event"}}{{/crossLink}} event on change.
-             *
-             * @property camera
-             * @type Camera
-             */
-            camera: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this KeyboardZoomCamera's {{#crossLink "KeyboardZoomCamera/camera:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event camera
-                     * @param value The property's new value
-                     */
-                    this._setChild("camera", value);
-                },
-
-                get: function () {
-                    return this._children.camera;
-                }
-            },
-
-            /**
-             * The sensitivity of this KeyboardZoomCamera.
-             *
-             * Fires a {{#crossLink "KeyboardZoomCamera/sensitivity:event"}}{{/crossLink}} event on change.
-             *
-             * @property sensitivity
-             * @type Number
-             * @default 1.0
-             */
-            sensitivity: {
-
-                set: function (value) {
-
-                    this._sensitivity = value || 1.0;
-
-                    /**
-                     * Fired whenever this KeyboardZoomCamera's  {{#crossLink "KeyboardZoomCamera/sensitivity:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event sensitivity
-                     * @param value The property's new value
-                     */
-                    this.fire("sensitivity", this._sensitivity);
-                },
-
-                get: function () {
-                    return this._sensitivity;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this KeyboardZoomCamera is active or not.
-             *
-             * Fires an {{#crossLink "KeyboardZoomCamera/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    var input = this.scene.input;
-
-                    if (value) {
-
-                        var self = this;
-
-                        this._onTick = this.scene.on("tick",
-                            function (params) {
-
-                                var camera = self._children.camera;
-
-                                if (!camera) {
-                                    return;
-                                }
-
-                                var elapsed = params.deltaTime;
-
-                                if (!input.ctrlDown && !input.altDown) {
-
-                                    var wkey = input.keyDown[input.KEY_ADD];
-                                    var skey = input.keyDown[input.KEY_SUBTRACT];
-
-                                    if (wkey || skey) {
-
-                                        var z = 0;
-
-                                        var sensitivity = self.sensitivity * 15.0;
-
-                                        if (skey) {
-                                            z = elapsed * sensitivity;
-
-                                        } else if (wkey) {
-                                            z = -elapsed * sensitivity;
-                                        }
-
-                                        camera.view.zoom(z);
-                                    }
-                                }
-                            });
-
-                    } else {
-
-                        if (this._onTick !== null) {
-                            this.scene.off(this._onTick);
-                        }
-                    }
-
-                    /**
-                     * Fired whenever this KeyboardZoomCamera's {{#crossLink "KeyboardZoomCamera/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._active = value);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                sensitivity: this._sensitivity,
-                active: this._active
-            };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this.active = false;
-        }
-    });
-
-})();
-;/**
- A **MouseOrbitCamera** orbits a {{#crossLink "Camera"}}{{/crossLink}} about its point-of-interest using the mouse.
-
- ## Overview
-
- <ul>
- <li>A MouseOrbitCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.</li>
- <li>In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
- position will orbit the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- </ul>
-
- ## Example
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var camera = new XEO.Camera(scene);
-
- var control = new XEO.MouseOrbitCamera(scene, {
-
-        camera: camera,
-
-        // "First person" mode rotates look about eye.
-        // By default however, we orbit eye about look.
-        firstPerson: false
-    });
-
- var object = new XEO.GameObject(scene);
- ````
-
- @class MouseOrbitCamera
- @module XEO
- @submodule input
- @constructor
- @param [scene] {scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent Scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MouseOrbitCamera.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MouseOrbitCamera. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Mouse drag sensitivity factor.
- @param [cfg.firstPerson=false] {Boolean}  Indicates whether this MouseOrbitCamera is in "first person" mode.
- @param [cfg.active=true] {Boolean} Whether or not this MouseOrbitCamera is active.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.MouseOrbitCamera = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.MouseOrbitCamera",
-
-        _init: function (cfg) {
-
-            // Event handles
-            
-            this._onTick = null;
-            this._onMouseDown = null;
-            this._onMouseMove = null;
-            this._onMouseUp = null;
-            
-            // Init properties
-            
-            this.camera = cfg.camera;
-            this.sensitivity = cfg.sensitivity;
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this MouseOrbitCamera.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MouseOrbitCamera. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires a {{#crossLink "MouseOrbitCamera/camera:event"}}{{/crossLink}} event on change.
-             *
-             * @property camera
-             * @type Camera
-             */
-            camera: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this MouseOrbitCamera's {{#crossLink "MouseOrbitCamera/camera:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event camera
-                     * @param value The property's new value
-                     */
-                    this._setChild("camera", value);
-                },
-
-                get: function () {
-                    return this._children.camera;
-                }
-            },
-
-            /**
-             * The sensitivity of this MouseOrbitCamera.
-             *
-             * Fires a {{#crossLink "MouseOrbitCamera/sensitivity:event"}}{{/crossLink}} event on change.
-             *
-             * @property sensitivity
-             * @type Number
-             * @default 1.0
-             */
-            sensitivity: {
-
-                set: function (value) {
-
-                    this._sensitivity = value || 1.0;
-
-                    /**
-                     * Fired whenever this MouseOrbitCamera's  {{#crossLink "MouseOrbitCamera/sensitivity:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event sensitivity
-                     * @param value The property's new value
-                     */
-                    this.fire("sensitivity", this._sensitivity);
-                },
-
-                get: function () {
-                    return this._sensitivity;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this MouseOrbitCamera is in "first person" mode.
-             *
-             * A MouseOrbitCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its
-             * target {{#crossLink "Camera"}}{{/crossLink}}. In 'first person' mode, the
-             * {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
-             * position orbits the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise
-             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
-             *
-             * Fires a {{#crossLink "MouseOrbitCamera/firstPerson:event"}}{{/crossLink}} event on change.
-             *
-             * @property firstPerson
-             * @default false
-             * @type Boolean
-             */
-            firstPerson: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    this._firstPerson = value;
-
-                    /**
-                     * Fired whenever this MouseOrbitCamera's {{#crossLink "MouseOrbitCamera/firstPerson:property"}}{{/crossLink}} property changes.
-                     * @event firstPerson
-                     * @param value The property's new value
-                     */
-                    this.fire('firstPerson', this._firstPerson);
-                },
-
-                get: function () {
-                    return this._firstPerson;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this MouseOrbitCamera is active or not.
-             *
-             * Fires an {{#crossLink "MouseOrbitCamera/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    var input = this.scene.input;
-
-                    if (value) {
-                        
-                        var lastX;
-                        var lastY;
-                        var xDelta = 0;
-                        var yDelta = 0;
-                        var down = false;
-
-                        var self = this;
-
-                        this._onTick = this.scene.on("tick",
-                            function (params) {
-
-                                var camera = self._children.camera;
-                                
-                                if (!camera) {
-                                    return;
-                                }
-                                
-                                if (xDelta != 0) {
-                                    camera.view.rotateEyeY(-xDelta * self._sensitivity);
-                                    xDelta = 0;
-                                }
-
-                                if (yDelta != 0) {
-                                    camera.view.rotateEyeX(yDelta * self._sensitivity);
-                                    yDelta = 0;
-                                }
-                            });
-
-                        this._onMouseDown = input.on("mousedown",
-                            function (e) {
-
-                                if (input.mouseDownLeft
-                                    && !input.mouseDownRight
-                                    && !input.keyDown[input.KEY_SHIFT]
-                                    && !input.mouseDownMiddle) {
-
-                                    down = true;
-                                    lastX = e[0];
-                                    lastY = e[1];
-
-                                } else {
-                                    down = false;
-                                }
-
-                            });
-
-                        this._onMouseUp = input.on("mouseup",
-                            function (e) {
-                                down = false;
-                            });
-
-                        this._onMouseMove = input.on("mousemove",
-                            function (e) {
-                                if (down) {
-                                    xDelta += (e[0] - lastX) * self._sensitivity;
-                                    yDelta += (e[1] - lastY) * self._sensitivity;
-                                    lastX = e[0];
-                                    lastY = e[1];
-                                }
-                            });
-
-                    } else {
-
-                        input.off(this._onTick);
-
-                        input.off(this._onMouseDown);
-                        input.off(this._onMouseUp);
-                        input.off(this._onMouseMove);
-                    }
-
-                    /**
-                     * Fired whenever this MouseOrbitCamera's {{#crossLink "MouseOrbitCamera/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._active = value);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                sensitivity: this._sensitivity,
-                active: this._active
-            };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this.active = false;
-        }
-    });
-
-})();
-;/**
- A **MousePanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the mouse.
-
- ## Overview
-
- <ul>
- <li>A MousePanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Panning is done by dragging the mouse with both the left and right buttons down.</li>
- <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Panning forwards and backwards involves translating
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth along the
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
- {{#crossLink "Lookat/look:property"}}{{/crossLink}} along the the vector perpendicular to the {{#crossLink "Lookat/up:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
- </ul>
-
- ## Example
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var camera = new XEO.Camera(scene);
-
- var control = new XEO.MousePanCamera(scene, {
-        camera: camera
-    });
-
- var object = new XEO.GameObject(scene);
- ````
-
- @class MousePanCamera
- @module XEO
- @submodule input
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePanCamera.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MousePanCamera. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Pan sensitivity factor.
- @param [cfg.active=true] {Boolean} Whether or not this MousePanCamera is active.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.MousePanCamera = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.MousePanCamera",
-
-        _init: function (cfg) {
-
-            // Event handles
-
-            this._onTick = null;
-            this._onMouseDown = null;
-            this._onMouseMove = null;
-            this._onMouseUp = null;
-
-            // Init properties
-
-            this.camera = cfg.camera;
-            this.sensitivity = cfg.sensitivity;
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this MousePanCamera.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MousePanCamera. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires a {{#crossLink "MousePanCamera/camera:event"}}{{/crossLink}} event on change.
-             *
-             * @property camera
-             * @type Camera
-             */
-            camera: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this MousePanCamera's {{#crossLink "MousePanCamera/camera:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event camera
-                     * @param value The property's new value
-                     */
-                    this._setChild("camera", value);
-                },
-
-                get: function () {
-                    return this._children.camera;
-                }
-            },
-
-            /**
-             * The sensitivity of this MousePanCamera.
-             *
-             * Fires a {{#crossLink "MousePanCamera/sensitivity:event"}}{{/crossLink}} event on change.
-             *
-             * @property sensitivity
-             * @type Number
-             * @default 1.0
-             */
-            sensitivity: {
-
-                set: function (value) {
-
-                    this._sensitivity = value ? value * 0.03 : 0.03;
-
-                    /**
-                     * Fired whenever this MousePanCamera's  {{#crossLink "MousePanCamera/sensitivity:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event sensitivity
-                     * @param value The property's new value
-                     */
-                    this.fire("sensitivity", this._sensitivity);
-                },
-
-                get: function () {
-                    return this._sensitivity;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this MousePanCamera is active or not.
-             *
-             * Fires an {{#crossLink "MousePanCamera/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    var input = this.scene.input;
-
-                    if (value) {
-
-                        var lastX;
-                        var lastY;
-                        var xDelta = 0;
-                        var yDelta = 0;
-                        var down = false;
-
-                        var self = this;
-
-                        this._onTick = this.scene.on("tick",
-                            function () {
-
-                                var camera = self._children.camera;
-
-                                if (!camera) {
-                                    return;
-                                }
-
-                                if (xDelta != 0 || yDelta != 0) {
-
-                                    camera.view.pan([xDelta, yDelta, 0]);
-
-                                    xDelta = 0;
-                                    yDelta = 0;
-                                }
-                            });
-
-                        this._onMouseDown = input.on("mousedown",
-                            function (e) {
-
-                                if ((input.mouseDownLeft && input.mouseDownRight) ||
-                                    (input.mouseDownLeft && input.keyDown[input.KEY_SHIFT]) ||
-                                    input.mouseDownMiddle) {
-
-                                    lastX = e[0];
-                                    lastY = e[1];
-
-                                    down = true;
-
-                                } else {
-                                    down = false;
-                                }
-                            });
-
-                        this._onMouseUp = input.on("mouseup",
-                            function () {
-                                down = false;
-                            });
-
-                        this._onMouseMove = input.on("mousemove",
-                            function (e) {
-                                if (down) {
-                                    xDelta += (e[0] - lastX) * self.sensitivity;
-                                    yDelta += (e[1] - lastY) * self.sensitivity;
-                                    lastX = e[0];
-                                    lastY = e[1];
-                                }
-                            });
-
-                    } else {
-
-                        input.off(this._onTick);
-                        input.off(this._onMouseDown);
-                        input.off(this._onMouseUp);
-                        input.off(this._onMouseMove);
-                    }
-
-                    /**
-                     * Fired whenever this MousePanCamera's {{#crossLink "MousePanCamera/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._active = value);
-                },
-
-                get: function () {
-                    return this._active; // Unbinds events
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                sensitivity: this._sensitivity,
-                active: this._active
-            };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this.active = false;
-        }
-    });
-
-})();
-;/**
- A **MousePickObject** picks {{#crossLink "GameObject"}}GameObjects{{/crossLink}} with mouse clicks.
-
- ## Overview
-
-TODO
-
- ## Example
-
- ````Javascript
- var scene = new XEO.Scene({ element: "myDiv" });
-
- // Create some GameObjects
-
- var object1 = new XEO.GameObject(scene, {
-    id: "object1",
-    transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })
- });
-
- var object2 = new XEO.GameObject(scene, {
-    id: "object2",
-    transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })
- });
-
- var object3 = new XEO.GameObject(scene, {
-    id: "object3",
-    transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })
- });
-
- // Create a MousePickObject
- var mousePickObject = new XEO.MousePickObject(scene, {
-
-    // We want the 3D World-space coordinates
-    // of each location we pick
-
-    rayPick: true
- });
-
- // Handle picked GameObjects
- mousePickObject.on("pick", function(e) {
-    var object = e.object;
-    var canvasPos = e.canvasPos;
-    var worldPos = e.worldPos;
- });
-
- // Handle nothing picked
- mousePickObject.on("nopick", function(e) {
-    var canvasPos = e.canvasPos;
- });
- ````
-
- @class MousePickObject
- @module XEO
- @submodule input
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickObject.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
- {{#crossLink "GameObject"}}{{/crossLink}}.
- @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickObject is active.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.MousePickObject = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.MousePickObject",
-
-        _init: function (cfg) {
-
-            this.rayPick = cfg.rayPick;
-
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * Flag which indicates whether this MousePickObject is active or not.
-             *
-             * Fires a {{#crossLink "MousePickObject/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    var input = this.scene.input;
-
-                    if (value) {
-
-                        var self = this;
-
-                        this._onMouseUp = input.on("dblclick",
-                            function (canvasPos) {
-
-                                var hit = self.scene.pick(canvasPos, {
-                                    rayPick: self._rayPick
-                                });
-
-                                if (hit) {
-
-                                    /**
-                                     * Fired whenever a {{#crossLink "GameObject"}}GameObject{{/crossLink}} is picked.
-                                     * @event picked
-                                     * @param {String} objectId The ID of the picked {{#crossLink "GameObject"}}GameObject{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
-                                     * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                     * @param {Array of Number} worldPos When {{#crossLink "MousePickObject/rayPick"}}{{/crossLink}} is true,
-                                     * provides the World-space coordinate that was ray-picked on the surface of the
-                                     * {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
-                                     */
-                                    self.fire("pick", hit);
-
-                                } else {
-
-                                    /**
-                                     * Fired whenever an attempt to pick {{#crossLink "GameObject"}}GameObject{{/crossLink}} picks empty space.
-                                     * @event nopick
-                                     * @param {Array of Number} canvasPos The Canvas-space coordinate at which the pick was attempted.
-                                     */
-                                    self.fire("nopick", {
-                                        canvasPos: canvasPos
-                                    });
-                                }
-                            });
-
-                    } else {
-
-                        input.off(this._onMouseDown);
-                        input.off(this._onMouseUp);
-                    }
-
-                    /**
-                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._active = value);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            },
-
-            /**
-             * Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
-             * {{#crossLink "GameObject"}}{{/crossLink}}.
-             *
-             * When true, this MousePickObject returns the 3D World-space intersection in each
-             * {{#crossLink "MousePickObject/picked:event"}}{{/crossLink}} event.
-             *
-             * Fires a {{#crossLink "MousePickObject/rayPick:event"}}{{/crossLink}} event on change.
-             *
-             * @property rayPick
-             * @type Boolean
-             */
-            rayPick: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._rayPick === value) {
-                        return;
-                    }
-
-                    this._dirty = false;
-
-                    /**
-                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/rayPick:property"}}{{/crossLink}} property changes.
-                     * @event rayPick
-                     * @param value The property's new value
-                     */
-                    this.fire('rayPick', this._rayPick = value);
-                },
-
-                get: function () {
-                    return this._rayPick;
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                rayPick: this._rayPick,
-                active: this._active
-            };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this.active = false;
-        }
-    });
-})();;/**
- A **MouseZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse wheel.
-
- ## Overview
-
- <ul>
- <li>A MouseZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- </ul>
-
- ## Example
-
- ````Javascript
- var scene = new XEO.Scene();
-
- var camera = new XEO.Camera(scene);
-
- var control = new XEO.MouseZoomCamera(scene, {
-        camera: camera
-    });
-
- var object = new XEO.GameObject(scene);
- ````
-
- @class MouseZoomCamera
- @module XEO
- @submodule input
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MouseZoomCamera.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MouseZoomCamera. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Zoom sensitivity factor.
- @param [cfg.active=true] {Boolean} Whether or not this MouseZoomCamera is active.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.MouseZoomCamera = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.MouseZoomCamera",
-
-        _init: function (cfg) {
-
-            // Event handles
-
-            this._onTick = null;
-            this._onMouseWheel = null;
-
-            // Init properties
-
-            this.camera = cfg.camera;
-            this.sensitivity = cfg.sensitivity;
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this MouseZoomCamera.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MouseZoomCamera. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires a {{#crossLink "MouseZoomCamera/camera:event"}}{{/crossLink}} event on change.
-             *
-             * @property camera
-             * @type Camera
-             */
-            camera: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this MouseZoomCamera's {{#crossLink "MouseZoomCamera/camera:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event camera
-                     * @param value The property's new value
-                     */
-                    this._setChild("camera", value);
-                },
-
-                get: function () {
-                    return this._children.camera;
-                }
-            },
-
-            /**
-             * The sensitivity of this MouseZoomCamera.
-             *
-             * Fires a {{#crossLink "MouseZoomCamera/sensitivity:event"}}{{/crossLink}} event on change.
-             *
-             * @property sensitivity
-             * @type Number
-             * @default 1.0
-             */
-            sensitivity: {
-
-                set: function (value) {
-
-                    this._sensitivity = value || 1.0;
-
-                    /**
-                     * Fired whenever this MouseZoomCamera's  {{#crossLink "MouseZoomCamera/sensitivity:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event sensitivity
-                     * @param value The property's new value
-                     */
-                    this.fire("sensitivity", this._sensitivity);
-                },
-
-                get: function () {
-                    return this._sensitivity;
-                }
-            },
-
-            /**
-             * Indicates whether this MouseZoomCamera is active or not.
-             *
-             * Fires an {{#crossLink "MouseZoomCamera/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    if (value) {
-
-                        var delta = 0;
-                        var target = 0;
-                        var newTarget = false;
-                        var targeting = false;
-                        var progress = 0;
-
-                        var eyeVec = XEO.math.vec3();
-                        var lookVec = XEO.math.vec3();
-                        var tempVec3 = XEO.math.vec3();
-
-                        var self = this;
-
-                        this._onMouseWheel = this.scene.input.on("mousewheel",
-                            function (_delta) {
-
-                                delta = _delta;
-
-                                if (delta === 0) {
-                                    targeting = false;
-                                    newTarget = false;
-                                } else {
-                                    newTarget = true;
-                                }
-                            });
-
-                        this._onTick = this.scene.on("tick",
-                            function () {
-
-                                var camera = self._children.camera;
-
-                                if (!camera) {
-                                    return;
-                                }
-
-                                var eye = camera.view.eye;
-                                var look = camera.view.look;
-
-                                eyeVec[0] = eye[0];
-                                eyeVec[1] = eye[1];
-                                eyeVec[2] = eye[2];
-
-                                lookVec[0] = look[0];
-                                lookVec[1] = look[1];
-                                lookVec[2] = look[2];
-
-                                XEO.math.subVec3(eyeVec, lookVec, tempVec3);
-
-                                var lenLook = Math.abs(XEO.math.lenVec3(tempVec3));
-                                var lenLimits = 1000;
-                                var f = self._sensitivity * (2.0 + (lenLook / lenLimits));
-
-                                if (newTarget) {
-                                    target = delta * f;
-                                    progress = 0;
-                                    newTarget = false;
-                                    targeting = true;
-                                }
-
-                                if (targeting) {
-
-                                    if (delta > 0) {
-
-                                        progress += 0.2 * f;
-
-                                        if (progress > target) {
-                                            targeting = false;
-                                        }
-
-                                    } else if (delta < 0) {
-
-                                        progress -= 0.2 * f;
-
-                                        if (progress < target) {
-                                            targeting = false;
-                                        }
-                                    }
-
-                                    if (targeting) {
-                                        camera.view.zoom(progress);
-                                    }
-                                }
-                            });
-
-                    } else {
-
-                        if (this._onTick !== null) {
-                            this.scene.off(this._onTick);
-                            this.scene.input.off(this._onMouseWheel);
-                        }
-                    }
-
-                    /**
-                     * Fired whenever this MouseZoomCamera's {{#crossLink "MouseZoomCamera/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._active = value);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                sensitivity: this._sensitivity,
-                active: this._active
-            };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this.active = false;
-        }
-    });
-
-})();
-;/**
  * Components for defining light sources.
  *
  * @module XEO
@@ -11116,10 +7651,12 @@ TODO
                     value = value || [];
 
                     var light;
+                    var i;
+                    var len;
 
                     // Unsubscribe from events on old lights
 
-                    for (var i = 0, len = this._lights.length; i < len; i++) {
+                    for (i = 0, len = this._lights.length; i < len; i++) {
 
                         light = this._lights[i];
 
@@ -11160,7 +7697,7 @@ TODO
                         }
                     }
 
-                    for (var i = 0, len = value.length; i < len; i++) {
+                    for (i = 0, len = value.length; i < len; i++) {
 
                         light = value[i];
 
@@ -11199,7 +7736,7 @@ TODO
                 },
 
                 get: function () {
-                    return this._lights.slice(0, this._lights.length);
+                    return this._lights;
                 }
             }
         },
@@ -11262,6 +7799,19 @@ TODO
         },
 
         _destroy: function () {
+
+            var i;
+            var len;
+            var light;
+
+            for (i = 0, len = this._lights.length; i < len; i++) {
+
+                light = this._lights[i];
+
+                light.off(this._dirtySubs[i]);
+                light.off(this._destroyedSubs[i]);
+            }
+
             this._state.destroy();
         }
     });
@@ -13139,733 +9689,6 @@ TODO
 
 })();
 ;/**
- A **PBRMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of
- attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} using a physically-based rendering model.
-
- ## Overview
-
- <ul>
- <li>Physically Based Rendering (PBR) is a method of shading and rendering that provides a more accurate representation
- of how light interacts with surfaces. It can be referred to as Physically Based Rendering (PBR) or Physically Based Shading (PBS).
- Depending on what aspect of the pipeline is being discussed, PBS is usually specific to shading concepts and PBR specific
- to rendering and lighting. However, both terms describe on a whole, the process of representing assets from a physically
- accurate standpoint. - *Wes McDermott, Allegorithmic PBR Guide, Vol. 2*</li>
- <li>The xeoEngine PBRMaterial is based on the once used in [Unreal Engine](https://docs.unrealengine.com/latest/INT/Engine/Rendering/Materials/PhysicallyBased/index.html)</li>
- </ul>
-
- <img src="../../../assets/images/PBRMaterial.png"></img>
-
- ### Material attributes
-
- * **{{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}}** - degree of metallicity in range ````[0..1]````, where ````0```` is fully dialectric (non-metal) and ````1```` is fully metallic.
- * **{{#crossLink "PBRMaterial/color:property"}}{{/crossLink}}** - base color.
- * **{{#crossLink "PBRMaterial/colorMap:property"}}{{/crossLink}}** - color map {{#crossLink "Texture"}}{{/crossLink}} to replace {{#crossLink "PBRMaterial/color:property"}}{{/crossLink}}.
- * **{{#crossLink "PBRMaterial/emissive:property"}}{{/crossLink}}** - emissive color.
- * **{{#crossLink "PBRMaterial/emissiveMap:property"}}{{/crossLink}}** - emissive map {{#crossLink "Texture"}}{{/crossLink}} to replace {{#crossLink "PBRMaterial/emissive:property"}}{{/crossLink}}.
- * **{{#crossLink "PBRMaterial/opacity:property"}}{{/crossLink}}** - opacity in range ````[0..1]````.
- * **{{#crossLink "PBRMaterial/opacityMap:property"}}{{/crossLink}}** - opacity map {{#crossLink "Texture"}}{{/crossLink}} to replace {{#crossLink "PBRMaterial/opacity:property"}}{{/crossLink}}.
- * **{{#crossLink "PBRMaterial/roughness:property"}}{{/crossLink}}** - surface roughness in range ````[0..1]````, where ````0```` is 100% smooth and ````1```` is 100% rough.
- * **{{#crossLink "PBRMaterial/roughnessMap:property"}}{{/crossLink}}** - roughness map {{#crossLink "Texture"}}{{/crossLink}} to replace {{#crossLink "PBRMaterial/roughness:property"}}{{/crossLink}}.
- * **{{#crossLink "PBRMaterial/normalMap:property"}}{{/crossLink}}** - normal map {{#crossLink "Texture"}}{{/crossLink}}.
- * **{{#crossLink "PBRMaterial/specular:property"}}{{/crossLink}}** - specular reflection color.
- * **{{#crossLink "PBRMaterial/specularMap:property"}}{{/crossLink}}** - specular map {{#crossLink "Texture"}}{{/crossLink}} to replace {{#crossLink "PBRMaterial/specular:property"}}{{/crossLink}}.
-
-
- ## Example 1: Non-metallic material
-
- In this example we have
-
- <ul>
- <li>a dialectric (non-metallic) PBRMaterial,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
-
-
- ```` javascript
- var scene = new XEO.Scene();
-
- var material1 = new XEO.PBRMaterial(scene, {
-    metallic: 0.0, // Default
-    color: [1.0, 0.8, 0.0],
-    specular: [1.0, 1.0, 1.0]
- });
-
- var geometry = new XEO.Geometry(scene);  // Default box
-
- var object = new XEO.GameObject(scene, {
-    material: material1,
-    geometry: geometry
- });
- ````
-
- ## Example 2: Metallic material
-
- ```` javascript
- var material2 = new XEO.PBRMaterial(scene, {
-    metallic: 1.0,
-    color: [1.0, 0.8, 0.0],
-    roughness: 0.3
- });
- ````
-
- ## Example 3: Metallic material with color map
-
- ```` javascript
- var colorMap = new XEO.Texture(scene, {
-    src: "colorMap.jpg"
- });
-
- var material3 = new XEO.PBRMaterial(scene, {
-    metallic: 1.0,
-    colorMap: colorMap,
-    roughness: 0.3
- });
- ````
-
- @class PBRMaterial
- @module XEO
- @submodule materials
- @constructor
- @extends Material
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this PBRMaterial within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
- @param [cfg] {*} The PBRMaterial configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta=null] {String:Object} Metadata to attach to this PBRMaterial.
- @param [cfg.metallic=0.0] {Number} Scalar in range 0-1 that controls how metallic the PBRMaterial is.
- @param [cfg.color=[ 1.0, 1.0, 1.0 ]] {Array of Number} Base color.
- @param [cfg.colorMap=null] {Texture} A color map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the color property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
- @param [cfg.emissive=[ 1.0, 1.0, 1.0 ]] {Array of Number} Emissive color.
- @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
- @param [cfg.opacity=1] {Number} Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque. Only applies while {{#crossLink "Modes"}}Modes{{/crossLink}} {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} equals ````true````.
- @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
- @param [cfg.roughness=0.0] {Number} Scalar in range 0-1 that controls roughness, where 0 is 100% glossiness and 1 is 100% roughness.
- @param [cfg.roughnessMap=null] {Texture} A roughness map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the roughness property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
- @param [cfg.normalMap=null] {Texture} A normal map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
- @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} Specular color.
- @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PBRMaterial.
- */
-(function () {
-
-    "use strict";
-
-    XEO.PBRMaterial = XEO.Material.extend({
-
-        type: "XEO.PBRMaterial",
-
-        _init: function (cfg) {
-
-            this._state = new XEO.renderer.PBRMaterial({
-
-                type: "pbrMaterial",
-
-                // (0.0) for non-metal and (1.0) for raw metal
-                metallic: 0.0,
-
-                // Base color
-                color: [1.0, 1.0, 1.0],
-                colorMap: null,
-
-                // Emissive color
-                emissive: [1.0, 1.0, 1.0],
-                emissiveMap: null,
-
-                // Opacity
-                opacity: 1.0,
-                opacityMap: null,
-
-                // Roughness
-                roughness: 0.0,
-                roughnessMap: null,
-
-                // Bumpiness
-                normalMap: null,
-
-                // Specular reflectance
-                specular: [1.0, 1.0, 1.0],
-                specularMap: null,
-
-                // True when state needs rebuild
-                dirty: true,
-
-                hash: null
-            });
-
-
-            this._components = [];
-            this._dirtyComponentSubs = [];
-            this._destroyedComponentSubs = [];
-
-            this.metallic = cfg.metallic;
-
-            this.color = cfg.color;
-            this.colorMap = cfg.colorMap;
-
-            this.emissive = cfg.emissive;
-            this.emissiveMap = cfg.emissiveMap;
-
-            this.opacity = cfg.opacity;
-            this.opacityMap = cfg.opacityMap;
-
-            this.roughness = cfg.roughness;
-            this.roughnessMap = cfg.roughnessMap;
-
-            this.normalMap = cfg.normalMap;
-
-            this.specular = cfg.specular;
-            this.specularMap = cfg.specularMap;
-        },
-
-        _props: {
-
-            /**
-             Controls how metallic this material is.
-
-             Nonmetals have a value of ````0````, while metals have a value of ````1````. For pure surfaces, such as
-             pure metal, pure stone, pure plastic, etc. this value will be 0 or 1, not anything in between. When
-             creating hybrid surfaces like corroded, dusty, or rusty metals, you may find that you need some value
-             between 0 and 1.
-
-             Fires a {{#crossLink "PBRMaterial/metallic:event"}}{{/crossLink}} event on change.
-
-             @property metallic
-             @default 0.0
-             @type Number
-             */
-            metallic: {
-
-                set: function (value) {
-
-                    this._state.metallic = value !== undefined ? value : 0;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/metallic:property"}}{{/crossLink}} property changes.
-
-                     @event metallic
-                     @param value Number The property's new value
-                     */
-                    this.fire("metallic", this._state.metallic);
-                },
-
-                get: function () {
-                    return this._state.metallic;
-                }
-            },
-
-            /**
-             Base color of this material.
-
-             This property may be overridden by {{#crossLink "PBRMaterial/colorMap:property"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "PBRMaterial/color:event"}}{{/crossLink}} event on change.
-
-             @property color
-             @default [1.0, 1.0, 1.0]
-             @type Array(Number)
-             */
-            color: {
-
-                set: function (value) {
-
-                    this._state.color = value || [1.0, 1.0, 1.0];
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/color:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event color
-                     * @param value {Array(Number)} The property's new value
-                     */
-                    this.fire("color", this._state.color);
-                },
-
-                get: function () {
-                    return this._state.color;
-                }
-            },
-
-            /**
-             Color {{#crossLink "Texture"}}{{/crossLink}}, to apply instead of {{#crossLink "PBRMaterial/color:property"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "PBRMaterial/colorMap:event"}}{{/crossLink}} event on change.
-
-             @property colorMap
-             @default null
-             @type {Texture}
-             */
-            colorMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/color:property"}}{{/crossLink}} property changes.
-
-                     @event colorMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("colorMap", texture);
-                },
-
-                get: function () {
-                    return this._components["colorMap"];
-                }
-            },
-
-            /**
-             Emissive color of this material.
-
-             This property may be overridden by {{#crossLink "PBRMaterial/emissiveMap:property"}}{{/crossLink}}.
-
-             Fires an {{#crossLink "PBRMaterial/emissive:event"}}{{/crossLink}} event on change.
-
-             @property emissive
-             @default [1.0, 1.0, 1.0]
-             @type Array(Number)
-             */
-            emissive: {
-
-                set: function (value) {
-
-                    this._state.emissive = value || [1.0, 1.0, 1.0];
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/emissive:property"}}{{/crossLink}} property changes.
-
-                     @event emissive
-                     @param value {Array(Number)} The property's new value
-                     */
-                    this.fire("emissive", this._state.emissive);
-                },
-
-                get: function () {
-                    return this._state.emissive;
-                }
-            },
-
-            /**
-             Emissive {{#crossLink "Texture"}}{{/crossLink}}, to apply instead of {{#crossLink "PBRMaterial/emissive:property"}}{{/crossLink}}.
-
-             Fires an {{#crossLink "PBRMaterial/emissiveMap:event"}}{{/crossLink}} event on change.
-
-             @property emissiveMap
-             @default null
-             @type {Texture}
-             */
-            emissiveMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/emissiveMap:property"}}{{/crossLink}} property changes.
-
-                     @event emissiveMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("emissiveMap", texture);
-                },
-
-                get: function () {
-                    return this._components["emissiveMap"];
-                }
-            },
-
-            /**
-             Opacity of this material.
-
-             Opacity is a value in the range [0..1], in which 0 is fully transparent and 1.0 is fully opaque.
-
-             This property may be overidden by {{#crossLink "PBRMaterial/opacityMap:property"}}{{/crossLink}}.
-
-             Attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
-
-             Fires an {{#crossLink "PBRMaterial/opacity:event"}}{{/crossLink}} event on change.
-
-             @property opacity
-             @default 1.0
-             @type Number
-             */
-            opacity: {
-
-                set: function (value) {
-
-                    this._state.opacity = (value !== undefined || value !== null) ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/opacity:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event opacity
-                     * @param value {Number} The property's new value
-                     */
-                    this.fire("opacity", this._state.opacity);
-                },
-
-                get: function () {
-                    return this._state.opacity;
-                }
-            },
-
-            /**
-             Opacity {{#crossLink "Texture"}}{{/crossLink}}, to apply instead of {{#crossLink "PBRMaterial/opacity:property"}}{{/crossLink}}.
-
-             Fires an {{#crossLink "PBRMaterial/opacityMap:event"}}{{/crossLink}} event on change.
-
-             @property opacityMap
-             @default null
-             @type {Texture}
-             */
-            opacityMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/opacityMap:property"}}{{/crossLink}} property changes.
-
-                     @event opacityMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("opacityMap", texture);
-                },
-
-                get: function () {
-                    return this._components["opacityMap"];
-                }
-            },
-
-            /**
-             A factor in range [0..1] that indicates the surface roughness of this PBRMaterial.
-
-             A value of ````0```` is a mirrow reflection, while ````1```` is completely matte.
-
-             This property may be overidden by {{#crossLink "PBRMaterial/roughnessMap:property"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "PBRMaterial/roughness:event"}}{{/crossLink}} event on change.
-
-             @property roughness
-             @default 0.0
-             @type Number
-             */
-            roughness: {
-
-                set: function (value) {
-
-                    this._state.roughness = value !== undefined ? value : 0;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/roughness:property"}}{{/crossLink}} property changes.
-
-                     @event roughness
-                     @param value Number The property's new value
-                     */
-                    this.fire("roughness", this._state.roughness);
-                },
-
-                get: function () {
-                    return this._state.roughness;
-                }
-            },
-
-            /**
-             Roughness {{#crossLink "Texture"}}{{/crossLink}}, to apply instead of {{#crossLink "PBRMaterial/roughness:property"}}{{/crossLink}}.
-
-             Fires an {{#crossLink "PBRMaterial/roughnessMap:event"}}{{/crossLink}} event on change.
-
-             @property roughnessMap
-             @default null
-             @type {Texture}
-             */
-            roughnessMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/roughnessMap:property"}}{{/crossLink}} property changes.
-
-                     @event roughnessMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("roughnessMap", texture);
-                },
-
-                get: function () {
-                    return this._components["roughnessMap"];
-                }
-            },
-
-            /**
-             A normal map {{#crossLink "Texture"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "PBRMaterial/normalMap:event"}}{{/crossLink}} event on change.
-
-             @property normalMap
-             @default null
-             @type {Texture}
-             */
-            normalMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/normal:property"}}{{/crossLink}} property changes.
-
-                     @event normalMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("normalMap", texture);
-                },
-
-                get: function () {
-                    return this._components["normalMap"];
-                }
-            },
-
-            /**
-             Specular color of this material.
-
-             This property may be overridden by {{#crossLink "PBRMaterial/specularMap:property"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "PBRMaterial/specular:event"}}{{/crossLink}} event on change.
-
-             @property specular
-             @default [0.3, 0.3, 0.3]
-             @type Array(Number)
-             */
-            specular: {
-
-                set: function (value) {
-
-                    this._state.specular = value || [0.3, 0.3, 0.3];
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/specular:property"}}{{/crossLink}} property changes.
-
-                     @event specular
-                     @param value {Array(Number)} The property's new value
-                     */
-                    this.fire("specular", this._state.specular);
-                },
-
-                get: function () {
-                    return this._state.specular;
-                }
-            },
-
-
-            /**
-             Specular {{#crossLink "Texture"}}{{/crossLink}}, to apply instead of {{#crossLink "PBRMaterial/specular:property"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "PBRMaterial/specularMap:event"}}{{/crossLink}} event on change.
-
-             @property specularMap
-             @default null
-             @type {Texture}
-             */
-            specularMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PBRMaterial's {{#crossLink "PBRMaterial/specularMap:property"}}{{/crossLink}} property changes.
-
-                     @event specularMap
-                     @param value Number The property's new value
-                     */
-                    this._attachComponent("specularMap", texture);
-                },
-
-                get: function () {
-                    return this._components["specularMap"];
-                }
-            }
-        },
-
-        _attachComponent: function (type, component) {
-
-            if (XEO._isString(component)) {
-
-                // ID given for component - find the component 
-                var id = component;
-
-                component = this.scene.components[id];
-
-                if (!component) {
-                    this.error("Component not found: " + XEO._inQuotes(id));
-                    return;
-                }
-            }
-
-            if (component && component.type !== "XEO.Texture" && component.type !== "XEO.Fresnel") {
-                this.error("Component " +XEO._inQuotes(id) + " is not a XEO.Texture or XEO.Fresnel");
-                return;
-            }
-
-            var oldComponent = this._components[type];
-
-            if (oldComponent) {
-
-                // Replacing old component
-
-                oldComponent.off(this._dirtyComponentSubs[type]);
-                oldComponent.off(this._destroyedComponentSubs[type]);
-
-                delete this._components[type];
-            }
-
-            var self = this;
-
-            if (component) {
-
-                this._dirtyComponentSubs[type] = component.on("dirty",
-                    function () {
-                        self.fire("dirty", true);
-                    });
-
-                this._destroyedComponentSubs[type] = component.on("destroyed",
-                    function () {
-
-                        delete self._dirtyComponentSubs[type];
-                        delete self._destroyedComponentSubs[type];
-
-                        self._state.dirty = true;
-
-                        self.fire("dirty", true);
-                        self.fire(type, null);
-                    });
-
-                this._components[type] = component;
-            }
-
-            this._state[type] = component ? component._state : null;
-
-            this._state.dirty = true;
-
-            this.fire(type, component || null);
-        },
-
-        _compile: function () {
-
-            if (this._state.dirty) {
-
-                this._makeHash();
-
-                this._state.dirty = false;
-            }
-
-            this._renderer.material = this._state;
-        },
-
-        _makeHash: function () {
-
-            var state = this._state;
-
-            var hash = [];
-
-            if (state.colorMap) {
-                hash.push("/c");
-                if (state.colorMap.matrix) {
-                    hash.push("/anim");
-                }
-            }
-
-            if (state.emissiveMap) {
-                hash.push("/e");
-                if (state.emissiveMap.matrix) {
-                    hash.push("/anim");
-                }
-            }
-
-            if (state.opacityMap) {
-                hash.push("/o");
-                if (state.opacityMap.matrix) {
-                    hash.push("/anim");
-                }
-            }
-
-            if (state.roughnessMap) {
-                hash.push("/r");
-                if (state.roughnessMap.matrix) {
-                    hash.push("/anim");
-                }
-            }
-
-            if (state.normalMap) {
-                hash.push("/b");
-                if (state.normalMap.matrix) {
-                    hash.push("/anim");
-                }
-            }
-
-            hash.push(";");
-
-            state.hash = hash.join("");
-        },
-
-        _getJSON: function () {
-
-            var components = this._components;
-
-            var json = {};
-
-            // Common
-
-            json.color = this._state.color;
-
-            if (components.colorMap) {
-                json.colorMap = components.colorMap.id;
-            }
-
-            json.emissive = this._state.emissive;
-
-            if (components.emissiveMap) {
-                json.emissiveMap = components.emissiveMap.id;
-            }
-
-            json.opacity = this._state.opacity;
-
-            if (components.opacityMap) {
-                json.opacityMap = components.opacityMap.id;
-            }
-
-            json.roughness = this._state.roughness;
-
-            if (components.roughnessMap) {
-                json.roughnessMap = components.roughnessMap.id;
-            }
-
-            if (components.normalMap) {
-                json.normalMap = components.normalMap.id;
-            }
-
-            json.metallic = this._state.metallic;
-
-            json.specular = this.specular;
-
-            if (components.specularMap) {
-                json.specularMap = components.specularMap.id;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();;/**
  A **Texture** specifies a texture map.
 
  ## Overview
@@ -14079,7 +9902,7 @@ TODO
 
                 var self = this;
 
-                this.scene.once("tick",
+                this.scene.once("tick2",
                     function () {
                         self._build();
                     });
@@ -16184,6 +12007,7 @@ TODO
         /**
          * Returns a 4x4 'lookat' viewing transform matrix.
          * @method lookAtMat4c
+         * @static
          */
         lookAtMat4c: function (posx, posy, posz, targetx, targety, targetz, upx, upy, upz) {
             return XEO.math.lookAtMat4v([posx, posy, posz], [targetx, targety, targetz], [upx, upy, upz], []);
@@ -16192,6 +12016,7 @@ TODO
         /**
          * Returns a 4x4 orthographic projection matrix.
          * @method orthoMat4c
+         * @static
          */
         orthoMat4c: function (left, right, bottom, top, near, far, dest) {
             if (!dest) {
@@ -16227,6 +12052,7 @@ TODO
         /**
          * Returns a 4x4 perspective projection matrix.
          * @method frustumMat4v
+         * @static
          */
         frustumMat4v: function (fmin, fmax) {
             var fmin4 = [fmin[0], fmin[1], fmin[2], 0.0];
@@ -16266,6 +12092,7 @@ TODO
         /**
          * Returns a 4x4 perspective projection matrix.
          * @method frustumMat4v
+         * @static
          */
         frustumMat4: function (left, right, bottom, top, near, far, dest) {
             if (!dest) {
@@ -16296,6 +12123,7 @@ TODO
         /**
          * Returns a 4x4 perspective projection matrix.
          * @method perspectiveMatrix4v
+         * @static
          */
         perspectiveMatrix4: function (fovyrad, aspectratio, znear, zfar) {
             var pmin = [];
@@ -16316,6 +12144,7 @@ TODO
         /**
          * Transforms a three-element position by a 4x4 matrix.
          * @method transformPoint3
+         * @static
          */
         transformPoint3: function (m, p) {
             var p0 = p[0], p1 = p[1], p2 = p[2];
@@ -16331,6 +12160,7 @@ TODO
         /**
          * Transforms an array of three-element positions by a 4x4 matrix.
          * @method transformPoints3
+         * @static
          */
         transformPoints3: function (m, points, points2) {
             var result = points2 || [];
@@ -16365,6 +12195,7 @@ TODO
         /**
          * Transforms a three-element vector by a 4x4 matrix.
          * @method transformVec3
+         * @static
          */
         transformVec3: function (m, v) {
             var v0 = v[0], v1 = v[1], v2 = v[2];
@@ -16378,6 +12209,7 @@ TODO
         /**
          * Transforms a four-element vector by a 4x4 matrix.
          * @method transformVec4
+         * @static
          */
         transformVec4: function (m, v) {
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
@@ -16392,6 +12224,7 @@ TODO
         /**
          * Transforms a four-element vector by a 4x4 projection matrix.
          * @method projectVec4
+         * @static
          */
         projectVec4: function (v) {
             var f = 1.0 / v[3];
@@ -16401,6 +12234,7 @@ TODO
         /**
          * Linearly interpolates between two 3D vectors.
          * @method lerpVec3
+         * @static
          */
         lerpVec3: function (t, t1, t2, p1, p2, dest) {
             var result = dest || this.vec3();
@@ -16414,6 +12248,7 @@ TODO
         /**
          * Gets the diagonal size of a boundary given as minima and maxima.
          * @method getAABBDiag
+         * @static
          */
         getAABBDiag: function (boundary) {
 
@@ -16437,6 +12272,7 @@ TODO
         /**
          * Gets the center of a boundary given as minima and maxima.
          * @method getAABBCenter
+         * @static
          */
         getAABBCenter: function (boundary, dest) {
             var r = dest || this.vec3();
@@ -16453,6 +12289,7 @@ TODO
          * an array of eight 3D positions, one for each corner of the boundary.
          *
          * @method AABB3ToOBB3
+         * @static
          * @param {*} aabb Axis-aligned boundary.
          * @param {Array} [obb] Oriented bounding box.
          * @returns {*} Oriented bounding box.
@@ -16532,6 +12369,7 @@ TODO
          * Finds the minimum axis-aligned boundary enclosing the 3D points given in a flattened,  1-dimensional array.
          *
          * @method positions3ToAABB3
+         * @static
          * @param {Array} positions Oriented bounding box.
          * @param {*} [aabb] Axis-aligned bounding box.
          * @returns {*} Axis-aligned bounding box.
@@ -16601,6 +12439,7 @@ TODO
          * Finds the minimum axis-aligned boundary enclosing the given 3D points.
          *
          * @method points3ToAABB3
+         * @static
          * @param {Array} points Oriented bounding box.
          * @param {*} [aabb] Axis-aligned bounding box.
          * @returns {*} Axis-aligned bounding box.
@@ -16664,140 +12503,260 @@ TODO
             aabb.zmax = zmax;
 
             return aabb;
+        },
+
+
+        /**
+         * Builds normal vectors from positions and indices.
+         *
+         * @method buildTangents
+         * @static
+         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
+         * @param {{Array of Number}} indices One-dimensional flattened array of indices.*
+         * @returns {{Array of Number}} One-dimensional flattened array of normal vectors.
+         */
+        buildNormals: function (positions, indices) {
+
+            var nvecs = new Array(positions.length / 3);
+            var j0;
+            var j1;
+            var j2;
+            var v1;
+            var v2;
+            var v3;
+
+            for (var i = 0, len = indices.length - 3; i < len; i += 3) {
+                j0 = indices[i + 0];
+                j1 = indices[i + 1];
+                j2 = indices[i + 2];
+
+                v1 = [positions[j0 * 3 + 0], positions[j0 * 3 + 1], positions[j0 * 3 + 2]];
+                v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
+                v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
+
+                v2 = XEO.math.subVec4(v2, v1, [0, 0, 0, 0]);
+                v3 = XEO.math.subVec4(v3, v1, [0, 0, 0, 0]);
+
+                var n = XEO.math.normalizeVec4(XEO.math.cross3Vec4(v2, v3, [0, 0, 0, 0]), [0, 0, 0, 0]);
+
+                if (!nvecs[j0]) nvecs[j0] = [];
+                if (!nvecs[j1]) nvecs[j1] = [];
+                if (!nvecs[j2]) nvecs[j2] = [];
+
+                nvecs[j0].push(n);
+                nvecs[j1].push(n);
+                nvecs[j2].push(n);
+            }
+
+            var normals = new Array(positions.length);
+
+            // now go through and average out everything
+            for (var i = 0, len = nvecs.length; i < len; i++) {
+                var count = nvecs[i].length;
+                var x = 0;
+                var y = 0;
+                var z = 0;
+                for (var j = 0; j < count; j++) {
+                    x += nvecs[i][j][0];
+                    y += nvecs[i][j][1];
+                    z += nvecs[i][j][2];
+                }
+                normals[i * 3 + 0] = (x / count);
+                normals[i * 3 + 1] = (y / count);
+                normals[i * 3 + 2] = (z / count);
+            }
+
+            return normals;
+        },
+
+
+        /**
+         * Builds vertex tangent vectors from positions, UVs and indices
+         *
+         * @method buildTangents
+         * @static
+         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
+         * @param {{Array of Number}} indices One-dimensional flattened array of indices.
+         * @param {{Array of Number}} uv One-dimensional flattened array of UV coordinates.
+         * @returns {{Array of Number}} One-dimensional flattened array of tangents.
+         */
+        buildTangents: function (positions, indices, uv) {
+
+            var tangents = [];
+
+            // The vertex arrays needs to be calculated
+            // before the calculation of the tangents
+
+            for (var location = 0; location < indices.length; location += 3) {
+
+                // Recontructing each vertex and UV coordinate into the respective vectors
+
+                var index = indices[location];
+
+                var v0 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
+                var uv0 = [uv[index * 2], uv[(index * 2) + 1]];
+
+                index = indices[location + 1];
+
+                var v1 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
+                var uv1 = [uv[index * 2], uv[(index * 2) + 1]];
+
+                index = indices[location + 2];
+
+                var v2 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
+                var uv2 = [uv[index * 2], uv[(index * 2) + 1]];
+
+                var deltaPos1 = XEO.math.subVec3(v1, v0, []);
+                var deltaPos2 = XEO.math.subVec3(v2, v0, []);
+
+                var deltaUV1 = XEO.math.subVec2(uv1, uv0, []);
+                var deltaUV2 = XEO.math.subVec2(uv2, uv0, []);
+
+                var r = 1.0 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
+
+                var tangent = XEO.math.mulVec3Scalar(
+                    XEO.math.subVec3(
+                        XEO.math.mulVec3Scalar(deltaPos1, deltaUV2[1], []),
+                        XEO.math.mulVec3Scalar(deltaPos2, deltaUV1[1], []),
+                        []
+                    ),
+                    r,
+                    []
+                );
+
+                // Average the value of the vectors outs
+                for (var v = 0; v < 3; v++) {
+                    var addTo = indices[location + v];
+                    if (typeof tangents[addTo] !== "undefined") {
+                        tangents[addTo] = XEO.math.addVec3(tangents[addTo], tangent, []);
+                    } else {
+                        tangents[addTo] = tangent;
+                    }
+                }
+            }
+
+            // Deconstruct the vectors back into 1D arrays for WebGL
+
+            var tangents2 = [];
+
+            for (var i = 0; i < tangents.length; i++) {
+                tangents2 = tangents2.concat(tangents[i]);
+            }
+
+            return tangents2;
+        },
+
+        /**
+         * Flattens a two-dimensional array into a one-dimensional array.
+         *
+         * @method flatten
+         * @static
+         * @param {Array of Arrays} a A 2D array
+         * @returns Flattened 1D array
+         */
+        flatten: function (a) {
+
+            var result = [];
+
+            var i;
+            var leni;
+            var j;
+            var lenj;
+            var item;
+
+            for (i = 0, leni = a.length; i < leni; i++) {
+                item = a[i];
+                for (j = 0, lenj = item.length; j < lenj; j++) {
+                    result.push(item[j]);
+                }
+            }
+
+            return result;
         }
+
     };
 
-})();;/**
- * Builds normal vectors from positions and indices
- * @private
- */
-XEO.math.buildNormals = function (positions, indices) {
+})();;XEO.math.tangentQuadraticBezier = function (t, p0, p1, p2) {
+    return 2 * ( 1 - t ) * ( p1 - p0 ) + 2 * t * ( p2 - p1 );
 
-    var nvecs = new Array(positions.length / 3);
-    var j0;
-    var j1;
-    var j2;
-    var v1;
-    var v2;
-    var v3;
-
-    for (var i = 0, len = indices.length - 3; i < len; i += 3) {
-        j0 = indices[i + 0];
-        j1 = indices[i + 1];
-        j2 = indices[i + 2];
-
-        v1 = [positions[j0 * 3 + 0], positions[j0 * 3 + 1], positions[j0 * 3 + 2]];
-        v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
-        v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
-
-        v2 = XEO.math.subVec4(v2, v1, [0, 0, 0, 0]);
-        v3 = XEO.math.subVec4(v3, v1, [0, 0, 0, 0]);
-
-        var n = XEO.math.normalizeVec4(XEO.math.cross3Vec4(v2, v3, [0, 0, 0, 0]), [0, 0, 0, 0]);
-
-        if (!nvecs[j0]) nvecs[j0] = [];
-        if (!nvecs[j1]) nvecs[j1] = [];
-        if (!nvecs[j2]) nvecs[j2] = [];
-
-        nvecs[j0].push(n);
-        nvecs[j1].push(n);
-        nvecs[j2].push(n);
-    }
-
-    var normals = new Array(positions.length);
-
-    // now go through and average out everything
-    for (var i = 0, len = nvecs.length; i < len; i++) {
-        var count = nvecs[i].length;
-        var x = 0;
-        var y = 0;
-        var z = 0;
-        for (var j = 0; j < count; j++) {
-            x += nvecs[i][j][0];
-            y += nvecs[i][j][1];
-            z += nvecs[i][j][2];
-        }
-        normals[i * 3 + 0] = (x / count);
-        normals[i * 3 + 1] = (y / count);
-        normals[i * 3 + 2] = (z / count);
-    }
-
-    return normals;
 };
 
+XEO.math.tangentQuadraticBezier = function (t, p0, p1, p2, p3) {
+    return -3 * p0 * (1 - t) * (1 - t) +
+        3 * p1 * (1 - t) * (1 - t) - 6 * t * p1 * (1 - t) +
+        6 * t * p2 * (1 - t) - 3 * t * t * p2 +
+        3 * t * t * p3;
 
-/**
- * Builds vertex tangent vectors from positions, UVs and indices
- *
- * Based on code by @rollokb, in his fork of webgl-obj-loader:
- * https://github.com/rollokb/webgl-obj-loader
- *
- * @private
- **/
-XEO.math.buildTangents = function (positions, indices, uv) {
+};
 
-    var tangents = [];
+XEO.math.tangentSpline = function (t, p0, p1, p2, p3) {
 
-    // The vertex arrays needs to be calculated
-    // before the calculation of the tangents
+    var h00 = 6 * t * t - 6 * t;
+    var h10 = 3 * t * t - 4 * t + 1;
+    var h01 = -6 * t * t + 6 * t;
+    var h11 = 3 * t * t - 2 * t;
 
-    for (var location = 0; location < indices.length; location += 3) {
+    return h00 + h10 + h01 + h11;
 
-        // Recontructing each vertex and UV coordinate into the respective vectors
+};
 
-        var index = indices[location];
+// Catmull-Rom
 
-        var v0 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
-        var uv0 = [uv[index * 2], uv[(index * 2) + 1]];
+XEO.math.catmullRomInterpolate = function (p0, p1, p2, p3, t) {
+    var v0 = ( p2 - p0 ) * 0.5;
+    var v1 = ( p3 - p1 ) * 0.5;
+    var t2 = t * t;
+    var t3 = t * t2;
+    return ( 2 * p1 - 2 * p2 + v0 + v1 ) * t3 + ( -3 * p1 + 3 * p2 - 2 * v0 - v1 ) * t2 + v0 * t + p1;
 
-        index = indices[location + 1];
+};
 
-        var v1 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
-        var uv1 = [uv[index * 2], uv[(index * 2) + 1]];
+// Bezier Curves formulas obtained from
+// http://en.wikipedia.org/wiki/B%C3%A9zier_curve
 
-        index = indices[location + 2];
+// Quad Bezier Functions
 
-        var v2 = [positions[index * 3], positions[(index * 3) + 1], positions[(index * 3) + 2]];
-        var uv2 = [uv[index * 2], uv[(index * 2) + 1]];
+XEO.math.b2p0 = function (t, p) {
+    var k = 1 - t;
+    return k * k * p;
 
-        var deltaPos1 = XEO.math.subVec3(v1, v0, []);
-        var deltaPos2 = XEO.math.subVec3(v2, v0, []);
+};
 
-        var deltaUV1 = XEO.math.subVec2(uv1, uv0, []);
-        var deltaUV2 = XEO.math.subVec2(uv2, uv0, []);
+XEO.math.b2p1 = function (t, p) {
+    return 2 * ( 1 - t ) * t * p;
+};
 
-        var r = 1.0 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
+XEO.math.b2p2 = function (t, p) {
+    return t * t * p;
+};
 
-        var tangent = XEO.math.mulVec3Scalar(
-            XEO.math.subVec3(
-                XEO.math.mulVec3Scalar(deltaPos1, deltaUV2[1], []),
-                XEO.math.mulVec3Scalar(deltaPos2, deltaUV1[1], []),
-                []
-            ),
-            r,
-            []
-        );
+XEO.math.b2 = function (t, p0, p1, p2) {
+    return this.b2p0(t, p0) + this.b2p1(t, p1) + this.b2p2(t, p2);
+};
 
-        // Average the value of the vectors outs
-        for (var v = 0; v < 3; v++) {
-            var addTo = indices[location + v];
-            if (typeof tangents[addTo] !== "undefined") {
-                tangents[addTo] = XEO.math.addVec3(tangents[addTo], tangent, []);
-            } else {
-                tangents[addTo] = tangent;
-            }
-        }
-    }
+// Cubic Bezier Functions
 
-    // Deconstruct the vectors back into 1D arrays for WebGL
+XEO.math.b3p0 = function (t, p) {
+    var k = 1 - t;
+    return k * k * k * p;
+};
 
-    var tangents2 = [];
+XEO.math.b3p1 = function (t, p) {
+    var k = 1 - t;
+    return 3 * k * k * t * p;
+};
 
-    for (var i = 0; i < tangents.length; i++) {
-        tangents2 = tangents2.concat(tangents[i]);
-    }
+XEO.math.b3p2 = function (t, p) {
+    var k = 1 - t;
+    return 3 * k * t * t * p;
+};
 
-    return tangents2;
+XEO.math.b3p3 = function (t, p) {
+    return t * t * t * p;
+};
+
+XEO.math.b3 = function (t, p0, p1, p2, p3) {
+    return this.b3p0(t, p0) + this.b3p1(t, p1) + this.b3p2(t, p2) + this.b3p3(t, p3);
 };
 
 ;/**
@@ -17839,323 +13798,6 @@ XEO.math.buildTangents = function (positions, indices, uv) {
  * @module XEO
  * @submodule rendering
  */;/**
- A **Canvas** manages a {{#crossLink "Scene"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.
-
- ## Overview
-
- <ul>
-
- <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.</li>
-
- <li>When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
- an existing <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>, then
- the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
-
- <li>A Canvas will fire a {{#crossLink "Canvas/resized:event"}}{{/crossLink}} event whenever
- the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.</li>
-
- <li>A Canvas is responsible for obtaining a WebGL context from
- the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.</li>
-
- <li>A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
- lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.</li>
-
- <li>The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
- the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.</li>
-
- </ul>
-
- <img src="../../../assets/images/Canvas.png"></img>
-
- ## Example
-
- In the example below, we're creating a {{#crossLink "Scene"}}Scene{{/crossLink}} without specifying an HTML canvas element
- for it. This causes the {{#crossLink "Scene"}}Scene{{/crossLink}}'s Canvas component to create its own default element
- within the page. Then we subscribe to various events fired by that Canvas component.
-
- ```` javascript
- var scene = new XEO.Scene();
-
- // Get the Canvas off the Scene
- // Since we did not configure the Scene with the ID of a DOM canvas element,
- // the Canvas will create its own canvas element in the DOM
- var canvas = scene.canvas;
-
- // Get the WebGL context off the Canvas
- var gl = canvas.gl;
-
- // Subscribe to Canvas resize events
- canvas.on("resize", function(e) {
-        var width = e.width;
-        var height = e.height;
-        var aspect = e.aspect;
-        //...
-     });
-
- // Subscribe to WebGL context loss events on the Canvas
- canvas.on("webglContextLost", function() {
-        //...
-     });
-
- // Subscribe to WebGL context restored events on the Canvas
- canvas.on("webglContextRestored", function(gl) {
-        var newContext = gl;
-        //...
-     });
- ````
-
- When we want to bind the Canvas to an existing HTML canvas element, configure the
- {{#crossLink "Scene"}}{{/crossLink}} with the ID of the element, like this:
-
- ```` javascript
- // Create a Scene, this time configuting it with the
- // ID of an existing DOM canvas element
- var scene = new XEO.Scene({
-          canvasId: "myCanvas"
-     });
-
- // ..and the rest of this example can be the same as the previous example.
-
- ````
- @class Canvas
- @module XEO
- @submodule rendering
- @static
- @param {Scene} scene Parent scene
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    var canvases = {};
-
-    XEO.Canvas = XEO.Component.extend({
-
-        type: "XEO.Canvas",
-
-        serializable: false,
-
-        // Names of recognised WebGL contexts
-        _WEBGL_CONTEXT_NAMES: [
-            "webgl",
-            "experimental-webgl",
-            "webkit-3d",
-            "moz-webgl",
-            "moz-glweb20"
-        ],
-
-        _init: function (cfg) {
-
-            /**
-             * The HTML canvas. When the {{#crossLink "Viewer"}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,
-             * then this property will be that element, otherwise it will be a full-page canvas that this Canvas has
-             * created by default.
-             *
-             * @property canvas
-             * @type {HTMLCanvasElement}
-             * @final
-             */
-            this.canvas = null;
-
-            /**
-             * The WebGL rendering context, obtained by this Canvas from the HTML 5 canvas.
-             *
-             * @property gl
-             * @type {WebGLRenderingContext}
-             * @final
-             */
-            this.gl = null;
-
-            /**
-             * Attributes for the WebGL context
-             *
-             * @type {{}|*}
-             */
-            this.contextAttr = cfg.contextAttr || {};
-
-            if (!cfg.canvas) {
-
-                // Canvas not supplied, create one automatically
-
-                this._createCanvas();
-
-            } else {
-
-                // Canvas supplied
-
-                if (XEO._isString(cfg.canvas)) {
-
-                    // Canvas ID supplied - find the canvas
-
-                    this.canvas = document.getElementById(cfg.canvas);
-
-                    if (!this.canvas) {
-
-                        // Canvas not found - create one automatically
-
-                        this.error("Canvas element not found: " + XEO._inQuotes(cfg.canvas)
-                            + " - creating default canvas instead.");
-
-                        this._createCanvas();
-                    }
-
-                } else {
-
-                    this.error("Config 'canvasId' should be a string - "
-                        + "creating default canvas instead.");
-
-                    this._createCanvas();
-                }
-            }
-
-            if (!this.canvas) {
-
-                this.error("Faied to create canvas");
-
-                return;
-            }
-
-            // If the canvas uses css styles to specify the sizes make sure the basic
-            // width and height attributes match or the WebGL context will use 300 x 150
-
-            this.canvas.width = this.canvas.clientWidth;
-            this.canvas.height = this.canvas.clientHeight;
-
-            // Get WebGL context
-
-            this._initWebGL();
-
-            // Bind context loss and recovery handlers
-
-            var self = this;
-
-            this.canvas.addEventListener("webglcontextlost",
-                function () {
-
-                    /**
-                     * Fired wheneber the WebGL context has been lost
-                     * @event webglContextLost
-                     */
-                    self.fire("webglContextLost");
-                },
-                false);
-
-            this.canvas.addEventListener("webglcontextrestored",
-                function () {
-                    self._initWebGL();
-                    if (self.gl) {
-
-                        /**
-                         * Fired whenever the WebGL context has been restored again after having previously being lost
-                         * @event webglContextRestored
-                         * @param value The WebGL context object
-                         */
-                        self.fire("webglContextRestored", self.gl);
-                    }
-                },
-                false);
-
-            // Publish canvas size changes on each scene tick
-
-            var lastWidth = this.canvas.width;
-            var lastHeight = this.canvas.height;
-
-            this._tick = this.scene.on("tick",
-                function () {
-
-                    var canvas = self.canvas;
-
-                    if (canvas.width !== lastWidth || canvas.height !== lastHeight) {
-
-                        lastWidth = canvas.width;
-                        lastHeight = canvas.height;
-
-                        /**
-                         * Fired whenever the canvas has resized
-                         * @event resized
-                         * @param width {Number} The new canvas width
-                         * @param height {Number} The new canvas height
-                         * @param aspect {Number} The new canvas aspect ratio
-                         */
-                        self.fire("resized", {
-                            width: canvas.width,
-                            height: canvas.height,
-                            aspect: canvas.height / canvas.width
-                        });
-                    }
-                });
-
-            this.canvas.oncontextmenu = function (e) {
-                e.preventDefault();
-            };
-        },
-
-        /**
-         * Creates a canvas in the DOM
-         * @private
-         */
-        _createCanvas: function () {
-
-            var canvasId = "XEO-canvas-" + XEO.math.createUUID();
-            var body = document.getElementsByTagName("body")[0];
-            var div = document.createElement('div');
-
-            var style = div.style;
-            style.height = "600px";
-            style.width = "600px";
-            style.padding = "0";
-            style.margin = "0";
-            style.background = "black";
-            style.float = "left";
-            //style.left = "0";
-            //style.top = "0";
-            // style.position = "absolute";
-            // style["z-index"] = "10000";
-
-            div.innerHTML += '<canvas id="' + canvasId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0;"></canvas>';
-
-            body.appendChild(div);
-
-            this.canvas = document.getElementById(canvasId);
-        },
-
-        /**
-         * Initialises the WebGL context
-         */
-        _initWebGL: function () {
-
-            for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
-                try {
-                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
-                } catch (e) { // Try with next context name
-                }
-            }
-
-            if (!this.gl) {
-
-                this.error('Failed to get a WebGL context');
-
-                /**
-                 * Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL
-                 * is either unsupported or has been disabled.
-                 * @event webglContextFailed
-                 */
-                this.fire("webglContextFailed", true, true);
-
-                // TODO: render message in canvas
-
-
-            }
-        },
-
-        _destroy: function () {
-            this.scene.off(this._tick);
-        }
-    });
-
-})();
-;/**
  A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
@@ -22806,7 +18448,8 @@ var object3 = new XEO.GameObject(scene, {
 
 
                 } else { // No normals
-                    add("fragColor = vec4((diffuse.rgb + (emissive * color.rgb)) * (vec3(1.0, 1.0, 1.0) + ambient.rgb), opacity);");
+                    //add("fragColor = vec4((diffuse.rgb + (emissive * color.rgb)) * (vec3(1.0, 1.0, 1.0) + ambient.rgb), opacity);");
+                    add("fragColor = vec4(diffuse.rgb, opacity);");
                 }
 
 
@@ -26943,6 +22586,6593 @@ scene.on("tick", function(e) {
             return {
                 xyz: this.xyz
             };
+        }
+    });
+
+})();
+;/**
+ A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target component, AABB or eye/look/up position.
+
+ ## Overview
+
+ <ul>
+ <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.
+ </ul>
+
+ ## Example
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var camera = new XEO.Camera(scene);
+
+ var object = new XEO.GameObject(scene);
+
+ var animation = new XEO.CameraFlight(scene, {
+    camera: camera
+ });
+
+ animation.flyTo({
+    eye: [-5,-5,-5],
+    look: [0,0,0]
+    up: [0,1,0]
+ }, function() {
+    // Arrived
+ });
+ ````
+
+ @class CameraFlight
+ @module XEO
+ @submodule animation
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [cfg] {*} Fly configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.CameraFlight = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.CameraFlight",
+
+        _init: function (cfg) {
+
+            this._look1 = XEO.math.vec3();
+            this._eye1 = XEO.math.vec3();
+            this._up1 = XEO.math.vec3();
+
+            this._look2 = XEO.math.vec3();
+            this._eye2 = XEO.math.vec3();
+            this._up2 = XEO.math.vec3();
+
+            this._vec = XEO.math.vec3();
+
+            this._dist = 0;
+
+            this._flying = false;
+
+            this._ok = null;
+
+            this._onTick = null;
+
+            this._camera = cfg.camera;
+
+            this._tempVec = XEO.math.vec3();
+
+            this._eyeVec = XEO.math.vec3();
+            this._lookVec = XEO.math.vec3();
+
+            this._stopFOV = 55;
+
+            this._time1 = null;
+            this._time2 = null;
+
+            this.easing = cfg.easing !== false;
+
+            this.duration = cfg.duration || 0.5;
+
+            this.camera = cfg.camera;
+        },
+
+        /**
+         * Begins flying this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
+         *
+         * <ul>
+         *     <li>When the target is a boundary, the {{#crossLink "Camera"}}{{/crossLink}} will fly towards the target
+         *     and stop when the target fills most of the canvas.</li>
+         *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *      vectors, then this CameraFlight will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.</li>
+         * @method flyTo
+         * @param params  {*} Flight parameters
+         * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
+         * {{#crossLink "Camera/eye:property"}}Camera's eye{{/crossLink}} position will
+         * swing away from its {{#crossLink "Camera/eye:property"}}look{{/crossLink}} position as it flies to the target.
+         * @param [params.component] {String|Component} ID or instance of a component to fly to.
+         * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
+         * @param [params.eye] {Array of Number} Position to fly the eye position to.
+         * @param [params.look] {Array of Number} Position to fly the look position to.
+         * @param [params.up] {Array of Number} Position to fly the up vector to.
+         * @param [ok] {Function} Callback fired on arrival
+         */
+        flyTo: function (params, ok) {
+
+            if (this._flying) {
+                this.stop();
+            }
+
+            this._ok = ok;
+
+            this._arc = params.arc === undefined ? 0.0 : params.arc;
+
+            var lookat = this.camera.view;
+
+            // Set up initial camera state
+
+            this._look1 = lookat.look;
+            this._eye1 = lookat.eye;
+            this._up1 = lookat.up;
+
+            // Get normalized eye->look vector
+
+            this._vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, []));
+
+            // Back-off factor in range of [0..1], when 0 is close, 1 is far
+
+            var backOff = params.backOff || 0.5;
+
+            if (backOff < 0) {
+                backOff = 0;
+
+            } else if (backOff > 1) {
+                backOff = 1;
+            }
+
+            backOff = 1 - backOff;
+
+            var component = params.component;
+            var aabb = params.aabb;
+
+            if (component || aabb) {
+
+                if (component) {
+
+                    if (XEO._isNumeric(component) || XEO._isString(component)) {
+
+                        var componentId = component;
+
+                        component = this.scene.components[componentId];
+
+                        if (!component) {
+                            this.error("Component not found: " + XEO._inQuotes(componentId));
+                            return;
+                        }
+                    }
+
+                    var worldBoundary = component.worldBoundary;
+
+                    if (!worldBoundary) {
+                        this.error("Can't fly to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
+                        return;
+                    }
+
+                    aabb = worldBoundary.aabb;
+                }
+
+                if (aabb.xmax <= aabb.xmin || aabb.ymax <= aabb.ymin || aabb.zmax <= aabb.zmin) {
+                    return;
+                }
+
+                var dist = params.dist || 2.5;
+                var lenVec = Math.abs(XEO.math.lenVec3(this._vec));
+                var diag = XEO.math.getAABBDiag(aabb);
+                var len = Math.abs((diag / (1.0 + (backOff * 0.8))) / Math.tan(this._stopFOV / 2));  /// Tweak this to set final camera distance on arrival
+                var sca = (len / lenVec) * dist;
+
+                this._look2 = XEO.math.getAABBCenter(aabb);
+                this._look2 = [this._look2[0], this._look2[1], this._look2[2]];
+
+                if (params.offset) {
+
+                    this._look2[0] += params.offset[0];
+                    this._look2[1] += params.offset[1];
+                    this._look2[2] += params.offset[2];
+                }
+
+                this._eye2 = XEO.math.addVec3(this._look2, XEO.math.mulVec3Scalar(this._vec, sca, []));
+                this._up2 = XEO.math.vec3();
+                this._up2[1] = 1;
+
+            } else {
+
+                // Zooming to specific look and eye points
+
+                var lookat = params;
+
+                var look = params.look || this._camera.view.look;
+                var eye = params.eye || this._camera.view.eye;
+                var up = params.up || this._camera.view.up;
+
+                this._look2[0] = look[0];
+                this._look2[1] = look[1];
+                this._look2[2] = look[2];
+
+
+                this._eye2[0] = eye[0];
+                this._eye2[1] = eye[1];
+                this._eye2[2] = eye[2];
+
+                this._up2[0] = up[0];
+                this._up2[1] = up[1];
+                this._up2[2] = up[2];
+            }
+
+            this.fire("started", params, true);
+
+            var self = this;
+
+            this._time1 = (new Date()).getTime();
+            this._time2 = this._time1 + this._duration;
+
+            this._tick = this.scene.on("tick",
+                function (params) {
+                    self._update();
+                });
+
+            this._flying = true;
+        },
+
+        _update: function () {
+
+            if (!this._flying) {
+                return;
+            }
+
+            var time = (new Date()).getTime();
+
+            var t = (time - this._time1) / (this._time2 - this._time1);
+
+            if (t > 1) {
+                this.stop();
+                return;
+            }
+
+            t = this.easing ? this._ease(t, 0, 1, 1) : t;
+
+            var view = this._camera.view;
+
+            view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, []);
+            view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
+            view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, []);
+        },
+
+        // Quadratic easing out - decelerating to zero velocity
+        // http://gizma.com/easing
+
+        _ease: function (t, b, c, d) {
+            t /= d;
+            return -c * t * (t - 2) + b;
+        },
+
+        stop: function () {
+
+            if (!this._flying) {
+                return;
+            }
+
+            this.scene.off(this._tick);
+
+            this._flying = false;
+
+            this._time1 = null;
+            this._time2 = null;
+
+            this.fire("stopped", true, true);
+
+            var ok = this._ok;
+
+            if (ok) {
+                this._ok = false;
+                ok();
+            }
+        },
+
+        _props: {
+
+            camera: {
+
+                set: function (value) {
+                    var camera = value || this.scene.camera;
+                    if (camera) {
+                        if (XEO._isNumeric(camera) || XEO._isString(camera)) {
+                            camera = this.scene.components[camera];
+                            if (!camera) {
+                                this.error("Component not found: " + XEO._inQuotes(value));
+                                return;
+                            }
+                        }
+                        if (camera.type != "XEO.Camera") {
+                            this.error("Component " + XEO._inQuotes(camera.id) + " is not a XEO.Camera");
+                            return;
+                        }
+                        this._camera = value || this.scene.camera;
+                    }
+                    this.stop();
+                },
+
+                get: function () {
+                    return this._camera;
+                }
+            },
+
+            duration: {
+
+                set: function (value) {
+                    this._duration = value * 1000.0;
+                    this.stop();
+                },
+
+                get: function () {
+                    return this._duration * 0.001;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {};
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this.stop();
+        }
+    });
+
+})();
+;/**
+ A **CameraPath** flies a {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "Curve"}}{{/crossLink}}.
+
+ ## Example
+
+ ````Javascript
+
+ var object = new XEO.GameObject();
+
+ var camera = new XEO.Camera();
+
+ var spline = new XEO.SplineCurve({
+            points: [
+                [0, 0, 100],
+                [10, 5, 60],
+                [7, 2, 20],
+                [2, -1, 10]
+            ]
+        });
+
+ var cameraPath = new XEO.CameraPath({
+    camera: camera,
+    path: spline
+ });
+
+ XEO.scene.on("tick",
+    function(e) {
+
+        var t = (e.time - e.startTime) * 0.01;
+
+        spline.t = t;
+    });
+ ````
+
+ @class CameraPath
+ @module XEO
+ @submodule animation
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [cfg] {*} Configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraPath.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraPath. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.path] {String|Curve} ID or instance of a {{#crossLink "Curve"}}{{/crossLink}} to move along.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.CameraPath = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.CameraPath",
+
+        _init: function (cfg) {
+
+            this.camera = cfg.camera;
+            this.path = cfg.path;
+        },
+
+        _props: {
+
+
+            /**
+             * The Camera for this CameraPath.
+             *
+             * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
+             * default {{#crossLink "Scene/camera:property"}}{{/crossLink}}.
+             *
+             * Fires a {{#crossLink "CameraPath/camera:event"}}{{/crossLink}} event on change.
+             *
+             * @property camera
+             * @type Camera
+             */
+            camera: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this CameraPaths's {{#crossLink "CameraPath/camera:property"}}{{/crossLink}} property changes.
+                     * @event camera
+                     * @param value The property's new value
+                     */
+                    this._setChild("camera", value);
+
+                    this._update();
+                },
+
+                get: function () {
+                    return this._children.camera;
+                }
+            },
+
+            /**
+             * The Curve for this CameraPath.
+             *
+             * Fires a {{#crossLink "CameraPath/path:event"}}{{/crossLink}} event on change.
+             *
+             * @property path
+             * @type {Path}
+             */
+            path: {
+
+                set: function (value) {
+
+                    // Unsubscribe from old Curves's events
+
+                    var oldPath = this._children.path;
+
+                    if (oldPath && (!value || (value.id !== undefined ? value.id : value) !== oldPath.id)) {
+                        oldPath.off(this._onPathT);
+                    }
+
+                    /**
+                     * Fired whenever this CameraPaths's {{#crossLink "CameraPath/path:property"}}{{/crossLink}} property changes.
+                     * @event path
+                     * @param value The property's new value
+                     */
+                    this._setChild("path", value);
+
+                    var newPath = this._children.path;
+
+                    if (newPath) {
+
+                        // Subscribe to new Path's events
+
+                        var self = this;
+
+                        this._onPathT = newPath.on("t",
+                            function () {
+                                // Called immediately
+                                self._update();
+                            });
+                    }
+                },
+
+                get: function () {
+                    return this._children.path;
+                }
+            }
+        },
+
+        _update: function () {
+
+            var camera = this._children.camera;
+            var path = this._children.path;
+
+            if (!camera || !path) {
+                return;
+            }
+
+            var point = path.point;
+            var tangent = path.tangent;
+
+            var view = camera.view;
+
+            view.eye = point;
+            view.look = [point[0] + tangent[0], point[1] + tangent[1], point[2] + tangent[2]];
+        },
+
+        _getJSON: function () {
+
+            var json = {
+            };
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            if (this._children.path) {
+                json.path = this._children.path.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            if (this._children.path) {
+                this._children.path.off(this._onPathT);
+            }
+        }
+    });
+
+})();
+;/**
+  Components for defining 3D curves.
+
+  @module XEO
+  @submodule curves
+ */;/**
+ A **Curve** is the abstract base class for various other curve classes.
+
+ ## Overview
+
+ The Curve is subclassed by the following component types:
+
+ <ul>
+    <li>{{#crossLink "SplineCurve"}}{{/crossLink}}</li>
+    <li>{{#crossLink "CubicBezierCurve"}}{{/crossLink}}</li>
+    <li>{{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}</li>
+    <li>{{#crossLink "Path"}}{{/crossLink}}</li>
+ </u>
+
+ @class Curve
+ @module XEO
+ @submodule curves
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [cfg] {*} Configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Curve.
+ @param [cfg.t=0] Current position on this Curve, in range between 0..1.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Curve = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.Curve",
+
+        _init: function (cfg) {
+
+            this.t = cfg.t;
+        },
+
+        _props: {
+
+            /**
+             Progress along this Curve.
+
+             Automatically clamps to range [0..1].
+
+             Fires a {{#crossLink "Curve/t:event"}}{{/crossLink}} event on change.
+
+             @property t
+             @default 0
+             @type Number
+             */
+            t: {
+
+                set: function (value) {
+
+                    value = value || 0;
+
+                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
+
+                    /**
+                     * Fired whenever this Curve's
+                     * {{#crossLink "Curve/t:property"}}{{/crossLink}} property changes.
+                     * @event t
+                     * @param value The property's new value
+                     */
+                    this.fire("t", this._t);
+                },
+
+                get: function () {
+                    return this._t;
+                }
+            },
+
+
+            /**
+             Tangent on this Curve at position {{#crossLink "Curve/t:property"}}{{/crossLink}}.
+
+             @property point
+             @type {{Array of Number}}
+             */
+            tangent: {
+
+                get: function () {
+
+                  return this.getTangent(this._t);
+                }
+            },
+
+            /**
+             Length of this Curve.
+             @property length
+             @type {Number}
+             */
+            length: {
+
+                get: function () {
+                    var lengths = this._getLengths();
+                    return lengths[lengths.length - 1];
+                }
+            }
+        },
+
+        /**
+         * Returns a normalized tangent vector on this Curve at the given position.
+         * @method getTangent
+         * @param {Number} t Position to get tangent at.
+         * @returns {{Array of Number}} Normalized tangent vector
+         */
+        getTangent: function(t) {
+
+            var delta = 0.0001;
+
+            var t1 = this._t - delta;
+            var t2 = this._t + delta;
+
+            if (t1 < 0) {
+                t1 = 0;
+            }
+
+            if (t2 > 1) {
+                t2 = 1;
+            }
+
+            var pt1 = this.getPoint(t1);
+            var pt2 = this.getPoint(t2);
+
+            var vec = XEO.math.subVec3(pt2, pt1, []);
+
+            return XEO.math.normalizeVec3(vec, []);
+        },
+
+
+        _getPointAt: function (u) {
+
+            var t = this._getUToTMapping(u);
+
+            return this.getPoint(t);
+
+        },
+
+        /**
+         * Samples points on this Curve, at the given number of equally-spaced divisions.
+         * @method getPoints
+         * @param {Number} divisions The number of divisions.
+         * @returns {Array of Array} Array of sampled 3D points.
+         */
+        getPoints: function (divisions) {
+
+            if (!divisions) {
+                divisions = 5;
+            }
+
+            var d, pts = [];
+
+            for (d = 0; d <= divisions; d++) {
+                pts.push(this.getPoint(d / divisions));
+            }
+
+            return pts;
+
+        },
+
+        getSpacedPoints: function (divisions) {
+
+            if (!divisions) {
+                divisions = 5;
+            }
+
+            var d, pts = [];
+
+            for (d = 0; d <= divisions; d++) {
+                pts.push(this._getPointAt(d / divisions));
+            }
+
+            return pts;
+        },
+
+
+        _getLengths: function (divisions) {
+
+            if (!divisions) {
+                divisions = (this.__arcLengthDivisions) ? (this.__arcLengthDivisions) : 200;
+            }
+
+            if (this.cacheArcLengths
+                && ( this.cacheArcLengths.length == divisions + 1 )
+                && !this.needsUpdate) {
+
+                return this.cacheArcLengths;
+
+            }
+
+            this.needsUpdate = false;
+
+            var cache = [];
+            var current;
+            var last = this.getPoint(0);
+            var p;
+            var sum = 0;
+
+            cache.push(0);
+
+            for (p = 1; p <= divisions; p++) {
+
+                current = this.getPoint(p / divisions);
+                sum += XEO.math.lenVec3(XEO.math.subVec3(current, last, []));
+                cache.push(sum);
+                last = current;
+
+            }
+
+            this.cacheArcLengths = cache;
+
+            return cache; // { sums: cache, sum:sum }, Sum is in the last element.
+
+        },
+
+        _updateArcLengths: function () {
+            this.needsUpdate = true;
+            this._getLengths();
+        },
+
+        // Given u ( 0 .. 1 ), get a t to find p. This gives you points which are equi distance
+
+        _getUToTMapping: function (u, distance) {
+
+            var arcLengths = this._getLengths();
+
+            var i = 0, il = arcLengths.length;
+
+            var targetArcLength; // The targeted u distance value to get
+
+            if (distance) {
+
+                targetArcLength = distance;
+
+            } else {
+
+                targetArcLength = u * arcLengths[il - 1];
+            }
+
+            //var time = Date.now();
+
+            // binary search for the index with largest value smaller than target u distance
+
+            var low = 0, high = il - 1, comparison;
+
+            while (low <= high) {
+
+                i = Math.floor(low + ( high - low ) / 2); // less likely to overflow, though probably not issue here, JS doesn't really have integers, all numbers are floats
+
+                comparison = arcLengths[i] - targetArcLength;
+
+                if (comparison < 0) {
+
+                    low = i + 1;
+
+                } else if (comparison > 0) {
+
+                    high = i - 1;
+
+                } else {
+
+                    high = i;
+                    break;
+
+                    // DONE
+                }
+            }
+
+            i = high;
+
+            //console.log('b' , i, low, high, Date.now()- time);
+
+            if (arcLengths[i] == targetArcLength) {
+
+                var t = i / ( il - 1 );
+                return t;
+
+            }
+
+            // we could get finer grain at lengths, or use simple interpolatation between two points
+
+            var lengthBefore = arcLengths[i];
+            var lengthAfter = arcLengths[i + 1];
+
+            var segmentLength = lengthAfter - lengthBefore;
+
+            // determine where we are between the 'before' and 'after' points
+
+            var segmentFraction = ( targetArcLength - lengthBefore ) / segmentLength;
+
+            // add that fractional amount to t
+
+            var t = ( i + segmentFraction ) / ( il - 1 );
+
+            return t;
+        }
+    });
+
+})();
+;/**
+ A **CubicBezierCurve** extends {{#crossLink "Curve"}}{{/crossLink}} to provide a cubic Bezier curve.
+
+ ## Overview
+
+ <img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif"/>
+
+ *[Cubic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
+
+ <ul>
+    <li>To build a complex path, you can combine an unlimited combination of CubicBezierCurves,
+ {{#crossLink "QuadraticBezierCurve"}}QuadraticBezierCurves{{/crossLink}} and {{#crossLink "SplineCurve"}}SplineCurves{{/crossLink}}
+ within a {{#crossLink "Path"}}{{/crossLink}}.</li>
+ </ul>
+
+ ## Example
+
+ ````javascript
+
+ var curve = new XEO.CubicBezierCurve({
+        v0: [-10, 0, 0],
+        v1: [-5, 15, 0],
+        v2: [20, 15, 0],
+        v3: [10, 0, 0]
+    });
+
+ curve.scene.on("tick", function(e) {
+
+        curve.t = (e.time - e.startTime) * 0.01;
+
+        var point = curve.point;
+        var tangent = curve.tangent;
+
+        this.log("t=" + curve.t + ", point=" +
+            JSON.stringify(point) + ", tangent=" +
+                JSON.stringify(tangent));
+    });
+ ````
+
+ @class CubicBezierCurve
+ @module XEO
+ @submodule curves
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [cfg] {*} Configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CubicBezierCurve.
+ @param [cfg.v0=[0,0,0]] The starting point.
+ @param [cfg.v1=[0,0,0]] The first control point.
+ @param [cfg.v2=[0,0,0]] The middle control point.
+ @param [cfg.v3=[0,0,0]] The ending point.
+ @param [cfg.t=0] Current position on this CubicBezierCurve, in range between 0..1.
+ @extends Curve
+ */
+(function () {
+
+    "use strict";
+
+    XEO.CubicBezierCurve = XEO.Curve.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.CubicBezierCurve",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.v0 = cfg.v0;
+            this.v1 = cfg.v1;
+            this.v2 = cfg.v2;
+            this.v3 = cfg.v3;
+
+            this.t = cfg.t;
+        },
+
+        _props: {
+
+            /**
+             Starting point on this CubicBezierCurve.
+
+             Fires a {{#crossLink "CubicBezierCurve/v0:event"}}{{/crossLink}} event on change.
+
+             @property v0
+             @default [0.0, 0.0, 0.0]
+             @type Array(Number)
+             */
+            v0: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this CubicBezierCurve's
+                     * {{#crossLink "CubicBezierCurve/v0:property"}}{{/crossLink}} property changes.
+                     * @event v0
+                     * @param value The property's new value
+                     */
+                    this.fire("v0", this._v0 = value || [0, 0, 0]);
+                },
+
+                get: function () {
+                    return this._v0;
+                }
+            },
+
+            /**
+             First control point on this CubicBezierCurve.
+
+             Fires a {{#crossLink "CubicBezierCurve/v1:event"}}{{/crossLink}} event on change.
+
+             @property v1
+             @default [0.0, 0.0, 0.0]
+             @type Array(Number)
+             */
+            v1: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this CubicBezierCurve's
+                     * {{#crossLink "CubicBezierCurve/v1:property"}}{{/crossLink}} property changes.
+                     * @event v1
+                     * @param value The property's new value
+                     */
+                    this.fire("v1", this._v1 = value || [0, 0, 0]);
+                },
+
+                get: function () {
+                    return this._v1;
+                }
+            },
+
+            /**
+             Second control point on this CubicBezierCurve.
+
+             Fires a {{#crossLink "CubicBezierCurve/v2:event"}}{{/crossLink}} event on change.
+
+             @property v2
+             @default [0.0, 0.0, 0.0]
+             @type Array(Number)
+             */
+            v2: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this CubicBezierCurve's
+                     * {{#crossLink "CubicBezierCurve/v2:property"}}{{/crossLink}} property changes.
+                     * @event v2
+                     * @param value The property's new value
+                     */
+                    this.fire("v2", this._v2 = value || [0, 0, 0]);
+                },
+
+                get: function () {
+                    return this._v2;
+                }
+            },
+
+            /**
+             End point on this CubicBezierCurve.
+
+             Fires a {{#crossLink "CubicBezierCurve/v3:event"}}{{/crossLink}} event on change.
+
+             @property v3
+             @default [0.0, 0.0, 0.0]
+             @type Array(Number)
+             */
+            v3: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this CubicBezierCurve's
+                     * {{#crossLink "CubicBezierCurve/v3:property"}}{{/crossLink}} property changes.
+                     * @event v3
+                     * @param value The property's new value
+                     */
+                    this.fire("v3", this._v3 = value || [0, 0, 0]);
+                },
+
+                get: function () {
+                    return this._v3;
+                }
+            },
+
+            /**
+             Current position of progress along this CubicBezierCurve.
+
+             Automatically clamps to range [0..1].
+
+             Fires a {{#crossLink "CubicBezierCurve/t:event"}}{{/crossLink}} event on change.
+
+             @property t
+             @default 0
+             @type Number
+             */
+            t: {
+                set: function (value) {
+
+                    value = value || 0;
+
+                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
+
+                    /**
+                     * Fired whenever this CubicBezierCurve's
+                     * {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}} property changes.
+                     * @event t
+                     * @param value The property's new value
+                     */
+                    this.fire("t", this._t);
+                },
+
+                get: function () {
+                    return this._t;
+                }
+            },
+
+            /**
+             Point on this CubicBezierCurve at position {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}}.
+
+             @property point
+             @type {{Array of Number}}
+             */
+            point: {
+
+                get: function () {
+                    return this.getPoint(this._t);
+                }
+            }
+        },
+
+        /**
+         * Returns point on this CubicBezierCurve at the given position.
+         * @param {Number} t Position to get point at.
+         * @returns {{Array of Number}}
+         */
+        getPoint: function (t) {
+
+            var math = XEO.math;
+            var vector = math.vec3();
+
+            vector[0] = math.b3(t, this._v0[0], this._v1[0], this._v2[0], this._v3[0]);
+            vector[1] = math.b3(t, this._v0[1], this._v1[1], this._v2[1], this._v3[1]);
+            vector[2] = math.b3(t, this._v0[2], this._v1[2], this._v2[2], this._v3[2]);
+
+            return vector;
+        },
+
+        _getJSON: function () {
+            return {
+                v0: this._v0,
+                v1: this._v1,
+                v2: this._v2,
+                v3: this._v3,
+                t: this._t
+            };
+        }
+    });
+
+})();
+;/**
+ A **SplineCurve** extends {{#crossLink "Curve"}}{{/crossLink}} to provide a spline curve.
+
+ ## Overview
+
+ <img style="border:1px solid; background: white;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Quadratic_spline_six_segments.svg/200px-Quadratic_spline_six_segments.svg.png"/>
+
+ *[Spline Curve from Wikipedia](https://en.wikipedia.org/wiki/Spline_(mathematics))*
+
+ <ul>
+    <li>To build a complex path, you can combine an unlimited combination of SplineCurves,
+ {{#crossLink "CubicBezierCurve"}}CubicBezierCurves{{/crossLink}} and {{#crossLink "QuadraticBezierCurve"}}QuadraticBezierCurves{{/crossLink}}
+ within a {{#crossLink "Path"}}{{/crossLink}}.</li>
+ </ul>
+
+
+ ## Example 1
+
+ Create a SplineCurve, subscribe to updates on its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and
+ {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "SplineCurve/t:property"}}{{/crossLink}}
+ property over time:
+
+ ````javascript
+
+ var curve = new XEO.SplineCurve({
+        points: [
+            [-10, 0, 0],
+            [-5, 15, 0],
+            [20, 15, 0],
+            [10, 0, 0]
+        ]
+    });
+
+ curve.scene.on("tick", function(e) {
+
+        curve.t = (e.time - e.startTime) * 0.01;
+
+        var point = curve.point;
+        var tangent = curve.tangent;
+
+        this.log("t=" + curve.t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+    });
+ ````
+
+ ## Example 2
+
+ Alternatively, we can randomly sample the point and vector at a given **t** with calls
+ to the SplineCurve's {{#crossLink "SplineCurve/getPoint:method"}}{{/crossLink}} and
+ {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods:
+
+ ````javascript
+ var curve = new XEO.SplineCurve({
+        points: [
+            [-10, 0, 0],
+            [-5, 15, 0],
+            [20, 15, 0],
+            [10, 0, 0]
+        ]
+    });
+
+ curve.scene.on("tick", function(e) {
+
+        var t = (e.time - e.startTime) * 0.01;
+
+        var point = curve.getPoint(t);
+        var tangent = curve.getTangent(t);
+
+        this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+    });
+ ````
+
+ @class SplineCurve
+ @module XEO
+ @submodule curves
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [cfg] {*} Configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SplineCurve.
+ @param [cfg.points=[]] Control points on this SplineCurve.
+ @param [cfg.t=0] Current position on this SplineCurve, in range between 0..1.
+ @extends Curve
+ */
+(function () {
+
+    "use strict";
+
+    XEO.SplineCurve = XEO.Curve.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.SplineCurve",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.points = cfg.points;
+
+            this.t = cfg.t;
+        },
+
+        _props: {
+
+            /**
+             Control points on this SplineCurve.
+
+             Fires a {{#crossLink "SplineCurve/points:event"}}{{/crossLink}} event on change.
+
+             @property points
+             @default []
+             @type Array(Number)
+             */
+            points: {
+
+                set: function (value) {
+
+                    this._points = value || [];
+
+                    /**
+                     * Fired whenever this SplineCurve's
+                     * {{#crossLink "SplineCurve/points:property"}}{{/crossLink}} property changes.
+                     * @event points
+                     * @param value The property's new value
+                     */
+                    this.fire("points", this._points);
+                },
+
+                get: function () {
+                    return this._points;
+                }
+            },
+
+            /**
+             Progress along this SplineCurve.
+
+             Automatically clamps to range [0..1].
+
+             Fires a {{#crossLink "SplineCurve/t:event"}}{{/crossLink}} event on change.
+
+             @property t
+             @default 0
+             @type Number
+             */
+            t: {
+                set: function (value) {
+
+                    value = value || 0;
+
+                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
+
+                    /**
+                     * Fired whenever this SplineCurve's
+                     * {{#crossLink "SplineCurve/t:property"}}{{/crossLink}} property changes.
+                     * @event t
+                     * @param value The property's new value
+                     */
+                    this.fire("t", this._t);
+                },
+
+                get: function () {
+                    return this._t;
+                }
+            },
+
+            /**
+             Point on this SplineCurve at position {{#crossLink "SplineCurve/t:property"}}{{/crossLink}}.
+
+             @property point
+             @type {{Array of Number}}
+             */
+            point: {
+
+                get: function () {
+                   return this.getPoint(this._t);
+                }
+            }
+        },
+
+        /**
+         * Returns point on this SplineCurve at the given position.
+         * @method getPoint
+         * @param {Number} t Position to get point at.
+         * @returns {{Array of Number}}
+         */
+        getPoint: function(t) {
+
+            var math = XEO.math;
+
+            var points = this.points;
+            var point = ( points.length - 1 ) * t;
+
+            var intPoint = Math.floor(point);
+            var weight = point - intPoint;
+
+            var point0 = points[intPoint == 0 ? intPoint : intPoint - 1];
+            var point1 = points[intPoint];
+            var point2 = points[intPoint > points.length - 2 ? points.length - 1 : intPoint + 1];
+            var point3 = points[intPoint > points.length - 3 ? points.length - 1 : intPoint + 2];
+
+            var vector = math.vec3();
+
+            vector[0] = math.catmullRomInterpolate(point0[0], point1[0], point2[0], point3[0], weight);
+            vector[1] = math.catmullRomInterpolate(point0[1], point1[1], point2[1], point3[1], weight);
+            vector[2] = math.catmullRomInterpolate(point0[2], point1[2], point2[2], point3[2], weight);
+
+            return vector;
+        },
+
+        _getJSON: function () {
+            return {
+                v0: this._v0,
+                v1: this._v1,
+                v2: this._v2,
+                v3: this._v3,
+                t: this._t
+            };
+        }
+    });
+
+})();
+;/**
+ A **QuadraticBezierCurve** extends {{#crossLink "Curve"}}{{/crossLink}} to provide a cubic Bezier curve.
+
+ ## Overview
+
+ <img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/B%C3%A9zier_2_big.gif/240px-B%C3%A9zier_2_big.gif"/>
+
+ *[Quadratic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
+
+ <ul>
+    <li>To build a complex path, you can combine an unlimited combination of QuadraticBezierCurves,
+ {{#crossLink "CubicBezierCurve"}}CubicBezierCurves{{/crossLink}} and {{#crossLink "SplineCurve"}}SplineCurves{{/crossLink}}
+ within a {{#crossLink "Path"}}{{/crossLink}}.</li>
+ </ul>
+
+ ## Example 1
+
+ In our first example, we'll define a QuadraticBezierCurve and update it on each scene tick,
+ while logging the curve's changing properties.
+
+ ````javascript
+ var curve = new XEO.QuadraticBezierCurve({
+        v0: [-10, 0, 0],
+        v1: [20, 15, 0],
+        v2: [10, 0, 0]
+    });
+
+ curve.scene.on("tick", function(e) {
+
+        curve.t = (e.time - e.startTime) * 0.01;
+
+        var point = curve.point;
+        var tangent = curve.tangent;
+
+        this.log("t=" + curve.t + ", point=" +
+            JSON.stringify(point) + ", tangent=" +
+                JSON.stringify(tangent));
+    });
+ ````
+
+ ## Example 2
+
+ In the next example, we'll create a {{#crossLink "GameObject"}}{{/crossLink}} with a
+ {{#crossLink "PhongMaterial"}}{{/crossLink}} whose diffuse color is bound to the
+ interpolated {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}} property on the QuadraticBezierCurve.
+
+ Then we'll animate the QuadraticBezierCurve's {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}} property
+ to update the diffuse color.
+
+ ````javascript
+ var curve = new XEO.QuadraticBezierCurve({
+        v0: [1, 0, 0],
+        v1: [0, 1, 0],
+        v2: [0, 0, 1]
+    });
+
+ // Create a GameObject with a PhongMaterial
+ var material = new XEO.PhongMaterial({
+        diffuse: [0, 0, 0]
+    });
+
+ var object = new XEO.GameObject({
+        material: material
+    });
+
+ // Bind the PhongMaterial diffuse color
+ // to the QuadraticBezierCurve
+ curve.on("t", function() {
+        material.diffuse = curve.point;
+    });
+
+ // Animate the QuadraticBezierCurve, which in turn
+ // updates the PhongMaterial diffuse color
+ var tick = object.scene.on("tick", function (e) {
+        curve.t = (e.time - e.startTime) * 0.00005;
+   });
+ ````
+
+ ## Example 3
+
+ In the previous two examples, we relied on our QuadraticBezierCurves to remember their progress in their
+ {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}} and {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}}
+ properties, which is useful when we want to wire components together into reactive event-driven networks, as we did with the
+ PhongMaterial in the previous example.
+
+ As an alternative, we can instead sample the point and vector at a given *t* via calls
+ to the QuadraticBezierCurve's {{#crossLink "QuadraticBezierCurve/getPoint:method"}}{{/crossLink}} and
+ {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods:
+
+ ````javascript
+ var curve = new XEO.QuadraticBezierCurve({
+        v0: [-10, 0, 0],
+        v1: [20, 15, 0],
+        v2: [10, 0, 0]
+    });
+
+ curve.scene.on("tick", function(e) {
+
+        var t = (e.time - e.startTime) * 0.01;
+
+        var point = curve.getPoint(t);
+        var tangent = curve.getTangent(t);
+
+        this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+    });
+ ````
+
+ ## Example 4
+
+ When we want to build a {{#crossLink "Geometry"}}{{/crossLink}} from a QuadraticBezierCurve, we can sample points
+ along the curve using its {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method, as shown below.
+
+ Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
+
+ ````javascript
+ var curve = new XEO.QuadraticBezierCurve({
+        v0: [-10, 0, 0],
+        v1: [20, 15, 0],
+        v2: [10, 0, 0]
+    });
+
+ // Geometry which creates a line-strip through fifty
+ // points sampled at equidistant positions on our QuadraticBezierCurve
+
+ var geometry = new XEO.Geometry({
+    positions: XEO.math.flatten(curve.getPoints(50))
+ });
+ ````
+
+ @class QuadraticBezierCurve
+ @module XEO
+ @submodule curves
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [cfg] {*} Configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this QuadraticBezierCurve.
+ @param [cfg.v0=[0,0,0]] The starting point.
+ @param [cfg.v1=[0,0,0]] The middle control point.
+ @param [cfg.v2=[0,0,0]] The end point.
+ @param [cfg.t=0] Current position on this QuadraticBezierCurve, in range between 0..1.
+ @extends Curve
+ */
+(function () {
+
+    "use strict";
+
+    XEO.QuadraticBezierCurve = XEO.Curve.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.QuadraticBezierCurve",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.v0 = cfg.v0;
+            this.v1 = cfg.v1;
+            this.v2 = cfg.v2;
+
+            this.t = cfg.t;
+        },
+
+        _props: {
+
+            /**
+             Starting point on this QuadraticBezierCurve.
+
+             Fires a {{#crossLink "QuadraticBezierCurve/v0:event"}}{{/crossLink}} event on change.
+
+             @property v0
+             @default [0.0, 0.0, 0.0]
+             @type Array(Number)
+             */
+            v0: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this QuadraticBezierCurve's
+                     * {{#crossLink "QuadraticBezierCurve/v0:property"}}{{/crossLink}} property changes.
+                     * @event v0
+                     * @param value The property's new value
+                     */
+                    this.fire("v0", this._v0 = value || [0, 0, 0]);
+                },
+
+                get: function () {
+                    return this._v0;
+                }
+            },
+
+            /**
+             Middle control point on this QuadraticBezierCurve.
+
+             Fires a {{#crossLink "QuadraticBezierCurve/v1:event"}}{{/crossLink}} event on change.
+
+             @property v1
+             @default [0.0, 0.0, 0.0]
+             @type Array(Number)
+             */
+            v1: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this QuadraticBezierCurve's
+                     * {{#crossLink "QuadraticBezierCurve/v1:property"}}{{/crossLink}} property changes.
+                     * @event v1
+                     * @param value The property's new value
+                     */
+                    this.fire("v1", this._v1 = value || [0, 0, 0]);
+                },
+
+                get: function () {
+                    return this._v1;
+                }
+            },
+
+            /**
+             End point on this QuadraticBezierCurve.
+
+             Fires a {{#crossLink "QuadraticBezierCurve/v2:event"}}{{/crossLink}} event on change.
+
+             @property v2
+             @default [0.0, 0.0, 0.0]
+             @type Array(Number)
+             */
+            v2: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this QuadraticBezierCurve's
+                     * {{#crossLink "QuadraticBezierCurve/v2:property"}}{{/crossLink}} property changes.
+                     * @event v2
+                     * @param value The property's new value
+                     */
+                    this.fire("v2", this._v2 = value || [0, 0, 0]);
+                },
+
+                get: function () {
+                    return this._v2;
+                }
+            },
+
+            /**
+             Progress along this QuadraticBezierCurve.
+
+             Automatically clamps to range [0..1].
+
+             Fires a {{#crossLink "QuadraticBezierCurve/t:event"}}{{/crossLink}} event on change.
+
+             @property t
+             @default 0
+             @type Number
+             */
+            t: {
+                set: function (value) {
+
+                    value = value || 0;
+
+                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
+
+                    /**
+                     * Fired whenever this QuadraticBezierCurve's
+                     * {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}} property changes.
+                     * @event t
+                     * @param value The property's new value
+                     */
+                    this.fire("t", this._t);
+                },
+
+                get: function () {
+                    return this._t;
+                }
+            },
+
+
+            /**
+             Point on this QuadraticBezierCurve at position {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}}.
+
+             @property point
+             @type {{Array of Number}}
+             */
+            point: {
+
+                get: function () {
+                    return this.getPoint(this._t);
+                }
+            }
+        },
+
+        /**
+         * Returns point on this QuadraticBezierCurve at the given position.
+         * @method getPoint
+         * @param {Number} t Position to get point at.
+         * @returns {{Array of Number}}
+         */
+        getPoint: function (t) {
+
+            var math = XEO.math;
+            var vector = math.vec3();
+
+            vector[0] = math.b2(t, this._v0[0], this._v1[0], this._v2[0]);
+            vector[1] = math.b2(t, this._v0[1], this._v1[1], this._v2[1]);
+            vector[2] = math.b2(t, this._v0[2], this._v1[2], this._v2[2]);
+
+            return vector;
+        },
+
+        _getJSON: function () {
+            return {
+                v0: this._v0,
+                v1: this._v1,
+                v2: this._v2,
+                t: this._t
+            };
+        }
+    });
+
+})();
+;/**
+ A **Path** is a complex curved path constructed from various types of sub-curves.
+
+ ## Overview
+
+ A Path can be constructed from the following {{#crossLink "Curve"}}{{/crossLink}} sub-classes:
+
+ <ul>
+    <li>{{#crossLink "SplineCurve"}}{{/crossLink}}</li>
+    <li>{{#crossLink "CubicBezierCurve"}}{{/crossLink}}</li>
+    <li>{{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}</li>
+ </ul>
+
+ ## Example
+
+ ````javascript
+
+ var path = new XEO.Path({
+        curves: [
+            new XEO.CubicBezierCurve({
+                v0: [-10, 0, 0],
+                v1: [-5, 15, 0],
+                v2: [20, 15, 0],
+                v3: [10, 0, 0]
+            }),
+            new XEO.QuadraticBezierCurve({
+                v0: [-10, 0, 0],
+                v1: [20, 15, 0],
+                v2: [10, 0, 0]
+            }),
+            new XEO.SplineCurve({
+                points: [
+                    [-10, 0, 0],
+                    [-5, 15, 0],
+                    [20, 15, 0],
+                    [10, 0, 0]
+                ]
+            })
+        ]
+    });
+
+ path.scene.on("tick", function(e) {
+
+        path.t = (e.time - e.startTime) * 0.01;
+
+        var point = path.point;
+        var tangent = path.tangent;
+
+        this.log("t=" + path.t + ", point=" +
+            JSON.stringify(point) + ", tangent=" +
+                JSON.stringify(tangent));
+    });
+ ````
+
+ @class Path
+ @module XEO
+ @submodule curves
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [cfg] {*} Fly configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Path.
+ @param [cfg.curves=[]] IDs or instances of {{#crossLink "Curve"}}{{/crossLink}} subtypes to add to this Path.
+ @param [cfg.t=0] Current position on this Path, in range between 0..1.
+ @extends Curve
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Path = XEO.Curve.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.Path",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this._cachedLengths = [];
+            this._dirty = true;
+
+            // Array of child Curve components
+            this._curves = [];
+
+            this._t = 0;
+
+            // Subscriptions to "dirty" events from child Curve components
+            this._dirtySubs = [];
+
+            // Subscriptions to "destroyed" events from child Curve components
+            this._destroyedSubs = [];
+
+            // Add initial curves
+            this.curves = cfg.curves || [];
+
+            // Set initial progress
+            this.t = cfg.t;
+        },
+
+        /**
+         * Adds a {{#crossLink "Curve"}}{{/crossLink}} to this Path.
+         *
+         * Fires a {{#crossLink "Path/curves:event"}}{{/crossLink}} event on change.
+         *
+         * @param {Curve} curve The {{#crossLink "Curve"}}{{/crossLink}} to add.
+         */
+        addCurve: function (curve) {
+
+            this._curves.push(curve);
+
+            this._dirty = true;
+
+            /**
+             * Fired whenever this Path's
+             * {{#crossLink "Path/curves:property"}}{{/crossLink}} property changes.
+             * @event curves
+             * @param value The property's new value
+             */
+            this.fire("curves", this._curves);
+        },
+
+        _props: {
+
+            /**
+             The {{#crossLink "Curve"}}Curves{{/crossLink}} in this Path.
+
+             Fires a {{#crossLink "Path/curves:event"}}{{/crossLink}} event on change.
+
+             @property curves
+             @default []
+             @type {{Array of Spline, Path, QuadraticBezierCurve or CubicBezierCurve}}
+             */
+            curves: {
+
+                set: function (value) {
+
+                    value = value || [];
+
+                    var curve;
+
+                    // Unsubscribe from events on old curves
+
+                    var i;
+                    var len;
+
+                    for (i = 0, len = this._curves.length; i < len; i++) {
+
+                        curve = this._curves[i];
+
+                        curve.off(this._dirtySubs[i]);
+                        curve.off(this._destroyedSubs[i]);
+                    }
+
+                    this._curves = [];
+
+                    this._dirtySubs = [];
+                    this._destroyedSubs = [];
+
+                    var self = this;
+
+                    function curveDirty() {
+                        self._dirty = true;
+                    }
+
+                    function curveDestroyed() {
+
+                        var id = this.id;
+
+                        for (i = 0, len = self._curves.length; i < len; i++) {
+
+                            if (self._curves[i].id === id) {
+
+                                self._curves = self._curves.slice(i, i + 1);
+                                self._dirtySubs = self._dirtySubs.slice(i, i + 1);
+                                self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
+
+                                self._dirty = true;
+
+                                self.fire("curves", self._curves);
+
+                                return;
+                            }
+                        }
+                    }
+
+                    for (i = 0, len = value.length; i < len; i++) {
+
+                        curve = value[i];
+
+                        if (XEO._isNumeric(curve) || XEO._isString(curve)) {
+
+                            // ID given for curve - find the curve component
+
+                            var id = curve;
+
+                            curve = this.scene.components[id];
+
+                            if (!curve) {
+                                this.error("Component not found: " + XEO._inQuotes(id));
+                                continue;
+                            }
+                        }
+
+                        var type = curve.type;
+
+                        if (type !== "XEO.SplineCurve" &&
+                            type != "XEO.Path" &&
+                            type != "XEO.CubicBezierCurve" &&
+                            type != "XEO.QuadraticBezierCurve") {
+
+                            this.error("Component " + XEO._inQuotes(curve.id)
+                                + " is not a XEO.SplineCurve, XEO.Path or XEO.QuadraticBezierCurve");
+
+                            continue;
+                        }
+
+                        this._curves.push(curve);
+
+                        this._dirtySubs.push(curve.on("dirty", curveDirty));
+
+                        this._destroyedSubs.push(curve.on("destroyed", curveDestroyed));
+                    }
+
+                    this._dirty = true;
+
+                    this.fire("curves", this._curves);
+                },
+
+                get: function () {
+                    return this._curves;
+                }
+            },
+
+            /**
+             Current point of progress along this Path.
+
+             Automatically clamps to range [0..1].
+
+             Fires a {{#crossLink "Path/t:event"}}{{/crossLink}} event on change.
+
+             @property t
+             @default 0
+             @type Number
+             */
+            t: {
+                set: function (value) {
+
+                    value = value || 0;
+
+                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
+
+                    /**
+                     * Fired whenever this Path's
+                     * {{#crossLink "Path/t:property"}}{{/crossLink}} property changes.
+                     * @event t
+                     * @param value The property's new value
+                     */
+                    this.fire("t", this._t);
+                },
+
+                get: function () {
+                    return this._t;
+                }
+            },
+
+            /**
+             Point on this Path corresponding to the current value of {{#crossLink "Path/t:property"}}{{/crossLink}}.
+
+             @property point
+             @type {{Array of Number}}
+             */
+            point: {
+
+                get: function () {
+                    return this.getPoint(this._t);
+                }
+            },
+
+            /**
+             Length of this Path, which is the cumulative length of all {{#crossLink "Curve/t:property"}}Curves{{/crossLink}}
+             currently in {{#crossLink "Path/curves:property"}}{{/crossLink}}.
+
+             @property length
+             @type {Number}
+             */
+            length: {
+
+                get: function () {
+                    var lens = this._getCurveLengths();
+                    return lens[lens.length - 1];
+                }
+            }
+        },
+
+        /**
+         * Gets a point on this Path corresponding to the given progress position.
+         * @param {Number} t Indicates point of progress along this curve, in the range [0..1].
+         * @returns {{Array of Number}}
+         */
+        getPoint: function (t) {
+
+            var d = t * this.length;
+            var curveLengths = this._getCurveLengths();
+            var i = 0, diff, curve;
+
+            while (i < curveLengths.length) {
+
+                if (curveLengths[i] >= d) {
+
+                    diff = curveLengths[i] - d;
+                    curve = this._curves[i];
+
+                    var u = 1 - diff / curve.length;
+
+                    return curve._getPointAt(u);
+                }
+                i++;
+            }
+            return null;
+        },
+
+        _getCurveLengths: function () {
+
+            if (!this._dirty) {
+                return this._cachedLengths;
+            }
+
+            var lengths = [];
+            var sums = 0;
+            var i, il = this._curves.length;
+
+            for (i = 0; i < il; i++) {
+
+                sums += this._curves[i].length;
+                lengths.push(sums);
+
+            }
+
+            this._cachedLengths = lengths;
+            this._dirty = false;
+
+            return lengths;
+        },
+
+        _getJSON: function () {
+
+            var curveIds = [];
+
+            for (var i = 0, len = this._curves.length; i < len; i++) {
+                curveIds.push(this._curves[i].id);
+            }
+
+            return {
+                curves: curveIds,
+                t: this._t
+            };
+        },
+
+        _destroy: function () {
+
+            var i;
+            var len;
+            var curve;
+
+            for (i = 0, len = this._curves.length; i < len; i++) {
+
+                curve = this._curves[i];
+
+                curve.off(this._dirtySubs[i]);
+                curve.off(this._destroyedSubs[i]);
+            }
+        }
+    });
+
+})();
+
+;/**
+ A **Torus** defines toroid geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Example
+
+ ````javascript
+
+ ````
+
+ @class Torus
+ @module XEO
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Torus in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Torus.
+ @param [cfg.radius=1] {Number}
+ @param [cfg.tube=0.3] {Number}
+ @param [cfg.segmentsR=32] {Number}
+ @param [cfg.segmentsT=24] {Number}
+ @param [cfg.arc=Math.PI / 2.0] {Number}
+ @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
+ @extends Geometry
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Torus = XEO.Geometry.extend({
+
+        type: "XEO.Torus",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.lod = cfg.lod;
+            this.radius = cfg.radius;
+            this.tube = cfg.tube;
+            this.segmentsR = cfg.segmentsR;
+            this.segmentsT = cfg.segmentsT;
+            this.arc = cfg.arc;
+        },
+
+        _torusDirty: function () {
+            if (!this.__dirty) {
+                this.__dirty = true;
+                var self = this;
+                this.scene.once("tick2",
+                    function () {
+                        self._buildTorus();
+                        self.__dirty = false;
+                    });
+            }
+        },
+
+        _buildTorus: function () {
+
+            var radius = this._radius;
+            var tube = this._tube;
+            var segmentsR = Math.floor(this._segmentsR * this._lod);
+            var segmentsT = Math.floor(this._segmentsT * this._lod);
+            var arc = this._arc;
+
+            if (segmentsR < 4) {
+                segmentsR = 4;
+            }
+
+            if (segmentsT < 4) {
+                segmentsT = 4;
+            }
+
+            var positions = [];
+            var normals = [];
+            var uvs = [];
+            var indices = [];
+
+            var u;
+            var v;
+            var centerX;
+            var centerY;
+            var centerZ = 0;
+            var x;
+            var y;
+            var z;
+            var vec;
+
+            var i;
+            var j;
+
+            for (j = 0; j <= segmentsR; j++) {
+                for (i = 0; i <= segmentsT; i++) {
+
+                    u = i / segmentsT * arc;
+                    v = j / segmentsR * Math.PI * 2;
+
+                    centerX = radius * Math.cos(u);
+                    centerY = radius * Math.sin(u);
+
+                    x = (radius + tube * Math.cos(v) ) * Math.cos(u);
+                    y = (radius + tube * Math.cos(v) ) * Math.sin(u);
+                    z = tube * Math.sin(v);
+
+                    positions.push(x);
+                    positions.push(y);
+                    positions.push(z);
+
+                    uvs.push(i / segmentsT);
+                    uvs.push(1 - j / segmentsR);
+
+                    vec = XEO.math.normalizeVec3(XEO.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
+
+                    normals.push(vec[0]);
+                    normals.push(vec[1]);
+                    normals.push(vec[2]);
+                }
+            }
+
+            var a;
+            var b;
+            var c;
+            var d;
+
+            for (j = 1; j <= segmentsR; j++) {
+                for (i = 1; i <= segmentsT; i++) {
+
+                    a = ( segmentsT + 1 ) * j + i - 1;
+                    b = ( segmentsT + 1 ) * ( j - 1 ) + i - 1;
+                    c = ( segmentsT + 1 ) * ( j - 1 ) + i;
+                    d = ( segmentsT + 1 ) * j + i;
+
+                    indices.push(a);
+                    indices.push(b);
+                    indices.push(c);
+
+                    indices.push(c);
+                    indices.push(d);
+                    indices.push(a);
+                }
+            }
+
+            this.positions = positions;
+            this.normals = normals;
+            this.uv = uvs;
+            this.indices = indices;
+        },
+
+        _props: {
+
+            /**
+             * The Torus's level-of-detail factor.
+             *
+             * Fires a {{#crossLink "Torus/lod:event"}}{{/crossLink}} event on change.
+             *
+             * @property lod
+             * @default 1
+             * @type Number
+             */
+            lod: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._lod === value) {
+                        return;
+                    }
+
+                    if (value < 0 || value > 1) {
+                        this.warn("clamping lod to [0..1]");
+                        value = value < 0 ? 0 : 1;
+                    }
+
+                    this._lod = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/lod:property"}}{{/crossLink}} property changes.
+                     * @event lod
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("lod", this._lod);
+
+                    this._torusDirty();
+                },
+
+                get: function () {
+                    return this._lod;
+                }
+            },
+
+            /**
+             * The Torus's radius.
+             *
+             * Fires a {{#crossLink "Torus/radius:event"}}{{/crossLink}} event on change.
+             *
+             * @property radius
+             * @default 1
+             * @type Number
+             */
+            radius: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._radius === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative radius not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._radius = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/radius:property"}}{{/crossLink}} property changes.
+                     * @event radius
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("radius", this._radius);
+
+                    this._torusDirty();
+                },
+
+                get: function () {
+                    return this._radius;
+                }
+            },
+
+
+            /**
+             * The Torus's tube.
+             *
+             * Fires a {{#crossLink "Torus/tube:event"}}{{/crossLink}} event on change.
+             *
+             * @property tube
+             * @default 0.3
+             * @type Number
+             */
+            tube: {
+
+                set: function (value) {
+
+                    value = value || 0.3;
+
+                    if (this._tube === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative tube not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._tube = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/tube:property"}}{{/crossLink}} property changes.
+                     * @event tube
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("tube", this._tube);
+
+                    this._torusDirty();
+                },
+
+                get: function () {
+                    return this._tube;
+                }
+            },
+
+            /**
+             * The Torus's segmentsR.
+             *
+             * Fires a {{#crossLink "Torus/segmentsR:event"}}{{/crossLink}} event on change.
+             *
+             * @property segmentsR
+             * @default 32
+             * @type Number
+             */
+            segmentsR: {
+
+                set: function (value) {
+
+                    value = value || 32;
+
+                    if (this._segmentsR === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative segmentsR not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._segmentsR = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/segmentsR:property"}}{{/crossLink}} property changes.
+                     * @event segmentsR
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("segmentsR", this._segmentsR);
+
+                    this._torusDirty();
+                },
+
+                get: function () {
+                    return this._segmentsR;
+                }
+            },
+
+
+            /**
+             * The Torus's segmentsT.
+             *
+             * Fires a {{#crossLink "Torus/segmentsT:event"}}{{/crossLink}} event on change.
+             *
+             * @property segmentsT
+             * @default 24
+             * @type Number
+             */
+            segmentsT: {
+
+                set: function (value) {
+
+                    value = value || 24;
+
+                    if (this._segmentsT === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative segmentsT not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._segmentsT = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/segmentsT:property"}}{{/crossLink}} property changes.
+                     * @event segmentsT
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("segmentsT", this._segmentsT);
+
+                    this._torusDirty();
+                },
+
+                get: function () {
+                    return this._segmentsT;
+                }
+            },
+
+            /**
+             * The Torus's arc.
+             *
+             * Fires a {{#crossLink "Torus/arc:event"}}{{/crossLink}} event on change.
+             *
+             * @property arc
+             * @default Math.PI * 2
+             * @type Number
+             */
+            arc: {
+
+                set: function (value) {
+
+                    value = value || Math.PI * 2;
+
+                    if (this._arc === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative arc not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._arc = value;
+
+                    /**
+                     * Fired whenever this Torus's {{#crossLink "Torus/arc:property"}}{{/crossLink}} property changes.
+                     * @event arc
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("arc", this._arc);
+
+                    this._torusDirty();
+                },
+
+                get: function () {
+                    return this._arc;
+                }
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                // Don't save lod
+                radius: this._radius,
+                tube: this._tube,
+                segmentsR: this._segmentsR,
+                segmentsT: this._segmentsT,
+                arc: this._arc
+            };
+        }
+    });
+
+})();
+;/**
+ A **Sphere** defines spherical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Example
+
+ ````javascript
+
+ ````
+
+ @class Sphere
+ @module XEO
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Sphere in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Sphere.
+ @param [cfg.radius=1] {Number}
+ @param [cfg.heightSegments=8] {Number}
+ @param [cfg.widthSegments=6] {Number}
+ @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
+ @extends Geometry
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Sphere = XEO.Geometry.extend({
+
+        type: "XEO.Sphere",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.lod = cfg.lod;
+            this.radius = cfg.radius;
+            this.heightSegments = cfg.heightSegments;
+            this.widthSegments = cfg.widthSegments;
+        },
+
+        _sphereDirty: function () {
+            if (!this.__dirty) {
+                this.__dirty = true;
+                var self = this;
+                this.scene.once("tick2",
+                    function () {
+                        self._buildSphere();
+                        self.__dirty = false;
+                    });
+            }
+        },
+
+        _buildSphere: function () {
+
+            var radius = this._radius;
+            var heightSegments = Math.floor(this._lod * this._heightSegments);
+            var widthSegments = Math.floor(this._lod * this._widthSegments);
+
+            if (heightSegments < 6) {
+                heightSegments = 6;
+            }
+
+            if (widthSegments < 6) {
+                widthSegments = 6;
+            }
+
+            var positions = [];
+            var normals = [];
+            var uvs = [];
+            var indices = [];
+
+            var i;
+            var j;
+
+            var theta;
+            var sinTheta;
+            var cosTheta;
+
+            var phi;
+            var sinPhi;
+            var cosPhi;
+
+            var x;
+            var y;
+            var z;
+
+            var u;
+            var v;
+
+            var first;
+            var second;
+
+            for (i = 0; i <= heightSegments; i++) {
+
+                theta = i * Math.PI / heightSegments;
+                sinTheta = Math.sin(theta);
+                cosTheta = Math.cos(theta);
+
+                for (j = 0; j <= widthSegments; j++) {
+
+                    phi = j * 2 * Math.PI / widthSegments;
+                    sinPhi = Math.sin(phi);
+                    cosPhi = Math.cos(phi);
+
+                    x = cosPhi * sinTheta;
+                    y = cosTheta;
+                    z = sinPhi * sinTheta;
+                    u = j / widthSegments;
+                    v = i / heightSegments;
+
+                    normals.push(x);
+                    normals.push(y);
+                    normals.push(z);
+
+                    uvs.push(u);
+                    uvs.push(v);
+
+                    positions.push(radius * x);
+                    positions.push(radius * y);
+                    positions.push(radius * z);
+                }
+            }
+
+            for (i = 0; i < heightSegments; i++) {
+                for (j = 0; j < widthSegments; j++) {
+
+                    first = (i * (widthSegments + 1)) + j;
+                    second = first + widthSegments + 1;
+
+                    indices.push(first + 1);
+                    indices.push(second + 1);
+                    indices.push(second);
+                    indices.push(first + 1);
+                    indices.push(second);
+                    indices.push(first);
+                }
+            }
+
+            this.positions = positions;
+            this.normals = normals;
+            this.uv = uvs;
+            this.indices = indices;
+        },
+
+        _props: {
+
+            /**
+             * The Sphere's level-of-detail factor.
+             *
+             * Fires a {{#crossLink "Sphere/lod:event"}}{{/crossLink}} event on change.
+             *
+             * @property lod
+             * @default 1
+             * @type Number
+             */
+            lod: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._lod === value) {
+                        return;
+                    }
+
+                    if (value < 0 || value > 1) {
+                        this.warn("clamping lod to [0..1]");
+                        value = value < 0 ? 0 : 1;
+                    }
+
+                    this._lod = value;
+
+                    /**
+                     * Fired whenever this Sphere's {{#crossLink "Sphere/lod:property"}}{{/crossLink}} property changes.
+                     * @event lod
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("lod", this._lod);
+
+                    this._sphereDirty();
+                },
+
+                get: function () {
+                    return this._lod;
+                }
+            },
+
+            /**
+             * The Sphere's radius.
+             *
+             * Fires a {{#crossLink "Sphere/radius:event"}}{{/crossLink}} event on change.
+             *
+             * @property radius
+             * @default 1
+             * @type Number
+             */
+            radius: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._radius === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative radius not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._radius = value;
+
+                    /**
+                     * Fired whenever this Sphere's {{#crossLink "Sphere/radius:property"}}{{/crossLink}} property changes.
+                     * @event radius
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("radius", this._radius);
+
+                    this._sphereDirty();
+                },
+
+                get: function () {
+                    return this._radius;
+                }
+            },
+
+
+            /**
+             * The Sphere's number of latitude bands.
+             *
+             * Fires a {{#crossLink "Sphere/heightSegments:event"}}{{/crossLink}} event on change.
+             *
+             * @property heightSegments
+             * @default 6
+             * @type Number
+             */
+            heightSegments: {
+
+                set: function (value) {
+
+                    value = value || 6;
+
+                    if (this._heightSegments === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative heightSegments not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._heightSegments = value;
+
+                    /**
+                     * Fired whenever this Sphere's {{#crossLink "Sphere/heightSegments:property"}}{{/crossLink}} property changes.
+                     * @event heightSegments
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("heightSegments", this._heightSegments);
+
+                    this._sphereDirty();
+                },
+
+                get: function () {
+                    return this._heightSegments;
+                }
+            },
+
+            /**
+             * The Sphere's number of longitude bands.
+             *
+             * Fires a {{#crossLink "Sphere/widthSegments:event"}}{{/crossLink}} event on change.
+             *
+             * @property widthSegments
+             * @default 8
+             * @type Number
+             */
+            widthSegments: {
+
+                set: function (value) {
+
+                    value = value || 8;
+
+                    if (this._widthSegments === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative widthSegments not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._widthSegments = value;
+
+                    /**
+                     * Fired whenever this Sphere's {{#crossLink "Sphere/widthSegments:property"}}{{/crossLink}} property changes.
+                     * @event widthSegments
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("widthSegments", this._widthSegments);
+
+                    this._sphereDirty();
+                },
+
+                get: function () {
+                    return this._widthSegments;
+                }
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                // Don't save lod
+                radius: this._radius,
+                heightSegments: this._heightSegments,
+                widthSegments: this._widthSegments
+            };
+        }
+    });
+
+})();
+;/**
+ A path geometry.
+
+ @class PathGeometry
+ @module geometry
+ @extends Geometry
+ */
+XEO.PathGeometry = XEO.Geometry.extend({
+
+    type: "XEO.PathGeometry",
+
+    // Constructor
+
+    _init: function (cfg) {
+
+        this._super(cfg);
+
+        this.path = cfg.path;
+        this.divisions = cfg.divisions;
+    },
+
+    __scheduleBuild: function () {
+        if (!this.__dirty) {
+            this.__dirty = true;
+            var self = this;
+            this.scene.once("tick2",
+                function () {
+                    self.__build();
+                    self.__dirty = false;
+                });
+        }
+    },
+
+    _props: {
+
+        /**
+         * The Path for this PathGeometry.
+         *
+         * Fires a {{#crossLink "PathGeometry/path:event"}}{{/crossLink}} event on change.
+         *
+         * @property path
+         * @type {Path}
+         */
+        path: {
+
+            set: function (value) {
+
+                // Unsubscribe from old Curves's events
+
+                var oldPath = this._children.path;
+
+                if (oldPath && (!value || (value.id !== undefined ? value.id : value) !== oldPath.id)) {
+                    oldPath.off(this._onPathCurves);
+                }
+
+                /**
+                 * Fired whenever this CameraPaths's {{#crossLink "CameraPath/path:property"}}{{/crossLink}} property changes.
+                 * @event path
+                 * @param value The property's new value
+                 */
+                this._setChild("path", value);
+
+                var newPath = this._children.path;
+
+                if (newPath) {
+
+                    // Subscribe to new Path's curves
+
+                    var self = this;
+
+                    this._onPathCurves = newPath.on("curves",
+                        function () {
+                            self.__scheduleBuild();
+                        });
+                }
+            },
+
+            get: function () {
+                return this._children.path;
+            }
+        },
+
+        /**
+         * The number of segments in this PathGeometry.
+         *
+         * Fires a {{#crossLink "PathGeometry/divisions:event"}}{{/crossLink}} event on change.
+         *
+         * @property divisions
+         * @default 6
+         * @type {Number}
+         */
+        divisions: {
+
+            set: function (value) {
+
+                value = value || 6;
+
+                this._divisions = value;
+
+                this.fire("divisions", this._divisions);
+
+                this.__scheduleBuild();
+            },
+
+            get: function () {
+                return this._divisions;
+            }
+        }
+    },
+
+    __build: function () {
+
+        var path = this._children.path;
+
+        if (!path) {
+            return;
+        }
+
+        var points = path.getPoints(this._divisions);
+
+        var positions = [];
+        var point;
+
+        for (var i = 0, len = points.length; i < len; i++) {
+
+            point = points[i];
+
+            positions.push(point[0]);
+            positions.push(point[1]);
+            positions.push(point[2]);
+        }
+
+        var indices = [];
+
+        for (var i = 0, len = points.length - 1; i < len; i++) {
+            indices.push(i);
+            indices.push(i + 1);
+        }
+
+        this.primitive = "lines";
+        this.positions = positions;
+        this.indices = indices;
+        this.normals = null;
+        this.uv = null;
+    },
+
+    _getJSON: function () {
+
+        var json = {
+            divisions: this._divisions
+        };
+
+        if (this._children.path) {
+            json.path = this._children.path.id;
+        }
+
+        return json;
+    },
+
+    _destroy: function () {
+        if (this._children.path) {
+            this._children.path.off(this._onPathCurves);
+        }
+    }
+});;/**
+ A **Cylinder** defines cylindrical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Example
+
+ ````javascript
+
+ ````
+
+ @class Cylinder
+ @module XEO
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Cylinder in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Cylinder.
+ @param [cfg.radiusTop=1] {Number} Radius of top.
+ @param [cfg.radiusBottom=1] {Number} Radius of bottom.
+ @param [cfg.height=1] {Number} Height.
+ @param [cfg.radialSegments=60] {Number} Number of segments around the Cylinder.
+ @param [cfg.heightSegments=1] {Number} Number of vertical segments.
+ @param [cfg.openEnded=false] {Boolean} Whether or not the Cylinder has solid caps on the ends.
+ @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
+ @extends Geometry
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Cylinder = XEO.Geometry.extend({
+
+        type: "XEO.Cylinder",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.lod = cfg.lod;
+            this.radiusTop = cfg.radiusTop;
+            this.radiusBottom = cfg.radiusBottom;
+            this.height = cfg.height;
+            this.radialSegments = cfg.radialSegments;
+            this.heightSegments = cfg.heightSegments;
+            this.openEnded = cfg.openEnded;
+        },
+
+        _cylinderDirty: function () {
+            if (!this.__dirty) {
+                this.__dirty = true;
+                var self = this;
+                this.scene.once("tick2",
+                    function () {
+                        self._buildCylinder();
+                        self.__dirty = false;
+                    });
+            }
+        },
+
+        _buildCylinder: function () {
+
+            var radiusTop = this._radiusTop;
+            var radiusBottom = this._radiusBottom;
+            var height = this._height;
+            var radialSegments = Math.floor(this._radialSegments * this._lod);
+            var heightSegments = Math.floor(this._heightSegments * this._lod);
+
+            if (radialSegments < 3) {
+                radialSegments = 3;
+            }
+
+            if (heightSegments < 1) {
+                heightSegments = 1;
+            }
+
+            var openEnded = this._openEnded;
+
+            var heightHalf = height / 2;
+            var heightLength = height / heightSegments;
+            var radialAngle = (2.0 * Math.PI / radialSegments);
+            var radialLength = 1.0 / radialSegments;
+            var nextRadius = this._radiusBottom;
+            var radiusChange = (radiusTop - radiusBottom) / heightSegments;
+
+            var positions = [];
+            var normals = [];
+            var uvs = [];
+            var indices = [];
+
+            var h;
+            var i;
+
+            var x;
+            var z;
+
+            var currentRadius;
+            var currentHeight;
+
+            var center;
+            var first;
+            var second;
+
+            var startIndex;
+            var tu;
+            var tv;
+
+            // create vertices
+            var normalY = (90.0 - (Math.atan(height / (radiusBottom - radiusTop))) * 180 / Math.PI) / 90.0;
+
+            for (h = 0; h <= heightSegments; h++) {
+                currentRadius = radiusTop - h * radiusChange;
+                currentHeight = heightHalf - h * heightLength;
+
+                for (i = 0; i <= radialSegments; i++) {
+                    x = Math.sin(i * radialAngle);
+                    z = Math.cos(i * radialAngle);
+
+                    normals.push(currentRadius * x);
+                    normals.push(normalY); //todo
+                    normals.push(currentRadius * z);
+                    uvs.push(1 - (i * radialLength));
+                    uvs.push(0 + h * 1 / heightSegments);
+                    positions.push(currentRadius * x);
+                    positions.push(currentHeight);
+                    positions.push(currentRadius * z);
+                }
+            }
+
+            // create faces
+            for (h = 0; h < heightSegments; h++) {
+                for (i = 0; i <= radialSegments; i++) {
+                    first = h * (radialSegments + 1) + i;
+                    second = first + radialSegments;
+                    indices.push(first);
+                    indices.push(second);
+                    indices.push(second + 1);
+
+                    indices.push(first);
+                    indices.push(second + 1);
+                    indices.push(first + 1);
+                }
+            }
+
+            // create top cap
+            if (!openEnded && radiusTop > 0) {
+                startIndex = (positions.length / 3);
+
+                // top center
+                normals.push(0.0);
+                normals.push(1.0);
+                normals.push(0.0);
+                uvs.push(0.5);
+                uvs.push(0.5);
+                positions.push(0);
+                positions.push(heightHalf);
+                positions.push(0);
+
+                // top triangle fan
+                for (i = 0; i <= radialSegments; i++) {
+                    x = Math.sin(i * radialAngle);
+                    z = Math.cos(i * radialAngle);
+                    tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
+                    tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
+
+                    normals.push(radiusTop * x);
+                    normals.push(1.0);
+                    normals.push(radiusTop * z);
+                    uvs.push(tu);
+                    uvs.push(tv);
+                    positions.push(radiusTop * x);
+                    positions.push(heightHalf);
+                    positions.push(radiusTop * z);
+                }
+
+                for (i = 0; i < radialSegments; i++) {
+                    center = startIndex;
+                    first = startIndex + 1 + i;
+                    indices.push(first);
+                    indices.push(first + 1);
+                    indices.push(center);
+                }
+            }
+
+            // create bottom cap
+            if (!openEnded && radiusBottom > 0) {
+                startIndex = (positions.length / 3);
+
+                // top center
+                normals.push(0.0);
+                normals.push(-1.0);
+                normals.push(0.0);
+                uvs.push(0.5);
+                uvs.push(0.5);
+                positions.push(0);
+                positions.push(0 - heightHalf);
+                positions.push(0);
+
+                // top triangle fan
+                for (i = 0; i <= radialSegments; i++) {
+                    x = Math.sin(i * radialAngle);
+                    z = Math.cos(i * radialAngle);
+                    tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
+                    tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
+
+                    normals.push(radiusBottom * x);
+                    normals.push(-1.0);
+                    normals.push(radiusBottom * z);
+                    uvs.push(tu);
+                    uvs.push(tv);
+                    positions.push(radiusBottom * x);
+                    positions.push(0 - heightHalf);
+                    positions.push(radiusBottom * z);
+                }
+
+                for (i = 0; i < radialSegments; i++) {
+                    center = startIndex;
+                    first = startIndex + 1 + i;
+                    indices.push(first);
+                    indices.push(first + 1);
+                    indices.push(center);
+                }
+            }
+
+            this.positions = positions;
+            this.normals = normals;
+            this.uv = uvs;
+            this.indices = indices;
+        },
+
+        _props: {
+
+            /**
+             * The Cylinder's level-of-detail factor.
+             *
+             * Fires a {{#crossLink "Cylinder/lod:event"}}{{/crossLink}} event on change.
+             *
+             * @property lod
+             * @default 1
+             * @type Number
+             */
+            lod: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._lod === value) {
+                        return;
+                    }
+
+                    if (value < 0 || value > 1) {
+                        this.warn("clamping lod to [0..1]");
+                        value = value < 0 ? 0 : 1;
+                    }
+
+                    this._lod = value;
+
+                    /**
+                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/lod:property"}}{{/crossLink}} property changes.
+                     * @event lod
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("lod", this._lod);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._lod;
+                }
+            },
+
+            /**
+             * The Cylinder's top radius.
+             *
+             * Fires a {{#crossLink "Cylinder/radiusTop:event"}}{{/crossLink}} event on change.
+             *
+             * @property radiusTop
+             * @default 1
+             * @type Number
+             */
+            radiusTop: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._radiusTop === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative radiusTop not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._radiusTop = value;
+
+                    /**
+                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/radiusTop:property"}}{{/crossLink}} property changes.
+                     * @event radiusTop
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("radiusTop", this._radiusTop);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._radiusTop;
+                }
+            },
+
+            /**
+             * The Cylinder's bottom radius.
+             *
+             * Fires a {{#crossLink "Cylinder/radiusBottom:event"}}{{/crossLink}} event on change.
+             *
+             * @property radiusBottom
+             * @default 1
+             * @type Number
+             */
+            radiusBottom: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._radiusBottom === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative radiusBottom not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._radiusBottom = value;
+
+                    /**
+                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/radiusBottom:property"}}{{/crossLink}} property changes.
+                     * @event radiusBottom
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("radiusBottom", this._radiusBottom);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._radiusBottom;
+                }
+            },
+
+            /**
+             * The Cylinder's height.
+             *
+             * Fires a {{#crossLink "Cylinder/height:event"}}{{/crossLink}} event on change.
+             *
+             * @property height
+             * @default 1
+             * @type Number
+             */
+            height: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._height === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative height not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._height = value;
+
+                    /**
+                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/height:property"}}{{/crossLink}} property changes.
+                     * @event height
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("height", this._height);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._height;
+                }
+            },
+
+            /**
+             * The Cylinder's radial segments.
+             *
+             * Fires a {{#crossLink "Cylinder/radialSegments:event"}}{{/crossLink}} event on change.
+             *
+             * @property radialSegments
+             * @default 60
+             * @type Number
+             */
+            radialSegments: {
+
+                set: function (value) {
+
+                    value = value || 60;
+
+                    if (this._radialSegments === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative radialSegments not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._radialSegments = value;
+
+                    /**
+                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/radialSegments:property"}}{{/crossLink}} property changes.
+                     * @event radialSegments
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("radialSegments", this._radialSegments);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._radialSegments;
+                }
+            },
+
+            /**
+             * The Cylinder's height segments.
+             *
+             * Fires a {{#crossLink "Cylinder/heightSegments:event"}}{{/crossLink}} event on change.
+             *
+             * @property heightSegments
+             * @default 1
+             * @type Number
+             */
+            heightSegments: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._heightSegments === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative heightSegments not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._heightSegments = value;
+
+                    /**
+                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/heightSegments:property"}}{{/crossLink}} property changes.
+                     * @event heightSegments
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("heightSegments", this._heightSegments);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._heightSegments;
+                }
+            }
+        },
+
+
+        /**
+         * Indicates whether this Cylinder's is open-ended.
+         *
+         * Fires a {{#crossLink "Cylinder/openEnded:event"}}{{/crossLink}} event on change.
+         *
+         * @property openEnded
+         * @default false
+         * @type Boolean
+         */
+        openEnded: {
+
+            set: function (value) {
+
+                value = value === undefined ? false : value;
+
+                if (this._openEnded === value) {
+                    return;
+                }
+
+                this._openEnded = value;
+
+                /**
+                 * Fired whenever this Cylinder's {{#crossLink "Cylinder/openEnded:property"}}{{/crossLink}} property changes.
+                 * @event openEnded
+                 * @type Boolean
+                 * @param value The property's new value
+                 */
+                this.fire("openEnded", this._openEnded);
+
+                this._cylinderDirty();
+            },
+
+            get: function () {
+                return this._openEnded;
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                // Don't save lod
+                radiusTop: this._radiusTop,
+                radiusBottom: this._radiusBottom,
+                height: this._height,
+                radialSegments: this._radialSegments,
+                heightSegments: this._heightSegments,
+                openEnded: this._openEnded
+            };
+        }
+    });
+
+})();
+;/**
+ * Components for managing groups of components.
+ *
+ * @module XEO
+ * @submodule groups
+ */;/**
+ A **Group** is a subset of the {{#crossLink "Component"}}Components{{/crossLink}} within a {{#crossLink "Scene"}}{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+ <li>Supports addition and removal of {{#crossLink "Component"}}Components{{/crossLink}} by instance, ID or type.</li>
+ </ul>
+
+ <img src="../../../assets/images/Group.png"></img>
+
+ ## Example
+
+ In this example we have:
+
+ <ul>
+ <li>a {{#crossLink "Material"}}{{/crossLink}},
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} (that is the default box shape),
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above,</li>
+ <li>two {{#crossLink "Group"}}Groups{{/crossLink}}, each containing a subset of all our components.</li>
+ </ul>
+
+ ````javascript
+ var scene = new XEO.Scene();
+
+ var material = new XEO.PhongMaterial(scene, {
+     id: "myMaterial",
+     diffuse: [0.5, 0.5, 0.0]
+ });
+
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+ var gameObject = new XEO.GameObject(scene, {
+    id: "myObject",
+    material: material,
+    geometry: geometry
+ });
+
+ // Our first group contains the Material, added by ID,
+ // plus the Geometry and GameObject, both added by instance.
+
+ var group1 = new XEO.Group(scene, { // Initialize with three components
+    components: [
+        "myMaterial",
+        geometry,
+        gameObject
+    ]
+ });
+
+ // Our second Group includes the geometry, added by instance,
+ // and the GameObject, added by type. If there were more than
+ // one GameObject in the scene, then that type would ensure
+ // that all the GameObjects were in the Group.
+
+ var group2 = new XEO.Group(scene);
+
+ group2.add([  // Add two components
+        geometry,
+        "XEO.GameObject",
+    ]);
+
+ // We can iterate over the components in a Group like so:
+
+ group1.iterate(
+    function(component) {
+        //..
+    });
+
+ // And remove components from a Group
+ // by instance, ID or type:
+
+ group1.remove("myMaterial"); // Remove one component by ID
+ group1.remove([geometry, gameObject]); // Remove two components by instance
+
+ group2.remove("XEO.Geometry"); // Remove all Geometries
+ ````
+
+ TODO
+
+ @class Group
+ @module XEO
+ @submodule groups
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Component} Optional map of user-defined metadata to attach to this Group.
+ @param [cfg.components] {{Array of String|Component}} Array of {{#crossLink "Component"}}{{/crossLink}} IDs or instances.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Group = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.Group",
+
+        _init: function (cfg) {
+
+            /**
+             * The {{#crossLink "Components"}}{{/crossLink}} within this Group, mapped to their IDs.
+             *
+             * Fires an {{#crossLink "Group/updated:event"}}{{/crossLink}} event on change.
+             *
+             * @property components
+             * @type {{String:Component}}
+             */
+            this.components = {};
+
+            /**
+             * The number of {{#crossLink "Components"}}{{/crossLink}} within this Group.
+             *
+             * @property numComponents
+             * @type Number
+             */
+            this.numComponents = 0;
+
+            /**
+             * For each {{#crossLink "Component"}}Component{{/crossLink}} type, a map of
+             * IDs to instances.
+             *
+             * @property types
+             * @type {String:{String:XEO.Component}}
+             */
+            this.types = {};
+
+            // Subscriptions to "destroyed" events from components
+            this._destroyedSubs = {};
+
+            if (cfg.components) {
+                this.add(cfg.components);
+            }
+        },
+
+        /**
+         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}}s to this Group.
+         *
+         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
+         *
+         * See class comment for usage examples.
+         *
+         * The {{#crossLink "Component"}}Components{{/crossLink}} must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Group.
+         *
+         * Fires an {{#crossLink "Group/updated:event"}}{{/crossLink}} event.
+         *
+         * @method add
+         * @param {Array of Component} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
+         */
+        add: function (components) {
+
+            components = XEO._isArray(components) ? components : [components];
+
+            for (var i = 0, len = components.length; i < len; i++) {
+                this._addComponent(components[i]);
+            }
+        },
+
+        _addComponent: function (c) {
+
+            var componentId;
+            var component;
+            var type;
+            var types;
+
+            if (c.type) {
+
+                // Component instance
+
+                component = c;
+
+            } else if (XEO._isNumeric(c) || XEO._isString(c)) {
+
+                if (this.scene.types[c]) {
+
+                    // Component type
+
+                    type = c;
+
+                    types = this.scene.types[type];
+
+                    if (!types) {
+                        this.warn("Component type not found: '" + type + "'");
+                        return;
+                    }
+
+                    for (componentId in types) {
+                        if (types.hasOwnProperty(componentId)) {
+                            this._addComponent(types[componentId]);
+                        }
+                    }
+
+                    return;
+
+                } else {
+
+                    // Component ID
+
+                    component = this.scene.components[c];
+
+                    if (!component) {
+                        this.warn("Component not found: " + XEO._inQuotes(c));
+                        return;
+                    }
+                }
+
+            } else {
+
+                return;
+            }
+
+            if (component.scene != this.scene) {
+
+                // Component in wrong Scene
+
+                this.warn("Attempted to add component from different XEO.Scene: " + XEO._inQuotes(component.id));
+                return;
+            }
+
+            // Add component to this map
+
+            this.components[component.id] = component;
+
+            // Register component for its type
+
+            types = this.types[component.type];
+
+            if (!types) {
+                types = this.types[type] = {};
+            }
+
+            types[component.id] = component;
+
+            this.numComponents++;
+
+            // Remove component when it's destroyed
+
+            var self = this;
+
+            this._destroyedSubs[component.id] = component.on("destroyed",
+                function(component) {
+                    self._removeComponent(component);
+                });
+
+            this.fire("added", component);
+        },
+
+        /**
+         * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Group.
+         *
+         * Fires an {{#crossLink "Group/updated:event"}}{{/crossLink}} event.
+         *
+         * @method clear
+         */
+        clear: function () {
+
+            this.iterate(function (component) {
+                this._removeComponent(component);
+            });
+        },
+
+        /**
+         * Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Group.
+         *
+         * @method destroyAll
+         */
+        destroyAll: function () {
+
+            this.iterate(function (component) {
+                component.destroy();
+            });
+        },
+
+        /**
+         * Removes one or more {{#crossLink "Component"}}Components{{/crossLink}} from this Group.
+         *
+         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
+         *
+         * See class comment for usage examples.
+         *
+         * Fires an {{#crossLink "Group/updated:event"}}{{/crossLink}} event.
+         *
+         * @method remove
+         * @param {Array of Components} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
+         */
+        remove: function (components) {
+
+            components = XEO._isArray(components) ? components : [components];
+
+            for (var i = 0, len = components.length; i < len; i++) {
+                this._removeComponent(components[i]);
+            }
+        },
+
+        _removeComponent: function (component) {
+
+            var componentId = component.id;
+
+            if (component.scene != this.scene) {
+                this.warn("Attempted to remove component that's not in same XEO.Scene: '" + componentId + "'");
+                return;
+            }
+
+            delete this.components[componentId];
+
+            // Unsubscribe from component destruction
+
+            component.off(this._destroyedSubs[componentId]);
+
+            delete this._destroyedSubs[componentId];
+
+            // Unregister component for its type
+
+            var types = this.types[component.type];
+
+            if (types) {
+                delete types[component.id];
+            }
+
+            this.numComponents--;
+
+            this.fire("removed", component);
+        },
+
+        /**
+         * Iterates with a callback over the {{#crossLink "Component"}}Components{{/crossLink}} in this Group.
+         *
+         * @method withComponents
+         * @param {Function} callback Callback called for each {{#crossLink "Component"}}{{/crossLink}}.
+         */
+        iterate: function (callback) {
+            for (var componentId in this.components) {
+                if (this.components.hasOwnProperty(componentId)) {
+                    callback.call(this, this.components[componentId]);
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var componentIds = [];
+
+            for (var componentId in this.components) {
+                if (this.components.hasOwnProperty(componentId)) {
+                    componentIds.push(this.components[componentId].id); // Don't convert numbers into strings
+                }
+            }
+
+            return {
+                components: componentIds
+            };
+        },
+
+        _destroy: function () {
+
+            this.clear();
+        }
+    });
+
+})();;
+/**
+ A **GroupBoundary** configures the WebGL color buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+
+ <li>A GroupBoundary configures **the way** that pixels are written to the WebGL color buffer.</li>
+ <li>GroupBoundary is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
+ colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
+
+ </ul>
+
+ <img src="../../../assets/images/GroupBoundary.png"></img>
+
+ ## Example
+
+ In this example we're configuring the WebGL color buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
+
+ This example scene contains:
+
+ <ul>
+ <li>a GroupBoundary that enables blending and sets the color mask,</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
+
+ ````javascript
+ var scene = new XEO.Scene();
+
+ var GroupBoundary = new XEO.GroupBoundary(scene, {
+    blendEnabled: true,
+    colorMask: [true, true, true, true]
+});
+
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+ var gameObject = new XEO.GameObject(scene, {
+    GroupBoundary: GroupBoundary,
+    geometry: geometry
+});
+ ````
+
+ @class GroupBoundary
+ @module XEO
+ @submodule groups
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this GroupBoundary within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} GroupBoundary configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GroupBoundary.
+ @param [cfg.blendEnabled=false] {Boolean} Indicates if blending is enabled.
+ @param [cfg.colorMask=[true, true, true, true]] {Array of Boolean} The color mask,
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.GroupBoundary = XEO.Component.extend({
+
+        type: "XEO.GroupBoundary",
+
+        _init: function (cfg) {
+
+            this.group = cfg.group;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GameObject.
+             *
+             * Defaults to an empty internally-managed {{#crossLink "Group"}}{{/crossLink}}.
+             *
+             * Fires a {{#crossLink "GroupBoundary/group:event"}}{{/crossLink}} event on change.
+             *
+             * @property group
+             * @type Group
+             */
+            group: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this GroupBoundary's  {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event group
+                     * @param value The property's new value
+                     */
+                    this._setChild("group", value);
+                },
+
+                get: function () {
+                    return this._children.group;
+                }
+            },
+            
+            /**
+             * World-space 3D boundary.
+             *
+             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
+             * time you reference it.
+             *
+             * @property worldBoundary
+             * @type Boundary3D
+             * @final
+             */
+            worldBoundary: {
+
+                get: function () {
+
+                    if (!this._worldBoundary) {
+
+                        var self = this;
+
+                        this._worldBoundary = new XEO.Boundary3D(this.scene, {
+
+                            getDirty: function () {
+                                return self._worldBoundaryDirty;
+                            },
+
+                            getOBB: function () {
+
+                                // Calls our Geometry's modelBoundary property,
+                                // lazy-inits the boundary and its obb
+
+                                return self._children.geometry.modelBoundary.obb;
+                            },
+
+                            getMatrix: function () {
+                                return self._children.transform.matrix;
+                            }
+                        });
+
+                        this._worldBoundary.on("destroyed",
+                            function () {
+                                self._worldBoundary = null;
+                            });
+
+                        this._setWorldBoundaryDirty();
+                    }
+
+                    return this._worldBoundary;
+                }
+            },
+
+            /**
+             * View-space 3D boundary.
+             *
+             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance
+             * next time you reference it.
+             *
+             * @property viewBoundary
+             * @type Boundary3D
+             * @final
+             */
+            viewBoundary: {
+
+                get: function () {
+
+                    if (!this._viewBoundary) {
+
+                        var self = this;
+
+                        this._viewBoundary = new XEO.Boundary3D(this.scene, {
+
+                            getDirty: function () {
+                                return self._viewBoundaryDirty;
+                            },
+
+                            getOBB: function () {
+
+                                // Calls our worldBoundary property,
+                                // lazy-inits the boundary and its obb
+
+                                return self.worldBoundary.obb;
+                            },
+
+                            getMatrix: function () {
+                                return self._children.camera.view.matrix;
+                            }
+                        });
+
+                        this._viewBoundary.on("destroyed",
+                            function () {
+                                self._viewBoundary = null;
+                            });
+
+                        this._setViewBoundaryDirty();
+                    }
+
+                    return this._viewBoundary;
+                }
+            }
+        },
+
+        _setWorldBoundaryDirty: function () {
+            this._worldBoundaryDirty = true;
+            this._viewBoundaryDirty = true;
+            if (this._worldBoundary) {
+                this._worldBoundary.fire("updated", true);
+            }
+            if (this._viewBoundary) {
+                this._viewBoundary.fire("updated", true);
+            }
+        },
+
+        _setViewBoundaryDirty: function () {
+            this._viewBoundaryDirty = true;
+            if (this._viewBoundary) {
+                this._viewBoundary.fire("updated", true);
+            }
+        },
+        
+        _getJSON: function () {
+            return {
+                
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+;/**
+ A **CameraControl** pans, rotates and zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse and keyboard,
+ as well as switches it between preset left, right, anterior, posterior, superior and inferior views.
+
+ A CameraControl is comprised of the following control components, which each handle an aspect of interaction:
+
+ <ul>
+ <li>panning - {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} and {{#crossLink "MousePanCamera"}}{{/crossLink}}</li>
+ <li>rotation - {{#crossLink "KeyboardOrbitCamera"}}{{/crossLink}} and {{#crossLink "MouseOrbitCamera"}}{{/crossLink}}</li>
+ <li>zooming - {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} and {{#crossLink "MouseZoomCamera"}}{{/crossLink}}</li>
+ <li>switching preset views - {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}}</li>
+ <li>picking - {{#crossLink "MousePickObject"}}{{/crossLink}}</li>
+ <li>camera flight animation - {{#crossLink "CameraFlight"}}{{/crossLink}}</li>
+ </ul>
+
+ A CameraControl provides the controls as read-only properties, in case you need to configure or deactivate
+ them individually.
+
+ <ul>
+ <li>Activating or deactivating the CameraControl will activate/deactivate all the controls in unison.</li>
+ <li>Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
+ {{#crossLink "Camera"}}{{/crossLink}} to all the controls.</li>
+ <li>The controls are not intended to be attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.</li>
+ <li>The CameraControl manages the lifecycles of the controls, destroying them when the CameraControl is destroyed.</li>
+ </ul>
+
+ ## Example
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var camera = new XEO.Camera(scene);
+
+ var cameraControl = new XEO.CameraControl(scene, {
+
+        camera: camera,
+
+        // "First person" mode rotates look about eye.
+        // By default however, we orbit eye about look.
+        firstPerson: false
+    });
+
+ // Reduce the sensitivity of mouse rotation
+ cameraControl.mouseOrbit.sensitivity = 0.7;
+
+ // Deactivate switching between preset views
+ cameraControl.axisCamera.active = false;
+
+ // Create a GameObject
+ var object = new XEO.GameObject(scene);
+ ````
+
+ @class CameraControl
+ @module XEO
+ @submodule input
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraControl.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraControl. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.active=true] {Boolean} Whether or not this CameraControl is active.
+ @param [firstPerson=false] {Boolean} Whether or not this CameraControl is in "first person" mode.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.CameraControl = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.CameraControl",
+
+        /**
+         Indicates that only one instance of a CameraControl may be active within
+         its {{#crossLink "Scene"}}{{/crossLink}} at a time. When a CameraControl is activated, that has
+         a true value for this flag, then any other active CameraControl will be deactivated first.
+
+         @property exclusive
+         @type Boolean
+         @final
+         */
+        exclusive: true,
+
+        _init: function (cfg) {
+
+            var self = this;
+
+            var scene = this.scene;
+
+            /**
+             * The {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property keyboardAxis
+             * @final
+             * @type KeyboardAxisCamera
+             */
+            this.keyboardAxis = new XEO.KeyboardAxisCamera(scene, {
+                camera: cfg.camera
+            });
+
+            /**
+             * The {{#crossLink "KeyboardOrbitCamera"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property keyboardOrbit
+             * @final
+             * @type KeyboardOrbitCamera
+             */
+            this.keyboardOrbit = new XEO.KeyboardOrbitCamera(scene, {
+                sensitivity: 1,
+                camera: cfg.camera
+            });
+
+            /**
+             * The {{#crossLink "MouseOrbitCamera"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property mouseOrbit
+             * @final
+             * @type MouseOrbitCamera
+             */
+            this.mouseOrbit = new XEO.MouseOrbitCamera(scene, {
+                sensitivity: 1,
+                camera: cfg.camera
+            });
+
+            /**
+             * The {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property keyboardPan
+             * @final
+             * @type KeyboardPanCamera
+             */
+            this.keyboardPan = new XEO.KeyboardPanCamera(scene, {
+                sensitivity: 1,
+                camera: cfg.camera
+            });
+
+            /**
+             * The {{#crossLink "MousePanCamera"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property mousePan
+             * @final
+             * @type MousePanCamera
+             */
+            this.mousePan = new XEO.MousePanCamera(scene, {
+                sensitivity: 1,
+                camera: cfg.camera
+            });
+
+            /**
+             * The {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property keyboardZoom
+             * @final
+             * @type KeyboardZoomCamera
+             */
+            this.keyboardZoom = new XEO.KeyboardZoomCamera(scene, {
+                sensitivity: 1,
+                camera: cfg.camera
+            });
+
+            /**
+             * The {{#crossLink "MouseZoomCamera"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property mouseZoom
+             * @final
+             * @type MouseZoomCamera
+             */
+            this.mouseZoom = new XEO.MouseZoomCamera(scene, {
+                sensitivity: 1,
+                camera: cfg.camera
+            });
+
+            /**
+             * The {{#crossLink "MousePickObject"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property mousePickObject
+             * @final
+             * @type MousePickObject
+             */
+            this.mousePickObject = new XEO.MousePickObject(scene, {
+                rayPick: true,
+                camera: cfg.camera
+            });
+
+            /**
+             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property cameraFly
+             * @final
+             * @type CameraFlight
+             */
+            this.cameraFly = new XEO.CameraFlight(scene, {
+                camera: cfg.camera
+            });
+
+            this.mousePickObject.on("pick",
+                function (e) {
+
+                    var view = self.cameraFly.camera.view;
+
+                    var diff = XEO.math.subVec3(view.eye, view.look, []);
+
+                    self.cameraFly.flyTo({
+                        look: e.worldPos,
+                        eye: [
+                            e.worldPos[0] + diff[0],
+                            e.worldPos[1] + diff[1],
+                            e.worldPos[2] + diff[2]
+                        ]
+                    });
+                });
+
+            // Handle when nothing is picked
+            this.mousePickObject.on("nopick",
+                function (e) {
+                    // alert("Mothing picked");
+                });
+
+            this.firstPerson = cfg.firstPerson;
+            this.camera = cfg.camera;
+            this.active = cfg.active !== false;
+        },
+
+        _props: {
+
+            /**
+             * Flag which indicates whether this CameraControl is in "first person" mode.
+             *
+             * In "first person" mode (disabled by default) the look position rotates about the eye position. Otherwise,
+             * the eye rotates about the look.
+             *
+             * Fires a {{#crossLink "KeyboardOrbitCamera/firstPerson:event"}}{{/crossLink}} event on change.
+             *
+             * @property firstPerson
+             * @default false
+             * @type Boolean
+             */
+            firstPerson: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    this._firstPerson = value;
+
+                    this.keyboardOrbit.firstPerson = value;
+                    this.mouseOrbit.firstPerson = value;
+
+                    /**
+                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/firstPerson:property"}}{{/crossLink}} property changes.
+                     * @event firstPerson
+                     * @param value The property's new value
+                     */
+                    this.fire('firstPerson', this._firstPerson);
+                },
+
+                get: function () {
+                    return this._firstPerson;
+                }
+            },
+
+            /**
+             * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraControl.
+             *
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraControl. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * @property camera
+             * @type Camera
+             */
+            camera: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/camera:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event camera
+                     * @param value The property's new value
+                     */
+                    this._setChild("camera", value);
+
+                    // Update camera on child components
+
+                    var camera = this._children.camera;
+
+                    this.keyboardAxis.camera = camera;
+                    this.keyboardOrbit.camera = camera;
+                    this.mouseOrbit.camera = camera;
+                    this.keyboardPan.camera = camera;
+                    this.mousePan.camera = camera;
+                    this.keyboardZoom.camera = camera;
+                    this.mouseZoom.camera = camera;
+                    this.cameraFly.camera = camera;
+                },
+
+                get: function () {
+                    return this._camera;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this CameraControl is active or not.
+             *
+             * Fires an {{#crossLink "CameraControl/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    // Activate or deactivate child components
+
+                    this.keyboardAxis.active = value;
+                    this.keyboardOrbit.active = value;
+                    this.mouseOrbit.active = value;
+                    this.keyboardPan.active = value;
+                    this.mousePan.active = value;
+                    this.keyboardZoom.active = value;
+                    this.mouseZoom.active = value;
+                    this.mousePickObject.active = value;
+                    this.cameraFly.active = value;
+
+                    /**
+                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._active = value);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                sensitivity: this._sensitivity,
+                active: this._active
+            };
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+
+            this.active = false;
+
+            this.keyboardAxis.destroy();
+            this.keyboardOrbit.destroy();
+            this.mouseOrbit.destroy();
+            this.keyboardPan.destroy();
+            this.mousePan.destroy();
+            this.keyboardZoom.destroy();
+            this.mouseZoom.destroy();
+            this.mousePickObject.destroy();
+            this.cameraFly.destroy();
+        }
+    });
+
+})();
+;/**
+ A **KeyboardAxisCamera** switches a {{#crossLink "Camera"}}{{/crossLink}} between preset left, right, anterior,
+ posterior, superior and inferior views using the keyboard.
+
+ ## Overview
+
+ <ul>
+ <li>A KeyboardAxisCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ </ul>
+
+ By default the views are selected by the following keys:
+
+ <ul>
+ <li>'1' - left side, viewing center from along -X axis</li>
+ <li>'2' - right side, viewing center from along +X axis</li>
+ <li>'3' - anterior, viewing center from along -Z axis</li>
+ <li>'4' - posterior, viewing center from along +Z axis</li>
+ <li>'5' - superior, viewing center from along -Y axis</li>
+ <li>'6' - inferior, viewing center from along +Y axis</li>
+ </ul>
+
+ ## Example
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var camera = new XEO.Camera(scene);
+
+ var control = new XEO.KeyboardAxisCamera(scene, {
+        camera: camera
+    });
+
+ var object = new XEO.GameObject(scene);
+ ````
+
+ @class KeyboardAxisCamera
+ @module XEO
+ @submodule input
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardAxisCamera.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardAxisCamera. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.active=true] {Boolean} Whether or not this KeyboardAxisCamera is active.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.KeyboardAxisCamera = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.KeyboardAxisCamera",
+
+        _init: function (cfg) {
+
+            // Event handles
+
+            this._onKeyDown = null;
+
+            // Animations
+
+            this._cameraFly = new XEO.CameraFlight(this.scene, {
+            });
+
+            // Init properties
+
+            this.camera = cfg.camera;
+            this.active = cfg.active !== false;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this KeyboardAxisCamera.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardAxisCamera. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink "KeyboardAxisCamera/camera:event"}}{{/crossLink}} event on change.
+             *
+             * @property camera
+             * @type Camera
+             */
+            camera: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this KeyboardAxisCamera's {{#crossLink "KeyboardAxisCamera/camera:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event camera
+                     * @param value The property's new value
+                     */
+                    this._setChild("camera", value);
+
+                    // Update animation
+
+                    this._cameraFly.camera = this._children.camera;
+                },
+
+                get: function () {
+                    return this._children.camera;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this KeyboardAxisCamera is active or not.
+             *
+             * Fires an {{#crossLink "KeyboardAxisCamera/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    this._cameraFly.active = value;
+
+                    var self = this;
+
+                    var input = this.scene.input;
+
+                    if (value) {
+
+                        this._onKeyDown = input.on("keydown",
+                            function (keyCode) {
+
+                                if (!self._children.camera) {
+                                    return;
+                                }
+
+                                var aabb = self.scene.worldAABB;
+                                var center = self.scene.worldCenter;
+
+                                switch (keyCode) {
+
+                                    case input.KEY_NUM_1:
+
+                                        // Right view
+
+                                        self._cameraFly.flyTo({
+                                            look: center,
+                                            eye: [-10, 0, 0],
+                                            up: [0, 1, 0]
+                                        });
+
+
+                                        break;
+
+                                    case input.KEY_NUM_2:
+
+                                        // Left view
+
+                                        self._cameraFly.flyTo({
+                                            look: center,
+                                            eye: [10, 0, 0],
+                                            up: [0, 1, 0]
+                                        });
+
+
+                                        break;
+
+                                    case input.KEY_NUM_3:
+
+                                        // Front view
+
+                                        self._cameraFly.flyTo({
+                                            look: center,
+                                            eye: [0, 0, -10],
+                                            up: [0, 1, 0]
+                                        });
+
+                                        break;
+
+                                    case input.KEY_NUM_4:
+
+                                        // Back view
+
+                                        self._cameraFly.flyTo({
+                                            look: center,
+                                            eye: [0, 0, 10],
+                                            up: [0, 1, 0]
+                                        });
+
+                                        break;
+
+                                    case input.KEY_NUM_5:
+
+                                        // Top view
+
+                                        self._cameraFly.flyTo({
+                                            look: center,
+                                            eye: [0, -10, 0],
+                                            up: [0, 0, -1]
+                                        });
+
+                                        break;
+
+                                    case input.KEY_NUM_6:
+
+                                        // Bottom view
+
+                                        self._cameraFly.flyTo({
+                                            look: center,
+                                            eye: [0, 10, 0],
+                                            up: [0, 0, 1]
+                                        });
+
+                                        break;
+                                }
+                            });
+
+                    } else {
+
+                        this.scene.off(this._onKeyDown);
+                    }
+
+                    /**
+                     * Fired whenever this KeyboardAxisCamera's {{#crossLink "KeyboardAxisCamera/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._active = value);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                active: this._active
+            };
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+
+            this.active = false;
+
+            this._cameraFly.destroy();
+        }
+    });
+
+})();
+;/**
+ A **KeyboardOrbitCamera** orbits a {{#crossLink "Camera"}}{{/crossLink}} about its point-of-interest using the keyboard's arrow keys.
+
+ ## Overview
+
+ <ul>
+ <li>A KeyboardOrbitCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its target {{#crossLink "Camera"}}{{/crossLink}}.
+ <li>The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+ <li>Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
+ about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+ <li>Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
+ <li>Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
+ <li>X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.</li>
+ <li>In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ position will orbit the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
+ will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+ </ul>
+
+ ## Example
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var camera = new XEO.Camera(scene);
+
+ var control = new XEO.KeyboardOrbitCamera(scene, {
+
+        camera: camera,
+
+        // "First person" mode rotates look about eye.
+        // By default however, we orbit eye about look.
+        firstPerson: false
+    });
+
+ var object = new XEO.GameObject(scene);
+ ````
+
+
+ @class KeyboardOrbitCamera
+ @module XEO
+ @submodule input
+ @constructor
+ @param [viewer] {Viewer} Parent {{#crossLink "Viewer"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent viewer, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardAxisCamera.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardOrbitCamera. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.sensitivity=1.0] {Number} Orbit sensitivity factor.
+ @param [cfg.firstPerson=false] {Boolean}  Indicates whether this KeyboardOrbitCamera is in "first person" mode.
+ @param [cfg.active=true] {Boolean} Whether or not this MousePanCamera is active.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.KeyboardOrbitCamera = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.KeyboardOrbitCamera",
+
+        _init: function (cfg) {
+
+            // Event handles
+            
+            this._onTick = null;
+
+            // Init properties
+            
+            this.camera = cfg.camera;
+            this.active = cfg.active !== false;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this KeyboardOrbitCamera.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardOrbitCamera. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink "KeyboardOrbitCamera/camera:event"}}{{/crossLink}} event on change.
+             *
+             * @property camera
+             * @type Camera
+             */
+            camera: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this KeyboardOrbitCamera's {{#crossLink "KeyboardOrbitCamera/camera:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event camera
+                     * @param value The property's new value
+                     */
+                    this._setChild("camera", value);
+                },
+
+                get: function () {
+                    return this._children.camera;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this KeyboardOrbitCamera is in "first person" mode.
+             *
+             * A KeyboardOrbitCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its
+             * target {{#crossLink "Camera"}}{{/crossLink}}. In 'first person' mode, the
+             * {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+             * position orbits the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise
+             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+             *
+             * Fires a {{#crossLink "KeyboardOrbitCamera/firstPerson:event"}}{{/crossLink}} event on change.
+             *
+             * @property firstPerson
+             * @default false
+             * @type Boolean
+             */
+            firstPerson: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    this._firstPerson = value;
+
+                    /**
+                     * Fired whenever this KeyboardOrbitCamera's {{#crossLink "KeyboardOrbitCamera/firstPerson:property"}}{{/crossLink}} property changes.
+                     * @event firstPerson
+                     * @param value The property's new value
+                     */
+                    this.fire('firstPerson', this._firstPerson);
+                },
+
+                get: function () {
+                    return this._firstPerson;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this KeyboardOrbitCamera is active or not.
+             *
+             * Fires an {{#crossLink "KeyboardOrbitCamera/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    var input = this.scene.input;
+
+                    if (value) {
+
+                        var self = this;
+
+                        this._onTick = this.scene.on("tick",
+                            function (params) {
+
+                                var camera = self._children.camera;
+                                
+                                if (!camera) {
+                                    return;
+                                }
+
+                                var elapsed = params.deltaTime;
+
+                                var yawRate = 50;
+                                var pitchRate = 50;
+
+                                if (!input.ctrlDown && !input.altDown) {
+
+                                    var left = input.keyDown[input.KEY_LEFT_ARROW];
+                                    var right = input.keyDown[input.KEY_RIGHT_ARROW];
+                                    var up = input.keyDown[input.KEY_UP_ARROW];
+                                    var down = input.keyDown[input.KEY_DOWN_ARROW];
+
+                                    if (left || right || up || down) {
+
+                                        var yaw = 0;
+                                        var pitch = 0;
+
+                                        if (right) {
+                                            yaw = -elapsed * yawRate;
+
+                                        } else if (left) {
+                                            yaw = elapsed * yawRate;
+                                        }
+
+                                        if (down) {
+                                            pitch = elapsed * pitchRate;
+
+                                        } else if (up) {
+                                            pitch = -elapsed * pitchRate;
+                                        }
+
+                                        if (Math.abs(yaw) > Math.abs(pitch)) {
+                                            pitch = 0;
+                                        } else {
+                                            yaw = 0;
+                                        }
+
+                                        if (yaw != 0) {
+                                            camera.view.rotateEyeY(yaw);
+                                        }
+
+                                        if (pitch != 0) {
+                                            camera.view.rotateEyeX(pitch);
+                                        }
+                                    }
+                                }
+                            });
+
+                    } else {
+
+                        this.scene.off(this._onTick);
+                    }
+
+                    /**
+                     * Fired whenever this KeyboardOrbitCamera's {{#crossLink "KeyboardOrbitCamera/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._active = value);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                sensitivity: this._sensitivity,
+                active: this._active
+            };
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this.active = false; // Unbinds events
+        }
+    });
+
+})();
+;/**
+ A **KeyboardPanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the W, S, A and D keys.
+
+ ## Overview
+
+ <ul>
+ <li>A KeyboardPanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
+ along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
+ <li>Panning forwards and backwards involves translating
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth along the
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
+ <li>Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
+ {{#crossLink "Lookat/look:property"}}{{/crossLink}} along the the vector perpendicular to the {{#crossLink "Lookat/up:property"}}{{/crossLink}}
+ and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
+ </ul>
+
+ ## Example
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var camera = new XEO.Camera(scene);
+
+ var control = new XEO.KeyboardPanCamera(scene, {
+        camera: camera
+    });
+
+ var object = new XEO.GameObject(scene);
+ ````
+
+ @class KeyboardPanCamera
+ @module XEO
+ @submodule input
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardOrbitCamera.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardPanCamera. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.sensitivity=1.0] {Number} Pan sensitivity factor.
+ @param [cfg.active=true] {Boolean} Whether or not this KeyboardPanCamera is active.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.KeyboardPanCamera = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.KeyboardPanCamera",
+
+        _init: function (cfg) {
+
+            // Event handles
+
+            this._onTick = null;
+
+            // Init properties
+
+            this.camera = cfg.camera;
+            this.sensitivity = cfg.sensitivity;
+            this.active = cfg.active !== false;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this KeyboardPanCamera.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardPanCamera. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink "KeyboardPanCamera/camera:event"}}{{/crossLink}} event on change.
+             *
+             * @property camera
+             * @type Camera
+             */
+            camera: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this KeyboardPanCamera's {{#crossLink "KeyboardPanCamera/camera:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event camera
+                     * @param value The property's new value
+                     */
+                    this._setChild("camera", value);
+                },
+
+                get: function () {
+                    return this._children.camera;
+                }
+            },
+
+            /**
+             * The sensitivity of this KeyboardPanCamera.
+             *
+             * Fires a {{#crossLink "KeyboardPanCamera/sensitivity:event"}}{{/crossLink}} event on change.
+             *
+             * @property sensitivity
+             * @type Number
+             * @default 1.0
+             */
+            sensitivity: {
+
+                set: function (value) {
+
+                    this._sensitivity = value || 1.0;
+
+                    /**
+                     * Fired whenever this KeyboardPanCamera's  {{#crossLink "KeyboardPanCamera/sensitivity:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event sensitivity
+                     * @param value The property's new value
+                     */
+                    this.fire("sensitivity", this._sensitivity);
+                },
+
+                get: function () {
+                    return this._sensitivity;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this KeyboardPanCamera is active or not.
+             *
+             * Fires an {{#crossLink "KeyboardPanCamera/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    var input = this.scene.input;
+
+                    if (value) {
+
+                        var self = this;
+
+                        this._onTick = this.scene.on("tick",
+                            function (params) {
+
+                                var camera = self._children.camera;
+
+                                if (!camera) {
+                                    return;
+                                }
+
+                                var elapsed = params.deltaTime;
+
+                                if (!input.ctrlDown && !input.altDown) {
+
+                                    var wkey = input.keyDown[input.KEY_W];
+                                    var skey = input.keyDown[input.KEY_S];
+                                    var akey = input.keyDown[input.KEY_A];
+                                    var dkey = input.keyDown[input.KEY_D];
+                                    var zkey = input.keyDown[input.KEY_Z];
+                                    var xkey = input.keyDown[input.KEY_X];
+
+                                    if (wkey || skey || akey || dkey || xkey || zkey) {
+
+                                        var x = 0;
+                                        var y = 0;
+                                        var z = 0;
+
+                                        var sensitivity = self.sensitivity;
+
+                                        if (skey) {
+                                            y = elapsed * sensitivity;
+
+                                        } else if (wkey) {
+                                            y = -elapsed * sensitivity;
+                                        }
+
+                                        if (dkey) {
+                                            x = elapsed * sensitivity;
+
+                                        } else if (akey) {
+                                            x = -elapsed * sensitivity;
+                                        }
+
+                                        if (xkey) {
+                                            z = elapsed * sensitivity;
+
+                                        } else if (zkey) {
+                                            z = -elapsed * sensitivity;
+                                        }
+
+                                        camera.view.pan([x, y, z]);
+                                    }
+                                }
+                            });
+
+                    } else {
+
+                        if (this._onTick) {
+                            this.scene.off(this._onTick);
+                        }
+                    }
+
+                    /**
+                     * Fired whenever this KeyboardPanCamera's {{#crossLink "KeyboardPanCamera/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._active = value);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                sensitivity: this._sensitivity,
+                active: this._active
+            };
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this.active = false;
+        }
+    });
+
+})();
+;/**
+ A **KeyboardZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the + and - keys.
+
+ ## Overview
+
+ <ul>
+ <li>A KeyboardZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
+ along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
+ </ul>
+
+ ## Example
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var camera = new XEO.Camera(scene);
+
+ var control = new XEO.KeyboardZoomCamera(scene, {
+        camera: camera
+    });
+
+ var object = new XEO.GameObject(scene);
+ ````
+
+ @class KeyboardZoomCamera
+ @module XEO
+ @submodule input
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardZoomCamera.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardZoomCamera. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.sensitivity=1.0] {Number} Zoom sensitivity factor.
+ @param [cfg.active=true] {Boolean} Whether or not this KeyboardZoomCamera is active.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.KeyboardZoomCamera = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.KeyboardZoomCamera",
+
+        _init: function (cfg) {
+
+            // Event handles
+
+            this._onTick = null;
+
+            // Init properties
+
+            this.camera = cfg.camera;
+            this.sensitivity = cfg.sensitivity;
+            this.active = cfg.active !== false;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this KeyboardZoomCamera.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardZoomCamera. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink "KeyboardZoomCamera/camera:event"}}{{/crossLink}} event on change.
+             *
+             * @property camera
+             * @type Camera
+             */
+            camera: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this KeyboardZoomCamera's {{#crossLink "KeyboardZoomCamera/camera:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event camera
+                     * @param value The property's new value
+                     */
+                    this._setChild("camera", value);
+                },
+
+                get: function () {
+                    return this._children.camera;
+                }
+            },
+
+            /**
+             * The sensitivity of this KeyboardZoomCamera.
+             *
+             * Fires a {{#crossLink "KeyboardZoomCamera/sensitivity:event"}}{{/crossLink}} event on change.
+             *
+             * @property sensitivity
+             * @type Number
+             * @default 1.0
+             */
+            sensitivity: {
+
+                set: function (value) {
+
+                    this._sensitivity = value || 1.0;
+
+                    /**
+                     * Fired whenever this KeyboardZoomCamera's  {{#crossLink "KeyboardZoomCamera/sensitivity:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event sensitivity
+                     * @param value The property's new value
+                     */
+                    this.fire("sensitivity", this._sensitivity);
+                },
+
+                get: function () {
+                    return this._sensitivity;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this KeyboardZoomCamera is active or not.
+             *
+             * Fires an {{#crossLink "KeyboardZoomCamera/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    var input = this.scene.input;
+
+                    if (value) {
+
+                        var self = this;
+
+                        this._onTick = this.scene.on("tick",
+                            function (params) {
+
+                                var camera = self._children.camera;
+
+                                if (!camera) {
+                                    return;
+                                }
+
+                                var elapsed = params.deltaTime;
+
+                                if (!input.ctrlDown && !input.altDown) {
+
+                                    var wkey = input.keyDown[input.KEY_ADD];
+                                    var skey = input.keyDown[input.KEY_SUBTRACT];
+
+                                    if (wkey || skey) {
+
+                                        var z = 0;
+
+                                        var sensitivity = self.sensitivity * 15.0;
+
+                                        if (skey) {
+                                            z = elapsed * sensitivity;
+
+                                        } else if (wkey) {
+                                            z = -elapsed * sensitivity;
+                                        }
+
+                                        camera.view.zoom(z);
+                                    }
+                                }
+                            });
+
+                    } else {
+
+                        if (this._onTick !== null) {
+                            this.scene.off(this._onTick);
+                        }
+                    }
+
+                    /**
+                     * Fired whenever this KeyboardZoomCamera's {{#crossLink "KeyboardZoomCamera/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._active = value);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                sensitivity: this._sensitivity,
+                active: this._active
+            };
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this.active = false;
+        }
+    });
+
+})();
+;/**
+ A **MouseOrbitCamera** orbits a {{#crossLink "Camera"}}{{/crossLink}} about its point-of-interest using the mouse.
+
+ ## Overview
+
+ <ul>
+ <li>A MouseOrbitCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ <li>The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+ <li>Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
+ about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+ <li>Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
+ <li>Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
+ <li>X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.</li>
+ <li>In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ position will orbit the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
+ will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+ </ul>
+
+ ## Example
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var camera = new XEO.Camera(scene);
+
+ var control = new XEO.MouseOrbitCamera(scene, {
+
+        camera: camera,
+
+        // "First person" mode rotates look about eye.
+        // By default however, we orbit eye about look.
+        firstPerson: false
+    });
+
+ var object = new XEO.GameObject(scene);
+ ````
+
+ @class MouseOrbitCamera
+ @module XEO
+ @submodule input
+ @constructor
+ @param [scene] {scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent Scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MouseOrbitCamera.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MouseOrbitCamera. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.sensitivity=1.0] {Number} Mouse drag sensitivity factor.
+ @param [cfg.firstPerson=false] {Boolean}  Indicates whether this MouseOrbitCamera is in "first person" mode.
+ @param [cfg.active=true] {Boolean} Whether or not this MouseOrbitCamera is active.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.MouseOrbitCamera = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.MouseOrbitCamera",
+
+        _init: function (cfg) {
+
+            // Event handles
+            
+            this._onTick = null;
+            this._onMouseDown = null;
+            this._onMouseMove = null;
+            this._onMouseUp = null;
+            
+            // Init properties
+            
+            this.camera = cfg.camera;
+            this.sensitivity = cfg.sensitivity;
+            this.active = cfg.active !== false;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this MouseOrbitCamera.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MouseOrbitCamera. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink "MouseOrbitCamera/camera:event"}}{{/crossLink}} event on change.
+             *
+             * @property camera
+             * @type Camera
+             */
+            camera: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this MouseOrbitCamera's {{#crossLink "MouseOrbitCamera/camera:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event camera
+                     * @param value The property's new value
+                     */
+                    this._setChild("camera", value);
+                },
+
+                get: function () {
+                    return this._children.camera;
+                }
+            },
+
+            /**
+             * The sensitivity of this MouseOrbitCamera.
+             *
+             * Fires a {{#crossLink "MouseOrbitCamera/sensitivity:event"}}{{/crossLink}} event on change.
+             *
+             * @property sensitivity
+             * @type Number
+             * @default 1.0
+             */
+            sensitivity: {
+
+                set: function (value) {
+
+                    this._sensitivity = value || 1.0;
+
+                    /**
+                     * Fired whenever this MouseOrbitCamera's  {{#crossLink "MouseOrbitCamera/sensitivity:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event sensitivity
+                     * @param value The property's new value
+                     */
+                    this.fire("sensitivity", this._sensitivity);
+                },
+
+                get: function () {
+                    return this._sensitivity;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this MouseOrbitCamera is in "first person" mode.
+             *
+             * A MouseOrbitCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its
+             * target {{#crossLink "Camera"}}{{/crossLink}}. In 'first person' mode, the
+             * {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+             * position orbits the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise
+             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+             *
+             * Fires a {{#crossLink "MouseOrbitCamera/firstPerson:event"}}{{/crossLink}} event on change.
+             *
+             * @property firstPerson
+             * @default false
+             * @type Boolean
+             */
+            firstPerson: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    this._firstPerson = value;
+
+                    /**
+                     * Fired whenever this MouseOrbitCamera's {{#crossLink "MouseOrbitCamera/firstPerson:property"}}{{/crossLink}} property changes.
+                     * @event firstPerson
+                     * @param value The property's new value
+                     */
+                    this.fire('firstPerson', this._firstPerson);
+                },
+
+                get: function () {
+                    return this._firstPerson;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this MouseOrbitCamera is active or not.
+             *
+             * Fires an {{#crossLink "MouseOrbitCamera/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    var input = this.scene.input;
+
+                    if (value) {
+                        
+                        var lastX;
+                        var lastY;
+                        var xDelta = 0;
+                        var yDelta = 0;
+                        var down = false;
+
+                        var self = this;
+
+                        this._onTick = this.scene.on("tick",
+                            function (params) {
+
+                                var camera = self._children.camera;
+                                
+                                if (!camera) {
+                                    return;
+                                }
+                                
+                                if (xDelta != 0) {
+                                    camera.view.rotateEyeY(-xDelta * self._sensitivity);
+                                    xDelta = 0;
+                                }
+
+                                if (yDelta != 0) {
+                                    camera.view.rotateEyeX(yDelta * self._sensitivity);
+                                    yDelta = 0;
+                                }
+                            });
+
+                        this._onMouseDown = input.on("mousedown",
+                            function (e) {
+
+                                if (input.mouseDownLeft
+                                    && !input.mouseDownRight
+                                    && !input.keyDown[input.KEY_SHIFT]
+                                    && !input.mouseDownMiddle) {
+
+                                    down = true;
+                                    lastX = e[0];
+                                    lastY = e[1];
+
+                                } else {
+                                    down = false;
+                                }
+
+                            });
+
+                        this._onMouseUp = input.on("mouseup",
+                            function (e) {
+                                down = false;
+                            });
+
+                        this._onMouseMove = input.on("mousemove",
+                            function (e) {
+                                if (down) {
+                                    xDelta += (e[0] - lastX) * self._sensitivity;
+                                    yDelta += (e[1] - lastY) * self._sensitivity;
+                                    lastX = e[0];
+                                    lastY = e[1];
+                                }
+                            });
+
+                    } else {
+
+                        input.off(this._onTick);
+
+                        input.off(this._onMouseDown);
+                        input.off(this._onMouseUp);
+                        input.off(this._onMouseMove);
+                    }
+
+                    /**
+                     * Fired whenever this MouseOrbitCamera's {{#crossLink "MouseOrbitCamera/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._active = value);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                sensitivity: this._sensitivity,
+                active: this._active
+            };
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this.active = false;
+        }
+    });
+
+})();
+;/**
+ A **MousePanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the mouse.
+
+ ## Overview
+
+ <ul>
+ <li>A MousePanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ <li>Panning is done by dragging the mouse with both the left and right buttons down.</li>
+ <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
+ along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
+ <li>Panning forwards and backwards involves translating
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth along the
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
+ <li>Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
+ {{#crossLink "Lookat/look:property"}}{{/crossLink}} along the the vector perpendicular to the {{#crossLink "Lookat/up:property"}}{{/crossLink}}
+ and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
+ </ul>
+
+ ## Example
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var camera = new XEO.Camera(scene);
+
+ var control = new XEO.MousePanCamera(scene, {
+        camera: camera
+    });
+
+ var object = new XEO.GameObject(scene);
+ ````
+
+ @class MousePanCamera
+ @module XEO
+ @submodule input
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePanCamera.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MousePanCamera. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.sensitivity=1.0] {Number} Pan sensitivity factor.
+ @param [cfg.active=true] {Boolean} Whether or not this MousePanCamera is active.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.MousePanCamera = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.MousePanCamera",
+
+        _init: function (cfg) {
+
+            // Event handles
+
+            this._onTick = null;
+            this._onMouseDown = null;
+            this._onMouseMove = null;
+            this._onMouseUp = null;
+
+            // Init properties
+
+            this.camera = cfg.camera;
+            this.sensitivity = cfg.sensitivity;
+            this.active = cfg.active !== false;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this MousePanCamera.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MousePanCamera. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink "MousePanCamera/camera:event"}}{{/crossLink}} event on change.
+             *
+             * @property camera
+             * @type Camera
+             */
+            camera: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this MousePanCamera's {{#crossLink "MousePanCamera/camera:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event camera
+                     * @param value The property's new value
+                     */
+                    this._setChild("camera", value);
+                },
+
+                get: function () {
+                    return this._children.camera;
+                }
+            },
+
+            /**
+             * The sensitivity of this MousePanCamera.
+             *
+             * Fires a {{#crossLink "MousePanCamera/sensitivity:event"}}{{/crossLink}} event on change.
+             *
+             * @property sensitivity
+             * @type Number
+             * @default 1.0
+             */
+            sensitivity: {
+
+                set: function (value) {
+
+                    this._sensitivity = value ? value * 0.03 : 0.03;
+
+                    /**
+                     * Fired whenever this MousePanCamera's  {{#crossLink "MousePanCamera/sensitivity:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event sensitivity
+                     * @param value The property's new value
+                     */
+                    this.fire("sensitivity", this._sensitivity);
+                },
+
+                get: function () {
+                    return this._sensitivity;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this MousePanCamera is active or not.
+             *
+             * Fires an {{#crossLink "MousePanCamera/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    var input = this.scene.input;
+
+                    if (value) {
+
+                        var lastX;
+                        var lastY;
+                        var xDelta = 0;
+                        var yDelta = 0;
+                        var down = false;
+
+                        var self = this;
+
+                        this._onTick = this.scene.on("tick",
+                            function () {
+
+                                var camera = self._children.camera;
+
+                                if (!camera) {
+                                    return;
+                                }
+
+                                if (xDelta != 0 || yDelta != 0) {
+
+                                    camera.view.pan([xDelta, yDelta, 0]);
+
+                                    xDelta = 0;
+                                    yDelta = 0;
+                                }
+                            });
+
+                        this._onMouseDown = input.on("mousedown",
+                            function (e) {
+
+                                if ((input.mouseDownLeft && input.mouseDownRight) ||
+                                    (input.mouseDownLeft && input.keyDown[input.KEY_SHIFT]) ||
+                                    input.mouseDownMiddle) {
+
+                                    lastX = e[0];
+                                    lastY = e[1];
+
+                                    down = true;
+
+                                } else {
+                                    down = false;
+                                }
+                            });
+
+                        this._onMouseUp = input.on("mouseup",
+                            function () {
+                                down = false;
+                            });
+
+                        this._onMouseMove = input.on("mousemove",
+                            function (e) {
+                                if (down) {
+                                    xDelta += (e[0] - lastX) * self.sensitivity;
+                                    yDelta += (e[1] - lastY) * self.sensitivity;
+                                    lastX = e[0];
+                                    lastY = e[1];
+                                }
+                            });
+
+                    } else {
+
+                        input.off(this._onTick);
+                        input.off(this._onMouseDown);
+                        input.off(this._onMouseUp);
+                        input.off(this._onMouseMove);
+                    }
+
+                    /**
+                     * Fired whenever this MousePanCamera's {{#crossLink "MousePanCamera/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._active = value);
+                },
+
+                get: function () {
+                    return this._active; // Unbinds events
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                sensitivity: this._sensitivity,
+                active: this._active
+            };
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this.active = false;
+        }
+    });
+
+})();
+;/**
+ A **MousePickObject** picks {{#crossLink "GameObject"}}GameObjects{{/crossLink}} with mouse clicks.
+
+ ## Overview
+
+TODO
+
+ ## Example
+
+ ````Javascript
+ var scene = new XEO.Scene({ element: "myDiv" });
+
+ // Create some GameObjects
+
+ var object1 = new XEO.GameObject(scene, {
+    id: "object1",
+    transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })
+ });
+
+ var object2 = new XEO.GameObject(scene, {
+    id: "object2",
+    transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })
+ });
+
+ var object3 = new XEO.GameObject(scene, {
+    id: "object3",
+    transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })
+ });
+
+ // Create a MousePickObject
+ var mousePickObject = new XEO.MousePickObject(scene, {
+
+    // We want the 3D World-space coordinates
+    // of each location we pick
+
+    rayPick: true
+ });
+
+ // Handle picked GameObjects
+ mousePickObject.on("pick", function(e) {
+    var object = e.object;
+    var canvasPos = e.canvasPos;
+    var worldPos = e.worldPos;
+ });
+
+ // Handle nothing picked
+ mousePickObject.on("nopick", function(e) {
+    var canvasPos = e.canvasPos;
+ });
+ ````
+
+ @class MousePickObject
+ @module XEO
+ @submodule input
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickObject.
+ @param [rayPick=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
+ {{#crossLink "GameObject"}}{{/crossLink}}.
+ @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickObject is active.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.MousePickObject = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.MousePickObject",
+
+        _init: function (cfg) {
+
+            this.rayPick = cfg.rayPick;
+
+            this.active = cfg.active !== false;
+        },
+
+        _props: {
+
+            /**
+             * Flag which indicates whether this MousePickObject is active or not.
+             *
+             * Fires a {{#crossLink "MousePickObject/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    var input = this.scene.input;
+
+                    if (value) {
+
+                        var self = this;
+
+                        this._onMouseUp = input.on("dblclick",
+                            function (canvasPos) {
+
+                                var hit = self.scene.pick(canvasPos, {
+                                    rayPick: self._rayPick
+                                });
+
+                                if (hit) {
+
+                                    /**
+                                     * Fired whenever a {{#crossLink "GameObject"}}GameObject{{/crossLink}} is picked.
+                                     * @event picked
+                                     * @param {String} objectId The ID of the picked {{#crossLink "GameObject"}}GameObject{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+                                     * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
+                                     * @param {Array of Number} worldPos When {{#crossLink "MousePickObject/rayPick"}}{{/crossLink}} is true,
+                                     * provides the World-space coordinate that was ray-picked on the surface of the
+                                     * {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
+                                     */
+                                    self.fire("pick", hit);
+
+                                } else {
+
+                                    /**
+                                     * Fired whenever an attempt to pick {{#crossLink "GameObject"}}GameObject{{/crossLink}} picks empty space.
+                                     * @event nopick
+                                     * @param {Array of Number} canvasPos The Canvas-space coordinate at which the pick was attempted.
+                                     */
+                                    self.fire("nopick", {
+                                        canvasPos: canvasPos
+                                    });
+                                }
+                            });
+
+                    } else {
+
+                        input.off(this._onMouseDown);
+                        input.off(this._onMouseUp);
+                    }
+
+                    /**
+                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._active = value);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            },
+
+            /**
+             * Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
+             * {{#crossLink "GameObject"}}{{/crossLink}}.
+             *
+             * When true, this MousePickObject returns the 3D World-space intersection in each
+             * {{#crossLink "MousePickObject/picked:event"}}{{/crossLink}} event.
+             *
+             * Fires a {{#crossLink "MousePickObject/rayPick:event"}}{{/crossLink}} event on change.
+             *
+             * @property rayPick
+             * @type Boolean
+             */
+            rayPick: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._rayPick === value) {
+                        return;
+                    }
+
+                    this._dirty = false;
+
+                    /**
+                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/rayPick:property"}}{{/crossLink}} property changes.
+                     * @event rayPick
+                     * @param value The property's new value
+                     */
+                    this.fire('rayPick', this._rayPick = value);
+                },
+
+                get: function () {
+                    return this._rayPick;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                rayPick: this._rayPick,
+                active: this._active
+            };
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this.active = false;
+        }
+    });
+})();;/**
+ A **MouseZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse wheel.
+
+ ## Overview
+
+ <ul>
+ <li>A MouseZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
+ along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
+ </ul>
+
+ ## Example
+
+ ````Javascript
+ var scene = new XEO.Scene();
+
+ var camera = new XEO.Camera(scene);
+
+ var control = new XEO.MouseZoomCamera(scene, {
+        camera: camera
+    });
+
+ var object = new XEO.GameObject(scene);
+ ````
+
+ @class MouseZoomCamera
+ @module XEO
+ @submodule input
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MouseZoomCamera.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MouseZoomCamera. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.sensitivity=1.0] {Number} Zoom sensitivity factor.
+ @param [cfg.active=true] {Boolean} Whether or not this MouseZoomCamera is active.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.MouseZoomCamera = XEO.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "XEO.MouseZoomCamera",
+
+        _init: function (cfg) {
+
+            // Event handles
+
+            this._onTick = null;
+            this._onMouseWheel = null;
+
+            // Init properties
+
+            this.camera = cfg.camera;
+            this.sensitivity = cfg.sensitivity;
+            this.active = cfg.active !== false;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this MouseZoomCamera.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MouseZoomCamera. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink "MouseZoomCamera/camera:event"}}{{/crossLink}} event on change.
+             *
+             * @property camera
+             * @type Camera
+             */
+            camera: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this MouseZoomCamera's {{#crossLink "MouseZoomCamera/camera:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event camera
+                     * @param value The property's new value
+                     */
+                    this._setChild("camera", value);
+                },
+
+                get: function () {
+                    return this._children.camera;
+                }
+            },
+
+            /**
+             * The sensitivity of this MouseZoomCamera.
+             *
+             * Fires a {{#crossLink "MouseZoomCamera/sensitivity:event"}}{{/crossLink}} event on change.
+             *
+             * @property sensitivity
+             * @type Number
+             * @default 1.0
+             */
+            sensitivity: {
+
+                set: function (value) {
+
+                    this._sensitivity = value || 1.0;
+
+                    /**
+                     * Fired whenever this MouseZoomCamera's  {{#crossLink "MouseZoomCamera/sensitivity:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event sensitivity
+                     * @param value The property's new value
+                     */
+                    this.fire("sensitivity", this._sensitivity);
+                },
+
+                get: function () {
+                    return this._sensitivity;
+                }
+            },
+
+            /**
+             * Indicates whether this MouseZoomCamera is active or not.
+             *
+             * Fires an {{#crossLink "MouseZoomCamera/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    if (value) {
+
+                        var delta = 0;
+                        var target = 0;
+                        var newTarget = false;
+                        var targeting = false;
+                        var progress = 0;
+
+                        var eyeVec = XEO.math.vec3();
+                        var lookVec = XEO.math.vec3();
+                        var tempVec3 = XEO.math.vec3();
+
+                        var self = this;
+
+                        this._onMouseWheel = this.scene.input.on("mousewheel",
+                            function (_delta) {
+
+                                delta = _delta;
+
+                                if (delta === 0) {
+                                    targeting = false;
+                                    newTarget = false;
+                                } else {
+                                    newTarget = true;
+                                }
+                            });
+
+                        this._onTick = this.scene.on("tick",
+                            function () {
+
+                                var camera = self._children.camera;
+
+                                if (!camera) {
+                                    return;
+                                }
+
+                                var eye = camera.view.eye;
+                                var look = camera.view.look;
+
+                                eyeVec[0] = eye[0];
+                                eyeVec[1] = eye[1];
+                                eyeVec[2] = eye[2];
+
+                                lookVec[0] = look[0];
+                                lookVec[1] = look[1];
+                                lookVec[2] = look[2];
+
+                                XEO.math.subVec3(eyeVec, lookVec, tempVec3);
+
+                                var lenLook = Math.abs(XEO.math.lenVec3(tempVec3));
+                                var lenLimits = 1000;
+                                var f = self._sensitivity * (2.0 + (lenLook / lenLimits));
+
+                                if (newTarget) {
+                                    target = delta * f;
+                                    progress = 0;
+                                    newTarget = false;
+                                    targeting = true;
+                                }
+
+                                if (targeting) {
+
+                                    if (delta > 0) {
+
+                                        progress += 0.2 * f;
+
+                                        if (progress > target) {
+                                            targeting = false;
+                                        }
+
+                                    } else if (delta < 0) {
+
+                                        progress -= 0.2 * f;
+
+                                        if (progress < target) {
+                                            targeting = false;
+                                        }
+                                    }
+
+                                    if (targeting) {
+                                        camera.view.zoom(progress);
+                                    }
+                                }
+                            });
+
+                    } else {
+
+                        if (this._onTick !== null) {
+                            this.scene.off(this._onTick);
+                            this.scene.input.off(this._onMouseWheel);
+                        }
+                    }
+
+                    /**
+                     * Fired whenever this MouseZoomCamera's {{#crossLink "MouseZoomCamera/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._active = value);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                sensitivity: this._sensitivity,
+                active: this._active
+            };
+
+            if (this._children.camera) {
+                json.camera = this._children.camera.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this.active = false;
         }
     });
 
