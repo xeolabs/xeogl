@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/extras/geometry/sphere.js - xeoengine</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/Cylinder.html">Cylinder</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/GameObject.html">GameObject</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
+                                <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
+                                <li><a href="../classes/Group.html">Group</a></li>
+                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
+                                <li><a href="../classes/Heightmap.html">Heightmap</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/math.html">math</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/Sound.html">Sound</a></li>
+                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stats.html">Stats</a></li>
+                                <li><a href="../classes/Task.html">Task</a></li>
+                                <li><a href="../classes/Tasks.html">Tasks</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.CameraFlight.html">XEO.CameraFlight</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/configuration.html">configuration</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/objects.html">objects</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/reporting.html">reporting</a></li>
+                                <li><a href="../modules/spatial.html">spatial</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
+                                <li><a href="../modules/XEO.html">XEO</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src/extras/geometry/sphere.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **Sphere** defines spherical geometry for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+
+ ## Example
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class Sphere
+ @module XEO
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Sphere in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Sphere.
+ @param [cfg.radius=1] {Number}
+ @param [cfg.heightSegments=8] {Number}
+ @param [cfg.widthSegments=6] {Number}
+ @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
+ @extends Geometry
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    XEO.Sphere = XEO.Geometry.extend({
+
+        type: &quot;XEO.Sphere&quot;,
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.lod = cfg.lod;
+            this.radius = cfg.radius;
+            this.heightSegments = cfg.heightSegments;
+            this.widthSegments = cfg.widthSegments;
+        },
+
+        _sphereDirty: function () {
+            if (!this.__dirty) {
+                this.__dirty = true;
+                var self = this;
+                this.scene.once(&quot;tick2&quot;,
+                    function () {
+                        self._buildSphere();
+                        self.__dirty = false;
+                    });
+            }
+        },
+
+        _buildSphere: function () {
+
+            var radius = this._radius;
+            var heightSegments = Math.floor(this._lod * this._heightSegments);
+            var widthSegments = Math.floor(this._lod * this._widthSegments);
+
+            if (heightSegments &lt; 6) {
+                heightSegments = 6;
+            }
+
+            if (widthSegments &lt; 6) {
+                widthSegments = 6;
+            }
+
+            var positions = [];
+            var normals = [];
+            var uvs = [];
+            var indices = [];
+
+            var i;
+            var j;
+
+            var theta;
+            var sinTheta;
+            var cosTheta;
+
+            var phi;
+            var sinPhi;
+            var cosPhi;
+
+            var x;
+            var y;
+            var z;
+
+            var u;
+            var v;
+
+            var first;
+            var second;
+
+            for (i = 0; i &lt;= heightSegments; i++) {
+
+                theta = i * Math.PI / heightSegments;
+                sinTheta = Math.sin(theta);
+                cosTheta = Math.cos(theta);
+
+                for (j = 0; j &lt;= widthSegments; j++) {
+
+                    phi = j * 2 * Math.PI / widthSegments;
+                    sinPhi = Math.sin(phi);
+                    cosPhi = Math.cos(phi);
+
+                    x = cosPhi * sinTheta;
+                    y = cosTheta;
+                    z = sinPhi * sinTheta;
+                    u = j / widthSegments;
+                    v = i / heightSegments;
+
+                    normals.push(x);
+                    normals.push(y);
+                    normals.push(z);
+
+                    uvs.push(u);
+                    uvs.push(v);
+
+                    positions.push(radius * x);
+                    positions.push(radius * y);
+                    positions.push(radius * z);
+                }
+            }
+
+            for (i = 0; i &lt; heightSegments; i++) {
+                for (j = 0; j &lt; widthSegments; j++) {
+
+                    first = (i * (widthSegments + 1)) + j;
+                    second = first + widthSegments + 1;
+
+                    indices.push(first + 1);
+                    indices.push(second + 1);
+                    indices.push(second);
+                    indices.push(first + 1);
+                    indices.push(second);
+                    indices.push(first);
+                }
+            }
+
+            this.positions = positions;
+            this.normals = normals;
+            this.uv = uvs;
+            this.indices = indices;
+        },
+
+        _props: {
+
+            /**
+             * The Sphere&#x27;s level-of-detail factor.
+             *
+             * Fires a {{#crossLink &quot;Sphere/lod:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property lod
+             * @default 1
+             * @type Number
+             */
+            lod: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._lod === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0 || value &gt; 1) {
+                        this.warn(&quot;clamping lod to [0..1]&quot;);
+                        value = value &lt; 0 ? 0 : 1;
+                    }
+
+                    this._lod = value;
+
+                    /**
+                     * Fired whenever this Sphere&#x27;s {{#crossLink &quot;Sphere/lod:property&quot;}}{{/crossLink}} property changes.
+                     * @event lod
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;lod&quot;, this._lod);
+
+                    this._sphereDirty();
+                },
+
+                get: function () {
+                    return this._lod;
+                }
+            },
+
+            /**
+             * The Sphere&#x27;s radius.
+             *
+             * Fires a {{#crossLink &quot;Sphere/radius:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property radius
+             * @default 1
+             * @type Number
+             */
+            radius: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._radius === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative radius not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._radius = value;
+
+                    /**
+                     * Fired whenever this Sphere&#x27;s {{#crossLink &quot;Sphere/radius:property&quot;}}{{/crossLink}} property changes.
+                     * @event radius
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;radius&quot;, this._radius);
+
+                    this._sphereDirty();
+                },
+
+                get: function () {
+                    return this._radius;
+                }
+            },
+
+
+            /**
+             * The Sphere&#x27;s number of latitude bands.
+             *
+             * Fires a {{#crossLink &quot;Sphere/heightSegments:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property heightSegments
+             * @default 6
+             * @type Number
+             */
+            heightSegments: {
+
+                set: function (value) {
+
+                    value = value || 6;
+
+                    if (this._heightSegments === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative heightSegments not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._heightSegments = value;
+
+                    /**
+                     * Fired whenever this Sphere&#x27;s {{#crossLink &quot;Sphere/heightSegments:property&quot;}}{{/crossLink}} property changes.
+                     * @event heightSegments
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;heightSegments&quot;, this._heightSegments);
+
+                    this._sphereDirty();
+                },
+
+                get: function () {
+                    return this._heightSegments;
+                }
+            },
+
+            /**
+             * The Sphere&#x27;s number of longitude bands.
+             *
+             * Fires a {{#crossLink &quot;Sphere/widthSegments:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property widthSegments
+             * @default 8
+             * @type Number
+             */
+            widthSegments: {
+
+                set: function (value) {
+
+                    value = value || 8;
+
+                    if (this._widthSegments === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative widthSegments not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._widthSegments = value;
+
+                    /**
+                     * Fired whenever this Sphere&#x27;s {{#crossLink &quot;Sphere/widthSegments:property&quot;}}{{/crossLink}} property changes.
+                     * @event widthSegments
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;widthSegments&quot;, this._widthSegments);
+
+                    this._sphereDirty();
+                },
+
+                get: function () {
+                    return this._widthSegments;
+                }
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                // Don&#x27;t save lod
+                radius: this._radius,
+                heightSegments: this._heightSegments,
+                widthSegments: this._widthSegments
+            };
+        }
+    });
+
+})();
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
