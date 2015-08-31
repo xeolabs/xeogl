@@ -12,41 +12,60 @@
     XEO.renderer.webgl.Shader = function (gl, type, source) {
 
         /**
-         * True as soon as this shader is allocated and ready to go
+         * True if this shader successfully allocated. When false,
+         * #error will contain WebGL the error log.
          * @type {boolean}
          */
         this.allocated = false;
 
+        /**
+         * True if this shader successfully compiled. When false,
+         * #error will contain WebGL the error log.
+         * @type {boolean}
+         */
+        this.compiled = false;
+
+        /**
+         * Saves the WebGL error log when this shader failed to allocate or compile.
+         * @type {boolean}
+         */
+        this.errorLog = null;
+
+        /**
+         * The GLSL for this shader.
+         * @type {Array of String}
+         */
+        this.source = source;
+
+        /**
+         * WebGL handle to this shader's GPU resource
+         */
         this.handle = gl.createShader(type);
 
         if (!this.handle) {
-            console.error("Failed to create WebGL shader");
+            this.errorLog = [
+                "Failed to allocate"
+            ];
             return;
         }
+
+        this.allocated = true;
 
         gl.shaderSource(this.handle, source);
         gl.compileShader(this.handle);
 
-        this.valid = (gl.getShaderParameter(this.handle, gl.COMPILE_STATUS) !== 0);
+        this.compiled = gl.getShaderParameter(this.handle, gl.COMPILE_STATUS);
 
-        if (!this.valid) {
+        if (!this.compiled) {
 
             if (!gl.isContextLost()) { // Handled explicitly elsewhere, so won't re-handle here
 
-                console.error("Shader program failed to compile: " + gl.getShaderInfoLog(this.handle));
-                console.error("Shader source:");
-
-                var lines = source.split('\n');
-
-                for (var j = 0; j < lines.length; j++) {
-                    console.error((j + 1) + ": " + lines[j]);
-                }
-
-                return;
+                this.errorLog = [];
+                this.errorLog.push("");
+                this.errorLog.push(gl.getShaderInfoLog(this.handle));
+                this.errorLog = this.errorLog.concat(this.source);
             }
         }
-
-        this.allocated = true;
     };
 
 })();

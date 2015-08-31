@@ -928,8 +928,64 @@
 
                     return this._viewBoundary;
                 }
+            },
+
+            /**
+             * JSON object containing the (GLSL) source code of the shaders for this GameObject.
+             *
+             * This is sometimes useful to have as a reference
+             * when constructing your own custom {{#crossLink "Shader"}}{{/crossLink}} components.
+             *
+             * Will return null if xeoEngine has not yet rendered this GameObject.
+             *
+             * @property glsl
+             * @type JSON
+             * @final
+             */
+            glsl: {
+
+                get: function () {
+                    var rendererObject = this._renderer.objects[this.id];
+                    if (!rendererObject) {
+                        return null;
+                    }
+                    var source = rendererObject.program.source;
+                    return {
+                        draw: {
+                            vertex: source.drawVertex,
+                            fragment: source.drawFragment
+                        },
+                        pick: {
+                            vertex: source.pickVertex,
+                            fragment: source.pickFragment
+                        }
+                    };
+                }
+            },
+
+            /**
+             * The (GLSL) source code of the shaders for this GameObject, as a string.
+             *
+             * This is sometimes useful to have as a reference
+             * when constructing your own custom {{#crossLink "Shader"}}{{/crossLink}} components.
+             *
+             * Will return null if xeoEngine has not yet rendered this GameObject.
+             *
+             * @property glslString
+             * @type String
+             * @final
+             */
+            glslString: {
+
+                get: function () {
+                    var glsl = this.glsl;
+                    if (glsl) {
+                        return JSON.stringify(glsl, "\n", 4);
+                    }
+                }
             }
         },
+
 
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
@@ -974,7 +1030,15 @@
 
             // (Re)build this GameObject in the renderer
 
-            this._renderer.buildObject(this.id);
+            var result = this._renderer.buildObject(this.id);
+
+            if (result && result.error) {
+
+                // Object has errors, probably due to
+                // shader not allocating/compiling/linking.
+
+                this.error(result.errorLog.join("\n"));
+            }
         },
 
         _getJSON: function () {

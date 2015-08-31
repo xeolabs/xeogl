@@ -21,8 +21,7 @@
 
         gl.bindTexture(this.target, this.texture);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-            XEO.renderer.webgl.ensureImageSizePowerOfTwo(cfg.image));
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
         gl.bindTexture(this.target, null);
     };
@@ -57,18 +56,24 @@
         }
 
         if (cfg.magFilter) {
-            var magFilter = this._getGLEnum(cfg.minFilter);
+            var magFilter = this._getGLEnum(cfg.magFilter);
             if (magFilter) {
                 gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, magFilter);
             }
         }
 
         if (cfg.wrapS) {
-            gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, cfg.wrapS);
+            var wrapS = this._getGLEnum(cfg.wrapS);
+            if (wrapS) {
+                gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, wrapS);
+            }
         }
 
         if (cfg.wrapT) {
-            gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, cfg.wrapT);
+            var wrapT = this._getGLEnum(cfg.wrapT);
+            if (wrapT) {
+                gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, wrapT);
+            }
         }
 
         gl.bindTexture(this.target, null);
