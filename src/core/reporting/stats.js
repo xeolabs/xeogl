@@ -168,8 +168,10 @@
             this.fire(name, this.stats[name]);
         },
 
-        _toJSON: function () {
-            stats: return XEO._copy(this.stats);
+        _getJSON: function () {
+            return {
+                stats: XEO._copy(this.stats)
+            };
         }
     });
 
