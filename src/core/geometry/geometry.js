@@ -255,6 +255,7 @@
  @param [cfg.uv] {Array of Number} UVs array.
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.indices] {Array of Number} Indices array.
+ @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from positions and indices.
  @extends Component
  */
 (function () {
@@ -389,6 +390,8 @@
                 }
             }
 
+            this.autoNormals = cfg.autoNormals;
+
             var self = this;
 
             this._webglContextRestored = this.scene.canvas.on(
@@ -476,6 +479,13 @@
                 if (this._state.normals) {
                     this._state.normals.destroy();
                 }
+
+                // Automatic normal generation
+
+                if (this._autoNormals && this._positions && this._indices) {
+                    this._normals = XEO.math.buildNormals(this._positions, this._indices);
+                }
+
                 this._state.normals = this._normals ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._normals), this._normals.length, 3, usage) : null;
                 this._normalsDirty = false;
             }
@@ -577,15 +587,15 @@
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._positions !== !value);
+
                     this._positions = value;
                     this._positionsDirty = true;
 
                     this._scheduleBuild();
 
                     this._setModelBoundaryDirty();
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._positions !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -631,13 +641,13 @@
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._normals !== !value);
+
                     this._normals = value;
                     this._normalsDirty = true;
 
                     this._scheduleBuild();
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._normals !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -671,13 +681,13 @@
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._uv !== !value);
+
                     this._uv = value;
                     this._uvDirty = true;
 
                     this._scheduleBuild();
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._uv !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -711,13 +721,13 @@
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._colors != !value);
+
                     this._colors = value;
                     this._colorsDirty = true;
 
                     this._scheduleBuild();
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colors != !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -751,14 +761,13 @@
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._indices && !value);
+
                     this._indices = value;
                     this._indicesDirty = true;
 
                     this._scheduleBuild();
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._indices && !value);
-
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -822,7 +831,49 @@
 
                     return this._modelBoundary;
                 }
+            },
+
+            /**
+             * Set true to make this Geometry automatically generate {{#crossLink "Geometry/normals:property"}}{{/crossLink}} from
+             * {{#crossLink "Geometry/positions:property"}}{{/crossLink}} and {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
+             *
+             * This Geomatry will auto-generate its {{#crossLink "Geometry/normals:property"}}{{/crossLink}} on the
+             * next {{#crossLink "Scene"}}{{/crossLink}} {{#crossLink "Scene/tick:event"}}{{/crossLink}} event.
+             *
+             * Fires a {{#crossLink "Geometry/autoNormals:event"}}{{/crossLink}} event on change.
+             *
+             * @property autoNormals
+             * @default  false
+             * @type Boolean
+             */
+            autoNormals: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._autoNormals === value) {
+                        return;
+                    }
+
+                    this._autoNormals = value;
+
+                    /**
+                     * Fired whenever this Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} property changes.
+                     * @event autoNormals
+                     * @type Boolean
+                     * @param value The property's new value
+                     */
+                    this.fire("autoNormals", this._primitive);
+
+                    this._scheduleBuild();
+                },
+
+                get: function () {
+                    return this._autoNormals;
+                }
             }
+
         },
 
         _setModelBoundaryDirty: function () {
