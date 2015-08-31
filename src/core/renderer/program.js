@@ -56,6 +56,37 @@
          */
         this.useCount = 0;
 
+        /**
+         * True when successfully allocated
+         * @type {boolean}
+         */
+        this.allocated = false;
+
+        /**
+         * True when successfully compiled
+         * @type {boolean}
+         */
+        this.compiled = false;
+
+        /**
+         * True when successfully linked
+         * @type {boolean}
+         */
+        this.linked = false;
+
+        /**
+         * True when successfully validated
+         * @type {boolean}
+         */
+        this.validated = false;
+
+        /**
+         * Contains error log on failure to allocate, compile, validate or link
+         * @type {boolean}
+         */
+        this.errorLog = null;
+
+
         this.build(gl);
     };
 
@@ -67,8 +98,63 @@
 
         this.gl = gl;
 
+        this.allocated = false;
+        this.compiled = false;
+        this.linked = false;
+        this.validated = false;
+        this.errorLog = null;
+
         this.draw = new XEO.renderer.webgl.Program(gl, this.source.drawVertex, this.source.drawFragment);
-        this.pick = new XEO.renderer.webgl.Program(gl, this.source.pickVertex, this.source.pickFragment);
+        this.pick = this.draw;
+     //   this.pick = new XEO.renderer.webgl.Program(gl, this.source.pickVertex, this.source.pickFragment);
+
+        if (!this.draw.allocated) {
+            this.errorLog = ["Draw program failed to allocate"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pick.allocated) {
+            this.errorLog = ["Pick program failed to allocate"].concat(this.pick.errorLog);
+            return;
+        }
+
+        this.allocated = true;
+
+        if (!this.draw.compiled) {
+            this.errorLog = ["Draw program failed to compile"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pick.compiled) {
+            this.errorLog = ["Pick program failed to compile"].concat(this.pick.errorLog);
+            return;
+        }
+
+        this.compiled = true;
+
+        if (!this.draw.linked) {
+            this.errorLog = ["Draw program failed to link"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pick.linked) {
+            this.errorLog = ["Pick program failed to link"].concat(this.pick.errorLog);
+            return;
+        }
+
+        this.linked = true;
+
+        if (!this.draw.validated) {
+            this.errorLog = ["Draw program failed to validate"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pick.validated) {
+            this.errorLog = ["Pick program failed to validate"].concat(this.pick.errorLog);
+            return;
+        }
+
+        this.validated = true;
     };
 
 })();
