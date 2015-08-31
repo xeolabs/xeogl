@@ -93,12 +93,12 @@
         this.transparent = cfg.transparent === true;
 
         // The objects in the render
-        this._objects = {};
+        this.objects = {};
 
         // Ambient color
         this._ambientColor = [0, 0, 0, 1.0];
 
-        // The object list, containing all elements of #_objects, kept in GL state-sorted order
+        // The object list, containing all elements of #objects, kept in GL state-sorted order
         this._objectList = [];
         this._objectListLen = 0;
 
@@ -243,7 +243,7 @@
         this.shader = null;
 
         /**
-        Render state providing custom shader params.
+         Render state providing custom shader params.
          @property shaderParams
          @type {renderer.Shader}
          */
@@ -360,15 +360,10 @@
      */
     XEO.renderer.Renderer.prototype.buildObject = function (objectId) {
 
-        var object = this._objects[objectId];
+        var object = this.objects[objectId];
 
         if (!object) {
-
-            // Create the object
-
-            object = this._objects[objectId] = this._objectFactory.get(objectId);
-
-            this.objectListDirty = true;
+            object = this._objectFactory.get(objectId);
         }
 
         // Attach to the object any states that we need to get off it later.
@@ -416,6 +411,22 @@
             object.hash = hash;
         }
 
+        var program = object.program;
+
+        if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
+
+            if (this.objects[objectId]) {
+
+                // Don't keep faulty objects in the renderer
+                this.removeObject(objectId);
+            }
+
+            return {
+                error: true,
+                errorLog: object.program.errorLog
+            }
+        }
+
         // Build sequence of draw chunks on the object
 
         // The order of some of these is important because some chunks will set
@@ -436,23 +447,31 @@
         this._setChunk(object, 12, "geometry", this.geometry);
         this._setChunk(object, 13, "draw", this.geometry); // Must be last
 
-        // At the very least, the object sort order
-        // will need be recomputed
+        if (!this.objects[objectId]) {
 
-        this.stateOrderDirty = true;
+            this.objects[objectId] = object;
+
+            this.objectListDirty = true;
+
+        } else {
+
+            // At the very least, the object sort order will need be recomputed
+
+            this.stateOrderDirty = true;
+        }
+
+        return object;
     };
 
     /** Adds a render state chunk to a render graph object.
-    */
+     */
     XEO.renderer.Renderer.prototype._setChunk = function (object, order, chunkType, state) {
 
         var oldChunk = object.chunks[order];
 
         if (oldChunk) {
-
-          oldChunk.init(oldChunk.id, object, object.program, state);
-
-          return;
+            oldChunk.init(oldChunk.id, object, object.program, state);
+            return;
         }
 
         // Attach new chunk
@@ -493,7 +512,7 @@
      */
     XEO.renderer.Renderer.prototype.removeObject = function (objectId) {
 
-        var object = this._objects[objectId];
+        var object = this.objects[objectId];
 
         if (!object) {
             return;
@@ -508,7 +527,7 @@
         // Release object
         this._objectFactory.put(object);
 
-        delete this._objects[objectId];
+        delete this.objects[objectId];
 
         // Need to repack object map into fast iteration list
         this.objectListDirty = true;
@@ -565,10 +584,10 @@
 
         this._objectListLen = 0;
 
-        for (var objectId in this._objects) {
-            if (this._objects.hasOwnProperty(objectId)) {
+        for (var objectId in this.objects) {
+            if (this.objects.hasOwnProperty(objectId)) {
 
-                this._objectList[this._objectListLen++] = this._objects[objectId];
+                this._objectList[this._objectListLen++] = this.objects[objectId];
             }
         }
     };
@@ -803,7 +822,7 @@
 
                 if (chunk.draw) {
 
-                  // Rendering pass
+                    // Rendering pass
 
                     if (chunk.unique || this._lastChunkId[i] !== chunk.id) {
 
@@ -816,7 +835,7 @@
 
                 if (chunk.pick) {
 
-                   // Picking pass
+                    // Picking pass
 
                     if (pickable !== false) {
 
@@ -981,11 +1000,11 @@
             // Build hit report
 
             hit = {
-                  object: object,
-                  canvasPos: [
+                object: object,
+                canvasPos: [
                     canvasX,
                     canvasY
-                  ]
+                ]
             };
 
             // Now do a ray-pick if requested
@@ -1179,7 +1198,7 @@
         gl.flush();
 
         if (frameCtx.renderBuf) {
-    //        frameCtx.renderBuf.unbind();
+            //        frameCtx.renderBuf.unbind();
         }
 
 //
