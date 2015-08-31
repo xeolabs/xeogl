@@ -142,12 +142,12 @@
  | uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  | uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  |---|---|
- | uniform vec3 xeo_uMaterialDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
+ | uniform vec3 xeo_uDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
  | uniform vec3 xeo_uMaterialSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
  | uniform vec3 xeo_uMaterialEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
  | uniform float xeo_uMaterialOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
  | uniform float xeo_uMaterialShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
- | uniform float xeo_uMaterialDiffuseFresnelBias;       |  | {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} |
+ | uniform float xeo_uDiffuseFresnelBias;       |  | {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} |
 
  #### Varying
 

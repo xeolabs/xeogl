@@ -100,7 +100,7 @@
  // Scene with authoring metadata
  var scene = new XEO.Scene({
     id: "myScene",
-    metadata: {
+    meta: {
         title: "My awesome 3D scene",
         author: "@xeolabs",
         date: "February 13 2015"
@@ -111,7 +111,7 @@
  var material = new XEO.PhongMaterial(scene, {
     id: "myMaterial",
     diffuse: [1, 0, 0],
-    metadata: {
+    meta: {
         description: "Bright red color with no textures",
         version: "0.1",
         foo: "bar"
@@ -123,12 +123,12 @@
 
  ````javascript
  // Subscribe to changes to the Material's metadata
- material.on("metadata", function(value) {
+ material.on("meta", function(value) {
     console.log("Metadata changed: " + JSON.stringify(value));
 });
 
  // Change the Material's metadata, firing our change handler
- material.metadata = {
+ material.meta = {
     description: "Bright red color with no textures",
     version: "0.2",
     foo: "baz"
@@ -259,7 +259,7 @@
              @property metadata
              @type Object
              */
-            this.metadata = cfg.metadata || {};
+            this.meta = cfg.meta || {};
 
             /**
              Unique ID for this Component within its parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -658,6 +658,13 @@
 
         _props: {
 
+            /**
+             * JSON object containing the state of this Component.
+             *
+             * @property json
+             * @type JSON
+             * @final
+             */
             json: {
 
                 get: function () {
@@ -670,28 +677,39 @@
                         id: this.id // Only output user-defined IDs
                     };
 
-                    if (!XEO._isEmptyObject(this.metadata)) {
-                        json.metadata = this.metadata;
+                    if (!XEO._isEmptyObject(this.meta)) {
+                        json.meta = this.meta;
                     }
 
                     return this._getJSON ? XEO._apply(this._getJSON(), json) : json;
                 }
             },
 
-            // Experimental - serializes this component to JS code
-            // that can be evaluated to recreate this component.
-
-            js: {
-
-                get: function () {
-                    return "new " + this.type + "(" + this.string + ");";
-                }
-            },
-
+            /**
+             * String containing the serialized JSON state of this Component.
+             *
+             * @property string
+             * @type String
+             * @final
+             */
             string: {
 
                 get: function () {
-                    return JSON.stringify(this.json, null, 4);
+                    return JSON.stringify(this.json, "\n", 4);
+                }
+            },
+
+            /**
+             * Experimental: string containing a JavaScript expression that would instantiate this Component.
+             *
+             * @property string
+             * @type String
+             * @final
+             */
+            js: {
+
+                get: function () {
+                    return "new " + this.type + "(" + this.jsonString + ");";
                 }
             }
         },

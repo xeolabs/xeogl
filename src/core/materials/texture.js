@@ -36,11 +36,11 @@
 
  var texture1 = new XEO.Texture(scene, {
     src: "diffuseMap.jpg"
-});
+ });
 
  var texture2 = new XEO.Texture(scene, {
     src: "normalMap.jpg"
-});
+ });
 
  var texture3 = new XEO.Texture(scene, {
     src: "specularMap.jpg"
@@ -141,12 +141,12 @@
 
             // Dirty flags
 
-            this._dirty = true;
-            this._matrixDirty = true;
+            this._dirty = false;
+            this._matrixDirty = false;
             this._srcDirty = false;
             this._imageDirty = false;
             this._targetDirty = false;
-            this._propsDirty = true;
+            this._propsDirty = false;
 
             var self = this;
 
@@ -180,6 +180,14 @@
             this.scale = cfg.scale;
             this.rotate = cfg.rotate;
 
+            // Properties
+
+            this.minFilter = cfg.minFilter;
+            this.magFilter = cfg.magFilter;
+            this.wrapS = cfg.wrapS;
+            this.wrapT = cfg.wrapT;
+            this.flipY = cfg.flipY;
+
             // Data source
 
             if (cfg.src) {
@@ -191,14 +199,6 @@
             } else if (cfg.target) {
                 this.target = cfg.target; // Render target
             }
-
-            // Properties
-
-            this.minFilter = cfg.minFilter;
-            this.magFilter = cfg.magFilter;
-            this.wrapS = cfg.wrapS;
-            this.wrapT = cfg.wrapT;
-            this.flipY = cfg.flipY;
 
             this.scene.stats.inc("textures");
         },
@@ -215,6 +215,8 @@
                 this.scene.once("tick2",
                     function () {
                         self._build();
+
+                        self._dirty = false;
                     });
             }
         },
@@ -225,24 +227,38 @@
 
             var state = this._state;
 
-            if (!state.texture) {
-                state.texture = new XEO.renderer.webgl.Texture2D(gl);
-            }
 
             if (this._srcDirty) {
+
                 if (this._src) {
+
                     this._loadSrc(this._src);
                     this._srcDirty = false;
+
                     return;
+
                 }
             }
 
+
             if (this._imageDirty) {
+
                 if (this._image) {
+
+                    if (!state.texture) {
+                        state.texture = new XEO.renderer.webgl.Texture2D(gl);
+
+                    }
+
                     state.texture.setImage(this._image);
+
                     this._imageDirty = false;
+
+                    // May now need to regenerate mipmaps etc
+                    this._propsDirty = true;
                 }
             }
+
 
             if (this._targetDirty) {
 
@@ -251,6 +267,7 @@
 
                 this._targetDirty = false;
             }
+
 
             if (this._matrixDirty) {
 
@@ -279,22 +296,21 @@
                 this._matrixDirty = false;
             }
 
+
             if (this._propsDirty) {
                 state.texture.setProps(state);
                 this._propsDirty = false;
             }
 
             this._renderer.imageDirty = true;
-
-            this._dirty = false;
         },
 
 
         _loadSrc: function (src) {
 
-            var task = this.scene.tasks.create({
-                description: "Loading texture"
-            });
+            //var task = this.scene.tasks.create({
+            //    description: "Loading texture"
+            //});
 
             var self = this;
 
@@ -312,7 +328,7 @@
                     self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
                     self._target = null;
 
-                    self._imageDirty = false;
+                    self._imageDirty = true;
                     self._srcDirty = false;
                     self._targetDirty = false;
 
@@ -326,11 +342,11 @@
                     self._scheduleBuild();
                 }
 
-                task.setCompleted();
+//                task.setCompleted();
             };
 
             image.onerror = function () {
-                task.setFailed();
+                //              task.setFailed();
             };
 
             if (src.indexOf("data") === 0) {
@@ -407,7 +423,7 @@
              */
             src: {
 
-                set: function(value) {
+                set: function (value) {
 
                     this._image = null;
                     this._src = value;
@@ -428,7 +444,7 @@
                     this.fire("src", this._src);
                 },
 
-                get: function() {
+                get: function () {
                     return this._src;
                 }
             },
@@ -614,16 +630,29 @@
              * Fires a {{#crossLink "Texture/minFilter:event"}}{{/crossLink}} event on change.
              *
              * @property minFilter
-             * @default "linearMipMapLinear"
+             * @default "linearMipmapLinear"
              * @type String
              */
             minFilter: {
 
                 set: function (value) {
 
-                    value = value || "linearMipMapLinear";
+                    value = value || "linearMipmapLinear";
 
-                    this._minFilter = value;
+                    if (value !== "linear" &&
+                        value !== "linearMipmapNearest" &&
+                        value !== "linearMipmapLinear" &&
+                        value !== "nearestMipmapLinear" &&
+                        value !== "linearMipmapLinear") {
+
+                        this.error("Unsupported value for 'minFilter': '" + value +
+                            "' - supported values are 'linear', 'linearMipmapNearest', 'nearestMipmapLinear' " +
+                            "and 'linearMipmapLinear'. Defaulting to 'linearMipmapLinear'.");
+
+                        value = "linearMipmapLinear";
+                    }
+
+                    this._state.minFilter = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -633,11 +662,11 @@
                      * @event minFilter
                      * @param value {String} The property's new value
                      */
-                    this.fire("minFilter", this._minFilter);
+                    this.fire("minFilter", this._state.minFilter);
                 },
 
                 get: function () {
-                    return this._minFilter;
+                    return this._state.minFilter;
                 }
             },
 
@@ -665,7 +694,15 @@
 
                     value = value || "linear";
 
-                    this._magFilter = value;
+                    if (value !== "linear" && value !== "nearest") {
+
+                        this.error("Unsupported value for 'magFilter': '" + value +
+                            "' - supported values are 'linear' and 'nearest'. Defaulting to 'linear'.");
+
+                        value = "linear";
+                    }
+
+                    this._state.magFilter = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -675,11 +712,11 @@
                      * @event magFilter
                      * @param value {String} The property's new value
                      */
-                    this.fire("magFilter", this._magFilter);
+                    this.fire("magFilter", this._state.magFilter);
                 },
 
                 get: function () {
-                    return this._magFilter;
+                    return this._state.magFilter;
                 }
             },
 
@@ -709,7 +746,15 @@
 
                     value = value || "repeat";
 
-                    this._wrapS = value;
+                    if (value !== "clampToEdge" && value !== "mirroredRepeat" && value !== "repeat") {
+
+                        this.error("Unsupported value for 'wrapS': '" + value +
+                            "' - supported values are 'clampToEdge', 'mirroredRepeat' and 'repeat'. Defaulting to 'repeat'.");
+
+                        value = "repeat";
+                    }
+
+                    this._state.wrapS = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -719,11 +764,11 @@
                      * @event wrapS
                      * @param value {String} The property's new value
                      */
-                    this.fire("wrapS", this._wrapS);
+                    this.fire("wrapS", this._state.wrapS);
                 },
 
                 get: function () {
-                    return this._wrapS;
+                    return this._state.wrapS;
                 }
             },
 
@@ -753,7 +798,15 @@
 
                     value = value || "repeat";
 
-                    this._wrapT = value;
+                    if (value !== "clampToEdge" && value !== "mirroredRepeat" && value !== "repeat") {
+
+                        this.error("Unsupported value for 'wrapT': '" + value +
+                            "' - supported values are 'clampToEdge', 'mirroredRepeat' and 'repeat'. Defaulting to 'repeat'.");
+
+                        value = "repeat";
+                    }
+
+                    this._state.wrapT = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -763,11 +816,11 @@
                      * @event wrapT
                      * @param value {String} The property's new value
                      */
-                    this.fire("wrapT", this._wrapT);
+                    this.fire("wrapT", this._state.wrapT);
                 },
 
                 get: function () {
-                    return this._wrapT;
+                    return this._state.wrapT;
                 }
             },
 
@@ -787,7 +840,7 @@
 
                     value = value !== false;
 
-                    this._flipY = value;
+                    this._state.flipY = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -797,41 +850,49 @@
                      * @event flipY
                      * @param value {Boolean} The property's new value
                      */
-                    this.fire("flipY", this._flipY);
+                    this.fire("flipY", this._state.flipY);
                 },
 
                 get: function () {
-                    return this._flipY;
+                    return this._state.flipY;
                 }
             }
         },
 
         _getJSON: function () {
 
-            var json = {
-                translate: this._translate,
-                scale: this._scale,
-                rotate: this._rotate
-            };
+            var json = {};
 
-            if (this._minFilter != "linearMipMapLinear") {
-                json.minFilter = this._minFilter;
+            if (this._translate && (this._translate[0] !== 0 || this._translate[1] !== 0)) {
+                json.translate = this._translate;
             }
 
-            if (this._magFilter != "linear") {
-                json.magFilter = this._magFilter;
+            if (this._scale && (this._scale[0] !== 1 || this._scale[1] !== 1)) {
+                json.scale = this._scale;
             }
 
-            if (this._wrapS != "repeat") {
-                json.wrapS = this._wrapS;
+            if (this._rotate !== 0) {
+                json.rotate = this._rotate;
             }
 
-            if (this._wrapT != "repeat") {
-                json.wrapT = this._wrapT;
+            if (this._state.minFilter != "linearMipmapLinear") {
+                json.minFilter = this._state.minFilter;
             }
 
-            if (this._flipY !== true) {
-                json.flipY = this._flipY;
+            if (this._state.magFilter != "linear") {
+                json.magFilter = this._state.magFilter;
+            }
+
+            if (this._state.wrapS != "repeat") {
+                json.wrapS = this._state.wrapS;
+            }
+
+            if (this._state.wrapT != "repeat") {
+                json.wrapT = this._state.wrapT;
+            }
+
+            if (this._state.flipY !== true) {
+                json.flipY = this._state.flipY;
             }
 
             if (this._src) {

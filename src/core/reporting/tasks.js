@@ -124,7 +124,7 @@ myTask2.setFailed();
                 params.id = this._idMap.addItem({});
             }
 
-            var task = new XEO.Tasks.Task(this, params);
+            var task = new XEO.Task(this, params);
 
             this.tasks[params.id] = task;
 

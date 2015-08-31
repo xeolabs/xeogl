@@ -168,9 +168,9 @@
 
             this._dirty = true;
 
-            this._components = [];
-            this._dirtyComponentSubs = [];
-            this._destroyedComponentSubs = [];
+            this._components = {};
+            this._dirtyComponentSubs = {};
+            this._destroyedComponentSubs = {};
 
 
             this.ambient = cfg.ambient;
@@ -182,12 +182,12 @@
             this.shininess = cfg.shininess;
             this.reflectivity = cfg.reflectivity;
 
-            this.normalMap = cfg.normalMap;
             this.diffuseMap = cfg.diffuseMap;
             this.specularMap = cfg.specularMap;
             this.emissiveMap = cfg.emissiveMap;
             this.opacityMap = cfg.opacityMap;
             this.reflectivityMap = cfg.reflectivityMap;
+            this.normalMap = cfg.normalMap;
 
             this.diffuseFresnel = cfg.diffuseFresnel;
             this.specularFresnel = cfg.specularFresnel;
@@ -817,6 +817,7 @@
 
             this._dirty = true;
 
+            this.fire("dirty", true);
             this.fire(type, component || null);
         },
 

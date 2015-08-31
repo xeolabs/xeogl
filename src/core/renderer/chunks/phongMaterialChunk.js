@@ -14,7 +14,7 @@
 
             // Blinn-Phong base material
 
-            this._uMaterialDiffuse = draw.getUniform("xeo_uMaterialDiffuse");
+            this._uMaterialDiffuse = draw.getUniform("xeo_uDiffuse");
             this._uMaterialSpecular = draw.getUniform("xeo_uMaterialSpecular");
             this._uMaterialEmissive = draw.getUniform("xeo_uMaterialEmissive");
             this._uMaterialOpacity = draw.getUniform("xeo_uMaterialOpacity");
@@ -23,42 +23,42 @@
             // Textures
 
             if (state.diffuseMap) {
-                this._uMaterialDiffuseMap = draw.getUniform("xeo_uMaterialDiffuseMap");
-                this._uMaterialDiffuseMapMatrix = draw.getUniform("xeo_uMaterialDiffuseMapMatrix");
+                this._uDiffuseMap = "xeo_uDiffuseMap";
+                this._uDiffuseMapMatrix = draw.getUniform("xeo_uDiffuseMapMatrix");
             }
 
             if (state.specularMap) {
-                this._uSpecularMap = draw.getUniform("xeo_uSpecularMap");
+                this._uSpecularMap = "xeo_uSpecularMap";
                 this._uSpecularMapMatrix = draw.getUniform("xeo_uSpecularMapMatrix");
             }
 
             if (state.emissiveMap) {
-                this._uEmissiveMap = draw.getUniform("xeo_uEmissiveMap");
+                this._uEmissiveMap = "xeo_uEmissiveMap";
                 this._uEmissiveMapMatrix = draw.getUniform("xeo_uEmissiveMapMatrix");
             }
 
             if (state.opacityMap) {
-                this._uOpacityMap = draw.getUniform("xeo_uOpacityMap");
+                this._uOpacityMap = "xeo_uOpacityMap";
                 this._uOpacityMapMatrix = draw.getUniform("xeo_uOpacityMapMatrix");
             }
 
             if (state.reflectivityMap) {
-                this._uReflectivityMap = draw.getUniform("xeo_uReflectivityMap");
+                this._uReflectivityMap = "xeo_uReflectivityMap";
                 this._uReflectivityMapMatrix = draw.getUniform("xeo_uReflectivityMapMatrix");
             }
 
             if (state.normalMap) {
-                this._uBumpMap = draw.getUniform("xeo_uBumpMap");
-                this._uBumpMapMatrix = draw.getUniform("xeo_uBumpMapMatrix");
+                this._uBumpMap = "xeo_uNormalMap";
+                this._uBumpMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
             }
 
             // Fresnel effects
 
             if (state.diffuseFresnel) {
-                this._uMaterialDiffuseFresnelBias = draw.getUniform("xeo_uMaterialDiffuseFresnelBias");
-                this._uMaterialDiffuseFresnelPower = draw.getUniform("xeo_uMaterialDiffuseFresnelPower");
-                this._uMaterialDiffuseFresnelLeftColor = draw.getUniform("xeo_uMaterialDiffuseFresnelLeftColor");
-                this._uMaterialDiffuseFresnelRightColor = draw.getUniform("xeo_uMaterialDiffuseFresnelRightColor");
+                this._uDiffuseFresnelBias = draw.getUniform("xeo_uDiffuseFresnelBias");
+                this._uDiffuseFresnelPower = draw.getUniform("xeo_uDiffuseFresnelPower");
+                this._uDiffuseFresnelLeftColor = draw.getUniform("xeo_uDiffuseFresnelLeftColor");
+                this._uDiffuseFresnelRightColor = draw.getUniform("xeo_uDiffuseFresnelRightColor");
             }
 
             if (state.specularFresnel) {
@@ -130,18 +130,18 @@
 
             // Diffuse map
 
-            if ( this._uMaterialDiffuseMap) {
+            if (state.diffuseMap && state.diffuseMap.texture) {
 
-                draw.bindTexture(this._uMaterialDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit++);
 
-                if (this._uMaterialDiffuseMapMatrix) {
-                    this._uMaterialDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
+                if (this._uDiffuseMapMatrix) {
+                    this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
                 }
             }
 
             // Specular map
 
-            if (this._uSpecularMap) {
+            if (state.specularMap && state.specularMap.texture) {
 
                 draw.bindTexture(this._uSpecularMap, state.specularMap.texture, frameCtx.textureUnit++);
 
@@ -152,7 +152,7 @@
 
             // Emissive map
 
-            if (this._uEmissiveMap) {
+            if (state.emissiveMap && state.emissiveMap.texture) {
 
                 draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
 
@@ -163,7 +163,7 @@
 
             // Opacity map
 
-            if (this._uOpacityMap) {
+            if (state.opacityMap && state.opacityMap.texture) {
 
                 draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit++);
 
@@ -174,7 +174,7 @@
 
             // Reflectivity map
 
-            if (this._uReflectivityMap) {
+            if (state.reflectivityMap && state.reflectivityMap.texture) {
 
                 draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, frameCtx.textureUnit++);
 
@@ -185,7 +185,7 @@
 
             // Bump map
 
-            if (this._uBumpMap) {
+            if (state.bumpMap && state.bumpMap.texture) {
 
                 draw.bindTexture(this._uBumpMap, state.normalMap.texture, frameCtx.textureUnit++);
 
@@ -204,20 +204,20 @@
 
             if (state.diffuseFresnel) {
 
-                if (this._uMaterialDiffuseFresnelBias) {
-                    this._uMaterialDiffuseFresnelBias.setValue(state.diffuseFresnel.bias);
+                if (this._uDiffuseFresnelBias) {
+                    this._uDiffuseFresnelBias.setValue(state.diffuseFresnel.bias);
                 }
 
-                if (this._uMaterialDiffuseFresnelPower) {
-                    this._uMaterialDiffuseFresnelPower.setValue(state.diffuseFresnel.power);
+                if (this._uDiffuseFresnelPower) {
+                    this._uDiffuseFresnelPower.setValue(state.diffuseFresnel.power);
                 }
 
-                if (this._uMaterialDiffuseFresnelLeftColor) {
-                    this._uMaterialDiffuseFresnelLeftColor.setValue(state.diffuseFresnel.leftColor);
+                if (this._uDiffuseFresnelLeftColor) {
+                    this._uDiffuseFresnelLeftColor.setValue(state.diffuseFresnel.leftColor);
                 }
 
-                if (this._uMaterialDiffuseFresnelRightColor) {
-                    this._uMaterialDiffuseFresnelRightColor.setValue(state.diffuseFresnel.rightColor);
+                if (this._uDiffuseFresnelRightColor) {
+                    this._uDiffuseFresnelRightColor.setValue(state.diffuseFresnel.rightColor);
                 }
             }
 

@@ -35,7 +35,7 @@
 
             states = _states;
 
-            texturing = isTexturing();
+            texturing = hasTextures();
             normals = hasNormals();
             tangents = hasTangents();
             clipping = states.clips.clips.length > 0;
@@ -59,7 +59,7 @@
 
         // Returns true if texturing
 
-        function isTexturing() {
+        function hasTextures() {
 
             if (!states.geometry.uv) {
                 return false;
@@ -67,14 +67,12 @@
 
             var material = states.material;
 
-            if (material.type === "phongMaterial") {
-
-                if (material.diffuseMap || material.specularMap || material.emissiveMap || material.opacityMap || material.reflectivityMap) {
-                    return true;
-                }
-            }
-
-            return false;
+            return (material.type === "phongMaterial" &&
+            (material.diffuseMap ||
+            material.specularMap ||
+            material.emissiveMap ||
+            material.opacityMap ||
+            material.reflectivityMap));
         }
 
         // Returns true if rendering reflections
@@ -568,7 +566,7 @@
 
             if (phongMaterial) {
 
-                add("uniform vec3 xeo_uMaterialDiffuse;");
+                add("uniform vec3 xeo_uDiffuse;");
                 add("uniform vec3 xeo_uMaterialSpecular;");
                 add("uniform vec3 xeo_uMaterialEmissive;");
                 add("uniform float xeo_uMaterialOpacity;");
@@ -582,30 +580,23 @@
                     }
 
                     if (states.material.diffuseMap) {
-                        add("uniform sampler2D xeo_uTextureDiffuse;");
+                        add("uniform sampler2D xeo_uDiffuseMap;");
                         if (states.material.diffuseMap.matrix) {
-                            add("uniform mat4 xeo_uTextureDiffuseMatrix;");
+                            add("uniform mat4 xeo_uDiffuseMapMatrix;");
                         }
                     }
 
                     if (states.material.specularMap) {
-                        add("uniform sampler2D xeo_uTextureSpecular;");
+                        add("uniform sampler2D xeo_uSpecularMap;");
                         if (states.material.specularMap.matrix) {
-                            add("uniform mat4 xeo_uTextureSpecularMatrix;");
+                            add("uniform mat4 xeo_uSpecularMapMatrix;");
                         }
                     }
 
                     if (states.material.emissiveMap) {
-                        add("uniform sampler2D xeo_uTextureEmissive;");
+                        add("uniform sampler2D xeo_uEmissiveMap;");
                         if (states.material.emissiveMap.matrix) {
-                            add("uniform mat4 xeo_uTextureEmissiveMatrix;");
-                        }
-                    }
-
-                    if (states.material.emissiveMap) {
-                        add("uniform sampler2D xeo_uTextureEmissive;");
-                        if (states.material.emissiveMap.matrix) {
-                            add("uniform mat4 xeo_uTextureEmissiveMatrix;");
+                            add("uniform mat4 xeo_uEmissiveMapMatrix;");
                         }
                     }
 
@@ -711,11 +702,12 @@
                     // Fragment diffuse color from geometry vertex colors
 
                     add("vec3 diffuse = xeo_vColor.rgb;");
+
                 } else {
 
                     // Fragment diffuse color from material
 
-                    add("vec3 diffuse = xeo_uMaterialDiffuse;")
+                    add("vec3 diffuse = xeo_uDiffuse;")
                 }
 
                 // These may be overridden by textures later
@@ -736,6 +728,7 @@
 
                         // Normalize the interpolated normals in the per-fragment-fragment-shader,
                         // because if we linear interpolated two nonparallel normalized vectors, the resulting vector won’t be of length 1
+
                         add("vec3 viewNormalVec = normalize(xeo_vViewNormal);");
                     }
                 }
@@ -756,12 +749,12 @@
                         // Diffuse map
 
                         if (material.diffuseMap.matrix) {
-                            add("textureCoord = (xeo_uMaterialDiffuseTextureMatrix * texturePos).xy;");
+                            add("textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
 
-                        add("diffuse = texture2D(xeo_uMaterialDiffuseTexture, textureCoord).rgb);");
+                        add("diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
                     }
 
                     if (material.specularMap) {
@@ -769,12 +762,12 @@
                         // Specular map
 
                         if (material.specularMap.matrix) {
-                            add("textureCoord = (xeo_uSpecularTextureMatrix * texturePos).xy;");
+                            add("textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
 
-                        add("specular = texture2D(xeo_uSpecularTexture, textureCoord).rgb;");
+                        add("specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
                     }
 
                     if (material.emissiveMap) {
@@ -782,12 +775,12 @@
                         // Emissive map
 
                         if (material.emissiveMap.matrix) {
-                            add("textureCoord = (xeo_uEmissiveTextureMatrix * texturePos).xy;");
+                            add("textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
 
-                        add("emissive = texture2D(xeo_uEmissiveTexture, textureCoord).rgb;");
+                        add("emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
                     }
 
                     if (material.opacityMap) {
@@ -795,12 +788,12 @@
                         // Opacity map
 
                         if (material.opacityMap.matrix) {
-                            add("textureCoord = (xeo_uOpacityTextureMatrix * texturePos).xy;");
+                            add("textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
 
-                        add("opacity = texture2D(xeo_uOpacityTexture, textureCoord).b;");
+                        add("opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
                     }
 
                     if (material.reflectivityMap) {
@@ -808,12 +801,12 @@
                         // Reflectivity map
 
                         if (material.reflectivityMap.matrix) {
-                            add("textureCoord = (xeo_uReflectivityTextureMatrix * texturePos).xy;");
+                            add("textureCoord = (xeo_uReflectivityMapMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
 
-                        add("reflectivity = texture2D(xeo_uReflectivityTexture, textureCoord).b;");
+                        add("reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
                     }
                 }
 
@@ -882,7 +875,7 @@
                     }
 
                     add("fragColor = vec4(diffuse * diffuseLight, opacity);");
-                //    add("fragColor = vec4((specularLight + diffuse * (diffuseLight + ambient)) + emissive, opacity);");
+                    //    add("fragColor = vec4((specularLight + diffuse * (diffuseLight + ambient)) + emissive, opacity);");
 
 
                 } else { // No normals
@@ -926,9 +919,7 @@
 
         // Finish building program source
         function end() {
-            var result = src.join("\n");
-       //     console.log(result);
-            return result;
+            return src;
         }
 
         function getFSFloatPrecision(gl) {

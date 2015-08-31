@@ -21,25 +21,25 @@
 
         /**
          * Source code for pick vertex shader
-         * @type String
+         * @type {Array of String]
          */
         this.pickVertex = pickVertex;
 
         /**
          * Source code for pick fragment shader
-         * @type String
+         * @type {Array of String}
          */
         this.pickFragment = pickFragment;
 
         /**
          * Source code for draw vertex shader
-         * @type String
+         * @type {Array of String}
          */
         this.drawVertex = drawVertex;
 
         /**
          * Source code for draw fragment shader
-         * @type String
+         * @type {Array of String}
          */
         this.drawFragment = drawFragment;
 
