@@ -62,7 +62,7 @@
 
  // Subscribe to updates to the Boundary3D
  worldBoundary.on("updated",
-    function() {
+ function() {
 
         // Get the updated properties again
 
@@ -118,6 +118,7 @@
             this._getDirty = cfg.getDirty;
             this._getOBB = cfg.getOBB;
             this._getMatrix = cfg.getMatrix;
+            this._getPositions = cfg.getPositions;
 
             // Cached bounding boxes (oriented and axis-aligned) 
 
@@ -277,7 +278,7 @@
 
                 if (matrix) {
 
-                   // Got transform matrix
+                    // Got transform matrix
 
                     // Transform OOBB by matrix,
                     // derive AABB and center
