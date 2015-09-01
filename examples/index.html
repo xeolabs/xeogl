@@ -213,19 +213,22 @@
             "#change events",
             "components_changeEvents",
 
-            "#cloning",
-            "components_cloning",
-
             "#finding components in Scenes",
             "components_findingByID",
             "components_findingByType",
-            "components_toJSON",
 
             "#logging",
             "components_logging",
 
             "#metadata",
-            "components_metadata"
+            "components_metadata",
+
+            "#serializing",
+            "components_toJSON",
+            "components_toString",
+
+            "#cloning",
+            "components_cloning"
         ],
 
         "Curves": [
@@ -252,11 +255,13 @@
             "geometry_torus",
             "geometry_sphere",
             "geometry_cylinder",
+            "geometry_heightmap",
 
             "#level-of-detail",
             "geometry_torus_lod",
             "geometry_sphere_lod",
-            "geometry_cylinder_lod"
+            "geometry_cylinder_lod",
+            "geometry_heightmap_lod"
         ],
 
         "Groups": [
@@ -265,10 +270,9 @@
         ],
 
         "Interaction": [
+
             "#interacting with xeoEngine",
-            "input_mouse",
-            "input_keyboard",
-            "input_keyboard2",
+            "input_events",
 
             "#camera control components",
             "input_CameraControl",
@@ -295,11 +299,24 @@
         ],
 
         "Materials": [
-            "materials_phong"
+            "materials_phong",
+
+            "#texturing",
+            "materials_texture_diffuse",
+            "materials_texture_specular",
+            "materials_texture_emissive",
+            "materials_texture_opacity",
+            "materials_texture_reflectivity",
+            "materials_texture_normalMap"
+
         ],
 
         "Scene": [
-            "scene_events_tick"
+            "#events",
+            "scene_events_tick",
+
+            "#statistics",
+            "scene_stats"
         ]
     };
 

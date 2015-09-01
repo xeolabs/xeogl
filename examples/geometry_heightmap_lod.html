@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Cylinder.html"
+                                                                      target="_other">Sphere</a>
+</div>
+
+<script>
+
+    new XEO.CameraControl();
+
+    // The Geometry we'll dynamically modify
+    var geometry = new XEO.Heightmap({
+        primitive: "triangles",
+        src: "textures/heightMap.jpg",
+        xSize: 10,
+        ySize: 1.0,
+        zSize: 10,
+        xSegments: 100,
+        ySegments: 100,
+        lod: 1.0
+    });
+
+    // GameObject that uses our Geometry
+    var object = new XEO.GameObject({
+        geometry: geometry,
+        material: new XEO.PhongMaterial({
+            diffuse: [0, 0, 1]
+        })
+    });
+
+    object.scene.camera.view.rotateEyeX(-70);
+
+
+    var d = 0.01;
+    var lod = 0.01;
+
+    object.scene.on("tick", function () {
+
+        if (lod < 0 || lod > 1) {
+            d = -d;
+        }
+
+        lod += d;
+
+        geometry.lod = lod;
+
+        var view = object.scene.camera.view;
+    });
+
+</script>
+</body>
+</html>

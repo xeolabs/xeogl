@@ -20,7 +20,9 @@
 <body>
 
 <div id="infoDark">
-    <a href="http://xeoengine.org">xeoEngine</a> - cloning a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a>
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    cloning a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a> 1000 times
 </div>
 
 <script>
@@ -32,7 +34,7 @@
     // Make a bunch of clones of the GameObject,
     // each with their own randomized Translate.
 
-    for (var i = 0; i < 3000; i++) {
+    for (var i = 0; i < 1000; i++) {
 
         object.clone({
 
@@ -46,7 +48,7 @@
         });
     }
 
-    object.camera.view.zoom(40);
+    object.camera.view.zoom(60);
 
     // Orbit the eye position about the look position.
 

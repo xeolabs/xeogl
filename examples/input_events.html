@@ -14,15 +14,15 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoDark">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a> <br><br>rotating a <a href="../docs/classes/Camera.html"
-                                                                      target="_other">Camera</a> on each <a
-        href="../docs/classes/Scene.html" target="_other">Scene</a> "tick" event
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <br><br>
+    handling input events
     <pre id="infoTxt" style="text-align: left;"></pre>
 </div>
 
@@ -30,20 +30,43 @@
 
     var object = new XEO.GameObject();
 
-    object.camera.view.eye = [0,0,-5];
+    object.camera.view.eye = [-3, 2, 1];
 
-    object.scene.on("tick",
-            function (e) {
 
-                object.camera.view.rotateEyeY(0.5);
-                object.camera.view.rotateEyeX(0.3);
+    var input = object.scene.input;
 
-                log("tick", e);
-            });
+    input.on("keydown", function (keyCode) {
+        log("keydown, keyCode = " + keyCode);
+    });
+
+    input.on("keyup", function (keyCode) {
+        log("keyup, keyCode = " + keyCode);
+    });
+
+    input.on("mousedown", function (params) {
+        log("mousedown", params);
+    });
+
+    input.on("mouseup", function (params) {
+        log("mouseup", params);
+    });
+
+    input.on("mousemove", function (params) {
+        log("mousemove", params);
+    });
+
+    input.on("mousewheel", function (params) {
+        log("mousewheel", params);
+    });
+
+    input.on("mouseclicked", function (params) {
+        log("mouseclicked", params);
+    });
 
 
     var buf = [];
 
+    // Logs text to the page
     function log(event, params) {
 
         var txt = event;

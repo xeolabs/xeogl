@@ -14,7 +14,8 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
+    <script src="lib/dat.gui.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -25,16 +26,26 @@
 
 <script>
 
-    var object = new XEO.GameObject({
+    var torus = new XEO.Torus({
+        radius: 1.0,
+        tube: 0.3,
+        segmentsR: 32,
+        segmentsT: 24,
+        arc: Math.PI * 2.0
+    });
 
-        geometry: new XEO.Torus({
-            radius: 1.0,
-            tube: 0.3,
-            segmentsR: 32,
-            segmentsT: 24,
-            arc: Math.PI * 2.0
+    var object = new XEO.GameObject({
+        geometry: torus,
+        material: new XEO.PhongMaterial({
+            ambient: [0.3, 0.3, 0.3],
+            shininess: 30,
+            diffuseMap: new XEO.Texture({
+                src: "textures/brickWall.jpg"
+            })
         })
     });
+
+    object.scene.camera.view.eye = [0,0,-4];
 
     object.scene.on("tick",
             function () {
@@ -44,6 +55,50 @@
                 view.rotateEyeY(0.6);
                 view.rotateEyeX(0.3);
             });
+
+    // GUI
+
+    var Menu = function () {
+
+        this.message = "Torus";
+
+        this["radius"] = torus.radius;
+        this["tube"] = torus.tube;
+        this["segmentsR"] = torus.segmentsR;
+        this["segmentsT"] = torus.segmentsT;
+        this["arc"] = torus.arc;
+
+        var self = this;
+
+        // This is actually quite inefficient because it continually updates
+        // the scene graph, forcing frames to continually re-render.
+        // Your GPU's not going to like it, but it's just for a quick and dirty demo.
+
+        var update = function () {
+
+            torus.radius = self["radius"];
+            torus.tube = self["tube"];
+            torus.segmentsT = self["segmentsR"];
+            torus.segmentsR = self["segmentsT"];
+            torus.arc = self["arc"];
+
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var gui = new dat.GUI();
+
+    var menu = new Menu();
+
+    var folder = gui.addFolder('Torus');
+    folder.add(menu, 'radius', 0.1, 5.0);
+    folder.add(menu, 'tube', 0.1, 1.0);
+    folder.add(menu, 'segmentsR', 4, 30.0);
+    folder.add(menu, 'segmentsT', 4, 30.0);
+
+    folder.open();
 
 </script>
 </body>

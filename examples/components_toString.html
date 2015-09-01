@@ -22,7 +22,7 @@
 <div id="infoDark">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    serializing a component to JSON
+    serializing a component to a string
     <pre id="infoTxt" style="text-align: left">
     </pre>
 </div>
@@ -42,14 +42,14 @@
         material: material
     });
 
-    // Get JSON representation of the PhongMaterial
+    // Get string representation of the PhongMaterial
 
-    var json = object.material.json;
+    var str = object.material.string;
 
-    logJSON(json);
+    log(str);
 
-    function logJSON(json) {
-        document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+    function log(str) {
+        document.getElementById("infoTxt").innerHTML = "'" + str + "'";
     }
 
 </script>

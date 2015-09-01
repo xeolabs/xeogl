@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - specular <a href="../docs/classes/Texture.html"
+                                                                               target="_other">Texture</a>
+</div>
+
+<script>
+
+    var geometry = new XEO.Torus({
+        radius: 1.0,
+        tube: 0.3,
+        segmentsR: 32,
+        segmentsT: 24,
+        arc: Math.PI * 2.0
+    });
+
+    var texture = new XEO.Texture({
+        src: "textures/chesterfieldSpecularMap.png",
+        minFilter: "linearMipmapLinear",
+        magFiler: "linear",
+        wrapS: "repeat",
+        wrapT: "repeat",
+        flipY: true,
+        translate: [0, 0, 0],
+        scale: [1, 1, 1],
+        rotate: 0
+    });
+
+    var material = new XEO.PhongMaterial({
+        ambient: [0.3, 0.3, 0.3],
+        shininess: 30,
+        specularMap: texture
+    });
+
+    var object = new XEO.GameObject({
+        geometry: geometry,
+        material: material
+    });
+
+    object.scene.on("tick",
+            function () {
+
+                var view = object.scene.camera.view;
+
+                view.rotateEyeY(0.6);
+                view.rotateEyeX(0.3);
+            });
+
+</script>
+</body>
+</html>

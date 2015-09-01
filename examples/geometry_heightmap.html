@@ -20,17 +20,22 @@
 <body>
 
 <div id="infoDark">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Sphere.html" target="_other">Sphere</a>
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Sphere.html"
+                                                                      target="_other">Sphere</a>
 </div>
 
 <script>
 
     var object = new XEO.GameObject({
 
-        geometry: new XEO.Sphere({
-            radius: 1.0,
-            heightSegments: 30,
-            widthSegments: 30
+        geometry: new XEO.Heightmap({
+            primitive: "lines",
+            src: "textures/heightMap.jpg",
+            xSize: 10,
+            ySize: 0.5,
+            zSize: 10,
+            xSegments: 100,
+            ySegments: 100
         }),
         material: new XEO.PhongMaterial({
             diffuse: [0.5, 0.5, 1]

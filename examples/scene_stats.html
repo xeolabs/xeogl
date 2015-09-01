@@ -20,53 +20,37 @@
 <body>
 
 <div id="infoDark">
-    <a href="http://xeoengine.org">xeoEngine</a> - cloning a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a>
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    scene statistics
+    <pre id="infoTxt" style="text-align: left">
+    </pre>
 </div>
 
 <script>
 
-    var objects = [];
-    var object;
+    // Create a prototype GameObject with all defaults.
 
+    var object = new XEO.GameObject();
 
-    for (var i = 0; i < 10; i++) {
+    // Make a bunch of clones of the GameObject,
+    // each with their own randomized Translate.
 
-        object = new XEO.GameObject({
+    for (var i = 0; i < 1000; i++) {
+
+        object.clone({
 
             transform: new XEO.Translate({
                 xyz: [
-                    Math.random() * 10 - 5,
-                    Math.random() * 10 - 5,
-                    Math.random() * 10 - 5
+                    Math.random() * 50 - 25,
+                    Math.random() * 50 - 25,
+                    Math.random() * 50 - 25
                 ]
             })
         });
-
-        objects.push(object);
     }
 
-    object.scene.camera.view.eye = [-10, 10, 5];
-
-
-    var flight = new XEO.CameraFlight({
-        duration: 20
-    });
-
-
-    new XEO.MouseOrbitCamera({sensitivity: 0.2});
-    new XEO.MouseZoomCamera();
-
-
-    setInterval(function () {
-
-        object = objects[Math.floor(Math.random() * 10)];
-
-        flight.flyTo({
-            component: object
-        });
-
-    }, 2000);
-
+    object.camera.view.zoom(60);
 
     // Orbit the eye position about the look position.
 
@@ -79,6 +63,17 @@
                 view.rotateEyeX(0.3);
             });
 
+    object.scene.once("tick2",
+            function () {
+
+                var stats = object.scene.stats.stats;
+
+                logJSON(stats);
+            });
+
+    function logJSON(json) {
+        document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+    }
 
 </script>
 </body>

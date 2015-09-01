@@ -32,7 +32,7 @@
     // Create a GameObject
 
     var object = new XEO.GameObject({
-        metadata: {
+        meta: {
             description: "This is my GameObject!",
             version: "0.1",
             foo: "bar"
@@ -44,15 +44,21 @@
     object.material = new XEO.PhongMaterial({
         id: "myMaterial",
         diffuse: [1.0, 1.0, 0.0],
-        metadata: {
+        meta: {
             description: "This is my PhongMaterial!",
             version: "0.1",
             foo: "bar"
         }
     });
 
-    object.metadata.version = "0.2";
-    object.metadata.bar = "foo";
+    object.meta.version = "0.2";
+    object.meta.bar = "foo";
+
+    logJSON(object.meta);
+
+    function logJSON(json) {
+        document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+    }
 
 </script>
 </body>

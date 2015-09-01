@@ -34,6 +34,17 @@
         id: "myObject"
     });
 
+    var scene = object.scene;
+
+    scene.on("log", log);
+    scene.on("warn", log);
+    scene.on("error", log);
+
+    function log(str) {
+        document.getElementById("infoTxt").innerHTML += (str + "\n\n");
+    }
+
+
     // Log a message in context of this GameObject
     // Message will appear in console as "[LOG] myObject: Everything is fine, situation normal."
     object.log("Everything is fine, situation normal.");
@@ -50,7 +61,8 @@
 
     // Log an error message in context of the Material
     // Message will appear in console as "[ERROR] myMaterial: Aw, snap!."
-    object.material.error("Aw, snap!")
+    object.material.error("Aw, snap!");
+
 
 </script>
 </body>

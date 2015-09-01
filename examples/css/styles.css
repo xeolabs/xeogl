@@ -14,7 +14,7 @@ body {
 }
 
 .xeolabsLogo {
-    background-image: url("images/a-xeolabs-project.png");
+    background-image: url("../images/a-xeolabs-project.png");
     position: absolute;
     left: 0;
     top: 0;
@@ -58,17 +58,17 @@ body {
 
 
 #infoDark {
-/*position: absolute; */
+position: absolute;
   top: 0px;
   /* padding: 5px; */
   padding: 20px;
-  z-index: 1000;
+  z-index: 100000;
   font-size: 16px;
   /* text-align: right; */
   color: black;
-  width: 100%;
+  /*width: 100%;*/
   float: left;
-
+/*border: 1px gray solid;*/
 }
 
 #infoDark a {
