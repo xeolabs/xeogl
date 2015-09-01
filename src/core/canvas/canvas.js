@@ -277,7 +277,7 @@
             style.left = "0";
             style.top = "0";
              style.position = "absolute";
-             style["z-index"] = "10000";
+             style["z-index"] = "-10000";
 
             div.innerHTML += '<canvas id="' + canvasId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0;"></canvas>';
 
