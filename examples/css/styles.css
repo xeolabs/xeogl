@@ -89,6 +89,15 @@ position: absolute;
 }
 
 
+#dat-gui-container {
+    position: absolute;
+    top: 100px;
+    right: 20px;
+    z-index: 100000;
+    float: right;
+    width:300px
+}
+
 #header {
     background: white;
     width: 100%;
