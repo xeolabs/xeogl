@@ -461,7 +461,9 @@
          */
         log: function (message) {
 
-            window.console.log("[LOG]" + this._message(message));
+            message = "[LOG]" + this._message(message);
+
+            window.console.log(message);
 
             this.scene.fire("log", message);
         },
@@ -469,24 +471,6 @@
         _message: function (message) {
             // return " [" + (this.type.indexOf("XEO.") > -1 ? this.type.substring(4) : this.type) + " " + XEO._inQuotes(this.id) + "]: " + message;
             return " [" + this.type + " " + XEO._inQuotes(this.id) + "]: " + message;
-        },
-
-        /**
-         * Logs an error for this component to the JavaScript console.
-         *
-         * The console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*
-         *
-         * Also fires the message as an {{#crossLink "Scene/error:event"}}{{/crossLink}} event on the
-         * parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
-         *
-         * @method error
-         * @param {String} message The message to log
-         */
-        error: function (message) {
-
-            window.console.error("[ERROR]" + this._message(message));
-
-            this.scene.fire("error", message);
         },
 
         /**
@@ -502,9 +486,31 @@
          */
         warn: function (message) {
 
-            window.console.warn("[WARN]" + this._message(message));
+            message = "[WARN]" + this._message(message);
+
+            window.console.warn(message);
 
             this.scene.fire("warn", message);
+        },
+
+        /**
+         * Logs an error for this component to the JavaScript console.
+         *
+         * The console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*
+         *
+         * Also fires the message as an {{#crossLink "Scene/error:event"}}{{/crossLink}} event on the
+         * parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+         *
+         * @method error
+         * @param {String} message The message to log
+         */
+        error: function (message) {
+
+            message = "[ERROR]" + this._message(message);
+
+            window.console.error(message);
+
+            this.scene.fire("error", message);
         },
 
         /**
@@ -526,7 +532,7 @@
         clone: function (cfg) {
 
             if (this.destroyed) {
-                this.error("Component has been destroyed - cloning not allowed");
+                this.error("Clone failed - component has been destroyed");
                 return;
             }
 
