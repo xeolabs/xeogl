@@ -115,6 +115,8 @@
  Only applies while {{#crossLink "Modes"}}Modes{{/crossLink}} {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} equals ````true````.
  @param [cfg.shininess=30] {Number} Scalar in range 0-70 that determines the size and sharpness of specular highlights.
  @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
+ @param [cfg.lineWidth=1] {Number} Scalar that controls the width of lines for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines".
+ @param [cfg.pointSize=1] {Number} Scalar that controls the size of points for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "points".
  @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
@@ -149,6 +151,9 @@
                 opacity: 1.0,
                 shininess: 30.0,
                 reflectivity: 1.0,
+                
+                lineWidth: 1.0,
+                pointSize: 1.0,
 
                 normalMap: null,
                 diffuseMap: null,
@@ -181,6 +186,9 @@
             this.opacity = cfg.opacity;
             this.shininess = cfg.shininess;
             this.reflectivity = cfg.reflectivity;
+            
+            this.lineWidth = cfg.lineWidth;
+            this.pointSize = cfg.pointSize;
 
             this.diffuseMap = cfg.diffuseMap;
             this.specularMap = cfg.specularMap;
@@ -402,6 +410,68 @@
                 }
             },
 
+            /**
+             The PhongMaterial's line width.
+
+             Fires a {{#crossLink "PhongMaterial/lineWidth:event"}}{{/crossLink}} event on change.
+
+             @property lineWidth
+             @default 1.0
+             @type Number
+             */
+            lineWidth: {
+
+                set: function (value) {
+
+                    this._state.lineWidth = value || 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/lineWidth:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event lineWidth
+                     * @param value {Array(Number)} The property's new value
+                     */
+                    this.fire("lineWidth", this._state.lineWidth);
+                },
+
+                get: function () {
+                    return this._state.lineWidth;
+                }
+            },
+
+            /**
+             The PhongMaterial's point size.
+
+             Fires a {{#crossLink "PhongMaterial/pointSize:event"}}{{/crossLink}} event on change.
+
+             @property pointSize
+             @default 1.0
+             @type Number
+             */
+            pointSize: {
+
+                set: function (value) {
+
+                    this._state.pointSize = value || 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/pointSize:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event pointSize
+                     * @param value {Array(Number)} The property's new value
+                     */
+                    this.fire("pointSize", this._state.pointSize);
+                },
+
+                get: function () {
+                    return this._state.pointSize;
+                }
+            },
+            
             /**
              Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected by this PhongMaterial.
 
@@ -915,14 +985,31 @@
                 ambient: this._state.ambient,
                 diffuse: this._state.diffuse,
                 specular: this._state.specular,
-                emissive: this._state.emissive,
-
-                // Factors
-
-                opacity: this._state.opacity,
-                shininess: this._state.shininess,
-                reflectivity: this._state.reflectivity
+                emissive: this._state.emissive
             };
+
+            if (this._state.opacity != 1.0) {
+                json.opacity = this._state.opacity;
+            }
+
+            if (this._state.shininess != 30.0) {
+                json.shininess = this._state.shininess;
+            }
+
+            if (this._state.reflectivity != 1.0) {
+                json.reflectivity = this._state.reflectivity;
+            }
+
+
+            // Lines and points
+            
+            if (this._state.lineWidth != 1.0) {
+                json.lineWidth = this._state.lineWidth;
+            }
+
+            if (this._state.pointSize != 1.0) {
+                json.pointSize = this._state.pointSize;
+            }
 
             // Textures
 
