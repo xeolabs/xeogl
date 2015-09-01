@@ -33,12 +33,12 @@
     object.camera.view.eye = [0,0,-5];
 
     object.scene.on("tick",
-            function (e) {
+            function (params) {
 
                 object.camera.view.rotateEyeY(0.5);
                 object.camera.view.rotateEyeX(0.3);
 
-                log("tick", e);
+                log("tick", params);;
             });
 
 
@@ -46,16 +46,12 @@
 
     function log(event, params) {
 
-        var txt = event;
-        if (params) {
-            txt += ": " + JSON.stringify(params)
-        }
-
-        buf.push(txt);
+        buf.push(event + ": " + JSON.stringify(params));
 
         if (buf.length > 30) {
             buf.shift();
         }
+
         document.getElementById("infoTxt").innerText = buf.join("\n");
     }
 

@@ -14,31 +14,46 @@
         }
     </style>
 
-    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="lib/dat.gui.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/dat-gui-swec.css">
+
+    <script src="../build/xeoengine.js"></script>
 
 <body>
 
 <div id="infoDark">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Sphere.html"
-                                                                      target="_other">Sphere</a>
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <br><br><a href="../docs/classes/Heightmap.html"
+               target="_other">Heightmap</a>
+</div>
+<div id="dat-gui-container">
 </div>
 
 <script>
 
-    var object = new XEO.GameObject({
+    //------------------ Scene definition --------------------
 
-        geometry: new XEO.Heightmap({
-            primitive: "lines",
-            src: "textures/heightMap.jpg",
-            xSize: 10,
-            ySize: 0.5,
-            zSize: 10,
-            xSegments: 100,
-            ySegments: 100
-        }),
-        material: new XEO.PhongMaterial({
-            diffuse: [0.5, 0.5, 1]
+    var heightmap = new XEO.Heightmap({
+        primitive: "lines",
+        src: "textures/heightMap1.jpg",
+        xSize: 10,
+        ySize: 1.0,
+        zSize: 10,
+        xSegments: 50,
+        zSegments: 50,
+        lod: 1.0 // Default
+    });
+
+    var object = new XEO.GameObject({
+        geometry: heightmap,
+        material:  new XEO.PhongMaterial({
+            ambient: [0.3, 0.3, 0.3],
+            shininess: 30,
+            diffuseMap: new XEO.Texture({
+                src: "textures/brickWall.jpg"
+            })
         })
     });
 
@@ -50,6 +65,66 @@
                 view.rotateEyeY(0.6);
                 view.rotateEyeX(0.3);
             });
+
+    //------------------ GUI ---------------------------------
+
+    var Menu = function () {
+
+        this.message = "heightmap";
+
+        this["primitive"] = heightmap.primitive;
+        this["src"] = heightmap.src.substring("textures/".length);
+        this["xSize"] = heightmap.xSize;
+        this["ySize"] = heightmap.ySize;
+        this["zSize"] = heightmap.zSize;
+        this["xSegments"] = heightmap.xSegments;
+        this["zSegments"] = heightmap.zSegments;
+        this["lod"] = heightmap.lod;
+
+        var self = this;
+
+        // This is actually quite inefficient because it continually updates
+        // the scene graph, forcing frames to continually re-render.
+        // Your GPU's not going to like it, but it's just for a quick and dirty demo.
+
+        var update = function () {
+
+            heightmap.primitive = self["primitive"];
+            heightmap.src = "textures/" + self["src"];
+            heightmap.xSize = self["xSize"];
+            heightmap.ySize = self["ySize"];
+            heightmap.zSize = self["zSize"];
+            heightmap.xSegments = self["xSegments"];
+            heightmap.zSegments = self["zSegments"];
+            heightmap.lod = self["lod"];
+
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var gui = new dat.GUI({autoPlace: false});
+
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+    var menu = new Menu();
+
+    var folder = gui.addFolder('heightmap');
+    folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
+    folder.add(menu, 'src', [
+        "heightMap1.jpg",
+        "heightMap2.png",
+        "heightMap2.jpg"
+    ]);
+    folder.add(menu, 'xSize', 0.1, 10.0);
+    folder.add(menu, 'ySize', 0.1, 10.0);
+    folder.add(menu, 'zSize', 0.1, 10.0);
+    folder.add(menu, 'xSegments', 1, 50);
+    folder.add(menu, 'zSegments', 1, 50);
+    folder.add(menu, 'lod', 0.1, 1.0);
+
+    folder.open();
 
 </script>
 </body>
