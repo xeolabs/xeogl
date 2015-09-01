@@ -1127,6 +1127,7 @@
         frameCtx.pickIndex = 0; // Indexes this._pickObjects
         frameCtx.textureUnit = 0;
         frameCtx.lineWidth = 1;
+        frameCtx.pointSize = 1;
         frameCtx.transparent = false; // True while rendering transparency bin
         frameCtx.ambientColor = this._ambientColor;
 

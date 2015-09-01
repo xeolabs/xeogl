@@ -257,6 +257,10 @@
                 return vertex;
             }
 
+            var flatMaterial = (states.material.type === "flatMaterial");
+            var phongMaterial = !flatMaterial && (states.material.type === "phongMaterial");
+            var pbrMaterial = !flatMaterial && !phongMaterial && (states.material.type === "pbrMaterial");
+
             begin();
 
             // Matrix uniforms
@@ -373,6 +377,10 @@
             //        }
             //    }
             //}
+
+            if (phongMaterial) {
+                add("uniform float xeo_uPointSize;");
+            }
 
             add("void main(void) {");
 
@@ -524,6 +532,10 @@
             if (states.geometry.colorBuf) {
                 add("xeo_vColor = xeo_aColor;");
             }
+
+            if (phongMaterial) {
+                    add("gl_PointSize = xeo_uPointSize;");
+                }
 
             add("gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
 

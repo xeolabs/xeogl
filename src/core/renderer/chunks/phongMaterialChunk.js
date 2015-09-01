@@ -20,6 +20,8 @@
             this._uMaterialOpacity = draw.getUniform("xeo_uMaterialOpacity");
             this._uMaterialShininess = draw.getUniform("xeo_uMaterialShininess");
 
+            this._uPointSize = draw.getUniform("xeo_uPointSize");
+            
             // Textures
 
             if (state.diffuseMap) {
@@ -94,6 +96,7 @@
 
             var draw = this.program.draw;
             var state = this.state;
+            var gl = this.program.gl;
 
             // Diffuse color
 
@@ -122,6 +125,15 @@
 
             if (this._uMaterialShininess) {
                 this._uMaterialShininess.setValue(state.shininess);
+            }
+
+            if (frameCtx.lineWidth != state.lineWidth) {
+                gl.lineWidth(state.lineWidth);
+                frameCtx.lineWidth = state.lineWidth;
+            }
+
+            if (this._uPointSize) {
+                this._uPointSize.setValue(state.pointSize);
             }
 
             // Textures
