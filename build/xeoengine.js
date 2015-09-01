@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-08-28
+ * Built on 2015-09-01
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -572,7 +572,7 @@
  // Scene with authoring metadata
  var scene = new XEO.Scene({
     id: "myScene",
-    metadata: {
+    meta: {
         title: "My awesome 3D scene",
         author: "@xeolabs",
         date: "February 13 2015"
@@ -583,7 +583,7 @@
  var material = new XEO.PhongMaterial(scene, {
     id: "myMaterial",
     diffuse: [1, 0, 0],
-    metadata: {
+    meta: {
         description: "Bright red color with no textures",
         version: "0.1",
         foo: "bar"
@@ -595,12 +595,12 @@
 
  ````javascript
  // Subscribe to changes to the Material's metadata
- material.on("metadata", function(value) {
+ material.on("meta", function(value) {
     console.log("Metadata changed: " + JSON.stringify(value));
 });
 
  // Change the Material's metadata, firing our change handler
- material.metadata = {
+ material.meta = {
     description: "Bright red color with no textures",
     version: "0.2",
     foo: "baz"
@@ -731,7 +731,7 @@
              @property metadata
              @type Object
              */
-            this.metadata = cfg.metadata || {};
+            this.meta = cfg.meta || {};
 
             /**
              Unique ID for this Component within its parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -933,7 +933,9 @@
          */
         log: function (message) {
 
-            window.console.log("[LOG]" + this._message(message));
+            message = "[LOG]" + this._message(message);
+
+            window.console.log(message);
 
             this.scene.fire("log", message);
         },
@@ -941,24 +943,6 @@
         _message: function (message) {
             // return " [" + (this.type.indexOf("XEO.") > -1 ? this.type.substring(4) : this.type) + " " + XEO._inQuotes(this.id) + "]: " + message;
             return " [" + this.type + " " + XEO._inQuotes(this.id) + "]: " + message;
-        },
-
-        /**
-         * Logs an error for this component to the JavaScript console.
-         *
-         * The console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*
-         *
-         * Also fires the message as an {{#crossLink "Scene/error:event"}}{{/crossLink}} event on the
-         * parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
-         *
-         * @method error
-         * @param {String} message The message to log
-         */
-        error: function (message) {
-
-            window.console.error("[ERROR]" + this._message(message));
-
-            this.scene.fire("error", message);
         },
 
         /**
@@ -974,9 +958,31 @@
          */
         warn: function (message) {
 
-            window.console.warn("[WARN]" + this._message(message));
+            message = "[WARN]" + this._message(message);
+
+            window.console.warn(message);
 
             this.scene.fire("warn", message);
+        },
+
+        /**
+         * Logs an error for this component to the JavaScript console.
+         *
+         * The console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*
+         *
+         * Also fires the message as an {{#crossLink "Scene/error:event"}}{{/crossLink}} event on the
+         * parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+         *
+         * @method error
+         * @param {String} message The message to log
+         */
+        error: function (message) {
+
+            message = "[ERROR]" + this._message(message);
+
+            window.console.error(message);
+
+            this.scene.fire("error", message);
         },
 
         /**
@@ -998,7 +1004,7 @@
         clone: function (cfg) {
 
             if (this.destroyed) {
-                this.error("Component has been destroyed - cloning not allowed");
+                this.error("Clone failed - component has been destroyed");
                 return;
             }
 
@@ -1130,6 +1136,13 @@
 
         _props: {
 
+            /**
+             * JSON object containing the state of this Component.
+             *
+             * @property json
+             * @type JSON
+             * @final
+             */
             json: {
 
                 get: function () {
@@ -1142,28 +1155,39 @@
                         id: this.id // Only output user-defined IDs
                     };
 
-                    if (!XEO._isEmptyObject(this.metadata)) {
-                        json.metadata = this.metadata;
+                    if (!XEO._isEmptyObject(this.meta)) {
+                        json.meta = this.meta;
                     }
 
                     return this._getJSON ? XEO._apply(this._getJSON(), json) : json;
                 }
             },
 
-            // Experimental - serializes this component to JS code
-            // that can be evaluated to recreate this component.
-
-            js: {
-
-                get: function () {
-                    return "new " + this.type + "(" + this.string + ");";
-                }
-            },
-
+            /**
+             * String containing the serialized JSON state of this Component.
+             *
+             * @property string
+             * @type String
+             * @final
+             */
             string: {
 
                 get: function () {
-                    return JSON.stringify(this.json, null, 4);
+                    return JSON.stringify(this.json, "\n", 4);
+                }
+            },
+
+            /**
+             * Experimental: string containing a JavaScript expression that would instantiate this Component.
+             *
+             * @property string
+             * @type String
+             * @final
+             */
+            js: {
+
+                get: function () {
+                    return "new " + this.type + "(" + this.jsonString + ");";
                 }
             }
         },
@@ -4513,7 +4537,7 @@
             style.left = "0";
             style.top = "0";
              style.position = "absolute";
-             style["z-index"] = "10000";
+             style["z-index"] = "-10000";
 
             div.innerHTML += '<canvas id="' + canvasId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0;"></canvas>';
 
@@ -5639,6 +5663,7 @@ visibility.destroy();
  @param [cfg.uv] {Array of Number} UVs array.
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.indices] {Array of Number} Indices array.
+ @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from positions and indices.
  @extends Component
  */
 (function () {
@@ -5773,6 +5798,8 @@ visibility.destroy();
                 }
             }
 
+            this.autoNormals = cfg.autoNormals;
+
             var self = this;
 
             this._webglContextRestored = this.scene.canvas.on(
@@ -5860,6 +5887,13 @@ visibility.destroy();
                 if (this._state.normals) {
                     this._state.normals.destroy();
                 }
+
+                // Automatic normal generation
+
+                if (this._autoNormals && this._positions && this._indices) {
+                    this._normals = XEO.math.buildNormals(this._positions, this._indices);
+                }
+
                 this._state.normals = this._normals ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._normals), this._normals.length, 3, usage) : null;
                 this._normalsDirty = false;
             }
@@ -5961,15 +5995,15 @@ visibility.destroy();
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._positions !== !value);
+
                     this._positions = value;
                     this._positionsDirty = true;
 
                     this._scheduleBuild();
 
                     this._setModelBoundaryDirty();
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._positions !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -6015,13 +6049,13 @@ visibility.destroy();
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._normals !== !value);
+
                     this._normals = value;
                     this._normalsDirty = true;
 
                     this._scheduleBuild();
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._normals !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -6055,13 +6089,13 @@ visibility.destroy();
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._uv !== !value);
+
                     this._uv = value;
                     this._uvDirty = true;
 
                     this._scheduleBuild();
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._uv !== !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -6095,13 +6129,13 @@ visibility.destroy();
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._colors != !value);
+
                     this._colors = value;
                     this._colorsDirty = true;
 
                     this._scheduleBuild();
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colors != !value);
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -6135,14 +6169,13 @@ visibility.destroy();
 
                 set: function (value) {
 
+                    // Only recompile when adding or removing this property, not when modifying
+                    var dirty = (!this._indices && !value);
+
                     this._indices = value;
                     this._indicesDirty = true;
 
                     this._scheduleBuild();
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._indices && !value);
-
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -6192,7 +6225,7 @@ visibility.destroy();
                             },
 
                             getPositions: function () {
-                                return self._positions
+                                return self._positions;
                             }
                         });
 
@@ -6206,7 +6239,49 @@ visibility.destroy();
 
                     return this._modelBoundary;
                 }
+            },
+
+            /**
+             * Set true to make this Geometry automatically generate {{#crossLink "Geometry/normals:property"}}{{/crossLink}} from
+             * {{#crossLink "Geometry/positions:property"}}{{/crossLink}} and {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
+             *
+             * This Geomatry will auto-generate its {{#crossLink "Geometry/normals:property"}}{{/crossLink}} on the
+             * next {{#crossLink "Scene"}}{{/crossLink}} {{#crossLink "Scene/tick:event"}}{{/crossLink}} event.
+             *
+             * Fires a {{#crossLink "Geometry/autoNormals:event"}}{{/crossLink}} event on change.
+             *
+             * @property autoNormals
+             * @default  false
+             * @type Boolean
+             */
+            autoNormals: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._autoNormals === value) {
+                        return;
+                    }
+
+                    this._autoNormals = value;
+
+                    /**
+                     * Fired whenever this Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} property changes.
+                     * @event autoNormals
+                     * @type Boolean
+                     * @param value The property's new value
+                     */
+                    this.fire("autoNormals", this._primitive);
+
+                    this._scheduleBuild();
+                },
+
+                get: function () {
+                    return this._autoNormals;
+                }
             }
+
         },
 
         _setModelBoundaryDirty: function () {
@@ -8876,9 +8951,9 @@ var myScene = new XEO.Scene();
 
             this._dirty = true;
 
-            this._components = [];
-            this._dirtyComponentSubs = [];
-            this._destroyedComponentSubs = [];
+            this._components = {};
+            this._dirtyComponentSubs = {};
+            this._destroyedComponentSubs = {};
 
 
             this.ambient = cfg.ambient;
@@ -8890,12 +8965,12 @@ var myScene = new XEO.Scene();
             this.shininess = cfg.shininess;
             this.reflectivity = cfg.reflectivity;
 
-            this.normalMap = cfg.normalMap;
             this.diffuseMap = cfg.diffuseMap;
             this.specularMap = cfg.specularMap;
             this.emissiveMap = cfg.emissiveMap;
             this.opacityMap = cfg.opacityMap;
             this.reflectivityMap = cfg.reflectivityMap;
+            this.normalMap = cfg.normalMap;
 
             this.diffuseFresnel = cfg.diffuseFresnel;
             this.specularFresnel = cfg.specularFresnel;
@@ -9525,6 +9600,7 @@ var myScene = new XEO.Scene();
 
             this._dirty = true;
 
+            this.fire("dirty", true);
             this.fire(type, component || null);
         },
 
@@ -9726,11 +9802,11 @@ var myScene = new XEO.Scene();
 
  var texture1 = new XEO.Texture(scene, {
     src: "diffuseMap.jpg"
-});
+ });
 
  var texture2 = new XEO.Texture(scene, {
     src: "normalMap.jpg"
-});
+ });
 
  var texture3 = new XEO.Texture(scene, {
     src: "specularMap.jpg"
@@ -9831,12 +9907,12 @@ var myScene = new XEO.Scene();
 
             // Dirty flags
 
-            this._dirty = true;
-            this._matrixDirty = true;
+            this._dirty = false;
+            this._matrixDirty = false;
             this._srcDirty = false;
             this._imageDirty = false;
             this._targetDirty = false;
-            this._propsDirty = true;
+            this._propsDirty = false;
 
             var self = this;
 
@@ -9870,6 +9946,14 @@ var myScene = new XEO.Scene();
             this.scale = cfg.scale;
             this.rotate = cfg.rotate;
 
+            // Properties
+
+            this.minFilter = cfg.minFilter;
+            this.magFilter = cfg.magFilter;
+            this.wrapS = cfg.wrapS;
+            this.wrapT = cfg.wrapT;
+            this.flipY = cfg.flipY;
+
             // Data source
 
             if (cfg.src) {
@@ -9881,14 +9965,6 @@ var myScene = new XEO.Scene();
             } else if (cfg.target) {
                 this.target = cfg.target; // Render target
             }
-
-            // Properties
-
-            this.minFilter = cfg.minFilter;
-            this.magFilter = cfg.magFilter;
-            this.wrapS = cfg.wrapS;
-            this.wrapT = cfg.wrapT;
-            this.flipY = cfg.flipY;
 
             this.scene.stats.inc("textures");
         },
@@ -9905,6 +9981,8 @@ var myScene = new XEO.Scene();
                 this.scene.once("tick2",
                     function () {
                         self._build();
+
+                        self._dirty = false;
                     });
             }
         },
@@ -9915,24 +9993,38 @@ var myScene = new XEO.Scene();
 
             var state = this._state;
 
-            if (!state.texture) {
-                state.texture = new XEO.renderer.webgl.Texture2D(gl);
-            }
 
             if (this._srcDirty) {
+
                 if (this._src) {
+
                     this._loadSrc(this._src);
                     this._srcDirty = false;
+
                     return;
+
                 }
             }
 
+
             if (this._imageDirty) {
+
                 if (this._image) {
+
+                    if (!state.texture) {
+                        state.texture = new XEO.renderer.webgl.Texture2D(gl);
+
+                    }
+
                     state.texture.setImage(this._image);
+
                     this._imageDirty = false;
+
+                    // May now need to regenerate mipmaps etc
+                    this._propsDirty = true;
                 }
             }
+
 
             if (this._targetDirty) {
 
@@ -9941,6 +10033,7 @@ var myScene = new XEO.Scene();
 
                 this._targetDirty = false;
             }
+
 
             if (this._matrixDirty) {
 
@@ -9969,22 +10062,21 @@ var myScene = new XEO.Scene();
                 this._matrixDirty = false;
             }
 
+
             if (this._propsDirty) {
                 state.texture.setProps(state);
                 this._propsDirty = false;
             }
 
             this._renderer.imageDirty = true;
-
-            this._dirty = false;
         },
 
 
         _loadSrc: function (src) {
 
-            var task = this.scene.tasks.create({
-                description: "Loading texture"
-            });
+            //var task = this.scene.tasks.create({
+            //    description: "Loading texture"
+            //});
 
             var self = this;
 
@@ -10002,7 +10094,7 @@ var myScene = new XEO.Scene();
                     self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
                     self._target = null;
 
-                    self._imageDirty = false;
+                    self._imageDirty = true;
                     self._srcDirty = false;
                     self._targetDirty = false;
 
@@ -10016,11 +10108,11 @@ var myScene = new XEO.Scene();
                     self._scheduleBuild();
                 }
 
-                task.setCompleted();
+//                task.setCompleted();
             };
 
             image.onerror = function () {
-                task.setFailed();
+                //              task.setFailed();
             };
 
             if (src.indexOf("data") === 0) {
@@ -10097,7 +10189,7 @@ var myScene = new XEO.Scene();
              */
             src: {
 
-                set: function(value) {
+                set: function (value) {
 
                     this._image = null;
                     this._src = value;
@@ -10118,7 +10210,7 @@ var myScene = new XEO.Scene();
                     this.fire("src", this._src);
                 },
 
-                get: function() {
+                get: function () {
                     return this._src;
                 }
             },
@@ -10304,16 +10396,29 @@ var myScene = new XEO.Scene();
              * Fires a {{#crossLink "Texture/minFilter:event"}}{{/crossLink}} event on change.
              *
              * @property minFilter
-             * @default "linearMipMapLinear"
+             * @default "linearMipmapLinear"
              * @type String
              */
             minFilter: {
 
                 set: function (value) {
 
-                    value = value || "linearMipMapLinear";
+                    value = value || "linearMipmapLinear";
 
-                    this._minFilter = value;
+                    if (value !== "linear" &&
+                        value !== "linearMipmapNearest" &&
+                        value !== "linearMipmapLinear" &&
+                        value !== "nearestMipmapLinear" &&
+                        value !== "linearMipmapLinear") {
+
+                        this.error("Unsupported value for 'minFilter': '" + value +
+                            "' - supported values are 'linear', 'linearMipmapNearest', 'nearestMipmapLinear' " +
+                            "and 'linearMipmapLinear'. Defaulting to 'linearMipmapLinear'.");
+
+                        value = "linearMipmapLinear";
+                    }
+
+                    this._state.minFilter = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -10323,11 +10428,11 @@ var myScene = new XEO.Scene();
                      * @event minFilter
                      * @param value {String} The property's new value
                      */
-                    this.fire("minFilter", this._minFilter);
+                    this.fire("minFilter", this._state.minFilter);
                 },
 
                 get: function () {
-                    return this._minFilter;
+                    return this._state.minFilter;
                 }
             },
 
@@ -10355,7 +10460,15 @@ var myScene = new XEO.Scene();
 
                     value = value || "linear";
 
-                    this._magFilter = value;
+                    if (value !== "linear" && value !== "nearest") {
+
+                        this.error("Unsupported value for 'magFilter': '" + value +
+                            "' - supported values are 'linear' and 'nearest'. Defaulting to 'linear'.");
+
+                        value = "linear";
+                    }
+
+                    this._state.magFilter = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -10365,11 +10478,11 @@ var myScene = new XEO.Scene();
                      * @event magFilter
                      * @param value {String} The property's new value
                      */
-                    this.fire("magFilter", this._magFilter);
+                    this.fire("magFilter", this._state.magFilter);
                 },
 
                 get: function () {
-                    return this._magFilter;
+                    return this._state.magFilter;
                 }
             },
 
@@ -10399,7 +10512,15 @@ var myScene = new XEO.Scene();
 
                     value = value || "repeat";
 
-                    this._wrapS = value;
+                    if (value !== "clampToEdge" && value !== "mirroredRepeat" && value !== "repeat") {
+
+                        this.error("Unsupported value for 'wrapS': '" + value +
+                            "' - supported values are 'clampToEdge', 'mirroredRepeat' and 'repeat'. Defaulting to 'repeat'.");
+
+                        value = "repeat";
+                    }
+
+                    this._state.wrapS = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -10409,11 +10530,11 @@ var myScene = new XEO.Scene();
                      * @event wrapS
                      * @param value {String} The property's new value
                      */
-                    this.fire("wrapS", this._wrapS);
+                    this.fire("wrapS", this._state.wrapS);
                 },
 
                 get: function () {
-                    return this._wrapS;
+                    return this._state.wrapS;
                 }
             },
 
@@ -10443,7 +10564,15 @@ var myScene = new XEO.Scene();
 
                     value = value || "repeat";
 
-                    this._wrapT = value;
+                    if (value !== "clampToEdge" && value !== "mirroredRepeat" && value !== "repeat") {
+
+                        this.error("Unsupported value for 'wrapT': '" + value +
+                            "' - supported values are 'clampToEdge', 'mirroredRepeat' and 'repeat'. Defaulting to 'repeat'.");
+
+                        value = "repeat";
+                    }
+
+                    this._state.wrapT = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -10453,11 +10582,11 @@ var myScene = new XEO.Scene();
                      * @event wrapT
                      * @param value {String} The property's new value
                      */
-                    this.fire("wrapT", this._wrapT);
+                    this.fire("wrapT", this._state.wrapT);
                 },
 
                 get: function () {
-                    return this._wrapT;
+                    return this._state.wrapT;
                 }
             },
 
@@ -10477,7 +10606,7 @@ var myScene = new XEO.Scene();
 
                     value = value !== false;
 
-                    this._flipY = value;
+                    this._state.flipY = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -10487,41 +10616,49 @@ var myScene = new XEO.Scene();
                      * @event flipY
                      * @param value {Boolean} The property's new value
                      */
-                    this.fire("flipY", this._flipY);
+                    this.fire("flipY", this._state.flipY);
                 },
 
                 get: function () {
-                    return this._flipY;
+                    return this._state.flipY;
                 }
             }
         },
 
         _getJSON: function () {
 
-            var json = {
-                translate: this._translate,
-                scale: this._scale,
-                rotate: this._rotate
-            };
+            var json = {};
 
-            if (this._minFilter != "linearMipMapLinear") {
-                json.minFilter = this._minFilter;
+            if (this._translate && (this._translate[0] !== 0 || this._translate[1] !== 0)) {
+                json.translate = this._translate;
             }
 
-            if (this._magFilter != "linear") {
-                json.magFilter = this._magFilter;
+            if (this._scale && (this._scale[0] !== 1 || this._scale[1] !== 1)) {
+                json.scale = this._scale;
             }
 
-            if (this._wrapS != "repeat") {
-                json.wrapS = this._wrapS;
+            if (this._rotate !== 0) {
+                json.rotate = this._rotate;
             }
 
-            if (this._wrapT != "repeat") {
-                json.wrapT = this._wrapT;
+            if (this._state.minFilter != "linearMipmapLinear") {
+                json.minFilter = this._state.minFilter;
             }
 
-            if (this._flipY !== true) {
-                json.flipY = this._flipY;
+            if (this._state.magFilter != "linear") {
+                json.magFilter = this._state.magFilter;
+            }
+
+            if (this._state.wrapS != "repeat") {
+                json.wrapS = this._state.wrapS;
+            }
+
+            if (this._state.wrapT != "repeat") {
+                json.wrapT = this._state.wrapT;
+            }
+
+            if (this._state.flipY !== true) {
+                json.flipY = this._state.flipY;
             }
 
             if (this._src) {
@@ -13694,8 +13831,64 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     return this._viewBoundary;
                 }
+            },
+
+            /**
+             * JSON object containing the (GLSL) source code of the shaders for this GameObject.
+             *
+             * This is sometimes useful to have as a reference
+             * when constructing your own custom {{#crossLink "Shader"}}{{/crossLink}} components.
+             *
+             * Will return null if xeoEngine has not yet rendered this GameObject.
+             *
+             * @property glsl
+             * @type JSON
+             * @final
+             */
+            glsl: {
+
+                get: function () {
+                    var rendererObject = this._renderer.objects[this.id];
+                    if (!rendererObject) {
+                        return null;
+                    }
+                    var source = rendererObject.program.source;
+                    return {
+                        draw: {
+                            vertex: source.drawVertex,
+                            fragment: source.drawFragment
+                        },
+                        pick: {
+                            vertex: source.pickVertex,
+                            fragment: source.pickFragment
+                        }
+                    };
+                }
+            },
+
+            /**
+             * The (GLSL) source code of the shaders for this GameObject, as a string.
+             *
+             * This is sometimes useful to have as a reference
+             * when constructing your own custom {{#crossLink "Shader"}}{{/crossLink}} components.
+             *
+             * Will return null if xeoEngine has not yet rendered this GameObject.
+             *
+             * @property glslString
+             * @type String
+             * @final
+             */
+            glslString: {
+
+                get: function () {
+                    var glsl = this.glsl;
+                    if (glsl) {
+                        return JSON.stringify(glsl, "\n", 4);
+                    }
+                }
             }
         },
+
 
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
@@ -13740,7 +13933,15 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             // (Re)build this GameObject in the renderer
 
-            this._renderer.buildObject(this.id);
+            var result = this._renderer.buildObject(this.id);
+
+            if (result && result.error) {
+
+                // Object has errors, probably due to
+                // shader not allocating/compiling/linking.
+
+                this.error(result.errorLog.join("\n"));
+            }
         },
 
         _getJSON: function () {
@@ -15119,12 +15320,12 @@ var object3 = new XEO.GameObject(scene, {
  | uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  | uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  |---|---|
- | uniform vec3 xeo_uMaterialDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
+ | uniform vec3 xeo_uDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
  | uniform vec3 xeo_uMaterialSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
  | uniform vec3 xeo_uMaterialEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
  | uniform float xeo_uMaterialOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
  | uniform float xeo_uMaterialShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
- | uniform float xeo_uMaterialDiffuseFresnelBias;       |  | {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} |
+ | uniform float xeo_uDiffuseFresnelBias;       |  | {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} |
 
  #### Varying
 
@@ -15844,12 +16045,12 @@ var object3 = new XEO.GameObject(scene, {
         this.transparent = cfg.transparent === true;
 
         // The objects in the render
-        this._objects = {};
+        this.objects = {};
 
         // Ambient color
         this._ambientColor = [0, 0, 0, 1.0];
 
-        // The object list, containing all elements of #_objects, kept in GL state-sorted order
+        // The object list, containing all elements of #objects, kept in GL state-sorted order
         this._objectList = [];
         this._objectListLen = 0;
 
@@ -15994,7 +16195,7 @@ var object3 = new XEO.GameObject(scene, {
         this.shader = null;
 
         /**
-        Render state providing custom shader params.
+         Render state providing custom shader params.
          @property shaderParams
          @type {renderer.Shader}
          */
@@ -16111,15 +16312,10 @@ var object3 = new XEO.GameObject(scene, {
      */
     XEO.renderer.Renderer.prototype.buildObject = function (objectId) {
 
-        var object = this._objects[objectId];
+        var object = this.objects[objectId];
 
         if (!object) {
-
-            // Create the object
-
-            object = this._objects[objectId] = this._objectFactory.get(objectId);
-
-            this.objectListDirty = true;
+            object = this._objectFactory.get(objectId);
         }
 
         // Attach to the object any states that we need to get off it later.
@@ -16167,6 +16363,22 @@ var object3 = new XEO.GameObject(scene, {
             object.hash = hash;
         }
 
+        var program = object.program;
+
+        if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
+
+            if (this.objects[objectId]) {
+
+                // Don't keep faulty objects in the renderer
+                this.removeObject(objectId);
+            }
+
+            return {
+                error: true,
+                errorLog: object.program.errorLog
+            }
+        }
+
         // Build sequence of draw chunks on the object
 
         // The order of some of these is important because some chunks will set
@@ -16187,23 +16399,31 @@ var object3 = new XEO.GameObject(scene, {
         this._setChunk(object, 12, "geometry", this.geometry);
         this._setChunk(object, 13, "draw", this.geometry); // Must be last
 
-        // At the very least, the object sort order
-        // will need be recomputed
+        if (!this.objects[objectId]) {
 
-        this.stateOrderDirty = true;
+            this.objects[objectId] = object;
+
+            this.objectListDirty = true;
+
+        } else {
+
+            // At the very least, the object sort order will need be recomputed
+
+            this.stateOrderDirty = true;
+        }
+
+        return object;
     };
 
     /** Adds a render state chunk to a render graph object.
-    */
+     */
     XEO.renderer.Renderer.prototype._setChunk = function (object, order, chunkType, state) {
 
         var oldChunk = object.chunks[order];
 
         if (oldChunk) {
-
-          oldChunk.init(oldChunk.id, object, object.program, state);
-
-          return;
+            oldChunk.init(oldChunk.id, object, object.program, state);
+            return;
         }
 
         // Attach new chunk
@@ -16244,7 +16464,7 @@ var object3 = new XEO.GameObject(scene, {
      */
     XEO.renderer.Renderer.prototype.removeObject = function (objectId) {
 
-        var object = this._objects[objectId];
+        var object = this.objects[objectId];
 
         if (!object) {
             return;
@@ -16259,7 +16479,7 @@ var object3 = new XEO.GameObject(scene, {
         // Release object
         this._objectFactory.put(object);
 
-        delete this._objects[objectId];
+        delete this.objects[objectId];
 
         // Need to repack object map into fast iteration list
         this.objectListDirty = true;
@@ -16316,10 +16536,10 @@ var object3 = new XEO.GameObject(scene, {
 
         this._objectListLen = 0;
 
-        for (var objectId in this._objects) {
-            if (this._objects.hasOwnProperty(objectId)) {
+        for (var objectId in this.objects) {
+            if (this.objects.hasOwnProperty(objectId)) {
 
-                this._objectList[this._objectListLen++] = this._objects[objectId];
+                this._objectList[this._objectListLen++] = this.objects[objectId];
             }
         }
     };
@@ -16554,7 +16774,7 @@ var object3 = new XEO.GameObject(scene, {
 
                 if (chunk.draw) {
 
-                  // Rendering pass
+                    // Rendering pass
 
                     if (chunk.unique || this._lastChunkId[i] !== chunk.id) {
 
@@ -16567,7 +16787,7 @@ var object3 = new XEO.GameObject(scene, {
 
                 if (chunk.pick) {
 
-                   // Picking pass
+                    // Picking pass
 
                     if (pickable !== false) {
 
@@ -16732,11 +16952,11 @@ var object3 = new XEO.GameObject(scene, {
             // Build hit report
 
             hit = {
-                  object: object,
-                  canvasPos: [
+                object: object,
+                canvasPos: [
                     canvasX,
                     canvasY
-                  ]
+                ]
             };
 
             // Now do a ray-pick if requested
@@ -16930,7 +17150,7 @@ var object3 = new XEO.GameObject(scene, {
         gl.flush();
 
         if (frameCtx.renderBuf) {
-    //        frameCtx.renderBuf.unbind();
+            //        frameCtx.renderBuf.unbind();
         }
 
 //
@@ -17292,11 +17512,6 @@ var object3 = new XEO.GameObject(scene, {
         this.chunks = [];
 
         /**
-         * Number of state chunks applied to render this object
-         */
-        this.chunksLen = 0;
-
-        /**
          * Shader programs that render this object, also used for (re)computing #sortKey
          */
         this.program = null;
@@ -17412,6 +17627,37 @@ var object3 = new XEO.GameObject(scene, {
          */
         this.useCount = 0;
 
+        /**
+         * True when successfully allocated
+         * @type {boolean}
+         */
+        this.allocated = false;
+
+        /**
+         * True when successfully compiled
+         * @type {boolean}
+         */
+        this.compiled = false;
+
+        /**
+         * True when successfully linked
+         * @type {boolean}
+         */
+        this.linked = false;
+
+        /**
+         * True when successfully validated
+         * @type {boolean}
+         */
+        this.validated = false;
+
+        /**
+         * Contains error log on failure to allocate, compile, validate or link
+         * @type {boolean}
+         */
+        this.errorLog = null;
+
+
         this.build(gl);
     };
 
@@ -17423,8 +17669,63 @@ var object3 = new XEO.GameObject(scene, {
 
         this.gl = gl;
 
+        this.allocated = false;
+        this.compiled = false;
+        this.linked = false;
+        this.validated = false;
+        this.errorLog = null;
+
         this.draw = new XEO.renderer.webgl.Program(gl, this.source.drawVertex, this.source.drawFragment);
-        this.pick = new XEO.renderer.webgl.Program(gl, this.source.pickVertex, this.source.pickFragment);
+        this.pick = this.draw;
+     //   this.pick = new XEO.renderer.webgl.Program(gl, this.source.pickVertex, this.source.pickFragment);
+
+        if (!this.draw.allocated) {
+            this.errorLog = ["Draw program failed to allocate"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pick.allocated) {
+            this.errorLog = ["Pick program failed to allocate"].concat(this.pick.errorLog);
+            return;
+        }
+
+        this.allocated = true;
+
+        if (!this.draw.compiled) {
+            this.errorLog = ["Draw program failed to compile"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pick.compiled) {
+            this.errorLog = ["Pick program failed to compile"].concat(this.pick.errorLog);
+            return;
+        }
+
+        this.compiled = true;
+
+        if (!this.draw.linked) {
+            this.errorLog = ["Draw program failed to link"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pick.linked) {
+            this.errorLog = ["Pick program failed to link"].concat(this.pick.errorLog);
+            return;
+        }
+
+        this.linked = true;
+
+        if (!this.draw.validated) {
+            this.errorLog = ["Draw program failed to validate"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pick.validated) {
+            this.errorLog = ["Pick program failed to validate"].concat(this.pick.errorLog);
+            return;
+        }
+
+        this.validated = true;
     };
 
 })();
@@ -17529,25 +17830,25 @@ var object3 = new XEO.GameObject(scene, {
 
         /**
          * Source code for pick vertex shader
-         * @type String
+         * @type {Array of String]
          */
         this.pickVertex = pickVertex;
 
         /**
          * Source code for pick fragment shader
-         * @type String
+         * @type {Array of String}
          */
         this.pickFragment = pickFragment;
 
         /**
          * Source code for draw vertex shader
-         * @type String
+         * @type {Array of String}
          */
         this.drawVertex = drawVertex;
 
         /**
          * Source code for draw fragment shader
-         * @type String
+         * @type {Array of String}
          */
         this.drawFragment = drawFragment;
 
@@ -17597,7 +17898,7 @@ var object3 = new XEO.GameObject(scene, {
 
             states = _states;
 
-            texturing = isTexturing();
+            texturing = hasTextures();
             normals = hasNormals();
             tangents = hasTangents();
             clipping = states.clips.clips.length > 0;
@@ -17621,7 +17922,7 @@ var object3 = new XEO.GameObject(scene, {
 
         // Returns true if texturing
 
-        function isTexturing() {
+        function hasTextures() {
 
             if (!states.geometry.uv) {
                 return false;
@@ -17629,14 +17930,12 @@ var object3 = new XEO.GameObject(scene, {
 
             var material = states.material;
 
-            if (material.type === "phongMaterial") {
-
-                if (material.diffuseMap || material.specularMap || material.emissiveMap || material.opacityMap || material.reflectivityMap) {
-                    return true;
-                }
-            }
-
-            return false;
+            return (material.type === "phongMaterial" &&
+            (material.diffuseMap ||
+            material.specularMap ||
+            material.emissiveMap ||
+            material.opacityMap ||
+            material.reflectivityMap));
         }
 
         // Returns true if rendering reflections
@@ -18130,7 +18429,7 @@ var object3 = new XEO.GameObject(scene, {
 
             if (phongMaterial) {
 
-                add("uniform vec3 xeo_uMaterialDiffuse;");
+                add("uniform vec3 xeo_uDiffuse;");
                 add("uniform vec3 xeo_uMaterialSpecular;");
                 add("uniform vec3 xeo_uMaterialEmissive;");
                 add("uniform float xeo_uMaterialOpacity;");
@@ -18144,30 +18443,23 @@ var object3 = new XEO.GameObject(scene, {
                     }
 
                     if (states.material.diffuseMap) {
-                        add("uniform sampler2D xeo_uTextureDiffuse;");
+                        add("uniform sampler2D xeo_uDiffuseMap;");
                         if (states.material.diffuseMap.matrix) {
-                            add("uniform mat4 xeo_uTextureDiffuseMatrix;");
+                            add("uniform mat4 xeo_uDiffuseMapMatrix;");
                         }
                     }
 
                     if (states.material.specularMap) {
-                        add("uniform sampler2D xeo_uTextureSpecular;");
+                        add("uniform sampler2D xeo_uSpecularMap;");
                         if (states.material.specularMap.matrix) {
-                            add("uniform mat4 xeo_uTextureSpecularMatrix;");
+                            add("uniform mat4 xeo_uSpecularMapMatrix;");
                         }
                     }
 
                     if (states.material.emissiveMap) {
-                        add("uniform sampler2D xeo_uTextureEmissive;");
+                        add("uniform sampler2D xeo_uEmissiveMap;");
                         if (states.material.emissiveMap.matrix) {
-                            add("uniform mat4 xeo_uTextureEmissiveMatrix;");
-                        }
-                    }
-
-                    if (states.material.emissiveMap) {
-                        add("uniform sampler2D xeo_uTextureEmissive;");
-                        if (states.material.emissiveMap.matrix) {
-                            add("uniform mat4 xeo_uTextureEmissiveMatrix;");
+                            add("uniform mat4 xeo_uEmissiveMapMatrix;");
                         }
                     }
 
@@ -18273,11 +18565,12 @@ var object3 = new XEO.GameObject(scene, {
                     // Fragment diffuse color from geometry vertex colors
 
                     add("vec3 diffuse = xeo_vColor.rgb;");
+
                 } else {
 
                     // Fragment diffuse color from material
 
-                    add("vec3 diffuse = xeo_uMaterialDiffuse;")
+                    add("vec3 diffuse = xeo_uDiffuse;")
                 }
 
                 // These may be overridden by textures later
@@ -18298,6 +18591,7 @@ var object3 = new XEO.GameObject(scene, {
 
                         // Normalize the interpolated normals in the per-fragment-fragment-shader,
                         // because if we linear interpolated two nonparallel normalized vectors, the resulting vector won’t be of length 1
+
                         add("vec3 viewNormalVec = normalize(xeo_vViewNormal);");
                     }
                 }
@@ -18318,12 +18612,12 @@ var object3 = new XEO.GameObject(scene, {
                         // Diffuse map
 
                         if (material.diffuseMap.matrix) {
-                            add("textureCoord = (xeo_uMaterialDiffuseTextureMatrix * texturePos).xy;");
+                            add("textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
 
-                        add("diffuse = texture2D(xeo_uMaterialDiffuseTexture, textureCoord).rgb);");
+                        add("diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
                     }
 
                     if (material.specularMap) {
@@ -18331,12 +18625,12 @@ var object3 = new XEO.GameObject(scene, {
                         // Specular map
 
                         if (material.specularMap.matrix) {
-                            add("textureCoord = (xeo_uSpecularTextureMatrix * texturePos).xy;");
+                            add("textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
 
-                        add("specular = texture2D(xeo_uSpecularTexture, textureCoord).rgb;");
+                        add("specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
                     }
 
                     if (material.emissiveMap) {
@@ -18344,12 +18638,12 @@ var object3 = new XEO.GameObject(scene, {
                         // Emissive map
 
                         if (material.emissiveMap.matrix) {
-                            add("textureCoord = (xeo_uEmissiveTextureMatrix * texturePos).xy;");
+                            add("textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
 
-                        add("emissive = texture2D(xeo_uEmissiveTexture, textureCoord).rgb;");
+                        add("emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
                     }
 
                     if (material.opacityMap) {
@@ -18357,12 +18651,12 @@ var object3 = new XEO.GameObject(scene, {
                         // Opacity map
 
                         if (material.opacityMap.matrix) {
-                            add("textureCoord = (xeo_uOpacityTextureMatrix * texturePos).xy;");
+                            add("textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
 
-                        add("opacity = texture2D(xeo_uOpacityTexture, textureCoord).b;");
+                        add("opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
                     }
 
                     if (material.reflectivityMap) {
@@ -18370,12 +18664,12 @@ var object3 = new XEO.GameObject(scene, {
                         // Reflectivity map
 
                         if (material.reflectivityMap.matrix) {
-                            add("textureCoord = (xeo_uReflectivityTextureMatrix * texturePos).xy;");
+                            add("textureCoord = (xeo_uReflectivityMapMatrix * texturePos).xy;");
                         } else {
                             add("textureCoord = texturePos.xy;");
                         }
 
-                        add("reflectivity = texture2D(xeo_uReflectivityTexture, textureCoord).b;");
+                        add("reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
                     }
                 }
 
@@ -18444,7 +18738,7 @@ var object3 = new XEO.GameObject(scene, {
                     }
 
                     add("fragColor = vec4(diffuse * diffuseLight, opacity);");
-                //    add("fragColor = vec4((specularLight + diffuse * (diffuseLight + ambient)) + emissive, opacity);");
+                    //    add("fragColor = vec4((specularLight + diffuse * (diffuseLight + ambient)) + emissive, opacity);");
 
 
                 } else { // No normals
@@ -18488,9 +18782,7 @@ var object3 = new XEO.GameObject(scene, {
 
         // Finish building program source
         function end() {
-            var result = src.join("\n");
-       //     console.log(result);
-            return result;
+            return src;
         }
 
         function getFSFloatPrecision(gl) {
@@ -18554,10 +18846,10 @@ var object3 = new XEO.GameObject(scene, {
             ccw: "CCW",
             linear: "LINEAR",
             nearest: "NEAREST",
-            linearMipMapNearest: "LINEAR_MIPMAP_NEAREST",
-            nearestMipMapNearest: "NEAREST_MIPMAP_NEAREST",
-            nearestMipMapLinear: "NEAREST_MIPMAP_LINEAR",
-            linearMipMapLinear: "LINEAR_MIPMAP_LINEAR",
+            linearMipmapNearest: "LINEAR_MIPMAP_NEAREST",
+            nearestMipmapNearest: "NEAREST_MIPMAP_NEAREST",
+            nearestMipmapLinear: "NEAREST_MIPMAP_LINEAR",
+            linearMipmapLinear: "LINEAR_MIPMAP_LINEAR",
             repeat: "REPEAT",
             clampToEdge: "CLAMP_TO_EDGE",
             mirroredRepeat: "MIRRORED_REPEAT",
@@ -18765,13 +19057,37 @@ var object3 = new XEO.GameObject(scene, {
      */
     XEO.renderer.webgl.Program = function (gl, vertex, fragment) {
 
+        this.gl = gl;
+
         /**
-         * True as soon as this program is allocated and ready to go
+         * True when successfully allocated
          * @type {boolean}
          */
         this.allocated = false;
 
-        this.gl = gl;
+        /**
+         * True when successfully compiled
+         * @type {boolean}
+         */
+        this.compiled = false;
+
+        /**
+         * True when successfully linked
+         * @type {boolean}
+         */
+        this.linked = false;
+
+        /**
+         * True when successfully validated
+         * @type {boolean}
+         */
+        this.validated = false;
+
+        /**
+         * Contains error log on failure to allocate, compile, validate or link
+         * @type {boolean}
+         */
+        this.errorLog = null;
 
         // Inputs for this program
 
@@ -18781,9 +19097,33 @@ var object3 = new XEO.GameObject(scene, {
 
         // Shaders
 
-        this._vertexShader = new XEO.renderer.webgl.Shader(gl, gl.VERTEX_SHADER, vertex);
+        this._vertexShader = new XEO.renderer.webgl.Shader(gl, gl.VERTEX_SHADER, vertex.join("\n"));
+        this._fragmentShader = new XEO.renderer.webgl.Shader(gl, gl.FRAGMENT_SHADER, fragment.join("\n"));
 
-        this._fragmentShader = new XEO.renderer.webgl.Shader(gl, gl.FRAGMENT_SHADER, fragment);
+        if (!this._vertexShader.allocated) {
+            this.errorLog = ["Vertex shader failed to allocate"].concat(this._vertexShader.errorLog);
+            return;
+        }
+
+        if (!this._fragmentShader.allocated) {
+            this.errorLog = ["Fragment shader failed to allocate"].concat(this._fragmentShader.errorLog);
+            return;
+        }
+
+        this.allocated = true;
+
+        if (!this._vertexShader.compiled) {
+            this.errorLog = ["Vertex shader failed to compile"].concat(this._vertexShader.errorLog);
+            return;
+        }
+
+        if (!this._fragmentShader.compiled) {
+            this.errorLog = ["Fragment shader failed to compile"].concat(this._fragmentShader.errorLog);
+            return;
+        }
+
+        this.compiled = true;
+
 
         var a, i, u, u_name, location, shader;
 
@@ -18791,71 +19131,85 @@ var object3 = new XEO.GameObject(scene, {
 
         this.handle = gl.createProgram();
 
-        if (this.handle) {
-
-            if (this._vertexShader.valid) {
-                gl.attachShader(this.handle, this._vertexShader.handle);
-            }
-
-            if (this._fragmentShader.valid) {
-                gl.attachShader(this.handle, this._fragmentShader.handle);
-            }
-
-            gl.linkProgram(this.handle);
-
-            console.error("vertex");
-            console.error(gl.getShaderInfoLog(this._vertexShader.handle));
-            console.error("fragment");
-            console.error(gl.getShaderInfoLog(this._fragmentShader.handle));
-
-            // Discover uniforms and samplers
-
-            var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
-            var valueIndex = 0;
-
-            for (i = 0; i < numUniforms; ++i) {
-
-                u = gl.getActiveUniform(this.handle, i);
-
-                if (u) {
-
-                    u_name = u.name;
-
-                    if (u_name[u_name.length - 1] === "\u0000") {
-                        u_name = u_name.substr(0, u_name.length - 1);
-                    }
-
-                    location = gl.getUniformLocation(this.handle, u_name);
-
-                    if ((u.type === gl.SAMPLER_2D) || (u.type === gl.SAMPLER_CUBE) || (u.type === 35682)) {
-
-                        this.samplers[u_name] = new XEO.renderer.webgl.Sampler(gl, location);
-
-                    } else {
-
-                        this.uniforms[u_name] = new XEO.renderer.webgl.Uniform(gl, u.type, location);
-                    }
-                }
-            }
-
-            // Discover attributes
-
-            var numAttribs = gl.getProgramParameter(this.handle, gl.ACTIVE_ATTRIBUTES);
-
-            for (i = 0; i < numAttribs; i++) {
-
-                a = gl.getActiveAttrib(this.handle, i);
-
-                if (a) {
-
-                    location = gl.getAttribLocation(this.handle, a.name);
-
-                    this.attributes[a.name] = new XEO.renderer.webgl.Attribute(gl, location);
-                }
-            }
-
-            this.allocated = true;
+        if (!this.handle) {
+            this.errorLog = ["Failed to allocate program"];
+            return;
         }
+
+        gl.attachShader(this.handle, this._vertexShader.handle);
+        gl.attachShader(this.handle, this._fragmentShader.handle);
+
+        gl.linkProgram(this.handle);
+
+        this.linked = gl.getProgramParameter(this.handle, gl.LINK_STATUS);
+
+        this.validated = this.linked ? gl.getProgramParameter(this.handle, gl.VALIDATE_STATUS) : false;
+
+        if (!this.linked || !this.validated) {
+
+            this.errorLog = [
+            ];
+
+            this.errorLog.push("");
+            this.errorLog.push(gl.getProgramInfoLog(this.handle));
+
+            this.errorLog.push("\nVertex shader:\n");
+            this.errorLog = this.errorLog.concat(vertex);
+
+            this.errorLog.push("\nFragment shader:\n");
+            this.errorLog = this.errorLog.concat(fragment);
+
+            return;
+        }
+
+
+        // Discover uniforms and samplers
+
+        var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
+        var valueIndex = 0;
+
+        for (i = 0; i < numUniforms; ++i) {
+
+            u = gl.getActiveUniform(this.handle, i);
+
+            if (u) {
+
+                u_name = u.name;
+
+                if (u_name[u_name.length - 1] === "\u0000") {
+                    u_name = u_name.substr(0, u_name.length - 1);
+                }
+
+                location = gl.getUniformLocation(this.handle, u_name);
+
+                if ((u.type === gl.SAMPLER_2D) || (u.type === gl.SAMPLER_CUBE) || (u.type === 35682)) {
+
+                    this.samplers[u_name] = new XEO.renderer.webgl.Sampler(gl, location);
+
+                } else {
+
+                    this.uniforms[u_name] = new XEO.renderer.webgl.Uniform(gl, u.type, location);
+                }
+            }
+        }
+
+        // Discover attributes
+
+        var numAttribs = gl.getProgramParameter(this.handle, gl.ACTIVE_ATTRIBUTES);
+
+        for (i = 0; i < numAttribs; i++) {
+
+            a = gl.getActiveAttrib(this.handle, i);
+
+            if (a) {
+
+                location = gl.getAttribLocation(this.handle, a.name);
+
+                this.attributes[a.name] = new XEO.renderer.webgl.Attribute(gl, location);
+            }
+        }
+
+        this.allocated = true;
     };
 
     XEO.renderer.webgl.Program.prototype.bind = function () {
@@ -19199,41 +19553,60 @@ var object3 = new XEO.GameObject(scene, {
     XEO.renderer.webgl.Shader = function (gl, type, source) {
 
         /**
-         * True as soon as this shader is allocated and ready to go
+         * True if this shader successfully allocated. When false,
+         * #error will contain WebGL the error log.
          * @type {boolean}
          */
         this.allocated = false;
 
+        /**
+         * True if this shader successfully compiled. When false,
+         * #error will contain WebGL the error log.
+         * @type {boolean}
+         */
+        this.compiled = false;
+
+        /**
+         * Saves the WebGL error log when this shader failed to allocate or compile.
+         * @type {boolean}
+         */
+        this.errorLog = null;
+
+        /**
+         * The GLSL for this shader.
+         * @type {Array of String}
+         */
+        this.source = source;
+
+        /**
+         * WebGL handle to this shader's GPU resource
+         */
         this.handle = gl.createShader(type);
 
         if (!this.handle) {
-            console.error("Failed to create WebGL shader");
+            this.errorLog = [
+                "Failed to allocate"
+            ];
             return;
         }
+
+        this.allocated = true;
 
         gl.shaderSource(this.handle, source);
         gl.compileShader(this.handle);
 
-        this.valid = (gl.getShaderParameter(this.handle, gl.COMPILE_STATUS) !== 0);
+        this.compiled = gl.getShaderParameter(this.handle, gl.COMPILE_STATUS);
 
-        if (!this.valid) {
+        if (!this.compiled) {
 
             if (!gl.isContextLost()) { // Handled explicitly elsewhere, so won't re-handle here
 
-                console.error("Shader program failed to compile: " + gl.getShaderInfoLog(this.handle));
-                console.error("Shader source:");
-
-                var lines = source.split('\n');
-
-                for (var j = 0; j < lines.length; j++) {
-                    console.error((j + 1) + ": " + lines[j]);
-                }
-
-                return;
+                this.errorLog = [];
+                this.errorLog.push("");
+                this.errorLog.push(gl.getShaderInfoLog(this.handle));
+                this.errorLog = this.errorLog.concat(this.source);
             }
         }
-
-        this.allocated = true;
     };
 
 })();;(function () {
@@ -19259,8 +19632,7 @@ var object3 = new XEO.GameObject(scene, {
 
         gl.bindTexture(this.target, this.texture);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-            XEO.renderer.webgl.ensureImageSizePowerOfTwo(cfg.image));
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
         gl.bindTexture(this.target, null);
     };
@@ -19295,18 +19667,24 @@ var object3 = new XEO.GameObject(scene, {
         }
 
         if (cfg.magFilter) {
-            var magFilter = this._getGLEnum(cfg.minFilter);
+            var magFilter = this._getGLEnum(cfg.magFilter);
             if (magFilter) {
                 gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, magFilter);
             }
         }
 
         if (cfg.wrapS) {
-            gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, cfg.wrapS);
+            var wrapS = this._getGLEnum(cfg.wrapS);
+            if (wrapS) {
+                gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, wrapS);
+            }
         }
 
         if (cfg.wrapT) {
-            gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, cfg.wrapT);
+            var wrapT = this._getGLEnum(cfg.wrapT);
+            if (wrapT) {
+                gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, wrapT);
+            }
         }
 
         gl.bindTexture(this.target, null);
@@ -20585,7 +20963,7 @@ var object3 = new XEO.GameObject(scene, {
 
             // Blinn-Phong base material
 
-            this._uMaterialDiffuse = draw.getUniform("xeo_uMaterialDiffuse");
+            this._uMaterialDiffuse = draw.getUniform("xeo_uDiffuse");
             this._uMaterialSpecular = draw.getUniform("xeo_uMaterialSpecular");
             this._uMaterialEmissive = draw.getUniform("xeo_uMaterialEmissive");
             this._uMaterialOpacity = draw.getUniform("xeo_uMaterialOpacity");
@@ -20594,42 +20972,42 @@ var object3 = new XEO.GameObject(scene, {
             // Textures
 
             if (state.diffuseMap) {
-                this._uMaterialDiffuseMap = draw.getUniform("xeo_uMaterialDiffuseMap");
-                this._uMaterialDiffuseMapMatrix = draw.getUniform("xeo_uMaterialDiffuseMapMatrix");
+                this._uDiffuseMap = "xeo_uDiffuseMap";
+                this._uDiffuseMapMatrix = draw.getUniform("xeo_uDiffuseMapMatrix");
             }
 
             if (state.specularMap) {
-                this._uSpecularMap = draw.getUniform("xeo_uSpecularMap");
+                this._uSpecularMap = "xeo_uSpecularMap";
                 this._uSpecularMapMatrix = draw.getUniform("xeo_uSpecularMapMatrix");
             }
 
             if (state.emissiveMap) {
-                this._uEmissiveMap = draw.getUniform("xeo_uEmissiveMap");
+                this._uEmissiveMap = "xeo_uEmissiveMap";
                 this._uEmissiveMapMatrix = draw.getUniform("xeo_uEmissiveMapMatrix");
             }
 
             if (state.opacityMap) {
-                this._uOpacityMap = draw.getUniform("xeo_uOpacityMap");
+                this._uOpacityMap = "xeo_uOpacityMap";
                 this._uOpacityMapMatrix = draw.getUniform("xeo_uOpacityMapMatrix");
             }
 
             if (state.reflectivityMap) {
-                this._uReflectivityMap = draw.getUniform("xeo_uReflectivityMap");
+                this._uReflectivityMap = "xeo_uReflectivityMap";
                 this._uReflectivityMapMatrix = draw.getUniform("xeo_uReflectivityMapMatrix");
             }
 
             if (state.normalMap) {
-                this._uBumpMap = draw.getUniform("xeo_uBumpMap");
-                this._uBumpMapMatrix = draw.getUniform("xeo_uBumpMapMatrix");
+                this._uBumpMap = "xeo_uNormalMap";
+                this._uBumpMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
             }
 
             // Fresnel effects
 
             if (state.diffuseFresnel) {
-                this._uMaterialDiffuseFresnelBias = draw.getUniform("xeo_uMaterialDiffuseFresnelBias");
-                this._uMaterialDiffuseFresnelPower = draw.getUniform("xeo_uMaterialDiffuseFresnelPower");
-                this._uMaterialDiffuseFresnelLeftColor = draw.getUniform("xeo_uMaterialDiffuseFresnelLeftColor");
-                this._uMaterialDiffuseFresnelRightColor = draw.getUniform("xeo_uMaterialDiffuseFresnelRightColor");
+                this._uDiffuseFresnelBias = draw.getUniform("xeo_uDiffuseFresnelBias");
+                this._uDiffuseFresnelPower = draw.getUniform("xeo_uDiffuseFresnelPower");
+                this._uDiffuseFresnelLeftColor = draw.getUniform("xeo_uDiffuseFresnelLeftColor");
+                this._uDiffuseFresnelRightColor = draw.getUniform("xeo_uDiffuseFresnelRightColor");
             }
 
             if (state.specularFresnel) {
@@ -20701,18 +21079,18 @@ var object3 = new XEO.GameObject(scene, {
 
             // Diffuse map
 
-            if ( this._uMaterialDiffuseMap) {
+            if (state.diffuseMap && state.diffuseMap.texture) {
 
-                draw.bindTexture(this._uMaterialDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit++);
 
-                if (this._uMaterialDiffuseMapMatrix) {
-                    this._uMaterialDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
+                if (this._uDiffuseMapMatrix) {
+                    this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
                 }
             }
 
             // Specular map
 
-            if (this._uSpecularMap) {
+            if (state.specularMap && state.specularMap.texture) {
 
                 draw.bindTexture(this._uSpecularMap, state.specularMap.texture, frameCtx.textureUnit++);
 
@@ -20723,7 +21101,7 @@ var object3 = new XEO.GameObject(scene, {
 
             // Emissive map
 
-            if (this._uEmissiveMap) {
+            if (state.emissiveMap && state.emissiveMap.texture) {
 
                 draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
 
@@ -20734,7 +21112,7 @@ var object3 = new XEO.GameObject(scene, {
 
             // Opacity map
 
-            if (this._uOpacityMap) {
+            if (state.opacityMap && state.opacityMap.texture) {
 
                 draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit++);
 
@@ -20745,7 +21123,7 @@ var object3 = new XEO.GameObject(scene, {
 
             // Reflectivity map
 
-            if (this._uReflectivityMap) {
+            if (state.reflectivityMap && state.reflectivityMap.texture) {
 
                 draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, frameCtx.textureUnit++);
 
@@ -20756,7 +21134,7 @@ var object3 = new XEO.GameObject(scene, {
 
             // Bump map
 
-            if (this._uBumpMap) {
+            if (state.bumpMap && state.bumpMap.texture) {
 
                 draw.bindTexture(this._uBumpMap, state.normalMap.texture, frameCtx.textureUnit++);
 
@@ -20775,20 +21153,20 @@ var object3 = new XEO.GameObject(scene, {
 
             if (state.diffuseFresnel) {
 
-                if (this._uMaterialDiffuseFresnelBias) {
-                    this._uMaterialDiffuseFresnelBias.setValue(state.diffuseFresnel.bias);
+                if (this._uDiffuseFresnelBias) {
+                    this._uDiffuseFresnelBias.setValue(state.diffuseFresnel.bias);
                 }
 
-                if (this._uMaterialDiffuseFresnelPower) {
-                    this._uMaterialDiffuseFresnelPower.setValue(state.diffuseFresnel.power);
+                if (this._uDiffuseFresnelPower) {
+                    this._uDiffuseFresnelPower.setValue(state.diffuseFresnel.power);
                 }
 
-                if (this._uMaterialDiffuseFresnelLeftColor) {
-                    this._uMaterialDiffuseFresnelLeftColor.setValue(state.diffuseFresnel.leftColor);
+                if (this._uDiffuseFresnelLeftColor) {
+                    this._uDiffuseFresnelLeftColor.setValue(state.diffuseFresnel.leftColor);
                 }
 
-                if (this._uMaterialDiffuseFresnelRightColor) {
-                    this._uMaterialDiffuseFresnelRightColor.setValue(state.diffuseFresnel.rightColor);
+                if (this._uDiffuseFresnelRightColor) {
+                    this._uDiffuseFresnelRightColor.setValue(state.diffuseFresnel.rightColor);
                 }
             }
 
@@ -21335,8 +21713,10 @@ return;
             this.fire(name, this.stats[name]);
         },
 
-        _toJSON: function () {
-            stats: return XEO._copy(this.stats);
+        _getJSON: function () {
+            return {
+                stats: XEO._copy(this.stats)
+            };
         }
     });
 
@@ -21544,7 +21924,7 @@ myTask2.setFailed();
                 params.id = this._idMap.addItem({});
             }
 
-            var task = new XEO.Tasks.Task(this, params);
+            var task = new XEO.Task(this, params);
 
             this.tasks[params.id] = task;
 
@@ -21707,7 +22087,7 @@ myTask2.setFailed();
 
  // Subscribe to updates to the Boundary3D
  worldBoundary.on("updated",
-    function() {
+ function() {
 
         // Get the updated properties again
 
@@ -21763,6 +22143,7 @@ myTask2.setFailed();
             this._getDirty = cfg.getDirty;
             this._getOBB = cfg.getOBB;
             this._getMatrix = cfg.getMatrix;
+            this._getPositions = cfg.getPositions;
 
             // Cached bounding boxes (oriented and axis-aligned) 
 
@@ -21922,7 +22303,7 @@ myTask2.setFailed();
 
                 if (matrix) {
 
-                   // Got transform matrix
+                    // Got transform matrix
 
                     // Transform OOBB by matrix,
                     // derive AABB and center
@@ -22659,6 +23040,7 @@ scene.on("tick", function(e) {
             this._eye2 = XEO.math.vec3();
             this._up2 = XEO.math.vec3();
 
+            this._eyeLookVec = XEO.math.vec3();
             this._vec = XEO.math.vec3();
 
             this._dist = 0;
@@ -22728,7 +23110,9 @@ scene.on("tick", function(e) {
 
             // Get normalized eye->look vector
 
-            this._vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, []));
+            this._eyeLookVec = XEO.math.subVec3(this._eye1, this._look1, this._eyeLookVec);
+
+            this._vec = XEO.math.normalizeVec3(this._eyeLookVec, this._vec);
 
             // Back-off factor in range of [0..1], when 0 is close, 1 is far
 
@@ -22792,7 +23176,7 @@ scene.on("tick", function(e) {
                     this._look2[2] += params.offset[2];
                 }
 
-                this._eye2 = XEO.math.addVec3(this._look2, XEO.math.mulVec3Scalar(this._vec, sca, []));
+                this._eye2 = XEO.math.addVec3(this._look2, XEO.math.mulVec3Scalar(this._vec, sca, []), []);
                 this._up2 = XEO.math.vec3();
                 this._up2[1] = 1;
 
@@ -22854,9 +23238,23 @@ scene.on("tick", function(e) {
 
             var view = this._camera.view;
 
-            view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, []);
+             view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, []);
             view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
-            view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, []);
+return;
+            var newLook = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
+
+            var look = view.look;
+            var eye = view.eye;
+
+            view.eye = [
+                eye[0] + (newLook[0] - look[0]),
+                eye[1] + (newLook[1] - look[1]),
+                eye[2] + (newLook[2] - look[2])
+            ];
+
+            view.look = newLook;
+
+            //view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, []);
         },
 
         // Quadratic easing out - decelerating to zero velocity
@@ -22926,7 +23324,7 @@ scene.on("tick", function(e) {
                 },
 
                 get: function () {
-                    return this._duration * 0.001;
+                    return this._duration / 1000.0;
                 }
             }
         },
@@ -25219,6 +25617,7 @@ scene.on("tick", function(e) {
             }
 
             this.positions = positions;
+            this.normals= null
             this.normals = normals;
             this.uv = uvs;
             this.indices = indices;
@@ -26105,6 +26504,752 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 heightSegments: this._heightSegments,
                 openEnded: this._openEnded
             };
+        }
+    });
+
+})();
+;/**
+ A **Heightmap** defines spherical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Example
+
+ ````javascript
+
+ ````
+
+ @class Heightmap
+ @module XEO
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Heightmap in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Heightmap.
+ @param [cfg.radius=1] {Number}
+ @param [cfg.xSize=8] {Number}
+ @param [cfg.zSegments=6] {Number}
+ @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
+ @extends Geometry
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Heightmap = XEO.Geometry.extend({
+
+        type: "XEO.Heightmap",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this._image = null; // Cached HTML image element
+            this._imageData = null; // Cached image data
+
+            this._srcDirty = false;
+            this._imageDirty = false;
+            this._geometryDirty = false;
+
+            // Set component properties
+
+            this.autoNormals = true;
+
+            if (cfg.src) {
+                this.src = cfg.src;
+
+            } else if (cfg.image) {
+                this.image = cfg.image;
+            }
+
+            this.xSize = cfg.xSize;
+            this.ySize = cfg.ySize;
+            this.zSize = cfg.zSize;
+
+            this.xSegments = cfg.xSegments;
+            this.zSegments = cfg.zSegments;
+
+            this.lod = cfg.lod;
+        },
+
+        _heightmapDirty: function () {
+            if (!this.__dirty) {
+                this.__dirty = true;
+                var self = this;
+                this.scene.once("tick2",
+                    function () {
+                        self._buildHeightmap();
+                        self.__dirty = false;
+                    });
+            }
+        },
+
+        _buildHeightmap: function () {
+
+            if (this._srcDirty) {
+
+                // src has updated
+
+                if (this._src) {
+
+                    // Load new image file
+
+                    this._loadSrc(this._src);
+
+                    // Now need to get image data
+
+                    this._srcDirty = false;
+                    this._imageDirty = true;
+
+                    return;
+                }
+            }
+
+            if (this._imageDirty) {
+
+                // Image data has updated
+
+                if (!this._image) {
+                    return;
+                }
+
+                var element = window.document.createElement('canvas');
+                element.width = this._image.width;
+                element.height = this._image.height;
+                var ctx = element.getContext("2d");
+                ctx.drawImage(this._image, 0, 0);
+                this._imageData = ctx.getImageData(0, 0, this._image.width, this._image.height).data;
+             //   element.parentNode.removeChild(element);
+
+                // Now need to rebuild geometry
+
+                this._imageDirty = false;
+                this._geometryDirty = true;
+            }
+
+            //if (this._geometryDirty) {
+            //
+            //    var imageWidth = this._image.width;
+            //    var imageHeight = this._image.height;
+            //
+            //    var positions = [];
+            //    var uvs = [];
+            //    var indices = [];
+            //
+            //    var width = this._xSize;
+            //    var height = this._zSize;
+            //
+            //    var xSegments = this._xSegments;
+            //    var zSegments = this._zSegments;
+            //
+            //    var halfWidth = width / 2;
+            //    var halfHeight = height / 2;
+            //
+            //    var gridX = xSegments;
+            //    var gridZ = zSegments;
+            //
+            //    var gridX1 = gridX + 1;
+            //    var gridZ1 = gridZ + 1;
+            //
+            //    var segWidth = width / gridX;
+            //    var segHeight = height / gridZ;
+            //
+            //    var imgX;
+            //    var imgY;
+            //
+            //    var x;
+            //    var y;
+            //    var z;
+            //
+            //    for (var px = 0; px <= gridZ; px++) {
+            //        for (var py = 0; py <= gridX; py++) {
+            //
+            //            x = px * segWidth;
+            //            y = py * segHeight;
+            //
+            //            imgX = Math.round((x / width) * (imageWidth - 1));
+            //            imgY = Math.round((y / height) * (imageHeight - 1));
+            //
+            //            z = (this._imageData[(imageWidth * imgY + imgX) * 4]) / 255 * this._ySize;
+            //
+            //            if (z == undefined || isNaN(z)) {
+            //                z = 0;
+            //            }
+            //
+            //            positions.push(x - halfWidth);
+            //            positions.push(-y + halfHeight);
+            //            positions.push(-z);
+            //
+            //            uvs.push(py / gridX);
+            //            uvs.push(1 - px / gridZ);
+            //        }
+            //    }
+            //
+            //    var a;
+            //    var b;
+            //    var c;
+            //    var d;
+            //
+            //    for (var iz = 0; iz < gridZ; iz++) {
+            //        for (var ix = 0; ix < gridX; ix++) {
+            //
+            //            a = ix + gridX1 * iz;
+            //            b = ix + gridX1 * ( iz + 1 );
+            //            c = ( ix + 1 ) + gridX1 * ( iz + 1 );
+            //            d = ( ix + 1 ) + gridX1 * iz;
+            //
+            //            if (a >= positions.length || b >= positions.length || c >= positions.length || d >= positions.length) {
+            //                continue;
+            //            }
+            //            indices.push(a);
+            //            indices.push(b);
+            //            indices.push(c);
+            //
+            //            indices.push(c);
+            //            indices.push(d);
+            //            indices.push(a);
+            //        }
+            //    }
+            //
+            //    this.positions = positions;
+            //    this.normals = null;
+            //    //this.normals = normals;
+            //    this.uv = uvs;
+            //    this.indices = indices;
+            //
+            //    this._geometryDirty = false;
+            //}
+            //
+            //return;
+
+            if (this._geometryDirty) {
+
+                // Geometry needs rebuild
+
+                if (!this._image || !this._imageData) {
+                    return;
+                }
+
+                var imageWidth = this._image.width;
+                var imageHeight = this._image.height;
+
+                var xSize = this._xSize;
+                var ySize = this._ySize;
+                var zSize = this._zSize;
+
+                var xSegments = Math.floor(this._lod * this._xSegments);
+                var zSegments = Math.floor(this._lod * this._zSegments);
+
+                if (xSegments < 4) {
+                    xSegments = 4;
+                }
+
+                if (zSegments < 4) {
+                    zSegments = 4;
+                }
+
+                var positions = [];
+                var uvs = [];
+                var indices = [];
+
+                var halfXSize = xSize / 2;
+                var halfYSize = zSize / 2;
+
+                var xSegments1 = xSegments + 1;
+                var zSegments1 = zSegments + 1;
+
+                var segWidth = xSize / xSegments;
+                var segHeight = zSize / zSegments;
+
+                var imgX;
+                var imgY;
+
+                var x;
+                var y;
+                var z;
+
+                for (var px = 0; px <= zSegments; px++) {
+                    for (var py = 0; py <= xSegments; py++) {
+
+                        x = px * segWidth;
+                        y = py * segHeight;
+
+                        imgX = Math.round((x / xSize) * (imageWidth - 1));
+                        imgY = Math.round((y / zSize) * (imageHeight - 1));
+
+                        z = (this._imageData[(imageWidth * imgY + imgX) * 4]) / 255 * ySize;
+
+                        if (z == undefined || isNaN(z)) {
+                            z = 0;
+                        }
+
+                        positions.push(x - halfXSize);
+                        positions.push(-y + halfYSize);
+                        positions.push(-z);
+
+                        uvs.push(py / xSegments);
+                        uvs.push(1 - px / zSegments);
+                    }
+                }
+
+                var a;
+                var b;
+                var c;
+                var d;
+
+                for (var iz = 0; iz < zSegments; iz++) {
+                    for (var ix = 0; ix < xSegments; ix++) {
+
+                        a = ix + xSegments1 * iz;
+                        b = ix + xSegments1 * ( iz + 1 );
+                        c = ( ix + 1 ) + xSegments1 * ( iz + 1 );
+                        d = ( ix + 1 ) + xSegments1 * iz;
+
+                        indices.push(a);
+                        indices.push(b);
+                        indices.push(c);
+
+                        indices.push(c);
+                        indices.push(d);
+                        indices.push(a);
+                    }
+                }
+
+                this.positions = positions;
+                this.normals = positions;
+
+                this.uv = uvs;
+                this.indices = indices;
+
+                this._geometryDirty = false;
+            }
+        },
+
+        _loadSrc: function (src) {
+
+            //var task = this.scene.tasks.create({
+            //    description: "Loading heightmap image"
+            //});
+
+            var self = this;
+
+            var image = new Image();
+
+            image.onload = function () {
+
+                if (self._src === src) {
+
+                    // Ensure data source was not changed while we were loading
+
+                    // Keep self._src because that's where we loaded the image
+                    // from, and we may need to save that in JSON later
+
+                    self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
+
+                    self._srcDirty = false;
+                    self._imageDirty = true;
+                    self._geometryDirty = true;
+
+                    self._heightmapDirty();
+
+                    /**
+                     * Fired whenever this Heightmap's  {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property changes.
+                     * @event image
+                     * @param value {HTML Image} The property's new value
+                     */
+                    self.fire("image", self._image);
+                }
+
+            ///    task.setCompleted();
+            };
+
+            image.onerror = function () {
+                //task.setFailed();
+            };
+
+            if (src.indexOf("data") === 0) {
+
+                // Image data
+                image.src = src;
+
+            } else {
+
+                // Image file
+                image.crossOrigin = "Anonymous";
+                image.src = src;
+            }
+        },
+
+        _props: {
+
+            /**
+             * The Heightmap's level-of-detail factor.
+             *
+             * Fires a {{#crossLink "Heightmap/lod:event"}}{{/crossLink}} event on change.
+             *
+             * @property lod
+             * @default 1
+             * @type Number
+             */
+            lod: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._lod === value) {
+                        return;
+                    }
+
+                    if (value < 0 || value > 1) {
+                        this.warn("clamping lod to [0..1]");
+                        value = value < 0 ? 0 : 1;
+                    }
+
+                    this._lod = value;
+
+                    this._geometryDirty = true;
+
+                    this._heightmapDirty();
+
+                    /**
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/lod:property"}}{{/crossLink}} property changes.
+                     * @event lod
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("lod", this._lod);
+                },
+
+                get: function () {
+                    return this._lod;
+                }
+            },
+
+            /**
+             * Indicates an HTML DOM Image object to source this Heightmap from.
+             *
+             * Alternatively, you could indicate the source via the
+             * {{#crossLink "Heightmap/src:property"}}{{/crossLink}} property.
+             *
+             * Fires an {{#crossLink "Heightmap/image:event"}}{{/crossLink}} event on change.
+             *
+             * Sets the {{#crossLink "Heightmap/src:property"}}{{/crossLink}} to null.
+             *
+             * @property image
+             * @default null
+             * @type {HTMLImageElement}
+             */
+            image: {
+
+                set: function (value) {
+
+                    this._image = value ? XEO.renderer.webgl.ensureImageSizePowerOfTwo(value) : value;
+                    this._src = null;
+
+                    this._srcDirty = false;
+                    this._imageDirty = true;
+                    this._geometryDirty = true;
+
+                    this._heightmapDirty();
+
+                    /**
+                     * Fired whenever this Heightmap's  {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property changes.
+                     * @event image
+                     * @param value {HTML Image} The property's new value
+                     */
+                    this.fire("image", this._image);
+                },
+
+                get: function () {
+                    return this._state.image;
+                }
+            },
+
+            /**
+             * Indicates a path to an image file to source this Heightmap from.
+             *
+             * Alternatively, you could indicate the source via the
+             * {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property.
+             *
+             * Fires a {{#crossLink "Heightmap/src:event"}}{{/crossLink}} event on change.
+             *
+             * Sets the {{#crossLink "Heightmap/image:property"}}{{/crossLink}} to null.
+             *
+             * @property src
+             * @default null
+             * @type String
+             */
+            src: {
+
+                set: function (value) {
+
+                    this._image = null;
+                    this._src = value;
+
+                    this._srcDirty = true;
+                    this._imageDirty = true;
+                    this._geometryDirty = true;
+
+                    this._heightmapDirty();
+
+                    /**
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/src:property"}}{{/crossLink}} property changes.
+                     * @event src
+                     * @param value The property's new value
+                     * @type String
+                     */
+                    this.fire("src", this._src);
+                },
+
+                get: function () {
+                    return this._src;
+                }
+            },
+
+            /**
+             * The Heightmap's dimension (width) on the X-axis.
+             *
+             * Fires a {{#crossLink "Sphere/xSize:event"}}{{/crossLink}} event on change.
+             *
+             * @property xSize
+             * @default 1
+             * @type Number
+             */
+            xSize: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._xSize === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative xSize not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._xSize = value;
+
+                    this._geometryDirty = true;
+
+                    this._heightmapDirty();
+
+                    /**
+                     * Fired whenever this Sphere's {{#crossLink "Sphere/xSize:property"}}{{/crossLink}} property changes.
+                     * @event xSize
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("xSize", this._xSize);
+                },
+
+                get: function () {
+                    return this._xSize;
+                }
+            },
+
+            /**
+             * The Heightmap's dimension (height) on the Y-axis.
+             *
+             * Fires a {{#crossLink "Sphere/ySize:event"}}{{/crossLink}} event on change.
+             *
+             * @property ySize
+             * @default 0.25
+             * @type Number
+             */
+            ySize: {
+
+                set: function (value) {
+
+                    value = value || 0.25;
+
+                    if (this._ySize === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative ySize not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._ySize = value;
+
+                    this._geometryDirty = true;
+
+                    this._heightmapDirty();
+
+                    /**
+                     * Fired whenever this Sphere's {{#crossLink "Sphere/ySize:property"}}{{/crossLink}} property changes.
+                     * @event ySize
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("ySize", this._ySize);
+                },
+
+                get: function () {
+                    return this._ySize;
+                }
+            },
+
+            /**
+             * The Heightmap's dimension (depth) on the Z-axis.
+             *
+             * Fires a {{#crossLink "Sphere/zSize:event"}}{{/crossLink}} event on change.
+             *
+             * @property zSize
+             * @default 1
+             * @type Number
+             */
+            zSize: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._zSize === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative zSize not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._zSize = value;
+
+                    this._geometryDirty = true;
+
+                    this._heightmapDirty();
+
+                    /**
+                     * Fired whenever this Sphere's {{#crossLink "Sphere/zSize:property"}}{{/crossLink}} property changes.
+                     * @event zSize
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("zSize", this._zSize);
+                },
+
+                get: function () {
+                    return this._zSize;
+                }
+            },
+
+            /**
+             * The Heightmap's number of segments on the X-axis (width).
+             *
+             * Fires a {{#crossLink "Sphere/xSegments:event"}}{{/crossLink}} event on change.
+             *
+             * @property xSegments
+             * @default 100
+             * @type Number
+             */
+            xSegments: {
+
+                set: function (value) {
+
+                    value = value || 100;
+
+                    if (this._xSegments === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative xSegments not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._xSegments = value;
+
+                    this._geometryDirty = true;
+
+                    this._heightmapDirty();
+
+                    /**
+                     * Fired whenever this Sphere's {{#crossLink "Sphere/xSegments:property"}}{{/crossLink}} property changes.
+                     * @event xSegments
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("xSegments", this._xSegments);
+                },
+
+                get: function () {
+                    return this._xSegments;
+                }
+            },
+
+            /**
+             * The Heightmap's number of segments on the Z-axis (depth).
+             *
+             * Fires a {{#crossLink "Sphere/zSegments:event"}}{{/crossLink}} event on change.
+             *
+             * @property zSegments
+             * @default 100
+             * @type Number
+             */
+            zSegments: {
+
+                set: function (value) {
+
+                    value = value || 100;
+
+                    if (this._zSegments === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative zSegments not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._zSegments = value;
+
+                    this._geometryDirty = true;
+
+                    this._heightmapDirty();
+
+                    /**
+                     * Fired whenever this Sphere's {{#crossLink "Sphere/zSegments:property"}}{{/crossLink}} property changes.
+                     * @event zSegments
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("zSegments", this._zSegments);
+                },
+
+                get: function () {
+                    return this._zSegments;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json = {
+
+                xSize: this._xSize,
+                ySize: this._ySize,
+                zSize: this._zSize,
+
+                xSegments: this._xSegments,
+                zSegments: this._zSegments
+            };
+
+            if (this._src) {
+                json.src = this._src;
+
+            } else if (this._image) {
+                // TODO: json._image = <image data>
+            }
+
+            return json;
+
         }
     });
 
