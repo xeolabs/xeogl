@@ -67,6 +67,7 @@
             this._eye2 = XEO.math.vec3();
             this._up2 = XEO.math.vec3();
 
+            this._eyeLookVec = XEO.math.vec3();
             this._vec = XEO.math.vec3();
 
             this._dist = 0;
@@ -136,7 +137,9 @@
 
             // Get normalized eye->look vector
 
-            this._vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, []));
+            this._eyeLookVec = XEO.math.subVec3(this._eye1, this._look1, this._eyeLookVec);
+
+            this._vec = XEO.math.normalizeVec3(this._eyeLookVec, this._vec);
 
             // Back-off factor in range of [0..1], when 0 is close, 1 is far
 
@@ -200,7 +203,7 @@
                     this._look2[2] += params.offset[2];
                 }
 
-                this._eye2 = XEO.math.addVec3(this._look2, XEO.math.mulVec3Scalar(this._vec, sca, []));
+                this._eye2 = XEO.math.addVec3(this._look2, XEO.math.mulVec3Scalar(this._vec, sca, []), []);
                 this._up2 = XEO.math.vec3();
                 this._up2[1] = 1;
 
@@ -262,9 +265,23 @@
 
             var view = this._camera.view;
 
-            view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, []);
+             view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, []);
             view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
-            view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, []);
+return;
+            var newLook = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
+
+            var look = view.look;
+            var eye = view.eye;
+
+            view.eye = [
+                eye[0] + (newLook[0] - look[0]),
+                eye[1] + (newLook[1] - look[1]),
+                eye[2] + (newLook[2] - look[2])
+            ];
+
+            view.look = newLook;
+
+            //view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, []);
         },
 
         // Quadratic easing out - decelerating to zero velocity
@@ -334,7 +351,7 @@
                 },
 
                 get: function () {
-                    return this._duration * 0.001;
+                    return this._duration / 1000.0;
                 }
             }
         },
