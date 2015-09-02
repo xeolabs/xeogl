@@ -608,11 +608,18 @@
                 "XEO": 1
             }
         },
+        "src/extras/animation/_module.js": {
+            "name": "src/extras/animation/_module.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/extras/animation/cameraFlight.js": {
             "name": "src/extras/animation/cameraFlight.js",
             "modules": {},
             "classes": {
-                "XEO.CameraFlight": 1
+                "CameraFlight": 1
             },
             "fors": {},
             "namespaces": {}
@@ -677,6 +684,13 @@
             "classes": {
                 "SplineCurve": 1
             },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/extras/geometry/_module.js": {
+            "name": "src/extras/geometry/_module.js",
+            "modules": {},
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -751,6 +765,13 @@
             "classes": {
                 "GroupBoundary": 1
             },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/extras/input/_module.js": {
+            "name": "src/extras/input/_module.js",
+            "modules": {},
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -953,7 +974,7 @@
                 "Component": 1,
                 "Scene": 1,
                 "XEO": 1,
-                "XEO.CameraFlight": 1,
+                "CameraFlight": 1,
                 "CameraPath": 1,
                 "CubicBezierCurve": 1,
                 "Curve": 1,
@@ -994,7 +1015,7 @@
             "submodules": {},
             "classes": {
                 "MorphTargets": 1,
-                "XEO.CameraFlight": 1,
+                "CameraFlight": 1,
                 "CameraPath": 1
             },
             "fors": {},
@@ -4167,8 +4188,8 @@
             "static": 1,
             "author": "xeolabs / http://xeolabs.com/"
         },
-        "XEO.CameraFlight": {
-            "name": "XEO.CameraFlight",
+        "CameraFlight": {
+            "name": "CameraFlight",
             "shortname": "CameraFlight",
             "classitems": [],
             "plugins": [],
@@ -4176,10 +4197,10 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "XEO",
-            "namespace": "XEO",
+            "namespace": "",
             "file": "src/extras/animation/cameraFlight.js",
             "line": 1,
-            "description": "A **CameraFlight** flies a {{#crossLink \"Camera\"}}{{/crossLink}} to a given target.\n\n## Overview\n\n\n<ul>\n<li>A CameraFlight animates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to the {{#crossLink \"Camera\"}}{{/crossLink}}.</li>\n<li>A CameraFlight can be attached to a different {{#crossLink \"Camera\"}}{{/crossLink}} at any time.</li>\n<li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>\n</ul>\n\nA target can be:\n\n<ul>\n<li>a World-space {{#crossLink \"Boundary3D\"}}{{/crossLink}}</li>,\n<li>an instance or ID of any {{#crossLink \"Component\"}}{{/crossLink}} subtype that provides a World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} in a \"worldBoundary\" property, or</li>\n<li>specific ````eye````, ````look```` and ````up```` vectors.\n</ul>\n\n## Example #1\n\nFlying to a {{#crossLink \"GameObject\"}}{{/crossLink}} (which provides a World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} via its {{#crossLink \"GameObject/worldBoundary:property\"}}{{/crossLink}} property):\n\n````Javascript\nvar camera = new XEO.Camera();\n\n// Create a CameraFlight that takes exactly ten seconds to fly\n// the Camera to each specified target\nvar cameraFlight = new XEO.CameraFlight({\n   camera: camera,\n   duration: 20\n});\n\n// Create a GameObject, which gets all the default components\nvar object = new GameObject();\n\n// Fly to the GameObject's worldBoundary\ncameraFlight.flyTo(object);\n````\n\n## Example #2\n\nFlying the CameraFlight from the previous example to specified eye, look and up positions:\n\n````Javascript\n// Fly to a target eye, look and up\ncameraFlight.flyTo({\n   eye: [-5,-5,-5],\n   look: [0,0,0]\n   up: [0,1,0]\n}, function() {\n   // Arrived\n});\n````\n\n## Example #3\n\nFlying the CameraFlight from the previous two examples explicitly to the World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} of the {{#crossLink \"GameObject\"}}{{/crossLink}} property):\n\n````Javascript\nvar worldBoundary = object.worldBoundary;\n\ncameraFlight.flyTo(worldBoundary);\n````\n\n## Example #4\n\nFlying the CameraFlight from the previous two examples explicitly to {{#crossLink \"Boundary3D\"}}Boundary3D's{{/crossLink}}\naxis-aligned bounding box:\n\n````Javascript\nvar worldBoundary = object.worldBoundary;\n\nvar aabb = worldBoundary.aabb;\n\ncameraFlight.flyTo(aabb);\n````",
+            "description": "A **CameraFlight** flies a {{#crossLink \"Camera\"}}{{/crossLink}} to a given target.\n\n## Overview\n\n<ul>\n   <li>A CameraFlight animates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to the {{#crossLink \"Camera\"}}{{/crossLink}}.</li>\n   <li>A CameraFlight can be attached to a different {{#crossLink \"Camera\"}}{{/crossLink}} at any time.</li>\n   <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>\n</ul>\n\nA target can be:\n\n<ul>\n   <li>a World-space {{#crossLink \"Boundary3D\"}}{{/crossLink}},</li>\n   <li>an instance or ID of any {{#crossLink \"Component\"}}{{/crossLink}} subtype that provides a World-space</li>\n   {{#crossLink \"Boundary3D\"}}{{/crossLink}} in a \"worldBoundary\" property, or</li>\n   <li>specific ````eye````, ````look```` and ````up```` positions.</li>\n</ul>\n\n## Example #1\n\nFlying to a {{#crossLink \"GameObject\"}}{{/crossLink}} (which provides a World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} via its {{#crossLink \"GameObject/worldBoundary:property\"}}{{/crossLink}} property):\n\n````Javascript\nvar camera = new XEO.Camera();\n\n// Create a CameraFlight that takes exactly ten seconds to fly\n// the Camera to each specified target\nvar cameraFlight = new XEO.CameraFlight({\n   camera: camera,\n   duration: 20\n});\n\n// Create a GameObject, which gets all the default components\nvar object = new GameObject();\n\n// Fly to the GameObject's worldBoundary\ncameraFlight.flyTo(object);\n````\n\n## Example #2\n\nFlying the CameraFlight from the previous example to specified eye, look and up positions:\n\n````Javascript\n// Fly to a target eye, look and up\ncameraFlight.flyTo({\n   eye: [-5,-5,-5],\n   look: [0,0,0]\n   up: [0,1,0]\n}, function() {\n   // Arrived\n});\n````\n\n## Example #3\n\nFlying the CameraFlight from the previous two examples explicitly to the World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} of the {{#crossLink \"GameObject\"}}{{/crossLink}} property):\n\n````Javascript\nvar worldBoundary = object.worldBoundary;\n\ncameraFlight.flyTo(worldBoundary);\n````\n\n## Example #4\n\nFlying the CameraFlight from the previous two examples explicitly to {{#crossLink \"Boundary3D\"}}Boundary3D's{{/crossLink}}\naxis-aligned bounding box:\n\n````Javascript\nvar worldBoundary = object.worldBoundary;\n\nvar aabb = worldBoundary.aabb;\n\ncameraFlight.flyTo(aabb);\n````",
             "submodule": "animation",
             "is_constructor": 1,
             "params": [
@@ -4191,8 +4212,8 @@
                 },
                 {
                     "name": "cfg",
-                    "description": "Fly configuration",
-                    "type": "*",
+                    "description": "Target - see class documentation above.",
+                    "type": "String|Component|Boundary3D|Array of Number|*",
                     "optional": true,
                     "props": [
                         {
@@ -14670,19 +14691,19 @@
         },
         {
             "file": "src/extras/animation/cameraFlight.js",
-            "line": 102,
+            "line": 101,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
             "type": "String",
             "final": 1,
-            "class": "XEO.CameraFlight",
+            "class": "CameraFlight",
             "module": "XEO",
             "submodule": "animation"
         },
         {
             "file": "src/extras/animation/cameraFlight.js",
-            "line": 149,
+            "line": 148,
             "description": "Begins flying this CameraFlight's {{#crossLink \"Camera\"}}{{/crossLink}} to the given target.\n\n<ul>\n    <li>When the target is a boundary, the {{#crossLink \"Camera\"}}{{/crossLink}} will fly towards the target\n    and stop when the target fills most of the canvas.</li>\n    <li>When the target is an explicit {{#crossLink \"Camera\"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````\n     vectors, then this CameraFlight will interpolate the {{#crossLink \"Camera\"}}{{/crossLink}} to that target and stop there.</li>",
             "itemtype": "method",
             "name": "flyTo",
@@ -14738,13 +14759,13 @@
                     "optional": true
                 }
             ],
-            "class": "XEO.CameraFlight",
+            "class": "CameraFlight",
             "module": "XEO",
             "submodule": "animation"
         },
         {
             "file": "src/extras/animation/cameraFlight.js",
-            "line": 424,
+            "line": 423,
             "description": "Fired whenever this CameraFlight's {{#crossLink \"CameraFlight/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -14754,7 +14775,7 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "XEO.CameraFlight",
+            "class": "CameraFlight",
             "module": "XEO",
             "submodule": "animation"
         },

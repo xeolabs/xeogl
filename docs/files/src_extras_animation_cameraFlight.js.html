@@ -42,6 +42,7 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
@@ -113,7 +114,6 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
-                                <li><a href="../classes/XEO.CameraFlight.html">XEO.CameraFlight</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -178,20 +178,19 @@
 
  ## Overview
 
-
  &lt;ul&gt;
- &lt;li&gt;A CameraFlight animates the {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} attached to the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}.&lt;/li&gt;
- &lt;li&gt;A CameraFlight can be attached to a different {{#crossLink &quot;Camera&quot;}}{{/crossLink}} at any time.&lt;/li&gt;
- &lt;li&gt;While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.&lt;/li&gt;
+    &lt;li&gt;A CameraFlight animates the {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} attached to the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}.&lt;/li&gt;
+    &lt;li&gt;A CameraFlight can be attached to a different {{#crossLink &quot;Camera&quot;}}{{/crossLink}} at any time.&lt;/li&gt;
+    &lt;li&gt;While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.&lt;/li&gt;
  &lt;/ul&gt;
 
  A target can be:
 
  &lt;ul&gt;
- &lt;li&gt;a World-space {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}&lt;/li&gt;,
- &lt;li&gt;an instance or ID of any {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that provides a World-space
- {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} in a &quot;worldBoundary&quot; property, or&lt;/li&gt;
- &lt;li&gt;specific &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60; vectors.
+    &lt;li&gt;a World-space {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}},&lt;/li&gt;
+    &lt;li&gt;an instance or ID of any {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that provides a World-space&lt;/li&gt;
+    {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} in a &quot;worldBoundary&quot; property, or&lt;/li&gt;
+    &lt;li&gt;specific &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60; positions.&lt;/li&gt;
  &lt;/ul&gt;
 
  ## Example #1
@@ -260,7 +259,7 @@
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
- @param [cfg] {*} Fly configuration
+ @param [cfg] {String|Component|Boundary3D|Array of Number|*} Target - see class documentation above.
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} to control.

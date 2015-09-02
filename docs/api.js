@@ -5,6 +5,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Boundary3D",
         "Camera",
         "CameraControl",
+        "CameraFlight",
         "CameraPath",
         "Canvas",
         "Clip",
@@ -75,7 +76,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Translate",
         "Visibility",
         "XEO",
-        "XEO.CameraFlight",
         "math"
     ],
     "modules": [
