@@ -23149,34 +23149,85 @@ scene.on("tick", function(e) {
 
 })();
 ;/**
- A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target component, AABB or eye/look/up position.
+ A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target.
 
  ## Overview
 
+
  <ul>
- <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.
+ <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
+ <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
+ <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
  </ul>
 
- ## Example
+ A target can be:
+
+ <ul>
+ <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}}</li>,
+ <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space
+ {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
+ <li>specific ````eye````, ````look```` and ````up```` vectors.
+ </ul>
+
+ ## Example #1
+
+ Flying to a {{#crossLink "GameObject"}}{{/crossLink}} (which provides a World-space
+ {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "GameObject/worldBoundary:property"}}{{/crossLink}} property):
 
  ````Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera();
 
- var camera = new XEO.Camera(scene);
-
- var object = new XEO.GameObject(scene);
-
- var animation = new XEO.CameraFlight(scene, {
-    camera: camera
+ // Create a CameraFlight that takes exactly ten seconds to fly
+ // the Camera to each specified target
+ var cameraFlight = new XEO.CameraFlight({
+    camera: camera,
+    duration: 20
  });
 
- animation.flyTo({
+ // Create a GameObject, which gets all the default components
+ var object = new GameObject();
+
+ // Fly to the GameObject's worldBoundary
+ cameraFlight.flyTo(object);
+ ````
+
+ ## Example #2
+
+ Flying the CameraFlight from the previous example to specified eye, look and up positions:
+
+ ````Javascript
+ // Fly to a target eye, look and up
+ cameraFlight.flyTo({
     eye: [-5,-5,-5],
     look: [0,0,0]
     up: [0,1,0]
  }, function() {
     // Arrived
  });
+ ````
+
+ ## Example #3
+
+ Flying the CameraFlight from the previous two examples explicitly to the World-space
+ {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "GameObject"}}{{/crossLink}} property):
+
+ ````Javascript
+ var worldBoundary = object.worldBoundary;
+
+ cameraFlight.flyTo(worldBoundary);
+ ````
+
+ ## Example #4
+
+ Flying the CameraFlight from the previous two examples explicitly to {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
+ axis-aligned bounding box:
+
+ ````Javascript
+ var worldBoundary = object.worldBoundary;
+
+ var aabb = worldBoundary.aabb;
+
+ cameraFlight.flyTo(aabb);
  ````
 
  @class CameraFlight
@@ -23292,66 +23343,91 @@ scene.on("tick", function(e) {
             this._look1 = lookat.look;
             this._up1 = lookat.up;
 
-            var worldBoundary = params.worldBoundary;
-            var component = !worldBoundary ? params.component : null;
-            var aabb = worldBoundary ? worldBoundary.aabb : params.aabb;
+            var aabb;
+            var eye;
+            var look;
+            var up;
 
-            var eye = params.eye;
-            var look = params.look;
-            var up = params.up;
+            if (worldBoundary = params.worldBoundary) { // Get the worldBoundary once for efficiency
 
-            var offset = params.offset;
-            var backoff = params.backoff;
+                // Argument is a Component subtype with a worldBoundary
 
-            if (worldBoundary || component || aabb) {
+                aabb = worldBoundary.aabb;
 
-                if (component) {
+            } else if (aabb = params.aabb) { // Get the AABB once for efficiency
 
-                    // Get AABB from component
+                // Argument is a Boundary3D
 
-                    if (XEO._isNumeric(component) || XEO._isString(component)) {
+            } else if (params.xmin != undefined &&
+                params.ymin != undefined &&
+                params.zmin != undefined &&
+                params.xmax != undefined &&
+                params.ymax != undefined &&
+                params.zmax != undefined) {
 
-                        var componentId = component;
+                // Argument is an AABB
 
-                        component = this.scene.components[componentId];
+                aabb = params;
 
-                        if (!component) {
-                            this.error("Component not found: " + XEO._inQuotes(componentId));
-                            if (ok) {
-                                ok();
-                            }
-                            return;
-                        }
-                    }
+            } else if (params.eye || params.look || params.up) {
 
-                    worldBoundary = component.worldBoundary;
+                // Argument is eye, look and up positions
 
-                    if (!worldBoundary) {
-                        this.error("Can't fly to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
+                eye = params.eye;
+                look = params.look;
+                up = params.up;
+
+            } else {
+
+                // Argument must be an instance or ID of a Component (subtype)
+
+                var component = params;
+
+                if (XEO._isNumeric(component) || XEO._isString(component)) {
+
+                    var componentId = component;
+
+                    component = this.scene.components[componentId];
+
+                    if (!component) {
+                        this.error("Component not found: " + XEO._inQuotes(componentId));
                         if (ok) {
                             ok();
                         }
                         return;
                     }
-
-                    aabb = worldBoundary.aabb;
                 }
 
-                if (aabb) {
+                var worldBoundary = component.worldBoundary;
 
-                    if (aabb.xmax <= aabb.xmin || aabb.ymax <= aabb.ymin || aabb.zmax <= aabb.zmin) {
-
-                        // Don't fly to an empty boundary
-                        return;
+                if (!worldBoundary) {
+                    this.error("Can't fly to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
+                    if (ok) {
+                        ok();
                     }
+                    return;
+                }
 
-                    this._look2 = XEO.math.getAABBCenter(aabb);
+                aabb = worldBoundary.aabb;
+            }
 
-                    if (offset) {
-                        this._look2[0] += offset[0];
-                        this._look2[1] += offset[1];
-                        this._look2[2] += offset[2];
-                    }
+            var offset = params.offset;
+            var backoff = params.backoff;
+
+            if (aabb) {
+
+                if (aabb.xmax <= aabb.xmin || aabb.ymax <= aabb.ymin || aabb.zmax <= aabb.zmin) {
+
+                    // Don't fly to an empty boundary
+                    return;
+                }
+
+                this._look2 = XEO.math.getAABBCenter(aabb);
+
+                if (offset) {
+                    this._look2[0] += offset[0];
+                    this._look2[1] += offset[1];
+                    this._look2[2] += offset[2];
                 }
 
                 this._flyToBoundary = true;
@@ -23452,7 +23528,7 @@ scene.on("tick", function(e) {
 
                 view.eye = [eye[0] + x, eye[1] + y, eye[2] + z];
                 view.look = newLook;
-           //     view.up = [up[0] + x, up[1] + y, up[2] + z];
+                //     view.up = [up[0] + x, up[1] + y, up[2] + z];
             }
         },
 
