@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>XEO.CameraFlight - xeoengine</title>
+    <title>CameraFlight - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -42,6 +42,7 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
@@ -113,7 +114,6 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
-                                <li><a href="../classes/XEO.CameraFlight.html">XEO.CameraFlight</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -169,7 +169,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>XEO.CameraFlight Class</h1>
+<h1>CameraFlight Class</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -190,17 +190,17 @@
     <p>A <strong>CameraFlight</strong> flies a <a href="../classes/Camera.html" class="crosslink">Camera</a> to a given target.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A CameraFlight animates the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> attached to the <a href="../classes/Camera.html" class="crosslink">Camera</a>.</li>
-<li>A CameraFlight can be attached to a different <a href="../classes/Camera.html" class="crosslink">Camera</a> at any time.</li>
-<li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
+   <li>A CameraFlight animates the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> attached to the <a href="../classes/Camera.html" class="crosslink">Camera</a>.</li>
+   <li>A CameraFlight can be attached to a different <a href="../classes/Camera.html" class="crosslink">Camera</a> at any time.</li>
+   <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
 </ul>
 
 <p>A target can be:</p>
 <ul>
-<li>a World-space <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></li>,
-<li>an instance or ID of any <a href="../classes/Component.html" class="crosslink">Component</a> subtype that provides a World-space
-<a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> in a "worldBoundary" property, or</li>
-<li>specific <code>eye</code>, <code>look</code> and <code>up</code> vectors.
+   <li>a World-space <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></li>,
+   <li>an instance or ID of any <a href="../classes/Component.html" class="crosslink">Component</a> subtype that provides a World-space</li>
+   <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> in a "worldBoundary" property, or</li>
+   <li>specific <code>eye</code>, <code>look</code> and <code>up</code> vectors.</li>
 </ul>
 
 <h2 id="example-1">Example #1</h2>
@@ -253,8 +253,8 @@ cameraFlight.flyTo(aabb);
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_XEO.CameraFlight" class="method item">
-            <h3 class="name"><code>XEO.CameraFlight</code></h3>
+        <div id="method_CameraFlight" class="method item">
+            <h3 class="name"><code>CameraFlight</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -306,12 +306,12 @@ cameraFlight.flyTo(aabb);
                         </li>
                         <li class="param">
                                 <code class="param-name optional">[cfg]</code>
-                                <span class="type"></span>
+                                <span class="type">String | <a href="../classes/Component.html" class="crosslink">Component</a> | <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> | Array of Number | </span>
                                 <span class="flag optional" title="This parameter is optional.">optional</span>
         
         
                             <div class="param-description">
-                                <p>Fly configuration</p>
+                                <p>Target - see class documentation above.</p>
         
                             </div>
         
@@ -672,7 +672,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_extras_animation_cameraFlight.js.html#l149"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:149</code></a>
+        <a href="../files/src_extras_animation_cameraFlight.js.html#l148"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:148</code></a>
         </p>
 
 
@@ -1319,7 +1319,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_extras_animation_cameraFlight.js.html#l102"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:102</code></a>
+                            <a href="../files/src_extras_animation_cameraFlight.js.html#l101"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:101</code></a>
                             </p>
                     
                     
@@ -1350,7 +1350,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_animation_cameraFlight.js.html#l424"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:424</code></a>
+                            <a href="../files/src_extras_animation_cameraFlight.js.html#l423"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:423</code></a>
                             </p>
                     
                     
