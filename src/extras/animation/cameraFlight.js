@@ -3,20 +3,19 @@
 
  ## Overview
 
-
  <ul>
- <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
- <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
- <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
+    <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
+    <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
+    <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
  </ul>
 
  A target can be:
 
  <ul>
- <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}}</li>,
- <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space
- {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
- <li>specific ````eye````, ````look```` and ````up```` vectors.
+    <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
+    <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
+    {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
+    <li>specific ````eye````, ````look```` and ````up```` positions.</li>
  </ul>
 
  ## Example #1
@@ -85,7 +84,7 @@
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg] {*} Fly configuration
+ @param [cfg] {String|Component|Boundary3D|Array of Number|*} Target - see class documentation above.
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
