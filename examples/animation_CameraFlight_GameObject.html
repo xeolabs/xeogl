@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+     - <a href="../docs/classes/CameraFlight.html" target="_other">CameraFlight</a>
+</div>
+
+<script>
+
+    // Create some random objects
+
+    var objects = [];
+    var object;
+
+    for (var i = 0; i < 20; i++) {
+
+        object = new XEO.GameObject({
+
+            transform: new XEO.Translate({
+                xyz: [
+                    Math.random() * 15 - 7,
+                    Math.random() * 15 - 7,
+                    Math.random() * 15 - 7
+                ]
+            }),
+
+            material: new XEO.PhongMaterial({
+                diffuse: [0.6, 0.6, 1]
+            })
+        });
+
+        objects.push(object);
+    }
+
+    // Create a CameraFlight animation
+
+    var flight = new XEO.CameraFlight({
+        duration: 20
+    });
+
+    // Create a couple of camera controls so that
+    // user can rotate and zoom camera while demo runs
+
+    new XEO.MouseOrbitCamera({sensitivity: 0.2});
+    new XEO.MouseZoomCamera();
+
+
+    // Periodically highlight and fly to a randomly-selected object
+
+    var prevObject;
+    var prevObjectDiffuse;
+
+    setInterval(function () {
+
+        if (prevObject) {
+            prevObject.material.diffuse = prevObjectDiffuse;
+        }
+
+        object = objects[Math.floor(Math.random() * 10)];
+
+        prevObject = object;
+        prevObjectDiffuse = object.material.diffuse;
+
+        object.material.diffuse = [1, 1, 0];
+
+        flight.flyTo(object);
+
+    }, 2000);
+
+    // Slowly the eye position about the look position.
+
+    object.scene.on("tick",
+            function () {
+
+                var view = object.camera.view;
+
+                view.rotateEyeY(0.3);
+                view.rotateEyeX(0.2);
+            });
+
+</script>
+</body>
+</html>

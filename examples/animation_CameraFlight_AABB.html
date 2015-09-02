@@ -81,7 +81,11 @@
         prevObjectDiffuse = object.material.diffuse;
 
         object.material.diffuse = [1, 1, 0];
-        flight.flyTo(object);
+
+        var worldBoundary = object.worldBoundary;
+        var aabb = worldBoundary.aabb;
+
+        flight.flyTo(aabb);
 
     }, 2000);
 
