@@ -187,30 +187,66 @@
 
 
 <div class="box intro">
-    <p>A <strong>CameraFlight</strong> flies a <a href="../classes/Camera.html" class="crosslink">Camera</a> to a given target component, AABB or eye/look/up position.</p>
+    <p>A <strong>CameraFlight</strong> flies a <a href="../classes/Camera.html" class="crosslink">Camera</a> to a given target.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A CameraFlight animates the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> attached to the <a href="../classes/Camera.html" class="crosslink">Camera</a>.
+<li>A CameraFlight animates the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> attached to the <a href="../classes/Camera.html" class="crosslink">Camera</a>.</li>
+<li>A CameraFlight can be attached to a different <a href="../classes/Camera.html" class="crosslink">Camera</a> at any time.</li>
+<li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
 </ul>
 
-<h2 id="example">Example</h2>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
+<p>A target can be:</p>
+<ul>
+<li>a World-space <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></li>,
+<li>an instance or ID of any <a href="../classes/Component.html" class="crosslink">Component</a> subtype that provides a World-space
+<a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> in a "worldBoundary" property, or</li>
+<li>specific <code>eye</code>, <code>look</code> and <code>up</code> vectors.
+</ul>
 
-var camera = new XEO.Camera(scene);
+<h2 id="example-1">Example #1</h2>
+<p>Flying to a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> (which provides a World-space
+<a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> via its <a href="../classes/GameObject.html#property_worldBoundary" class="crosslink">worldBoundary</a> property):</p>
+<pre class="code prettyprint"><code class="lang-Javascript">var camera = new XEO.Camera();
 
-var object = new XEO.GameObject(scene);
-
-var animation = new XEO.CameraFlight(scene, {
-   camera: camera
+// Create a CameraFlight that takes exactly ten seconds to fly
+// the Camera to each specified target
+var cameraFlight = new XEO.CameraFlight({
+   camera: camera,
+   duration: 20
 });
 
-animation.flyTo({
+// Create a GameObject, which gets all the default components
+var object = new GameObject();
+
+// Fly to the GameObject&#39;s worldBoundary
+cameraFlight.flyTo(object);
+</code></pre>
+<h2 id="example-2">Example #2</h2>
+<p>Flying the CameraFlight from the previous example to specified eye, look and up positions:</p>
+<pre class="code prettyprint"><code class="lang-Javascript">// Fly to a target eye, look and up
+cameraFlight.flyTo({
    eye: [-5,-5,-5],
    look: [0,0,0]
    up: [0,1,0]
 }, function() {
    // Arrived
 });
+</code></pre>
+<h2 id="example-3">Example #3</h2>
+<p>Flying the CameraFlight from the previous two examples explicitly to the World-space
+<a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> of the <a href="../classes/GameObject.html" class="crosslink">GameObject</a> property):</p>
+<pre class="code prettyprint"><code class="lang-Javascript">var worldBoundary = object.worldBoundary;
+
+cameraFlight.flyTo(worldBoundary);
+</code></pre>
+<h2 id="example-4">Example #4</h2>
+<p>Flying the CameraFlight from the previous two examples explicitly to <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D&#39;s</a>
+axis-aligned bounding box:</p>
+<pre class="code prettyprint"><code class="lang-Javascript">var worldBoundary = object.worldBoundary;
+
+var aabb = worldBoundary.aabb;
+
+cameraFlight.flyTo(aabb);
 </code></pre>
 
 </div>
@@ -394,11 +430,19 @@ animation.flyTo({
 
                             </li>
                             <li class="index-item property inherited">
+                                <a href="#property_json">json</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property inherited inherited">
+                                <a href="#property_string">string</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -413,6 +457,10 @@ animation.flyTo({
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_camera">camera</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
@@ -439,7 +487,7 @@ animation.flyTo({
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l699"><code>src&#x2F;core&#x2F;component.js:699</code></a>
+        <a href="../files/src_core_component.js.html#l723"><code>src&#x2F;core&#x2F;component.js:723</code></a>
         </p>
 
 
@@ -479,7 +527,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l474"><code>src&#x2F;core&#x2F;component.js:474</code></a>
+        <a href="../files/src_core_component.js.html#l496"><code>src&#x2F;core&#x2F;component.js:496</code></a>
         </p>
 
 
@@ -624,7 +672,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_extras_animation_cameraFlight.js.html#l99"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:99</code></a>
+        <a href="../files/src_extras_animation_cameraFlight.js.html#l149"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:149</code></a>
         </p>
 
 
@@ -647,11 +695,11 @@ any subsequent notifications on that location as they are made.</p>
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">params</code>
-                        <span class="type"></span>
+                        <span class="type"> | <a href="../classes/Component.html" class="crosslink">Component</a></span>
 
 
                     <div class="param-description">
-                        <p>Flight parameters</p>
+                        <p>Either a parameters object or a <a href="../classes/Component.html" class="crosslink">Component</a> subtype that has a WorldBoundary.</p>
 
                     </div>
 
@@ -1058,7 +1106,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l492"><code>src&#x2F;core&#x2F;component.js:492</code></a>
+        <a href="../files/src_core_component.js.html#l476"><code>src&#x2F;core&#x2F;component.js:476</code></a>
         </p>
 
 
@@ -1150,6 +1198,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_json" class="property item inherited">
+                        <h3 class="name"><code>json</code></h3>
+                        <span class="type">JSON</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_json">Component</a>:
+                            <a href="../files/src_core_component.js.html#l667"><code>src&#x2F;core&#x2F;component.js:667</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JSON object containing the state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_metadata" class="property item inherited">
                         <h3 class="name"><code>metadata</code></h3>
                         <span class="type">Object</span>
@@ -1201,6 +1275,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_string" class="property item inherited">
+                        <h3 class="name"><code>string</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Component.html#property_string">
+                                    Component
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_core_component.js.html#l694"><code>src&#x2F;core&#x2F;component.js:694</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>String containing the serialized JSON state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_type" class="property item">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
@@ -1216,7 +1319,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_extras_animation_cameraFlight.js.html#l51"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:51</code></a>
+                            <a href="../files/src_extras_animation_cameraFlight.js.html#l102"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:102</code></a>
                             </p>
                     
                     
@@ -1236,6 +1339,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_camera" class="events item">
+                        <h3 class="name"><code>camera</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_animation_cameraFlight.js.html#l424"><code>src&#x2F;extras&#x2F;animation&#x2F;cameraFlight.js:424</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraFlight&#39;s CameraFlight/camera:property
+                    property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1247,7 +1393,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l731"><code>src&#x2F;core&#x2F;component.js:731</code></a>
+                            <a href="../files/src_core_component.js.html#l755"><code>src&#x2F;core&#x2F;component.js:755</code></a>
                             </p>
                     
                     

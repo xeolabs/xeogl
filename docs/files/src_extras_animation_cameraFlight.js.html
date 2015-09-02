@@ -174,34 +174,85 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **CameraFlight** flies a {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to a given target component, AABB or eye/look/up position.
+ A **CameraFlight** flies a {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to a given target.
 
  ## Overview
 
+
  &lt;ul&gt;
- &lt;li&gt;A CameraFlight animates the {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} attached to the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}.
+ &lt;li&gt;A CameraFlight animates the {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} attached to the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;A CameraFlight can be attached to a different {{#crossLink &quot;Camera&quot;}}{{/crossLink}} at any time.&lt;/li&gt;
+ &lt;li&gt;While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.&lt;/li&gt;
  &lt;/ul&gt;
 
- ## Example
+ A target can be:
+
+ &lt;ul&gt;
+ &lt;li&gt;a World-space {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}&lt;/li&gt;,
+ &lt;li&gt;an instance or ID of any {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that provides a World-space
+ {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} in a &quot;worldBoundary&quot; property, or&lt;/li&gt;
+ &lt;li&gt;specific &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60; vectors.
+ &lt;/ul&gt;
+
+ ## Example #1
+
+ Flying to a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} (which provides a World-space
+ {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} via its {{#crossLink &quot;GameObject/worldBoundary:property&quot;}}{{/crossLink}} property):
 
  &#x60;&#x60;&#x60;&#x60;Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera();
 
- var camera = new XEO.Camera(scene);
-
- var object = new XEO.GameObject(scene);
-
- var animation = new XEO.CameraFlight(scene, {
-    camera: camera
+ // Create a CameraFlight that takes exactly ten seconds to fly
+ // the Camera to each specified target
+ var cameraFlight = new XEO.CameraFlight({
+    camera: camera,
+    duration: 20
  });
 
- animation.flyTo({
+ // Create a GameObject, which gets all the default components
+ var object = new GameObject();
+
+ // Fly to the GameObject&#x27;s worldBoundary
+ cameraFlight.flyTo(object);
+ &#x60;&#x60;&#x60;&#x60;
+
+ ## Example #2
+
+ Flying the CameraFlight from the previous example to specified eye, look and up positions:
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+ // Fly to a target eye, look and up
+ cameraFlight.flyTo({
     eye: [-5,-5,-5],
     look: [0,0,0]
     up: [0,1,0]
  }, function() {
     // Arrived
  });
+ &#x60;&#x60;&#x60;&#x60;
+
+ ## Example #3
+
+ Flying the CameraFlight from the previous two examples explicitly to the World-space
+ {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} of the {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} property):
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+ var worldBoundary = object.worldBoundary;
+
+ cameraFlight.flyTo(worldBoundary);
+ &#x60;&#x60;&#x60;&#x60;
+
+ ## Example #4
+
+ Flying the CameraFlight from the previous two examples explicitly to {{#crossLink &quot;Boundary3D&quot;}}Boundary3D&#x27;s{{/crossLink}}
+ axis-aligned bounding box:
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+ var worldBoundary = object.worldBoundary;
+
+ var aabb = worldBoundary.aabb;
+
+ cameraFlight.flyTo(aabb);
  &#x60;&#x60;&#x60;&#x60;
 
  @class CameraFlight
@@ -242,6 +293,7 @@
             this._eye2 = XEO.math.vec3();
             this._up2 = XEO.math.vec3();
 
+            this._eyeLookVec = XEO.math.vec3();
             this._vec = XEO.math.vec3();
 
             this._dist = 0;
@@ -251,8 +303,6 @@
             this._ok = null;
 
             this._onTick = null;
-
-            this._camera = cfg.camera;
 
             this._tempVec = XEO.math.vec3();
 
@@ -280,7 +330,7 @@
          *     &lt;li&gt;When the target is an explicit {{#crossLink &quot;Camera&quot;}}{{/crossLink}} position, given as &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60;
          *      vectors, then this CameraFlight will interpolate the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to that target and stop there.&lt;/li&gt;
          * @method flyTo
-         * @param params  {*} Flight parameters
+         * @param params  {*|Component} Either a parameters object or a {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that has a {{#crossLink &quot;WorldBoundary&quot;}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
          * {{#crossLink &quot;Camera/eye:property&quot;}}Camera&#x27;s eye{{/crossLink}} position will
          * swing away from its {{#crossLink &quot;Camera/eye:property&quot;}}look{{/crossLink}} position as it flies to the target.
@@ -297,102 +347,125 @@
                 this.stop();
             }
 
-            this._ok = ok;
+            var camera = this._children.camera;
 
-            this._arc = params.arc === undefined ? 0.0 : params.arc;
-
-            var lookat = this.camera.view;
-
-            // Set up initial camera state
-
-            this._look1 = lookat.look;
-            this._eye1 = lookat.eye;
-            this._up1 = lookat.up;
-
-            // Get normalized eye-&gt;look vector
-
-            this._vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, []));
-
-            // Back-off factor in range of [0..1], when 0 is close, 1 is far
-
-            var backOff = params.backOff || 0.5;
-
-            if (backOff &lt; 0) {
-                backOff = 0;
-
-            } else if (backOff &gt; 1) {
-                backOff = 1;
+            if (!camera) {
+                if (ok) {
+                    ok();
+                }
+                return;
             }
 
-            backOff = 1 - backOff;
+            this._flying = false;
+            this._flyToLook = false;
+            this._flyToBoundary = false;
 
-            var component = params.component;
-            var aabb = params.aabb;
+            this._ok = ok;
 
-            if (component || aabb) {
+            var lookat = camera.view;
 
-                if (component) {
+            this._eye1 = lookat.eye;
+            this._look1 = lookat.look;
+            this._up1 = lookat.up;
 
-                    if (XEO._isNumeric(component) || XEO._isString(component)) {
+            var aabb;
+            var eye;
+            var look;
+            var up;
 
-                        var componentId = component;
+            if (worldBoundary = params.worldBoundary) { // Get the worldBoundary once for efficiency
 
-                        component = this.scene.components[componentId];
+                // Argument is a Component subtype with a worldBoundary
 
-                        if (!component) {
-                            this.error(&quot;Component not found: &quot; + XEO._inQuotes(componentId));
-                            return;
-                        }
-                    }
+                aabb = worldBoundary.aabb;
 
-                    var worldBoundary = component.worldBoundary;
+            } else if (aabb = params.aabb) { // Get the AABB once for efficiency
 
-                    if (!worldBoundary) {
-                        this.error(&quot;Can&#x27;t fly to component &quot; + XEO._inQuotes(componentId) + &quot; - does not have a worldBoundary&quot;);
-                        return;
-                    }
+                // Argument is a Boundary3D
 
-                    aabb = worldBoundary.aabb;
-                }
+            } else if (params.xmin != undefined &amp;&amp;
+                params.ymin != undefined &amp;&amp;
+                params.zmin != undefined &amp;&amp;
+                params.xmax != undefined &amp;&amp;
+                params.ymax != undefined &amp;&amp;
+                params.zmax != undefined) {
 
-                if (aabb.xmax &lt;= aabb.xmin || aabb.ymax &lt;= aabb.ymin || aabb.zmax &lt;= aabb.zmin) {
-                    return;
-                }
+                // Argument is an AABB
 
-                var dist = params.dist || 2.5;
-                var lenVec = Math.abs(XEO.math.lenVec3(this._vec));
-                var diag = XEO.math.getAABBDiag(aabb);
-                var len = Math.abs((diag / (1.0 + (backOff * 0.8))) / Math.tan(this._stopFOV / 2));  /// Tweak this to set final camera distance on arrival
-                var sca = (len / lenVec) * dist;
+                aabb = params;
 
-                this._look2 = XEO.math.getAABBCenter(aabb);
-                this._look2 = [this._look2[0], this._look2[1], this._look2[2]];
+            } else if (params.eye || params.look || params.up) {
 
-                if (params.offset) {
+                // Argument is eye, look and up positions
 
-                    this._look2[0] += params.offset[0];
-                    this._look2[1] += params.offset[1];
-                    this._look2[2] += params.offset[2];
-                }
-
-                this._eye2 = XEO.math.addVec3(this._look2, XEO.math.mulVec3Scalar(this._vec, sca, []));
-                this._up2 = XEO.math.vec3();
-                this._up2[1] = 1;
+                eye = params.eye;
+                look = params.look;
+                up = params.up;
 
             } else {
 
-                // Zooming to specific look and eye points
+                // Argument must be an instance or ID of a Component (subtype)
 
-                var lookat = params;
+                var component = params;
 
-                var look = params.look || this._camera.view.look;
-                var eye = params.eye || this._camera.view.eye;
-                var up = params.up || this._camera.view.up;
+                if (XEO._isNumeric(component) || XEO._isString(component)) {
+
+                    var componentId = component;
+
+                    component = this.scene.components[componentId];
+
+                    if (!component) {
+                        this.error(&quot;Component not found: &quot; + XEO._inQuotes(componentId));
+                        if (ok) {
+                            ok();
+                        }
+                        return;
+                    }
+                }
+
+                var worldBoundary = component.worldBoundary;
+
+                if (!worldBoundary) {
+                    this.error(&quot;Can&#x27;t fly to component &quot; + XEO._inQuotes(componentId) + &quot; - does not have a worldBoundary&quot;);
+                    if (ok) {
+                        ok();
+                    }
+                    return;
+                }
+
+                aabb = worldBoundary.aabb;
+            }
+
+            var offset = params.offset;
+            var backoff = params.backoff;
+
+            if (aabb) {
+
+                if (aabb.xmax &lt;= aabb.xmin || aabb.ymax &lt;= aabb.ymin || aabb.zmax &lt;= aabb.zmin) {
+
+                    // Don&#x27;t fly to an empty boundary
+                    return;
+                }
+
+                this._look2 = XEO.math.getAABBCenter(aabb);
+
+                if (offset) {
+                    this._look2[0] += offset[0];
+                    this._look2[1] += offset[1];
+                    this._look2[2] += offset[2];
+                }
+
+                this._flyToBoundary = true;
+
+            } else if (eye || look || up) {
+
+                look = look || this._look1;
+                eye = eye || this._eye1;
+                up = up || this._up1;
 
                 this._look2[0] = look[0];
                 this._look2[1] = look[1];
                 this._look2[2] = look[2];
-
 
                 this._eye2[0] = eye[0];
                 this._eye2[1] = eye[1];
@@ -401,6 +474,8 @@
                 this._up2[0] = up[0];
                 this._up2[1] = up[1];
                 this._up2[2] = up[2];
+
+                this._flyToLook = true;
             }
 
             this.fire(&quot;started&quot;, params, true);
@@ -412,19 +487,19 @@
 
             this._tick = this.scene.on(&quot;tick&quot;,
                 function (params) {
-                    self._update();
+                    self._update(params);
                 });
 
             this._flying = true;
         },
 
-        _update: function () {
+        _update: function (params) {
 
             if (!this._flying) {
                 return;
             }
 
-            var time = (new Date()).getTime();
+            var time = params.time;
 
             var t = (time - this._time1) / (this._time2 - this._time1);
 
@@ -435,11 +510,51 @@
 
             t = this.easing ? this._ease(t, 0, 1, 1) : t;
 
-            var view = this._camera.view;
+            var view = this._children.camera.view;
 
-            view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, []);
-            view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
-            view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, []);
+            if (this._flyToLook) {
+
+                view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, []);
+                view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
+                view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, []);
+
+                return;
+            }
+
+            if (this._flyToBoundary) {
+
+                var eye = view.eye;
+                var look = view.look;
+                var up = view.up;
+
+                var newLook = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
+
+                var x = newLook[0] - look[0];
+                var y = newLook[1] - look[1];
+                var z = newLook[2] - look[2];
+
+                /*
+                 var backoff = backoff || 0.5;
+                 backoff = backoff &lt; 0 ? 0 : (backoff &gt; 1 ? 1 : backoff);
+                 backoff = 1 - backoff;
+
+                 var eyeLookVec = XEO.math.subVec3(eye, look, []);
+                 var normEyeLookVec = XEO.math.normalizeVec3(eyeLookVec, []);
+
+                 var dist = params.dist || 2.5;
+                 var lenVec = Math.abs(XEO.math.lenVec3(this._vec));
+                 var diag = XEO.math.getAABBDiag(aabb);
+                 var len = Math.abs((diag / (1.0 + (backoff * 0.8))) / Math.tan(this._stopFOV / 2));  /// Tweak this to set final camera distance on arrival
+                 var sca = (len / lenVec) * dist;
+
+                 this._eye2 = XEO.math.addVec3(this._look2, XEO.math.mulVec3Scalar(this._vec, sca, []), []);
+
+                 */
+
+                view.eye = [eye[0] + x, eye[1] + y, eye[2] + z];
+                view.look = newLook;
+                //     view.up = [up[0] + x, up[1] + y, up[2] + z];
+            }
         },
 
         // Quadratic easing out - decelerating to zero velocity
@@ -459,6 +574,8 @@
             this.scene.off(this._tick);
 
             this._flying = false;
+            this._flyToLook = false;
+            this._flyToBoundary = false;
 
             this._time1 = null;
             this._time2 = null;
@@ -478,38 +595,35 @@
             camera: {
 
                 set: function (value) {
-                    var camera = value || this.scene.camera;
-                    if (camera) {
-                        if (XEO._isNumeric(camera) || XEO._isString(camera)) {
-                            camera = this.scene.components[camera];
-                            if (!camera) {
-                                this.error(&quot;Component not found: &quot; + XEO._inQuotes(value));
-                                return;
-                            }
-                        }
-                        if (camera.type != &quot;XEO.Camera&quot;) {
-                            this.error(&quot;Component &quot; + XEO._inQuotes(camera.id) + &quot; is not a XEO.Camera&quot;);
-                            return;
-                        }
-                        this._camera = value || this.scene.camera;
-                    }
+
+                    /**
+                     * Fired whenever this CameraFlight&#x27;s {{#crossLink &quot;CameraFlight/camera:property&quot;}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event camera
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;camera&quot;, value);
+
                     this.stop();
                 },
 
                 get: function () {
-                    return this._camera;
+                    return this._children.camera;
                 }
             },
 
             duration: {
 
                 set: function (value) {
+
                     this._duration = value * 1000.0;
+
                     this.stop();
                 },
 
                 get: function () {
-                    return this._duration * 0.001;
+                    return this._duration / 1000.0;
                 }
             }
         },

@@ -275,7 +275,7 @@
  // Scene with authoring metadata
  var scene = new XEO.Scene({
     id: &quot;myScene&quot;,
-    metadata: {
+    meta: {
         title: &quot;My awesome 3D scene&quot;,
         author: &quot;@xeolabs&quot;,
         date: &quot;February 13 2015&quot;
@@ -286,7 +286,7 @@
  var material = new XEO.PhongMaterial(scene, {
     id: &quot;myMaterial&quot;,
     diffuse: [1, 0, 0],
-    metadata: {
+    meta: {
         description: &quot;Bright red color with no textures&quot;,
         version: &quot;0.1&quot;,
         foo: &quot;bar&quot;
@@ -298,12 +298,12 @@
 
  &#x60;&#x60;&#x60;&#x60;javascript
  // Subscribe to changes to the Material&#x27;s metadata
- material.on(&quot;metadata&quot;, function(value) {
+ material.on(&quot;meta&quot;, function(value) {
     console.log(&quot;Metadata changed: &quot; + JSON.stringify(value));
 });
 
  // Change the Material&#x27;s metadata, firing our change handler
- material.metadata = {
+ material.meta = {
     description: &quot;Bright red color with no textures&quot;,
     version: &quot;0.2&quot;,
     foo: &quot;baz&quot;
@@ -434,7 +434,7 @@
              @property metadata
              @type Object
              */
-            this.metadata = cfg.metadata || {};
+            this.meta = cfg.meta || {};
 
             /**
              Unique ID for this Component within its parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
@@ -636,7 +636,9 @@
          */
         log: function (message) {
 
-            window.console.log(&quot;[LOG]&quot; + this._message(message));
+            message = &quot;[LOG]&quot; + this._message(message);
+
+            window.console.log(message);
 
             this.scene.fire(&quot;log&quot;, message);
         },
@@ -644,24 +646,6 @@
         _message: function (message) {
             // return &quot; [&quot; + (this.type.indexOf(&quot;XEO.&quot;) &gt; -1 ? this.type.substring(4) : this.type) + &quot; &quot; + XEO._inQuotes(this.id) + &quot;]: &quot; + message;
             return &quot; [&quot; + this.type + &quot; &quot; + XEO._inQuotes(this.id) + &quot;]: &quot; + message;
-        },
-
-        /**
-         * Logs an error for this component to the JavaScript console.
-         *
-         * The console message will have this format: *&#x60;&#x60;&#x60;&#x60;[ERROR] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;&#x60;&#x60;&#x60;&#x60;*
-         *
-         * Also fires the message as an {{#crossLink &quot;Scene/error:event&quot;}}{{/crossLink}} event on the
-         * parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
-         *
-         * @method error
-         * @param {String} message The message to log
-         */
-        error: function (message) {
-
-            window.console.error(&quot;[ERROR]&quot; + this._message(message));
-
-            this.scene.fire(&quot;error&quot;, message);
         },
 
         /**
@@ -677,9 +661,31 @@
          */
         warn: function (message) {
 
-            window.console.warn(&quot;[WARN]&quot; + this._message(message));
+            message = &quot;[WARN]&quot; + this._message(message);
+
+            window.console.warn(message);
 
             this.scene.fire(&quot;warn&quot;, message);
+        },
+
+        /**
+         * Logs an error for this component to the JavaScript console.
+         *
+         * The console message will have this format: *&#x60;&#x60;&#x60;&#x60;[ERROR] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;&#x60;&#x60;&#x60;&#x60;*
+         *
+         * Also fires the message as an {{#crossLink &quot;Scene/error:event&quot;}}{{/crossLink}} event on the
+         * parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+         *
+         * @method error
+         * @param {String} message The message to log
+         */
+        error: function (message) {
+
+            message = &quot;[ERROR]&quot; + this._message(message);
+
+            window.console.error(message);
+
+            this.scene.fire(&quot;error&quot;, message);
         },
 
         /**
@@ -701,7 +707,7 @@
         clone: function (cfg) {
 
             if (this.destroyed) {
-                this.error(&quot;Component has been destroyed - cloning not allowed&quot;);
+                this.error(&quot;Clone failed - component has been destroyed&quot;);
                 return;
             }
 
@@ -833,6 +839,13 @@
 
         _props: {
 
+            /**
+             * JSON object containing the state of this Component.
+             *
+             * @property json
+             * @type JSON
+             * @final
+             */
             json: {
 
                 get: function () {
@@ -845,28 +858,39 @@
                         id: this.id // Only output user-defined IDs
                     };
 
-                    if (!XEO._isEmptyObject(this.metadata)) {
-                        json.metadata = this.metadata;
+                    if (!XEO._isEmptyObject(this.meta)) {
+                        json.meta = this.meta;
                     }
 
                     return this._getJSON ? XEO._apply(this._getJSON(), json) : json;
                 }
             },
 
-            // Experimental - serializes this component to JS code
-            // that can be evaluated to recreate this component.
-
-            js: {
-
-                get: function () {
-                    return &quot;new &quot; + this.type + &quot;(&quot; + this.string + &quot;);&quot;;
-                }
-            },
-
+            /**
+             * String containing the serialized JSON state of this Component.
+             *
+             * @property string
+             * @type String
+             * @final
+             */
             string: {
 
                 get: function () {
-                    return JSON.stringify(this.json, null, 4);
+                    return JSON.stringify(this.json, &quot;\n&quot;, 4);
+                }
+            },
+
+            /**
+             * Experimental: string containing a JavaScript expression that would instantiate this Component.
+             *
+             * @property string
+             * @type String
+             * @final
+             */
+            js: {
+
+                get: function () {
+                    return &quot;new &quot; + this.type + &quot;(&quot; + this.jsonString + &quot;);&quot;;
                 }
             }
         },

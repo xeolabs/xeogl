@@ -259,7 +259,7 @@ var geometry = new XEO.Geometry(scene, {
 <pre class="code prettyprint"><code class="lang-javascript"> // Scene with authoring metadata
  var scene = new XEO.Scene({
     id: "myScene",
-    metadata: {
+    meta: {
         title: "My awesome 3D scene",
         author: "@xeolabs",
         date: "February 13 2015"
@@ -269,7 +269,7 @@ var geometry = new XEO.Geometry(scene, {
  var material = new XEO.PhongMaterial(scene, {
     id: "myMaterial",
     diffuse: [1, 0, 0],
-    metadata: {
+    meta: {
         description: "Bright red color with no textures",
         version: "0.1",
         foo: "bar"
@@ -278,11 +278,11 @@ var geometry = new XEO.Geometry(scene, {
 </code></pre>
 <p>As with all properties, you can subscribe and change the metadata like this:</p>
 <pre class="code prettyprint"><code class="lang-javascript"> // Subscribe to changes to the Material&#39;s metadata
- material.on("metadata", function(value) {
+ material.on("meta", function(value) {
     console.log("Metadata changed: " + JSON.stringify(value));
 });
 // Change the Material&#39;s metadata, firing our change handler
- material.metadata = {
+ material.meta = {
     description: "Bright red color with no textures",
     version: "0.2",
     foo: "baz"
@@ -482,11 +482,23 @@ var geometry = new XEO.Geometry(scene, {
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_json">json</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_string">string</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_string">string</a>
 
                             </li>
                             <li class="index-item property">
@@ -527,7 +539,7 @@ var geometry = new XEO.Geometry(scene, {
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l699"><code>src&#x2F;core&#x2F;component.js:699</code></a>
+        <a href="../files/src_core_component.js.html#l723"><code>src&#x2F;core&#x2F;component.js:723</code></a>
         </p>
 
 
@@ -567,7 +579,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l474"><code>src&#x2F;core&#x2F;component.js:474</code></a>
+        <a href="../files/src_core_component.js.html#l496"><code>src&#x2F;core&#x2F;component.js:496</code></a>
         </p>
 
 
@@ -1002,7 +1014,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_component.js.html#l492"><code>src&#x2F;core&#x2F;component.js:492</code></a>
+        <a href="../files/src_core_component.js.html#l476"><code>src&#x2F;core&#x2F;component.js:476</code></a>
         </p>
 
 
@@ -1094,6 +1106,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_json" class="property item">
+                        <h3 class="name"><code>json</code></h3>
+                        <span class="type">JSON</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_component.js.html#l667"><code>src&#x2F;core&#x2F;component.js:667</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JSON object containing the state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_metadata" class="property item">
                         <h3 class="name"><code>metadata</code></h3>
                         <span class="type">Object</span>
@@ -1139,6 +1177,58 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_string" class="property item">
+                        <h3 class="name"><code>string</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_component.js.html#l694"><code>src&#x2F;core&#x2F;component.js:694</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>String containing the serialized JSON state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_string" class="property item">
+                        <h3 class="name"><code>string</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_component.js.html#l708"><code>src&#x2F;core&#x2F;component.js:708</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Experimental: string containing a JavaScript expression that would instantiate this Component.</p>
                     
                         </div>
                     
@@ -1191,7 +1281,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_component.js.html#l731"><code>src&#x2F;core&#x2F;component.js:731</code></a>
+                            <a href="../files/src_core_component.js.html#l755"><code>src&#x2F;core&#x2F;component.js:755</code></a>
                             </p>
                     
                     

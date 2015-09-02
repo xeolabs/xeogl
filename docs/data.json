@@ -2044,6 +2044,12 @@
                             "description": "Indices array.",
                             "type": "Array of Number",
                             "optional": true
+                        },
+                        {
+                            "name": "autoNormals",
+                            "description": "Set true to automatically generate normal vectors from positions and indices.",
+                            "type": "Boolean",
+                            "optional": true
                         }
                     ]
                 }
@@ -2421,7 +2427,7 @@
             "namespace": "",
             "file": "src/core/materials/material.js",
             "line": 1,
-            "description": "A **Material** defines the surface appearance of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nMaterial is the base class for:\n\n<ul>\n<li>{{#crossLink \"PBRMaterial\"}}{{/crossLink}} - Physically-based rendering (PBR) material.</li>\n<li>{{#crossLink \"PhongMaterial\"}}{{/crossLink}} - Blinn-Phong shading material.</li>\n<li>(more coming)</li>\n</ul>\n\n<img src=\"../../../assets/images/Material.png\"></img>",
+            "description": "A **Material** defines the surface appearance of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nMaterial is the base class for:\n\n<ul>\n<li>{{#crossLink \"PBRMaterial\"}}{{/crossLink}} - Physically-based rendering (PBR) material.</li>\n<li>{{#crossLink \"Material\"}}{{/crossLink}} - Blinn-Phong shading material.</li>\n<li>(more coming)</li>\n</ul>\n\n<img src=\"../../../assets/images/Material.png\"></img>",
             "submodule": "materials",
             "is_constructor": 1,
             "extends": "Component"
@@ -2643,6 +2649,20 @@
                         {
                             "name": "reflectivity",
                             "description": "Scalar in range 0-1 that controls how much {{#crossLink \"CubeMap\"}}CubeMap{{/crossLink}} is reflected.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "lineWidth",
+                            "description": "Scalar that controls the width of lines for {{#crossLink \"Geometry\"}}{{/crossLink}} with {{#crossLink \"Geometry/primitive:property\"}}{{/crossLink}} set to \"lines\".",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "pointSize",
+                            "description": "Scalar that controls the size of points for {{#crossLink \"Geometry\"}}{{/crossLink}} with {{#crossLink \"Geometry/primitive:property\"}}{{/crossLink}} set to \"points\".",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "1"
@@ -3431,7 +3451,7 @@
             "namespace": "",
             "file": "src/core/rendering/shader.js",
             "line": 1,
-            "description": "A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>\n<li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other\ncomponents on the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Use Shaders in combination with {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} components when you need to share\nthe same Shaders among multiple {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms\ndifferently for each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.</li>\n<li>Use {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}}, {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}}\nand {{#crossLink \"Texture\"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>\n</ul>\n\n<img src=\"../../../assets/images/Shader.png\"></img>\n\n## Example\n\nThis example shows the simplest way to use a Shader, where we're just going to render a ripply water\npattern to a screen-aligned quad.\n\n<img src=\"../../assets/images/shaderExample1.png\"></img>\n\nIn our scene definition, we have an  {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that has a {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} that is our\nscreen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.\nFinally, we animate the rippling by periodically updating the Shader's \"time\" uniform.\n\n````javascript\n\nvar scene = new XEO.Scene();\n\n// Shader that's used by our Object. Note the 'xeo_aPosition' and 'xeo_aUV attributes',\n// which will receive the positions and UVs from the Geometry. Also note the 'time'\n// uniform, which we'll be animating via Shader#setParams.\n\nvar shader = new XEO.Shader(scene, {\n\n      // Vertex shading stage\n      vertex: [\n          \"attribute vec3 xeo_aPosition;\",\n          \"attribute vec2 xeo_aUV;\",\n          \"varying vec2 vUv;\",\n          \"void main () {\",\n          \"    gl_Position = vec4(xeo_aPosition, 1.0);\",\n          \"    vUv = xeo_aUV;\",\n          \"}\"\n      ],\n\n      // Fragment shading stage\n      fragment: [\n          \"precision mediump float;\",\n\n          \"uniform float time;\",\n          \"varying vec2 vUv;\",\n\n          \"void main( void ) {\",\n          \"    vec2 sp = vUv;\",\n          \"    vec2 p = sp*5.0 - vec2(10.0);\",\n          \"    vec2 i = p;\",\n          \"    float c = 1.0;\",\n          \"    float inten = 0.10;\",\n          \"    for (int n = 0; n < 10; n++) {\",\n          \"        float t = time * (1.0 - (3.0 / float(n+1)));\",\n          \"        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));\",\n          \"        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));\",\n          \"    }\",\n          \"    c /= float(10);\",\n          \"    c = 1.5-sqrt(c);\",\n          \"    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);\",\n          \"}\"\n      ],\n\n      // Initial value for the 'time' uniform in the fragment stage.\n      params: {\n          time: 0.0\n      }\n });\n\n// A screen-aligned quad\nvar quad = new XEO.Geometry(scene, {\n      primitive:\"triangles\",\n      positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],\n      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n      indices:[ 0, 1, 2, 0, 2, 3 ]\n });\n\nvar object = new XEO.GameObject(scene, {\n      shader: shader,\n      geometry: quad\n });\n\n````\nNow let's animate the \"time\" parameter on the Shader, to make the water ripple:\n\n```` javascript\nscene.on(\"tick\", function(params) {\n           shader.setParams({\n               time: params.timeElapsed\n           });\n       });\n````\n\n## <a name=\"inputs\">Shader Inputs</a>\n\nxeoEngine provides the following inputs for your shaders.\n\n#### Attributes\n\n*Attributes are used only in vertex shaders*\n\n| Attribute  | Description | Depends on  |\n|---|---|\n| attribute vec3 xeo_aPosition   | Geometry vertex positions | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} |\n| attribute vec2 xeo_aUV         | Geometry vertex UV coordinates | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n| attribute vec3 xeo_aNormal     | Geometry vertex normals | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}}  |\n| attribute vec4 xeo_aColor      | Geometry vertex colors  | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}}  |\n| attribute vec4 xeo_aTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n\n#### Uniforms\n\n*Uniforms are used in vertex and fragment shaders*\n\n| Uniform  | Description | Depends on  |\n|---|---|\n| uniform mat4  xeo_uModelMatrix                                   | Modelling transform matrix | {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  xeo_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  xeo_uViewMatrix                                    | View transform matrix | {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  xeo_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n|---|---|\n| uniform vec3  xeo_uLightAmbientColor                             | Color of the first {{#crossLink \"AmbientLight\"}}{{/crossLink}} in {{#crossLink \"Lights\"}}{{/crossLink}}| {{#crossLink \"AmbientLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightColor&lt;***N***&gt;                    | Diffuse color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightIntensity&lt;***N***&gt;                   | Specular color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink \"DirLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n|---|---|\n| uniform vec3 xeo_uMaterialDiffuse;       |  | {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} |\n| uniform vec3 xeo_uMaterialSpecular;       |  | {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} |\n| uniform vec3 xeo_uMaterialEmissive;       |  | {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} |\n| uniform float xeo_uMaterialOpacity;       |  | {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} |\n| uniform float xeo_uMaterialShininess;       |  | {{#crossLink \"PhongMaterial/shininess:property\"}}{{/crossLink}} |\n| uniform float xeo_uMaterialDiffuseFresnelBias;       |  | {{#crossLink \"Fresnel/bias:property\"}}{{/crossLink}} |\n\n#### Varying\n\n*Varying types are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|\n| varying vec4 xeo_vWorldPosition | |\n| varying vec4 xeo_vViewPosition | |\n| varying vec4 xeo_vColor | |\n\n#### Samplers\n\n*Samplers are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|",
+            "description": "A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>\n<li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other\ncomponents on the attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Use Shaders in combination with {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} components when you need to share\nthe same Shaders among multiple {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms\ndifferently for each {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.</li>\n<li>Use {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}}, {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}}\nand {{#crossLink \"Texture\"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>\n</ul>\n\n<img src=\"../../../assets/images/Shader.png\"></img>\n\n## Example\n\nThis example shows the simplest way to use a Shader, where we're just going to render a ripply water\npattern to a screen-aligned quad.\n\n<img src=\"../../assets/images/shaderExample1.png\"></img>\n\nIn our scene definition, we have an  {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} that has a {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} that is our\nscreen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.\nFinally, we animate the rippling by periodically updating the Shader's \"time\" uniform.\n\n````javascript\n\nvar scene = new XEO.Scene();\n\n// Shader that's used by our Object. Note the 'xeo_aPosition' and 'xeo_aUV attributes',\n// which will receive the positions and UVs from the Geometry. Also note the 'time'\n// uniform, which we'll be animating via Shader#setParams.\n\nvar shader = new XEO.Shader(scene, {\n\n      // Vertex shading stage\n      vertex: [\n          \"attribute vec3 xeo_aPosition;\",\n          \"attribute vec2 xeo_aUV;\",\n          \"varying vec2 vUv;\",\n          \"void main () {\",\n          \"    gl_Position = vec4(xeo_aPosition, 1.0);\",\n          \"    vUv = xeo_aUV;\",\n          \"}\"\n      ],\n\n      // Fragment shading stage\n      fragment: [\n          \"precision mediump float;\",\n\n          \"uniform float time;\",\n          \"varying vec2 vUv;\",\n\n          \"void main( void ) {\",\n          \"    vec2 sp = vUv;\",\n          \"    vec2 p = sp*5.0 - vec2(10.0);\",\n          \"    vec2 i = p;\",\n          \"    float c = 1.0;\",\n          \"    float inten = 0.10;\",\n          \"    for (int n = 0; n < 10; n++) {\",\n          \"        float t = time * (1.0 - (3.0 / float(n+1)));\",\n          \"        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));\",\n          \"        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));\",\n          \"    }\",\n          \"    c /= float(10);\",\n          \"    c = 1.5-sqrt(c);\",\n          \"    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);\",\n          \"}\"\n      ],\n\n      // Initial value for the 'time' uniform in the fragment stage.\n      params: {\n          time: 0.0\n      }\n });\n\n// A screen-aligned quad\nvar quad = new XEO.Geometry(scene, {\n      primitive:\"triangles\",\n      positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],\n      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n      indices:[ 0, 1, 2, 0, 2, 3 ]\n });\n\nvar object = new XEO.GameObject(scene, {\n      shader: shader,\n      geometry: quad\n });\n\n````\nNow let's animate the \"time\" parameter on the Shader, to make the water ripple:\n\n```` javascript\nscene.on(\"tick\", function(params) {\n           shader.setParams({\n               time: params.timeElapsed\n           });\n       });\n````\n\n## <a name=\"inputs\">Shader Inputs</a>\n\nxeoEngine provides the following inputs for your shaders.\n\n#### Attributes\n\n*Attributes are used only in vertex shaders*\n\n| Attribute  | Description | Depends on  |\n|---|---|\n| attribute vec3 xeo_aPosition   | Geometry vertex positions | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} |\n| attribute vec2 xeo_aUV         | Geometry vertex UV coordinates | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n| attribute vec3 xeo_aNormal     | Geometry vertex normals | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}}  |\n| attribute vec4 xeo_aColor      | Geometry vertex colors  | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}}  |\n| attribute vec4 xeo_aTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n\n#### Uniforms\n\n*Uniforms are used in vertex and fragment shaders*\n\n| Uniform  | Description | Depends on  |\n|---|---|\n| uniform mat4  xeo_uModelMatrix                                   | Modelling transform matrix | {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  xeo_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  xeo_uViewMatrix                                    | View transform matrix | {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  xeo_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n|---|---|\n| uniform vec3  xeo_uLightAmbientColor                             | Color of the first {{#crossLink \"AmbientLight\"}}{{/crossLink}} in {{#crossLink \"Lights\"}}{{/crossLink}}| {{#crossLink \"AmbientLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightColor&lt;***N***&gt;                    | Diffuse color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightIntensity&lt;***N***&gt;                   | Specular color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink \"DirLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n|---|---|\n| uniform vec3 xeo_uDiffuse;       |  | {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} |\n| uniform vec3 xeo_uMaterialSpecular;       |  | {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} |\n| uniform vec3 xeo_uMaterialEmissive;       |  | {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} |\n| uniform float xeo_uMaterialOpacity;       |  | {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} |\n| uniform float xeo_uMaterialShininess;       |  | {{#crossLink \"PhongMaterial/shininess:property\"}}{{/crossLink}} |\n| uniform float xeo_uDiffuseFresnelBias;       |  | {{#crossLink \"Fresnel/bias:property\"}}{{/crossLink}} |\n\n#### Varying\n\n*Varying types are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|\n| varying vec4 xeo_vWorldPosition | |\n| varying vec4 xeo_vViewPosition | |\n| varying vec4 xeo_vColor | |\n\n#### Samplers\n\n*Samplers are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|",
             "submodule": "rendering",
             "is_constructor": 1,
             "params": [
@@ -3727,7 +3747,7 @@
             "namespace": "",
             "file": "src/core/spatial/boundary3d.js",
             "line": 1,
-            "description": "A **Boundary3D** provides the axis-aligned and object-aligned extents of its owner component.\n\n## Overview\n\nA Boundary3D provides its spatial info in these properties:\n\n<ul>\n<li>{{#crossLink \"Boundary3D/obb:property\"}}{{/crossLink}} - object-aligned bounding box (OBB)</li>\n<li>{{#crossLink \"Boundary3D/aabb:property\"}}{{/crossLink}} - axis-aligned bounding box (AABB)</li>\n<li>{{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}} - center coordinate </li>\n</ul>\n\nThe following components have Boundary3Ds:\n\n<ul>\n<li>A {{#crossLink \"Geometry\"}}{{/crossLink}} provides its Model-space boundary via\nproperty {{#crossLink \"Geometry/modelBoundary:property\"}}{{/crossLink}}</li>\n<li>A {{#crossLink \"GameObject\"}}{{/crossLink}} provides its World and View-space boundaries via\nproperties {{#crossLink \"GameObject/worldBoundary:property\"}}{{/crossLink}}\nand {{#crossLink \"GameObject/viewBoundary:property\"}}{{/crossLink}}</li>\n</ul>\n\n<img src=\"../../../assets/images/Boundary.png\"></img>\n\n## Example\n\nA {{#crossLink \"GameObject\"}}{{/crossLink}} provides its World-space boundary as a Boundary3D that encloses\nits {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntheir transformation by the GameObject's {{#crossLink \"GameObject/transform:property\"}}Modelling transform{{/crossLink}}.\n\nIn this example we get the boundary and subscribe to updates on it, then animate the modelling transform,\nwhich gives us a running update of the moving boundary extents via our update handler.\n\n```` javascript\nvar scene = new XEO.Scene();\n\n// Geometry\nvar geometry = new XEO.Geometry(myScene, {...});\n\n// Modelling transform\nvar translate = new XEO.Translate(scene, {\n   xyz: [-5, 0, 0]\n});\n\n// Game object that applies the modelling transform to the Geometry\nvar object = new XEO.GameObject(myScene, {\n      geometry: myGeometry,\n      transform: translate\n });\n\nvar worldBoundary = object.worldBoundary();\n\n// World-space OBB\nvar obb = worldBoundary.obb;\n\n// World-space AABB\nvar aabb = worldBoundary.aabb;\n\n// World-space center\nvar center = worldBoundary.center;\n\n// Subscribe to updates to the Boundary3D\nworldBoundary.on(\"updated\",\n   function() {\n\n       // Get the updated properties again\n\n       obb = worldBoundary.obb;\n       aabb = worldBoundary.aabb;\n       center = worldBoundary.center;\n\n       //...\n   });\n\n// Animate the modelling transform;\n// on each tick, this will update the Boundary3D and fire our\n// handler, enabling us to track the changing boundary.\n\nvar x = 0;\n\nscene.on(\"tick\", function() {\n   translate.xyz: [x, 0, 0];\n   x += 0.5;\n});\n````",
+            "description": "A **Boundary3D** provides the axis-aligned and object-aligned extents of its owner component.\n\n## Overview\n\nA Boundary3D provides its spatial info in these properties:\n\n<ul>\n<li>{{#crossLink \"Boundary3D/obb:property\"}}{{/crossLink}} - object-aligned bounding box (OBB)</li>\n<li>{{#crossLink \"Boundary3D/aabb:property\"}}{{/crossLink}} - axis-aligned bounding box (AABB)</li>\n<li>{{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}} - center coordinate </li>\n</ul>\n\nThe following components have Boundary3Ds:\n\n<ul>\n<li>A {{#crossLink \"Geometry\"}}{{/crossLink}} provides its Model-space boundary via\nproperty {{#crossLink \"Geometry/modelBoundary:property\"}}{{/crossLink}}</li>\n<li>A {{#crossLink \"GameObject\"}}{{/crossLink}} provides its World and View-space boundaries via\nproperties {{#crossLink \"GameObject/worldBoundary:property\"}}{{/crossLink}}\nand {{#crossLink \"GameObject/viewBoundary:property\"}}{{/crossLink}}</li>\n</ul>\n\n<img src=\"../../../assets/images/Boundary.png\"></img>\n\n## Example\n\nA {{#crossLink \"GameObject\"}}{{/crossLink}} provides its World-space boundary as a Boundary3D that encloses\nits {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntheir transformation by the GameObject's {{#crossLink \"GameObject/transform:property\"}}Modelling transform{{/crossLink}}.\n\nIn this example we get the boundary and subscribe to updates on it, then animate the modelling transform,\nwhich gives us a running update of the moving boundary extents via our update handler.\n\n```` javascript\nvar scene = new XEO.Scene();\n\n// Geometry\nvar geometry = new XEO.Geometry(myScene, {...});\n\n// Modelling transform\nvar translate = new XEO.Translate(scene, {\n   xyz: [-5, 0, 0]\n});\n\n// Game object that applies the modelling transform to the Geometry\nvar object = new XEO.GameObject(myScene, {\n      geometry: myGeometry,\n      transform: translate\n });\n\nvar worldBoundary = object.worldBoundary();\n\n// World-space OBB\nvar obb = worldBoundary.obb;\n\n// World-space AABB\nvar aabb = worldBoundary.aabb;\n\n// World-space center\nvar center = worldBoundary.center;\n\n// Subscribe to updates to the Boundary3D\nworldBoundary.on(\"updated\",\nfunction() {\n\n       // Get the updated properties again\n\n       obb = worldBoundary.obb;\n       aabb = worldBoundary.aabb;\n       center = worldBoundary.center;\n\n       //...\n   });\n\n// Animate the modelling transform;\n// on each tick, this will update the Boundary3D and fire our\n// handler, enabling us to track the changing boundary.\n\nvar x = 0;\n\nscene.on(\"tick\", function() {\n   translate.xyz: [x, 0, 0];\n   x += 0.5;\n});\n````",
             "submodule": "spatial",
             "is_constructor": 1,
             "params": [
@@ -4046,7 +4066,7 @@
             "namespace": "",
             "file": "src/core/component.js",
             "line": 1,
-            "description": "**Component** is the base class for all xeoEngine components.\n## Contents\n<Ul>\n <li><a href=\"#ids\">Component IDs</a></li>\n <li><a href=\"#componentProps\">Properties</a></li>\n <li><a href=\"#metadata\">Metadata</a></li>\n <li><a href=\"#logging\">Logging</a></li>\n <li><a href=\"#destruction\">Destruction</a></li>\n </ul>\n## <a name=\"ids\">Component IDs</a>\nEvery Component has an ID that's unique within the parent {{#crossLink \"Scene\"}}{{/crossLink}}. xeoEngine generates\n the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a\n scene comprised of {{#crossLink \"Scene\"}}{{/crossLink}}, {{#crossLink \"Material\"}}{{/crossLink}}, {{#crossLink \"Geometry\"}}{{/crossLink}} and\n {{#crossLink \"GameObject\"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for\n the {{#crossLink \"Geometry\"}}{{/crossLink}}:\n````javascript\n // The Scene is a Component too\n var scene = new XEO.Scene({\n    id: \"myScene\"\n});\nvar material = new XEO.PhongMaterial(scene, {\n    id: \"myMaterial\"\n});\nvar geometry = new XEO.Geometry(scene, {\n    id: \"myGeometry\"\n});\n// Let xeoEngine automatically generate the ID for our Object\n var object = new XEO.GameObject(scene, {\n    material: material,\n    geometry: geometry\n});\n ````\nWe can then find those components like this:\n````javascript\n // Find the Scene\n var theScene = XEO.scenes[\"myScene\"];\n// Find the Material\n var theMaterial = theScene.components[\"myMaterial\"];\n ````\n## <a name=\"componentProps\">Properties</a>\nAlmost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe\n to the {{#crossLink \"PhongMaterial/diffuse:event\"}}{{/crossLink}} event that a\n {{#crossLink \"Material\"}}{{/crossLink}} fires when its {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\n property is updated, like so:\n````javascript\n // Bind a change callback to a property\n var handle = material.on(\"diffuse\", function(diffuse) {\n    console.log(\"Material diffuse color has changed to: [\" + diffuse[0] + \", \" + diffuse[1] + \",\" + diffuse[2] + \"]\");\n});\n// Change the property value, which fires the callback\n material.diffuse = [ 0.0, 0.5, 0.5 ];\n// Unsubscribe from the property change event\n material.off(handle);\n ````\nWe can also subscribe to changes in the way components are attached to each other, since components are properties\n of other components. For example, we can subscribe to the '{{#crossLink \"Object/material:event\"}}{{/crossLink}}' event that a\n {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} fires when its {{#crossLink \"Object/material:property\"}}{{/crossLink}}\n property is set to a different {{#crossLink \"Material\"}}Material{{/crossLink}}:\n```` javascript\n // Bind a change callback to the Object's Material\n object1.on(\"material\", function(material) {\n    console.log(\"Object's Material has changed to: \" + material.id);\n});\n// Now replace that Material with another\n object1.material = new XEO.PhongMaterial({\n    id: \"myOtherMaterial\",\n    diffuse: [ 0.3, 0.3, 0.6 ]\n    //..\n});\n ````\n## <a name=\"metadata\">Metadata</a>\nYou can set optional **metadata** on your Components, which can be anything you like. These are intended\n to help manage your components within your application code or content pipeline. You could use metadata to attach\n authoring or version information, like this:\n````javascript\n // Scene with authoring metadata\n var scene = new XEO.Scene({\n    id: \"myScene\",\n    metadata: {\n        title: \"My awesome 3D scene\",\n        author: \"@xeolabs\",\n        date: \"February 13 2015\"\n    }\n});\n// Material with descriptive metadata\n var material = new XEO.PhongMaterial(scene, {\n    id: \"myMaterial\",\n    diffuse: [1, 0, 0],\n    metadata: {\n        description: \"Bright red color with no textures\",\n        version: \"0.1\",\n        foo: \"bar\"\n    }\n});\n ````\nAs with all properties, you can subscribe and change the metadata like this:\n````javascript\n // Subscribe to changes to the Material's metadata\n material.on(\"metadata\", function(value) {\n    console.log(\"Metadata changed: \" + JSON.stringify(value));\n});\n// Change the Material's metadata, firing our change handler\n material.metadata = {\n    description: \"Bright red color with no textures\",\n    version: \"0.2\",\n    foo: \"baz\"\n};\n ````\n## <a name=\"logging\">Logging</a>\nComponents have methods to log ID-prefixed messages to the JavaScript console:\n````javascript\n material.log(\"Everything is fine, situation normal.\");\n material.warn(\"Wait, whats that red light?\");\n material.error(\"Aw, snap!\");\n ````\nThe logged messages will look like this in the console:\n````text\n [LOG]   myMaterial: Everything is fine, situation normal.\n [WARN]  myMaterial: Wait, whats that red light..\n [ERROR] myMaterial: Aw, snap!\n ````\n## <a name=\"destruction\">Destruction</a>\nGet notification of destruction directly on the Components:\n````javascript\n material.on(\"destroyed\", function() {\n    this.log(\"Component was destroyed: \" + this.id);\n});\n ````\nOr get notification of destruction of any Component within its {{#crossLink \"Scene\"}}{{/crossLink}}, indiscriminately:\n````javascript\n scene.on(\"componentDestroyed\", function(component) {\n    this.log(\"Component was destroyed: \" + component.id);\n});\n ````\nThen destroy a component like this:\n````javascript\n material.destroy();\n ````\nOther Components that are linked to it will fall back on a default of some sort. For example, any\n {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that were linked to our {{#crossLink \"Material\"}}{{/crossLink}}\n will then automatically link to the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/material:property\"}}{{/crossLink}}.",
+            "description": "**Component** is the base class for all xeoEngine components.\n## Contents\n<Ul>\n <li><a href=\"#ids\">Component IDs</a></li>\n <li><a href=\"#componentProps\">Properties</a></li>\n <li><a href=\"#metadata\">Metadata</a></li>\n <li><a href=\"#logging\">Logging</a></li>\n <li><a href=\"#destruction\">Destruction</a></li>\n </ul>\n## <a name=\"ids\">Component IDs</a>\nEvery Component has an ID that's unique within the parent {{#crossLink \"Scene\"}}{{/crossLink}}. xeoEngine generates\n the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a\n scene comprised of {{#crossLink \"Scene\"}}{{/crossLink}}, {{#crossLink \"Material\"}}{{/crossLink}}, {{#crossLink \"Geometry\"}}{{/crossLink}} and\n {{#crossLink \"GameObject\"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for\n the {{#crossLink \"Geometry\"}}{{/crossLink}}:\n````javascript\n // The Scene is a Component too\n var scene = new XEO.Scene({\n    id: \"myScene\"\n});\nvar material = new XEO.PhongMaterial(scene, {\n    id: \"myMaterial\"\n});\nvar geometry = new XEO.Geometry(scene, {\n    id: \"myGeometry\"\n});\n// Let xeoEngine automatically generate the ID for our Object\n var object = new XEO.GameObject(scene, {\n    material: material,\n    geometry: geometry\n});\n ````\nWe can then find those components like this:\n````javascript\n // Find the Scene\n var theScene = XEO.scenes[\"myScene\"];\n// Find the Material\n var theMaterial = theScene.components[\"myMaterial\"];\n ````\n## <a name=\"componentProps\">Properties</a>\nAlmost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe\n to the {{#crossLink \"PhongMaterial/diffuse:event\"}}{{/crossLink}} event that a\n {{#crossLink \"Material\"}}{{/crossLink}} fires when its {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\n property is updated, like so:\n````javascript\n // Bind a change callback to a property\n var handle = material.on(\"diffuse\", function(diffuse) {\n    console.log(\"Material diffuse color has changed to: [\" + diffuse[0] + \", \" + diffuse[1] + \",\" + diffuse[2] + \"]\");\n});\n// Change the property value, which fires the callback\n material.diffuse = [ 0.0, 0.5, 0.5 ];\n// Unsubscribe from the property change event\n material.off(handle);\n ````\nWe can also subscribe to changes in the way components are attached to each other, since components are properties\n of other components. For example, we can subscribe to the '{{#crossLink \"Object/material:event\"}}{{/crossLink}}' event that a\n {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} fires when its {{#crossLink \"Object/material:property\"}}{{/crossLink}}\n property is set to a different {{#crossLink \"Material\"}}Material{{/crossLink}}:\n```` javascript\n // Bind a change callback to the Object's Material\n object1.on(\"material\", function(material) {\n    console.log(\"Object's Material has changed to: \" + material.id);\n});\n// Now replace that Material with another\n object1.material = new XEO.PhongMaterial({\n    id: \"myOtherMaterial\",\n    diffuse: [ 0.3, 0.3, 0.6 ]\n    //..\n});\n ````\n## <a name=\"metadata\">Metadata</a>\nYou can set optional **metadata** on your Components, which can be anything you like. These are intended\n to help manage your components within your application code or content pipeline. You could use metadata to attach\n authoring or version information, like this:\n````javascript\n // Scene with authoring metadata\n var scene = new XEO.Scene({\n    id: \"myScene\",\n    meta: {\n        title: \"My awesome 3D scene\",\n        author: \"@xeolabs\",\n        date: \"February 13 2015\"\n    }\n});\n// Material with descriptive metadata\n var material = new XEO.PhongMaterial(scene, {\n    id: \"myMaterial\",\n    diffuse: [1, 0, 0],\n    meta: {\n        description: \"Bright red color with no textures\",\n        version: \"0.1\",\n        foo: \"bar\"\n    }\n});\n ````\nAs with all properties, you can subscribe and change the metadata like this:\n````javascript\n // Subscribe to changes to the Material's metadata\n material.on(\"meta\", function(value) {\n    console.log(\"Metadata changed: \" + JSON.stringify(value));\n});\n// Change the Material's metadata, firing our change handler\n material.meta = {\n    description: \"Bright red color with no textures\",\n    version: \"0.2\",\n    foo: \"baz\"\n};\n ````\n## <a name=\"logging\">Logging</a>\nComponents have methods to log ID-prefixed messages to the JavaScript console:\n````javascript\n material.log(\"Everything is fine, situation normal.\");\n material.warn(\"Wait, whats that red light?\");\n material.error(\"Aw, snap!\");\n ````\nThe logged messages will look like this in the console:\n````text\n [LOG]   myMaterial: Everything is fine, situation normal.\n [WARN]  myMaterial: Wait, whats that red light..\n [ERROR] myMaterial: Aw, snap!\n ````\n## <a name=\"destruction\">Destruction</a>\nGet notification of destruction directly on the Components:\n````javascript\n material.on(\"destroyed\", function() {\n    this.log(\"Component was destroyed: \" + this.id);\n});\n ````\nOr get notification of destruction of any Component within its {{#crossLink \"Scene\"}}{{/crossLink}}, indiscriminately:\n````javascript\n scene.on(\"componentDestroyed\", function(component) {\n    this.log(\"Component was destroyed: \" + component.id);\n});\n ````\nThen destroy a component like this:\n````javascript\n material.destroy();\n ````\nOther Components that are linked to it will fall back on a default of some sort. For example, any\n {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that were linked to our {{#crossLink \"Material\"}}{{/crossLink}}\n will then automatically link to the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/material:property\"}}{{/crossLink}}.",
             "is_constructor": 1,
             "params": [
                 {
@@ -4159,7 +4179,7 @@
             "namespace": "XEO",
             "file": "src/extras/animation/cameraFlight.js",
             "line": 1,
-            "description": "A **CameraFlight** flies a {{#crossLink \"Camera\"}}{{/crossLink}} to a given target component, AABB or eye/look/up position.\n\n## Overview\n\n<ul>\n<li>A CameraFlight animates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to the {{#crossLink \"Camera\"}}{{/crossLink}}.\n</ul>\n\n## Example\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar camera = new XEO.Camera(scene);\n\nvar object = new XEO.GameObject(scene);\n\nvar animation = new XEO.CameraFlight(scene, {\n   camera: camera\n});\n\nanimation.flyTo({\n   eye: [-5,-5,-5],\n   look: [0,0,0]\n   up: [0,1,0]\n}, function() {\n   // Arrived\n});\n````",
+            "description": "A **CameraFlight** flies a {{#crossLink \"Camera\"}}{{/crossLink}} to a given target.\n\n## Overview\n\n\n<ul>\n<li>A CameraFlight animates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to the {{#crossLink \"Camera\"}}{{/crossLink}}.</li>\n<li>A CameraFlight can be attached to a different {{#crossLink \"Camera\"}}{{/crossLink}} at any time.</li>\n<li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>\n</ul>\n\nA target can be:\n\n<ul>\n<li>a World-space {{#crossLink \"Boundary3D\"}}{{/crossLink}}</li>,\n<li>an instance or ID of any {{#crossLink \"Component\"}}{{/crossLink}} subtype that provides a World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} in a \"worldBoundary\" property, or</li>\n<li>specific ````eye````, ````look```` and ````up```` vectors.\n</ul>\n\n## Example #1\n\nFlying to a {{#crossLink \"GameObject\"}}{{/crossLink}} (which provides a World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} via its {{#crossLink \"GameObject/worldBoundary:property\"}}{{/crossLink}} property):\n\n````Javascript\nvar camera = new XEO.Camera();\n\n// Create a CameraFlight that takes exactly ten seconds to fly\n// the Camera to each specified target\nvar cameraFlight = new XEO.CameraFlight({\n   camera: camera,\n   duration: 20\n});\n\n// Create a GameObject, which gets all the default components\nvar object = new GameObject();\n\n// Fly to the GameObject's worldBoundary\ncameraFlight.flyTo(object);\n````\n\n## Example #2\n\nFlying the CameraFlight from the previous example to specified eye, look and up positions:\n\n````Javascript\n// Fly to a target eye, look and up\ncameraFlight.flyTo({\n   eye: [-5,-5,-5],\n   look: [0,0,0]\n   up: [0,1,0]\n}, function() {\n   // Arrived\n});\n````\n\n## Example #3\n\nFlying the CameraFlight from the previous two examples explicitly to the World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} of the {{#crossLink \"GameObject\"}}{{/crossLink}} property):\n\n````Javascript\nvar worldBoundary = object.worldBoundary;\n\ncameraFlight.flyTo(worldBoundary);\n````\n\n## Example #4\n\nFlying the CameraFlight from the previous two examples explicitly to {{#crossLink \"Boundary3D\"}}Boundary3D's{{/crossLink}}\naxis-aligned bounding box:\n\n````Javascript\nvar worldBoundary = object.worldBoundary;\n\nvar aabb = worldBoundary.aabb;\n\ncameraFlight.flyTo(aabb);\n````",
             "submodule": "animation",
             "is_constructor": 1,
             "params": [
@@ -6801,7 +6821,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 512,
+            "line": 522,
             "description": "The Geometry's primitive type.\n\nValid types are: 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.\n\nFires a {{#crossLink \"Geometry/primitive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "primitive",
@@ -6813,7 +6833,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 548,
+            "line": 558,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/primitive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "primitive",
@@ -6830,7 +6850,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 564,
+            "line": 574,
             "description": "The Geometry's positions array.\n\nThis property is a one-dimensional array - use  {{#crossLink \"XEO.math/flatten:method\"}}{{/crossLink}} to\nconvert two-dimensional arrays for assignment to this property.\n\nFires a {{#crossLink \"Geometry/positions:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "positions",
@@ -6842,7 +6862,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 594,
+            "line": 604,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "positions",
@@ -6858,7 +6878,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 601,
+            "line": 611,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/boundary:property\"}}{{/crossLink}} property changes.\n\nNote that this event does not carry the value of the property. In order to avoid needlessly\ncalculating unused values for this property, it will be lazy-calculated next time it's referenced\non this Geometry.",
             "itemtype": "event",
             "name": "positions",
@@ -6874,7 +6894,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 621,
+            "line": 631,
             "description": "The Geometry's normal vectors array.\n\nFires a {{#crossLink \"Geometry/normals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normals",
@@ -6886,7 +6906,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 646,
+            "line": 656,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/ normals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normals",
@@ -6902,7 +6922,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 661,
+            "line": 671,
             "description": "The Geometry's UV coordinate array.\n\nFires a {{#crossLink \"Geometry/uv:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "uv",
@@ -6914,7 +6934,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 686,
+            "line": 696,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "uv",
@@ -6930,7 +6950,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 701,
+            "line": 711,
             "description": "The Geometry's vertex colors array.\n\nFires a {{#crossLink \"Geometry/colors:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colors",
@@ -6942,7 +6962,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 726,
+            "line": 736,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colors",
@@ -6958,7 +6978,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 741,
+            "line": 751,
             "description": "The Geometry's indices array.\n\nFires a {{#crossLink \"Geometry/indices:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "indices",
@@ -6970,7 +6990,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 767,
+            "line": 776,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "indices",
@@ -6986,12 +7006,41 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 782,
+            "line": 791,
             "description": "Model-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
             "itemtype": "property",
             "name": "modelBoundary",
             "type": "Boundary3D",
             "final": 1,
+            "class": "Geometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/core/geometry/geometry.js",
+            "line": 836,
+            "description": "Set true to make this Geometry automatically generate {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} from\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}.\n\nThis Geomatry will auto-generate its {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} on the\nnext {{#crossLink \"Scene\"}}{{/crossLink}} {{#crossLink \"Scene/tick:event\"}}{{/crossLink}} event.\n\nFires a {{#crossLink \"Geometry/autoNormals:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "autoNormals",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Geometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/core/geometry/geometry.js",
+            "line": 861,
+            "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/autoNormals:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "autoNormals",
+            "type": "Boolean",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
             "class": "Geometry",
             "module": "XEO",
             "submodule": "geometry"
@@ -8871,6 +8920,64 @@
             "submodule": "materials"
         },
         {
+            "file": "src/core/materials/material.js",
+            "line": 34,
+            "description": "The Material's line width.\n\nFires a {{#crossLink \"Material/lineWidth:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "lineWidth",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Material",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/core/materials/material.js",
+            "line": 51,
+            "description": "Fired whenever this Material's {{#crossLink \"Material/lineWidth:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "lineWidth",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Array(Number)"
+                }
+            ],
+            "class": "Material",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/core/materials/material.js",
+            "line": 65,
+            "description": "The Material's point size.\n\nFires a {{#crossLink \"Material/pointSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "pointSize",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Material",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/core/materials/material.js",
+            "line": 82,
+            "description": "Fired whenever this Material's {{#crossLink \"Material/pointSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "pointSize",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Array(Number)"
+                }
+            ],
+            "class": "Material",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
             "file": "src/core/materials/pbrMaterial.js",
             "line": 182,
             "description": "Controls how metallic this material is.\n\nNonmetals have a value of ````0````, while metals have a value of ````1````. For pure surfaces, such as\npure metal, pure stone, pure plastic, etc. this value will be 0 or 1, not anything in between. When\ncreating hybrid surfaces like corroded, dusty, or rusty metals, you may find that you need some value\nbetween 0 and 1.\n\nFires a {{#crossLink \"PBRMaterial/metallic:event\"}}{{/crossLink}} event on change.",
@@ -9212,7 +9319,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 201,
+            "line": 209,
             "description": "The PhongMaterial's ambient color.\n\nFires a {{#crossLink \"PhongMaterial/ambient:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ambient",
@@ -9224,7 +9331,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 218,
+            "line": 226,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/ambient:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ambient",
@@ -9241,7 +9348,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 232,
+            "line": 240,
             "description": "The PhongMaterial's diffuse color.\n\nThis property may be overridden by {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/diffuse:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuse",
@@ -9253,7 +9360,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 251,
+            "line": 259,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuse",
@@ -9270,7 +9377,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 265,
+            "line": 273,
             "description": "The material's specular color.\n\nThis property may be overridden by {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/specular:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specular",
@@ -9282,7 +9389,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 284,
+            "line": 292,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specular",
@@ -9299,7 +9406,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 298,
+            "line": 306,
             "description": "The PhongMaterial's emissive color.\n\nThis property may be overridden by {{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/emissive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissive",
@@ -9311,7 +9418,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 317,
+            "line": 325,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissive",
@@ -9328,7 +9435,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 331,
+            "line": 339,
             "description": "Factor in the range [0..1] indicating how transparent the PhongMaterial is.\n\nA value of 0.0 indicates fully transparent, 1.0 is fully opaque.\n\nAttached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nThis property may be overridden by {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PhongMaterial/opacity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacity",
@@ -9340,7 +9447,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 356,
+            "line": 364,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacity",
@@ -9357,7 +9464,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 370,
+            "line": 378,
             "description": "A factor in range [0..128] that determines the size and sharpness of the specular highlights create by this PhongMaterial.\n\nLarger values produce smaller, sharper highlights. A value of 0.0 gives very large highlights that are almost never\ndesirable. Try values close to 10 for a larger, fuzzier highlight and values of 100 or more for a small, sharp\nhighlight.\n\nFires a {{#crossLink \"PhongMaterial/shininess:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shininess",
@@ -9369,7 +9476,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 391,
+            "line": 399,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/shininess:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shininess",
@@ -9385,7 +9492,65 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 405,
+            "line": 413,
+            "description": "The PhongMaterial's line width.\n\nFires a {{#crossLink \"PhongMaterial/lineWidth:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "lineWidth",
+            "default": "1.0",
+            "type": "Number",
+            "class": "PhongMaterial",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/core/materials/phongMaterial.js",
+            "line": 430,
+            "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/lineWidth:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "lineWidth",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Array(Number)"
+                }
+            ],
+            "class": "PhongMaterial",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/core/materials/phongMaterial.js",
+            "line": 444,
+            "description": "The PhongMaterial's point size.\n\nFires a {{#crossLink \"PhongMaterial/pointSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "pointSize",
+            "default": "1.0",
+            "type": "Number",
+            "class": "PhongMaterial",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/core/materials/phongMaterial.js",
+            "line": 461,
+            "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/pointSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "pointSize",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Array(Number)"
+                }
+            ],
+            "class": "PhongMaterial",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/core/materials/phongMaterial.js",
+            "line": 475,
             "description": "Scalar in range 0-1 that controls how much {{#crossLink \"CubeMap\"}}CubeMap{{/crossLink}} is reflected by this PhongMaterial.\n\nThe surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.\n\nThis property may be overridden by {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/reflectivity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflectivity",
@@ -9397,7 +9562,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 426,
+            "line": 496,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflectivity",
@@ -9413,7 +9578,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 440,
+            "line": 510,
             "description": "A normal {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/normalMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/normalMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normalMap",
@@ -9425,7 +9590,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 455,
+            "line": 525,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/normal:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normalMap",
@@ -9441,7 +9606,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 469,
+            "line": 539,
             "description": "A diffuse {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/diffuseMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuseMap",
@@ -9453,7 +9618,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 484,
+            "line": 554,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuseMap",
@@ -9469,7 +9634,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 498,
+            "line": 568,
             "description": "A specular {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/specularMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularMap",
@@ -9481,7 +9646,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 513,
+            "line": 583,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularMap",
@@ -9497,7 +9662,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 527,
+            "line": 597,
             "description": "An emissive {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PhongMaterial/emissiveMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissiveMap",
@@ -9509,7 +9674,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 542,
+            "line": 612,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissiveMap",
@@ -9525,7 +9690,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 556,
+            "line": 626,
             "description": "An opacity {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PhongMaterial/opacityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacityMap",
@@ -9537,7 +9702,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 571,
+            "line": 641,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacityMap",
@@ -9553,7 +9718,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 585,
+            "line": 655,
             "description": "A reflectivity {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/reflectivityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflectivityMap",
@@ -9565,7 +9730,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 600,
+            "line": 670,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflectivityMap",
@@ -9581,7 +9746,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 614,
+            "line": 684,
             "description": "A diffuse {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/diffuseFresnel:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/diffuseFresnel:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuseFresnel",
@@ -9593,7 +9758,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 629,
+            "line": 699,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuseFresnel",
@@ -9609,7 +9774,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 643,
+            "line": 713,
             "description": "A specular {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/specularFresnel:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularFresnel",
@@ -9621,7 +9786,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 658,
+            "line": 728,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/specularFresnel:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularFresnel",
@@ -9637,7 +9802,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 672,
+            "line": 742,
             "description": "An emissive {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PhongMaterial/emissiveFresnel:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissiveFresnel",
@@ -9649,7 +9814,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 687,
+            "line": 757,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/emissiveFresnel:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissiveFresnel",
@@ -9665,7 +9830,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 701,
+            "line": 771,
             "description": "An opacity {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PhongMaterial/opacityFresnel:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacityFresnel",
@@ -9677,7 +9842,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 716,
+            "line": 786,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/opacityFresnel:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacityFresnel",
@@ -9693,7 +9858,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 730,
+            "line": 800,
             "description": "A reflectivity {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/reflectivityFresnel:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflectivityFresnel",
@@ -9705,7 +9870,7 @@
         },
         {
             "file": "src/core/materials/phongMaterial.js",
-            "line": 745,
+            "line": 815,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/reflectivityFresnel:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflectivityFresnel",
@@ -9721,7 +9886,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 319,
+            "line": 335,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -9738,7 +9903,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 351,
+            "line": 367,
             "description": "Indicates an HTML DOM Image object to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"Texture/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "image",
@@ -9750,7 +9915,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 380,
+            "line": 396,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -9767,7 +9932,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 393,
+            "line": 409,
             "description": "Indicates a path to an image file to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/image:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "src",
@@ -9779,7 +9944,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 422,
+            "line": 438,
             "description": "Fired whenever this Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -9796,7 +9961,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 436,
+            "line": 452,
             "description": "Instance or ID of a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} or\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/image:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/target:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "target",
@@ -9808,7 +9973,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 466,
+            "line": 482,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/target:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "target",
@@ -9825,7 +9990,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 480,
+            "line": 496,
             "description": "2D translation vector that will be added to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/translate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "translate",
@@ -9837,7 +10002,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 501,
+            "line": 517,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/translate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "translate",
@@ -9854,7 +10019,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 514,
+            "line": 530,
             "description": "2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/scale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "scale",
@@ -9866,7 +10031,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 534,
+            "line": 550,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/scale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "scale",
@@ -9883,7 +10048,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 547,
+            "line": 563,
             "description": "Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/rotate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "rotate",
@@ -9895,7 +10060,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 567,
+            "line": 583,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/rotate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "rotate",
@@ -9912,11 +10077,11 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 580,
+            "line": 596,
             "description": "How this Texture is sampled when a texel covers less than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n\n    <li>**\"linear\"** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n\n    <li>**\"nearestMipmapNearest\"** - Chooses the mipmap that most closely matches the\n    size of the pixel being textured and uses the \"nearest\" criterion (the texture\n    element nearest to the center of the pixel) to produce a texture value.</li>\n\n    <li>**\"linearMipmapNearest\"** - Chooses the mipmap that most closely matches the size of\n    the pixel being textured and uses the \"linear\" criterion (a weighted average of the\n    four texture elements that are closest to the center of the pixel) to produce a\n    texture value.</li>\n\n    <li>**\"nearestMipmapLinear\"** - Chooses the two mipmaps that most closely\n    match the size of the pixel being textured and uses the \"nearest\" criterion\n    (the texture element nearest to the center of the pixel) to produce a texture\n    value from each mipmap. The final texture value is a weighted average of those two\n    values.</li>\n\n    <li>**\"linearMipmapLinear\"** - **(default)** - Chooses the two mipmaps that most closely match the size\n    of the pixel being textured and uses the \"linear\" criterion (a weighted average\n    of the four texture elements that are closest to the center of the pixel) to\n    produce a texture value from each mipmap. The final texture value is a weighted\n    average of those two values.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/minFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "minFilter",
-            "default": "\"linearMipMapLinear\"",
+            "default": "\"linearMipmapLinear\"",
             "type": "String",
             "class": "Texture",
             "module": "XEO",
@@ -9924,7 +10089,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 631,
+            "line": 660,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/minFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "minFilter",
@@ -9941,7 +10106,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 644,
+            "line": 673,
             "description": "How this Texture is sampled when a texel covers more than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n    <li>**\"linear\"** - **(default)** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/magFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "magFilter",
@@ -9953,7 +10118,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 673,
+            "line": 710,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/magFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "magFilter",
@@ -9970,7 +10135,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 686,
+            "line": 723,
             "description": "Wrap parameter for this Texture's *S* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  causes *S* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>\n    <li>**\"repeat\"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeoEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapS:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapS",
@@ -9982,7 +10147,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 717,
+            "line": 762,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapS:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapS",
@@ -9999,7 +10164,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 730,
+            "line": 775,
             "description": "Wrap parameter for this Texture's *T* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  Causes *T* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>\n    <li>**\"repeat\"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeoEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapT:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapT",
@@ -10011,7 +10176,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 761,
+            "line": 814,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapT:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapT",
@@ -10028,7 +10193,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 775,
+            "line": 828,
             "description": "Flips this Texture's Y axis to match the WebGL texture coordinate space.\n\nFires a {{#crossLink \"Texture/flipY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "flipY",
@@ -10040,7 +10205,7 @@
         },
         {
             "file": "src/core/materials/texture.js",
-            "line": 795,
+            "line": 848,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/flipY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "flipY",
@@ -12314,6 +12479,30 @@
             "submodule": "objects"
         },
         {
+            "file": "src/core/objects/gameObject.js",
+            "line": 933,
+            "description": "JSON object containing the (GLSL) source code of the shaders for this GameObject.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeoEngine has not yet rendered this GameObject.",
+            "itemtype": "property",
+            "name": "glsl",
+            "type": "JSON",
+            "final": 1,
+            "class": "GameObject",
+            "module": "XEO",
+            "submodule": "objects"
+        },
+        {
+            "file": "src/core/objects/gameObject.js",
+            "line": 966,
+            "description": "The (GLSL) source code of the shaders for this GameObject, as a string.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeoEngine has not yet rendered this GameObject.",
+            "itemtype": "property",
+            "name": "glslString",
+            "type": "String",
+            "final": 1,
+            "class": "GameObject",
+            "module": "XEO",
+            "submodule": "objects"
+        },
+        {
             "file": "src/core/objects/splineCurveHelper.js",
             "line": 79,
             "description": "The SplineCurve for this SplineCurveHelper.\n\nFires a {{#crossLink \"SplineCurveHelper/splineCurve:event\"}}{{/crossLink}} event on change.",
@@ -13194,7 +13383,7 @@
         },
         {
             "file": "src/core/spatial/boundary3d.js",
-            "line": 134,
+            "line": 135,
             "description": "World-space oriented bounding box (OBB).",
             "itemtype": "property",
             "name": "obb",
@@ -13206,7 +13395,7 @@
         },
         {
             "file": "src/core/spatial/boundary3d.js",
-            "line": 153,
+            "line": 154,
             "description": "World-space axis-aligned bounding box (AABB).",
             "itemtype": "property",
             "name": "aabb",
@@ -13218,7 +13407,7 @@
         },
         {
             "file": "src/core/spatial/boundary3d.js",
-            "line": 172,
+            "line": 173,
             "description": "World-space center point.",
             "itemtype": "property",
             "name": "center",
@@ -13699,23 +13888,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 474,
-            "description": "Logs an error for this component to the JavaScript console.\n\nThe console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*\n\nAlso fires the message as an {{#crossLink \"Scene/error:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
-            "itemtype": "method",
-            "name": "error",
-            "params": [
-                {
-                    "name": "message",
-                    "description": "The message to log",
-                    "type": "String"
-                }
-            ],
-            "class": "Component",
-            "module": "XEO"
-        },
-        {
-            "file": "src/core/component.js",
-            "line": 492,
+            "line": 476,
             "description": "Logs a warning for this component to the JavaScript console.\n\nThe console message will have this format: *````[WARN] [<component type> =<component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/warn:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "warn",
@@ -13731,7 +13904,23 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 510,
+            "line": 496,
+            "description": "Logs an error for this component to the JavaScript console.\n\nThe console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*\n\nAlso fires the message as an {{#crossLink \"Scene/error:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
+            "itemtype": "method",
+            "name": "error",
+            "params": [
+                {
+                    "name": "message",
+                    "description": "The message to log",
+                    "type": "String"
+                }
+            ],
+            "class": "Component",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/component.js",
+            "line": 516,
             "description": "Creates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is a {{#crossLink \"GameObject\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
             "params": [
                 {
@@ -13750,7 +13939,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 542,
+            "line": 548,
             "description": "Adds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name.\nPublishes the new child component on this component, keyed to the given name.",
             "params": [
                 {
@@ -13771,7 +13960,40 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 699,
+            "line": 667,
+            "description": "JSON object containing the state of this Component.",
+            "itemtype": "property",
+            "name": "json",
+            "type": "JSON",
+            "final": 1,
+            "class": "Component",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/component.js",
+            "line": 694,
+            "description": "String containing the serialized JSON state of this Component.",
+            "itemtype": "property",
+            "name": "string",
+            "type": "String",
+            "final": 1,
+            "class": "Component",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/component.js",
+            "line": 708,
+            "description": "Experimental: string containing a JavaScript expression that would instantiate this Component.",
+            "itemtype": "property",
+            "name": "string",
+            "type": "String",
+            "final": 1,
+            "class": "Component",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/component.js",
+            "line": 723,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.",
             "itemtype": "method",
             "name": "destroy",
@@ -13780,7 +14002,7 @@
         },
         {
             "file": "src/core/component.js",
-            "line": 731,
+            "line": 755,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -14448,7 +14670,7 @@
         },
         {
             "file": "src/extras/animation/cameraFlight.js",
-            "line": 51,
+            "line": 102,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -14460,15 +14682,15 @@
         },
         {
             "file": "src/extras/animation/cameraFlight.js",
-            "line": 99,
+            "line": 149,
             "description": "Begins flying this CameraFlight's {{#crossLink \"Camera\"}}{{/crossLink}} to the given target.\n\n<ul>\n    <li>When the target is a boundary, the {{#crossLink \"Camera\"}}{{/crossLink}} will fly towards the target\n    and stop when the target fills most of the canvas.</li>\n    <li>When the target is an explicit {{#crossLink \"Camera\"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````\n     vectors, then this CameraFlight will interpolate the {{#crossLink \"Camera\"}}{{/crossLink}} to that target and stop there.</li>",
             "itemtype": "method",
             "name": "flyTo",
             "params": [
                 {
                     "name": "params",
-                    "description": "Flight parameters",
-                    "type": "*",
+                    "description": "Either a parameters object or a {{#crossLink \"Component\"}}{{/crossLink}} subtype that has a {{#crossLink \"WorldBoundary\"}}{{/crossLink}}.",
+                    "type": "*|Component",
                     "props": [
                         {
                             "name": "arc",
@@ -14514,6 +14736,22 @@
                     "description": "Callback fired on arrival",
                     "type": "Function",
                     "optional": true
+                }
+            ],
+            "class": "XEO.CameraFlight",
+            "module": "XEO",
+            "submodule": "animation"
+        },
+        {
+            "file": "src/extras/animation/cameraFlight.js",
+            "line": 424,
+            "description": "Fired whenever this CameraFlight's {{#crossLink \"CameraFlight/camera:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "camera",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
                 }
             ],
             "class": "XEO.CameraFlight",
@@ -15457,7 +15695,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 202,
+            "line": 346,
             "description": "Fired whenever this Heightmap's  {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -15474,7 +15712,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 232,
+            "line": 376,
             "description": "The Heightmap's level-of-detail factor.\n\nFires a {{#crossLink \"Heightmap/lod:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lod",
@@ -15486,7 +15724,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 262,
+            "line": 406,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/lod:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lod",
@@ -15503,7 +15741,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 276,
+            "line": 420,
             "description": "Indicates an HTML DOM Image object to source this Heightmap from.\n\nAlternatively, you could indicate the source via the\n{{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} property.\n\nFires an {{#crossLink \"Heightmap/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} to null.",
             "itemtype": "property",
             "name": "image",
@@ -15515,7 +15753,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 302,
+            "line": 447,
             "description": "Fired whenever this Heightmap's  {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -15532,7 +15770,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 315,
+            "line": 460,
             "description": "Indicates a path to an image file to source this Heightmap from.\n\nAlternatively, you could indicate the source via the\n{{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property.\n\nFires a {{#crossLink \"Heightmap/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} to null.",
             "itemtype": "property",
             "name": "src",
@@ -15544,7 +15782,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 341,
+            "line": 487,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -15561,11 +15799,11 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 355,
+            "line": 501,
             "description": "The Heightmap's dimension (width) on the X-axis.\n\nFires a {{#crossLink \"Sphere/xSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSize",
-            "default": "6",
+            "default": "1",
             "type": "Number",
             "class": "Heightmap",
             "module": "XEO",
@@ -15573,7 +15811,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 385,
+            "line": 531,
             "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/xSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSize",
@@ -15590,11 +15828,11 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 399,
+            "line": 545,
             "description": "The Heightmap's dimension (height) on the Y-axis.\n\nFires a {{#crossLink \"Sphere/ySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ySize",
-            "default": "6",
+            "default": "0.25",
             "type": "Number",
             "class": "Heightmap",
             "module": "XEO",
@@ -15602,7 +15840,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 429,
+            "line": 575,
             "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/ySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ySize",
@@ -15619,11 +15857,11 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 443,
+            "line": 589,
             "description": "The Heightmap's dimension (depth) on the Z-axis.\n\nFires a {{#crossLink \"Sphere/zSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "zSize",
-            "default": "6",
+            "default": "1",
             "type": "Number",
             "class": "Heightmap",
             "module": "XEO",
@@ -15631,7 +15869,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 473,
+            "line": 619,
             "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/zSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "zSize",
@@ -15648,11 +15886,11 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 487,
+            "line": 633,
             "description": "The Heightmap's number of segments on the X-axis (width).\n\nFires a {{#crossLink \"Sphere/xSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSegments",
-            "default": "6",
+            "default": "100",
             "type": "Number",
             "class": "Heightmap",
             "module": "XEO",
@@ -15660,7 +15898,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 517,
+            "line": 663,
             "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/xSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSegments",
@@ -15677,11 +15915,11 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 531,
+            "line": 677,
             "description": "The Heightmap's number of segments on the Z-axis (depth).\n\nFires a {{#crossLink \"Sphere/zSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "zSegments",
-            "default": "6",
+            "default": "100",
             "type": "Number",
             "class": "Heightmap",
             "module": "XEO",
@@ -15689,7 +15927,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 561,
+            "line": 707,
             "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/zSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "zSegments",
@@ -17313,7 +17551,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/core/component.js:510"
+            "line": " src/core/component.js:516"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -17457,11 +17695,11 @@
         },
         {
             "message": "Missing item type\nCreates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is a {{#crossLink \"GameObject\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
-            "line": " src/core/component.js:510"
+            "line": " src/core/component.js:516"
         },
         {
             "message": "Missing item type\nAdds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name.\nPublishes the new child component on this component, keyed to the given name.",
-            "line": " src/core/component.js:542"
+            "line": " src/core/component.js:548"
         },
         {
             "message": "Missing item type\nResets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",

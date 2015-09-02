@@ -211,11 +211,11 @@
 
  var texture1 = new XEO.Texture(scene, {
     src: &quot;diffuseMap.jpg&quot;
-});
+ });
 
  var texture2 = new XEO.Texture(scene, {
     src: &quot;normalMap.jpg&quot;
-});
+ });
 
  var texture3 = new XEO.Texture(scene, {
     src: &quot;specularMap.jpg&quot;
@@ -316,12 +316,12 @@
 
             // Dirty flags
 
-            this._dirty = true;
-            this._matrixDirty = true;
+            this._dirty = false;
+            this._matrixDirty = false;
             this._srcDirty = false;
             this._imageDirty = false;
             this._targetDirty = false;
-            this._propsDirty = true;
+            this._propsDirty = false;
 
             var self = this;
 
@@ -355,6 +355,14 @@
             this.scale = cfg.scale;
             this.rotate = cfg.rotate;
 
+            // Properties
+
+            this.minFilter = cfg.minFilter;
+            this.magFilter = cfg.magFilter;
+            this.wrapS = cfg.wrapS;
+            this.wrapT = cfg.wrapT;
+            this.flipY = cfg.flipY;
+
             // Data source
 
             if (cfg.src) {
@@ -366,14 +374,6 @@
             } else if (cfg.target) {
                 this.target = cfg.target; // Render target
             }
-
-            // Properties
-
-            this.minFilter = cfg.minFilter;
-            this.magFilter = cfg.magFilter;
-            this.wrapS = cfg.wrapS;
-            this.wrapT = cfg.wrapT;
-            this.flipY = cfg.flipY;
 
             this.scene.stats.inc(&quot;textures&quot;);
         },
@@ -390,6 +390,8 @@
                 this.scene.once(&quot;tick2&quot;,
                     function () {
                         self._build();
+
+                        self._dirty = false;
                     });
             }
         },
@@ -400,24 +402,38 @@
 
             var state = this._state;
 
-            if (!state.texture) {
-                state.texture = new XEO.renderer.webgl.Texture2D(gl);
-            }
 
             if (this._srcDirty) {
+
                 if (this._src) {
+
                     this._loadSrc(this._src);
                     this._srcDirty = false;
+
                     return;
+
                 }
             }
 
+
             if (this._imageDirty) {
+
                 if (this._image) {
+
+                    if (!state.texture) {
+                        state.texture = new XEO.renderer.webgl.Texture2D(gl);
+
+                    }
+
                     state.texture.setImage(this._image);
+
                     this._imageDirty = false;
+
+                    // May now need to regenerate mipmaps etc
+                    this._propsDirty = true;
                 }
             }
+
 
             if (this._targetDirty) {
 
@@ -426,6 +442,7 @@
 
                 this._targetDirty = false;
             }
+
 
             if (this._matrixDirty) {
 
@@ -454,22 +471,21 @@
                 this._matrixDirty = false;
             }
 
+
             if (this._propsDirty) {
                 state.texture.setProps(state);
                 this._propsDirty = false;
             }
 
             this._renderer.imageDirty = true;
-
-            this._dirty = false;
         },
 
 
         _loadSrc: function (src) {
 
-            var task = this.scene.tasks.create({
-                description: &quot;Loading texture&quot;
-            });
+            //var task = this.scene.tasks.create({
+            //    description: &quot;Loading texture&quot;
+            //});
 
             var self = this;
 
@@ -487,7 +503,7 @@
                     self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
                     self._target = null;
 
-                    self._imageDirty = false;
+                    self._imageDirty = true;
                     self._srcDirty = false;
                     self._targetDirty = false;
 
@@ -501,11 +517,11 @@
                     self._scheduleBuild();
                 }
 
-                task.setCompleted();
+//                task.setCompleted();
             };
 
             image.onerror = function () {
-                task.setFailed();
+                //              task.setFailed();
             };
 
             if (src.indexOf(&quot;data&quot;) === 0) {
@@ -582,7 +598,7 @@
              */
             src: {
 
-                set: function(value) {
+                set: function (value) {
 
                     this._image = null;
                     this._src = value;
@@ -603,7 +619,7 @@
                     this.fire(&quot;src&quot;, this._src);
                 },
 
-                get: function() {
+                get: function () {
                     return this._src;
                 }
             },
@@ -789,16 +805,29 @@
              * Fires a {{#crossLink &quot;Texture/minFilter:event&quot;}}{{/crossLink}} event on change.
              *
              * @property minFilter
-             * @default &quot;linearMipMapLinear&quot;
+             * @default &quot;linearMipmapLinear&quot;
              * @type String
              */
             minFilter: {
 
                 set: function (value) {
 
-                    value = value || &quot;linearMipMapLinear&quot;;
+                    value = value || &quot;linearMipmapLinear&quot;;
 
-                    this._minFilter = value;
+                    if (value !== &quot;linear&quot; &amp;&amp;
+                        value !== &quot;linearMipmapNearest&quot; &amp;&amp;
+                        value !== &quot;linearMipmapLinear&quot; &amp;&amp;
+                        value !== &quot;nearestMipmapLinear&quot; &amp;&amp;
+                        value !== &quot;linearMipmapLinear&quot;) {
+
+                        this.error(&quot;Unsupported value for &#x27;minFilter&#x27;: &#x27;&quot; + value +
+                            &quot;&#x27; - supported values are &#x27;linear&#x27;, &#x27;linearMipmapNearest&#x27;, &#x27;nearestMipmapLinear&#x27; &quot; +
+                            &quot;and &#x27;linearMipmapLinear&#x27;. Defaulting to &#x27;linearMipmapLinear&#x27;.&quot;);
+
+                        value = &quot;linearMipmapLinear&quot;;
+                    }
+
+                    this._state.minFilter = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -808,11 +837,11 @@
                      * @event minFilter
                      * @param value {String} The property&#x27;s new value
                      */
-                    this.fire(&quot;minFilter&quot;, this._minFilter);
+                    this.fire(&quot;minFilter&quot;, this._state.minFilter);
                 },
 
                 get: function () {
-                    return this._minFilter;
+                    return this._state.minFilter;
                 }
             },
 
@@ -840,7 +869,15 @@
 
                     value = value || &quot;linear&quot;;
 
-                    this._magFilter = value;
+                    if (value !== &quot;linear&quot; &amp;&amp; value !== &quot;nearest&quot;) {
+
+                        this.error(&quot;Unsupported value for &#x27;magFilter&#x27;: &#x27;&quot; + value +
+                            &quot;&#x27; - supported values are &#x27;linear&#x27; and &#x27;nearest&#x27;. Defaulting to &#x27;linear&#x27;.&quot;);
+
+                        value = &quot;linear&quot;;
+                    }
+
+                    this._state.magFilter = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -850,11 +887,11 @@
                      * @event magFilter
                      * @param value {String} The property&#x27;s new value
                      */
-                    this.fire(&quot;magFilter&quot;, this._magFilter);
+                    this.fire(&quot;magFilter&quot;, this._state.magFilter);
                 },
 
                 get: function () {
-                    return this._magFilter;
+                    return this._state.magFilter;
                 }
             },
 
@@ -884,7 +921,15 @@
 
                     value = value || &quot;repeat&quot;;
 
-                    this._wrapS = value;
+                    if (value !== &quot;clampToEdge&quot; &amp;&amp; value !== &quot;mirroredRepeat&quot; &amp;&amp; value !== &quot;repeat&quot;) {
+
+                        this.error(&quot;Unsupported value for &#x27;wrapS&#x27;: &#x27;&quot; + value +
+                            &quot;&#x27; - supported values are &#x27;clampToEdge&#x27;, &#x27;mirroredRepeat&#x27; and &#x27;repeat&#x27;. Defaulting to &#x27;repeat&#x27;.&quot;);
+
+                        value = &quot;repeat&quot;;
+                    }
+
+                    this._state.wrapS = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -894,11 +939,11 @@
                      * @event wrapS
                      * @param value {String} The property&#x27;s new value
                      */
-                    this.fire(&quot;wrapS&quot;, this._wrapS);
+                    this.fire(&quot;wrapS&quot;, this._state.wrapS);
                 },
 
                 get: function () {
-                    return this._wrapS;
+                    return this._state.wrapS;
                 }
             },
 
@@ -928,7 +973,15 @@
 
                     value = value || &quot;repeat&quot;;
 
-                    this._wrapT = value;
+                    if (value !== &quot;clampToEdge&quot; &amp;&amp; value !== &quot;mirroredRepeat&quot; &amp;&amp; value !== &quot;repeat&quot;) {
+
+                        this.error(&quot;Unsupported value for &#x27;wrapT&#x27;: &#x27;&quot; + value +
+                            &quot;&#x27; - supported values are &#x27;clampToEdge&#x27;, &#x27;mirroredRepeat&#x27; and &#x27;repeat&#x27;. Defaulting to &#x27;repeat&#x27;.&quot;);
+
+                        value = &quot;repeat&quot;;
+                    }
+
+                    this._state.wrapT = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -938,11 +991,11 @@
                      * @event wrapT
                      * @param value {String} The property&#x27;s new value
                      */
-                    this.fire(&quot;wrapT&quot;, this._wrapT);
+                    this.fire(&quot;wrapT&quot;, this._state.wrapT);
                 },
 
                 get: function () {
-                    return this._wrapT;
+                    return this._state.wrapT;
                 }
             },
 
@@ -962,7 +1015,7 @@
 
                     value = value !== false;
 
-                    this._flipY = value;
+                    this._state.flipY = value;
                     this._propsDirty = true;
 
                     this._scheduleBuild();
@@ -972,41 +1025,49 @@
                      * @event flipY
                      * @param value {Boolean} The property&#x27;s new value
                      */
-                    this.fire(&quot;flipY&quot;, this._flipY);
+                    this.fire(&quot;flipY&quot;, this._state.flipY);
                 },
 
                 get: function () {
-                    return this._flipY;
+                    return this._state.flipY;
                 }
             }
         },
 
         _getJSON: function () {
 
-            var json = {
-                translate: this._translate,
-                scale: this._scale,
-                rotate: this._rotate
-            };
+            var json = {};
 
-            if (this._minFilter != &quot;linearMipMapLinear&quot;) {
-                json.minFilter = this._minFilter;
+            if (this._translate &amp;&amp; (this._translate[0] !== 0 || this._translate[1] !== 0)) {
+                json.translate = this._translate;
             }
 
-            if (this._magFilter != &quot;linear&quot;) {
-                json.magFilter = this._magFilter;
+            if (this._scale &amp;&amp; (this._scale[0] !== 1 || this._scale[1] !== 1)) {
+                json.scale = this._scale;
             }
 
-            if (this._wrapS != &quot;repeat&quot;) {
-                json.wrapS = this._wrapS;
+            if (this._rotate !== 0) {
+                json.rotate = this._rotate;
             }
 
-            if (this._wrapT != &quot;repeat&quot;) {
-                json.wrapT = this._wrapT;
+            if (this._state.minFilter != &quot;linearMipmapLinear&quot;) {
+                json.minFilter = this._state.minFilter;
             }
 
-            if (this._flipY !== true) {
-                json.flipY = this._flipY;
+            if (this._state.magFilter != &quot;linear&quot;) {
+                json.magFilter = this._state.magFilter;
+            }
+
+            if (this._state.wrapS != &quot;repeat&quot;) {
+                json.wrapS = this._state.wrapS;
+            }
+
+            if (this._state.wrapT != &quot;repeat&quot;) {
+                json.wrapT = this._state.wrapT;
+            }
+
+            if (this._state.flipY !== true) {
+                json.flipY = this._state.flipY;
             }
 
             if (this._src) {

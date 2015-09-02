@@ -416,6 +416,10 @@
 
                             </li>
                             <li class="index-item property inherited">
+                                <a href="#property_autoNormals">autoNormals</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_colors">colors</a>
 
                             </li>
@@ -429,6 +433,10 @@
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_indices">indices</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_json">json</a>
 
                             </li>
                             <li class="index-item property">
@@ -471,6 +479,10 @@
                                 <a href="#property_segmentsT">segmentsT</a>
 
                             </li>
+                            <li class="index-item property inherited inherited">
+                                <a href="#property_string">string</a>
+
+                            </li>
                             <li class="index-item property">
                                 <a href="#property_tube">tube</a>
 
@@ -493,6 +505,10 @@
                     <ul class="index-list events extends">
                             <li class="index-item event">
                                 <a href="#event_arc">arc</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_autoNormals">autoNormals</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -565,7 +581,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l699"><code>src&#x2F;core&#x2F;component.js:699</code></a>
+        <a href="../files/src_core_component.js.html#l723"><code>src&#x2F;core&#x2F;component.js:723</code></a>
         </p>
 
 
@@ -605,7 +621,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l474"><code>src&#x2F;core&#x2F;component.js:474</code></a>
+        <a href="../files/src_core_component.js.html#l496"><code>src&#x2F;core&#x2F;component.js:496</code></a>
         </p>
 
 
@@ -1040,7 +1056,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l492"><code>src&#x2F;core&#x2F;component.js:492</code></a>
+        <a href="../files/src_core_component.js.html#l476"><code>src&#x2F;core&#x2F;component.js:476</code></a>
         </p>
 
 
@@ -1108,6 +1124,36 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_autoNormals" class="property item inherited">
+                        <h3 class="name"><code>autoNormals</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_autoNormals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l836"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:836</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set true to make this Geometry automatically generate <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> from
+                    <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> and <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>.</p>
+                    <p>This Geomatry will auto-generate its <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> on the
+                    next <a href="../classes/Scene.html" class="crosslink">Scene</a> Scene/tick:event event.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_autoNormals" class="crosslink">autoNormals</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
                     <div id="property_colors" class="property item inherited">
                         <h3 class="name"><code>colors</code></h3>
                         <span class="type">Array of Number</span>
@@ -1119,7 +1165,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_colors">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l701"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:701</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l711"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:711</code></a>
                             </p>
                     
                     
@@ -1197,7 +1243,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_indices">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l741"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:741</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l751"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:751</code></a>
                             </p>
                     
                     
@@ -1210,6 +1256,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                             <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_json" class="property item inherited">
+                        <h3 class="name"><code>json</code></h3>
+                        <span class="type">JSON</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_json">Component</a>:
+                            <a href="../files/src_core_component.js.html#l667"><code>src&#x2F;core&#x2F;component.js:667</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JSON object containing the state of this Component.</p>
+                    
+                        </div>
+                    
                     
                     
                     </div>
@@ -1277,7 +1349,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_modelBoundary">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l782"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:782</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l791"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:791</code></a>
                             </p>
                     
                     
@@ -1305,7 +1377,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_normals">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l621"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:621</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l631"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:631</code></a>
                             </p>
                     
                     
@@ -1332,7 +1404,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_positions">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l564"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:564</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l574"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:574</code></a>
                             </p>
                     
                     
@@ -1361,7 +1433,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_primitive">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l512"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:512</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l522"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:522</code></a>
                             </p>
                     
                     
@@ -1485,6 +1557,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_string" class="property item inherited">
+                        <h3 class="name"><code>string</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Component.html#property_string">
+                                    Component
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_core_component.js.html#l694"><code>src&#x2F;core&#x2F;component.js:694</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>String containing the serialized JSON state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_tube" class="property item">
                         <h3 class="name"><code>tube</code></h3>
                         <span class="type">Number</span>
@@ -1552,7 +1653,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_uv">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l661"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:661</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l671"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:671</code></a>
                             </p>
                     
                     
@@ -1616,6 +1717,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_autoNormals" class="events item inherited">
+                        <h3 class="name"><code>autoNormals</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l861"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:861</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_autoNormals" class="crosslink">autoNormals</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_colors" class="events item inherited">
                         <h3 class="name"><code>colors</code></h3>
                         <span class="type"></span>
@@ -1627,7 +1770,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_colors">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l726"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:726</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l736"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:736</code></a>
                             </p>
                     
                     
@@ -1669,7 +1812,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l731"><code>src&#x2F;core&#x2F;component.js:731</code></a>
+                            <a href="../files/src_core_component.js.html#l755"><code>src&#x2F;core&#x2F;component.js:755</code></a>
                             </p>
                     
                     
@@ -1694,7 +1837,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_indices">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l767"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:767</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l776"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:776</code></a>
                             </p>
                     
                     
@@ -1778,7 +1921,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_normals">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l646"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:646</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l656"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:656</code></a>
                             </p>
                     
                     
@@ -1823,7 +1966,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Geometry
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_core_geometry_geometry.js.html#l594"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:594</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l604"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:604</code></a>
                             </p>
                     
                     
@@ -1865,7 +2008,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_primitive">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l548"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:548</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l558"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:558</code></a>
                             </p>
                     
                     
@@ -2075,7 +2218,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_uv">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l686"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:686</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l696"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:696</code></a>
                             </p>
                     
                     

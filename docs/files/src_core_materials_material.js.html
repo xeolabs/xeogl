@@ -180,7 +180,7 @@
 
  &lt;ul&gt;
  &lt;li&gt;{{#crossLink &quot;PBRMaterial&quot;}}{{/crossLink}} - Physically-based rendering (PBR) material.&lt;/li&gt;
- &lt;li&gt;{{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} - Blinn-Phong shading material.&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;Material&quot;}}{{/crossLink}} - Blinn-Phong shading material.&lt;/li&gt;
  &lt;li&gt;(more coming)&lt;/li&gt;
  &lt;/ul&gt;
 
@@ -202,6 +202,71 @@
 
         _init: function (cfg) {
 
+        },
+
+        _props: {
+
+            /**
+             The Material&#x27;s line width.
+
+             Fires a {{#crossLink &quot;Material/lineWidth:event&quot;}}{{/crossLink}} event on change.
+
+             @property lineWidth
+             @default 1.0
+             @type Number
+             */
+            lineWidth: {
+
+                set: function (value) {
+
+                    this._state.lineWidth = value || 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/lineWidth:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event lineWidth
+                     * @param value {Array(Number)} The property&#x27;s new value
+                     */
+                    this.fire(&quot;lineWidth&quot;, this._state.lineWidth);
+                },
+
+                get: function () {
+                    return this._state.lineWidth;
+                }
+            },
+
+            /**
+             The Material&#x27;s point size.
+
+             Fires a {{#crossLink &quot;Material/pointSize:event&quot;}}{{/crossLink}} event on change.
+
+             @property pointSize
+             @default 1.0
+             @type Number
+             */
+            pointSize: {
+
+                set: function (value) {
+
+                    this._state.pointSize = value || 1.0;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Material&#x27;s {{#crossLink &quot;Material/pointSize:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event pointSize
+                     * @param value {Array(Number)} The property&#x27;s new value
+                     */
+                    this.fire(&quot;pointSize&quot;, this._state.pointSize);
+                },
+
+                get: function () {
+                    return this._state.pointSize;
+                }
+            }
         }
     });
 

@@ -638,8 +638,20 @@ var center = viewBoundary.center;
                                 <a href="#property_geometry">geometry</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_glsl">glsl</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_glslString">glslString</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_json">json</a>
 
                             </li>
                             <li class="index-item property">
@@ -684,6 +696,10 @@ var center = viewBoundary.center;
                             </li>
                             <li class="index-item property">
                                 <a href="#property_stage">stage</a>
+
+                            </li>
+                            <li class="index-item property inherited inherited">
+                                <a href="#property_string">string</a>
 
                             </li>
                             <li class="index-item property">
@@ -816,7 +832,7 @@ var center = viewBoundary.center;
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l699"><code>src&#x2F;core&#x2F;component.js:699</code></a>
+        <a href="../files/src_core_component.js.html#l723"><code>src&#x2F;core&#x2F;component.js:723</code></a>
         </p>
 
 
@@ -856,7 +872,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_core_component.js.html#l474"><code>src&#x2F;core&#x2F;component.js:474</code></a>
+        <a href="../files/src_core_component.js.html#l496"><code>src&#x2F;core&#x2F;component.js:496</code></a>
         </p>
 
 
@@ -1291,7 +1307,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_core_component.js.html#l492"><code>src&#x2F;core&#x2F;component.js:492</code></a>
+        <a href="../files/src_core_component.js.html#l476"><code>src&#x2F;core&#x2F;component.js:476</code></a>
         </p>
 
 
@@ -1563,6 +1579,64 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_glsl" class="property item">
+                        <h3 class="name"><code>glsl</code></h3>
+                        <span class="type">JSON</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_objects_gameObject.js.html#l933"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:933</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JSON object containing the (GLSL) source code of the shaders for this GameObject.</p>
+                    <p>This is sometimes useful to have as a reference
+                    when constructing your own custom <a href="../classes/Shader.html" class="crosslink">Shader</a> components.</p>
+                    <p>Will return null if xeoEngine has not yet rendered this GameObject.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_glslString" class="property item">
+                        <h3 class="name"><code>glslString</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_objects_gameObject.js.html#l966"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:966</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The (GLSL) source code of the shaders for this GameObject, as a string.</p>
+                    <p>This is sometimes useful to have as a reference
+                    when constructing your own custom <a href="../classes/Shader.html" class="crosslink">Shader</a> components.</p>
+                    <p>Will return null if xeoEngine has not yet rendered this GameObject.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_id" class="property item inherited">
                         <h3 class="name"><code>id</code></h3>
                         <span class="type">String</span>
@@ -1583,6 +1657,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_json" class="property item inherited">
+                        <h3 class="name"><code>json</code></h3>
+                        <span class="type">JSON</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_json">Component</a>:
+                            <a href="../files/src_core_component.js.html#l667"><code>src&#x2F;core&#x2F;component.js:667</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JSON object containing the state of this Component.</p>
                     
                         </div>
                     
@@ -1895,6 +1995,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_stage" class="crosslink">stage</a> when set to
                     a null or undefined value.</p>
                     <p>Fires a <a href="../classes/GameObject.html#event_stage" class="crosslink">stage</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_string" class="property item inherited">
+                        <h3 class="name"><code>string</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Component.html#property_string">
+                                    Component
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_core_component.js.html#l694"><code>src&#x2F;core&#x2F;component.js:694</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>String containing the serialized JSON state of this Component.</p>
                     
                         </div>
                     
@@ -2318,7 +2447,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l731"><code>src&#x2F;core&#x2F;component.js:731</code></a>
+                            <a href="../files/src_core_component.js.html#l755"><code>src&#x2F;core&#x2F;component.js:755</code></a>
                             </p>
                     
                     
