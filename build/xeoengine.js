@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-09-02
+ * Built on 2015-09-11
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -25,6 +25,15 @@
     "use strict";
 
     var XEO = function () {
+
+        /**
+         * Semantic version number. The value for this is set by an expression that's concatenated to
+         * the end of the built binary by the xeoEngine build script.
+         * @property version
+         * @namespace XEO
+         * @type {String}
+         */
+        this.version = null;
 
         // Ensures unique scene IDs
         // Lazy-instantiated because class won't be defined yet
@@ -313,9 +322,7 @@
 
     var initializing = false;
 
-    var fnTest = /xyz/.test(function () {
-        xyz;
-    }) ? /\b_super\b/ : /.*/;
+    var fnTest = /xyz/.test(function () { xyz; }) ? /\b_super\b/ : /.*/;
 
     // The base Class implementation (does nothing)
     this.Class = function () {
@@ -1019,25 +1026,26 @@
 
         /**
          * Adds a child component to this.
-         * When component not given, attaches the scene's default instance for the given name.
+         * When component not given, attaches the scene's default instance for the given name (if any).
          * Publishes the new child component on this component, keyed to the given name.
          *
          * @param {string} name component name
          * @param {Component} child The component
+         * @param {Boolean} useDefault
          * @private
          */
-        _setChild: function (name, child) {
+        _setChild: function (name, child, useDefault) {
 
-            if (!child) {
+            if (!child && useDefault !== false) {
 
                 // No child given, fall back on default component class for the given name
 
                 child = this.scene[name];
 
-                if (!child) {
-                    this.error("No default component for name '" + name + "'");
-                    return;
-                }
+                //if (!child) {
+                //    this.error("No default component for name '" + name + "'");
+                //    return;
+                //}
 
             } else {
 
@@ -1063,7 +1071,7 @@
                 }
             }
 
-            if (child.scene.id !== this.scene.id) {
+            if (child && child.scene.id !== this.scene.id) {
                 this.error("Not in same scene: " + child.type + " " + XEO._inQuotes(child.id));
                 return;
             }
@@ -1086,42 +1094,48 @@
                 oldChild.off(this._childDirtySubs[name]);
             }
 
-            // Set and publish the new child on this component
+            if (child) {
 
-            this._children[name] = child;
+                // Set and publish the new child on this component
 
-            var self = this;
+                this._children[name] = child;
 
-            // Bind destruct listener to new child to remove it
-            // from this component when destroyed
+                var self = this;
 
-            this._childDestroySubs[name] = child.on("destroyed",
-                function () {
+                // Bind destruct listener to new child to remove it
+                // from this component when destroyed
 
-                    // Child destroyed
-                    delete self._children[name];
+                this._childDestroySubs[name] = child.on("destroyed",
+                    function () {
 
-                    // Try to fall back on default child
-                    var defaultComponent = self.scene[name];
+                        // Child destroyed
+                        delete self._children[name];
 
-                    if (!defaultComponent || child.id === defaultComponent.id) {
+                        // Try to fall back on default child
+                        var defaultComponent = self.scene[name];
 
-                        // Old child was the default,
-                        // so publish null child and bail
+                        if (!defaultComponent || child.id === defaultComponent.id) {
 
-                        self.fire(name, null);
+                            // Old child was the default,
+                            // so publish null child and bail
 
-                        return;
-                    }
+                            self.fire(name, null);
 
-                    // Set default child
-                    self._setChild(name, defaultComponent);
-                });
+                            return;
+                        }
 
-            this._childDirtySubs[name] = child.on("dirty",
-                function () {
-                    self.fire("dirty", true);
-                });
+                        // Set default child
+                        self._setChild(name, defaultComponent);
+                    });
+
+                this._childDirtySubs[name] = child.on("dirty",
+                    function () {
+                        self.fire("dirty", true);
+                    });
+
+            } else {
+                delete this._children[name];
+            }
 
             this.fire("dirty", true);
 
@@ -1129,7 +1143,6 @@
 
             return child;
         },
-
 
         _compile: function () {
         },
@@ -1187,7 +1200,10 @@
             js: {
 
                 get: function () {
-                    return "new " + this.type + "(" + this.jsonString + ");";
+                    var json = this.json;
+                    delete json.id;
+                    var str = JSON.stringify(json, "\n", 4);
+                    return "new " + this.type + "(" + str + ");";
                 }
             }
         },
@@ -1243,11 +1259,11 @@
  ## Contents
 
  <Ul>
-    <li><a href="#sceneStructure">Scene Structure</a></li>
-    <li><a href="#sceneCanvas">The Scene Canvas</a></li>
-    <li><a href="#findingByID">Finding Scenes and Components by ID</a></li>
-    <li><a href="#defaults">The Default Scene</a></li>
-    <li><a href="#savingAndLoading">Saving and Loading Scenes</a></li>
+ <li><a href="#sceneStructure">Scene Structure</a></li>
+ <li><a href="#sceneCanvas">The Scene Canvas</a></li>
+ <li><a href="#findingByID">Finding Scenes and Components by ID</a></li>
+ <li><a href="#defaults">The Default Scene</a></li>
+ <li><a href="#savingAndLoading">Saving and Loading Scenes</a></li>
  </ul>
 
  ## <a name="sceneStructure">Scene Structure</a>
@@ -1468,6 +1484,48 @@
 
             var self = this;
 
+            /**
+             * Tracks statistics within this Scene, such as numbers of
+             * textures, geometries etc.
+             * @final
+             * @property stats
+             * @type {*}
+             * @final
+             */
+            this.stats = {
+                build: {
+                    version: XEO.version
+                },
+                client: {
+                    browser: (navigator && navigator.userAgent) ? navigator.userAgent : "n/a"
+                },
+                canvas: {
+                    width: 0,
+                    height: 0
+                },
+                scene: {
+                    objects: 0
+                },
+                memory: {
+                    meshes: 0,
+                    positions: 0,
+                    colors: 0,
+                    normals: 0,
+                    uvs: 0,
+                    indices: 0,
+                    textures: 0,
+                    programs: 0
+                },
+                frame: {
+                    useProgram: 0,
+                    setUniform: 0,
+                    setUniformCacheHits: 0,
+                    bindTexture: 0,
+                    bindArray: 0,
+                    drawElements: 0
+                }
+            };
+
             this._componentIDMap = new XEO.utils.Map();
 
             /**
@@ -1540,8 +1598,7 @@
                     alert("xeoEngine failed to find WebGL!");
                 });
 
-            // The core WebGL renderer
-            this._renderer = new XEO.renderer.Renderer({
+            this._renderer = new XEO.renderer.Renderer(this.stats, {
                 canvas: this.canvas,
                 transparent: cfg.transparent
             });
@@ -1565,20 +1622,6 @@
              * @final
              */
             this.tasks = new XEO.Tasks(this);
-
-            /**
-             * Tracks statistics within this Scene, such as numbers of
-             * textures, geometries etc.
-             * @final
-             * @property stats
-             * @type {Stats}
-             * @final
-             */
-            this.stats = new XEO.Stats(this, {
-                objects: 0,
-                geometries: 0,
-                textures: 0
-            });
 
             // Register Scene on engine
             // Do this BEFORE we add components below
@@ -1618,7 +1661,7 @@
             this._initDefaults();
         },
 
-        _initDefaults: function() {
+        _initDefaults: function () {
 
             this.view;
             this.project;
@@ -1704,7 +1747,7 @@
                         // Unschedule any pending recompilation of
                         // the GameObject into the renderer
 
-                        self.stats.dec("objects");
+                        self.stats.scene.objects--;
 
                         delete self.objects[c.id];
 
@@ -1740,7 +1783,7 @@
 
                 // Update scene statistics
 
-                this.stats.inc("objects");
+                this.stats.scene.objects++;
             }
 
             /**
@@ -2075,7 +2118,7 @@
                                 new XEO.AmbientLight(this, {
                                     id: "default.light0",
                                     color: [0.7, 0.7, 0.7],
-                                    intensity: 1.0
+                                    intensity: 0.5
                                 }),
 
                                 // Directional light source #1
@@ -2083,7 +2126,7 @@
                                     id: "default.light1",
                                     dir: [-0.5, -0.5, -1.0],
                                     color: [1.0, 1.0, 1.0],
-                                    intensity: 1.0,
+                                    intensity: 0.5,
                                     space: "view"
                                 }),
 
@@ -2092,7 +2135,7 @@
                                     id: "default.light2",
                                     dir: [1.0, -0.9, -0.7],
                                     color: [1.0, 1.0, 1.0],
-                                    intensity: 1.0,
+                                    intensity: 0.2,
                                     space: "view"
                                 })
                             ]
@@ -2246,14 +2289,14 @@
          * @method pick
          * @param {Array of Number} canvasPos Canvas-space coordinates.
          * @param {*} [options] Pick options.
-         * @param {Boolean} [options.rayPick=false] Whether to perform a 3D ray-intersect pick.
+         * @param {Boolean} [options.pickPrimitive=false] Whether to try to pick a primitive on the {{#crossLink "GameObject"}}GameObject's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}.
          * @returns {*} Hit record when a {{#crossLink "GameObject"}}{{/crossLink}} is picked.
          */
         pick: function (canvasPos, options) {
 
             return this._renderer.pick({
                 canvasPos: canvasPos,
-                rayPick: options.rayPick
+                pickPrimitive: options.pickPrimitive
             });
         },
 
@@ -2262,8 +2305,10 @@
          * Resets this Scene to its default state.
          *
          * References to any components in this Scene will become invalid.
+         *
+         * @method clear
          */
-        clear: function () {
+        clear: function () {  // FIXME: should only clear user-created components
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
@@ -2282,6 +2327,15 @@
             this._dirtyObjects = {};
         },
 
+        /**
+         * Displays a simple test object.
+         *
+         * Clears the Scene first.
+         *
+         * The test object is destroyed as soon as anything else is created in this Scene.
+         *
+         * @method testPattern
+         */
         testPattern: function () {
 
             // Clear the scene
@@ -2304,7 +2358,7 @@
             var spin = this.on("tick",
                 function () {
                     object.transform.angle = angle;
-                    angle += 0.01;
+                    angle += 0.5;
                 });
 
             var self = this;
@@ -2346,7 +2400,7 @@
             }
 
             if (countCompiledObjects > 0) {
-            //    this.log("Compiled " + countCompiledObjects + " XEO.GameObject" + (countCompiledObjects > 1 ? "s" : ""));
+                //    this.log("Compiled " + countCompiledObjects + " XEO.GameObject" + (countCompiledObjects > 1 ? "s" : ""));
             }
 
             // Render a frame
@@ -3622,7 +3676,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Ortho.
- @param [cfg.left=-1.0] {Number} Position of the left plane on the View-space X-axis.
+ @param [cfg.left=-1.0] {Number} Position of the left plane on the View-space X-xyz.
  @param [cfg.right=1.0] {Number} Position of the right plane on the View-space X-axis.
  @param [cfg.top=1.0] {Number} Position of the top plane on the View-space Y-axis.
  @param [cfg.bottom=-1.0] {Number} Position of the bottom plane on the View-space Y-axis.
@@ -4506,6 +4560,10 @@
                             aspect: newHeight / newWidth
                         });
 
+                        var canvasStats = self.scene.stats.canvas;
+                        canvasStats.width = newWidth;
+                        canvasStats.height = newHeight;
+
                         lastWidth = newWidth;
                         lastHeight = newHeight;
 
@@ -4536,8 +4594,8 @@
             style.float = "left";
             style.left = "0";
             style.top = "0";
-             style.position = "absolute";
-             style["z-index"] = "-10000";
+            style.position = "absolute";
+            style["z-index"] = "-10000";
 
             div.innerHTML += '<canvas id="' + canvasId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0;"></canvas>';
 
@@ -5662,6 +5720,7 @@ visibility.destroy();
  @param [cfg.normals] {Array of Number} Normals array.
  @param [cfg.uv] {Array of Number} UVs array.
  @param [cfg.colors] {Array of Number} Vertex colors.
+ @param [cfg.tangents] {Array of Number} Vertex tangents.
  @param [cfg.indices] {Array of Number} Indices array.
  @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from positions and indices.
  @extends Component
@@ -5676,23 +5735,74 @@ visibility.destroy();
 
         _init: function (cfg) {
 
+            var self = this;
+
             this._state = new XEO.renderer.Geometry({
+
                 primitive: null, // WebGL enum
-                positions: null, // VBOs
+                primitiveName: null, // String
+
+                // VBOs 
+
+                positions: null,
                 colors: null,
                 normals: null,
                 uv: null,
                 tangents: null,
-                indices: null
+                indices: null,
+
+                // Getters for VBOs that are only created on-demand
+
+                // Tangents for normal mapping
+
+                getTangents: function () {
+                    if (self._tangentsDirty) {
+                        self._buildTangents();
+                    }
+                    return self._tangents;
+                },
+
+                // Arrays modified to support triangle-picking
+
+                getPickPositions: function () {
+                    if (self._pickVBOsDirty) {
+                        self._buildPickVBOs();
+                    }
+                    return self._pickPositions;
+                },
+
+                getPickColors: function () {
+                    if (self._pickVBOsDirty) {
+                        self._buildPickVBOs();
+                    }
+                    return self._pickColors;
+                },
+
+                getPickIndices: function () {
+                    if (self._pickVBOsDirty) {
+                        self._buildPickVBOs();
+                    }
+                    return self._pickIndices;
+                }
             });
 
-            this._primitive = null;  // String
-            this._positions = null; // Typed data arrays
-            this._colors = null;
-            this._normals = null;
-            this._uv = null;
+            // Typed arrays
+
+            this._positionsData = null;
+            this._colorsData = null;
+            this._normalsData = null;
+            this._uvData = null;
+            this._tangentsData = null;
+            this._indicesData = null;
+
+            // Lazy-generated VBOs
+
             this._tangents = null;
-            this._indices = null;
+            this._pickPositions = null;
+            this._pickColors = null;
+            this._pickIndices = null;
+
+            // Flags for work pending
 
             this._dirty = false;
             this._positionsDirty = true;
@@ -5701,7 +5811,7 @@ visibility.destroy();
             this._uvDirty = true;
             this._tangentsDirty = true;
             this._indicesDirty = true;
-
+            this._pickVBOsDirty = true;
 
             // Model-space Boundary3D
 
@@ -5724,15 +5834,6 @@ visibility.destroy();
                     -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, // Bottom face
                     1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, // Right face
                     -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0 // Left face
-                ];
-
-                this.colors = [
-                    1.0, 1.0, 1.0, 1.0,    // Front face
-                    1.0, 1.0, 1.0, 1.0,    // Back face
-                    1.0, 1.0, 1.0, 1.0,    // Top face
-                    1.0, 1.0, 1.0, 1.0,    // Bottom face
-                    1.0, 1.0, 1.0, 1.0,    // Right face
-                    1.0, 1.0, 1.0, 1.0     // Left face
                 ];
 
                 this.normals = [
@@ -5808,7 +5909,7 @@ visibility.destroy();
                     self._scheduleBuild();
                 });
 
-            this.scene.stats.inc("geometries");
+            this.scene.stats.memory.meshes++;
         },
 
         _scheduleBuild: function () {
@@ -5829,7 +5930,7 @@ visibility.destroy();
 
             var gl = this.scene.canvas.gl;
 
-            switch (this._primitive) {
+            switch (this._state.primitiveName) {
 
                 case "points":
                     this._state.primitive = gl.POINTS;
@@ -5865,65 +5966,153 @@ visibility.destroy();
 
             var usage = gl.STATIC_DRAW;
 
+            var memoryStats = this.scene.stats.memory;
+
             if (this._positionsDirty) {
                 if (this._state.positions) {
-                    this.scene.stats.dec("vertices", this._positions.length / 3);
+                    memoryStats.positions -= this._state.positions.numItems;
                     this._state.positions.destroy();
                 }
-                this._state.positions = this._positions ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._positions), this._positions.length, 3, usage) : null;
-                this.scene.stats.inc("vertices", this._positions.length / 3);
+                this._state.positions = this._positionsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._positionsData), this._positionsData.length, 3, usage) : null;
+                memoryStats.positions += this._state.positions.numItems;
                 this._positionsDirty = false;
+
+                // Need to rebuild pick mesh now
+                this._pickVBOsDirty = true;
             }
 
             if (this._colorsDirty) {
+
                 if (this._state.colors) {
+                    memoryStats.colors -= this._state.colors.numItems;
                     this._state.colors.destroy();
                 }
-                this._state.colors = this._colors ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._colors), this._colors.length, 4, usage) : null;
+                this._state.colors = this._colorsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._colorsData), this._colorsData.length, 4, usage) : null;
+                if (this._state.colors) {
+                    memoryStats.colors += this._state.colors.numItems;
+                }
                 this._colorsDirty = false;
             }
 
             if (this._normalsDirty) {
                 if (this._state.normals) {
+                    memoryStats.normals += this._state.normals.numItems;
                     this._state.normals.destroy();
                 }
 
                 // Automatic normal generation
 
-                if (this._autoNormals && this._positions && this._indices) {
-                    this._normals = XEO.math.buildNormals(this._positions, this._indices);
+                if (this._autoNormals && this._positionsData && this._indicesData) {
+                    this._normalsData = XEO.math.buildNormals(this._positionsData, this._indicesData);
                 }
 
-                this._state.normals = this._normals ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._normals), this._normals.length, 3, usage) : null;
+                this._state.normals = this._normalsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._normalsData), this._normalsData.length, 3, usage) : null;
+                if (this._state.normals) {
+                    memoryStats.normals += this._state.normals.numItems;
+                }
                 this._normalsDirty = false;
+
+                // Need to rebuild tangents
+                // next time the renderer gets them from the state
+
+                this._tangentsDirty = true;
             }
 
             if (this._uvDirty) {
                 if (this._state.uv) {
+                    memoryStats.uvs -= this._state.uv.numItems;
                     this._state.uv.destroy();
                 }
-                this._state.uv = this._uv ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._uv), this._uv.length, 2, usage) : null;
-                this._uvDirty = false;
-            }
-
-            if (this._tangentsDirty) {
-                if (this._state.tangents) {
-                    this._state.tangents.destroy();
+                this._state.uv = this._uvData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._uvData), this._uvData.length, 2, usage) : null;
+                if (this._state.uv) {
+                    memoryStats.uvs += this._state.uv.numItems;
                 }
-                this._state.tangents = this._tangents ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._tangents), this._tangents.length, 4, usage) : null;
-                this._tangentsDirty = false;
+                this._uvDirty = false;
+
+                // Need to rebuild tangents
+                // next time the renderer gets them from the state
+
+                this._tangentsDirty = true;
             }
 
             if (this._indicesDirty) {
                 if (this._state.indices) {
+                    memoryStats.indices -= this._state.indices.numItems;
                     this._state.indices.destroy();
                 }
-                this._state.indices = this._indices ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this._indices), this._indices.length, 1, usage) : null;
+                this._state.indices = this._indicesData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this._indicesData), this._indicesData.length, 1, usage) : null;
+                if (this._state.indices) {
+                    memoryStats.indices += this._state.indices.numItems;
+                }
                 this._indicesDirty = false;
+
+                // Need to rebuild pick mesh next time the
+                // renderer gets it from the state
+
+                this._pickVBOsDirty = true;
             }
 
             this._dirty = false;
         },
+
+        _buildTangents: function () {
+
+            if (!this._tangentsDirty) {
+                return;
+            }
+
+            if (this._tangents) {
+                this._tangents.destroy();
+            }
+
+            var gl = this.scene.canvas.gl;
+
+            var usage = gl.STATIC_DRAW;
+
+            this._tangents = this._tangentsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._tangentsData), this._tangentsData.length, 4, usage) : null;
+
+            this._tangentsDirty = false;
+        },
+
+
+        _buildPickVBOs: function () {
+
+            if (!this._pickVBOsDirty) {
+                return;
+            }
+
+            if (this._pickPositions) {
+                this._pickPositions.destroy();
+            }
+
+            if (this._pickColors) {
+                this._pickColors.destroy();
+            }
+
+            if (this._pickIndices) {
+                this._pickIndices.destroy();
+            }
+
+            if (this._positionsData && this._indicesData) {
+
+                var gl = this.scene.canvas.gl;
+
+                var usage = gl.STATIC_DRAW;
+
+                var arrays = XEO.math.getPickTriangles(this._positionsData, this._indicesData);
+
+                var pickPositions = arrays.pickPositions;
+                var pickColors = arrays.pickColors;
+                var pickIndices = arrays.pickIndices;
+
+                this._pickPositions = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickPositions), pickPositions.length, 3, usage);
+                this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickColors), pickColors.length, 4, usage);
+                this._pickIndices = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pickIndices), pickIndices.length, 1, usage);
+            }
+
+            this._pickVBOsDirty = false;
+        },
+
 
         _props: {
 
@@ -5959,7 +6148,7 @@ visibility.destroy();
                         value = "triangles";
                     }
 
-                    this._primitive = value;
+                    this._state.primitiveName = value;
 
                     this.fire("dirty", true);
 
@@ -5969,13 +6158,13 @@ visibility.destroy();
                      * @type String
                      * @param value The property's new value
                      */
-                    this.fire("primitive", this._primitive);
+                    this.fire("primitive", this._state.primitiveName);
 
                     this._scheduleBuild();
                 },
 
                 get: function () {
-                    return this._primitive;
+                    return this._state.primitiveName;
                 }
             },
 
@@ -5996,9 +6185,9 @@ visibility.destroy();
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._positions !== !value);
+                    var dirty = (!this._positionsData !== !value);
 
-                    this._positions = value;
+                    this._positionsData = value;
                     this._positionsDirty = true;
 
                     this._scheduleBuild();
@@ -6014,7 +6203,7 @@ visibility.destroy();
                      * @event positions
                      * @param value The property's new value
                      */
-                    this.fire("positions", this._positions);
+                    this.fire("positions", this._positionsData);
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/boundary:property"}}{{/crossLink}} property changes.
@@ -6032,7 +6221,7 @@ visibility.destroy();
                 },
 
                 get: function () {
-                    return this._positions;
+                    return this._positionsData;
                 }
             },
 
@@ -6050,9 +6239,9 @@ visibility.destroy();
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._normals !== !value);
+                    var dirty = (!this._normalsData !== !value);
 
-                    this._normals = value;
+                    this._normalsData = value;
                     this._normalsDirty = true;
 
                     this._scheduleBuild();
@@ -6066,13 +6255,13 @@ visibility.destroy();
                      * @event  normals
                      * @param value The property's new value
                      */
-                    this.fire(" normals", this._normals);
+                    this.fire(" normals", this._normalsData);
 
                     this._renderer.imageDirty = true;
                 },
 
                 get: function () {
-                    return this._normals;
+                    return this._normalsData;
                 }
             },
 
@@ -6090,9 +6279,9 @@ visibility.destroy();
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._uv !== !value);
+                    var dirty = (!this._uvData !== !value);
 
-                    this._uv = value;
+                    this._uvData = value;
                     this._uvDirty = true;
 
                     this._scheduleBuild();
@@ -6106,13 +6295,13 @@ visibility.destroy();
                      * @event uv
                      * @param value The property's new value
                      */
-                    this.fire("uv", this._uv);
+                    this.fire("uv", this._uvData);
 
                     this._renderer.imageDirty = true;
                 },
 
                 get: function () {
-                    return this._uv;
+                    return this._uvData;
                 }
             },
 
@@ -6130,9 +6319,9 @@ visibility.destroy();
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colors != !value);
+                    var dirty = (!this._colorsData != !value);
 
-                    this._colors = value;
+                    this._colorsData = value;
                     this._colorsDirty = true;
 
                     this._scheduleBuild();
@@ -6146,13 +6335,13 @@ visibility.destroy();
                      * @event colors
                      * @param value The property's new value
                      */
-                    this.fire("colors", this._colors);
+                    this.fire("colors", this._colorsData);
 
                     this._renderer.imageDirty = true;
                 },
 
                 get: function () {
-                    return this._colors;
+                    return this._colorsData;
                 }
             },
 
@@ -6170,9 +6359,9 @@ visibility.destroy();
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._indices && !value);
+                    var dirty = (!this._indicesData && !value);
 
-                    this._indices = value;
+                    this._indicesData = value;
                     this._indicesDirty = true;
 
                     this._scheduleBuild();
@@ -6186,13 +6375,13 @@ visibility.destroy();
                      * @event indices
                      * @param value The property's new value
                      */
-                    this.fire("indices", this._indices);
+                    this.fire("indices", this._indicesData);
 
                     this._renderer.imageDirty = true;
                 },
 
                 get: function () {
-                    return this._indices;
+                    return this._indicesData;
                 }
             },
 
@@ -6225,7 +6414,7 @@ visibility.destroy();
                             },
 
                             getPositions: function () {
-                                return self._positions;
+                                return self._positionsData;
                             }
                         });
 
@@ -6272,7 +6461,7 @@ visibility.destroy();
                      * @type Boolean
                      * @param value The property's new value
                      */
-                    this.fire("autoNormals", this._primitive);
+                    this.fire("autoNormals", this._autoNormals);
 
                     this._scheduleBuild();
                 },
@@ -6281,11 +6470,55 @@ visibility.destroy();
                     return this._autoNormals;
                 }
             }
+            //,
+            //
+            ///**
+            // * Set true to make this Geometry automatically generate {{#crossLink "Geometry/tangents:property"}}{{/crossLink}} from
+            // * {{#crossLink "Geometry/uv:property"}}{{/crossLink}} and {{#crossLink "Geometry/normals:property"}}{{/crossLink}}.
+            // *
+            // * This Geomatry will auto-generate its {{#crossLink "Geometry/tangents:property"}}{{/crossLink}} on the
+            // * next {{#crossLink "Scene"}}{{/crossLink}} {{#crossLink "Scene/tick:event"}}{{/crossLink}} event.
+            // *
+            // * Fires a {{#crossLink "Geometry/autoTangents:event"}}{{/crossLink}} event on change.
+            // *
+            // * @property autoTangents
+            // * @default  false
+            // * @type Boolean
+            // */
+            //autoTangents: {
+            //
+            //    set: function (value) {
+            //
+            //        value = !!value;
+            //
+            //        if (this._autoTangents === value) {
+            //            return;
+            //        }
+            //
+            //        this._autoTangents = value;
+            //
+            //        /**
+            //         * Fired whenever this Geometry's {{#crossLink "Geometry/autoTangents:property"}}{{/crossLink}} property changes.
+            //         * @event autoTangents
+            //         * @type Boolean
+            //         * @param value The property's new value
+            //         */
+            //        this.fire("autoTangents", this._primitive);
+            //
+            //        this._scheduleBuild();
+            //    },
+            //
+            //    get: function () {
+            //        return this._autoTangents;
+            //    }
+            //}
 
         },
 
         _setModelBoundaryDirty: function () {
+
             this._modelBoundaryDirty = true;
+
             if (this._modelBoundary) {
                 this._modelBoundary.fire("updated", true);
             }
@@ -6302,14 +6535,14 @@ visibility.destroy();
 
         _getJSON: function () {
 
-            return XEO._apply2({
-                primitive: this._primitive,
-                positions: this._positions,
-                normals: this._normals,
-                uv: this._uv,
-                colors: this._colors,
-                indices: this._indices
-            }, {});
+            return {
+                primitive: this._state.primitiveName,
+                positions: this._positionsData,
+                normals: this._normalsData,
+                uv: this._uvData,
+                colors: this._colorsData,
+                indices: this._indicesData
+            };
         },
 
         _destroy: function () {
@@ -6334,13 +6567,29 @@ visibility.destroy();
                 this._state.uv.destroy();
             }
 
-            if (this._state.tangents) {
-                this._state.tangents.destroy();
-            }
-
             if (this._state.indices) {
                 this._state.indices.destroy();
             }
+
+            // Destroy lazy-generated VBOs
+
+            if (this._tangentsData) {
+                this._tangentsData.destroy();
+            }
+
+            if (this._pickPositions) {
+                this._pickPositions.destroy();
+            }
+
+            if (this._pickColors) {
+                this._pickColors.destroy();
+            }
+
+            if (this._pickIndices) {
+                this._pickIndices.destroy();
+            }
+
+            // Destroy boundary
 
             if (this._modelBoundary) {
                 this._modelBoundary.destroy();
@@ -6352,10 +6601,9 @@ visibility.destroy();
 
             // Decrement geometry statistic
 
-            this.scene.stats.dec("geometries");
+            this.scene.stats.memory.meshes--;
         }
     });
-
 })();
 ;/**
  * Components for capturing user input.
@@ -9019,13 +9267,8 @@ var myScene = new XEO.Scene();
                 hash: null
             });
 
-            this._dirty = true;
-
-            this._components = {};
-            this._dirtyComponentSubs = {};
-            this._destroyedComponentSubs = {};
-
-
+            this._hashDirty = true;
+            
             this.ambient = cfg.ambient;
             this.diffuse = cfg.diffuse;
             this.specular = cfg.specular;
@@ -9126,14 +9369,14 @@ var myScene = new XEO.Scene();
              Fires a {{#crossLink "PhongMaterial/specular:event"}}{{/crossLink}} event on change.
 
              @property specular
-             @default [0.3, 0.3, 0.3]
+             @default [1.0, 1.0, 1.0]
              @type Array(Number)
              */
             specular: {
 
                 set: function (value) {
 
-                    this._state.specular = value || [0.3, 0.3, 0.3];
+                    this._state.specular = value || [1.0, 1.0, 1.0];
 
                     this._renderer.imageDirty = true;
 
@@ -9376,11 +9619,11 @@ var myScene = new XEO.Scene();
                      @event normalMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("normalMap", texture);
+                    this._setComponent("normalMap", texture);
                 },
 
                 get: function () {
-                    return this._components["normalMap"];
+                    return this._children["normalMap"];
                 }
             },
 
@@ -9405,11 +9648,11 @@ var myScene = new XEO.Scene();
                      @event diffuseMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("diffuseMap", texture);
+                    this._setComponent("diffuseMap", texture);
                 },
 
                 get: function () {
-                    return this._components["diffuseMap"];
+                    return this._children["diffuseMap"];
                 }
             },
 
@@ -9434,11 +9677,11 @@ var myScene = new XEO.Scene();
                      @event specularMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("specularMap", texture);
+                    this._setComponent("specularMap", texture);
                 },
 
                 get: function () {
-                    return this._components["specularMap"];
+                    return this._children["specularMap"];
                 }
             },
 
@@ -9463,11 +9706,11 @@ var myScene = new XEO.Scene();
                      @event emissiveMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("emissiveMap", texture);
+                    this._setComponent("emissiveMap", texture);
                 },
 
                 get: function () {
-                    return this._components["emissiveMap"];
+                    return this._children["emissiveMap"];
                 }
             },
 
@@ -9492,11 +9735,11 @@ var myScene = new XEO.Scene();
                      @event opacityMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("opacityMap", texture);
+                    this._setComponent("opacityMap", texture);
                 },
 
                 get: function () {
-                    return this._components["opacityMap"];
+                    return this._children["opacityMap"];
                 }
             },
 
@@ -9521,11 +9764,38 @@ var myScene = new XEO.Scene();
                      @event reflectivityMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("reflectivityMap", texture);
+                    this._setComponent("reflectivityMap", texture);
                 },
 
                 get: function () {
-                    return this._components["reflectivityMap"];
+                    return this._children["reflectivityMap"];
+                }
+            },
+
+            /**
+             A reflection {{#crossLink "CubeMap"}}{{/crossLink}} attached to this PhongMaterial.
+
+             Fires a {{#crossLink "PhongMaterial/reflection:event"}}{{/crossLink}} event on change.
+
+             @property reflection
+             @default null
+             @type {CubeMap}
+             */
+            reflection: {
+
+                set: function (cubeMap) {
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} property changes.
+
+                     @event reflection
+                     @param value {CubeMap} The property's new value
+                     */
+                    this._setComponent("reflection", cubeMap);
+                },
+
+                get: function () {
+                    return this._children["reflection"];
                 }
             },
 
@@ -9550,11 +9820,11 @@ var myScene = new XEO.Scene();
                      @event diffuseFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("diffuseFresnel", fresnel);
+                    this._setComponent("diffuseFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._components["diffuseFresnel"];
+                    return this._children["diffuseFresnel"];
                 }
             },
 
@@ -9579,11 +9849,11 @@ var myScene = new XEO.Scene();
                      @event specularFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("specularFresnel", fresnel);
+                    this._setComponent("specularFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._components["specularFresnel"];
+                    return this._children["specularFresnel"];
                 }
             },
 
@@ -9608,11 +9878,11 @@ var myScene = new XEO.Scene();
                      @event emissiveFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("emissiveFresnel", fresnel);
+                    this._setComponent("emissiveFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._components["emissiveFresnel"];
+                    return this._children["emissiveFresnel"];
                 }
             },
 
@@ -9637,11 +9907,11 @@ var myScene = new XEO.Scene();
                      @event opacityFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("opacityFresnel", fresnel);
+                    this._setComponent("opacityFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._components["opacityFresnel"];
+                    return this._children["opacityFresnel"];
                 }
             },
 
@@ -9666,86 +9936,26 @@ var myScene = new XEO.Scene();
                      @event reflectivityFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("reflectivityFresnel", fresnel);
+                    this._setComponent("reflectivityFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._components["reflectivityFresnel"];
+                    return this._children["reflectivityFresnel"];
                 }
             }
         },
 
-        _attachComponent: function (type, component) {
-
-            if (XEO._isString(component)) {
-
-                // ID given for component - find the component
-                var id = component;
-
-                component = this.scene.components[id];
-
-                if (!component) {
-                    this.error("Component not found: " + XEO._inQuotes(id));
-                    return;
-                }
-            }
-
-            if (component && component.type !== "XEO.Texture" && component.type !== "XEO.Fresnel") {
-                this.error("Component " + XEO._inQuotes(id) + " is not a XEO.Texture or XEO.Fresnel");
-                return;
-            }
-
-            var oldComponent = this._components[type];
-
-            if (oldComponent) {
-
-                // Replacing old component
-
-                oldComponent.off(this._dirtyComponentSubs[type]);
-                oldComponent.off(this._destroyedComponentSubs[type]);
-
-                delete this._components[type];
-            }
-
-            var self = this;
-
-            if (component) {
-
-                this._dirtyComponentSubs[type] = component.on("dirty",
-                    function () {
-                        self.fire("dirty", true);
-                    });
-
-                this._destroyedComponentSubs[type] = component.on("destroyed",
-                    function () {
-
-                        delete self._dirtyComponentSubs[type];
-                        delete self._destroyedComponentSubs[type];
-
-                        self._dirty = true;
-
-                        self.fire("dirty", true);
-                        self.fire(type, null);
-                    });
-
-                this._components[type] = component;
-            }
-
-            this._state[type] = component ? component._state : null;
-
-            this._dirty = true;
-
-            this.fire("dirty", true);
-            this.fire(type, component || null);
+        _setComponent: function (name, child) {
+            child = this._setChild(name, child, false);
+            this._state[name] = child ? child._state : null;
+            this._hashDirty = true;
         },
 
         _compile: function () {
 
-            if (this._dirty) {
-
+            if (this._hashDirty) {
                 this._makeHash();
-
-                this._dirty = false;
+                this._hashDirty = false;
             }
 
             this._renderer.material = this._state;
@@ -9861,7 +10071,7 @@ var myScene = new XEO.Scene();
 
             // Textures
 
-            var components = this._components;
+            var components = this._children;
 
             if (components.normalMap) {
                 json.normalMap = components.normalMap.id;
@@ -10033,8 +10243,17 @@ var myScene = new XEO.Scene();
             // Rendering state
 
             this._state = new XEO.renderer.Texture({
+
                 texture: null,
-                matrix: null
+                matrix: null,
+
+                // Texture properties
+
+                minFilter: null,
+                magFilter: null,
+                wrapS: null,
+                wrapT: null,
+                flipY: null
             });
 
             // Data source
@@ -10048,14 +10267,6 @@ var myScene = new XEO.Scene();
             this._translate = [0, 0];
             this._scale = [1, 1];
             this._rotate = [0, 0];
-
-            // Texture properties
-
-            this._minFilter = null;
-            this._magFilter = null;
-            this._wrapS = null;
-            this._wrapT = null;
-            this._flipY = null;
 
             // Dirty flags
 
@@ -10118,7 +10329,7 @@ var myScene = new XEO.Scene();
                 this.target = cfg.target; // Render target
             }
 
-            this.scene.stats.inc("textures");
+            this.scene.stats.memory.textures--;
         },
 
         // Schedules a call to #_build for the next "tick"
@@ -10835,7 +11046,7 @@ var myScene = new XEO.Scene();
                 this._state.texture.destroy();
             }
 
-            this.scene.stats.dec("textures");
+            this.scene.stats.memory.textures--;
         }
     });
 
@@ -10925,6 +11136,14 @@ var myScene = new XEO.Scene();
      * @static
      */
     XEO.math = {
+
+        /**
+         * The number of radiians in a degree (0.0174532925).
+         * @property DEGTORAD
+         * @namespace XEO.math
+         * @type {Number}
+         */
+        DEGTORAD: 0.0174532925,
 
         /**
          * Returns a new, uninitialized two-element vector.
@@ -12463,20 +12682,26 @@ var myScene = new XEO.Scene();
             var m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11];
             var m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15];
 
+            var r;
+
             for (var i = 0; i < len; ++i) {
+
                 // cache values
                 pi = points[i];
+
                 p0 = pi[0];
                 p1 = pi[1];
                 p2 = pi[2];
 
-                result[i] = [
-                    (m0 * p0) + (m4 * p1) + (m8 * p2) + m12,
-                    (m1 * p0) + (m5 * p1) + (m9 * p2) + m13,
-                    (m2 * p0) + (m6 * p1) + (m10 * p2) + m14,
-                    (m3 * p0) + (m7 * p1) + (m11 * p2) + m15
-                ];
+                r = result[i] || (result[i] = [0, 0, 0, 0]);
+
+                r[0] = (m0 * p0) + (m4 * p1) + (m8 * p2) + m12;
+                r[1] = (m1 * p0) + (m5 * p1) + (m9 * p2) + m13;
+                r[2] = (m2 * p0) + (m6 * p1) + (m10 * p2) + m14;
+                r[3] = (m3 * p0) + (m7 * p1) + (m11 * p2) + m15;
             }
+
+            result.length = len;
 
             return result;
         },
@@ -12574,6 +12799,20 @@ var myScene = new XEO.Scene();
         },
 
         /**
+         * Gets the center of a 2D boundary given as minima and maxima.
+         * @method getAABB2Center
+         * @static
+         */
+        getAABB2Center: function (boundary, dest) {
+            var r = dest || this.vec2();
+
+            r[0] = (boundary.xmax + boundary.xmin ) * 0.5;
+            r[1] = (boundary.ymax + boundary.ymin ) * 0.5;
+
+            return r;
+        },
+
+        /**
          * Converts an axis-aligned boundary into an oriented boundary consisting of
          * an array of eight 3D positions, one for each corner of the boundary.
          *
@@ -12659,11 +12898,11 @@ var myScene = new XEO.Scene();
          *
          * @method positions3ToAABB3
          * @static
-         * @param {Array} positions Oriented bounding box.
+         * @param {Array} positions Flattened 3D positions array
          * @param {*} [aabb] Axis-aligned bounding box.
          * @returns {*} Axis-aligned bounding box.
          */
-        positions3ToAABB3: function (points, aabb) {
+        positions3ToAABB3: function (positions, aabb) {
 
             aabb = aabb || {
                     xmin: 0,
@@ -12683,11 +12922,11 @@ var myScene = new XEO.Scene();
 
             var x, y, z;
 
-            for (var i = 0, len = points.length; i < len; i += 3) {
+            for (var i = 0, len = positions.length - 2; i < len; i += 3) {
 
-                x = points[i + 0];
-                y = points[i + 1];
-                z = points[i + 2];
+                x = positions[i + 0];
+                y = positions[i + 1];
+                z = positions[i + 2];
 
                 if (x < xmin) {
                     xmin = x;
@@ -12794,6 +13033,85 @@ var myScene = new XEO.Scene();
             return aabb;
         },
 
+        /**
+         * Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.
+         *
+         * @method points3ToAABB2
+         * @static
+         * @param {Array} points 3D Points.
+         * @param {*} [aabb] 2D axis-aligned bounding box.
+         * @returns {*} 2D axis-aligned bounding box.
+         */
+        points3ToAABB2: function (points, aabb) {
+
+            aabb = aabb || {
+                    xmin: 0, xmax: 0, ymin: 0, ymax: 0
+                };
+
+            var xmin = 10000000;
+            var ymin = 10000000;
+            var xmax = -10000000;
+            var ymax = -10000000;
+
+            var x, y, z, w, f;
+
+            for (var i = 0, len = points.length; i < len; i++) {
+
+                x = points[i][0];
+                y = points[i][1];
+                z = points[i][2];
+                w = points[i][3] || 1.0;
+
+                f = 1.0 / w;
+
+                x *= f;
+                y *= f;
+
+                if (x < xmin) {
+                    xmin = x;
+                }
+
+                if (y < ymin) {
+                    ymin = y;
+                }
+
+                if (x > xmax) {
+                    xmax = x;
+                }
+
+                if (y > ymax) {
+                    ymax = y;
+                }
+            }
+
+            aabb.xmin = xmin;
+            aabb.ymin = ymin;
+            aabb.xmax = xmax;
+            aabb.ymax = ymax;
+
+            return aabb;
+        },
+
+
+        AABB2ToCanvas: function (aabb, canvasWidth, canvasHeight, aabb2) {
+
+            aabb2 = aabb2 || aabb;
+
+            var midx = canvasWidth * 0.5;
+            var midy = canvasHeight * 0.5;
+
+            var xmin = aabb.xmin;
+            var ymin = -aabb.ymin;
+            var xmax = aabb.xmax;
+            var ymax = -aabb.ymax;
+
+            aabb2.xmin = Math.floor((xmin * midx) + midx);
+            aabb2.ymin = canvasHeight - Math.floor((ymin * -midy) + midy);
+            aabb2.xmax = Math.floor((xmax * midx) + midx);
+            aabb2.ymax = canvasHeight - Math.floor((ymax * -midy) + midy);
+
+            return aabb;
+        },
 
         /**
          * Builds normal vectors from positions and indices.
@@ -12823,10 +13141,10 @@ var myScene = new XEO.Scene();
                 v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
                 v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
 
-                v2 = XEO.math.subVec4(v2, v1, [0, 0, 0, 0]);
-                v3 = XEO.math.subVec4(v3, v1, [0, 0, 0, 0]);
+                v2 = XEO.math.subVec3(v2, v1, [0, 0, 0]);
+                v3 = XEO.math.subVec3(v3, v1, [0, 0, 0]);
 
-                var n = XEO.math.normalizeVec4(XEO.math.cross3Vec4(v2, v3, [0, 0, 0, 0]), [0, 0, 0, 0]);
+                var n = XEO.math.normalizeVec3(XEO.math.cross3Vec3(v2, v3, [0, 0, 0]), [0, 0, 0]);
 
                 if (!nvecs[j0]) nvecs[j0] = [];
                 if (!nvecs[j1]) nvecs[j1] = [];
@@ -12961,8 +13279,84 @@ var myScene = new XEO.Scene();
             }
 
             return result;
-        }
+        },
 
+        /**
+         * Builds vertex and index arrays needed by color-indexed triangle picking.
+         *
+         * @method getPickTriangles
+         * @static
+         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
+         * @param {{Array of Number}} indices One-dimensional flattened array of indices.
+         * @param {*} [pickTris] Optional object to return the arrays on.
+         * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
+         */
+        getPickTriangles: function (positions, indices, pickTris) {
+
+            pickTris = pickTris || {};
+
+            var pickPositions = [];
+            var pickColors = [];
+            var pickIndices = [];
+
+            var index;
+            var index2 = 0;
+            var primIndex = 0;
+
+            var r;
+            var g;
+            var b;
+
+            for (var location = 0; location < indices.length; location += 3) {
+
+                // Primitive-indexed triangle pick color
+
+                b = (primIndex >> 16 & 0xFF) / 255;
+                g = (primIndex >> 8 & 0xFF) / 255;
+                r = (primIndex & 0xFF) / 255;
+
+                index = indices[location];
+                pickIndices.push(index2++);
+
+                pickPositions.push(positions[(index * 3) + 0]);
+                pickPositions.push(positions[(index * 3) + 1]);
+                pickPositions.push(positions[(index * 3) + 2]);
+
+                pickColors.push(r);
+                pickColors.push(g);
+                pickColors.push(b);
+
+                index = indices[location + 1];
+                pickIndices.push(index2++);
+
+                pickPositions.push(positions[(index * 3) + 0]);
+                pickPositions.push(positions[(index * 3) + 1]);
+                pickPositions.push(positions[(index * 3) + 2]);
+
+                pickColors.push(r);
+                pickColors.push(g);
+                pickColors.push(b);
+
+                index = indices[location + 2];
+                pickIndices.push(index2++);
+
+                pickPositions.push(positions[(index * 3) + 0]);
+                pickPositions.push(positions[(index * 3) + 1]);
+                pickPositions.push(positions[(index * 3) + 2]);
+
+                pickColors.push(r);
+                pickColors.push(g);
+                pickColors.push(b);
+
+                primIndex++;
+            }
+
+            pickTris.pickPositions = pickPositions;
+            pickTris.pickColors = pickColors;
+            pickTris.pickIndices = pickIndices;
+
+            return pickTris;
+        }
     };
 
 })();;XEO.math.tangentQuadraticBezier = function (t, p0, p1, p2) {
@@ -13269,18 +13663,26 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         // Subscribe to new Camera's events
 
-                        // World-space boundary is dirty when new Camera's - (TODO)
-
                         var self = this;
 
                         this._onCameraView = newCamera.on("view",
                             function () {
-                                self._setWorldBoundaryDirty();
+                                self._setViewBoundaryDirty();
                             });
 
                         this._onCameraDestroyed = newCamera.on("destroyed",
                             function () {
-                                self._setWorldBoundaryDirty();
+                                self._setViewBoundaryDirty();
+                            });
+
+                        this._onCameraViewMatrix = newCamera.view.on("matrix",
+                            function () {
+                                self._setViewBoundaryDirty();
+                            });
+
+                        this._onCameraProjMatrix = newCamera.project.on("matrix",
+                            function () {
+                                self._setCanvasBoundaryDirty();
                             });
                     }
                 },
@@ -13844,7 +14246,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     var oldTransform = this._children.transform;
 
                     if (oldTransform && (!value || value.id !== oldTransform.id)) {
-                        oldTransform.off(this._onTransformMatrix);
+                        oldTransform.off(this._onTransformUpdated);
                         oldTransform.off(this._onTransformDestroyed);
                     }
 
@@ -13868,8 +14270,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         var self = this;
 
-                        this._onTransformMatrix = newTransform.on("matrix",
+                        this._onTransformUpdated = newTransform.on("updated",
                             function () {
+
+                                newTransform._buildLeafMatrix();
+
                                 self._setWorldBoundaryDirty();
                             });
 
@@ -13904,7 +14309,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         var self = this;
 
+
+                        // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
+
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
+
+                            meta: {
+                                description: "World-space boundary of GameObject " + this.id
+                            },
 
                             getDirty: function () {
                                 return self._worldBoundaryDirty;
@@ -13919,7 +14331,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                             },
 
                             getMatrix: function () {
-                                return self._children.transform.matrix;
+                                return self._children.transform.leafMatrix;
                             }
                         });
 
@@ -13954,7 +14366,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         var self = this;
 
+                        // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
+
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
+
+                            meta: {
+                                description: "View-space boundary of GameObject " + this.id
+                            },
 
                             getDirty: function () {
                                 return self._viewBoundaryDirty;
@@ -13986,6 +14404,58 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             },
 
             /**
+             * Canvas-space 2D boundary.
+             *
+             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink "Boundary2D"}}{{/crossLink}} instance
+             * next time you reference it.
+             *
+             * @property canvasBoundary
+             * @type Boundary2D
+             * @final
+             */
+            canvasBoundary: {
+
+                get: function () {
+
+                    if (!this._canvasBoundary) {
+
+                        var self = this;
+
+                        // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
+
+                        this._canvasBoundary = new XEO.Boundary2D(this.scene, {
+
+                            meta: {
+                                description: "Canvas-space boundary of GameObject " + this.id
+                            },
+
+                            getDirty: function () {
+                                return self._canvasBoundaryDirty;
+                            },
+
+                            getOBB: function () {
+                                return self.viewBoundary.obb; // Lazy-inits!
+                            },
+
+                            getMatrix: function () {
+                                return self._children.camera.project.matrix;
+                            }
+                        });
+
+                        this._canvasBoundary.on("destroyed",
+                            function () {
+                                self._canvasBoundary = null;
+                            });
+
+                        this._setCanvasBoundaryDirty();
+                    }
+
+                    return this._canvasBoundary;
+                }
+            },
+
+            /**
              * JSON object containing the (GLSL) source code of the shaders for this GameObject.
              *
              * This is sometimes useful to have as a reference
@@ -14007,12 +14477,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     var source = rendererObject.program.source;
                     return {
                         draw: {
-                            vertex: source.drawVertex,
-                            fragment: source.drawFragment
+                            vertex: source.vertexDraw,
+                            fragment: source.fragmentDraw
                         },
-                        pick: {
-                            vertex: source.pickVertex,
-                            fragment: source.pickFragment
+                        pickObject: {
+                            vertex: source.vertexPickObject,
+                            fragment: source.fragmentPickObject
+                        },
+                        pickPrimitive: {
+                            vertex: source.vertexPickPrimitive,
+                            fragment: source.fragmentPickPrimitive
                         }
                     };
                 }
@@ -14041,22 +14515,26 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
         },
 
-
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
-            this._viewBoundaryDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
             }
-            if (this._viewBoundary) {
-                this._viewBoundary.fire("updated", true);
-            }
+            this._setViewBoundaryDirty();
         },
 
         _setViewBoundaryDirty: function () {
             this._viewBoundaryDirty = true;
             if (this._viewBoundary) {
                 this._viewBoundary.fire("updated", true);
+            }
+            this._setCanvasBoundaryDirty();
+        },
+
+        _setCanvasBoundaryDirty: function () {
+            this._canvasBoundaryDirty = true;
+            if (this._canvasBoundary) {
+                this._canvasBoundary.fire("updated", true);
             }
         },
 
@@ -14122,7 +14600,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         _destroy: function () {
 
             if (this._children.transform) {
-                this._children.transform.off(this._onTransformMatrix);
+                this._children.transform.off(this._onTransformUpdated);
                 this._children.transform.off(this._onTransformDestroyed);
             }
 
@@ -14138,6 +14616,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             if (this._viewBoundary) {
                 this._viewBoundary.destroy();
+            }
+
+            if (this._canvasBoundary) {
+                this._canvasBoundary.destroy();
             }
 
             this._renderer.removeObject(this.id);
@@ -15473,10 +15955,10 @@ var object3 = new XEO.GameObject(scene, {
  | uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  |---|---|
  | uniform vec3 xeo_uDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
- | uniform vec3 xeo_uMaterialSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
- | uniform vec3 xeo_uMaterialEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
- | uniform float xeo_uMaterialOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
- | uniform float xeo_uMaterialShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
+ | uniform vec3 xeo_uSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
+ | uniform vec3 xeo_uEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
+ | uniform float xeo_uOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
+ | uniform float xeo_uShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
  | uniform float xeo_uDiffuseFresnelBias;       |  | {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} |
 
  #### Varying
@@ -16174,13 +16656,16 @@ var object3 = new XEO.GameObject(scene, {
      * <p>After a scene update, we set a flag on the display to indicate the stage we will need to redo from. The pipeline is
      * then lazy-redone on the next call to #render or #pick.</p>
      */
-    XEO.renderer.Renderer = function (cfg) {
+    XEO.renderer.Renderer = function (stats, cfg) {
+
+        // Collects runtime statistics
+        this.stats = stats || {};
 
         // Renderer is bound to the lifetime of an HTML5 canvas
         this._canvas = cfg.canvas;
 
         // Factory which creates and recycles XEO.renderer.Program instances
-        this._programFactory = new XEO.renderer.ProgramFactory({
+        this._programFactory = new XEO.renderer.ProgramFactory(this.stats, {
             canvas: cfg.canvas
         });
 
@@ -16211,11 +16696,11 @@ var object3 = new XEO.GameObject(scene, {
         // "draw" list for normal image rendering.  The chunks in these lists are held in the state-sorted order of
         // their objects in #_objectList, with runs of duplicate states removed.
 
-        this._drawList = [];      // State chunk list to render all objects
-        this._drawListLen = 0;
+        this._drawChunkList = [];      // State chunk list to render all objects
+        this._drawChunkListLen = 0;
 
-        this._pickDrawList = [];  // State chunk list to render scene to pick buffer
-        this._pickDrawListLen = 0;
+        this._pickObjectChunkList = [];  // State chunk list to render scene to pick buffer
+        this._pickObjectChunkListLen = 0;
 
 
         // The frame context holds state shared across a single render of the
@@ -16409,20 +16894,6 @@ var object3 = new XEO.GameObject(scene, {
          * @type Boolean
          */
         this.imageDirty = true;
-
-        /**
-         * Flags the neccessity for the pick buffer to be re-rendered from the
-         * draw list.
-         * @type Boolean
-         */
-        this.pickBufDirty = true;
-
-        /**
-         * Flags the neccessity for the ray-pick depth buffer to be re-rendered
-         * from the draw list.
-         * @type Boolean
-         */
-        this.rayPickBufDirty = true;
     };
 
     /**
@@ -16438,14 +16909,10 @@ var object3 = new XEO.GameObject(scene, {
 
         var gl = this._canvas.gl;
 
-        // Rebuild pick buffers
+        // Rebuild pick buffer
 
         if (this.pickBuf) {
             this.pickBuf.webglRestored(gl);
-        }
-
-        if (this.rayPickBuf) {
-            this.rayPickBuf.webglRestored(gl);
         }
 
         // Need redraw
@@ -16495,7 +16962,6 @@ var object3 = new XEO.GameObject(scene, {
             this.geometry.hash,
             this.shader.hash,
             this.clips.hash,
-            //this.morphTargets.hash,
             this.material.hash,
             //this.reflect.hash,
             this.lights.hash
@@ -16511,6 +16977,8 @@ var object3 = new XEO.GameObject(scene, {
             }
 
             object.program = this._programFactory.get(hash, this);
+
+            this.stats.memory.programs = this._programFactory.numActivePrograms;
 
             object.hash = hash;
         }
@@ -16571,16 +17039,20 @@ var object3 = new XEO.GameObject(scene, {
      */
     XEO.renderer.Renderer.prototype._setChunk = function (object, order, chunkType, state) {
 
+        var programId = object.program.id;
+        var stateId = state ? state.id : -1;
+        var id = (programId * 10000000) + stateId; // FIXME: Assuming less than 1M states
+
         var oldChunk = object.chunks[order];
 
         if (oldChunk) {
-            oldChunk.init(oldChunk.id, object, object.program, state);
+            oldChunk.init(id, object, object.program, state);
             return;
         }
 
         // Attach new chunk
 
-        object.chunks[order] = this._chunkFactory.getChunk(chunkType, object, object.program, state);
+        object.chunks[order] = this._chunkFactory.getChunk(id, chunkType, object, object.program, state);
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
@@ -16669,54 +17141,35 @@ var object3 = new XEO.GameObject(scene, {
         }
 
         if (this.imageDirty || params.force) {
-
-            // Render the draw list
-
-            this._doDrawList({
+            this._doDrawList({                  // Render the draw list
                 clear: (params.clear !== false) // Clear buffers by default
             });
-
             this.imageDirty = false;
-            this.pickBufDirty = true;      // Pick buffer now needs redraw on next pick
         }
     };
 
     /**
-     * (Re)builds the object list from the object soup.
+     * Builds the object list from the object map
      */
     XEO.renderer.Renderer.prototype._buildObjectList = function () {
-
         this._objectListLen = 0;
-
         for (var objectId in this.objects) {
             if (this.objects.hasOwnProperty(objectId)) {
-
                 this._objectList[this._objectListLen++] = this.objects[objectId];
             }
         }
     };
 
     /**
-     * (Re)generates each object's state sort key from it's states.
+     * Generates object state sort keys
      */
     XEO.renderer.Renderer.prototype._makeStateSortKeys = function () {
-
-        //  console.log("--------------------------------------------------------------------------------------------------");
-        // console.log("XEO.Renderer_makeSortKeys");
-
         var object;
-
         for (var i = 0, len = this._objectListLen; i < len; i++) {
-
             object = this._objectList[i];
-
-            if (!object.program) {
-
-                // Non-visual object (eg. sound)
+            if (!object.program) { // Non-visual object (eg. sound)
                 object.sortKey = -1;
-
             } else {
-
                 object.sortKey =
                     ((object.stage.priority + 1) * 1000000000000)
                     + ((object.modes.transparent ? 2 : 1) * 1000000000)
@@ -16725,23 +17178,20 @@ var object3 = new XEO.GameObject(scene, {
                     + object.material.id;
             }
         }
-        //  console.log("--------------------------------------------------------------------------------------------------");
     };
 
     /**
-     * State-sorts the object list in ascending order of the object's state sort keys.
+     * State-sorts the object list
      */
     XEO.renderer.Renderer.prototype._stateSort = function () {
-
         this._objectList.length = this._objectListLen;
-
         this._objectList.sort(function (a, b) {
             return a.sortKey - b.sortKey;
         });
     };
 
     /**
-     * Logs the object to the console for debugging
+     * Logs the object list
      */
     XEO.renderer.Renderer.prototype._logObjectList = function () {
         console.log("--------------------------------------------------------------------------------------------------");
@@ -16760,16 +17210,16 @@ var object3 = new XEO.GameObject(scene, {
      */
     XEO.renderer.Renderer.prototype._buildDrawList = function () {
 
-        this._lastChunkId = this._lastChunkId || [];
-        this._lastPickChunkId = this._lastPickChunkId || [];
+        this._lastDrawChunkId = this._lastDrawChunkId || [];
+        this._lastPickObjectChunkId = this._lastPickObjectChunkId || [];
 
         for (var i = 0; i < 20; i++) {
-            this._lastChunkId[i] = null;
-            this._lastPickChunkId[i] = null;
+            this._lastDrawChunkId[i] = null;
+            this._lastPickObjectChunkId[i] = null;
         }
 
-        this._drawListLen = 0;
-        this._pickDrawListLen = 0;
+        this._drawChunkListLen = 0;
+        this._pickObjectChunkListLen = 0;
 
         // For each render target, a list of objects to render to that target
         var targetObjectLists = {};
@@ -16801,7 +17251,7 @@ var object3 = new XEO.GameObject(scene, {
 
             // Put objects with render targets into a bin for each target
 
-            if (object.colorTarget || object.depthTarget) {
+            if (9 == 8 && (object.colorTarget || object.depthTarget)) { // TODO: Enable color and depth targets
 
                 if (object.colorTarget) {
 
@@ -16855,29 +17305,29 @@ var object3 = new XEO.GameObject(scene, {
 
         var pickable;
 
-        for (var i = 0, len = targetListList.length; i < len; i++) {
+        //for (var i = 0, len = targetListList.length; i < len; i++) {
+        //
+        //    list = targetListList[i];
+        //    target = targetList[i];
+        //
+        //    this._appendRenderTargetChunk(target);
+        //
+        //    for (var j = 0, lenj = list.length; j < lenj; j++) {
+        //
+        //        object = list[j];
+        //
+        //        pickable = object.stage && object.stage.pickable; // We'll only pick objects in pickable stages
+        //
+        //        this._appendObjectToDrawChunkLists(object, pickable);
+        //    }
+        //}
 
-            list = targetListList[i];
-            target = targetList[i];
-
-            this._appendRenderTargetChunk(target);
-
-            for (var j = 0, lenj = list.length; j < lenj; j++) {
-
-                object = list[j];
-
-                pickable = object.stage && object.stage.pickable; // We'll only pick objects in pickable stages
-
-                this._appendObjectToDrawLists(object, pickable);
-            }
-        }
-
-        if (object) {
-
-            // Unbinds any render target bound previously
-
-            this._appendRenderTargetChunk(this._chunkFactory.getChunk("renderTarget", object, object.program, {}));
-        }
+        //if (object) {
+        //
+        //    // Unbinds any render target bound previously
+        //
+        //    this._appendRenderTargetChunk(this._chunkFactory.getChunk("renderTarget", object, object.program, {}));
+        //}
 
         // Append chunks for objects not in render targets
 
@@ -16887,7 +17337,7 @@ var object3 = new XEO.GameObject(scene, {
 
             pickable = !object.stage || (object.stage && object.stage.pickable); // We'll only pick objects in pickable stages
 
-            this._appendObjectToDrawLists(object, pickable);
+            this._appendObjectToDrawChunkLists(object, pickable);
         }
 
         // Draw list is now up to date.
@@ -16897,7 +17347,7 @@ var object3 = new XEO.GameObject(scene, {
 
 
     XEO.renderer.Renderer.prototype._appendRenderTargetChunk = function (chunk) {
-        this._drawList[this._drawListLen++] = chunk;
+        this._drawChunkList[this._drawChunkListLen++] = chunk;
     };
 
     /**
@@ -16906,10 +17356,10 @@ var object3 = new XEO.GameObject(scene, {
      * @param pickable
      * @private
      */
-    XEO.renderer.Renderer.prototype._appendObjectToDrawLists = function (object, pickable) {
+    XEO.renderer.Renderer.prototype._appendObjectToDrawChunkLists = function (object, pickable) {
 
         var chunks = object.chunks;
-        var picking = object.modes.picking;
+        var picking = pickable && object.modes.picking;
         var chunk;
 
         for (var i = 0, len = chunks.length; i < len; i++) {
@@ -16926,36 +17376,31 @@ var object3 = new XEO.GameObject(scene, {
 
                 if (chunk.draw) {
 
-                    // Rendering pass
+                    // Draw pass
 
-                    if (chunk.unique || this._lastChunkId[i] !== chunk.id) {
+                    if (chunk.unique || this._lastDrawChunkId[i] !== chunk.id) {
 
                         // Don't reapply repeated chunks
 
-                        this._drawList[this._drawListLen++] = chunk;
-                        this._lastChunkId[i] = chunk.id;
+                        this._drawChunkList[this._drawChunkListLen++] = chunk;
+                        this._lastDrawChunkId[i] = chunk.id;
                     }
                 }
 
-                if (chunk.pick) {
+                if (chunk.pickObject) {
 
-                    // Picking pass
+                    // Object-picking pass
 
-                    if (pickable !== false) {
+                    if (picking) {
 
-                        // Don't pick objects in unpickable stages
+                        // Don't pick unpickable objects
 
-                        if (picking) {
+                        if (chunk.unique || this._lastPickObjectChunkId[i] !== chunk.id) {
 
-                            // Don't pick unpickable objects
+                            // Don't reapply repeated chunks
 
-                            if (chunk.unique || this._lastPickChunkId[i] !== chunk.id) {
-
-                                // Don't reapply repeated chunks
-
-                                this._pickDrawList[this._pickDrawListLen++] = chunk;
-                                this._lastPickChunkId[i] = chunk.id;
-                            }
+                            this._pickObjectChunkList[this._pickObjectChunkListLen++] = chunk;
+                            this._lastPickObjectChunkId[i] = chunk.id;
                         }
                     }
                 }
@@ -16971,11 +17416,11 @@ var object3 = new XEO.GameObject(scene, {
     XEO.renderer.Renderer.prototype._logDrawList = function () {
 
         console.log("--------------------------------------------------------------------------------------------------");
-        console.log(this._drawListLen + " draw list chunks");
+        console.log(this._drawChunkListLen + " draw list chunks");
 
-        for (var i = 0, len = this._drawListLen; i < len; i++) {
+        for (var i = 0, len = this._drawChunkListLen; i < len; i++) {
 
-            var chunk = this._drawList[i];
+            var chunk = this._drawChunkList[i];
 
             console.log("[chunk " + i + "] type = " + chunk.type);
 
@@ -17001,11 +17446,11 @@ var object3 = new XEO.GameObject(scene, {
     XEO.renderer.Renderer.prototype._logPickList = function () {
 
         console.log("--------------------------------------------------------------------------------------------------");
-        console.log(this._pickDrawListLen + " pick list chunks");
+        console.log(this._pickObjectChunkListLen + " pick list chunks");
 
-        for (var i = 0, len = this._pickDrawListLen; i < len; i++) {
+        for (var i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
 
-            var chunk = this._pickDrawList[i];
+            var chunk = this._pickObjectChunkList[i];
 
             console.log("[chunk " + i + "] type = " + chunk.type);
 
@@ -17023,14 +17468,14 @@ var object3 = new XEO.GameObject(scene, {
     };
 
     /**
-     * Attempts to pick a renderer object at the given canvas coordinates.
+     * Attempts to pick an object at the given canvas coordinates.
      *
      * @param {*} params Picking params.
      * @returns {*} Hit result, if any.
      */
     XEO.renderer.Renderer.prototype.pick = function (params) {
 
-        var canvas = this._canvas.canvas;
+        var gl = this._canvas.gl;
 
         var hit = null;
 
@@ -17039,9 +17484,9 @@ var object3 = new XEO.GameObject(scene, {
 
         var pickBuf = this.pickBuf;
 
-        // Lazy-create the pick buffer
-
         if (!pickBuf) {
+
+            // Lazy-create the pick buffer
 
             pickBuf = new XEO.renderer.webgl.RenderBuffer({
                 gl: this._canvas.gl,
@@ -17049,59 +17494,34 @@ var object3 = new XEO.GameObject(scene, {
             });
 
             this.pickBuf = pickBuf;
-
-            this.pickBufDirty = true;
         }
 
         // Do any pending render
 
         this.render();
 
-        // Colour-index pick to find the picked object
-
         pickBuf.bind();
 
-        // Re-render the pick buffer if the image
-        // was updated by the render we just did
+        pickBuf.clear();
 
-        if (this.pickBufDirty) {
+        this._doDrawList({
+            pickObject: true,
+            clear: true
+        });
 
-            pickBuf.clear();
+        gl.finish();
 
-            // Do a color-index picking pass over the draw list
-
-            this._doDrawList({
-                pick: true,
-                clear: true
-            });
-
-            this._canvas.gl.finish();
-
-            this.pickBufDirty = false;
-
-            // Because the image was updated, we'll also need
-            // to re-render the ray-pick depth buffer
-
-            this.rayPickBufDirty = true;
-        }
-
-        // Read pixel color in pick buffer at given coordinates,
-        // convert to an index into the pick name list
+        // Convert picked pixel color to object index
 
         var pix = pickBuf.read(canvasX, canvasY);
         var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
-        var pickIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
+        pickedObjectIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
 
-        pickBuf.unbind();
-
-        // Look up pick name from index
-
-        var object = this._frameCtx.pickObjects[pickIndex];
+        var object = this._frameCtx.pickObjects[pickedObjectIndex];
 
         if (object) {
 
             // Object was picked
-            // Build hit report
 
             hit = {
                 object: object,
@@ -17111,117 +17531,52 @@ var object3 = new XEO.GameObject(scene, {
                 ]
             };
 
-            // Now do a ray-pick if requested
+            // Now do a primitive-pick if requested
 
-            if (params.rayPick) {
+            if (params.pickPrimitive) {
 
-                // Lazy-create ray pick depth buffer
+                pickBuf.clear();
 
-                var rayPickBuf = this.rayPickBuf;
+                this._doDrawList({
+                    pickPrimitive: true,
+                    object: object,
+                    clear: true
+                });
 
-                if (!rayPickBuf) {
+                gl.finish();
 
-                    rayPickBuf = new XEO.renderer.webgl.RenderBuffer({
-                        gl: this._canvas.gl,
-                        canvas: this._canvas
-                    });
+                // Convert picked pixel color to primitive index
 
-                    this.rayPickBuf = rayPickBuf;
+                pix = pickBuf.read(canvasX, canvasY);
+                var primitiveIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
+                primitiveIndex = (primitiveIndex >= 1) ? primitiveIndex - 1 : -1;
 
-                    this.rayPickBufDirty = true;
-                }
-
-                // Render depth values to the ray-pick depth buffer
-
-                rayPickBuf.bind();
-
-                if (this.rayPickBufDirty) {
-
-                    rayPickBuf.clear();
-
-                    this._doDrawList({
-                        object: object,  // Render just the picked object
-                        pick: true,
-                        rayPick: true,
-                        clear: true
-                    });
-
-                    this.rayPickBufDirty = false;
-                }
-
-                // Read pixel from depth buffer, convert to normalised device Z coordinate,
-                // which will be in range of [0..1] with z=0 at front
-
-                pix = rayPickBuf.read(canvasX, canvasY);
-
-                rayPickBuf.unbind();
-
-                // Get World-space ray-intersect position
-
-                var screenZ = this._unpackDepth(pix);
-                var w = canvas.width;
-                var h = canvas.height;
-                // Calculate clip space coordinates, which will be in range
-                // of x=[-1..1] and y=[-1..1], with y=(+1) at top
-                var x = (canvasX - w / 2) / (w / 2);           // Calculate clip space coordinates
-                var y = -(canvasY - h / 2) / (h / 2);
-                var projMat = this._frameCtx.projMatrix;
-                var viewMat = this._frameCtx.viewMatrix;
-                var pvMat = XEO.math.mulMat4(projMat, viewMat, []);
-                var pvMatInverse = XEO.math.inverseMat4(pvMat, []);
-                var world1 = XEO.math.transformVec4(pvMatInverse, [x, y, -1, 1]);
-                world1 = XEO.math.mulVec4Scalar(world1, 1 / world1[3]);
-                var world2 = XEO.math.transformVec4(pvMatInverse, [x, y, 1, 1]);
-                world2 = XEO.math.mulVec4Scalar(world2, 1 / world2[3]);
-                var dir = XEO.math.subVec3(world2, world1, []);
-                var vWorld = XEO.math.addVec3(world1, XEO.math.mulVec4Scalar(dir, screenZ, []), []);
-
-                // Got World-space intersect with surface of picked geometry
-
-                hit.worldPos = vWorld;
+                hit.primitiveIndex = primitiveIndex;
             }
         }
 
-        return hit;
-    };
+        pickBuf.unbind();
 
-    /**
-     * Unpacks a color-encoded depth
-     * @param {Array(Number)} depthZ Depth encoded as an RGBA color value
-     * @returns {Number}
-     * @private
-     */
-    XEO.renderer.Renderer.prototype._unpackDepth = function (depthZ) {
-        var vec = [depthZ[0] / 256.0, depthZ[1] / 256.0, depthZ[2] / 256.0, depthZ[3] / 256.0];
-        var bitShift = [1.0 / (256.0 * 256.0 * 256.0), 1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0];
-        return XEO.math.dotVec4(vec, bitShift);
+        return hit;
     };
 
     /** Renders either the draw or pick list.
      *
      * @param {*} params
      * @param {Boolean} params.clear Set true to clear the color, depth and stencil buffers first
-     * @param {Boolean} params.pick Set true to render for picking
-     * @param {Boolean} params.rayPick Set true to render for ray-picking
+     * @param {Boolean} params.pickObject
+     * @param {Boolean} params.pickPrimitive
+     * @param {Boolean} params.object
      * @private
      */
     XEO.renderer.Renderer.prototype._doDrawList = function (params) {
 
         var gl = this._canvas.gl;
 
-        // Initialize the renderer frame context.
-        // The frame context holds state that will be used by draw list
-        // chunks as they are rendered for this frame. Some of the frame context
-        // state will also be updated by chunks as they are rendered.
-
         var frameCtx = this._frameCtx;
 
-        frameCtx.pick = !!params.pick;
-        frameCtx.rayPick = !!params.rayPick;
         frameCtx.renderTarget = null;
         frameCtx.renderBuf = null;
-        frameCtx.viewMatrix = null;
-        frameCtx.projMatrix = null;
         frameCtx.depthbufEnabled = null;
         frameCtx.clearDepth = null;
         frameCtx.depthFunc = gl.LESS;
@@ -17230,12 +17585,16 @@ var object3 = new XEO.GameObject(scene, {
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.pickIndex = 0; // Indexes this._pickObjects
         frameCtx.textureUnit = 0;
-        frameCtx.lineWidth = 1;
-        frameCtx.pointSize = 1;
         frameCtx.transparent = false; // True while rendering transparency bin
         frameCtx.ambientColor = this._ambientColor;
 
-        // Set the viewport to the extents of the drawing buffer
+        frameCtx.drawElements = 0;
+        frameCtx.useProgram = 0;
+        frameCtx.bindTexture = 0;
+        frameCtx.bindArray = 0;
+
+        this.stats.frame.setUniform = 0;
+        this.stats.frame.setUniformCacheHits = 0;
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
@@ -17257,47 +17616,46 @@ var object3 = new XEO.GameObject(scene, {
         }
 
         if (params.clear) {
-
-            // Clear the various buffers for this frame
-
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
         }
 
-        // "modes" chunks set the backface winding direction
         gl.frontFace(gl.CCW);
-
-        // "modes" chunks set backface culling on/off
         gl.disable(gl.CULL_FACE);
-
-        // Last "modes" chunk in draw list with
-        // transparent == true will enable blend
         gl.disable(gl.BLEND);
 
-        if (params.pick) {
+        if (params.pickObject) {
 
-            // Pick render
+            for (var i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
+                this._pickObjectChunkList[i].pickObject(frameCtx);
+            }
+
+        } else if (params.pickPrimitive) {
+
+            // Process object-picking chunks for the given object
 
             if (params.object) {
 
-                // Render the pick chunks for a given object
-                // TODO
+                var chunks = params.object.chunks;
+                var chunk;
 
-            } else {
-
-                // Render all pick chunks in the draw list
-
-                for (var i = 0, len = this._pickDrawListLen; i < len; i++) {
-                    this._pickDrawList[i].pick(frameCtx);
+                for (var i = 0, len = chunks.length; i < len; i++) {
+                    chunk = chunks[i];
+                    if (chunk.pickPrimitive) {
+                        chunk.pickPrimitive(frameCtx);
+                    }
                 }
             }
 
         } else {
 
-            // Render the draw chunk list
-
-            for (var i = 0, len = this._drawListLen; i < len; i++) {
-                this._drawList[i].draw(frameCtx);
+            for (var i = 0, len = this._drawChunkListLen; i < len; i++) {
+                this._drawChunkList[i].draw(frameCtx);
             }
+
+            this.stats.frame.drawElements = frameCtx.drawElements;
+            this.stats.frame.useProgram = frameCtx.useProgram;
+            this.stats.frame.bindTexture = frameCtx.bindTexture;
+            this.stats.frame.bindArray = frameCtx.bindArray;
         }
 
         gl.flush();
@@ -17305,7 +17663,6 @@ var object3 = new XEO.GameObject(scene, {
         if (frameCtx.renderBuf) {
             //        frameCtx.renderBuf.unbind();
         }
-
 //
 //    var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 //    for (var ii = 0; ii < numTextureUnits; ++ii) {
@@ -17629,7 +17986,8 @@ var object3 = new XEO.GameObject(scene, {
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Geometry = XEO.renderer.State.extend({});
+    XEO.renderer.Geometry = XEO.renderer.State.extend({
+    });
 
 })();
 
@@ -17731,12 +18089,15 @@ var object3 = new XEO.GameObject(scene, {
     /**
      * @class Vertex and fragment shaders for pick and draw
      *
+     * @param {*} stats Collects runtime statistics
      * @param {Number} id ID unique among all programs in the owner {@link XEO.renderer.ProgramFactory}
      * @param {String} hash Hash code which uniquely identifies the capabilities of the program, computed from hashes on the {@link Scene_Core}s that the {@link XEO.renderer.ProgramSource} composed to render
      * @param {XEO.renderer.ProgramSource} source Sourcecode from which the the program is compiled in {@link #build}
      * @param {WebGLRenderingContext} gl WebGL context
      */
-    XEO.renderer.Program = function (id, hash, source, gl) {
+    XEO.renderer.Program = function (stats, id, hash, source, gl) {
+
+        this.stats = stats;
 
         /**
          * ID for this program, unique among all programs in the display
@@ -17769,10 +18130,16 @@ var object3 = new XEO.GameObject(scene, {
         this.draw = null;
 
         /**
-         * The picking program
+         * The object picking program
          * @type webgl.Program
          */
-        this.pick = null;
+        this.pickObject = null;
+
+        /**
+         * The primitive picking program
+         * @type webgl.Program
+         */
+        this.pickPrimitive = null;
 
         /**
          * The count of display objects using this program
@@ -17828,17 +18195,22 @@ var object3 = new XEO.GameObject(scene, {
         this.validated = false;
         this.errorLog = null;
 
-        this.draw = new XEO.renderer.webgl.Program(gl, this.source.drawVertex, this.source.drawFragment);
-        this.pick = this.draw;
-     //   this.pick = new XEO.renderer.webgl.Program(gl, this.source.pickVertex, this.source.pickFragment);
+        this.draw = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexDraw, this.source.fragmentDraw);
+        this.pickObject = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexPickObject, this.source.fragmentPickObject);
+        this.pickPrimitive = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexPickPrimitive, this.source.fragmentPickPrimitive);
 
         if (!this.draw.allocated) {
             this.errorLog = ["Draw program failed to allocate"].concat(this.draw.errorLog);
             return;
         }
 
-        if (!this.pick.allocated) {
-            this.errorLog = ["Pick program failed to allocate"].concat(this.pick.errorLog);
+        if (!this.pickObject.allocated) {
+            this.errorLog = ["Object-picking program failed to allocate"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.allocated) {
+            this.errorLog = ["Primitive-picking program failed to allocate"].concat(this.pickPrimitive.errorLog);
             return;
         }
 
@@ -17849,8 +18221,13 @@ var object3 = new XEO.GameObject(scene, {
             return;
         }
 
-        if (!this.pick.compiled) {
-            this.errorLog = ["Pick program failed to compile"].concat(this.pick.errorLog);
+        if (!this.pickObject.compiled) {
+            this.errorLog = ["Object-picking program failed to compile"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.compiled) {
+            this.errorLog = ["Primitive-picking program failed to compile"].concat(this.pickPrimitive.errorLog);
             return;
         }
 
@@ -17861,8 +18238,13 @@ var object3 = new XEO.GameObject(scene, {
             return;
         }
 
-        if (!this.pick.linked) {
-            this.errorLog = ["Pick program failed to link"].concat(this.pick.errorLog);
+        if (!this.pickObject.linked) {
+            this.errorLog = ["Object-picking program failed to link"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.linked) {
+            this.errorLog = ["Primitive-picking program failed to link"].concat(this.pickPrimitive.errorLog);
             return;
         }
 
@@ -17873,8 +18255,13 @@ var object3 = new XEO.GameObject(scene, {
             return;
         }
 
-        if (!this.pick.validated) {
-            this.errorLog = ["Pick program failed to validate"].concat(this.pick.errorLog);
+        if (!this.pickObject.validated) {
+            this.errorLog = ["Object-picking program failed to validate"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.validated) {
+            this.errorLog = ["Primitive-picking program failed to validate"].concat(this.pickPrimitive.errorLog);
             return;
         }
 
@@ -17888,14 +18275,20 @@ var object3 = new XEO.GameObject(scene, {
 
     /**
      * @class Manages {@link XEO.renderer.Program} instances.
+     * @param stats Collects runtime statistics
+     * @param cfg Configs
      */
-    XEO.renderer.ProgramFactory = function (cfg) {
+    XEO.renderer.ProgramFactory = function (stats, cfg) {
+
+        this.stats = stats;
 
         this._canvas = cfg.canvas;
 
         this._programs = {};
 
         this._nextProgramId = 0;
+
+        this.numActivePrograms = 0;
     };
 
 
@@ -17915,9 +18308,11 @@ var object3 = new XEO.GameObject(scene, {
 
             var source = XEO.renderer.ProgramSourceFactory.getSource(hash, states);
 
-            program = new XEO.renderer.Program(this._nextProgramId++, hash, source, this._canvas.gl);
+            program = new XEO.renderer.Program(this.stats, this._nextProgramId++, hash, source, this._canvas.gl);
 
             this._programs[hash] = program;
+
+            this.numActivePrograms++;
         }
 
         program.useCount++;
@@ -17933,11 +18328,14 @@ var object3 = new XEO.GameObject(scene, {
         if (--program.useCount <= 0) {
 
             program.draw.destroy();
-            program.pick.destroy();
+            program.pickObject.destroy();
+            program.pickPrimitive.destroy();
 
             XEO.renderer.ProgramSourceFactory.putSource(program.hash);
 
             this._programs[program.hash] = null;
+
+            this.numActivePrograms--;
         }
     };
 
@@ -17968,12 +18366,17 @@ var object3 = new XEO.GameObject(scene, {
      * @class Source code for pick and draw shader programs, to be compiled into one or more {@link XEO.renderer.Program}s
      *
      * @param {String} hash Hash code identifying the rendering capabilities of the programs
-     * @param {String} pickVertex Source code of the pick vertex shader
-     * @param {String} pickFragment Source code of the pick fragment shader
-     * @param {String} drawVertex Source code of the draw vertex shader
-     * @param {String} drawFragment Source code of the draw fragment shader
+     * @param {String} vertexPickObject Vertex shader source for object picking.
+     * @param {String} fragmentPickObject Fragment shader source for object picking.
+     * @param {String} vertexPickPrimitive Vertex shader source for primitive picking.
+     * @param {String} fragmentPickPrimitive Fragment shader source for primitive picking.
+     * @param {String} vertexDraw Vertex shader source for drawing.
+     * @param {String} fragmentDraw Fragment shader source for drawing.
      */
-    XEO.renderer.ProgramSource = function (hash, pickVertex, pickFragment, drawVertex, drawFragment) {
+    XEO.renderer.ProgramSource = function (hash,
+                                           vertexPickObject, fragmentPickObject,
+                                           vertexPickPrimitive, fragmentPickPrimitive,
+                                           vertexDraw, fragmentDraw) {
 
         /**
          * Hash code identifying the capabilities of the {@link XEO.renderer.Program} that is compiled from this source
@@ -17982,28 +18385,40 @@ var object3 = new XEO.GameObject(scene, {
         this.hash = hash;
 
         /**
-         * Source code for pick vertex shader
+         * Vertex shader source for object picking
          * @type {Array of String]
          */
-        this.pickVertex = pickVertex;
+        this.vertexPickObject = vertexPickObject;
 
         /**
-         * Source code for pick fragment shader
+         * Fragment shader source for object picking.
          * @type {Array of String}
          */
-        this.pickFragment = pickFragment;
+        this.fragmentPickObject = fragmentPickObject;
 
         /**
-         * Source code for draw vertex shader
-         * @type {Array of String}
+         * Vertex shader source for primitive picking.
+         * @type {Array of String]
          */
-        this.drawVertex = drawVertex;
+        this.vertexPickPrimitive = vertexPickPrimitive;
 
         /**
-         * Source code for draw fragment shader
+         * Fragment shader source for primitive picking.
          * @type {Array of String}
          */
-        this.drawFragment = drawFragment;
+        this.fragmentPickPrimitive = fragmentPickPrimitive;
+
+        /**
+         * Vertex shader source for drawing.
+         * @type {Array of String}
+         */
+        this.vertexDraw = vertexDraw;
+
+        /**
+         * Fragment shader source for drawing.
+         * @type {Array of String}
+         */
+        this.fragmentDraw = fragmentDraw;
 
         /**
          * Count of {@link XEO.renderer.Program}s compiled from this program source code
@@ -18029,12 +18444,9 @@ var object3 = new XEO.GameObject(scene, {
 
         var states; // Cache rendering state
         var texturing; // True when rendering state contains textures
-        var normals; // True when rendering state contains normals
-        var tangents; // True when rendering state contains tangents
-        var clipping; // True when rendering state contains clip planes
-        var morphing; // True when rendering state contains morph targets
+        var shading; // True when rendering state contains normals
+        var normalMapping; // True when rendering state contains tangents
         var reflection; // True when rendering state contains reflections
-        var depthTarget; // True when rendering state contains a depth target
 
         /**
          * Get source code for a program to render the given states.
@@ -18052,20 +18464,18 @@ var object3 = new XEO.GameObject(scene, {
             states = _states;
 
             texturing = hasTextures();
-            normals = hasNormals();
-            tangents = hasTangents();
-            clipping = states.clips.clips.length > 0;
-            //morphing = !!states.morphTargets.targets;
-            morphing = false;
+            shading = hasShading();
+            normalMapping = hasNormalMap();
             reflection = hasReflection();
-            depthTarget = hasDepthTarget();
 
             source = new XEO.renderer.ProgramSource(
                 hash,
-                composePickingVertexShader(),
-                composePickingFragmentShader(),
-                composeRenderingVertexShader(),
-                composeRenderingFragmentShader()
+                vertexPickObject(),
+                fragmentPickObject(),
+                vertexPickPrimitive(),
+                fragmentPickPrimitive(),
+                vertexDraw(),
+                fragmentDraw()
             );
 
             cache[hash] = source;
@@ -18073,77 +18483,41 @@ var object3 = new XEO.GameObject(scene, {
             return source;
         };
 
-        // Returns true if texturing
-
         function hasTextures() {
-
             if (!states.geometry.uv) {
                 return false;
             }
-
             var material = states.material;
-
-            return (material.type === "phongMaterial" &&
-            (material.diffuseMap ||
-            material.specularMap ||
-            material.emissiveMap ||
-            material.opacityMap ||
-            material.reflectivityMap));
+            return material.diffuseMap ||
+                material.specularMap ||
+                material.emissiveMap ||
+                material.opacityMap ||
+                material.reflectivityMap;
         }
 
-        // Returns true if rendering reflections
-        function hasReflection(states) {
+        function hasReflection() {
             return false;
             //return (states.cubemap.layers && states.cubemap.layers.length > 0 && states.geometry.normalBuf);
         }
 
-        // Returns true if normals exist on geometry
-        function hasNormals() {
-
-            if (states.geometry.normals) {
+        function hasShading() {
+            var primitive = states.geometry.primitiveName;
+            if (states.geometry.normals &&
+                (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
                 return true;
             }
-
-            //if (states.MorphTargets.targets && states.MorphTargets.targets[0].normalBuf) {
-            //    return true;
-            //}
-
             return false;
         }
 
-        // Returns true if geometry has tangents for normal mapping
-        function hasTangents() {
-
-            //if (states.texture) {
-            //
-            //    var layers = states.texture.layers;
-            //
-            //    if (!layers) {
-            //        return false;
-            //    }
-            //
-            //    for (var i = 0, len = layers.length; i < len; i++) {
-            //        if (layers[i].applyTo === "normals") {
-            //            return true;
-            //        }
-            //    }
-            //}
-            //
-            return false;
-        }
-
-        // Returns true if renderer state set contains a depth target
-        function hasDepthTarget() {
-            return !!states.depthTarget;
+        function hasNormalMap() {
+            return (states.geometry.normals && states.material.normalMap);
         }
 
         /**
          * Releases program source code back to this factory.
          */
         this.putSource = function (hash) {
-
             var source = cache[hash];
-
             if (source) {
                 if (--source.useCount === 0) {
                     cache[source.hash] = null;
@@ -18151,119 +18525,70 @@ var object3 = new XEO.GameObject(scene, {
             }
         };
 
-        // Returns GLSL for a picking mode vertex shader
-        //
-        function composePickingVertexShader() {
 
+        // NOTE: Picking shaders will become more complex and will eventually be
+        // composed from state, in the same manner as the draw shaders.
+
+        function vertexPickObject() {
             begin();
-
             add("attribute vec3 xeo_aPosition;");
-
             add("uniform mat4 xeo_uModelMatrix;");
             add("uniform mat4 xeo_uViewMatrix;");
             add("uniform mat4 xeo_uViewNormalMatrix;");
             add("uniform mat4 xeo_uProjMatrix;");
-
             add("varying vec4 xeo_vWorldPosition;");
             add("varying vec4 xeo_vViewPosition;");
-
-//            if (morphing) {
-//                add("uniform float xeo_uMorphFactor;");       // LERP factor for morph
-//                if (states.MorphTargets.targets[0].vertexBuf) {      // target2 has these arrays also
-//                    add("attribute vec3 xeo_aMorphVertex;");
-//                }
-//            }
-
             add("void main(void) {");
-
-            add("vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
-
-//            if (morphing) {
-//                if (states.MorphTargets.targets[0].vertexBuf) {
-//                    add("  tmpVertex = vec4(mix(tmpVertex.xyz, xeo_aMorphVertex, xeo_uMorphFactor), 1.0); ");
-//                }
-//            }
-
-            add("xeo_vWorldPosition = xeo_uModelMatrix * tmpVertex; ");
-
-            add("xeo_vViewPosition = xeo_uViewMatrix * xeo_vWorldPosition;");
-
-            add("gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
-
+            add("   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
+            add("   xeo_vWorldPosition = xeo_uModelMatrix * tmpVertex; ");
+            add("   xeo_vViewPosition = xeo_uViewMatrix * xeo_vWorldPosition;");
+            add("   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
             add("}");
-
             return end();
         }
 
-        function composePickingFragmentShader() {
-
+        function fragmentPickObject() {
             begin();
-
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
-
-            add("varying vec4 xeo_vWorldPosition;");
-            add("varying vec4 xeo_vViewPosition;");
-
-            add("uniform bool  xeo_uRayPickMode;");
-            add("uniform vec3  xeo_uPickColor;");
-
-            // Clipping
-
-            if (clipping) {
-                for (var i = 0; i < states.clips.clips.length; i++) {
-                    add("uniform float xeo_uClipMode" + i + ";");
-                    add("uniform vec4  xeo_uClipPlane" + i + ";");
-                }
-            }
-
-            // Pack depth function for ray-pick
-
-            add("vec4 packDepth(const in float depth) {");
-            add("  const vec4 bitShift = vec4(256.0*256.0*256.0, 256.0*256.0, 256.0, 1.0);");
-            add("  const vec4 bitMask  = vec4(0.0, 1.0/256.0, 1.0/256.0, 1.0/256.0);");
-            add("  vec4 res = fract(depth * bitShift);");
-            add("  res -= res.xxyz * bitMask;");
-            add("  return res;");
-            add("}");
-
-            // main
-
+            add("uniform vec4 xeo_uPickColor;");
             add("void main(void) {");
-
-            // Clipping logic
-
-            if (clipping) {
-                add("if (SCENEJS_uModesClipping) {");
-                add("float dist = 0.0;");
-                for (var i = 0; i < states.clips.clips.length; i++) {
-                    add("if (xeo_uClipMode" + i + " != 0.0) {");
-                    add("   dist += clamp(dot(xeo_vWorldPosition.xyz, xeo_uClipPlane" + i + ".xyz) - xeo_uClipPlane" + i + ".w, 0.0, 1000.0);");
-                    add("}");
-                }
-                add("if (dist > 0.0) { discard; }");
-                add("}");
-            }
-
-            add("if (xeo_uRayPickMode) {");
-
-            // Output color-encoded depth value for ray-pick
-
-            add("   gl_FragColor = packDepth(gl_Position.z); ");
-
-            add("} else {");
-
-            // Output indexed color value for normal pick
-
-            add("   gl_FragColor = vec4(xeo_uPickColor.rgb, 1.0);  ");
-
+            add("   gl_FragColor = xeo_uPickColor; ");
             add("}");
-            add("}");
-
             return end();
         }
 
+        function vertexPickPrimitive() {
+            begin();
+            add("attribute vec3 xeo_aPosition;");
+            add("attribute vec4 xeo_aColor;");
+            add("uniform vec3 xeo_uPickColor;");
+            add("uniform mat4 xeo_uModelMatrix;");
+            add("uniform mat4 xeo_uViewMatrix;");
+            add("uniform mat4 xeo_uProjMatrix;");
+            add("varying vec4 xeo_vWorldPosition;");
+            add("varying vec4 xeo_vViewPosition;");
+            add("varying vec4 xeo_vColor;");
+            add("void main(void) {");
+            add("   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
+            add("   vec4 worldPosition = xeo_uModelMatrix * tmpVertex; ");
+            add("   vec4 viewPosition = xeo_uViewMatrix * worldPosition;");
+            add("   xeo_vColor = xeo_aColor;");
+            add("   gl_Position = xeo_uProjMatrix * viewPosition;");
+            add("}");
+            return end();
+        }
 
-        function composeRenderingVertexShader() {
+        function fragmentPickPrimitive() {
+            begin();
+            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add("varying vec4 xeo_vColor;");
+            add("void main(void) {");
+            add("   gl_FragColor = xeo_vColor;");
+            add("}");
+            return end();
+        }
+
+        function vertexDraw() {
 
             var vertex = states.shader.vertex;
 
@@ -18273,55 +18598,50 @@ var object3 = new XEO.GameObject(scene, {
                 return vertex;
             }
 
-            var flatMaterial = (states.material.type === "flatMaterial");
-            var phongMaterial = !flatMaterial && (states.material.type === "phongMaterial");
-            var pbrMaterial = !flatMaterial && !phongMaterial && (states.material.type === "pbrMaterial");
-
             begin();
 
             // Matrix uniforms
-
             add("uniform mat4 xeo_uModelMatrix;");
             add("uniform mat4 xeo_uViewMatrix;");
             add("uniform mat4 xeo_uProjMatrix;");
 
             // World-space eye position
-
             add("uniform vec3 xeo_uEye;");
 
-            // Model-space vertex position
+            add();
 
+            // Model-space vertex position
             add("attribute vec3 xeo_aPosition;");
 
-            // View-space fragment position
+            add();
 
+            // View-space fragment position
             add("varying vec4 xeo_vViewPosition;");
 
             // View-space vector from fragment position to eye
-
             add("varying vec3 xeo_vViewEyeVec;");
 
-            if (normals) {
+            if (shading) {
 
-                // Normals
+                add();
 
+                // Model-space vertex normal
                 add("attribute vec3 xeo_aNormal;");
 
                 // Modelling and View normal transform matrix
-
                 add("uniform mat4 xeo_uModelNormalMatrix;");
                 add("uniform mat4 xeo_uViewNormalMatrix;");
 
                 // View-space normal
-
                 add("varying vec3 xeo_vViewNormal;");
 
-                if (tangents) {
+                if (normalMapping) {
+
+                    // Vertex tangent vector
                     add("attribute vec4 xeo_aTangent;");
                 }
 
                 // Lights
-
                 for (var i = 0; i < states.lights.lights.length; i++) {
 
                     var light = states.lights.lights[i];
@@ -18331,19 +18651,16 @@ var object3 = new XEO.GameObject(scene, {
                     }
 
                     // Directional
-
                     if (light.type === "dir") {
                         add("uniform vec3 xeo_uLightDir" + i + ";");
                     }
 
                     // Point
-
                     if (light.type === "point") {
                         add("uniform vec3 xeo_uLightPos" + i + ";");
                     }
 
                     // Spot
-
                     if (light.type === "spot") {
                         add("uniform vec3 xeo_uLightPos" + i + ";");
                     }
@@ -18353,99 +18670,63 @@ var object3 = new XEO.GameObject(scene, {
                 }
             }
 
-            if (clipping) {
-
-                // World-space fragment position
-
-                add("varying vec4 xeo_vWorldPosition;");
-            }
-
             if (texturing) {
 
-                // Vertex UV coordinate
+                add();
 
+                // Vertex UV coordinate
                 add("attribute vec2 xeo_aUV;");
 
                 // Fragment UV coordinate
-
                 add("varying vec2 xeo_vUV;");
             }
 
-            if (states.geometry.colorBuf) {
+            if (states.geometry.colors) {
 
                 // Vertex color
-
-                add("attribute vec4 xeo_aColor;"); // Vertex colors
+                add("attribute vec4 xeo_aColor;");
 
                 // Fragment color
-
-                add("varying vec4 xeo_vColor;"); // Varying for fragment texturing
+                add("varying vec4 xeo_vColor;");
             }
 
-            //if (morphing) {
-            //    add("uniform float xeo_uMorphFactor;");// LERP factor for morph
-            //    if (states.MorphTargets.targets[0].vertexBuf) {  // target2 has these arrays also
-            //        add("attribute vec3 xeo_aMorphVertex;");
-            //    }
-            //    if (normals) {
-            //        if (states.MorphTargets.targets[0].normalBuf) {
-            //            add("attribute vec3 xeo_aMorphNormal;");
-            //        }
-            //    }
-            //}
-
-            if (phongMaterial) {
+            if (states.geometry.primitive === "points") {
                 add("uniform float xeo_uPointSize;");
             }
 
+            // ------------------- main -------------------------------
+
+            add();
             add("void main(void) {");
+            add();
+            add("   vec4 modelPosition = vec4(xeo_aPosition, 1.0); ");
 
-            add("vec4 modelPosition = vec4(xeo_aPosition, 1.0); ");
-
-            if (normals) {
-                add("vec4 modelNormal = vec4(xeo_aNormal, 0.0); ");
+            if (shading) {
+                add("   vec4 modelNormal = vec4(xeo_aNormal, 0.0); ");
             }
 
-            //if (morphing) {
-            //    if (states.MorphTargets.targets[0].vertexBuf) {
-            //        add("vec4 vMorphVertex = vec4(xeo_aMorphVertex, 1.0); ");
-            //        add("modelPosition = vec4(mix(modelPosition.xyz, vMorphVertex.xyz, xeo_uMorphFactor), 1.0); ");
-            //    }
-            //    if (normals) {
-            //        if (states.MorphTargets.targets[0].normalBuf) {
-            //            add("vec4 vMorphNormal = vec4(xeo_aMorphNormal, 1.0); ");
-            //            add("modelNormal = vec4( mix(modelNormal.xyz, vMorphNormal.xyz, xeo_uMorphFactor), 1.0); ");
-            //        }
-            //    }
-            //}
+            add("   vec4 worldPosition = xeo_uModelMatrix * modelPosition;");
 
-            add("vec4 worldPosition = xeo_uModelMatrix * modelPosition;");
+            add("   vec4 viewPosition  = xeo_uViewMatrix * worldPosition; ");
 
-            add("vec4 viewPosition  = xeo_uViewMatrix * worldPosition; ");
-
-            if (normals) {
-                add("vec3 worldNormal = (xeo_uModelNormalMatrix * modelNormal).xyz; ");
-                add("xeo_vViewNormal = (xeo_uViewNormalMatrix * vec4(worldNormal, 1.0)).xyz;");
+            if (shading) {
+                add("   vec3 worldNormal = (xeo_uModelNormalMatrix * modelNormal).xyz; ");
+                add("   xeo_vViewNormal = (xeo_uViewNormalMatrix * vec4(worldNormal, 1.0)).xyz;");
             }
 
-            if (clipping) {
-                add("  xeo_vWorldPosition = worldPosition;");
-            }
+            add("   xeo_vViewPosition = viewPosition;");
 
-            add("xeo_vViewPosition = viewPosition;");
-
-            if (tangents) {
+            if (normalMapping) {
 
                 // Compute tangent-bitangent-normal matrix
-
-                add("vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * xeo_aTangent).xyz);");
-                add("vec3 bitangent = cross(xeo_vViewNormal, tangent);");
-                add("mat3 TBM = mat3(tangent, bitangent, xeo_vViewNormal);");
+                add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * xeo_aTangent).xyz);");
+                add("   vec3 bitangent = cross(xeo_vViewNormal, tangent);");
+                add("   mat3 TBM = mat3(tangent, bitangent, xeo_vViewNormal);");
             }
 
             add("  vec3 tmpVec3;");
 
-            if (normals) {
+            if (shading) {
 
                 for (var i = 0; i < states.lights.lights.length; i++) {
 
@@ -18463,27 +18744,27 @@ var object3 = new XEO.GameObject(scene, {
 
                             // World space light
 
-                            add("tmpVec3 = normalize(xeo_uLightDir" + i + ");");
+                            add("   tmpVec3 = xeo_uLightDir" + i + ";");
 
                             // Transform to View space
-                            add("tmpVec3 = vec3(xeo_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            add("   tmpVec3 = vec3(xeo_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
 
-                            if (tangents) {
+                            if (normalMapping) {
 
                                 // Transform to Tangent space
-                                add("tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBM;");
                             }
 
                         } else {
 
                             // View space light
 
-                            add("tmpVec3 = normalize(xeo_uLightDir" + i + ");");
+                            add("   tmpVec3 = xeo_uLightDir" + i + ";");
 
-                            if (tangents) {
+                            if (normalMapping) {
 
                                 // Transform to Tangent space
-                                add("tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBM;");
                             }
                         }
 
@@ -18501,59 +18782,54 @@ var object3 = new XEO.GameObject(scene, {
 
                             // Transform into View space
 
-                            add("tmpVec3 = xeo_uLightPos" + i + " - worldPosition.xyz;"); // Vector from World coordinate to light pos
+                            add("   tmpVec3 = xeo_uLightPos" + i + " - worldPosition.xyz;"); // Vector from World coordinate to light pos
 
                             // Transform to View space
-                            add("tmpVec3 = vec3(xeo_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            add("   tmpVec3 = vec3(xeo_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
 
-                            if (tangents) {
-
+                            if (normalMapping) {
                                 // Transform to Tangent space
-                                add("tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBM;");
                             }
 
                         } else {
 
                             // View space
 
-                            add("tmpVec3 = xeo_uLightPos" + i + ".xyz - viewPosition.xyz;"); // Vector from View coordinate to light pos
+                            add("   tmpVec3 = xeo_uLightPos" + i + ".xyz - viewPosition.xyz;"); // Vector from View coordinate to light pos
 
-                            if (tangents) {
+                            if (normalMapping) {
 
                                 // Transform to tangent space
-                                add("tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBM;");
                             }
                         }
 
                         // Output
-                        add("xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length(xeo_uLightPos" + i + ".xyz - worldPosition.xyz));");
+                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length(xeo_uLightPos" + i + ".xyz - worldPosition.xyz));");
                     }
                 }
             }
 
-            add("xeo_vViewEyeVec = ((xeo_uViewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+            add("   xeo_vViewEyeVec = ((xeo_uViewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
 
-            if (tangents) {
-
-                add("xeo_vViewEyeVec *= TBM;");
+            if (normalMapping) {
+                add("   xeo_vViewEyeVec *= TBM;");
             }
 
             if (texturing) {
-
-                if (states.geometry.uv) {
-                    add("xeo_vUV = xeo_aUV;");
-                }
+                add("   xeo_vUV = xeo_aUV;");
             }
 
-            if (states.geometry.colorBuf) {
-                add("xeo_vColor = xeo_aColor;");
+            if (states.geometry.colors) {
+                add("   xeo_vColor = xeo_aColor;");
             }
 
-            if (phongMaterial) {
-                    add("gl_PointSize = xeo_uPointSize;");
-                }
+            if (states.geometry.primitiveName === "points") {
+                add("   gl_PointSize = xeo_uPointSize;");
+            }
 
-            add("gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
+            add("   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
 
             add("}");
 
@@ -18561,7 +18837,7 @@ var object3 = new XEO.GameObject(scene, {
         }
 
 
-        function composeRenderingFragmentShader() {
+        function fragmentDraw() {
 
             var fragment = states.shader.fragment;
             if (fragment) {
@@ -18572,103 +18848,80 @@ var object3 = new XEO.GameObject(scene, {
             begin();
 
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
-
+            add();
             add("varying vec4 xeo_vViewPosition;");
+            add();
+            add("uniform vec3 xeo_uDiffuse;");
+            add("uniform vec3 xeo_uSpecular;");
+            add("uniform vec3 xeo_uEmissive;");
+            add("uniform float xeo_uOpacity;");
+            add("uniform float xeo_uShininess;");
+            add("uniform float xeo_uReflectivity;");
+            add();
 
-            add("uniform float xeo_uZNear;");
-            add("uniform float xeo_uZFar;");
+            if (texturing) {
 
-            if (clipping) {
-
-                add("varying vec4 xeo_vWorldPosition;");
-
-                for (var i = 0; i < states.clips.clips.length; i++) {
-                    add("uniform float xeo_uClipMode" + i + ";");
-                    add("uniform vec4  xeo_uClipPlane" + i + ";");
+                if (states.geometry.uv) {
+                    add("varying vec2 xeo_vUV;");
                 }
-            }
 
-            var flatMaterial = (states.material.type === "flatMaterial");
-            var phongMaterial = !flatMaterial && (states.material.type === "phongMaterial");
-            var pbrMaterial = !flatMaterial && !phongMaterial && (states.material.type === "pbrMaterial");
-
-            if (phongMaterial) {
-
-                add("uniform vec3 xeo_uDiffuse;");
-                add("uniform vec3 xeo_uMaterialSpecular;");
-                add("uniform vec3 xeo_uMaterialEmissive;");
-                add("uniform float xeo_uMaterialOpacity;");
-                add("uniform float xeo_uMaterialShininess;");
-                add("uniform float xeo_uMaterialReflectivity;");
-
-                if (texturing) {
-
-                    if (states.geometry.uv) {
-                        add("varying vec2 xeo_vUV;");
+                if (states.material.ambientMap) {
+                    add("uniform sampler2D xeo_uAmbientMap;");
+                    if (states.material.ambientMap.matrix) {
+                        add("uniform mat4 xeo_uAmbientMapMatrix;");
                     }
+                }
 
-                    if (states.material.diffuseMap) {
-                        add("uniform sampler2D xeo_uDiffuseMap;");
-                        if (states.material.diffuseMap.matrix) {
-                            add("uniform mat4 xeo_uDiffuseMapMatrix;");
-                        }
+                if (states.material.diffuseMap) {
+                    add("uniform sampler2D xeo_uDiffuseMap;");
+                    if (states.material.diffuseMap.matrix) {
+                        add("uniform mat4 xeo_uDiffuseMapMatrix;");
                     }
+                }
 
-                    if (states.material.specularMap) {
-                        add("uniform sampler2D xeo_uSpecularMap;");
-                        if (states.material.specularMap.matrix) {
-                            add("uniform mat4 xeo_uSpecularMapMatrix;");
-                        }
+                if (states.material.specularMap) {
+                    add("uniform sampler2D xeo_uSpecularMap;");
+                    if (states.material.specularMap.matrix) {
+                        add("uniform mat4 xeo_uSpecularMapMatrix;");
                     }
+                }
 
-                    if (states.material.emissiveMap) {
-                        add("uniform sampler2D xeo_uEmissiveMap;");
-                        if (states.material.emissiveMap.matrix) {
-                            add("uniform mat4 xeo_uEmissiveMapMatrix;");
-                        }
+                if (states.material.emissiveMap) {
+                    add("uniform sampler2D xeo_uEmissiveMap;");
+                    if (states.material.emissiveMap.matrix) {
+                        add("uniform mat4 xeo_uEmissiveMapMatrix;");
                     }
+                }
 
-                    if (states.material.opacityMap) {
-                        add("uniform sampler2D xeo_uTextureOpacity;");
-                        if (states.material.opacityMap.matrix) {
-                            add("uniform mat4 xeo_uTextureOpacityMatrix;");
-                        }
+                if (states.material.opacityMap) {
+                    add("uniform sampler2D xeo_uTextureOpacity;");
+                    if (states.material.opacityMap.matrix) {
+                        add("uniform mat4 xeo_uTextureOpacityMatrix;");
                     }
+                }
 
-                    if (states.material.reflectivityMap) {
-                        add("uniform sampler2D xeo_uTextureReflectivity;");
-                        if (states.material.reflectivityMap.matrix) {
-                            add("uniform mat4 xeo_uTextureReflectivityMatrix;");
-                        }
+                if (states.material.reflectivityMap) {
+                    add("uniform sampler2D xeo_uTextureReflectivity;");
+                    if (states.material.reflectivityMap.matrix) {
+                        add("uniform mat4 xeo_uTextureReflectivityMatrix;");
                     }
                 }
             }
 
-            //if (normals && reflection) {
-            //    var layer;
-            //    for (var i = 0, len = states.cubemap.layers.length; i < len; i++) {
-            //        layer = states.cubemap.layers[i];
-            //        add("uniform samplerCube xeo_uCubeMapSampler" + i + ";");
-            //        add("uniform float xeo_uCubeMapIntensity" + i + ";");
-            //    }
-            //}
-
-
-            add("uniform bool xeo_uDepthMode;");
-
-            if (states.geometry.colorBuf) {
+            if (states.geometry.colors) {
                 add("varying vec4 xeo_vColor;");
             }
 
             // Global, ambient colour - taken from clear colour
 
             add("uniform vec3 xeo_uLightAmbientColor;");
+            add("uniform float xeo_uLightAmbientIntensity;");
 
             // World-space vector from fragment to eye
 
             add("varying vec3 xeo_vViewEyeVec;");
 
-            if (normals) {
+            if (shading) {
 
                 // View-space fragment normal
 
@@ -18687,246 +18940,183 @@ var object3 = new XEO.GameObject(scene, {
                     }
 
                     add("uniform vec3 xeo_uLightColor" + i + ";");
-
                     add("uniform float xeo_uLightIntensity" + i + ";");
-
                     if (light.type === "point") {
                         add("uniform vec3 xeo_uLightAttenuation" + i + ";");
                     }
-
                     add("varying vec4 xeo_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
                 }
             }
 
+            add();
             add("void main(void) {");
+            add();
 
-            if (clipping) {
+            // These may be overridden by textures below
 
-                // World-space fragment clipping
+            add("   vec3 ambient = xeo_uLightAmbientColor;");
+            add("   vec3 diffuse = xeo_uDiffuse;");
+            add("   vec3 specular = xeo_uSpecular;");
+            add("   vec3 emissive = xeo_uEmissive;");
+            add("   float opacity = xeo_uOpacity;");
+            add("   float shininess = xeo_uShininess;");
+            add("   float reflectivity = xeo_uReflectivity;");
 
-                add("if (SCENEJS_uModesClipping) {");
 
-                add("float dist = 0.0;");
+            if (states.geometry.colors) {
 
-                for (var i = 0; i < states.clips.clips.length; i++) {
-                    add("if (xeo_uClipMode" + i + " != 0.0) {");
-                    add("dist += clamp(dot(xeo_vWorldPosition.xyz, xeo_uClipPlane" + i + ".xyz) - xeo_uClipPlane" + i + ".w, 0.0, 1000.0);");
-                    add("}");
-                }
-                add("if (dist > 0.0) { discard; }");
-
-                add("}");
+                // Fragment diffuse color from geometry vertex colors
+                add("   diffuse = xeo_vColor.rgb;");
             }
 
-            add("vec3 ambient = xeo_uLightAmbientColor;");
+            if (shading) {
 
-
-            // ------------------- PhongMaterial Shading
-
-            if (phongMaterial) {
-
-                if (states.geometry.colorBuf) {
-
-                    // Fragment diffuse color from geometry vertex colors
-
-                    add("vec3 diffuse = xeo_vColor.rgb;");
+                if (normalMapping) {
+                    add("   vec3 viewNormalVec = vec3(0.0, 1.0, 0.0);");
 
                 } else {
 
-                    // Fragment diffuse color from material
-
-                    add("vec3 diffuse = xeo_uDiffuse;")
+                    // Normalize the interpolated normals in the per-fragment-fragment-shader,
+                    // because if we linear interpolated two nonparallel normalized vectors,
+                    // the resulting vector won’t be of length 1
+                    add("   vec3 viewNormalVec = normalize(xeo_vViewNormal);");
                 }
+            }
 
-                // These may be overridden by textures later
+            if (texturing) {
 
-                add("vec3 specular = xeo_uMaterialSpecular;");
-                add("vec3 emissive = xeo_uMaterialEmissive;");
-                add("float opacity = xeo_uMaterialOpacity;");
-                add("float shininess  = xeo_uMaterialShininess;");
-                add("float reflectivity  = xeo_uMaterialReflectivity;");
+                // Textures
 
-                if (normals) {
+                add();
 
-                    if (tangents) {
+                add("   vec4 texturePos = vec4(xeo_vUV.s, xeo_vUV.t, 1.0, 1.0);");
+                add("   vec2 textureCoord;");
 
-                        add("vec3 viewNormalVec = vec3(0.0, 1.0, 0.0);");
+                var material = states.material;
 
+                if (material.ambientMap) {
+                    add();
+                    if (material.ambientMap.matrix) {
+                        add("   textureCoord = (xeo_uAmbientMapMatrix * texturePos).xy;");
                     } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   ambient = texture2D(xeo_uAmbientMap, textureCoord).rgb;");
+                }
 
-                        // Normalize the interpolated normals in the per-fragment-fragment-shader,
-                        // because if we linear interpolated two nonparallel normalized vectors, the resulting vector won’t be of length 1
+                if (material.diffuseMap) {
+                    add();
+                    if (material.diffuseMap.matrix) {
+                        add("   textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   textureCoord.y = -texturePos.y;");
+                    add("   diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
+                }
 
-                        add("vec3 viewNormalVec = normalize(xeo_vViewNormal);");
+                if (material.specularMap) {
+                    add();
+                    if (material.specularMap.matrix) {
+                        add("   textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
+                }
+
+                if (material.emissiveMap) {
+                    add();
+                    if (material.emissiveMap.matrix) {
+                        add("   textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
+                }
+
+                if (material.opacityMap) {
+                    add();
+                    if (material.opacityMap.matrix) {
+                        add("   textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
+                }
+
+                if (material.reflectivityMap) {
+                    add();
+                    if (material.reflectivityMap.matrix) {
+                        add("   textureCoord = (xeo_uReflectivityMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
+                }
+            }
+
+            if (shading) {
+
+                add();
+                add("   vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
+                add("   vec3  specularLight = vec3(0.0, 0.0, 0.0);");
+
+                add();
+                add("   vec3  viewLightVec;");
+                add("   float dotN;");
+                add("   float lightDist;");
+                add("   float attenuation;");
+
+                var light;
+
+                for (var i = 0, len = states.lights.lights.length; i < len; i++) {
+
+                    light = states.lights.lights[i];
+
+                    if (light.type === "ambient") {
+                        continue;
+                    }
+
+                    add("   viewLightVec = normalize(xeo_vViewLightVecAndDist" + i + ".xyz);");
+
+                    if (light.type === "point") {
+                        add();
+                        add("   dotN = max(dot(viewNormalVec, viewLightVec), 0.0);");
+                        add("   lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
+                        add("   attenuation = 1.0 - (" +
+                            "  xeo_uLightAttenuation" + i + "[0] + " +
+                            "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
+                            "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
+
+                        add("   diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
+
+                        add("   specularLight += specular * xeo_uLightIntensity" + i +
+                            " * specular * pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
+                            "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess) * attenuation;");
+                    }
+
+                    if (light.type === "dir") {
+                        add();
+                        add("   dotN = max(dot(viewNormalVec, viewLightVec), 0.0);");
+
+                        add("   diffuseLight += dotN * xeo_uLightColor" + i + ";");
+
+                        add("   specularLight += specular * xeo_uLightIntensity" + i +
+                            " * pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
+                            "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess);");
                     }
                 }
 
-                if (texturing) {
+                add();
+                add("   gl_FragColor = vec4( (specularLight * specular) + (diffuse * (diffuseLight + ambient * xeo_uLightAmbientIntensity)) + emissive, opacity);");
 
-                    // Textures
+            } else {
 
-                    add("vec4 texturePos = vec4(xeo_vUV.s, xeo_vUV.t, 1.0, 1.0);");
-                    add("vec2 textureCoord = texturePos.xy;");
+                // No shading
 
-                    add("textureCoord.y = -textureCoord.y;");
-
-                    var material = states.material;
-
-                    if (material.diffuseMap) {
-
-                        // Diffuse map
-
-                        if (material.diffuseMap.matrix) {
-                            add("textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;");
-                        } else {
-                            add("textureCoord = texturePos.xy;");
-                        }
-
-                        add("diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
-                    }
-
-                    if (material.specularMap) {
-
-                        // Specular map
-
-                        if (material.specularMap.matrix) {
-                            add("textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;");
-                        } else {
-                            add("textureCoord = texturePos.xy;");
-                        }
-
-                        add("specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
-                    }
-
-                    if (material.emissiveMap) {
-
-                        // Emissive map
-
-                        if (material.emissiveMap.matrix) {
-                            add("textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;");
-                        } else {
-                            add("textureCoord = texturePos.xy;");
-                        }
-
-                        add("emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
-                    }
-
-                    if (material.opacityMap) {
-
-                        // Opacity map
-
-                        if (material.opacityMap.matrix) {
-                            add("textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;");
-                        } else {
-                            add("textureCoord = texturePos.xy;");
-                        }
-
-                        add("opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
-                    }
-
-                    if (material.reflectivityMap) {
-
-                        // Reflectivity map
-
-                        if (material.reflectivityMap.matrix) {
-                            add("textureCoord = (xeo_uReflectivityMapMatrix * texturePos).xy;");
-                        } else {
-                            add("textureCoord = texturePos.xy;");
-                        }
-
-                        add("reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
-                    }
-                }
-
-                if (normals && reflection) {
-
-                    add("vec3 envLookup = reflect(xeo_vViewEyeVec, viewNormalVec);");
-                    add("envLookup.y = envLookup.y * -1.0;"); // Need to flip textures on Y-axis for some reason
-                    add("vec4 envColor;");
-
-                    //for (var i = 0, len = states.cubemap.layers.length; i < len; i++) {
-                    //    layer = states.cubemap.layers[i];
-                    //    add("envColor = textureCube(xeo_uCubeMapSampler" + i + ", envLookup);");
-                    //    add("color = mix(color, envColor.rgb, specular * xeo_uCubeMapIntensity" + i + ");");
-                    //}
-                }
-
-                add("vec4 fragColor;");
-
-                if (normals) {
-
-                    add("vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
-                    add("vec3  specularLight = vec3(0.0, 0.0, 0.0);");
-                    add("vec3  viewLightVec;");
-                    add("float dotN;");
-                    add("float lightDist;");
-                    add("float attenuation;");
-
-                    var light;
-
-                    for (var i = 0, len = states.lights.lights.length; i < len; i++) {
-
-                        light = states.lights.lights[i];
-
-                        if (light.type === "ambient") {
-                            continue;
-                        }
-
-                        add("viewLightVec = xeo_vViewLightVecAndDist" + i + ".xyz;");
-
-                        if (light.type === "point") {
-
-                            add("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
-
-                            add("lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
-
-                            add("attenuation = 1.0 - (" +
-                                "  xeo_uLightAttenuation" + i + "[0] + " +
-                                "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
-                                "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
-
-                            add("diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
-
-                            add("specularLight += specular * xeo_uLightIntensity" + i +
-                                " * specular * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-xeo_vViewPosition.xyz)), 0.0), shininess) * attenuation;");
-                        }
-
-                        if (light.type === "dir") {
-
-                            add("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
-
-                            add("diffuseLight += dotN * xeo_uLightColor" + i + ";");
-
-                            add("specularLight += specular * xeo_uLightIntensity" + i +
-                                " * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-xeo_vViewPosition.xyz)), 0.0), shininess);");
-                        }
-                    }
-
-                    add("fragColor = vec4(diffuse * diffuseLight, opacity);");
-                    //    add("fragColor = vec4((specularLight + diffuse * (diffuseLight + ambient)) + emissive, opacity);");
-
-
-                } else { // No normals
-                    //add("fragColor = vec4((diffuse.rgb + (emissive * color.rgb)) * (vec3(1.0, 1.0, 1.0) + ambient.rgb), opacity);");
-                    add("fragColor = vec4(diffuse.rgb, opacity);");
-                }
-
-
-            } // if (phongMqterial)
-
-            if (depthTarget) {
-                add("if (xeo_uDepthMode) {");
-                add("  float depth = length(xeo_vViewPosition) / (xeo_uZFar - xeo_uZNear);");
-                add("  const vec4 bias = vec4(1.0 / 255.0, 1.0 / 255.0, 1.0 / 255.0, 0.0);");
-                add("  float r = depth;");
-                add("  float g = fract(r * 255.0);");
-                add("  float b = fract(g * 255.0);");
-                add("  float a = fract(b * 255.0);");
-                add("  vec4 colour = vec4(r, g, b, a);");
-                add("  gl_FragColor = colour - (colour.yzww * bias);");
-                add("} else {");
-                add("  gl_FragColor = fragColor;");
-                add("};");
+                add();
+                add("   gl_FragColor = vec4(diffuse + ambient + emissive, opacity);");
             }
 
             add("}");
@@ -18934,15 +19124,14 @@ var object3 = new XEO.GameObject(scene, {
             return end();
         }
 
-
         // Start fresh program source
         function begin() {
-            src = [""];
+            src = [];
         }
 
         // Append to program source
         function add(txt) {
-            src.push(txt);
+            src.push(txt || "");
         }
 
         // Finish building program source
@@ -19039,12 +19228,12 @@ var object3 = new XEO.GameObject(scene, {
      *
      * @param gl WebGL
      * @param type  Eg. ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER
-     * @param values  WebGL array wrapper
+     * @param data  WebGL array wrapper
      * @param numItems Count of items in array wrapper
      * @param itemSize Size of each item
      * @param usage Eg. STATIC_DRAW
      */
-    XEO.renderer.webgl.ArrayBuffer = function (gl, type, values, numItems, itemSize, usage) {
+    XEO.renderer.webgl.ArrayBuffer = function (gl, type, data, numItems, itemSize, usage) {
 
         /**
          * True when this buffer is allocated and ready to go
@@ -19056,28 +19245,27 @@ var object3 = new XEO.GameObject(scene, {
 
         this.type = type;
 
-        this.itemType = values.constructor == Uint8Array ? gl.UNSIGNED_BYTE :
-            values.constructor == Uint16Array ? gl.UNSIGNED_SHORT :
-                values.constructor == Uint32Array ? gl.UNSIGNED_INT :
+        this.itemType = data.constructor == Uint8Array ? gl.UNSIGNED_BYTE :
+            data.constructor == Uint16Array ? gl.UNSIGNED_SHORT :
+                data.constructor == Uint32Array ? gl.UNSIGNED_INT :
                     gl.FLOAT;
-
-        this.numItems = numItems;
-
-        this.itemSize = itemSize;
 
         this.usage = usage;
 
-        this._allocate(values, numItems);
+        this.length = 0;
+        this.numItems = 0;
+        this.itemSize = itemSize;
+
+        this._allocate(data);
     };
 
     /**
      * Allocates this buffer
      *
-     * @param values
-     * @param numItems
+     * @param data
      * @private
      */
-    XEO.renderer.webgl.ArrayBuffer.prototype._allocate = function (values, numItems) {
+    XEO.renderer.webgl.ArrayBuffer.prototype._allocate = function (data) {
 
         this.allocated = false;
 
@@ -19088,17 +19276,20 @@ var object3 = new XEO.GameObject(scene, {
         }
 
         if (this._handle) {
+
             this.gl.bindBuffer(this.type, this._handle);
-            this.gl.bufferData(this.type, values, this.usage);
+            this.gl.bufferData(this.type, data, this.usage);
             this.gl.bindBuffer(this.type, null);
-            this.numItems = numItems;
-            this.length = values.length;
+
+            this.length = data.length;
+            this.numItems = this.length / this.itemSize;
+
             this.allocated = true;
         }
     };
 
     /**
-     * Updates values within this buffer, reallocating if needed.
+     * Updates data within this buffer, reallocating if needed.
      *
      * @param data
      * @param offset
@@ -19216,11 +19407,14 @@ var object3 = new XEO.GameObject(scene, {
     /**
      * Wrapper for a WebGL program
      *
+     * @param stats Collects runtime statistics
      * @param gl WebGL gl
      * @param vertex Source code for vertex shader
      * @param fragment Source code for fragment shader
      */
-    XEO.renderer.webgl.Program = function (gl, vertex, fragment) {
+    XEO.renderer.webgl.Program = function (stats, gl, vertex, fragment) {
+
+        this.stats = stats;
 
         this.gl = gl;
 
@@ -19353,7 +19547,7 @@ var object3 = new XEO.GameObject(scene, {
 
                 } else {
 
-                    this.uniforms[u_name] = new XEO.renderer.webgl.Uniform(gl, u.type, location);
+                    this.uniforms[u_name] = new XEO.renderer.webgl.Uniform(stats.frame, gl, u.type, location);
                 }
             }
         }
@@ -19521,8 +19715,8 @@ var object3 = new XEO.GameObject(scene, {
 
     XEO.renderer.webgl.RenderBuffer.prototype._touch = function () {
 
-        var width = this.canvas.width;
-        var height = this.canvas.height;
+        var width = this.canvas.canvas.width;
+        var height = this.canvas.canvas.height;
 
         if (this.buffer) {
 
@@ -19985,7 +20179,7 @@ var object3 = new XEO.GameObject(scene, {
 
     "use strict";
 
-    XEO.renderer.webgl.Uniform = function (gl, type, location) {
+    XEO.renderer.webgl.Uniform = function (renderStats, gl, type, location) {
 
         var func = null;
 
@@ -19995,138 +20189,165 @@ var object3 = new XEO.GameObject(scene, {
 
             func = function (v) {
                 if (value === v) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform1i(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.BOOL_VEC2) {
 
             func = function (v) {
                 if (value !== null && value[0] === v[0] && value[1] === v[1]) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform2iv(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.BOOL_VEC3) {
 
             func = function (v) {
                 if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2]) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform3iv(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.BOOL_VEC4) {
 
             func = function (v) {
                 if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2] && value[3] === v[3]) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform4iv(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.INT) {
 
             func = function (v) {
                 if (value === v) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform1iv(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.INT_VEC2) {
 
             func = function (v) {
                 if (value !== null && value[0] === v[0] && value[1] === v[1]) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform2iv(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.INT_VEC3) {
 
             func = function (v) {
                 if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2]) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform3iv(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.INT_VEC4) {
 
             func = function (v) {
                 if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2] && value[3] === v[3]) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform4iv(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.FLOAT) {
 
             func = function (v) {
                 if (value === v) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform1f(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.FLOAT_VEC2) {
 
             func = function (v) {
                 if (value !== null && value[0] === v[0] && value[1] === v[1]) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform2fv(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.FLOAT_VEC3) {
 
             func = function (v) {
                 if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2]) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform3fv(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.FLOAT_VEC4) {
 
             func = function (v) {
                 if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2] && value[3] === v[3]) {
+                    renderStats.setUniformCacheHits++;
                     return;
                 }
                 value = v;
                 gl.uniform4fv(location, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.FLOAT_MAT2) {
 
             func = function (v) {
                 gl.uniformMatrix2fv(location, gl.FALSE, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.FLOAT_MAT3) {
 
             func = function (v) {
                 gl.uniformMatrix3fv(location, gl.FALSE, v);
+                renderStats.setUniform++;
             };
 
         } else if (type === gl.FLOAT_MAT4) {
 
             func = function (v) {
                 gl.uniformMatrix4fv(location, gl.FALSE, v);
+                renderStats.setUniform++;
             };
 
         } else {
@@ -20165,7 +20386,7 @@ var object3 = new XEO.GameObject(scene, {
     /**
      * Initialises the chunk.
      *
-     * @param {String} id Chunk ID
+     * @param {Number} id Chunk ID
      * @param {XEO.renderer.Object} object renderer object to which this chunk belongs
      * @param {XEO.renderer.Program} program Program to render this chunk
      * @param {XEO.renderer.State} state The state rendered by this chunk
@@ -20198,7 +20419,8 @@ var object3 = new XEO.GameObject(scene, {
     XEO.renderer.ChunkFactory = function () {
 
         this._chunks = {};
-        this._chunkIDs = new XEO.utils.Map();
+
+        //this._chunkIDs = new XEO.utils.Map();
 
         this.chunkTypes = XEO.renderer.ChunkFactory.chunkTypes;
     };
@@ -20206,10 +20428,11 @@ var object3 = new XEO.GameObject(scene, {
     /**
      * Sub-classes of {@link XEO.renderer.Chunk} provided by this factory
      */
-    XEO.renderer.ChunkFactory.chunkTypes = {};    // Supported chunk classes, installed by #createChunkType
+    XEO.renderer.ChunkFactory.chunkTypes = {};   // Supported chunk classes, installed by #createChunkType
 
     // Free pool of unused XEO.renderer.Chunk instances
-    XEO.renderer.ChunkFactory._freeChunks = {};    // Free chunk pool for each type
+
+    XEO.renderer.ChunkFactory._freeChunks = {};  // Free chunk pool for each type
 
     /**
      * Creates a chunk type.
@@ -20217,8 +20440,8 @@ var object3 = new XEO.GameObject(scene, {
      * @param params Members to augment the chunk class prototype with
      * @param params.type Type name for the new chunk class
      * @param params.draw Method to render the chunk in draw render
-     * @param params.pick Method to render the chunk in pick render
-     * @param params.drawAndPick Method to render the chunk in both draw and pick renders
+     * @param params.pickObject
+     * @param params.pickPrimitive
      */
     XEO.renderer.ChunkFactory.createChunkType = function (params) {
 
@@ -20229,18 +20452,12 @@ var object3 = new XEO.GameObject(scene, {
         var supa = XEO.renderer.Chunk;
 
         var chunkClass = function () { // Create the class
-
             this.useCount = 0;
-
             this.init.apply(this, arguments);
         };
 
         chunkClass.prototype = new supa();              // Inherit from base class
         chunkClass.prototype.constructor = chunkClass;
-
-        if (params.drawAndPick) {                       // Common method for draw and pick render
-            params.draw = params.pick = params.drawAndPick;
-        }
 
         XEO._apply(params, chunkClass.prototype);   // Augment subclass
 
@@ -20257,17 +20474,13 @@ var object3 = new XEO.GameObject(scene, {
     /**
      * Gets a chunk from this factory.
      */
-    XEO.renderer.ChunkFactory.prototype.getChunk = function (type, object, program, state) {
+    XEO.renderer.ChunkFactory.prototype.getChunk = function (id, type, object, program, state) {
 
         var chunkClass = XEO.renderer.ChunkFactory.chunkTypes[type]; // Check type supported
 
         if (!chunkClass) {
             throw "chunk type not supported: '" + type + "'";
         }
-
-        // Unique ID for our chunk
-
-        var id = this._chunkIDs.addItem();
 
         // Try to recycle a free chunk
 
@@ -20314,9 +20527,8 @@ var object3 = new XEO.GameObject(scene, {
 
         if (--chunk.useCount <= 0) {
 
-          this._chunkIDs.removeItem(chunk.id);
 
-            delete this._chunks[chunk.id];
+          delete this._chunks[chunk.id];
 
             var freeChunks = XEO.renderer.ChunkFactory._freeChunks[chunk.type];
 
@@ -20379,7 +20591,9 @@ var object3 = new XEO.GameObject(scene, {
             }
         },
 
-        drawAndPick: function (frameCtx) {
+        drawPick: function (frameCtx) {
+
+            return;
 
             var uClipMode = (frameCtx.pick) ? this._uClipModePick : this._uClipModeDraw;
             var uClipPlane = (frameCtx.pick) ? this._uClipPlanePick : this._uClipPlaneDraw;
@@ -20431,12 +20645,10 @@ var object3 = new XEO.GameObject(scene, {
         type: "colorBuf",
 
         // Avoid re-application of this chunk after a program switch.
+
         programGlobal: true,
 
-        build: function () {
-        },
-
-        drawAndPick: function (frameCtx) {
+        draw: function (frameCtx) {
 
             if (!frameCtx.transparent) {
 
@@ -20524,9 +20736,10 @@ var object3 = new XEO.GameObject(scene, {
         type: "depthBuf",
 
         // Avoid reapplication of this chunk after a program switch.
+
         programGlobal: true,
 
-        drawAndPick: function (frameCtx) {
+        draw: function (frameCtx) {
 
             var gl = this.program.gl;
 
@@ -20570,9 +20783,6 @@ var object3 = new XEO.GameObject(scene, {
 
     "use strict";
 
-    /**
-     *
-     */
     XEO.renderer.ChunkFactory.createChunkType({
 
         type: "draw",
@@ -20581,51 +20791,55 @@ var object3 = new XEO.GameObject(scene, {
         // we track the ID of each chunk in order to avoid redundantly re-applying
         // the same chunk. We don't want that for draw chunks however, because
         // they contain GL drawElements calls, which we need to do for each object.
+
         unique: true,
 
         build: function () {
-
-            this._depthModeDraw = this.program.draw.getUniform("xeo_uDepthMode");
-
-            this._depthModePick = this.program.pick.getUniform("xeo_uDepthMode");
-
-            this._uPickColor = this.program.pick.getUniform("xeo_uPickColor");
+            this.uPickColorObject = this.program.pickObject.getUniform("xeo_uPickColor");
         },
 
-        drawAndPick: function (frameCtx) {
+        draw: function (frameCtx) {
 
             var state = this.state;
+            var gl = this.program.gl;
+            
+            if (state.indices) {
+                gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+                frameCtx.drawElements++;
+            }
+        },
+        
+        pickObject: function (frameCtx) {
 
+            var state = this.state;
             var gl = this.program.gl;
 
-            if (frameCtx.pick) {
+            if (this.uPickColorObject) {
 
-                // TODO: Only set pick color when depthMode === false/0?
+                frameCtx.pickObjects[frameCtx.pickIndex] = this.object;
 
-                if (this._uPickColor) {
+                var b = frameCtx.pickIndex >> 16 & 0xFF;
+                var g = frameCtx.pickIndex >> 8 & 0xFF;
+                var r = frameCtx.pickIndex & 0xFF;
 
-                    frameCtx.pickObjects[frameCtx.pickIndex++] = this.object;
+                this.uPickColorObject.setValue([r / 255, g / 255, b / 255, 0]);
 
-                    var b = frameCtx.pickIndex >> 16 & 0xFF;
-                    var g = frameCtx.pickIndex >> 8 & 0xFF;
-                    var r = frameCtx.pickIndex & 0xFF;
-
-                    this._uPickColor.setValue([r / 255, g / 255, b / 255]);
-                }
-
-                if (this._depthModeDraw) {
-                    this._depthModePick.setValue(frameCtx.depthMode);
-                }
-
-            } else {
-
-                if (this._depthModePick) {
-                this._depthModeDraw.setValue(frameCtx.depthMode);
-                }
+                frameCtx.pickIndex++
             }
 
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+                frameCtx.drawElements++;
+            }
+        },
+
+        pickPrimitive: function () {
+            
+            var state = this.state;
+            var gl= this.program.gl;
+            
+            if (state.pickIndices) {
+                gl.drawElements(state.primitive, state.pickIndices.numItems, state.pickIndices.itemType, 0);
             }
         }
     });
@@ -20645,16 +20859,18 @@ var object3 = new XEO.GameObject(scene, {
         build: function () {
 
             var draw = this.program.draw;
-
             this._aPositionDraw = draw.getAttribute("xeo_aPosition");
             this._aNormalDraw = draw.getAttribute("xeo_aNormal");
             this._aUVDraw = draw.getAttribute("xeo_aUV");
             this._aTangentDraw = draw.getAttribute("xeo_aTangent");
             this._aColorDraw = draw.getAttribute("xeo_aColor");
 
-            var pick = this.program.pick;
+            var pickObject = this.program.pickObject;
+            this._aPositionPickObject = pickObject.getAttribute("xeo_aPosition");
 
-            this._aPositionPick = pick.getAttribute("xeo_aPosition");
+            var pickPrimitive = this.program.pickPrimitive;
+            this._aPositionPickPrimitive = pickPrimitive.getAttribute("xeo_aPosition");
+            this._aColorPickPrimitive = pickPrimitive.getAttribute("xeo_aColor");
         },
 
         draw: function (frameCtx) {
@@ -20663,24 +20879,45 @@ var object3 = new XEO.GameObject(scene, {
 
             if (this._aPositionDraw) {
                 this._aPositionDraw.bindFloatArrayBuffer(state.positions);
+                frameCtx.bindArray++;
             }
 
             if (this._aNormalDraw) {
                 this._aNormalDraw.bindFloatArrayBuffer(state.normals);
+                frameCtx.bindArray++;
             }
 
             if (this._aUVDraw) {
                 this._aUVDraw.bindFloatArrayBuffer(state.uv);
+                frameCtx.bindArray++;
             }
 
             if (this._aColorDraw) {
                 this._aColorDraw.bindFloatArrayBuffer(state.colors);
+                frameCtx.bindArray++;
             }
 
             if (this._aTangentDraw) {
 
-                // Lazy-compute tangents
-                //    this._aTangentDraw.bindFloatArrayBuffer(state2.tangentBuf || state2.getTangentBuf());
+                // Tangents array is lazy-built from UVs and normals,
+                // now that we know that we need it
+
+                this._aTangentDraw.bindFloatArrayBuffer(state.getTangents());
+                frameCtx.bindArray++;
+            }
+
+            if (state.indices) {
+                state.indices.bind();
+                frameCtx.bindArray++;
+            }
+        },
+
+        pickObject: function () {
+
+            var state = this.state;
+
+            if (this._aPositionPickObject) {
+                this._aPositionPickObject.bindFloatArrayBuffer(state.positions);
             }
 
             if (state.indices) {
@@ -20688,16 +20925,25 @@ var object3 = new XEO.GameObject(scene, {
             }
         },
 
-        pick: function () {
+        pickPrimitive: function () {
 
             var state = this.state;
 
-            if (this._aPositionPick) {
-                this._aPositionPick.bindFloatArrayBuffer(state.positions);
+            // Arrays for primitive-picking are lazy-built
+            // now that we know we need them
+
+            if (this._aPositionPickPrimitive) {
+                this._aPositionPickPrimitive.bindFloatArrayBuffer(state.getPickPositions());
             }
 
-            if (state.indices) {
-                state.indices.bind();
+            if (this._aColorPickPrimitive) {
+                this._aColorPickPrimitive.bindFloatArrayBuffer(state.getPickColors());
+            }
+
+            var pickIndices = state.getPickIndices();
+
+            if (pickIndices) {
+                pickIndices.bind();
             }
         }
     });
@@ -20732,7 +20978,7 @@ var object3 = new XEO.GameObject(scene, {
 
                     case "ambient":
                         this._uLightAmbientColor[i] = program.draw.getUniform("xeo_uLightAmbientColor");
-                        this._uLightAmbientIntensity[i] = program.draw.getUniform("xeo_uLightAmbientIntensity" + i);
+                        this._uLightAmbientIntensity[i] = program.draw.getUniform("xeo_uLightAmbientIntensity");
                         break;
 
                     case "dir":
@@ -20818,42 +21064,35 @@ var object3 = new XEO.GameObject(scene, {
         type: "modelTransform",
 
         build: function () {
-
-            var draw = this.program.draw;
-
-            this._uModelMatrixDraw = draw.getUniform("xeo_uModelMatrix");
-            this._uModelNormalMatrixDraw = draw.getUniform("xeo_uModelNormalMatrix");
-
-            var pick = this.program.pick;
-
-            this._uModelMatrixPick = pick.getUniform("xeo_uModelMatrix");
+            this._uModelMatrixDraw = this.program.draw.getUniform("xeo_uModelMatrix");
+            this._uModelNormalMatrixDraw = this.program.draw.getUniform("xeo_uModelNormalMatrix");
+            this._uModelMatrixPickObject = this.program.pickObject.getUniform("xeo_uModelMatrix");
+            this._uModelMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uModelMatrix");
         },
 
         draw: function () {
-
-            var gl = this.program.gl;
-
             if (this._uModelMatrixDraw) {
                 this._uModelMatrixDraw.setValue(this.state.matrix);
             }
-
             if (this._uModelNormalMatrixDraw) {
                 this._uModelNormalMatrixDraw.setValue(this.state.normalMatrix);
             }
         },
 
-        pick: function () {
+        pickObject: function () {
+            if (this._uModelMatrixPickObject) {
+                this._uModelMatrixPickObject.setValue(this.state.matrix);
+            }
+        },
 
-            var gl = this.program.gl;
-
-            if (this._uModelMatrixPick) {
-                this._uModelMatrixPick.setValue(this.state.matrix);
+        pickPrimitive: function () {
+            if (this._uModelMatrixPickPrimitive) {
+                this._uModelMatrixPickPrimitive.setValue(this.state.matrix);
             }
         }
     });
 
-})();
-;(function () {
+})();;(function () {
 
     "use strict";
 
@@ -20862,17 +21101,9 @@ var object3 = new XEO.GameObject(scene, {
         type: "modes",
 
         build: function () {
-
-            var draw = this.program.draw;
-
-            this._uModesClippingDraw = draw.getUniform("xeo_uModesClipping");
-
-            var pick = this.program.pick;
-
-            this._uModesClippingPick = pick.getUniform("xeo_uModesClipping");
         },
 
-        drawAndPick: function (frameCtx) {
+        draw: function (frameCtx) {
 
             var state = this.state;
             var gl = this.program.gl;
@@ -20880,14 +21111,11 @@ var object3 = new XEO.GameObject(scene, {
             var backfaces = state.backfaces;
 
             if (frameCtx.backfaces !== backfaces) {
-
                 if (backfaces) {
                     gl.disable(gl.CULL_FACE);
-
                 } else {
                     gl.enable(gl.CULL_FACE);
                 }
-
                 frameCtx.backfaces = backfaces;
             }
 
@@ -20900,52 +21128,92 @@ var object3 = new XEO.GameObject(scene, {
 
                 if (frontface) {
                     gl.frontFace(gl.CCW);
-
                 } else {
                     gl.frontFace(gl.CW);
                 }
-
                 frameCtx.frontface = frontface;
             }
 
             var transparent = state.transparent;
 
             if (frameCtx.transparent !== transparent) {
-
                 if (!frameCtx.pick) {
-
                     if (transparent) {
 
                         // Entering a transparency bin
 
                         gl.enable(gl.BLEND);
                         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
                         frameCtx.blendEnabled = true;
-
                     } else {
 
                         // Leaving a transparency bin
 
                         gl.disable(gl.BLEND);
-
                         frameCtx.blendEnabled = false;
                     }
                 }
-
                 frameCtx.transparent = transparent;
             }
+        },
 
-            if (frameCtx.pick) {
+        pickObject: function (frameCtx) {
 
-                if (this._uModesClippingPick) {
-                    this._uModesClippingPick.setValue(state.clipping);
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
                 }
+                frameCtx.backfaces = backfaces;
+            }
 
-            } else {
-                if (this._uModesClippingDraw) {
-                    this._uModesClippingDraw.setValue(state.clipping);
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+
+                // frontface is boolean for speed,
+                // true == "ccw", false == "cw"
+
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
                 }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickPrimitive: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+
+                // frontface is boolean for speed,
+                // true == "ccw", false == "cw"
+
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
             }
         }
     });
@@ -20973,14 +21241,14 @@ var object3 = new XEO.GameObject(scene, {
                 this._uMaterialColorMapMatrix = draw.getUniform("xeo_uMaterialColorMapMatrix");
             }
             
-            this._uMaterialEmissive = draw.getUniform("xeo_uMaterialEmissive");
+            this._uMaterialEmissive = draw.getUniform("xeo_uEmissive");
 
             if (state.emissiveMap) {
-                this._uMaterialEmissiveMap = draw.getUniform("xeo_uMaterialEmissiveMap");
+                this._uEmissiveMap = draw.getUniform("xeo_uMaterialEmissiveMap");
                 this._uMaterialEmissiveMapMatrix = draw.getUniform("xeo_uMaterialEmissiveMapMatrix");
             }
 
-            this._uMaterialOpacity = draw.getUniform("xeo_uMaterialOpacity");
+            this._uOpacity = draw.getUniform("xeo_uOpacity");
 
             if (state.opacityMap) {
                 this._uMaterialOpacityMap = draw.getUniform("xeo_uMaterialOpacityMap");
@@ -20999,7 +21267,7 @@ var object3 = new XEO.GameObject(scene, {
                 this._uMaterialNormalMapMatrix = draw.getUniform("xeo_uMaterialNormalMapMatrix");
             }
 
-            this._uMaterialSpecular = draw.getUniform("xeo_uMaterialSpecular");
+            this._uMaterialSpecular = draw.getUniform("xeo_uSpecular");
             
             if (state.specularMap) {
                 this._uMaterialSpecularMap = draw.getUniform("xeo_uMaterialSpecularMap");
@@ -21039,9 +21307,9 @@ var object3 = new XEO.GameObject(scene, {
                 this._uMaterialEmissive.setValue(state.emissive);
             }
 
-            if (this._uMaterialEmissiveMap) {
+            if (this._uEmissiveMap) {
 
-                draw.bindTexture(this._uMaterialEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
 
                 if (this._uMaterialEmissiveMapMatrix) {
                     this._uMaterialEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
@@ -21050,8 +21318,8 @@ var object3 = new XEO.GameObject(scene, {
 
             // Opacity 
 
-            if (this._uMaterialOpacity) {
-                this._uMaterialOpacity.setValue(state.opacity);
+            if (this._uOpacity) {
+                this._uOpacity.setValue(state.opacity);
             }
             
             if (this._uMaterialOpacityMap) {
@@ -21128,11 +21396,11 @@ var object3 = new XEO.GameObject(scene, {
 
             // Blinn-Phong base material
 
-            this._uMaterialDiffuse = draw.getUniform("xeo_uDiffuse");
-            this._uMaterialSpecular = draw.getUniform("xeo_uMaterialSpecular");
-            this._uMaterialEmissive = draw.getUniform("xeo_uMaterialEmissive");
-            this._uMaterialOpacity = draw.getUniform("xeo_uMaterialOpacity");
-            this._uMaterialShininess = draw.getUniform("xeo_uMaterialShininess");
+            this._uDiffuse = draw.getUniform("xeo_uDiffuse");
+            this._uSpecular = draw.getUniform("xeo_uSpecular");
+            this._uEmissive = draw.getUniform("xeo_uEmissive");
+            this._uOpacity = draw.getUniform("xeo_uOpacity");
+            this._uShininess = draw.getUniform("xeo_uShininess");
 
             this._uPointSize = draw.getUniform("xeo_uPointSize");
             
@@ -21214,31 +21482,31 @@ var object3 = new XEO.GameObject(scene, {
 
             // Diffuse color
 
-            if (this._uMaterialDiffuse) {
-                this._uMaterialDiffuse.setValue(state.diffuse);
+            if (this._uDiffuse) {
+                this._uDiffuse.setValue(state.diffuse);
             }
 
             // Specular color
 
-            if (this._uMaterialSpecular) {
-                this._uMaterialSpecular.setValue(state.specular);
+            if (this._uSpecular) {
+                this._uSpecular.setValue(state.specular);
             }
 
             // Emissive color
 
-            if (this._uMaterialEmissive) {
-                this._uMaterialEmissive.setValue(state.emissive);
+            if (this._uEmissive) {
+                this._uEmissive.setValue(state.emissive);
             }
 
             // Opacity
 
-            if (this._uMaterialOpacity) {
-                this._uMaterialOpacity.setValue(state.opacity);
+            if (this._uOpacity) {
+                this._uOpacity.setValue(state.opacity);
             }
 
 
-            if (this._uMaterialShininess) {
-                this._uMaterialShininess.setValue(state.shininess);
+            if (this._uShininess) {
+                this._uShininess.setValue(state.shininess);
             }
 
             if (frameCtx.lineWidth != state.lineWidth) {
@@ -21259,6 +21527,7 @@ var object3 = new XEO.GameObject(scene, {
             if (state.diffuseMap && state.diffuseMap.texture) {
 
                 draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
 
                 if (this._uDiffuseMapMatrix) {
                     this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
@@ -21270,6 +21539,7 @@ var object3 = new XEO.GameObject(scene, {
             if (state.specularMap && state.specularMap.texture) {
 
                 draw.bindTexture(this._uSpecularMap, state.specularMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
 
                 if (this._uSpecularMapMatrix) {
                     this._uSpecularMapMatrix.setValue(state.specularMap.matrix);
@@ -21281,6 +21551,7 @@ var object3 = new XEO.GameObject(scene, {
             if (state.emissiveMap && state.emissiveMap.texture) {
 
                 draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
 
                 if (this._uEmissiveMapMatrix) {
                     this._uEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
@@ -21292,6 +21563,7 @@ var object3 = new XEO.GameObject(scene, {
             if (state.opacityMap && state.opacityMap.texture) {
 
                 draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
 
                 if (this._uOpacityMapMatrix) {
                     this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
@@ -21314,6 +21586,7 @@ var object3 = new XEO.GameObject(scene, {
             if (state.bumpMap && state.bumpMap.texture) {
 
                 draw.bindTexture(this._uBumpMap, state.normalMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
 
                 if (this._uBumpMapMatrix) {
                     this._uBumpMapMatrix.setValue(state.normalMap.matrix);
@@ -21435,46 +21708,20 @@ var object3 = new XEO.GameObject(scene, {
         type: "program",
 
         build: function () {
-
-            // Note that "program" chunks are always after "renderTarget" chunks
-
-            this._depthModeDraw = this.program.draw.getUniform("xeo_uDepthMode");
-            this._depthModePick = this.program.pick.getUniform("xeo_uDepthMode");
-            this._rayPickMode = this.program.pick.getUniform("xeo_uRayPickMode");
         },
 
         draw: function (frameCtx) {
-
-            var draw = this.program.draw;
-
-            draw.bind();
-
+            this.program.draw.bind();
             frameCtx.textureUnit = 0;
-
-            if (this._depthModeDraw) {
-                this._depthModeDraw.setValue(frameCtx.depthMode);
-            }
-
-            frameCtx.drawProgram = draw;
+            frameCtx.useProgram++;
         },
 
-        pick: function (frameCtx) {
+        pickObject: function () {
+            this.program.pickObject.bind();
+        },
 
-            var pick = this.program.pick;
-
-            pick.bind();
-
-            this._rayPickMode.setValue(frameCtx.rayPick);
-
-            if (this._depthModePick) {
-                this._depthModePick.setValue(frameCtx.depthMode);
-            }
-
-            frameCtx.textureUnit = 0;
-
-            //for (var i = 0; i < 10; i++) {
-            //    gl.disableVertexAttribArray(i);
-            //}
+        pickPrimitive: function () {
+            this.program.pickPrimitive.bind();
         }
     });
 })();
@@ -21490,58 +21737,27 @@ var object3 = new XEO.GameObject(scene, {
         type: "projTransform",
 
         build: function () {
-
             this._uProjMatrixDraw = this.program.draw.getUniform("xeo_uProjMatrix");
-            this._uZNearDraw = this.program.draw.getUniform("xeo_uZNear");
-            this._uZFarDraw = this.program.draw.getUniform("xeo_uZFar");
-
-            this._uProjMatrixPick = this.program.pick.getUniform("xeo_uProjMatrix");
-            this._uZNearPick = this.program.pick.getUniform("xeo_uZNear");
-            this._uZFarPick = this.program.pick.getUniform("xeo_uZFar");
+            this._uProjMatrixPickObject = this.program.pickObject.getUniform("xeo_uProjMatrix");
+            this._uProjMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uProjMatrix");
         },
 
-        draw: function (frameCtx) {
-
-            var state = this.state;
-
+        draw: function () {
             if (this._uProjMatrixDraw) {
-                this._uProjMatrixDraw.setValue(state.matrix);
+                this._uProjMatrixDraw.setValue(this.state.matrix);
             }
-
-            if (this._uZNearDraw) {
-                this._uZNearDraw.setValue(state.near);
-            }
-
-            if (this._uZFarDraw) {
-                this._uZFarDraw.setValue(state.far);
-            }
-
-            frameCtx.projMatrix = state.matrix;
         },
 
-
-        pick: function (frameCtx) {
-
-            var state = this.state;
-
-            if (this._uProjMatrixPick) {
-                this._uProjMatrixPick.setValue(state.matrix);
+        pickObject: function () {
+            if (this._uProjMatrixPickObject) {
+                this._uProjMatrixPickObject.setValue(this.state.matrix);
             }
+        },
 
-            if (frameCtx.rayPick) {
-
-                // Z-pick pass: feed near and far clip planes into shader
-
-                if (this._uZNearPick) {
-                    this._uZNearPick.setValue(state.near);
-                }
-
-                if (this._uZFarPick) {
-                    this._uZFarPick.setValue(state.far);
-                }
+        pickPrimitive: function () {
+            if (this._uProjMatrixPickPrimitive) {
+                this._uProjMatrixPickPrimitive.setValue(this.state.matrix);
             }
-
-            frameCtx.projMatrix = state.matrix;
         }
     });
 
@@ -21607,23 +21823,17 @@ return;
 
     "use strict";
 
-    /**
-     *
-     */
     XEO.renderer.ChunkFactory.createChunkType({
 
         type: "shader",
 
-        build: function () {
-        },
-
-        drawAndPick: function (frameCtx) {
+        draw: function () {
 
             var params = this.state.params;
 
             if (params) {
 
-                var program = frameCtx.pick ? this.program.pick : this.program.draw;
+                var program = this.program.draw;
                 var name;
 
                 for (name in params) {
@@ -21634,28 +21844,21 @@ return;
             }
         }
     });
-
 })();;(function () {
 
     "use strict";
 
-    /**
-     *
-     */
     XEO.renderer.ChunkFactory.createChunkType({
 
         type: "shaderParams",
 
-        build: function () {
-        },
-
-        drawAndPick: function (frameCtx) {
+        draw: function (frameCtx) {
 
             var params = this.state.params;
 
             if (params) {
 
-                var program = frameCtx.pick ? this.program.pick : this.program.draw;
+                var program = this.program.draw;
                 var name;
 
                 for (name in params) {
@@ -21676,42 +21879,31 @@ return;
         type: "viewTransform",
 
         build: function () {
-
             this._uViewMatrixDraw = this.program.draw.getUniform("xeo_uViewMatrix");
             this._uViewNormalMatrixDraw = this.program.draw.getUniform("xeo_uViewNormalMatrix");
-            this._uEyeDraw = this.program.draw.getUniform("xeo_uEye");
-
-            this._uViewMatrixPick = this.program.pick.getUniform("xeo_uViewMatrix");
+            this._uViewMatrixPickObject = this.program.pickObject.getUniform("xeo_uViewMatrix");
+            this._uViewMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uViewMatrix");
         },
 
-        draw: function (frameCtx) {
-
-            var state = this.state;
-
+        draw: function () {
             if (this._uViewMatrixDraw) {
-                this._uViewMatrixDraw.setValue(state.matrix);
+                this._uViewMatrixDraw.setValue(this.state.matrix);
             }
-
             if (this._uViewNormalMatrixDraw) {
-                this._uViewNormalMatrixDraw.setValue(state.normalMatrix);
+                this._uViewNormalMatrixDraw.setValue(this.state.normalMatrix);
             }
-
-            if (this._uEyeDraw) {
-                this._uEyeDraw.setValue(state.eye);
-            }
-
-            frameCtx.viewMatrix = state.matrix;
         },
 
-        pick: function (frameCtx) {
-
-            var state = this.state;
-
-            if (this._uViewMatrixPick) {
-                this._uViewMatrixPick.setValue(state.matrix);
+        pickObject: function () {
+            if (this._uViewMatrixPickObject) {
+                this._uViewMatrixPickObject.setValue(this.state.matrix);
             }
+        },
 
-            frameCtx.viewMatrix = state.matrix;
+        pickPrimitive: function () {
+            if (this._uViewMatrixPickPrimitive) {
+                this._uViewMatrixPickPrimitive.setValue(this.state.matrix);
+            }
         }
     });
 
@@ -21787,13 +21979,17 @@ return;
 
  Listed below are are the statistics provided by the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
- Don't use these names for your own custom statistics properties.
+ Don't use these names for your own custom statistics.
 
  | Name  | Description|
  |---|---|
- | "numGeometries" | Number of {{#crossLink "Geometry"}}Geometrys{{/crossLink}} in the {{#crossLink "Scene"}}Scene{{/crossLink}} |
- | "numTextures"  | Number of {{#crossLink "Texture"}}Textures{{/crossLink}} in the {{#crossLink "Scene"}}Scene{{/crossLink}}  |
- | "numGameObjects"  | Number of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in the {{#crossLink "Scene"}}Scene{{/crossLink}}  |
+ | "objects" | Number of {{#crossLink "GameObject"}}GameObjects{{/crossLink}}  |
+ | "geometries" | Number of {{#crossLink "Geometry"}}Geometries{{/crossLink}} |
+ | "materials"  | Number of {{#crossLink "Material"}}Materials{{/crossLink}}  |
+ | "scene.textures"  | Number of {{#crossLink "Texture"}}Textures{{/crossLink}}  |
+ | "shaders"  | Number of WebGL shader programs currently allocated  |
+ | "webglRestored"  | Number of times the WebGL context has been restored so far for this {{#crossLink "Scene"}}Scene{{/crossLink}}  |
+ | "renderer.objects"  | Number of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are currently being rendered  |
 
  @class Stats
  @module XEO
@@ -21811,14 +22007,17 @@ return;
 
         _init: function (cfg) {
 
+            var stats = cfg.stats || {};
+
             this.stats = {};
 
-            for (var key in cfg) {
-                if (cfg.hasOwnProperty(key)) {
+            if (navigator && navigator.userAgent) {
+                this.set("browser", navigator.userAgent);
+            }
 
-                    this.stats[key] = cfg[key];
-
-                    this.fire(key, this.stats[key]);
+            for (var key in stats) {
+                if (stats.hasOwnProperty(key)) {
+                    this.set(key, stats[key]);
                 }
             }
         },
@@ -21828,12 +22027,34 @@ return;
         },
 
         /**
-         Increments the value of a statistic property within this Stats.
+         Sets the value of a statistic within this Stats.
 
-         Publishes the new value as an event with the same name as the property.
+         Creates the statistic if it does not yet exist.
+
+         Publishes the new value as an event with the same name as the statistic.
+
+         @method set
+         @param {String} name The statistic name.
+         @param {Number} value Value to set.
+         */
+        set: function (name, value) {
+
+            value = value || 0;
+
+            this.stats[name] = value;
+
+            this.fire(name, this.stats[name]);
+        },
+
+        /**
+         Increments the value of a statistic within this Stats.
+
+         Creates the statistic if it does not yet exist.
+
+         Publishes the new value as an event with the same name as the statistic.
 
          @method inc
-         @param {String} name The statistic property name.
+         @param {String} name The statistic name.
          @param {Number} [count=1] Amount to add.
          */
         inc: function (name, count) {
@@ -21850,12 +22071,12 @@ return;
         },
 
         /**
-         Decrements the value of a statistic property within this Stats.
+         Decrements the value of a statistic within this Stats.
 
-         Publishes the new value as an event with the same name as the property.
+         Publishes the new value as an event with the same name as the statistic.
 
          @method dec
-         @param {String} name The statistic property name.
+         @param {String} name The statistic name.
          @param {Number} [count=1] Amount to subtract.
          */
         dec: function (name, count) {
@@ -21872,12 +22093,12 @@ return;
         },
 
         /**
-         Zeroes the value of a statistic property within this Stats.
+         Zeroes the value of a statistic within this Stats.
 
-         Publishes the new value as an event with the same name as the property.
+         Publishes the new value as an event with the same name as the statistic.
 
          @method zero
-         @param {String} name The statistic property name.
+         @param {String} name The statistic  name.
          */
         zero: function (name) {
 
@@ -22201,6 +22422,290 @@ myTask2.setFailed();
  * @module XEO
  * @submodule spatial
  */;/**
+ A **Boundary2D** is a Canvas-space 2D boundary.
+
+ ## Overview
+
+ A Boundary2D provides its spatial info in these properties:
+
+ <ul>
+ <li>{{#crossLink "Boundary2D/aabb:property"}}{{/crossLink}} - axis-aligned bounding box (AABB)</li>
+ <li>{{#crossLink "Boundary2D/center:property"}}{{/crossLink}} - center coordinate </li>
+ </ul>
+
+ The following components have Boundary2Ds:
+
+ <ul>
+ <li>A {{#crossLink "GameObject"}}{{/crossLink}} provides its Canvas-space boundary via
+ its {{#crossLink "GameObject/canvasBoundary:property"}}{{/crossLink}} property</li>
+ </ul>
+
+ <img src="../../../assets/images/Boundary2D.png"></img>
+
+ ## Example
+
+ A {{#crossLink "GameObject"}}{{/crossLink}} provides its Canvas-space boundary as a Boundary2D that encloses
+ its {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
+ transformation by the GameObject's {{#crossLink "GameObject/transform:property"}}Modelling transform{{/crossLink}}
+ and projection by the matrix of tGameObject's {{#crossLink "GameObject/camera:property"}}Modelling transform{{/crossLink}}.
+
+ In this example we get the boundary and subscribe to updates on it, then animate the modelling transform,
+ which gives us a running update of the moving boundary extents via our update handler.
+
+ ```` javascript
+
+ // Modelling transform
+ var translate = new XEO.Translate({
+    xyz: [-5, 0, 0]
+ });
+
+ // Game object that applies the modelling transform to the Geometry
+ var object = new XEO.GameObject({
+       geometry: myGeometry,
+       transform: translate
+  });
+
+ var canvasBoundary = object.canvasBoundary();
+
+ // Canvas-space AABB
+ var aabb = canvasBoundary.aabb;
+
+ // Canvas-space center
+ var center = canvasBoundary.center;
+
+ // Subscribe to updates to the Boundary2D
+ canvasBoundary.on("updated",
+ function() {
+
+        // Get the updated properties again
+
+        aabb = canvasBoundary.aabb;
+        center = canvasBoundary.center;
+
+        //...
+    });
+
+ // Animate the modelling transform;
+ // on each tick, this will update the Boundary2D and fire our
+ // handler, enabling us to track the changing boundary.
+
+ var x = 0;
+
+ object.scene.on("tick", function() {
+    translate.xyz: [x, 0, 0];
+    x += 0.5;
+ });
+ ````
+
+ @class Boundary2D
+ @module XEO
+ @submodule spatial
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary2D within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary.
+ @param [cfg.aabb] {Array of Number} Optional initial canvas-space 2D axis-aligned bounding volume (AABB).
+ @param [cfg.center] {Array of Number} Optional initial canvas-space 2D center
+ @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB and matrix.
+ @param [cfg.getOBB] {Function} Optional callback to get new view-space 3D OBB from parent.
+ @param [cfg.getMatrix] {Function} Optional callback to get new projection matrix from parent.
+ @param [cfg.shown] {Boolean} Set true to show a helper DIV that indicates the boundary.
+ @extends Component
+ */
+
+/**
+ * Fired whenever this Boundary2D's {{#crossLink "Boundary2D/abb:property"}}{{/crossLink}} abd {{#crossLink "Boundary2D/center:property"}}{{/crossLink}}.
+ * properties change.
+ * @event updated
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Boundary2D = XEO.Component.extend({
+
+        type: "XEO.Boundary2D",
+
+        _init: function (cfg) {
+
+            // Indicator DIV
+
+            this._div = null;
+            this._shown = false;
+
+            // Cached canvas-space AABB and center
+
+            this._obb = null;
+            this._aabb = cfg.aabb || null;
+            this._center = cfg.center || null;
+
+            // Optional callbacks to lazy-pull
+            // data from owner component
+
+            this._getDirty = cfg.getDirty;
+            this._getOBB = cfg.getOBB;
+            this._getMatrix = cfg.getMatrix;
+
+            this.shown = cfg.shown;
+        },
+
+        _props: {
+
+            /**
+             * 2D Canvas-space axis-aligned bounding box (AABB).
+             *
+             * @property aabb
+             * @final
+             * @type {*}
+             */
+            aabb: {
+
+                get: function () {
+
+                    if (this._getDirty()) {
+                        this._build();
+                    }
+
+                    return this._aabb;
+                }
+            },
+
+            /**
+             * 2D Canvas-space center point.
+             *
+             * @property center
+             * @final
+             * @type {Array of Number}
+             */
+            center: {
+
+                get: function () {
+
+                    if (this._getDirty()) {
+                        this._build();
+                    }
+
+                    return this._center;
+                }
+            },
+
+            /**
+             * When true, shows a helper DIV that indicates the boundary.
+             *
+             * @property shown
+             * @type {Boolean}
+             */
+            shown: {
+
+                set: function (value) {
+
+                    if (value === this._shown) {
+                        return;
+                    }
+
+                    if (value) {
+                        if (!this._div) {
+
+                            var body = document.getElementsByTagName("body")[0];
+                            var div = document.createElement('div');
+
+                            var style = div.style;
+                            style.position = "absolute";
+                            style.padding = "10px";
+                            style.margin = "0";
+                            style.background = "green";
+                            style.opacity = 0.4;
+                            style.border="1px black solid";
+                            style["z-index"] = "1000";
+
+                            body.appendChild(div);
+
+                            var self = this;
+
+                            this.on("updated",
+                                function () {
+
+                                    var aabb = self.aabb;
+
+                                    div.style.left = aabb.xmin + "px";
+                                    div.style.top = aabb.ymin + "px";
+                                    div.style.width = (aabb.xmax - aabb.xmin) + "px";
+                                    div.style.height = (aabb.ymax - aabb.ymin) + "px";
+                                });
+
+                            this._div = div;
+                        }
+                    } else {
+                        if (this._div) {
+                            this._div.parentNode.removeChild(this._div);
+                            this._div = null;
+                        }
+                    }
+
+                    this._shown = value;
+
+                    /**
+                     * Fired whenever this Boundary2d's
+                     * {{#crossLink "Boundary2d/shown:property"}}{{/crossLink}} property changes.
+                     * @event shown
+                     * @param value The property's new value
+                     */
+                    this.fire("shown", this._shown);
+                },
+
+                get: function () {
+                    return this._shown;
+                }
+            }
+        },
+
+        // Lazy (re)builds the obb, aabb and center.
+
+        _build: function () {
+
+            var math = XEO.math;
+
+            var canvas = this.scene.canvas.canvas;
+            var width = canvas.width;
+            var height = canvas.height;
+
+            if (!this._obb) {
+
+                // Lazy-allocate
+
+                this._obb = [];
+
+                this._aabb = {
+                    xmin: 0, ymin: 0,
+                    xmax: 0, ymax: 0
+                };
+
+                this._center = [0, 0];
+            }
+
+            var obb = this._getOBB();
+            var matrix = this._getMatrix();
+
+            if (obb && matrix) {
+
+                math.transformPoints3(matrix, obb, this._obb);
+                math.points3ToAABB2(this._obb, this._aabb);
+                math.AABB2ToCanvas(this._aabb, width, height);
+                math.getAABB2Center(this._aabb, this._center);
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                aabb: this.aabb,
+                center: this.center
+            };
+        }
+    });
+
+})();
+;/**
  A **Boundary3D** provides the axis-aligned and object-aligned extents of its owner component.
 
  ## Overview
@@ -22235,23 +22740,22 @@ myTask2.setFailed();
  which gives us a running update of the moving boundary extents via our update handler.
 
  ```` javascript
- var scene = new XEO.Scene();
 
  // Geometry
- var geometry = new XEO.Geometry(myScene, {...});
+ var geometry = new XEO.Geometry();
 
  // Modelling transform
- var translate = new XEO.Translate(scene, {
+ var translate = new XEO.Translate({
     xyz: [-5, 0, 0]
  });
 
  // Game object that applies the modelling transform to the Geometry
- var object = new XEO.GameObject(myScene, {
+ var object = new XEO.GameObject({
        geometry: myGeometry,
        transform: translate
   });
 
- var worldBoundary = object.worldBoundary();
+ var worldBoundary = object.worldBoundary;
 
  // World-space OBB
  var obb = worldBoundary.obb;
@@ -22264,7 +22768,7 @@ myTask2.setFailed();
 
  // Subscribe to updates to the Boundary3D
  worldBoundary.on("updated",
- function() {
+    function() {
 
         // Get the updated properties again
 
@@ -22295,6 +22799,13 @@ myTask2.setFailed();
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary.
+ @param [cfg.obb] {Array of Number} Optional initial 3D object-aligned bounding volume (OBB).
+ @param [cfg.aabb] {Array of Number} Optional initial 3D axis-aligned bounding volume (AABB).
+ @param [cfg.center] {Array of Number} Optional initial 3D center
+ @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB, positions or transform matrix.
+ @param [cfg.getOBB] {Function} Optional callback to get new OBB from parent.
+ @param [cfg.getMatrix] {Function} Optional callback to get new transform matrix from parent.
+ @param [cfg.getPositions] {Function} Optional callback to get new positions from parent.
  @extends Component
  */
 
@@ -22314,28 +22825,29 @@ myTask2.setFailed();
 
         _init: function (cfg) {
 
+            // Cached bounding boxes (oriented and axis-aligned) 
+
+            this._obb = cfg.obb || null;
+            this._aabb = cfg.aabb || null;
+
+            // Cached center point
+
+            this._center = cfg.center || null;
+
             // Owner injected callbacks to provide
             // resources on lazy-rebuild
 
             this._getDirty = cfg.getDirty;
             this._getOBB = cfg.getOBB;
+            this._getAABB = cfg.getAABB;
             this._getMatrix = cfg.getMatrix;
             this._getPositions = cfg.getPositions;
-
-            // Cached bounding boxes (oriented and axis-aligned) 
-
-            this._obb = null;
-            this._aabb = null;
-
-            // Cached center point
-
-            this._center = null;
         },
 
         _props: {
 
             /**
-             * World-space oriented bounding box (OBB).
+             * 3D oriented bounding box (OBB).
              *
              * @property obb
              * @final
@@ -22354,7 +22866,7 @@ myTask2.setFailed();
             },
 
             /**
-             * World-space axis-aligned bounding box (AABB).
+             * 3D axis-aligned bounding box (AABB).
              *
              * @property aabb
              * @final
@@ -22373,7 +22885,7 @@ myTask2.setFailed();
             },
 
             /**
-             * World-space center point.
+             * 3D center point.
              *
              * @property center
              * @final
@@ -22392,23 +22904,26 @@ myTask2.setFailed();
             }
         },
 
-
-        // Lazy (re)builds the public
-        // properties of this Boundary3D
+        // (Re)builds the obb, aabb and center.
 
         _build: function () {
 
+            var math = XEO.math;
+
+            // Lazy-allocate
+
             if (!this._obb) {
-
-                // Lazy-allocate
-
                 this._obb = [];
+            }
 
+            if (!this._aabb) {
                 this._aabb = {
                     xmin: 0, ymin: 0, zmin: 0,
                     xmax: 0, ymax: 0, zmax: 0
                 };
+            }
 
+            if (!this._center) {
                 this._center = [0, 0, 0];
             }
 
@@ -22427,8 +22942,8 @@ myTask2.setFailed();
                 this._aabb.ymax = aabb.ymax;
                 this._aabb.zmax = aabb.zmax;
 
-                XEO.math.AABB3ToOBB3(this._aabb, this._obb);
-                XEO.math.getAABBCenter(this._aabb, this._center);
+                math.AABB3ToOBB3(this._aabb, this._obb);
+                math.getAABBCenter(this._aabb, this._center);
 
                 return;
             }
@@ -22452,22 +22967,23 @@ myTask2.setFailed();
                     // Transform OOBB by matrix,
                     // derive AABB and center
 
-                    XEO.math.positions3ToAABB3(positions, this._aabb);
-                    XEO.math.AABB3ToOBB3(this._aabb, this._obb);
-                    XEO.math.transformPoints3(matrix, this._obb);
-                    XEO.math.points3ToAABB3(this._obb, this._aabb);
-                    XEO.math.getAABBCenter(this._aabb, this._center);
+                    math.positions3ToAABB3(positions, this._aabb);
+                    math.AABB3ToOBB3(this._aabb, this._obb);
+                    math.transformPoints3(matrix, this._obb);
+                    math.points3ToAABB3(this._obb, this._aabb);
+                    math.getAABBCenter(this._aabb, this._center);
 
-                } else {
+                    return;
 
-                    // No transform matrix
-
-                    XEO.math.positions3ToAABB3(positions, this._aabb);
-                    XEO.math.AABB3ToOBB3(this._aabb, this._obb);
-                    XEO.math.getAABBCenter(this._aabb, this._center);
                 }
 
-                return;
+                // No transform matrix
+
+                math.positions3ToAABB3(positions, this._aabb);
+                math.AABB3ToOBB3(this._aabb, this._obb);
+                math.getAABBCenter(this._aabb, this._center);
+
+                return
             }
 
             var obb = this._getOBB ? this._getOBB() : null;
@@ -22485,24 +23001,33 @@ myTask2.setFailed();
                     // Transform OOBB by matrix,
                     // derive AABB and center
 
-                    XEO.math.transformPoints3(matrix, obb, this._obb);
-                    XEO.math.points3ToAABB3(this._obb, this._aabb);
-                    XEO.math.getAABBCenter(this._aabb, this._center);
+                    math.transformPoints3(matrix, obb, this._obb);
+                    math.points3ToAABB3(this._obb, this._aabb);
+                    math.getAABBCenter(this._aabb, this._center);
 
-                } else {
+                    return;
 
-                    // No transform matrix
-
-                    // Copy OOBB, derive AABB and center
-
-                    for (var i = 0, len = obb.length; i < lenl; i++) {
-                        this._obb[i] = obb[i];
-                    }
-
-                    XEO.math.points3ToAABB3(this._obb, this._aabb);
-                    XEO.math.getAABBCenter(this._aabb, this._center);
                 }
+
+                // No transform matrix
+
+                // Copy OOBB, derive AABB and center
+
+                for (var i = 0, len = obb.length; i < lenl; i++) {
+                    this._obb[i] = obb[i];
+                }
+
+                math.points3ToAABB3(this._obb, this._aabb);
+                math.getAABBCenter(this._aabb, this._center);
             }
+        },
+
+        _getJSON: function () {
+            return {
+                obb: this.obb,
+                aabb: this.aabb,
+                center: this.center
+            };
         }
     });
 
@@ -22520,11 +23045,10 @@ myTask2.setFailed();
  <ul>
  <li>Sub-classes of Transform are: {{#crossLink "Translate"}}{{/crossLink}},
  {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, and {{#crossLink "Quaternion"}}{{/crossLink}}</li>
- <li>Can be connected into hierarchies with other {{#crossLink "Transform"}}Transforms{{/crossLink}} and sub-classes</li>
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} are connected to leaf Transforms
- in the hierarchy, and will be transformed by each Transform on the path up to the
- root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>
+ <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
+ <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Transform.png"></img>
@@ -22532,6 +23056,117 @@ myTask2.setFailed();
  ## Example
 
  TODO
+
+ <img src="../../../assets/images/transformHierarchy.png"></img>
+
+ ````javascript
+
+ // Position of entire table
+
+ var tablePos = new XEO.Translate({
+        xyz: [0, 6, 0]
+    });
+
+ // Orientation of entire table
+
+ var tableRotate = new XEO.Rotate({
+        xyz: [1, 1, 1],
+        angle: 0,
+        parent: tablePos
+    });
+
+ // Red table leg
+
+ var tableLg1 = new XEO.GameObject({
+        transform: new XEO.Scale({
+            xyz: [1, 3, 1],
+            parent: new XEO.Translate({
+                xyz: [-4, -6, -4],
+                parent: tableRotate
+            })
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 0.3, 0.3]
+        })
+    });
+
+ // Green table leg
+
+ var tableLeg2 = new XEO.GameObject({
+        transform: new XEO.Scale({
+            xyz: [1, 3, 1],
+            parent: new XEO.Translate({
+                xyz: [4, -6, -4],
+                parent: tableRotate
+            })
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.3, 1.0, 0.3]
+        })
+    });
+
+ // Blue table leg
+
+ var tableLeg3 = new XEO.GameObject({
+        transform: new XEO.Scale({
+            xyz: [1, 3, 1],
+            parent: new XEO.Translate({
+                xyz: [4, -6, 4],
+                parent: tableRotate
+            })
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.3, 0.3, 1.0]
+        })
+    });
+
+ // Yellow table leg
+
+ var tableLeg4 = new XEO.GameObject({
+        transform: new XEO.Scale({
+            xyz: [1, 3, 1],
+            parent: new XEO.Translate({
+                xyz: [-4, -6, 4],
+                parent: tableRotate
+            })
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1.0, 1.0, 0.0]
+        })
+    });
+
+ // Purple table top
+
+ var tableTop = new XEO.GameObject({
+        transform: new XEO.Scale({
+            xyz: [6, 0.5, 6],
+            parent: new XEO.Translate({
+                xyz: [0, -3, 0],
+                parent: tableRotate
+            })
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1.0, 0.3, 1.0]
+        })
+    });
+
+ // Zoom camera out a bit
+ // Get the Camera from one of the GameObjects
+
+ tableTop.camera.view.zoom(10);
+
+ // Spin the entire table
+
+ var angle = 0;
+
+ scene.on("tick",
+    function () {
+
+        angle += 0.5;
+
+        tableRotate.angle = angle;
+    });
+ ````
 
  @class Transform
  @module XEO
@@ -22543,7 +23178,7 @@ myTask2.setFailed();
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  You only need to supply an ID if you need to be able to find the Transform by ID within the {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Transform.
- @param [cfg.parent] {String|XEO.Transform} ID or instance of a parent Transform within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [cfg.parent] {String|Transform} ID or instance of a parent Transform within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.matrix=[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]] {Array of Number} One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.
  @extends Component
  */
@@ -22556,6 +23191,11 @@ myTask2.setFailed();
         type: "XEO.Transform",
 
         _init: function (cfg) {
+
+            this._leafMatrixDirty = false;
+
+            this._onParentUpdated = null;
+            this._onParentDestroyed = null;
 
             this._state = new XEO.renderer.ModelTransform({
                 matrix: null,
@@ -22580,6 +23220,13 @@ myTask2.setFailed();
 
                 set: function (value) {
 
+                    // Unsubscribe from old parent's events
+
+                    if (this._parent && (!value || value.id !== this._parent.id)) {
+                        this._parent.off(this._onParentUpdated);
+                        this._parent.off(this._onParentDestroyed);
+                    }
+
                     this._parent = value;
 
                     /**
@@ -22588,6 +23235,30 @@ myTask2.setFailed();
                      * @param value The property's new value
                      */
                     this.fire("parent", this._parent);
+
+                    var self = this;
+
+                    var updated = function () {
+
+                        self._leafMatrixDirty = true;
+
+                        /**
+                         * Fired whenever this Transform's {{#crossLink "Transform/leafMatrix:property"}}{{/crossLink}} property changes.
+                         *
+                         * This event does not carry the updated property value. Instead, subscribers will need to read
+                         * that property again to get its updated value (which may be lazy-computed then).
+                         *
+                         * @event updated
+                         */
+                        self.fire("updated", true);
+                    };
+
+                    if (this._parent) {
+                        this._onParentUpdated = this._parent.on("updated", updated);
+                        this._onParentDestroyed = this._parent.on("destroyed", updated);
+                    }
+
+                    updated();
                 },
 
                 get: function () {
@@ -22596,9 +23267,9 @@ myTask2.setFailed();
             },
 
             /**
-             * The elements of this Transform's matrix.
+             * The Transform's local matrix.
              *
-             * Fires an {{#crossLink "Transform/matrix:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Transform/matrix:event"}}{{/crossLink}} event on change.
              *
              * @property matrix
              * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
@@ -22615,56 +23286,129 @@ myTask2.setFailed();
                             0, 0, 0, 1
                         ];
 
-                    this._state.matrix = new Float32Array(value);
+                    if (!this._matrix) {
+                        this._matrix = new Float32Array(value)
+                    } else {
+                        this._matrix.set(value);
+                    }
 
-                    this._state.normalMatrix = new Float32Array(
-                        XEO.math.transposeMat4(
-                            new Float32Array(
-                                XEO.math.inverseMat4(
-                                    this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
-
-                    this._renderer.imageDirty = true;
+                    this._leafMatrixDirty = true;
 
                     /**
                      * Fired whenever this Transform's {{#crossLink "Transform/matrix:property"}}{{/crossLink}} property changes.
                      * @event matrix
                      * @param value The property's new value
                      */
-                    this.fire("matrix", this._state.matrix);
+                    this.fire("matrix", this._matrix);
+
+                    this.fire("updated", true);
                 },
 
                 get: function () {
+                    return this._matrix;
+                }
+            },
+
+
+            /**
+             * Returns the product of all {{#crossLink "Transform/matrix:property"}}{{/crossLink}}'s on Transforms
+             * on the path via {{#crossLink "Transform/parent:property"}}{{/crossLink}} up to the root.
+             *
+             * The value of this property will have a fresh value after each
+             * {{#crossLink "Transform/updated:property"}}{{/crossLink}} event, which is fired whenever any Transform
+             * on the path receives an update for its {{#crossLink "Transform/matrix:property"}}{{/crossLink}} or
+             * {{#crossLink "Transform/matrix:property"}}{{/crossLink}} property.
+             *
+             * @property matrix
+             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             * @type {Array of Number}
+             */
+            leafMatrix: {
+
+                get: function () {
+
+                    if (this._leafMatrixDirty) {
+                        this._buildLeafMatrix();
+                    }
+
                     return this._state.matrix;
                 }
             }
         },
 
-        _compile: function () {                    
-          this._renderer.modelTransform = this._state;
+        _compile: function () {
+            this._renderer.modelTransform = this._state;
+        },
+
+        // This is called if necessary when reading "leafMatrix", to update that property.
+        // It's also called by GameObject when the Transform is the leaf to which the
+        // GameObject is attached, in response to an "updated" event from the Transform.
+
+        _buildLeafMatrix: function () {
+
+            if (!this._leafMatrixDirty) {
+                return;
+            }
+
+            this._state.matrix = this._state.matrix || [];
+
+            if (!this._parent) {
+
+                var m1 = this._matrix;
+                var m2 = this._state.matrix;
+
+                for (var i = 0, len = m1.length; i < len; i++) {
+                    m2[i] = m1[i];
+                }
+
+            } else {
+
+                XEO.math.mulMat4(this._parent.leafMatrix, this._matrix, this._state.matrix);
+            }
+
+            if (!this._state.normalMatrix) {
+                this._state.normalMatrix = new Float32Array(16);
+            }
+
+            // TODO: only compute normal matrix on leaf!
+
+            XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix);
+            XEO.math.transposeMat4(this._state.normalMatrix);
+
+            this._renderer.imageDirty = true;
+
+            this._leafMatrixDirty = false;
         },
 
         _getJSON: function () {
             return {
                 matrix: Array.prototype.slice.call(this._state.matrix)
             };
+        },
+
+        _destroy: function () {
+            if (this._parent) {
+                this._parent.off(this._onParentUpdated);
+                this._parent.off(this._onParentDestroyed);
+            }
         }
     });
 
 })();
 ;/**
 
- A **Rotate** applies a rotation transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Rotate** rotates associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} about an axis vector.
 
  ## Overview
 
  <ul>
  <li>Rotate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
- <li>Can be connected into hierarchies with other {{#crossLink "Transform"}}Transforms{{/crossLink}} and sub-classes</li>
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} are connected to leaf {{#crossLink "Transform"}}Transforms{{/crossLink}}
- in the hierarchy, and will be transformed by each {{#crossLink "Transform"}}Transform{{/crossLink}} on the path up to the
- root, in that order.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>
+ <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
+ <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
+
 
  <img src="../../../assets/images/Rotate.png"></img>
 
@@ -22843,7 +23587,7 @@ myTask2.setFailed();
                 // but that will be rarely be the case, where ormally it would just be the angle that is
                 // continually updated.
 
-                this.matrix = XEO.math.rotationMat4v(this._angle, this._xyz);
+                this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz);
             }
         },
 
@@ -22858,18 +23602,306 @@ myTask2.setFailed();
 })();
 ;/**
 
- A **Translate** applies a translation transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Quaternion** applies a rotation transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+ <li>Quaternion is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
+ <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
+ <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
+ </ul>
+
+ <img src="../../../assets/images/Quaternion.png"></img>
+
+ ## Example
+
+ In this example we have two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
+ Quaternion, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.
+ The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
+
+ ````javascript
+var scene = new XEO.Scene();
+
+var quaternion = new XEO.Quaternion(scene, {
+    xyzw: [0, 0, 0, 1], // Unit quaternion
+});
+
+var translate1 = new XEO.Translate(scene, {
+   parent: quaternion,
+   xyz: [-5, 0, 0] // Translate along -X axis
+});
+
+var translate2 = new XEO.Translate(scene, {
+   parent: quaternion,
+   xyz: [5, 0, 0] // Translate along +X axis
+});
+
+var scale = new XEO.Scale(scene, {
+   parent: translate2,
+   xyz: [1, 2, 1] // Scale x2 on Y axis
+});
+
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+var gameObject1 = new XEO.GameObject(scene, {
+   transform: translate1,
+   geometry: geometry
+});
+
+var gameObject2 = new XEO.GameObject(scene, {
+   transform: scale,
+   geometry: geometry
+});
+ ````
+
+Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+
+Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
+
+````javascript
+var scale2 = new XEO.Scale(scene, {
+   parent: translate1,
+   xyz: [1, 1, 2] // Scale x2 on Z axis
+});
+
+gameObject2.transform = scale2;
+ ````
+
+And just for fun, we'll start spinning the Quaternion:
+
+````javascript
+// Rotate 0.2 degrees about Y-axis on each frame
+scene.on("tick", function(e) {
+    quaternion.rotate([0, 1, 0, 0.2]);
+});
+````
+ @class Quaternion
+ @module XEO
+ @submodule transforms
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Quaternion in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Quaternion.
+ @param [cfg.xyzw=[0,0,0,1]] {Array(Number)} The initial Quaternion elements.
+ @extends Transform
+ */
+(function () {
+
+    "use strict";
+    XEO.Quaternion = XEO.Transform.extend({
+
+        type: "XEO.Quaternion",
+
+        _init: function (cfg) {
+            this._super(cfg);
+            this.xyzw = cfg.xyzw;
+        },
+
+        _props: {
+
+            /**
+             The quaternion elements
+             Fires an {{#crossLink "Quaternion/xyzw:event"}}{{/crossLink}} event on change.
+             @property xyzw
+             @default [0,0,0,1]
+             @type {Array of Number}
+             */
+            xyzw: {
+
+                set: function (value) {
+                    this._xyzw = value || [0, 0, 0, 1];
+//                this.matrix = XEO.math.scalingMat4v(this._xyzw);
+
+                    /**
+                     Fired whenever this Quaternion's {{#crossLink "Quaternion/xyzw:property"}}{{/crossLink}} property changes.
+
+                     @event xyzw
+                     @param value {Array of Number} The property's new value
+                     */
+                    this.fire("xyzw", this._xyzw);
+                },
+
+                get: function () {
+                    return this._xyz;
+                }
+            }
+        },
+
+        /**
+         Rotates this Quaternion.
+         Fires an {{#crossLink "Quaternion/xyzw:event"}}{{/crossLink}} event to notify of update to the Quaternion elements.
+         @method rotate
+         @param {Array of Number} angleAxis Rotation in angle-axis form.
+         */
+        rotate: function (angleAxis) {
+            // TODO
+        },
+
+        _getJSON: function () {
+            return {
+                xyzw: this.xyzw
+            };
+        }
+    });
+})();;/**
+
+ A **Scale** applies a scaling transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+ <li>Scale is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
+ <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
+ <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
+ </ul>
+
+ <<img src="../../../assets/images/Scale.png"></img>
+
+ ## Example
+
+ In this example we have two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
+ {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Translate"}}{{/crossLink}} and Scale transforms.
+ The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
+
+ ````javascript
+var scene = new XEO.Scene();
+
+var rotate = new XEO.Rotate(scene, {
+    xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
+    angle: 30
+});
+
+var translate1 = new XEO.Translate(scene, {
+    parent: rotate,
+    xyz: [-5, 0, 0] // Translate along -X axis
+});
+
+var translate2 = new XEO.Translate(scene, {
+    parent: rotate,
+    xyz: [5, 0, 0] // Translate along +X axis
+});
+
+var scale = new XEO.Scale(scene, {
+    parent: translate2,
+    xyz: [1, 2, 1] // Scale x2 on Y axis
+});
+
+var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+
+var gameObject1 = new XEO.GameObject(scene, {
+    transform: translate1,
+    geometry: geometry
+});
+
+var gameObject2 = new XEO.GameObject(scene, {
+    transform: scale,
+    geometry: geometry
+});
+ ````
+
+Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+
+Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
+
+````javascript
+
+var scale2 = new XEO.Scale(scene, {
+    parent: translate1,
+    xyz: [1, 1, 2] // Scale x2 on Z axis
+});
+
+gameObject2.transform = scale2;
+````
+
+ And just for fun, we'll start spinning the {{#crossLink "Rotate"}}{{/crossLink}}:
+
+````javascript
+// Rotate 0.2 degrees on each frame
+scene.on("tick", function(e) {
+    rotate.angle += 0.2;
+});
+````
+ @class Scale
+ @module XEO
+ @submodule transforms
+ @extends Transform
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Scale = XEO.Transform.extend({
+
+        type: "XEO.Scale",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.xyz = cfg.xyz;
+        },
+
+        _props: {
+
+            /**
+             * Vector indicating a scale factor for each axis.
+             * Fires an {{#crossLink "Scale/xyz:event"}}{{/crossLink}} event on change.
+             * @property xyz
+             * @default [1,1,1]
+             * @type {Array of Number}
+             */
+            xyz: {
+
+                set: function (value) {
+
+                    this._xyz = value || [1, 1, 1];
+
+                    this.matrix = XEO.math.scalingMat4v(this._xyz);
+
+                    /**
+                     Fired whenever this Scale's {{#crossLink "Scale/xyz:property"}}{{/crossLink}} property changes.
+
+                     @event xyz
+                     @param value {Array of Number} The property's new value
+                     */
+                    this.fire("xyz", this._xyz);
+                },
+
+                get: function () {
+                    return this._xyz;
+                }
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                xyz: this.xyz
+            };
+        }
+    });
+
+})();
+;/**
+
+ A **Translate** translates associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
 
  <ul>
 
  <li>Translate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
- <li>Can be connected into hierarchies with other {{#crossLink "Transform"}}Transforms{{/crossLink}} and sub-classes</li>
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} are connected to leaf {{#crossLink "Transform"}}Transforms{{/crossLink}}
- in the hierarchy, and will be transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the
- root, in that order.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>
+ <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
+ <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
+ </ul>
 
  </ul>
 
@@ -23008,165 +24040,23 @@ scene.on("tick", function(e) {
 
 })();
 ;/**
-
- A **Scale** applies a scaling transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
- ## Overview
-
- <ul>
- <li>Scale is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
- <li>Can be connected into hierarchies with other {{#crossLink "Transform"}}Transforms{{/crossLink}} and sub-classes</li>
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} are connected to leaf {{#crossLink "Transform"}}Transforms{{/crossLink}}
- in the hierarchy, and will be transformed by each {{#crossLink "Transform"}}Transform{{/crossLink}} on the path up to the
- root, in that order.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>
- </ul>
-
- <<img src="../../../assets/images/Scale.png"></img>
-
- ## Example
-
- In this example we have two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
- {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Translate"}}{{/crossLink}} and Scale transforms.
- The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
-
- ````javascript
-var scene = new XEO.Scene();
-
-var rotate = new XEO.Rotate(scene, {
-    xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
-    angle: 30
-});
-
-var translate1 = new XEO.Translate(scene, {
-    parent: rotate,
-    xyz: [-5, 0, 0] // Translate along -X axis
-});
-
-var translate2 = new XEO.Translate(scene, {
-    parent: rotate,
-    xyz: [5, 0, 0] // Translate along +X axis
-});
-
-var scale = new XEO.Scale(scene, {
-    parent: translate2,
-    xyz: [1, 2, 1] // Scale x2 on Y axis
-});
-
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
-var gameObject1 = new XEO.GameObject(scene, {
-    transform: translate1,
-    geometry: geometry
-});
-
-var gameObject2 = new XEO.GameObject(scene, {
-    transform: scale,
-    geometry: geometry
-});
- ````
-
-Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
-
-Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
-
-````javascript
-
-var scale2 = new XEO.Scale(scene, {
-    parent: translate1,
-    xyz: [1, 1, 2] // Scale x2 on Z axis
-});
-
-gameObject2.transform = scale2;
-````
-
- And just for fun, we'll start spinning the {{#crossLink "Rotate"}}{{/crossLink}}:
-
-````javascript
-// Rotate 0.2 degrees on each frame
-scene.on("tick", function(e) {
-    rotate.angle += 0.2;
-});
-````
- @class Scale
- @module XEO
- @submodule transforms
- @extends Transform
- */
-(function () {
-
-    "use strict";
-
-    XEO.Scale = XEO.Transform.extend({
-
-        type: "XEO.Scale",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this.xyz = cfg.xyz;
-        },
-
-        _props: {
-
-            /**
-             * Vector indicating a scale factor for each axis.
-             * Fires an {{#crossLink "Scale/xyz:event"}}{{/crossLink}} event on change.
-             * @property xyz
-             * @default [1,1,1]
-             * @type {Array of Number}
-             */
-            xyz: {
-
-                set: function (value) {
-
-                    this._xyz = value || [1, 1, 1];
-
-                    this.matrix = XEO.math.scalingMat4v(this._xyz);
-
-                    /**
-                     Fired whenever this Scale's {{#crossLink "Scale/xyz:property"}}{{/crossLink}} property changes.
-
-                     @event xyz
-                     @param value {Array of Number} The property's new value
-                     */
-                    this.fire("xyz", this._xyz);
-                },
-
-                get: function () {
-                    return this._xyz;
-                }
-            }
-        },
-
-        _getJSON: function () {
-            return {
-                xyz: this.xyz
-            };
-        }
-    });
-
-})();
-;/**
  A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target.
 
  ## Overview
 
-
  <ul>
- <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
- <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
- <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
+    <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
+    <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
+    <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
  </ul>
 
  A target can be:
 
  <ul>
- <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}}</li>,
- <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space
- {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
- <li>specific ````eye````, ````look```` and ````up```` vectors.
+    <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
+    <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
+    {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
+    <li>specific ````eye````, ````look```` and ````up```` positions.</li>
  </ul>
 
  ## Example #1
@@ -23196,7 +24086,6 @@ scene.on("tick", function(e) {
  Flying the CameraFlight from the previous example to specified eye, look and up positions:
 
  ````Javascript
- // Fly to a target eye, look and up
  cameraFlight.flyTo({
     eye: [-5,-5,-5],
     look: [0,0,0]
@@ -23219,7 +24108,7 @@ scene.on("tick", function(e) {
 
  ## Example #4
 
- Flying the CameraFlight from the previous two examples explicitly to {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
+ Flying the CameraFlight from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
  axis-aligned bounding box:
 
  ````Javascript
@@ -23235,7 +24124,7 @@ scene.on("tick", function(e) {
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg] {*} Fly configuration
+ @param [cfg] {String|Component|Boundary3D|Array of Number|*} Target - see class documentation above.
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
@@ -25330,6 +26219,173 @@ scene.on("tick", function(e) {
 })();
 
 ;/**
+ A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the axis-aligned boundary of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+
+ ## Example
+
+ ````javascript
+
+ ````
+
+ @class BoundaryGeometry
+ @module XEO
+ @submodule helpers
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this BoundaryGeometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoundaryGeometry.
+ @param [cfg.boundary] {Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.BoundaryGeometry = XEO.Geometry.extend({
+
+        type: "XEO.BoundaryGeometry",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.primitive = cfg.primitive || "lines";
+
+            this.positions = [
+                1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
+                -1.0, -1.0, 1.0, -1.0, 1.0, 1.0,
+                1.0, 1.0, -1.0, 1.0, -1.0, -1.0,
+                -1.0, -1.0, -1.0, -1.0, 1.0, -1.0
+            ];
+
+            this.indices = [
+                0, 1, 1, 2, 2, 3, 3, 0, 4,
+                5, 5, 6, 6, 7, 7, 4, 0, 4,
+                1, 5, 2, 6, 3, 7
+            ];
+
+            this.boundary = cfg.boundary;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Boundary3D"}}{{/crossLink}} we are showing.
+             *
+             * Fires a {{#crossLink "BoundaryGeometry/boundary:event"}}{{/crossLink}} event on change.
+             *
+             * @property Boundary3D
+             * @type Boundary3D
+             */
+            boundary: {
+
+                set: function (value) {
+
+                    // Unsubscribe from old boundary's events
+
+                    var oldBoundary = this._children.boundary;
+
+                    if (oldBoundary) {
+                        if ((!value || (value.id !== undefined ? value.id : value) !== oldBoundary.id)) {
+                            oldBoundary.off(this._onBoundaryUpdated);
+                        }
+                    }
+
+                    /**
+                     * Fired whenever this BoundaryGeometry's {{#crossLink "BoundaryGeometry/boundary:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event boundary
+                     * @param value The property's new value
+                     */
+                    this._setChild("boundary", value);
+
+                    var boundary = this._children.boundary;
+
+                    if (boundary) {
+
+                        var self = this;
+
+                        this._onBoundaryUpdated = boundary.on("updated",
+                            function () {
+
+                                var obb = boundary.obb;
+
+
+                                //self.positions = [
+                                //    obb[6][0], obb[6][1], obb[6][2],
+                                //    obb[6][0], obb[6][1], obb[6][2],
+                                //    obb[4][0], obb[4][1], obb[4][2],
+                                //    obb[4][0], obb[3][1], obb[4][2],
+                                //    obb[5][0], obb[3][1], obb[3][2],
+                                //    obb[5][0], obb[4][1], obb[3][2],
+                                //    obb[4][0], obb[4][1], obb[3][2],
+                                //    obb[4][0], obb[3][1], obb[3][2]
+                                //];
+
+                                self.positions = [
+                                    obb[2][0], obb[2][1], obb[4][2],
+                                    obb[2][0], obb[4][1], obb[4][2],
+                                    obb[0][0], obb[4][1], obb[4][2],
+                                    obb[0][0], obb[2][1], obb[4][2],
+                                    obb[2][0], obb[2][1], obb[3][2],
+                                    obb[2][0], obb[4][1], obb[3][2],
+                                    obb[0][0], obb[4][1], obb[3][2],
+                                    obb[0][0], obb[2][1], obb[3][2]
+                                ];
+
+                            //    var aabb = boundary.aabb;
+                            //
+                            //    var xmin = aabb.xmin;
+                            //    var ymin = aabb.ymin;
+                            //    var zmin = aabb.zmin;
+                            //    var xmax = aabb.xmax;
+                            //    var ymax = aabb.ymax;
+                            //    var zmax = aabb.zmax;
+                            //
+                            //    self.positions = [
+                            //        xmax, ymax, zmax,
+                            //        xmax, ymin, zmax,
+                            //        xmin, ymin, zmax,
+                            //        xmin, ymax, zmax,
+                            //        xmax, ymax, zmin,
+                            //        xmax, ymin, zmin,
+                            //        xmin, ymin, zmin,
+                            //        xmin, ymax, zmin
+                            //    ];
+                            });
+                    }
+                },
+
+                get: function () {
+                    return this._children.boundary;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var attr = {};
+
+            if (this._children.boundary) {
+                attr.boundary = this._children.boundary.id;
+            }
+
+            return attr;
+        },
+
+        _destroyed: function () {
+
+            if (this._children.boundary) {
+                this._children.boundary.off(this._onBoundaryUpdated);
+            }
+        }
+    });
+
+})();
+;/**
  A **Torus** defines toroid geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Example
@@ -25769,8 +26825,8 @@ scene.on("tick", function(e) {
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Sphere.
  @param [cfg.radius=1] {Number}
- @param [cfg.heightSegments=8] {Number}
- @param [cfg.widthSegments=6] {Number}
+ @param [cfg.heightSegments=24] {Number}
+ @param [cfg.widthSegments=18] {Number}
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -25810,12 +26866,12 @@ scene.on("tick", function(e) {
             var heightSegments = Math.floor(this._lod * this._heightSegments);
             var widthSegments = Math.floor(this._lod * this._widthSegments);
 
-            if (heightSegments < 6) {
-                heightSegments = 6;
+            if (heightSegments < 18) {
+                heightSegments = 18;
             }
 
-            if (widthSegments < 6) {
-                widthSegments = 6;
+            if (widthSegments < 18) {
+                widthSegments = 18;
             }
 
             var positions = [];
@@ -25989,14 +27045,14 @@ scene.on("tick", function(e) {
              * Fires a {{#crossLink "Sphere/heightSegments:event"}}{{/crossLink}} event on change.
              *
              * @property heightSegments
-             * @default 6
+             * @default 18
              * @type Number
              */
             heightSegments: {
 
                 set: function (value) {
 
-                    value = value || 6;
+                    value = value || 18;
 
                     if (this._heightSegments === value) {
                         return;
@@ -26031,14 +27087,14 @@ scene.on("tick", function(e) {
              * Fires a {{#crossLink "Sphere/widthSegments:event"}}{{/crossLink}} event on change.
              *
              * @property widthSegments
-             * @default 8
+             * @default 24
              * @type Number
              */
             widthSegments: {
 
                 set: function (value) {
 
-                    value = value || 8;
+                    value = value || 24;
 
                     if (this._widthSegments === value) {
                         return;
@@ -26844,6 +27900,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
             this.zSegments = cfg.zSegments;
 
             this.lod = cfg.lod;
+
+            this.autoNormals = cfg.auitoNormals !==false;
         },
 
         _heightmapDirty: function () {
@@ -27898,8 +28956,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
         }
     });
 
-})();;
-/**
+})();;/**
  A **GroupBoundary** configures the WebGL color buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
@@ -27965,6 +29022,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
         _init: function (cfg) {
 
+            this._onUpdated = {};
+
             this.group = cfg.group;
         },
 
@@ -27984,20 +29043,79 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                 set: function (value) {
 
+                    // Unsubscribe from old Group's events
+
+                    var oldGroup = this._children.group;
+
+                    if (oldGroup && (!value || value.id !== oldGroup.id)) {
+
+                        oldGroup.off(this._onAdded);
+                        oldGroup.off(this._onRemoved);
+
+                        oldGroup.iterate(unbind);
+                    }
+
                     /**
                      * Fired whenever this GroupBoundary's  {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
                      *
                      * @event group
                      * @param value The property's new value
                      */
-                    this._setChild("group", value);
+                    var group = this._setChild("group", value);
+
+                    var self = this;
+
+                    if (group) {
+
+                        this._onAdded = group.on("added",
+                            function () {
+                                if (c.worldBoundary) {
+                                    bind(c);
+                                    self._setGroupDirty();
+                                }
+                            });
+
+                        this._onRemoved = group.on("removed",
+                            function (c) {
+                                if (c.worldBoundary) {
+                                    unbind(c);
+                                    self._setGroupDirty();
+                                }
+                            });
+
+                        group.iterate(bind);
+
+                        this._setGroupDirty();
+                    }
+
+                    function bind(c) {
+                        var worldBoundary = c.worldBoundary;
+                        if (!worldBoundary) {
+                            return;
+                        }
+                        self._onUpdated[c.id] = worldBoundary.on("updated",
+                            function () {
+                                self._setGroupDirty();
+                            });
+                    }
+
+                    function unbind(c) {
+                        var worldBoundary = c.worldBoundary;
+                        if (!worldBoundary) {
+                            return;
+                        }
+                        worldBoundary.off(self._onUpdated[c.id]);
+                        delete self._onUpdated[c.id];
+                    }
+
+                    this._setGroupDirty();
                 },
 
                 get: function () {
                     return this._children.group;
                 }
             },
-            
+
             /**
              * World-space 3D boundary.
              *
@@ -28023,16 +29141,16 @@ XEO.PathGeometry = XEO.Geometry.extend({
                                 return self._worldBoundaryDirty;
                             },
 
-                            getOBB: function () {
+                            getAABB: function () {
 
-                                // Calls our Geometry's modelBoundary property,
-                                // lazy-inits the boundary and its obb
+                                if (self._groupDirty) {
 
-                                return self._children.geometry.modelBoundary.obb;
-                            },
+                                    self._buildAABB();
 
-                            getMatrix: function () {
-                                return self._children.transform.matrix;
+                                    self._groupDirty = false;
+                                }
+
+                                return self._aabb;
                             }
                         });
 
@@ -28082,7 +29200,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
                             },
 
                             getMatrix: function () {
-                                return self._children.camera.view.matrix;
+
+                                // TODO:
+                                return self.scene.camera.view.matrix;
                             }
                         });
 
@@ -28099,15 +29219,65 @@ XEO.PathGeometry = XEO.Geometry.extend({
             }
         },
 
+        /**
+         * Canvas-space 2D boundary.
+         *
+         * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+         * this property will be assigned to a fresh {{#crossLink "Boundary2D"}}{{/crossLink}} instance
+         * next time you reference it.
+         *
+         * @property canvasBoundary
+         * @type Boundary2D
+         * @final
+         */
+        canvasBoundary: {
+
+            get: function () {
+
+                if (!this._canvasBoundary) {
+
+                    var self = this;
+
+                    // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
+
+                    this._canvasBoundary = new XEO.Boundary2D(this.scene, {
+
+                        getDirty: function () {
+                            return self._canvasBoundaryDirty;
+                        },
+
+                        getOBB: function () {
+                            return self.viewBoundary.obb; // Lazy-inits!
+                        },
+
+                        getMatrix: function () {
+                            return self.scene.camera.project.matrix;
+                        }
+                    });
+
+                    this._canvasBoundary.on("destroyed",
+                        function () {
+                            self._canvasBoundary = null;
+                        });
+
+                    this._setCanvasBoundaryDirty();
+                }
+
+                return this._canvasBoundary;
+            }
+        },
+
+        _setGroupDirty: function () {
+            this._groupDirty = true;
+            this._setWorldBoundaryDirty();
+        },
+
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
-            this._viewBoundaryDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
             }
-            if (this._viewBoundary) {
-                this._viewBoundary.fire("updated", true);
-            }
+            this._setViewBoundaryDirty();
         },
 
         _setViewBoundaryDirty: function () {
@@ -28115,21 +29285,98 @@ XEO.PathGeometry = XEO.Geometry.extend({
             if (this._viewBoundary) {
                 this._viewBoundary.fire("updated", true);
             }
+            this._setCanvasBoundaryDirty();
         },
-        
+
+        _setCanvasBoundaryDirty: function () {
+            this._canvasBoundaryDirty = true;
+            if (this._canvasBoundary) {
+                this._canvasBoundary.fire("updated", true);
+            }
+        },
+
+        _buildAABB: function () {
+
+            if (!this._aabb) {
+                this._aabb = {
+                    xmin: 0, ymin: 0, zmin: 0,
+                    xmax: 0, ymax: 0, zmax: 0
+                };
+            }
+
+            var xmin = 100000;
+            var ymin = 100000;
+            var zmin = 100000;
+            var xmax = -100000;
+            var ymax = -100000;
+            var zmax = -100000;
+
+            var component;
+            var worldBoundary;
+            var aabb;
+
+            for (var componentId in this.components) {
+                if (this.components.hasOwnProperty(componentId)) {
+
+                    component = this.components[componentId];
+
+                    worldBoundary = component.worldBoundary;
+                    if (worldBoundary) {
+
+                        aabb = worldBoundary.aabb;
+
+                        if (aabb.xmin < xmin) {
+                            xmin = aabb.xmin;
+                        }
+
+                        if (aabb.ymin < ymin) {
+                            ymin = aabb.ymin;
+                        }
+
+                        if (aabb.zmin < zmin) {
+                            zmin = aabb.zmin;
+                        }
+
+                        if (aabb.xmax > xmax) {
+                            xmax = aabb.xmax;
+                        }
+
+                        if (aabb.ymax > ymax) {
+                            ymax = aabb.ymax;
+                        }
+
+                        if (aabb.zmax > zmax) {
+                            zmax = aabb.zmax;
+                        }
+                    }
+                }
+            }
+
+            this._aabb.xmin = xmin;
+            this._aabb.ymin = ymin;
+            this._aabb.zmin = zmin;
+            this._aabb.xmax = xmax;
+            this._aabb.ymax = ymax;
+            this._aabb.zmax = zmax;
+        },
+
         _getJSON: function () {
-            return {
-                
-            };
+            return {};
         },
 
         _destroy: function () {
-            this._state.destroy();
+            this.group = null;
         }
     });
 
-})();
+})
+();
 ;/**
+ * Components to help visualise other components.
+ *
+ * @module XEO
+ * @submodule helpers
+ */;/**
  A **CameraControl** pans, rotates and zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse and keyboard,
  as well as switches it between preset left, right, anterior, posterior, superior and inferior views.
 
@@ -28319,7 +29566,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * @type MousePickObject
              */
             this.mousePickObject = new XEO.MousePickObject(scene, {
-                rayPick: true,
+                pickPrimitive: true,
                 camera: cfg.camera
             });
 
@@ -28354,7 +29601,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             // Handle when nothing is picked
             this.mousePickObject.on("nopick",
                 function (e) {
-                    // alert("Mothing picked");
+                    alert("Mothing picked");
                 });
 
             this.firstPerson = cfg.firstPerson;
@@ -28363,6 +29610,20 @@ XEO.PathGeometry = XEO.Geometry.extend({
         },
 
         _props: {
+
+            //spin: {
+            //
+            //    set: function (value) {
+            //        object.scene.on("tick",
+            //            function () {
+            //
+            //                var view = object.scene.camera.view;
+            //
+            //                view.rotateEyeY(0.6);
+            //                view.rotateEyeX(0.3);
+            //            });
+            //    }
+            //},
 
             /**
              * Flag which indicates whether this CameraControl is in "first person" mode.
@@ -30138,14 +31399,14 @@ TODO
     // We want the 3D World-space coordinates
     // of each location we pick
 
-    rayPick: true
+    pickPrimitive: true
  });
 
  // Handle picked GameObjects
  mousePickObject.on("pick", function(e) {
     var object = e.object;
     var canvasPos = e.canvasPos;
-    var worldPos = e.worldPos;
+    var primitiveIndex = e.primitiveIndex;
  });
 
  // Handle nothing picked
@@ -30162,7 +31423,7 @@ TODO
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickObject.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
+ @param [pickPrimitive=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
  {{#crossLink "GameObject"}}{{/crossLink}}.
  @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickObject is active.
  @extends Component
@@ -30184,7 +31445,7 @@ TODO
 
         _init: function (cfg) {
 
-            this.rayPick = cfg.rayPick;
+            this.pickPrimitive = cfg.pickPrimitive;
 
             this.active = cfg.active !== false;
         },
@@ -30217,7 +31478,7 @@ TODO
                             function (canvasPos) {
 
                                 var hit = self.scene.pick(canvasPos, {
-                                    rayPick: self._rayPick
+                                    pickPrimitive: self._pickPrimitive
                                 });
 
                                 if (hit) {
@@ -30227,12 +31488,13 @@ TODO
                                      * @event picked
                                      * @param {String} objectId The ID of the picked {{#crossLink "GameObject"}}GameObject{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
                                      * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                     * @param {Array of Number} worldPos When {{#crossLink "MousePickObject/rayPick"}}{{/crossLink}} is true,
+                                     * @param {Array of Number} worldPos When {{#crossLink "MousePickObject/pickPrimitive"}}{{/crossLink}} is true,
                                      * provides the World-space coordinate that was ray-picked on the surface of the
                                      * {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
                                      */
                                     self.fire("pick", hit);
 
+                                    console.log(JSON.stringify(hit));
                                 } else {
 
                                     /**
@@ -30266,39 +31528,39 @@ TODO
             },
 
             /**
-             * Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
-             * {{#crossLink "GameObject"}}{{/crossLink}}.
+             * Indicates whether this MousePickObject will try to pick a {{#crossLink "Geometry"}}{{/crossLink}} primitive
+             * whenever it picks a {{#crossLink "GameObject"}}{{/crossLink}}.
              *
-             * When true, this MousePickObject returns the 3D World-space intersection in each
+             * When true, this MousePickObject will try to return the primitive index in a
              * {{#crossLink "MousePickObject/picked:event"}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink "MousePickObject/rayPick:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "MousePickObject/pickPrimitive:event"}}{{/crossLink}} event on change.
              *
-             * @property rayPick
+             * @property pickPrimitive
              * @type Boolean
              */
-            rayPick: {
+            pickPrimitive: {
 
                 set: function (value) {
 
                     value = !!value;
 
-                    if (this._rayPick === value) {
+                    if (this._pickPrimitive === value) {
                         return;
                     }
 
                     this._dirty = false;
 
                     /**
-                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/rayPick:property"}}{{/crossLink}} property changes.
-                     * @event rayPick
+                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/pickPrimitive:property"}}{{/crossLink}} property changes.
+                     * @event pickPrimitive
                      * @param value The property's new value
                      */
-                    this.fire('rayPick', this._rayPick = value);
+                    this.fire('pickPrimitive', this._pickPrimitive = value);
                 },
 
                 get: function () {
-                    return this._rayPick;
+                    return this._pickPrimitive;
                 }
             }
         },
@@ -30306,7 +31568,7 @@ TODO
         _getJSON: function () {
 
             var json = {
-                rayPick: this._rayPick,
+                pickPrimitive: this._pickPrimitive,
                 active: this._active
             };
 
@@ -30595,3 +31857,4 @@ TODO
     });
 
 })();
+XEO.version="0.1.0";
