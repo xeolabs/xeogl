@@ -87,7 +87,7 @@
                     scene.fire("tick3", tickEvent, true);
 
                     // Compile also means "render".
-                    // It only actually "compiles" anything if it needs recomiplation.
+                    // It only actually "compiles" anything if it needs recompilation.
 
                     scene._compile();
                 }
@@ -1517,6 +1517,7 @@
                     programs: 0
                 },
                 frame: {
+                    frameCount: 0,
                     useProgram: 0,
                     setUniform: 0,
                     setUniformCacheHits: 0,
@@ -17144,6 +17145,7 @@ var object3 = new XEO.GameObject(scene, {
             this._doDrawList({                  // Render the draw list
                 clear: (params.clear !== false) // Clear buffers by default
             });
+            this.stats.frame.frameCount++;
             this.imageDirty = false;
         }
     };

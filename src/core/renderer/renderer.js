@@ -558,6 +558,7 @@
             this._doDrawList({                  // Render the draw list
                 clear: (params.clear !== false) // Clear buffers by default
             });
+            this.stats.frame.frameCount++;
             this.imageDirty = false;
         }
     };
