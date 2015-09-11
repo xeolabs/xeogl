@@ -13,7 +13,7 @@
     /**
      * Initialises the chunk.
      *
-     * @param {String} id Chunk ID
+     * @param {Number} id Chunk ID
      * @param {XEO.renderer.Object} object renderer object to which this chunk belongs
      * @param {XEO.renderer.Program} program Program to render this chunk
      * @param {XEO.renderer.State} state The state rendered by this chunk

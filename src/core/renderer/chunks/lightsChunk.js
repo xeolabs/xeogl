@@ -28,7 +28,7 @@
 
                     case "ambient":
                         this._uLightAmbientColor[i] = program.draw.getUniform("xeo_uLightAmbientColor");
-                        this._uLightAmbientIntensity[i] = program.draw.getUniform("xeo_uLightAmbientIntensity" + i);
+                        this._uLightAmbientIntensity[i] = program.draw.getUniform("xeo_uLightAmbientIntensity");
                         break;
 
                     case "dir":

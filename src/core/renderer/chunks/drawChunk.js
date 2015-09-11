@@ -2,9 +2,6 @@
 
     "use strict";
 
-    /**
-     *
-     */
     XEO.renderer.ChunkFactory.createChunkType({
 
         type: "draw",
@@ -13,51 +10,55 @@
         // we track the ID of each chunk in order to avoid redundantly re-applying
         // the same chunk. We don't want that for draw chunks however, because
         // they contain GL drawElements calls, which we need to do for each object.
+
         unique: true,
 
         build: function () {
-
-            this._depthModeDraw = this.program.draw.getUniform("xeo_uDepthMode");
-
-            this._depthModePick = this.program.pick.getUniform("xeo_uDepthMode");
-
-            this._uPickColor = this.program.pick.getUniform("xeo_uPickColor");
+            this.uPickColorObject = this.program.pickObject.getUniform("xeo_uPickColor");
         },
 
-        drawAndPick: function (frameCtx) {
+        draw: function (frameCtx) {
 
             var state = this.state;
+            var gl = this.program.gl;
+            
+            if (state.indices) {
+                gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+                frameCtx.drawElements++;
+            }
+        },
+        
+        pickObject: function (frameCtx) {
 
+            var state = this.state;
             var gl = this.program.gl;
 
-            if (frameCtx.pick) {
+            if (this.uPickColorObject) {
 
-                // TODO: Only set pick color when depthMode === false/0?
+                frameCtx.pickObjects[frameCtx.pickIndex] = this.object;
 
-                if (this._uPickColor) {
+                var b = frameCtx.pickIndex >> 16 & 0xFF;
+                var g = frameCtx.pickIndex >> 8 & 0xFF;
+                var r = frameCtx.pickIndex & 0xFF;
 
-                    frameCtx.pickObjects[frameCtx.pickIndex++] = this.object;
+                this.uPickColorObject.setValue([r / 255, g / 255, b / 255, 0]);
 
-                    var b = frameCtx.pickIndex >> 16 & 0xFF;
-                    var g = frameCtx.pickIndex >> 8 & 0xFF;
-                    var r = frameCtx.pickIndex & 0xFF;
-
-                    this._uPickColor.setValue([r / 255, g / 255, b / 255]);
-                }
-
-                if (this._depthModeDraw) {
-                    this._depthModePick.setValue(frameCtx.depthMode);
-                }
-
-            } else {
-
-                if (this._depthModePick) {
-                this._depthModeDraw.setValue(frameCtx.depthMode);
-                }
+                frameCtx.pickIndex++
             }
 
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+                frameCtx.drawElements++;
+            }
+        },
+
+        pickPrimitive: function () {
+            
+            var state = this.state;
+            var gl= this.program.gl;
+            
+            if (state.pickIndices) {
+                gl.drawElements(state.primitive, state.pickIndices.numItems, state.pickIndices.itemType, 0);
             }
         }
     });

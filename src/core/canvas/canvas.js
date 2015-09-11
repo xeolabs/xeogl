@@ -246,6 +246,10 @@
                             aspect: newHeight / newWidth
                         });
 
+                        var canvasStats = self.scene.stats.canvas;
+                        canvasStats.width = newWidth;
+                        canvasStats.height = newHeight;
+
                         lastWidth = newWidth;
                         lastHeight = newHeight;
 
@@ -276,8 +280,8 @@
             style.float = "left";
             style.left = "0";
             style.top = "0";
-             style.position = "absolute";
-             style["z-index"] = "-10000";
+            style.position = "absolute";
+            style["z-index"] = "-10000";
 
             div.innerHTML += '<canvas id="' + canvasId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0;"></canvas>';
 

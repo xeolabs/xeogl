@@ -7,12 +7,15 @@
     /**
      * @class Vertex and fragment shaders for pick and draw
      *
+     * @param {*} stats Collects runtime statistics
      * @param {Number} id ID unique among all programs in the owner {@link XEO.renderer.ProgramFactory}
      * @param {String} hash Hash code which uniquely identifies the capabilities of the program, computed from hashes on the {@link Scene_Core}s that the {@link XEO.renderer.ProgramSource} composed to render
      * @param {XEO.renderer.ProgramSource} source Sourcecode from which the the program is compiled in {@link #build}
      * @param {WebGLRenderingContext} gl WebGL context
      */
-    XEO.renderer.Program = function (id, hash, source, gl) {
+    XEO.renderer.Program = function (stats, id, hash, source, gl) {
+
+        this.stats = stats;
 
         /**
          * ID for this program, unique among all programs in the display
@@ -45,10 +48,16 @@
         this.draw = null;
 
         /**
-         * The picking program
+         * The object picking program
          * @type webgl.Program
          */
-        this.pick = null;
+        this.pickObject = null;
+
+        /**
+         * The primitive picking program
+         * @type webgl.Program
+         */
+        this.pickPrimitive = null;
 
         /**
          * The count of display objects using this program
@@ -104,17 +113,22 @@
         this.validated = false;
         this.errorLog = null;
 
-        this.draw = new XEO.renderer.webgl.Program(gl, this.source.drawVertex, this.source.drawFragment);
-        this.pick = this.draw;
-     //   this.pick = new XEO.renderer.webgl.Program(gl, this.source.pickVertex, this.source.pickFragment);
+        this.draw = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexDraw, this.source.fragmentDraw);
+        this.pickObject = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexPickObject, this.source.fragmentPickObject);
+        this.pickPrimitive = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexPickPrimitive, this.source.fragmentPickPrimitive);
 
         if (!this.draw.allocated) {
             this.errorLog = ["Draw program failed to allocate"].concat(this.draw.errorLog);
             return;
         }
 
-        if (!this.pick.allocated) {
-            this.errorLog = ["Pick program failed to allocate"].concat(this.pick.errorLog);
+        if (!this.pickObject.allocated) {
+            this.errorLog = ["Object-picking program failed to allocate"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.allocated) {
+            this.errorLog = ["Primitive-picking program failed to allocate"].concat(this.pickPrimitive.errorLog);
             return;
         }
 
@@ -125,8 +139,13 @@
             return;
         }
 
-        if (!this.pick.compiled) {
-            this.errorLog = ["Pick program failed to compile"].concat(this.pick.errorLog);
+        if (!this.pickObject.compiled) {
+            this.errorLog = ["Object-picking program failed to compile"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.compiled) {
+            this.errorLog = ["Primitive-picking program failed to compile"].concat(this.pickPrimitive.errorLog);
             return;
         }
 
@@ -137,8 +156,13 @@
             return;
         }
 
-        if (!this.pick.linked) {
-            this.errorLog = ["Pick program failed to link"].concat(this.pick.errorLog);
+        if (!this.pickObject.linked) {
+            this.errorLog = ["Object-picking program failed to link"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.linked) {
+            this.errorLog = ["Primitive-picking program failed to link"].concat(this.pickPrimitive.errorLog);
             return;
         }
 
@@ -149,8 +173,13 @@
             return;
         }
 
-        if (!this.pick.validated) {
-            this.errorLog = ["Pick program failed to validate"].concat(this.pick.errorLog);
+        if (!this.pickObject.validated) {
+            this.errorLog = ["Object-picking program failed to validate"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.validated) {
+            this.errorLog = ["Primitive-picking program failed to validate"].concat(this.pickPrimitive.errorLog);
             return;
         }
 

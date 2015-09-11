@@ -115,8 +115,17 @@
             // Rendering state
 
             this._state = new XEO.renderer.Texture({
+
                 texture: null,
-                matrix: null
+                matrix: null,
+
+                // Texture properties
+
+                minFilter: null,
+                magFilter: null,
+                wrapS: null,
+                wrapT: null,
+                flipY: null
             });
 
             // Data source
@@ -130,14 +139,6 @@
             this._translate = [0, 0];
             this._scale = [1, 1];
             this._rotate = [0, 0];
-
-            // Texture properties
-
-            this._minFilter = null;
-            this._magFilter = null;
-            this._wrapS = null;
-            this._wrapT = null;
-            this._flipY = null;
 
             // Dirty flags
 
@@ -200,7 +201,7 @@
                 this.target = cfg.target; // Render target
             }
 
-            this.scene.stats.inc("textures");
+            this.scene.stats.memory.textures--;
         },
 
         // Schedules a call to #_build for the next "tick"
@@ -917,7 +918,7 @@
                 this._state.texture.destroy();
             }
 
-            this.scene.stats.dec("textures");
+            this.scene.stats.memory.textures--;
         }
     });
 

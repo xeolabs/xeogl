@@ -4,14 +4,20 @@
 
     /**
      * @class Manages {@link XEO.renderer.Program} instances.
+     * @param stats Collects runtime statistics
+     * @param cfg Configs
      */
-    XEO.renderer.ProgramFactory = function (cfg) {
+    XEO.renderer.ProgramFactory = function (stats, cfg) {
+
+        this.stats = stats;
 
         this._canvas = cfg.canvas;
 
         this._programs = {};
 
         this._nextProgramId = 0;
+
+        this.numActivePrograms = 0;
     };
 
 
@@ -31,9 +37,11 @@
 
             var source = XEO.renderer.ProgramSourceFactory.getSource(hash, states);
 
-            program = new XEO.renderer.Program(this._nextProgramId++, hash, source, this._canvas.gl);
+            program = new XEO.renderer.Program(this.stats, this._nextProgramId++, hash, source, this._canvas.gl);
 
             this._programs[hash] = program;
+
+            this.numActivePrograms++;
         }
 
         program.useCount++;
@@ -49,11 +57,14 @@
         if (--program.useCount <= 0) {
 
             program.draw.destroy();
-            program.pick.destroy();
+            program.pickObject.destroy();
+            program.pickPrimitive.destroy();
 
             XEO.renderer.ProgramSourceFactory.putSource(program.hash);
 
             this._programs[program.hash] = null;
+
+            this.numActivePrograms--;
         }
     };
 

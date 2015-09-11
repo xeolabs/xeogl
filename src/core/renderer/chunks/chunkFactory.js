@@ -8,7 +8,8 @@
     XEO.renderer.ChunkFactory = function () {
 
         this._chunks = {};
-        this._chunkIDs = new XEO.utils.Map();
+
+        //this._chunkIDs = new XEO.utils.Map();
 
         this.chunkTypes = XEO.renderer.ChunkFactory.chunkTypes;
     };
@@ -16,10 +17,11 @@
     /**
      * Sub-classes of {@link XEO.renderer.Chunk} provided by this factory
      */
-    XEO.renderer.ChunkFactory.chunkTypes = {};    // Supported chunk classes, installed by #createChunkType
+    XEO.renderer.ChunkFactory.chunkTypes = {};   // Supported chunk classes, installed by #createChunkType
 
     // Free pool of unused XEO.renderer.Chunk instances
-    XEO.renderer.ChunkFactory._freeChunks = {};    // Free chunk pool for each type
+
+    XEO.renderer.ChunkFactory._freeChunks = {};  // Free chunk pool for each type
 
     /**
      * Creates a chunk type.
@@ -27,8 +29,8 @@
      * @param params Members to augment the chunk class prototype with
      * @param params.type Type name for the new chunk class
      * @param params.draw Method to render the chunk in draw render
-     * @param params.pick Method to render the chunk in pick render
-     * @param params.drawAndPick Method to render the chunk in both draw and pick renders
+     * @param params.pickObject
+     * @param params.pickPrimitive
      */
     XEO.renderer.ChunkFactory.createChunkType = function (params) {
 
@@ -39,18 +41,12 @@
         var supa = XEO.renderer.Chunk;
 
         var chunkClass = function () { // Create the class
-
             this.useCount = 0;
-
             this.init.apply(this, arguments);
         };
 
         chunkClass.prototype = new supa();              // Inherit from base class
         chunkClass.prototype.constructor = chunkClass;
-
-        if (params.drawAndPick) {                       // Common method for draw and pick render
-            params.draw = params.pick = params.drawAndPick;
-        }
 
         XEO._apply(params, chunkClass.prototype);   // Augment subclass
 
@@ -67,17 +63,13 @@
     /**
      * Gets a chunk from this factory.
      */
-    XEO.renderer.ChunkFactory.prototype.getChunk = function (type, object, program, state) {
+    XEO.renderer.ChunkFactory.prototype.getChunk = function (id, type, object, program, state) {
 
         var chunkClass = XEO.renderer.ChunkFactory.chunkTypes[type]; // Check type supported
 
         if (!chunkClass) {
             throw "chunk type not supported: '" + type + "'";
         }
-
-        // Unique ID for our chunk
-
-        var id = this._chunkIDs.addItem();
 
         // Try to recycle a free chunk
 
@@ -124,9 +116,8 @@
 
         if (--chunk.useCount <= 0) {
 
-          this._chunkIDs.removeItem(chunk.id);
 
-            delete this._chunks[chunk.id];
+          delete this._chunks[chunk.id];
 
             var freeChunks = XEO.renderer.ChunkFactory._freeChunks[chunk.type];
 

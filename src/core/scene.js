@@ -4,11 +4,11 @@
  ## Contents
 
  <Ul>
-    <li><a href="#sceneStructure">Scene Structure</a></li>
-    <li><a href="#sceneCanvas">The Scene Canvas</a></li>
-    <li><a href="#findingByID">Finding Scenes and Components by ID</a></li>
-    <li><a href="#defaults">The Default Scene</a></li>
-    <li><a href="#savingAndLoading">Saving and Loading Scenes</a></li>
+ <li><a href="#sceneStructure">Scene Structure</a></li>
+ <li><a href="#sceneCanvas">The Scene Canvas</a></li>
+ <li><a href="#findingByID">Finding Scenes and Components by ID</a></li>
+ <li><a href="#defaults">The Default Scene</a></li>
+ <li><a href="#savingAndLoading">Saving and Loading Scenes</a></li>
  </ul>
 
  ## <a name="sceneStructure">Scene Structure</a>
@@ -229,6 +229,48 @@
 
             var self = this;
 
+            /**
+             * Tracks statistics within this Scene, such as numbers of
+             * textures, geometries etc.
+             * @final
+             * @property stats
+             * @type {*}
+             * @final
+             */
+            this.stats = {
+                build: {
+                    version: XEO.version
+                },
+                client: {
+                    browser: (navigator && navigator.userAgent) ? navigator.userAgent : "n/a"
+                },
+                canvas: {
+                    width: 0,
+                    height: 0
+                },
+                scene: {
+                    objects: 0
+                },
+                memory: {
+                    meshes: 0,
+                    positions: 0,
+                    colors: 0,
+                    normals: 0,
+                    uvs: 0,
+                    indices: 0,
+                    textures: 0,
+                    programs: 0
+                },
+                frame: {
+                    useProgram: 0,
+                    setUniform: 0,
+                    setUniformCacheHits: 0,
+                    bindTexture: 0,
+                    bindArray: 0,
+                    drawElements: 0
+                }
+            };
+
             this._componentIDMap = new XEO.utils.Map();
 
             /**
@@ -301,8 +343,7 @@
                     alert("xeoEngine failed to find WebGL!");
                 });
 
-            // The core WebGL renderer
-            this._renderer = new XEO.renderer.Renderer({
+            this._renderer = new XEO.renderer.Renderer(this.stats, {
                 canvas: this.canvas,
                 transparent: cfg.transparent
             });
@@ -326,20 +367,6 @@
              * @final
              */
             this.tasks = new XEO.Tasks(this);
-
-            /**
-             * Tracks statistics within this Scene, such as numbers of
-             * textures, geometries etc.
-             * @final
-             * @property stats
-             * @type {Stats}
-             * @final
-             */
-            this.stats = new XEO.Stats(this, {
-                objects: 0,
-                geometries: 0,
-                textures: 0
-            });
 
             // Register Scene on engine
             // Do this BEFORE we add components below
@@ -379,7 +406,7 @@
             this._initDefaults();
         },
 
-        _initDefaults: function() {
+        _initDefaults: function () {
 
             this.view;
             this.project;
@@ -465,7 +492,7 @@
                         // Unschedule any pending recompilation of
                         // the GameObject into the renderer
 
-                        self.stats.dec("objects");
+                        self.stats.scene.objects--;
 
                         delete self.objects[c.id];
 
@@ -501,7 +528,7 @@
 
                 // Update scene statistics
 
-                this.stats.inc("objects");
+                this.stats.scene.objects++;
             }
 
             /**
@@ -836,7 +863,7 @@
                                 new XEO.AmbientLight(this, {
                                     id: "default.light0",
                                     color: [0.7, 0.7, 0.7],
-                                    intensity: 1.0
+                                    intensity: 0.5
                                 }),
 
                                 // Directional light source #1
@@ -844,7 +871,7 @@
                                     id: "default.light1",
                                     dir: [-0.5, -0.5, -1.0],
                                     color: [1.0, 1.0, 1.0],
-                                    intensity: 1.0,
+                                    intensity: 0.5,
                                     space: "view"
                                 }),
 
@@ -853,7 +880,7 @@
                                     id: "default.light2",
                                     dir: [1.0, -0.9, -0.7],
                                     color: [1.0, 1.0, 1.0],
-                                    intensity: 1.0,
+                                    intensity: 0.2,
                                     space: "view"
                                 })
                             ]
@@ -1007,14 +1034,14 @@
          * @method pick
          * @param {Array of Number} canvasPos Canvas-space coordinates.
          * @param {*} [options] Pick options.
-         * @param {Boolean} [options.rayPick=false] Whether to perform a 3D ray-intersect pick.
+         * @param {Boolean} [options.pickPrimitive=false] Whether to try to pick a primitive on the {{#crossLink "GameObject"}}GameObject's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}.
          * @returns {*} Hit record when a {{#crossLink "GameObject"}}{{/crossLink}} is picked.
          */
         pick: function (canvasPos, options) {
 
             return this._renderer.pick({
                 canvasPos: canvasPos,
-                rayPick: options.rayPick
+                pickPrimitive: options.pickPrimitive
             });
         },
 
@@ -1023,8 +1050,10 @@
          * Resets this Scene to its default state.
          *
          * References to any components in this Scene will become invalid.
+         *
+         * @method clear
          */
-        clear: function () {
+        clear: function () {  // FIXME: should only clear user-created components
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
@@ -1043,6 +1072,15 @@
             this._dirtyObjects = {};
         },
 
+        /**
+         * Displays a simple test object.
+         *
+         * Clears the Scene first.
+         *
+         * The test object is destroyed as soon as anything else is created in this Scene.
+         *
+         * @method testPattern
+         */
         testPattern: function () {
 
             // Clear the scene
@@ -1065,7 +1103,7 @@
             var spin = this.on("tick",
                 function () {
                     object.transform.angle = angle;
-                    angle += 0.01;
+                    angle += 0.5;
                 });
 
             var self = this;
@@ -1107,7 +1145,7 @@
             }
 
             if (countCompiledObjects > 0) {
-            //    this.log("Compiled " + countCompiledObjects + " XEO.GameObject" + (countCompiledObjects > 1 ? "s" : ""));
+                //    this.log("Compiled " + countCompiledObjects + " XEO.GameObject" + (countCompiledObjects > 1 ? "s" : ""));
             }
 
             // Render a frame

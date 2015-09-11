@@ -15,6 +15,7 @@ module.exports = function (grunt) {
         concat: {
             options: {
                 banner: grunt.file.read('BANNER'),
+                footer: "XEO.version=\"<%= ENGINE_VERSION %>\";",
                 separator: ';',
                 process: true
             },

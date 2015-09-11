@@ -13,12 +13,9 @@
 
         var states; // Cache rendering state
         var texturing; // True when rendering state contains textures
-        var normals; // True when rendering state contains normals
-        var tangents; // True when rendering state contains tangents
-        var clipping; // True when rendering state contains clip planes
-        var morphing; // True when rendering state contains morph targets
+        var shading; // True when rendering state contains normals
+        var normalMapping; // True when rendering state contains tangents
         var reflection; // True when rendering state contains reflections
-        var depthTarget; // True when rendering state contains a depth target
 
         /**
          * Get source code for a program to render the given states.
@@ -36,20 +33,18 @@
             states = _states;
 
             texturing = hasTextures();
-            normals = hasNormals();
-            tangents = hasTangents();
-            clipping = states.clips.clips.length > 0;
-            //morphing = !!states.morphTargets.targets;
-            morphing = false;
+            shading = hasShading();
+            normalMapping = hasNormalMap();
             reflection = hasReflection();
-            depthTarget = hasDepthTarget();
 
             source = new XEO.renderer.ProgramSource(
                 hash,
-                composePickingVertexShader(),
-                composePickingFragmentShader(),
-                composeRenderingVertexShader(),
-                composeRenderingFragmentShader()
+                vertexPickObject(),
+                fragmentPickObject(),
+                vertexPickPrimitive(),
+                fragmentPickPrimitive(),
+                vertexDraw(),
+                fragmentDraw()
             );
 
             cache[hash] = source;
@@ -57,77 +52,41 @@
             return source;
         };
 
-        // Returns true if texturing
-
         function hasTextures() {
-
             if (!states.geometry.uv) {
                 return false;
             }
-
             var material = states.material;
-
-            return (material.type === "phongMaterial" &&
-            (material.diffuseMap ||
-            material.specularMap ||
-            material.emissiveMap ||
-            material.opacityMap ||
-            material.reflectivityMap));
+            return material.diffuseMap ||
+                material.specularMap ||
+                material.emissiveMap ||
+                material.opacityMap ||
+                material.reflectivityMap;
         }
 
-        // Returns true if rendering reflections
-        function hasReflection(states) {
+        function hasReflection() {
             return false;
             //return (states.cubemap.layers && states.cubemap.layers.length > 0 && states.geometry.normalBuf);
         }
 
-        // Returns true if normals exist on geometry
-        function hasNormals() {
-
-            if (states.geometry.normals) {
+        function hasShading() {
+            var primitive = states.geometry.primitiveName;
+            if (states.geometry.normals &&
+                (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
                 return true;
             }
-
-            //if (states.MorphTargets.targets && states.MorphTargets.targets[0].normalBuf) {
-            //    return true;
-            //}
-
             return false;
         }
 
-        // Returns true if geometry has tangents for normal mapping
-        function hasTangents() {
-
-            //if (states.texture) {
-            //
-            //    var layers = states.texture.layers;
-            //
-            //    if (!layers) {
-            //        return false;
-            //    }
-            //
-            //    for (var i = 0, len = layers.length; i < len; i++) {
-            //        if (layers[i].applyTo === "normals") {
-            //            return true;
-            //        }
-            //    }
-            //}
-            //
-            return false;
-        }
-
-        // Returns true if renderer state set contains a depth target
-        function hasDepthTarget() {
-            return !!states.depthTarget;
+        function hasNormalMap() {
+            return (states.geometry.normals && states.material.normalMap);
         }
 
         /**
          * Releases program source code back to this factory.
          */
         this.putSource = function (hash) {
-
             var source = cache[hash];
-
             if (source) {
                 if (--source.useCount === 0) {
                     cache[source.hash] = null;
@@ -135,119 +94,70 @@
             }
         };
 
-        // Returns GLSL for a picking mode vertex shader
-        //
-        function composePickingVertexShader() {
 
+        // NOTE: Picking shaders will become more complex and will eventually be
+        // composed from state, in the same manner as the draw shaders.
+
+        function vertexPickObject() {
             begin();
-
             add("attribute vec3 xeo_aPosition;");
-
             add("uniform mat4 xeo_uModelMatrix;");
             add("uniform mat4 xeo_uViewMatrix;");
             add("uniform mat4 xeo_uViewNormalMatrix;");
             add("uniform mat4 xeo_uProjMatrix;");
-
             add("varying vec4 xeo_vWorldPosition;");
             add("varying vec4 xeo_vViewPosition;");
-
-//            if (morphing) {
-//                add("uniform float xeo_uMorphFactor;");       // LERP factor for morph
-//                if (states.MorphTargets.targets[0].vertexBuf) {      // target2 has these arrays also
-//                    add("attribute vec3 xeo_aMorphVertex;");
-//                }
-//            }
-
             add("void main(void) {");
-
-            add("vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
-
-//            if (morphing) {
-//                if (states.MorphTargets.targets[0].vertexBuf) {
-//                    add("  tmpVertex = vec4(mix(tmpVertex.xyz, xeo_aMorphVertex, xeo_uMorphFactor), 1.0); ");
-//                }
-//            }
-
-            add("xeo_vWorldPosition = xeo_uModelMatrix * tmpVertex; ");
-
-            add("xeo_vViewPosition = xeo_uViewMatrix * xeo_vWorldPosition;");
-
-            add("gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
-
+            add("   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
+            add("   xeo_vWorldPosition = xeo_uModelMatrix * tmpVertex; ");
+            add("   xeo_vViewPosition = xeo_uViewMatrix * xeo_vWorldPosition;");
+            add("   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
             add("}");
-
             return end();
         }
 
-        function composePickingFragmentShader() {
-
+        function fragmentPickObject() {
             begin();
-
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
-
-            add("varying vec4 xeo_vWorldPosition;");
-            add("varying vec4 xeo_vViewPosition;");
-
-            add("uniform bool  xeo_uRayPickMode;");
-            add("uniform vec3  xeo_uPickColor;");
-
-            // Clipping
-
-            if (clipping) {
-                for (var i = 0; i < states.clips.clips.length; i++) {
-                    add("uniform float xeo_uClipMode" + i + ";");
-                    add("uniform vec4  xeo_uClipPlane" + i + ";");
-                }
-            }
-
-            // Pack depth function for ray-pick
-
-            add("vec4 packDepth(const in float depth) {");
-            add("  const vec4 bitShift = vec4(256.0*256.0*256.0, 256.0*256.0, 256.0, 1.0);");
-            add("  const vec4 bitMask  = vec4(0.0, 1.0/256.0, 1.0/256.0, 1.0/256.0);");
-            add("  vec4 res = fract(depth * bitShift);");
-            add("  res -= res.xxyz * bitMask;");
-            add("  return res;");
-            add("}");
-
-            // main
-
+            add("uniform vec4 xeo_uPickColor;");
             add("void main(void) {");
-
-            // Clipping logic
-
-            if (clipping) {
-                add("if (SCENEJS_uModesClipping) {");
-                add("float dist = 0.0;");
-                for (var i = 0; i < states.clips.clips.length; i++) {
-                    add("if (xeo_uClipMode" + i + " != 0.0) {");
-                    add("   dist += clamp(dot(xeo_vWorldPosition.xyz, xeo_uClipPlane" + i + ".xyz) - xeo_uClipPlane" + i + ".w, 0.0, 1000.0);");
-                    add("}");
-                }
-                add("if (dist > 0.0) { discard; }");
-                add("}");
-            }
-
-            add("if (xeo_uRayPickMode) {");
-
-            // Output color-encoded depth value for ray-pick
-
-            add("   gl_FragColor = packDepth(gl_Position.z); ");
-
-            add("} else {");
-
-            // Output indexed color value for normal pick
-
-            add("   gl_FragColor = vec4(xeo_uPickColor.rgb, 1.0);  ");
-
+            add("   gl_FragColor = xeo_uPickColor; ");
             add("}");
-            add("}");
-
             return end();
         }
 
+        function vertexPickPrimitive() {
+            begin();
+            add("attribute vec3 xeo_aPosition;");
+            add("attribute vec4 xeo_aColor;");
+            add("uniform vec3 xeo_uPickColor;");
+            add("uniform mat4 xeo_uModelMatrix;");
+            add("uniform mat4 xeo_uViewMatrix;");
+            add("uniform mat4 xeo_uProjMatrix;");
+            add("varying vec4 xeo_vWorldPosition;");
+            add("varying vec4 xeo_vViewPosition;");
+            add("varying vec4 xeo_vColor;");
+            add("void main(void) {");
+            add("   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
+            add("   vec4 worldPosition = xeo_uModelMatrix * tmpVertex; ");
+            add("   vec4 viewPosition = xeo_uViewMatrix * worldPosition;");
+            add("   xeo_vColor = xeo_aColor;");
+            add("   gl_Position = xeo_uProjMatrix * viewPosition;");
+            add("}");
+            return end();
+        }
 
-        function composeRenderingVertexShader() {
+        function fragmentPickPrimitive() {
+            begin();
+            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add("varying vec4 xeo_vColor;");
+            add("void main(void) {");
+            add("   gl_FragColor = xeo_vColor;");
+            add("}");
+            return end();
+        }
+
+        function vertexDraw() {
 
             var vertex = states.shader.vertex;
 
@@ -257,55 +167,50 @@
                 return vertex;
             }
 
-            var flatMaterial = (states.material.type === "flatMaterial");
-            var phongMaterial = !flatMaterial && (states.material.type === "phongMaterial");
-            var pbrMaterial = !flatMaterial && !phongMaterial && (states.material.type === "pbrMaterial");
-
             begin();
 
             // Matrix uniforms
-
             add("uniform mat4 xeo_uModelMatrix;");
             add("uniform mat4 xeo_uViewMatrix;");
             add("uniform mat4 xeo_uProjMatrix;");
 
             // World-space eye position
-
             add("uniform vec3 xeo_uEye;");
 
-            // Model-space vertex position
+            add();
 
+            // Model-space vertex position
             add("attribute vec3 xeo_aPosition;");
 
-            // View-space fragment position
+            add();
 
+            // View-space fragment position
             add("varying vec4 xeo_vViewPosition;");
 
             // View-space vector from fragment position to eye
-
             add("varying vec3 xeo_vViewEyeVec;");
 
-            if (normals) {
+            if (shading) {
 
-                // Normals
+                add();
 
+                // Model-space vertex normal
                 add("attribute vec3 xeo_aNormal;");
 
                 // Modelling and View normal transform matrix
-
                 add("uniform mat4 xeo_uModelNormalMatrix;");
                 add("uniform mat4 xeo_uViewNormalMatrix;");
 
                 // View-space normal
-
                 add("varying vec3 xeo_vViewNormal;");
 
-                if (tangents) {
+                if (normalMapping) {
+
+                    // Vertex tangent vector
                     add("attribute vec4 xeo_aTangent;");
                 }
 
                 // Lights
-
                 for (var i = 0; i < states.lights.lights.length; i++) {
 
                     var light = states.lights.lights[i];
@@ -315,19 +220,16 @@
                     }
 
                     // Directional
-
                     if (light.type === "dir") {
                         add("uniform vec3 xeo_uLightDir" + i + ";");
                     }
 
                     // Point
-
                     if (light.type === "point") {
                         add("uniform vec3 xeo_uLightPos" + i + ";");
                     }
 
                     // Spot
-
                     if (light.type === "spot") {
                         add("uniform vec3 xeo_uLightPos" + i + ";");
                     }
@@ -337,99 +239,63 @@
                 }
             }
 
-            if (clipping) {
-
-                // World-space fragment position
-
-                add("varying vec4 xeo_vWorldPosition;");
-            }
-
             if (texturing) {
 
-                // Vertex UV coordinate
+                add();
 
+                // Vertex UV coordinate
                 add("attribute vec2 xeo_aUV;");
 
                 // Fragment UV coordinate
-
                 add("varying vec2 xeo_vUV;");
             }
 
-            if (states.geometry.colorBuf) {
+            if (states.geometry.colors) {
 
                 // Vertex color
-
-                add("attribute vec4 xeo_aColor;"); // Vertex colors
+                add("attribute vec4 xeo_aColor;");
 
                 // Fragment color
-
-                add("varying vec4 xeo_vColor;"); // Varying for fragment texturing
+                add("varying vec4 xeo_vColor;");
             }
 
-            //if (morphing) {
-            //    add("uniform float xeo_uMorphFactor;");// LERP factor for morph
-            //    if (states.MorphTargets.targets[0].vertexBuf) {  // target2 has these arrays also
-            //        add("attribute vec3 xeo_aMorphVertex;");
-            //    }
-            //    if (normals) {
-            //        if (states.MorphTargets.targets[0].normalBuf) {
-            //            add("attribute vec3 xeo_aMorphNormal;");
-            //        }
-            //    }
-            //}
-
-            if (phongMaterial) {
+            if (states.geometry.primitive === "points") {
                 add("uniform float xeo_uPointSize;");
             }
 
+            // ------------------- main -------------------------------
+
+            add();
             add("void main(void) {");
+            add();
+            add("   vec4 modelPosition = vec4(xeo_aPosition, 1.0); ");
 
-            add("vec4 modelPosition = vec4(xeo_aPosition, 1.0); ");
-
-            if (normals) {
-                add("vec4 modelNormal = vec4(xeo_aNormal, 0.0); ");
+            if (shading) {
+                add("   vec4 modelNormal = vec4(xeo_aNormal, 0.0); ");
             }
 
-            //if (morphing) {
-            //    if (states.MorphTargets.targets[0].vertexBuf) {
-            //        add("vec4 vMorphVertex = vec4(xeo_aMorphVertex, 1.0); ");
-            //        add("modelPosition = vec4(mix(modelPosition.xyz, vMorphVertex.xyz, xeo_uMorphFactor), 1.0); ");
-            //    }
-            //    if (normals) {
-            //        if (states.MorphTargets.targets[0].normalBuf) {
-            //            add("vec4 vMorphNormal = vec4(xeo_aMorphNormal, 1.0); ");
-            //            add("modelNormal = vec4( mix(modelNormal.xyz, vMorphNormal.xyz, xeo_uMorphFactor), 1.0); ");
-            //        }
-            //    }
-            //}
+            add("   vec4 worldPosition = xeo_uModelMatrix * modelPosition;");
 
-            add("vec4 worldPosition = xeo_uModelMatrix * modelPosition;");
+            add("   vec4 viewPosition  = xeo_uViewMatrix * worldPosition; ");
 
-            add("vec4 viewPosition  = xeo_uViewMatrix * worldPosition; ");
-
-            if (normals) {
-                add("vec3 worldNormal = (xeo_uModelNormalMatrix * modelNormal).xyz; ");
-                add("xeo_vViewNormal = (xeo_uViewNormalMatrix * vec4(worldNormal, 1.0)).xyz;");
+            if (shading) {
+                add("   vec3 worldNormal = (xeo_uModelNormalMatrix * modelNormal).xyz; ");
+                add("   xeo_vViewNormal = (xeo_uViewNormalMatrix * vec4(worldNormal, 1.0)).xyz;");
             }
 
-            if (clipping) {
-                add("  xeo_vWorldPosition = worldPosition;");
-            }
+            add("   xeo_vViewPosition = viewPosition;");
 
-            add("xeo_vViewPosition = viewPosition;");
-
-            if (tangents) {
+            if (normalMapping) {
 
                 // Compute tangent-bitangent-normal matrix
-
-                add("vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * xeo_aTangent).xyz);");
-                add("vec3 bitangent = cross(xeo_vViewNormal, tangent);");
-                add("mat3 TBM = mat3(tangent, bitangent, xeo_vViewNormal);");
+                add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * xeo_aTangent).xyz);");
+                add("   vec3 bitangent = cross(xeo_vViewNormal, tangent);");
+                add("   mat3 TBM = mat3(tangent, bitangent, xeo_vViewNormal);");
             }
 
             add("  vec3 tmpVec3;");
 
-            if (normals) {
+            if (shading) {
 
                 for (var i = 0; i < states.lights.lights.length; i++) {
 
@@ -447,27 +313,27 @@
 
                             // World space light
 
-                            add("tmpVec3 = normalize(xeo_uLightDir" + i + ");");
+                            add("   tmpVec3 = xeo_uLightDir" + i + ";");
 
                             // Transform to View space
-                            add("tmpVec3 = vec3(xeo_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            add("   tmpVec3 = vec3(xeo_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
 
-                            if (tangents) {
+                            if (normalMapping) {
 
                                 // Transform to Tangent space
-                                add("tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBM;");
                             }
 
                         } else {
 
                             // View space light
 
-                            add("tmpVec3 = normalize(xeo_uLightDir" + i + ");");
+                            add("   tmpVec3 = xeo_uLightDir" + i + ";");
 
-                            if (tangents) {
+                            if (normalMapping) {
 
                                 // Transform to Tangent space
-                                add("tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBM;");
                             }
                         }
 
@@ -485,59 +351,54 @@
 
                             // Transform into View space
 
-                            add("tmpVec3 = xeo_uLightPos" + i + " - worldPosition.xyz;"); // Vector from World coordinate to light pos
+                            add("   tmpVec3 = xeo_uLightPos" + i + " - worldPosition.xyz;"); // Vector from World coordinate to light pos
 
                             // Transform to View space
-                            add("tmpVec3 = vec3(xeo_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            add("   tmpVec3 = vec3(xeo_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
 
-                            if (tangents) {
-
+                            if (normalMapping) {
                                 // Transform to Tangent space
-                                add("tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBM;");
                             }
 
                         } else {
 
                             // View space
 
-                            add("tmpVec3 = xeo_uLightPos" + i + ".xyz - viewPosition.xyz;"); // Vector from View coordinate to light pos
+                            add("   tmpVec3 = xeo_uLightPos" + i + ".xyz - viewPosition.xyz;"); // Vector from View coordinate to light pos
 
-                            if (tangents) {
+                            if (normalMapping) {
 
                                 // Transform to tangent space
-                                add("tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBM;");
                             }
                         }
 
                         // Output
-                        add("xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length(xeo_uLightPos" + i + ".xyz - worldPosition.xyz));");
+                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length(xeo_uLightPos" + i + ".xyz - worldPosition.xyz));");
                     }
                 }
             }
 
-            add("xeo_vViewEyeVec = ((xeo_uViewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+            add("   xeo_vViewEyeVec = ((xeo_uViewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
 
-            if (tangents) {
-
-                add("xeo_vViewEyeVec *= TBM;");
+            if (normalMapping) {
+                add("   xeo_vViewEyeVec *= TBM;");
             }
 
             if (texturing) {
-
-                if (states.geometry.uv) {
-                    add("xeo_vUV = xeo_aUV;");
-                }
+                add("   xeo_vUV = xeo_aUV;");
             }
 
-            if (states.geometry.colorBuf) {
-                add("xeo_vColor = xeo_aColor;");
+            if (states.geometry.colors) {
+                add("   xeo_vColor = xeo_aColor;");
             }
 
-            if (phongMaterial) {
-                    add("gl_PointSize = xeo_uPointSize;");
-                }
+            if (states.geometry.primitiveName === "points") {
+                add("   gl_PointSize = xeo_uPointSize;");
+            }
 
-            add("gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
+            add("   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
 
             add("}");
 
@@ -545,7 +406,7 @@
         }
 
 
-        function composeRenderingFragmentShader() {
+        function fragmentDraw() {
 
             var fragment = states.shader.fragment;
             if (fragment) {
@@ -556,103 +417,80 @@
             begin();
 
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
-
+            add();
             add("varying vec4 xeo_vViewPosition;");
+            add();
+            add("uniform vec3 xeo_uDiffuse;");
+            add("uniform vec3 xeo_uSpecular;");
+            add("uniform vec3 xeo_uEmissive;");
+            add("uniform float xeo_uOpacity;");
+            add("uniform float xeo_uShininess;");
+            add("uniform float xeo_uReflectivity;");
+            add();
 
-            add("uniform float xeo_uZNear;");
-            add("uniform float xeo_uZFar;");
+            if (texturing) {
 
-            if (clipping) {
-
-                add("varying vec4 xeo_vWorldPosition;");
-
-                for (var i = 0; i < states.clips.clips.length; i++) {
-                    add("uniform float xeo_uClipMode" + i + ";");
-                    add("uniform vec4  xeo_uClipPlane" + i + ";");
+                if (states.geometry.uv) {
+                    add("varying vec2 xeo_vUV;");
                 }
-            }
 
-            var flatMaterial = (states.material.type === "flatMaterial");
-            var phongMaterial = !flatMaterial && (states.material.type === "phongMaterial");
-            var pbrMaterial = !flatMaterial && !phongMaterial && (states.material.type === "pbrMaterial");
-
-            if (phongMaterial) {
-
-                add("uniform vec3 xeo_uDiffuse;");
-                add("uniform vec3 xeo_uMaterialSpecular;");
-                add("uniform vec3 xeo_uMaterialEmissive;");
-                add("uniform float xeo_uMaterialOpacity;");
-                add("uniform float xeo_uMaterialShininess;");
-                add("uniform float xeo_uMaterialReflectivity;");
-
-                if (texturing) {
-
-                    if (states.geometry.uv) {
-                        add("varying vec2 xeo_vUV;");
+                if (states.material.ambientMap) {
+                    add("uniform sampler2D xeo_uAmbientMap;");
+                    if (states.material.ambientMap.matrix) {
+                        add("uniform mat4 xeo_uAmbientMapMatrix;");
                     }
+                }
 
-                    if (states.material.diffuseMap) {
-                        add("uniform sampler2D xeo_uDiffuseMap;");
-                        if (states.material.diffuseMap.matrix) {
-                            add("uniform mat4 xeo_uDiffuseMapMatrix;");
-                        }
+                if (states.material.diffuseMap) {
+                    add("uniform sampler2D xeo_uDiffuseMap;");
+                    if (states.material.diffuseMap.matrix) {
+                        add("uniform mat4 xeo_uDiffuseMapMatrix;");
                     }
+                }
 
-                    if (states.material.specularMap) {
-                        add("uniform sampler2D xeo_uSpecularMap;");
-                        if (states.material.specularMap.matrix) {
-                            add("uniform mat4 xeo_uSpecularMapMatrix;");
-                        }
+                if (states.material.specularMap) {
+                    add("uniform sampler2D xeo_uSpecularMap;");
+                    if (states.material.specularMap.matrix) {
+                        add("uniform mat4 xeo_uSpecularMapMatrix;");
                     }
+                }
 
-                    if (states.material.emissiveMap) {
-                        add("uniform sampler2D xeo_uEmissiveMap;");
-                        if (states.material.emissiveMap.matrix) {
-                            add("uniform mat4 xeo_uEmissiveMapMatrix;");
-                        }
+                if (states.material.emissiveMap) {
+                    add("uniform sampler2D xeo_uEmissiveMap;");
+                    if (states.material.emissiveMap.matrix) {
+                        add("uniform mat4 xeo_uEmissiveMapMatrix;");
                     }
+                }
 
-                    if (states.material.opacityMap) {
-                        add("uniform sampler2D xeo_uTextureOpacity;");
-                        if (states.material.opacityMap.matrix) {
-                            add("uniform mat4 xeo_uTextureOpacityMatrix;");
-                        }
+                if (states.material.opacityMap) {
+                    add("uniform sampler2D xeo_uTextureOpacity;");
+                    if (states.material.opacityMap.matrix) {
+                        add("uniform mat4 xeo_uTextureOpacityMatrix;");
                     }
+                }
 
-                    if (states.material.reflectivityMap) {
-                        add("uniform sampler2D xeo_uTextureReflectivity;");
-                        if (states.material.reflectivityMap.matrix) {
-                            add("uniform mat4 xeo_uTextureReflectivityMatrix;");
-                        }
+                if (states.material.reflectivityMap) {
+                    add("uniform sampler2D xeo_uTextureReflectivity;");
+                    if (states.material.reflectivityMap.matrix) {
+                        add("uniform mat4 xeo_uTextureReflectivityMatrix;");
                     }
                 }
             }
 
-            //if (normals && reflection) {
-            //    var layer;
-            //    for (var i = 0, len = states.cubemap.layers.length; i < len; i++) {
-            //        layer = states.cubemap.layers[i];
-            //        add("uniform samplerCube xeo_uCubeMapSampler" + i + ";");
-            //        add("uniform float xeo_uCubeMapIntensity" + i + ";");
-            //    }
-            //}
-
-
-            add("uniform bool xeo_uDepthMode;");
-
-            if (states.geometry.colorBuf) {
+            if (states.geometry.colors) {
                 add("varying vec4 xeo_vColor;");
             }
 
             // Global, ambient colour - taken from clear colour
 
             add("uniform vec3 xeo_uLightAmbientColor;");
+            add("uniform float xeo_uLightAmbientIntensity;");
 
             // World-space vector from fragment to eye
 
             add("varying vec3 xeo_vViewEyeVec;");
 
-            if (normals) {
+            if (shading) {
 
                 // View-space fragment normal
 
@@ -671,246 +509,183 @@
                     }
 
                     add("uniform vec3 xeo_uLightColor" + i + ";");
-
                     add("uniform float xeo_uLightIntensity" + i + ";");
-
                     if (light.type === "point") {
                         add("uniform vec3 xeo_uLightAttenuation" + i + ";");
                     }
-
                     add("varying vec4 xeo_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
                 }
             }
 
+            add();
             add("void main(void) {");
+            add();
 
-            if (clipping) {
+            // These may be overridden by textures below
 
-                // World-space fragment clipping
+            add("   vec3 ambient = xeo_uLightAmbientColor;");
+            add("   vec3 diffuse = xeo_uDiffuse;");
+            add("   vec3 specular = xeo_uSpecular;");
+            add("   vec3 emissive = xeo_uEmissive;");
+            add("   float opacity = xeo_uOpacity;");
+            add("   float shininess = xeo_uShininess;");
+            add("   float reflectivity = xeo_uReflectivity;");
 
-                add("if (SCENEJS_uModesClipping) {");
 
-                add("float dist = 0.0;");
+            if (states.geometry.colors) {
 
-                for (var i = 0; i < states.clips.clips.length; i++) {
-                    add("if (xeo_uClipMode" + i + " != 0.0) {");
-                    add("dist += clamp(dot(xeo_vWorldPosition.xyz, xeo_uClipPlane" + i + ".xyz) - xeo_uClipPlane" + i + ".w, 0.0, 1000.0);");
-                    add("}");
-                }
-                add("if (dist > 0.0) { discard; }");
-
-                add("}");
+                // Fragment diffuse color from geometry vertex colors
+                add("   diffuse = xeo_vColor.rgb;");
             }
 
-            add("vec3 ambient = xeo_uLightAmbientColor;");
+            if (shading) {
 
-
-            // ------------------- PhongMaterial Shading
-
-            if (phongMaterial) {
-
-                if (states.geometry.colorBuf) {
-
-                    // Fragment diffuse color from geometry vertex colors
-
-                    add("vec3 diffuse = xeo_vColor.rgb;");
+                if (normalMapping) {
+                    add("   vec3 viewNormalVec = vec3(0.0, 1.0, 0.0);");
 
                 } else {
 
-                    // Fragment diffuse color from material
-
-                    add("vec3 diffuse = xeo_uDiffuse;")
+                    // Normalize the interpolated normals in the per-fragment-fragment-shader,
+                    // because if we linear interpolated two nonparallel normalized vectors,
+                    // the resulting vector won’t be of length 1
+                    add("   vec3 viewNormalVec = normalize(xeo_vViewNormal);");
                 }
+            }
 
-                // These may be overridden by textures later
+            if (texturing) {
 
-                add("vec3 specular = xeo_uMaterialSpecular;");
-                add("vec3 emissive = xeo_uMaterialEmissive;");
-                add("float opacity = xeo_uMaterialOpacity;");
-                add("float shininess  = xeo_uMaterialShininess;");
-                add("float reflectivity  = xeo_uMaterialReflectivity;");
+                // Textures
 
-                if (normals) {
+                add();
 
-                    if (tangents) {
+                add("   vec4 texturePos = vec4(xeo_vUV.s, xeo_vUV.t, 1.0, 1.0);");
+                add("   vec2 textureCoord;");
 
-                        add("vec3 viewNormalVec = vec3(0.0, 1.0, 0.0);");
+                var material = states.material;
 
+                if (material.ambientMap) {
+                    add();
+                    if (material.ambientMap.matrix) {
+                        add("   textureCoord = (xeo_uAmbientMapMatrix * texturePos).xy;");
                     } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   ambient = texture2D(xeo_uAmbientMap, textureCoord).rgb;");
+                }
 
-                        // Normalize the interpolated normals in the per-fragment-fragment-shader,
-                        // because if we linear interpolated two nonparallel normalized vectors, the resulting vector won’t be of length 1
+                if (material.diffuseMap) {
+                    add();
+                    if (material.diffuseMap.matrix) {
+                        add("   textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   textureCoord.y = -texturePos.y;");
+                    add("   diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
+                }
 
-                        add("vec3 viewNormalVec = normalize(xeo_vViewNormal);");
+                if (material.specularMap) {
+                    add();
+                    if (material.specularMap.matrix) {
+                        add("   textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
+                }
+
+                if (material.emissiveMap) {
+                    add();
+                    if (material.emissiveMap.matrix) {
+                        add("   textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
+                }
+
+                if (material.opacityMap) {
+                    add();
+                    if (material.opacityMap.matrix) {
+                        add("   textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
+                }
+
+                if (material.reflectivityMap) {
+                    add();
+                    if (material.reflectivityMap.matrix) {
+                        add("   textureCoord = (xeo_uReflectivityMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
+                }
+            }
+
+            if (shading) {
+
+                add();
+                add("   vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
+                add("   vec3  specularLight = vec3(0.0, 0.0, 0.0);");
+
+                add();
+                add("   vec3  viewLightVec;");
+                add("   float dotN;");
+                add("   float lightDist;");
+                add("   float attenuation;");
+
+                var light;
+
+                for (var i = 0, len = states.lights.lights.length; i < len; i++) {
+
+                    light = states.lights.lights[i];
+
+                    if (light.type === "ambient") {
+                        continue;
+                    }
+
+                    add("   viewLightVec = normalize(xeo_vViewLightVecAndDist" + i + ".xyz);");
+
+                    if (light.type === "point") {
+                        add();
+                        add("   dotN = max(dot(viewNormalVec, viewLightVec), 0.0);");
+                        add("   lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
+                        add("   attenuation = 1.0 - (" +
+                            "  xeo_uLightAttenuation" + i + "[0] + " +
+                            "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
+                            "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
+
+                        add("   diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
+
+                        add("   specularLight += specular * xeo_uLightIntensity" + i +
+                            " * specular * pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
+                            "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess) * attenuation;");
+                    }
+
+                    if (light.type === "dir") {
+                        add();
+                        add("   dotN = max(dot(viewNormalVec, viewLightVec), 0.0);");
+
+                        add("   diffuseLight += dotN * xeo_uLightColor" + i + ";");
+
+                        add("   specularLight += specular * xeo_uLightIntensity" + i +
+                            " * pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
+                            "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess);");
                     }
                 }
 
-                if (texturing) {
+                add();
+                add("   gl_FragColor = vec4( (specularLight * specular) + (diffuse * (diffuseLight + ambient * xeo_uLightAmbientIntensity)) + emissive, opacity);");
 
-                    // Textures
+            } else {
 
-                    add("vec4 texturePos = vec4(xeo_vUV.s, xeo_vUV.t, 1.0, 1.0);");
-                    add("vec2 textureCoord = texturePos.xy;");
+                // No shading
 
-                    add("textureCoord.y = -textureCoord.y;");
-
-                    var material = states.material;
-
-                    if (material.diffuseMap) {
-
-                        // Diffuse map
-
-                        if (material.diffuseMap.matrix) {
-                            add("textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;");
-                        } else {
-                            add("textureCoord = texturePos.xy;");
-                        }
-
-                        add("diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
-                    }
-
-                    if (material.specularMap) {
-
-                        // Specular map
-
-                        if (material.specularMap.matrix) {
-                            add("textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;");
-                        } else {
-                            add("textureCoord = texturePos.xy;");
-                        }
-
-                        add("specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
-                    }
-
-                    if (material.emissiveMap) {
-
-                        // Emissive map
-
-                        if (material.emissiveMap.matrix) {
-                            add("textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;");
-                        } else {
-                            add("textureCoord = texturePos.xy;");
-                        }
-
-                        add("emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
-                    }
-
-                    if (material.opacityMap) {
-
-                        // Opacity map
-
-                        if (material.opacityMap.matrix) {
-                            add("textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;");
-                        } else {
-                            add("textureCoord = texturePos.xy;");
-                        }
-
-                        add("opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
-                    }
-
-                    if (material.reflectivityMap) {
-
-                        // Reflectivity map
-
-                        if (material.reflectivityMap.matrix) {
-                            add("textureCoord = (xeo_uReflectivityMapMatrix * texturePos).xy;");
-                        } else {
-                            add("textureCoord = texturePos.xy;");
-                        }
-
-                        add("reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
-                    }
-                }
-
-                if (normals && reflection) {
-
-                    add("vec3 envLookup = reflect(xeo_vViewEyeVec, viewNormalVec);");
-                    add("envLookup.y = envLookup.y * -1.0;"); // Need to flip textures on Y-axis for some reason
-                    add("vec4 envColor;");
-
-                    //for (var i = 0, len = states.cubemap.layers.length; i < len; i++) {
-                    //    layer = states.cubemap.layers[i];
-                    //    add("envColor = textureCube(xeo_uCubeMapSampler" + i + ", envLookup);");
-                    //    add("color = mix(color, envColor.rgb, specular * xeo_uCubeMapIntensity" + i + ");");
-                    //}
-                }
-
-                add("vec4 fragColor;");
-
-                if (normals) {
-
-                    add("vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
-                    add("vec3  specularLight = vec3(0.0, 0.0, 0.0);");
-                    add("vec3  viewLightVec;");
-                    add("float dotN;");
-                    add("float lightDist;");
-                    add("float attenuation;");
-
-                    var light;
-
-                    for (var i = 0, len = states.lights.lights.length; i < len; i++) {
-
-                        light = states.lights.lights[i];
-
-                        if (light.type === "ambient") {
-                            continue;
-                        }
-
-                        add("viewLightVec = xeo_vViewLightVecAndDist" + i + ".xyz;");
-
-                        if (light.type === "point") {
-
-                            add("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
-
-                            add("lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
-
-                            add("attenuation = 1.0 - (" +
-                                "  xeo_uLightAttenuation" + i + "[0] + " +
-                                "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
-                                "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
-
-                            add("diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
-
-                            add("specularLight += specular * xeo_uLightIntensity" + i +
-                                " * specular * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-xeo_vViewPosition.xyz)), 0.0), shininess) * attenuation;");
-                        }
-
-                        if (light.type === "dir") {
-
-                            add("dotN = max(dot(normalize(viewNormalVec), normalize(viewLightVec)), 0.0);");
-
-                            add("diffuseLight += dotN * xeo_uLightColor" + i + ";");
-
-                            add("specularLight += specular * xeo_uLightIntensity" + i +
-                                " * pow(max(dot(reflect(normalize(-viewLightVec), normalize(-viewNormalVec)), normalize(-xeo_vViewPosition.xyz)), 0.0), shininess);");
-                        }
-                    }
-
-                    add("fragColor = vec4(diffuse * diffuseLight, opacity);");
-                    //    add("fragColor = vec4((specularLight + diffuse * (diffuseLight + ambient)) + emissive, opacity);");
-
-
-                } else { // No normals
-                    //add("fragColor = vec4((diffuse.rgb + (emissive * color.rgb)) * (vec3(1.0, 1.0, 1.0) + ambient.rgb), opacity);");
-                    add("fragColor = vec4(diffuse.rgb, opacity);");
-                }
-
-
-            } // if (phongMqterial)
-
-            if (depthTarget) {
-                add("if (xeo_uDepthMode) {");
-                add("  float depth = length(xeo_vViewPosition) / (xeo_uZFar - xeo_uZNear);");
-                add("  const vec4 bias = vec4(1.0 / 255.0, 1.0 / 255.0, 1.0 / 255.0, 0.0);");
-                add("  float r = depth;");
-                add("  float g = fract(r * 255.0);");
-                add("  float b = fract(g * 255.0);");
-                add("  float a = fract(b * 255.0);");
-                add("  vec4 colour = vec4(r, g, b, a);");
-                add("  gl_FragColor = colour - (colour.yzww * bias);");
-                add("} else {");
-                add("  gl_FragColor = fragColor;");
-                add("};");
+                add();
+                add("   gl_FragColor = vec4(diffuse + ambient + emissive, opacity);");
             }
 
             add("}");
@@ -918,15 +693,14 @@
             return end();
         }
 
-
         // Start fresh program source
         function begin() {
-            src = [""];
+            src = [];
         }
 
         // Append to program source
         function add(txt) {
-            src.push(txt);
+            src.push(txt || "");
         }
 
         // Finish building program source

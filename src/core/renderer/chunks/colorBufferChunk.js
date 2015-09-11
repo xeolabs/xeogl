@@ -10,12 +10,10 @@
         type: "colorBuf",
 
         // Avoid re-application of this chunk after a program switch.
+
         programGlobal: true,
 
-        build: function () {
-        },
-
-        drawAndPick: function (frameCtx) {
+        draw: function (frameCtx) {
 
             if (!frameCtx.transparent) {
 

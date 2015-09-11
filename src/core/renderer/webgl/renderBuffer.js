@@ -58,8 +58,8 @@
 
     XEO.renderer.webgl.RenderBuffer.prototype._touch = function () {
 
-        var width = this.canvas.width;
-        var height = this.canvas.height;
+        var width = this.canvas.canvas.width;
+        var height = this.canvas.canvas.height;
 
         if (this.buffer) {
 

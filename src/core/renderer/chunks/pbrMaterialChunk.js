@@ -21,14 +21,14 @@
                 this._uMaterialColorMapMatrix = draw.getUniform("xeo_uMaterialColorMapMatrix");
             }
             
-            this._uMaterialEmissive = draw.getUniform("xeo_uMaterialEmissive");
+            this._uMaterialEmissive = draw.getUniform("xeo_uEmissive");
 
             if (state.emissiveMap) {
-                this._uMaterialEmissiveMap = draw.getUniform("xeo_uMaterialEmissiveMap");
+                this._uEmissiveMap = draw.getUniform("xeo_uMaterialEmissiveMap");
                 this._uMaterialEmissiveMapMatrix = draw.getUniform("xeo_uMaterialEmissiveMapMatrix");
             }
 
-            this._uMaterialOpacity = draw.getUniform("xeo_uMaterialOpacity");
+            this._uOpacity = draw.getUniform("xeo_uOpacity");
 
             if (state.opacityMap) {
                 this._uMaterialOpacityMap = draw.getUniform("xeo_uMaterialOpacityMap");
@@ -47,7 +47,7 @@
                 this._uMaterialNormalMapMatrix = draw.getUniform("xeo_uMaterialNormalMapMatrix");
             }
 
-            this._uMaterialSpecular = draw.getUniform("xeo_uMaterialSpecular");
+            this._uMaterialSpecular = draw.getUniform("xeo_uSpecular");
             
             if (state.specularMap) {
                 this._uMaterialSpecularMap = draw.getUniform("xeo_uMaterialSpecularMap");
@@ -87,9 +87,9 @@
                 this._uMaterialEmissive.setValue(state.emissive);
             }
 
-            if (this._uMaterialEmissiveMap) {
+            if (this._uEmissiveMap) {
 
-                draw.bindTexture(this._uMaterialEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
 
                 if (this._uMaterialEmissiveMapMatrix) {
                     this._uMaterialEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
@@ -98,8 +98,8 @@
 
             // Opacity 
 
-            if (this._uMaterialOpacity) {
-                this._uMaterialOpacity.setValue(state.opacity);
+            if (this._uOpacity) {
+                this._uOpacity.setValue(state.opacity);
             }
             
             if (this._uMaterialOpacityMap) {

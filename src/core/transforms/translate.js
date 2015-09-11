@@ -1,17 +1,17 @@
 /**
 
- A **Translate** applies a translation transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Translate** translates associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
 
  <ul>
 
  <li>Translate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
- <li>Can be connected into hierarchies with other {{#crossLink "Transform"}}Transforms{{/crossLink}} and sub-classes</li>
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} are connected to leaf {{#crossLink "Transform"}}Transforms{{/crossLink}}
- in the hierarchy, and will be transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the
- root, in that order.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>
+ <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
+ <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
+ </ul>
 
  </ul>
 

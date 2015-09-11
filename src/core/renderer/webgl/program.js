@@ -5,11 +5,14 @@
     /**
      * Wrapper for a WebGL program
      *
+     * @param stats Collects runtime statistics
      * @param gl WebGL gl
      * @param vertex Source code for vertex shader
      * @param fragment Source code for fragment shader
      */
-    XEO.renderer.webgl.Program = function (gl, vertex, fragment) {
+    XEO.renderer.webgl.Program = function (stats, gl, vertex, fragment) {
+
+        this.stats = stats;
 
         this.gl = gl;
 
@@ -142,7 +145,7 @@
 
                 } else {
 
-                    this.uniforms[u_name] = new XEO.renderer.webgl.Uniform(gl, u.type, location);
+                    this.uniforms[u_name] = new XEO.renderer.webgl.Uniform(stats.frame, gl, u.type, location);
                 }
             }
         }

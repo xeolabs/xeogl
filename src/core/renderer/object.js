@@ -29,11 +29,6 @@
         this.chunks = [];
 
         /**
-         * Number of state chunks applied to render this object
-         */
-        this.chunksLen = 0;
-
-        /**
          * Shader programs that render this object, also used for (re)computing #sortKey
          */
         this.program = null;

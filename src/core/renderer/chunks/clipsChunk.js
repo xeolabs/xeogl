@@ -32,7 +32,9 @@
             }
         },
 
-        drawAndPick: function (frameCtx) {
+        drawPick: function (frameCtx) {
+
+            return;
 
             var uClipMode = (frameCtx.pick) ? this._uClipModePick : this._uClipModeDraw;
             var uClipPlane = (frameCtx.pick) ? this._uClipPlanePick : this._uClipPlaneDraw;

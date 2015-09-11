@@ -7,42 +7,31 @@
         type: "viewTransform",
 
         build: function () {
-
             this._uViewMatrixDraw = this.program.draw.getUniform("xeo_uViewMatrix");
             this._uViewNormalMatrixDraw = this.program.draw.getUniform("xeo_uViewNormalMatrix");
-            this._uEyeDraw = this.program.draw.getUniform("xeo_uEye");
-
-            this._uViewMatrixPick = this.program.pick.getUniform("xeo_uViewMatrix");
+            this._uViewMatrixPickObject = this.program.pickObject.getUniform("xeo_uViewMatrix");
+            this._uViewMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uViewMatrix");
         },
 
-        draw: function (frameCtx) {
-
-            var state = this.state;
-
+        draw: function () {
             if (this._uViewMatrixDraw) {
-                this._uViewMatrixDraw.setValue(state.matrix);
+                this._uViewMatrixDraw.setValue(this.state.matrix);
             }
-
             if (this._uViewNormalMatrixDraw) {
-                this._uViewNormalMatrixDraw.setValue(state.normalMatrix);
+                this._uViewNormalMatrixDraw.setValue(this.state.normalMatrix);
             }
-
-            if (this._uEyeDraw) {
-                this._uEyeDraw.setValue(state.eye);
-            }
-
-            frameCtx.viewMatrix = state.matrix;
         },
 
-        pick: function (frameCtx) {
-
-            var state = this.state;
-
-            if (this._uViewMatrixPick) {
-                this._uViewMatrixPick.setValue(state.matrix);
+        pickObject: function () {
+            if (this._uViewMatrixPickObject) {
+                this._uViewMatrixPickObject.setValue(this.state.matrix);
             }
+        },
 
-            frameCtx.viewMatrix = state.matrix;
+        pickPrimitive: function () {
+            if (this._uViewMatrixPickPrimitive) {
+                this._uViewMatrixPickPrimitive.setValue(this.state.matrix);
+            }
         }
     });
 

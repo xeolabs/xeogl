@@ -214,18 +214,26 @@
 
                         // Subscribe to new Camera's events
 
-                        // World-space boundary is dirty when new Camera's - (TODO)
-
                         var self = this;
 
                         this._onCameraView = newCamera.on("view",
                             function () {
-                                self._setWorldBoundaryDirty();
+                                self._setViewBoundaryDirty();
                             });
 
                         this._onCameraDestroyed = newCamera.on("destroyed",
                             function () {
-                                self._setWorldBoundaryDirty();
+                                self._setViewBoundaryDirty();
+                            });
+
+                        this._onCameraViewMatrix = newCamera.view.on("matrix",
+                            function () {
+                                self._setViewBoundaryDirty();
+                            });
+
+                        this._onCameraProjMatrix = newCamera.project.on("matrix",
+                            function () {
+                                self._setCanvasBoundaryDirty();
                             });
                     }
                 },
@@ -789,7 +797,7 @@
                     var oldTransform = this._children.transform;
 
                     if (oldTransform && (!value || value.id !== oldTransform.id)) {
-                        oldTransform.off(this._onTransformMatrix);
+                        oldTransform.off(this._onTransformUpdated);
                         oldTransform.off(this._onTransformDestroyed);
                     }
 
@@ -813,8 +821,11 @@
 
                         var self = this;
 
-                        this._onTransformMatrix = newTransform.on("matrix",
+                        this._onTransformUpdated = newTransform.on("updated",
                             function () {
+
+                                newTransform._buildLeafMatrix();
+
                                 self._setWorldBoundaryDirty();
                             });
 
@@ -849,7 +860,14 @@
 
                         var self = this;
 
+
+                        // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
+
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
+
+                            meta: {
+                                description: "World-space boundary of GameObject " + this.id
+                            },
 
                             getDirty: function () {
                                 return self._worldBoundaryDirty;
@@ -864,7 +882,7 @@
                             },
 
                             getMatrix: function () {
-                                return self._children.transform.matrix;
+                                return self._children.transform.leafMatrix;
                             }
                         });
 
@@ -899,7 +917,13 @@
 
                         var self = this;
 
+                        // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
+
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
+
+                            meta: {
+                                description: "View-space boundary of GameObject " + this.id
+                            },
 
                             getDirty: function () {
                                 return self._viewBoundaryDirty;
@@ -931,6 +955,58 @@
             },
 
             /**
+             * Canvas-space 2D boundary.
+             *
+             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink "Boundary2D"}}{{/crossLink}} instance
+             * next time you reference it.
+             *
+             * @property canvasBoundary
+             * @type Boundary2D
+             * @final
+             */
+            canvasBoundary: {
+
+                get: function () {
+
+                    if (!this._canvasBoundary) {
+
+                        var self = this;
+
+                        // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
+
+                        this._canvasBoundary = new XEO.Boundary2D(this.scene, {
+
+                            meta: {
+                                description: "Canvas-space boundary of GameObject " + this.id
+                            },
+
+                            getDirty: function () {
+                                return self._canvasBoundaryDirty;
+                            },
+
+                            getOBB: function () {
+                                return self.viewBoundary.obb; // Lazy-inits!
+                            },
+
+                            getMatrix: function () {
+                                return self._children.camera.project.matrix;
+                            }
+                        });
+
+                        this._canvasBoundary.on("destroyed",
+                            function () {
+                                self._canvasBoundary = null;
+                            });
+
+                        this._setCanvasBoundaryDirty();
+                    }
+
+                    return this._canvasBoundary;
+                }
+            },
+
+            /**
              * JSON object containing the (GLSL) source code of the shaders for this GameObject.
              *
              * This is sometimes useful to have as a reference
@@ -952,12 +1028,16 @@
                     var source = rendererObject.program.source;
                     return {
                         draw: {
-                            vertex: source.drawVertex,
-                            fragment: source.drawFragment
+                            vertex: source.vertexDraw,
+                            fragment: source.fragmentDraw
                         },
-                        pick: {
-                            vertex: source.pickVertex,
-                            fragment: source.pickFragment
+                        pickObject: {
+                            vertex: source.vertexPickObject,
+                            fragment: source.fragmentPickObject
+                        },
+                        pickPrimitive: {
+                            vertex: source.vertexPickPrimitive,
+                            fragment: source.fragmentPickPrimitive
                         }
                     };
                 }
@@ -986,22 +1066,26 @@
             }
         },
 
-
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
-            this._viewBoundaryDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
             }
-            if (this._viewBoundary) {
-                this._viewBoundary.fire("updated", true);
-            }
+            this._setViewBoundaryDirty();
         },
 
         _setViewBoundaryDirty: function () {
             this._viewBoundaryDirty = true;
             if (this._viewBoundary) {
                 this._viewBoundary.fire("updated", true);
+            }
+            this._setCanvasBoundaryDirty();
+        },
+
+        _setCanvasBoundaryDirty: function () {
+            this._canvasBoundaryDirty = true;
+            if (this._canvasBoundary) {
+                this._canvasBoundary.fire("updated", true);
             }
         },
 
@@ -1067,7 +1151,7 @@
         _destroy: function () {
 
             if (this._children.transform) {
-                this._children.transform.off(this._onTransformMatrix);
+                this._children.transform.off(this._onTransformUpdated);
                 this._children.transform.off(this._onTransformDestroyed);
             }
 
@@ -1083,6 +1167,10 @@
 
             if (this._viewBoundary) {
                 this._viewBoundary.destroy();
+            }
+
+            if (this._canvasBoundary) {
+                this._canvasBoundary.destroy();
             }
 
             this._renderer.removeObject(this.id);

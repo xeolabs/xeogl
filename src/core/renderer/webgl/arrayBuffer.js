@@ -7,12 +7,12 @@
      *
      * @param gl WebGL
      * @param type  Eg. ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER
-     * @param values  WebGL array wrapper
+     * @param data  WebGL array wrapper
      * @param numItems Count of items in array wrapper
      * @param itemSize Size of each item
      * @param usage Eg. STATIC_DRAW
      */
-    XEO.renderer.webgl.ArrayBuffer = function (gl, type, values, numItems, itemSize, usage) {
+    XEO.renderer.webgl.ArrayBuffer = function (gl, type, data, numItems, itemSize, usage) {
 
         /**
          * True when this buffer is allocated and ready to go
@@ -24,28 +24,27 @@
 
         this.type = type;
 
-        this.itemType = values.constructor == Uint8Array ? gl.UNSIGNED_BYTE :
-            values.constructor == Uint16Array ? gl.UNSIGNED_SHORT :
-                values.constructor == Uint32Array ? gl.UNSIGNED_INT :
+        this.itemType = data.constructor == Uint8Array ? gl.UNSIGNED_BYTE :
+            data.constructor == Uint16Array ? gl.UNSIGNED_SHORT :
+                data.constructor == Uint32Array ? gl.UNSIGNED_INT :
                     gl.FLOAT;
-
-        this.numItems = numItems;
-
-        this.itemSize = itemSize;
 
         this.usage = usage;
 
-        this._allocate(values, numItems);
+        this.length = 0;
+        this.numItems = 0;
+        this.itemSize = itemSize;
+
+        this._allocate(data);
     };
 
     /**
      * Allocates this buffer
      *
-     * @param values
-     * @param numItems
+     * @param data
      * @private
      */
-    XEO.renderer.webgl.ArrayBuffer.prototype._allocate = function (values, numItems) {
+    XEO.renderer.webgl.ArrayBuffer.prototype._allocate = function (data) {
 
         this.allocated = false;
 
@@ -56,17 +55,20 @@
         }
 
         if (this._handle) {
+
             this.gl.bindBuffer(this.type, this._handle);
-            this.gl.bufferData(this.type, values, this.usage);
+            this.gl.bufferData(this.type, data, this.usage);
             this.gl.bindBuffer(this.type, null);
-            this.numItems = numItems;
-            this.length = values.length;
+
+            this.length = data.length;
+            this.numItems = this.length / this.itemSize;
+
             this.allocated = true;
         }
     };
 
     /**
-     * Updates values within this buffer, reallocating if needed.
+     * Updates data within this buffer, reallocating if needed.
      *
      * @param data
      * @param offset

@@ -12,6 +12,15 @@
 
     var XEO = function () {
 
+        /**
+         * Semantic version number. The value for this is set by an expression that's concatenated to
+         * the end of the built binary by the xeoEngine build script.
+         * @property version
+         * @namespace XEO
+         * @type {String}
+         */
+        this.version = null;
+
         // Ensures unique scene IDs
         // Lazy-instantiated because class won't be defined yet
         this._sceneIDMap = null;

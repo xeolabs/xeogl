@@ -171,13 +171,8 @@
                 hash: null
             });
 
-            this._dirty = true;
-
-            this._components = {};
-            this._dirtyComponentSubs = {};
-            this._destroyedComponentSubs = {};
-
-
+            this._hashDirty = true;
+            
             this.ambient = cfg.ambient;
             this.diffuse = cfg.diffuse;
             this.specular = cfg.specular;
@@ -278,14 +273,14 @@
              Fires a {{#crossLink "PhongMaterial/specular:event"}}{{/crossLink}} event on change.
 
              @property specular
-             @default [0.3, 0.3, 0.3]
+             @default [1.0, 1.0, 1.0]
              @type Array(Number)
              */
             specular: {
 
                 set: function (value) {
 
-                    this._state.specular = value || [0.3, 0.3, 0.3];
+                    this._state.specular = value || [1.0, 1.0, 1.0];
 
                     this._renderer.imageDirty = true;
 
@@ -528,11 +523,11 @@
                      @event normalMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("normalMap", texture);
+                    this._setComponent("normalMap", texture);
                 },
 
                 get: function () {
-                    return this._components["normalMap"];
+                    return this._children["normalMap"];
                 }
             },
 
@@ -557,11 +552,11 @@
                      @event diffuseMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("diffuseMap", texture);
+                    this._setComponent("diffuseMap", texture);
                 },
 
                 get: function () {
-                    return this._components["diffuseMap"];
+                    return this._children["diffuseMap"];
                 }
             },
 
@@ -586,11 +581,11 @@
                      @event specularMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("specularMap", texture);
+                    this._setComponent("specularMap", texture);
                 },
 
                 get: function () {
-                    return this._components["specularMap"];
+                    return this._children["specularMap"];
                 }
             },
 
@@ -615,11 +610,11 @@
                      @event emissiveMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("emissiveMap", texture);
+                    this._setComponent("emissiveMap", texture);
                 },
 
                 get: function () {
-                    return this._components["emissiveMap"];
+                    return this._children["emissiveMap"];
                 }
             },
 
@@ -644,11 +639,11 @@
                      @event opacityMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("opacityMap", texture);
+                    this._setComponent("opacityMap", texture);
                 },
 
                 get: function () {
-                    return this._components["opacityMap"];
+                    return this._children["opacityMap"];
                 }
             },
 
@@ -673,11 +668,38 @@
                      @event reflectivityMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("reflectivityMap", texture);
+                    this._setComponent("reflectivityMap", texture);
                 },
 
                 get: function () {
-                    return this._components["reflectivityMap"];
+                    return this._children["reflectivityMap"];
+                }
+            },
+
+            /**
+             A reflection {{#crossLink "CubeMap"}}{{/crossLink}} attached to this PhongMaterial.
+
+             Fires a {{#crossLink "PhongMaterial/reflection:event"}}{{/crossLink}} event on change.
+
+             @property reflection
+             @default null
+             @type {CubeMap}
+             */
+            reflection: {
+
+                set: function (cubeMap) {
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} property changes.
+
+                     @event reflection
+                     @param value {CubeMap} The property's new value
+                     */
+                    this._setComponent("reflection", cubeMap);
+                },
+
+                get: function () {
+                    return this._children["reflection"];
                 }
             },
 
@@ -702,11 +724,11 @@
                      @event diffuseFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("diffuseFresnel", fresnel);
+                    this._setComponent("diffuseFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._components["diffuseFresnel"];
+                    return this._children["diffuseFresnel"];
                 }
             },
 
@@ -731,11 +753,11 @@
                      @event specularFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("specularFresnel", fresnel);
+                    this._setComponent("specularFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._components["specularFresnel"];
+                    return this._children["specularFresnel"];
                 }
             },
 
@@ -760,11 +782,11 @@
                      @event emissiveFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("emissiveFresnel", fresnel);
+                    this._setComponent("emissiveFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._components["emissiveFresnel"];
+                    return this._children["emissiveFresnel"];
                 }
             },
 
@@ -789,11 +811,11 @@
                      @event opacityFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("opacityFresnel", fresnel);
+                    this._setComponent("opacityFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._components["opacityFresnel"];
+                    return this._children["opacityFresnel"];
                 }
             },
 
@@ -818,86 +840,26 @@
                      @event reflectivityFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("reflectivityFresnel", fresnel);
+                    this._setComponent("reflectivityFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._components["reflectivityFresnel"];
+                    return this._children["reflectivityFresnel"];
                 }
             }
         },
 
-        _attachComponent: function (type, component) {
-
-            if (XEO._isString(component)) {
-
-                // ID given for component - find the component
-                var id = component;
-
-                component = this.scene.components[id];
-
-                if (!component) {
-                    this.error("Component not found: " + XEO._inQuotes(id));
-                    return;
-                }
-            }
-
-            if (component && component.type !== "XEO.Texture" && component.type !== "XEO.Fresnel") {
-                this.error("Component " + XEO._inQuotes(id) + " is not a XEO.Texture or XEO.Fresnel");
-                return;
-            }
-
-            var oldComponent = this._components[type];
-
-            if (oldComponent) {
-
-                // Replacing old component
-
-                oldComponent.off(this._dirtyComponentSubs[type]);
-                oldComponent.off(this._destroyedComponentSubs[type]);
-
-                delete this._components[type];
-            }
-
-            var self = this;
-
-            if (component) {
-
-                this._dirtyComponentSubs[type] = component.on("dirty",
-                    function () {
-                        self.fire("dirty", true);
-                    });
-
-                this._destroyedComponentSubs[type] = component.on("destroyed",
-                    function () {
-
-                        delete self._dirtyComponentSubs[type];
-                        delete self._destroyedComponentSubs[type];
-
-                        self._dirty = true;
-
-                        self.fire("dirty", true);
-                        self.fire(type, null);
-                    });
-
-                this._components[type] = component;
-            }
-
-            this._state[type] = component ? component._state : null;
-
-            this._dirty = true;
-
-            this.fire("dirty", true);
-            this.fire(type, component || null);
+        _setComponent: function (name, child) {
+            child = this._setChild(name, child, false);
+            this._state[name] = child ? child._state : null;
+            this._hashDirty = true;
         },
 
         _compile: function () {
 
-            if (this._dirty) {
-
+            if (this._hashDirty) {
                 this._makeHash();
-
-                this._dirty = false;
+                this._hashDirty = false;
             }
 
             this._renderer.material = this._state;
@@ -1013,7 +975,7 @@
 
             // Textures
 
-            var components = this._components;
+            var components = this._children;
 
             if (components.normalMap) {
                 json.normalMap = components.normalMap.id;

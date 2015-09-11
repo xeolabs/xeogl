@@ -41,6 +41,14 @@
     XEO.math = {
 
         /**
+         * The number of radiians in a degree (0.0174532925).
+         * @property DEGTORAD
+         * @namespace XEO.math
+         * @type {Number}
+         */
+        DEGTORAD: 0.0174532925,
+
+        /**
          * Returns a new, uninitialized two-element vector.
          * @method vec2
          * @static
@@ -1577,20 +1585,26 @@
             var m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11];
             var m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15];
 
+            var r;
+
             for (var i = 0; i < len; ++i) {
+
                 // cache values
                 pi = points[i];
+
                 p0 = pi[0];
                 p1 = pi[1];
                 p2 = pi[2];
 
-                result[i] = [
-                    (m0 * p0) + (m4 * p1) + (m8 * p2) + m12,
-                    (m1 * p0) + (m5 * p1) + (m9 * p2) + m13,
-                    (m2 * p0) + (m6 * p1) + (m10 * p2) + m14,
-                    (m3 * p0) + (m7 * p1) + (m11 * p2) + m15
-                ];
+                r = result[i] || (result[i] = [0, 0, 0, 0]);
+
+                r[0] = (m0 * p0) + (m4 * p1) + (m8 * p2) + m12;
+                r[1] = (m1 * p0) + (m5 * p1) + (m9 * p2) + m13;
+                r[2] = (m2 * p0) + (m6 * p1) + (m10 * p2) + m14;
+                r[3] = (m3 * p0) + (m7 * p1) + (m11 * p2) + m15;
             }
+
+            result.length = len;
 
             return result;
         },
@@ -1688,6 +1702,20 @@
         },
 
         /**
+         * Gets the center of a 2D boundary given as minima and maxima.
+         * @method getAABB2Center
+         * @static
+         */
+        getAABB2Center: function (boundary, dest) {
+            var r = dest || this.vec2();
+
+            r[0] = (boundary.xmax + boundary.xmin ) * 0.5;
+            r[1] = (boundary.ymax + boundary.ymin ) * 0.5;
+
+            return r;
+        },
+
+        /**
          * Converts an axis-aligned boundary into an oriented boundary consisting of
          * an array of eight 3D positions, one for each corner of the boundary.
          *
@@ -1773,11 +1801,11 @@
          *
          * @method positions3ToAABB3
          * @static
-         * @param {Array} positions Oriented bounding box.
+         * @param {Array} positions Flattened 3D positions array
          * @param {*} [aabb] Axis-aligned bounding box.
          * @returns {*} Axis-aligned bounding box.
          */
-        positions3ToAABB3: function (points, aabb) {
+        positions3ToAABB3: function (positions, aabb) {
 
             aabb = aabb || {
                     xmin: 0,
@@ -1797,11 +1825,11 @@
 
             var x, y, z;
 
-            for (var i = 0, len = points.length; i < len; i += 3) {
+            for (var i = 0, len = positions.length - 2; i < len; i += 3) {
 
-                x = points[i + 0];
-                y = points[i + 1];
-                z = points[i + 2];
+                x = positions[i + 0];
+                y = positions[i + 1];
+                z = positions[i + 2];
 
                 if (x < xmin) {
                     xmin = x;
@@ -1908,6 +1936,85 @@
             return aabb;
         },
 
+        /**
+         * Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.
+         *
+         * @method points3ToAABB2
+         * @static
+         * @param {Array} points 3D Points.
+         * @param {*} [aabb] 2D axis-aligned bounding box.
+         * @returns {*} 2D axis-aligned bounding box.
+         */
+        points3ToAABB2: function (points, aabb) {
+
+            aabb = aabb || {
+                    xmin: 0, xmax: 0, ymin: 0, ymax: 0
+                };
+
+            var xmin = 10000000;
+            var ymin = 10000000;
+            var xmax = -10000000;
+            var ymax = -10000000;
+
+            var x, y, z, w, f;
+
+            for (var i = 0, len = points.length; i < len; i++) {
+
+                x = points[i][0];
+                y = points[i][1];
+                z = points[i][2];
+                w = points[i][3] || 1.0;
+
+                f = 1.0 / w;
+
+                x *= f;
+                y *= f;
+
+                if (x < xmin) {
+                    xmin = x;
+                }
+
+                if (y < ymin) {
+                    ymin = y;
+                }
+
+                if (x > xmax) {
+                    xmax = x;
+                }
+
+                if (y > ymax) {
+                    ymax = y;
+                }
+            }
+
+            aabb.xmin = xmin;
+            aabb.ymin = ymin;
+            aabb.xmax = xmax;
+            aabb.ymax = ymax;
+
+            return aabb;
+        },
+
+
+        AABB2ToCanvas: function (aabb, canvasWidth, canvasHeight, aabb2) {
+
+            aabb2 = aabb2 || aabb;
+
+            var midx = canvasWidth * 0.5;
+            var midy = canvasHeight * 0.5;
+
+            var xmin = aabb.xmin;
+            var ymin = -aabb.ymin;
+            var xmax = aabb.xmax;
+            var ymax = -aabb.ymax;
+
+            aabb2.xmin = Math.floor((xmin * midx) + midx);
+            aabb2.ymin = canvasHeight - Math.floor((ymin * -midy) + midy);
+            aabb2.xmax = Math.floor((xmax * midx) + midx);
+            aabb2.ymax = canvasHeight - Math.floor((ymax * -midy) + midy);
+
+            return aabb;
+        },
 
         /**
          * Builds normal vectors from positions and indices.
@@ -1937,10 +2044,10 @@
                 v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
                 v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
 
-                v2 = XEO.math.subVec4(v2, v1, [0, 0, 0, 0]);
-                v3 = XEO.math.subVec4(v3, v1, [0, 0, 0, 0]);
+                v2 = XEO.math.subVec3(v2, v1, [0, 0, 0]);
+                v3 = XEO.math.subVec3(v3, v1, [0, 0, 0]);
 
-                var n = XEO.math.normalizeVec4(XEO.math.cross3Vec4(v2, v3, [0, 0, 0, 0]), [0, 0, 0, 0]);
+                var n = XEO.math.normalizeVec3(XEO.math.cross3Vec3(v2, v3, [0, 0, 0]), [0, 0, 0]);
 
                 if (!nvecs[j0]) nvecs[j0] = [];
                 if (!nvecs[j1]) nvecs[j1] = [];
@@ -2075,8 +2182,84 @@
             }
 
             return result;
-        }
+        },
 
+        /**
+         * Builds vertex and index arrays needed by color-indexed triangle picking.
+         *
+         * @method getPickTriangles
+         * @static
+         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
+         * @param {{Array of Number}} indices One-dimensional flattened array of indices.
+         * @param {*} [pickTris] Optional object to return the arrays on.
+         * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
+         */
+        getPickTriangles: function (positions, indices, pickTris) {
+
+            pickTris = pickTris || {};
+
+            var pickPositions = [];
+            var pickColors = [];
+            var pickIndices = [];
+
+            var index;
+            var index2 = 0;
+            var primIndex = 0;
+
+            var r;
+            var g;
+            var b;
+
+            for (var location = 0; location < indices.length; location += 3) {
+
+                // Primitive-indexed triangle pick color
+
+                b = (primIndex >> 16 & 0xFF) / 255;
+                g = (primIndex >> 8 & 0xFF) / 255;
+                r = (primIndex & 0xFF) / 255;
+
+                index = indices[location];
+                pickIndices.push(index2++);
+
+                pickPositions.push(positions[(index * 3) + 0]);
+                pickPositions.push(positions[(index * 3) + 1]);
+                pickPositions.push(positions[(index * 3) + 2]);
+
+                pickColors.push(r);
+                pickColors.push(g);
+                pickColors.push(b);
+
+                index = indices[location + 1];
+                pickIndices.push(index2++);
+
+                pickPositions.push(positions[(index * 3) + 0]);
+                pickPositions.push(positions[(index * 3) + 1]);
+                pickPositions.push(positions[(index * 3) + 2]);
+
+                pickColors.push(r);
+                pickColors.push(g);
+                pickColors.push(b);
+
+                index = indices[location + 2];
+                pickIndices.push(index2++);
+
+                pickPositions.push(positions[(index * 3) + 0]);
+                pickPositions.push(positions[(index * 3) + 1]);
+                pickPositions.push(positions[(index * 3) + 2]);
+
+                pickColors.push(r);
+                pickColors.push(g);
+                pickColors.push(b);
+
+                primIndex++;
+            }
+
+            pickTris.pickPositions = pickPositions;
+            pickTris.pickColors = pickColors;
+            pickTris.pickIndices = pickIndices;
+
+            return pickTris;
+        }
     };
 
 })();

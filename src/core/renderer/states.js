@@ -304,7 +304,8 @@
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Geometry = XEO.renderer.State.extend({});
+    XEO.renderer.Geometry = XEO.renderer.State.extend({
+    });
 
 })();
 

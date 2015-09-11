@@ -1,17 +1,17 @@
 /**
 
- A **Rotate** applies a rotation transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Rotate** rotates associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} about an axis vector.
 
  ## Overview
 
  <ul>
  <li>Rotate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
- <li>Can be connected into hierarchies with other {{#crossLink "Transform"}}Transforms{{/crossLink}} and sub-classes</li>
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} are connected to leaf {{#crossLink "Transform"}}Transforms{{/crossLink}}
- in the hierarchy, and will be transformed by each {{#crossLink "Transform"}}Transform{{/crossLink}} on the path up to the
- root, in that order.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Transforms create within xeoEngine's shaders.</li>
+ <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
+ <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
+
 
  <img src="../../../assets/images/Rotate.png"></img>
 
@@ -190,7 +190,7 @@
                 // but that will be rarely be the case, where ormally it would just be the angle that is
                 // continually updated.
 
-                this.matrix = XEO.math.rotationMat4v(this._angle, this._xyz);
+                this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz);
             }
         },
 

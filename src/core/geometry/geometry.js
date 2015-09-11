@@ -254,6 +254,7 @@
  @param [cfg.normals] {Array of Number} Normals array.
  @param [cfg.uv] {Array of Number} UVs array.
  @param [cfg.colors] {Array of Number} Vertex colors.
+ @param [cfg.tangents] {Array of Number} Vertex tangents.
  @param [cfg.indices] {Array of Number} Indices array.
  @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from positions and indices.
  @extends Component
@@ -268,23 +269,74 @@
 
         _init: function (cfg) {
 
+            var self = this;
+
             this._state = new XEO.renderer.Geometry({
+
                 primitive: null, // WebGL enum
-                positions: null, // VBOs
+                primitiveName: null, // String
+
+                // VBOs 
+
+                positions: null,
                 colors: null,
                 normals: null,
                 uv: null,
                 tangents: null,
-                indices: null
+                indices: null,
+
+                // Getters for VBOs that are only created on-demand
+
+                // Tangents for normal mapping
+
+                getTangents: function () {
+                    if (self._tangentsDirty) {
+                        self._buildTangents();
+                    }
+                    return self._tangents;
+                },
+
+                // Arrays modified to support triangle-picking
+
+                getPickPositions: function () {
+                    if (self._pickVBOsDirty) {
+                        self._buildPickVBOs();
+                    }
+                    return self._pickPositions;
+                },
+
+                getPickColors: function () {
+                    if (self._pickVBOsDirty) {
+                        self._buildPickVBOs();
+                    }
+                    return self._pickColors;
+                },
+
+                getPickIndices: function () {
+                    if (self._pickVBOsDirty) {
+                        self._buildPickVBOs();
+                    }
+                    return self._pickIndices;
+                }
             });
 
-            this._primitive = null;  // String
-            this._positions = null; // Typed data arrays
-            this._colors = null;
-            this._normals = null;
-            this._uv = null;
+            // Typed arrays
+
+            this._positionsData = null;
+            this._colorsData = null;
+            this._normalsData = null;
+            this._uvData = null;
+            this._tangentsData = null;
+            this._indicesData = null;
+
+            // Lazy-generated VBOs
+
             this._tangents = null;
-            this._indices = null;
+            this._pickPositions = null;
+            this._pickColors = null;
+            this._pickIndices = null;
+
+            // Flags for work pending
 
             this._dirty = false;
             this._positionsDirty = true;
@@ -293,7 +345,7 @@
             this._uvDirty = true;
             this._tangentsDirty = true;
             this._indicesDirty = true;
-
+            this._pickVBOsDirty = true;
 
             // Model-space Boundary3D
 
@@ -316,15 +368,6 @@
                     -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, // Bottom face
                     1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, // Right face
                     -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0 // Left face
-                ];
-
-                this.colors = [
-                    1.0, 1.0, 1.0, 1.0,    // Front face
-                    1.0, 1.0, 1.0, 1.0,    // Back face
-                    1.0, 1.0, 1.0, 1.0,    // Top face
-                    1.0, 1.0, 1.0, 1.0,    // Bottom face
-                    1.0, 1.0, 1.0, 1.0,    // Right face
-                    1.0, 1.0, 1.0, 1.0     // Left face
                 ];
 
                 this.normals = [
@@ -400,7 +443,7 @@
                     self._scheduleBuild();
                 });
 
-            this.scene.stats.inc("geometries");
+            this.scene.stats.memory.meshes++;
         },
 
         _scheduleBuild: function () {
@@ -421,7 +464,7 @@
 
             var gl = this.scene.canvas.gl;
 
-            switch (this._primitive) {
+            switch (this._state.primitiveName) {
 
                 case "points":
                     this._state.primitive = gl.POINTS;
@@ -457,65 +500,153 @@
 
             var usage = gl.STATIC_DRAW;
 
+            var memoryStats = this.scene.stats.memory;
+
             if (this._positionsDirty) {
                 if (this._state.positions) {
-                    this.scene.stats.dec("vertices", this._positions.length / 3);
+                    memoryStats.positions -= this._state.positions.numItems;
                     this._state.positions.destroy();
                 }
-                this._state.positions = this._positions ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._positions), this._positions.length, 3, usage) : null;
-                this.scene.stats.inc("vertices", this._positions.length / 3);
+                this._state.positions = this._positionsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._positionsData), this._positionsData.length, 3, usage) : null;
+                memoryStats.positions += this._state.positions.numItems;
                 this._positionsDirty = false;
+
+                // Need to rebuild pick mesh now
+                this._pickVBOsDirty = true;
             }
 
             if (this._colorsDirty) {
+
                 if (this._state.colors) {
+                    memoryStats.colors -= this._state.colors.numItems;
                     this._state.colors.destroy();
                 }
-                this._state.colors = this._colors ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._colors), this._colors.length, 4, usage) : null;
+                this._state.colors = this._colorsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._colorsData), this._colorsData.length, 4, usage) : null;
+                if (this._state.colors) {
+                    memoryStats.colors += this._state.colors.numItems;
+                }
                 this._colorsDirty = false;
             }
 
             if (this._normalsDirty) {
                 if (this._state.normals) {
+                    memoryStats.normals += this._state.normals.numItems;
                     this._state.normals.destroy();
                 }
 
                 // Automatic normal generation
 
-                if (this._autoNormals && this._positions && this._indices) {
-                    this._normals = XEO.math.buildNormals(this._positions, this._indices);
+                if (this._autoNormals && this._positionsData && this._indicesData) {
+                    this._normalsData = XEO.math.buildNormals(this._positionsData, this._indicesData);
                 }
 
-                this._state.normals = this._normals ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._normals), this._normals.length, 3, usage) : null;
+                this._state.normals = this._normalsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._normalsData), this._normalsData.length, 3, usage) : null;
+                if (this._state.normals) {
+                    memoryStats.normals += this._state.normals.numItems;
+                }
                 this._normalsDirty = false;
+
+                // Need to rebuild tangents
+                // next time the renderer gets them from the state
+
+                this._tangentsDirty = true;
             }
 
             if (this._uvDirty) {
                 if (this._state.uv) {
+                    memoryStats.uvs -= this._state.uv.numItems;
                     this._state.uv.destroy();
                 }
-                this._state.uv = this._uv ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._uv), this._uv.length, 2, usage) : null;
-                this._uvDirty = false;
-            }
-
-            if (this._tangentsDirty) {
-                if (this._state.tangents) {
-                    this._state.tangents.destroy();
+                this._state.uv = this._uvData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._uvData), this._uvData.length, 2, usage) : null;
+                if (this._state.uv) {
+                    memoryStats.uvs += this._state.uv.numItems;
                 }
-                this._state.tangents = this._tangents ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._tangents), this._tangents.length, 4, usage) : null;
-                this._tangentsDirty = false;
+                this._uvDirty = false;
+
+                // Need to rebuild tangents
+                // next time the renderer gets them from the state
+
+                this._tangentsDirty = true;
             }
 
             if (this._indicesDirty) {
                 if (this._state.indices) {
+                    memoryStats.indices -= this._state.indices.numItems;
                     this._state.indices.destroy();
                 }
-                this._state.indices = this._indices ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this._indices), this._indices.length, 1, usage) : null;
+                this._state.indices = this._indicesData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this._indicesData), this._indicesData.length, 1, usage) : null;
+                if (this._state.indices) {
+                    memoryStats.indices += this._state.indices.numItems;
+                }
                 this._indicesDirty = false;
+
+                // Need to rebuild pick mesh next time the
+                // renderer gets it from the state
+
+                this._pickVBOsDirty = true;
             }
 
             this._dirty = false;
         },
+
+        _buildTangents: function () {
+
+            if (!this._tangentsDirty) {
+                return;
+            }
+
+            if (this._tangents) {
+                this._tangents.destroy();
+            }
+
+            var gl = this.scene.canvas.gl;
+
+            var usage = gl.STATIC_DRAW;
+
+            this._tangents = this._tangentsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._tangentsData), this._tangentsData.length, 4, usage) : null;
+
+            this._tangentsDirty = false;
+        },
+
+
+        _buildPickVBOs: function () {
+
+            if (!this._pickVBOsDirty) {
+                return;
+            }
+
+            if (this._pickPositions) {
+                this._pickPositions.destroy();
+            }
+
+            if (this._pickColors) {
+                this._pickColors.destroy();
+            }
+
+            if (this._pickIndices) {
+                this._pickIndices.destroy();
+            }
+
+            if (this._positionsData && this._indicesData) {
+
+                var gl = this.scene.canvas.gl;
+
+                var usage = gl.STATIC_DRAW;
+
+                var arrays = XEO.math.getPickTriangles(this._positionsData, this._indicesData);
+
+                var pickPositions = arrays.pickPositions;
+                var pickColors = arrays.pickColors;
+                var pickIndices = arrays.pickIndices;
+
+                this._pickPositions = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickPositions), pickPositions.length, 3, usage);
+                this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickColors), pickColors.length, 4, usage);
+                this._pickIndices = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pickIndices), pickIndices.length, 1, usage);
+            }
+
+            this._pickVBOsDirty = false;
+        },
+
 
         _props: {
 
@@ -551,7 +682,7 @@
                         value = "triangles";
                     }
 
-                    this._primitive = value;
+                    this._state.primitiveName = value;
 
                     this.fire("dirty", true);
 
@@ -561,13 +692,13 @@
                      * @type String
                      * @param value The property's new value
                      */
-                    this.fire("primitive", this._primitive);
+                    this.fire("primitive", this._state.primitiveName);
 
                     this._scheduleBuild();
                 },
 
                 get: function () {
-                    return this._primitive;
+                    return this._state.primitiveName;
                 }
             },
 
@@ -588,9 +719,9 @@
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._positions !== !value);
+                    var dirty = (!this._positionsData !== !value);
 
-                    this._positions = value;
+                    this._positionsData = value;
                     this._positionsDirty = true;
 
                     this._scheduleBuild();
@@ -606,7 +737,7 @@
                      * @event positions
                      * @param value The property's new value
                      */
-                    this.fire("positions", this._positions);
+                    this.fire("positions", this._positionsData);
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/boundary:property"}}{{/crossLink}} property changes.
@@ -624,7 +755,7 @@
                 },
 
                 get: function () {
-                    return this._positions;
+                    return this._positionsData;
                 }
             },
 
@@ -642,9 +773,9 @@
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._normals !== !value);
+                    var dirty = (!this._normalsData !== !value);
 
-                    this._normals = value;
+                    this._normalsData = value;
                     this._normalsDirty = true;
 
                     this._scheduleBuild();
@@ -658,13 +789,13 @@
                      * @event  normals
                      * @param value The property's new value
                      */
-                    this.fire(" normals", this._normals);
+                    this.fire(" normals", this._normalsData);
 
                     this._renderer.imageDirty = true;
                 },
 
                 get: function () {
-                    return this._normals;
+                    return this._normalsData;
                 }
             },
 
@@ -682,9 +813,9 @@
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._uv !== !value);
+                    var dirty = (!this._uvData !== !value);
 
-                    this._uv = value;
+                    this._uvData = value;
                     this._uvDirty = true;
 
                     this._scheduleBuild();
@@ -698,13 +829,13 @@
                      * @event uv
                      * @param value The property's new value
                      */
-                    this.fire("uv", this._uv);
+                    this.fire("uv", this._uvData);
 
                     this._renderer.imageDirty = true;
                 },
 
                 get: function () {
-                    return this._uv;
+                    return this._uvData;
                 }
             },
 
@@ -722,9 +853,9 @@
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colors != !value);
+                    var dirty = (!this._colorsData != !value);
 
-                    this._colors = value;
+                    this._colorsData = value;
                     this._colorsDirty = true;
 
                     this._scheduleBuild();
@@ -738,13 +869,13 @@
                      * @event colors
                      * @param value The property's new value
                      */
-                    this.fire("colors", this._colors);
+                    this.fire("colors", this._colorsData);
 
                     this._renderer.imageDirty = true;
                 },
 
                 get: function () {
-                    return this._colors;
+                    return this._colorsData;
                 }
             },
 
@@ -762,9 +893,9 @@
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._indices && !value);
+                    var dirty = (!this._indicesData && !value);
 
-                    this._indices = value;
+                    this._indicesData = value;
                     this._indicesDirty = true;
 
                     this._scheduleBuild();
@@ -778,13 +909,13 @@
                      * @event indices
                      * @param value The property's new value
                      */
-                    this.fire("indices", this._indices);
+                    this.fire("indices", this._indicesData);
 
                     this._renderer.imageDirty = true;
                 },
 
                 get: function () {
-                    return this._indices;
+                    return this._indicesData;
                 }
             },
 
@@ -817,7 +948,7 @@
                             },
 
                             getPositions: function () {
-                                return self._positions
+                                return self._positionsData;
                             }
                         });
 
@@ -864,7 +995,7 @@
                      * @type Boolean
                      * @param value The property's new value
                      */
-                    this.fire("autoNormals", this._primitive);
+                    this.fire("autoNormals", this._autoNormals);
 
                     this._scheduleBuild();
                 },
@@ -873,11 +1004,55 @@
                     return this._autoNormals;
                 }
             }
+            //,
+            //
+            ///**
+            // * Set true to make this Geometry automatically generate {{#crossLink "Geometry/tangents:property"}}{{/crossLink}} from
+            // * {{#crossLink "Geometry/uv:property"}}{{/crossLink}} and {{#crossLink "Geometry/normals:property"}}{{/crossLink}}.
+            // *
+            // * This Geomatry will auto-generate its {{#crossLink "Geometry/tangents:property"}}{{/crossLink}} on the
+            // * next {{#crossLink "Scene"}}{{/crossLink}} {{#crossLink "Scene/tick:event"}}{{/crossLink}} event.
+            // *
+            // * Fires a {{#crossLink "Geometry/autoTangents:event"}}{{/crossLink}} event on change.
+            // *
+            // * @property autoTangents
+            // * @default  false
+            // * @type Boolean
+            // */
+            //autoTangents: {
+            //
+            //    set: function (value) {
+            //
+            //        value = !!value;
+            //
+            //        if (this._autoTangents === value) {
+            //            return;
+            //        }
+            //
+            //        this._autoTangents = value;
+            //
+            //        /**
+            //         * Fired whenever this Geometry's {{#crossLink "Geometry/autoTangents:property"}}{{/crossLink}} property changes.
+            //         * @event autoTangents
+            //         * @type Boolean
+            //         * @param value The property's new value
+            //         */
+            //        this.fire("autoTangents", this._primitive);
+            //
+            //        this._scheduleBuild();
+            //    },
+            //
+            //    get: function () {
+            //        return this._autoTangents;
+            //    }
+            //}
 
         },
 
         _setModelBoundaryDirty: function () {
+
             this._modelBoundaryDirty = true;
+
             if (this._modelBoundary) {
                 this._modelBoundary.fire("updated", true);
             }
@@ -894,14 +1069,14 @@
 
         _getJSON: function () {
 
-            return XEO._apply2({
-                primitive: this._primitive,
-                positions: this._positions,
-                normals: this._normals,
-                uv: this._uv,
-                colors: this._colors,
-                indices: this._indices
-            }, {});
+            return {
+                primitive: this._state.primitiveName,
+                positions: this._positionsData,
+                normals: this._normalsData,
+                uv: this._uvData,
+                colors: this._colorsData,
+                indices: this._indicesData
+            };
         },
 
         _destroy: function () {
@@ -926,13 +1101,29 @@
                 this._state.uv.destroy();
             }
 
-            if (this._state.tangents) {
-                this._state.tangents.destroy();
-            }
-
             if (this._state.indices) {
                 this._state.indices.destroy();
             }
+
+            // Destroy lazy-generated VBOs
+
+            if (this._tangentsData) {
+                this._tangentsData.destroy();
+            }
+
+            if (this._pickPositions) {
+                this._pickPositions.destroy();
+            }
+
+            if (this._pickColors) {
+                this._pickColors.destroy();
+            }
+
+            if (this._pickIndices) {
+                this._pickIndices.destroy();
+            }
+
+            // Destroy boundary
 
             if (this._modelBoundary) {
                 this._modelBoundary.destroy();
@@ -944,8 +1135,7 @@
 
             // Decrement geometry statistic
 
-            this.scene.stats.dec("geometries");
+            this.scene.stats.memory.meshes--;
         }
     });
-
 })();

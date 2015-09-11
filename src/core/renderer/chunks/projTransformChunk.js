@@ -7,58 +7,27 @@
         type: "projTransform",
 
         build: function () {
-
             this._uProjMatrixDraw = this.program.draw.getUniform("xeo_uProjMatrix");
-            this._uZNearDraw = this.program.draw.getUniform("xeo_uZNear");
-            this._uZFarDraw = this.program.draw.getUniform("xeo_uZFar");
-
-            this._uProjMatrixPick = this.program.pick.getUniform("xeo_uProjMatrix");
-            this._uZNearPick = this.program.pick.getUniform("xeo_uZNear");
-            this._uZFarPick = this.program.pick.getUniform("xeo_uZFar");
+            this._uProjMatrixPickObject = this.program.pickObject.getUniform("xeo_uProjMatrix");
+            this._uProjMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uProjMatrix");
         },
 
-        draw: function (frameCtx) {
-
-            var state = this.state;
-
+        draw: function () {
             if (this._uProjMatrixDraw) {
-                this._uProjMatrixDraw.setValue(state.matrix);
+                this._uProjMatrixDraw.setValue(this.state.matrix);
             }
-
-            if (this._uZNearDraw) {
-                this._uZNearDraw.setValue(state.near);
-            }
-
-            if (this._uZFarDraw) {
-                this._uZFarDraw.setValue(state.far);
-            }
-
-            frameCtx.projMatrix = state.matrix;
         },
 
-
-        pick: function (frameCtx) {
-
-            var state = this.state;
-
-            if (this._uProjMatrixPick) {
-                this._uProjMatrixPick.setValue(state.matrix);
+        pickObject: function () {
+            if (this._uProjMatrixPickObject) {
+                this._uProjMatrixPickObject.setValue(this.state.matrix);
             }
+        },
 
-            if (frameCtx.rayPick) {
-
-                // Z-pick pass: feed near and far clip planes into shader
-
-                if (this._uZNearPick) {
-                    this._uZNearPick.setValue(state.near);
-                }
-
-                if (this._uZFarPick) {
-                    this._uZFarPick.setValue(state.far);
-                }
+        pickPrimitive: function () {
+            if (this._uProjMatrixPickPrimitive) {
+                this._uProjMatrixPickPrimitive.setValue(this.state.matrix);
             }
-
-            frameCtx.projMatrix = state.matrix;
         }
     });
 

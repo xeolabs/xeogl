@@ -33,23 +33,22 @@
  which gives us a running update of the moving boundary extents via our update handler.
 
  ```` javascript
- var scene = new XEO.Scene();
 
  // Geometry
- var geometry = new XEO.Geometry(myScene, {...});
+ var geometry = new XEO.Geometry();
 
  // Modelling transform
- var translate = new XEO.Translate(scene, {
+ var translate = new XEO.Translate({
     xyz: [-5, 0, 0]
  });
 
  // Game object that applies the modelling transform to the Geometry
- var object = new XEO.GameObject(myScene, {
+ var object = new XEO.GameObject({
        geometry: myGeometry,
        transform: translate
   });
 
- var worldBoundary = object.worldBoundary();
+ var worldBoundary = object.worldBoundary;
 
  // World-space OBB
  var obb = worldBoundary.obb;
@@ -62,7 +61,7 @@
 
  // Subscribe to updates to the Boundary3D
  worldBoundary.on("updated",
- function() {
+    function() {
 
         // Get the updated properties again
 
@@ -93,6 +92,13 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary.
+ @param [cfg.obb] {Array of Number} Optional initial 3D object-aligned bounding volume (OBB).
+ @param [cfg.aabb] {Array of Number} Optional initial 3D axis-aligned bounding volume (AABB).
+ @param [cfg.center] {Array of Number} Optional initial 3D center
+ @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB, positions or transform matrix.
+ @param [cfg.getOBB] {Function} Optional callback to get new OBB from parent.
+ @param [cfg.getMatrix] {Function} Optional callback to get new transform matrix from parent.
+ @param [cfg.getPositions] {Function} Optional callback to get new positions from parent.
  @extends Component
  */
 
@@ -112,28 +118,29 @@
 
         _init: function (cfg) {
 
+            // Cached bounding boxes (oriented and axis-aligned) 
+
+            this._obb = cfg.obb || null;
+            this._aabb = cfg.aabb || null;
+
+            // Cached center point
+
+            this._center = cfg.center || null;
+
             // Owner injected callbacks to provide
             // resources on lazy-rebuild
 
             this._getDirty = cfg.getDirty;
             this._getOBB = cfg.getOBB;
+            this._getAABB = cfg.getAABB;
             this._getMatrix = cfg.getMatrix;
             this._getPositions = cfg.getPositions;
-
-            // Cached bounding boxes (oriented and axis-aligned) 
-
-            this._obb = null;
-            this._aabb = null;
-
-            // Cached center point
-
-            this._center = null;
         },
 
         _props: {
 
             /**
-             * World-space oriented bounding box (OBB).
+             * 3D oriented bounding box (OBB).
              *
              * @property obb
              * @final
@@ -152,7 +159,7 @@
             },
 
             /**
-             * World-space axis-aligned bounding box (AABB).
+             * 3D axis-aligned bounding box (AABB).
              *
              * @property aabb
              * @final
@@ -171,7 +178,7 @@
             },
 
             /**
-             * World-space center point.
+             * 3D center point.
              *
              * @property center
              * @final
@@ -190,23 +197,26 @@
             }
         },
 
-
-        // Lazy (re)builds the public
-        // properties of this Boundary3D
+        // (Re)builds the obb, aabb and center.
 
         _build: function () {
 
+            var math = XEO.math;
+
+            // Lazy-allocate
+
             if (!this._obb) {
-
-                // Lazy-allocate
-
                 this._obb = [];
+            }
 
+            if (!this._aabb) {
                 this._aabb = {
                     xmin: 0, ymin: 0, zmin: 0,
                     xmax: 0, ymax: 0, zmax: 0
                 };
+            }
 
+            if (!this._center) {
                 this._center = [0, 0, 0];
             }
 
@@ -225,8 +235,8 @@
                 this._aabb.ymax = aabb.ymax;
                 this._aabb.zmax = aabb.zmax;
 
-                XEO.math.AABB3ToOBB3(this._aabb, this._obb);
-                XEO.math.getAABBCenter(this._aabb, this._center);
+                math.AABB3ToOBB3(this._aabb, this._obb);
+                math.getAABBCenter(this._aabb, this._center);
 
                 return;
             }
@@ -250,22 +260,23 @@
                     // Transform OOBB by matrix,
                     // derive AABB and center
 
-                    XEO.math.positions3ToAABB3(positions, this._aabb);
-                    XEO.math.AABB3ToOBB3(this._aabb, this._obb);
-                    XEO.math.transformPoints3(matrix, this._obb);
-                    XEO.math.points3ToAABB3(this._obb, this._aabb);
-                    XEO.math.getAABBCenter(this._aabb, this._center);
+                    math.positions3ToAABB3(positions, this._aabb);
+                    math.AABB3ToOBB3(this._aabb, this._obb);
+                    math.transformPoints3(matrix, this._obb);
+                    math.points3ToAABB3(this._obb, this._aabb);
+                    math.getAABBCenter(this._aabb, this._center);
 
-                } else {
+                    return;
 
-                    // No transform matrix
-
-                    XEO.math.positions3ToAABB3(positions, this._aabb);
-                    XEO.math.AABB3ToOBB3(this._aabb, this._obb);
-                    XEO.math.getAABBCenter(this._aabb, this._center);
                 }
 
-                return;
+                // No transform matrix
+
+                math.positions3ToAABB3(positions, this._aabb);
+                math.AABB3ToOBB3(this._aabb, this._obb);
+                math.getAABBCenter(this._aabb, this._center);
+
+                return
             }
 
             var obb = this._getOBB ? this._getOBB() : null;
@@ -283,24 +294,33 @@
                     // Transform OOBB by matrix,
                     // derive AABB and center
 
-                    XEO.math.transformPoints3(matrix, obb, this._obb);
-                    XEO.math.points3ToAABB3(this._obb, this._aabb);
-                    XEO.math.getAABBCenter(this._aabb, this._center);
+                    math.transformPoints3(matrix, obb, this._obb);
+                    math.points3ToAABB3(this._obb, this._aabb);
+                    math.getAABBCenter(this._aabb, this._center);
 
-                } else {
+                    return;
 
-                    // No transform matrix
-
-                    // Copy OOBB, derive AABB and center
-
-                    for (var i = 0, len = obb.length; i < lenl; i++) {
-                        this._obb[i] = obb[i];
-                    }
-
-                    XEO.math.points3ToAABB3(this._obb, this._aabb);
-                    XEO.math.getAABBCenter(this._aabb, this._center);
                 }
+
+                // No transform matrix
+
+                // Copy OOBB, derive AABB and center
+
+                for (var i = 0, len = obb.length; i < lenl; i++) {
+                    this._obb[i] = obb[i];
+                }
+
+                math.points3ToAABB3(this._obb, this._aabb);
+                math.getAABBCenter(this._aabb, this._center);
             }
+        },
+
+        _getJSON: function () {
+            return {
+                obb: this.obb,
+                aabb: this.aabb,
+                center: this.center
+            };
         }
     });
 

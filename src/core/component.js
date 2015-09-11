@@ -547,25 +547,26 @@
 
         /**
          * Adds a child component to this.
-         * When component not given, attaches the scene's default instance for the given name.
+         * When component not given, attaches the scene's default instance for the given name (if any).
          * Publishes the new child component on this component, keyed to the given name.
          *
          * @param {string} name component name
          * @param {Component} child The component
+         * @param {Boolean} useDefault
          * @private
          */
-        _setChild: function (name, child) {
+        _setChild: function (name, child, useDefault) {
 
-            if (!child) {
+            if (!child && useDefault !== false) {
 
                 // No child given, fall back on default component class for the given name
 
                 child = this.scene[name];
 
-                if (!child) {
-                    this.error("No default component for name '" + name + "'");
-                    return;
-                }
+                //if (!child) {
+                //    this.error("No default component for name '" + name + "'");
+                //    return;
+                //}
 
             } else {
 
@@ -591,7 +592,7 @@
                 }
             }
 
-            if (child.scene.id !== this.scene.id) {
+            if (child && child.scene.id !== this.scene.id) {
                 this.error("Not in same scene: " + child.type + " " + XEO._inQuotes(child.id));
                 return;
             }
@@ -614,42 +615,48 @@
                 oldChild.off(this._childDirtySubs[name]);
             }
 
-            // Set and publish the new child on this component
+            if (child) {
 
-            this._children[name] = child;
+                // Set and publish the new child on this component
 
-            var self = this;
+                this._children[name] = child;
 
-            // Bind destruct listener to new child to remove it
-            // from this component when destroyed
+                var self = this;
 
-            this._childDestroySubs[name] = child.on("destroyed",
-                function () {
+                // Bind destruct listener to new child to remove it
+                // from this component when destroyed
 
-                    // Child destroyed
-                    delete self._children[name];
+                this._childDestroySubs[name] = child.on("destroyed",
+                    function () {
 
-                    // Try to fall back on default child
-                    var defaultComponent = self.scene[name];
+                        // Child destroyed
+                        delete self._children[name];
 
-                    if (!defaultComponent || child.id === defaultComponent.id) {
+                        // Try to fall back on default child
+                        var defaultComponent = self.scene[name];
 
-                        // Old child was the default,
-                        // so publish null child and bail
+                        if (!defaultComponent || child.id === defaultComponent.id) {
 
-                        self.fire(name, null);
+                            // Old child was the default,
+                            // so publish null child and bail
 
-                        return;
-                    }
+                            self.fire(name, null);
 
-                    // Set default child
-                    self._setChild(name, defaultComponent);
-                });
+                            return;
+                        }
 
-            this._childDirtySubs[name] = child.on("dirty",
-                function () {
-                    self.fire("dirty", true);
-                });
+                        // Set default child
+                        self._setChild(name, defaultComponent);
+                    });
+
+                this._childDirtySubs[name] = child.on("dirty",
+                    function () {
+                        self.fire("dirty", true);
+                    });
+
+            } else {
+                delete this._children[name];
+            }
 
             this.fire("dirty", true);
 
@@ -657,7 +664,6 @@
 
             return child;
         },
-
 
         _compile: function () {
         },
@@ -715,7 +721,10 @@
             js: {
 
                 get: function () {
-                    return "new " + this.type + "(" + this.jsonString + ");";
+                    var json = this.json;
+                    delete json.id;
+                    var str = JSON.stringify(json, "\n", 4);
+                    return "new " + this.type + "(" + str + ");";
                 }
             }
         },

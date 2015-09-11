@@ -7,36 +7,30 @@
         type: "modelTransform",
 
         build: function () {
-
-            var draw = this.program.draw;
-
-            this._uModelMatrixDraw = draw.getUniform("xeo_uModelMatrix");
-            this._uModelNormalMatrixDraw = draw.getUniform("xeo_uModelNormalMatrix");
-
-            var pick = this.program.pick;
-
-            this._uModelMatrixPick = pick.getUniform("xeo_uModelMatrix");
+            this._uModelMatrixDraw = this.program.draw.getUniform("xeo_uModelMatrix");
+            this._uModelNormalMatrixDraw = this.program.draw.getUniform("xeo_uModelNormalMatrix");
+            this._uModelMatrixPickObject = this.program.pickObject.getUniform("xeo_uModelMatrix");
+            this._uModelMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uModelMatrix");
         },
 
         draw: function () {
-
-            var gl = this.program.gl;
-
             if (this._uModelMatrixDraw) {
                 this._uModelMatrixDraw.setValue(this.state.matrix);
             }
-
             if (this._uModelNormalMatrixDraw) {
                 this._uModelNormalMatrixDraw.setValue(this.state.normalMatrix);
             }
         },
 
-        pick: function () {
+        pickObject: function () {
+            if (this._uModelMatrixPickObject) {
+                this._uModelMatrixPickObject.setValue(this.state.matrix);
+            }
+        },
 
-            var gl = this.program.gl;
-
-            if (this._uModelMatrixPick) {
-                this._uModelMatrixPick.setValue(this.state.matrix);
+        pickPrimitive: function () {
+            if (this._uModelMatrixPickPrimitive) {
+                this._uModelMatrixPickPrimitive.setValue(this.state.matrix);
             }
         }
     });

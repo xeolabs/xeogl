@@ -6,12 +6,17 @@
      * @class Source code for pick and draw shader programs, to be compiled into one or more {@link XEO.renderer.Program}s
      *
      * @param {String} hash Hash code identifying the rendering capabilities of the programs
-     * @param {String} pickVertex Source code of the pick vertex shader
-     * @param {String} pickFragment Source code of the pick fragment shader
-     * @param {String} drawVertex Source code of the draw vertex shader
-     * @param {String} drawFragment Source code of the draw fragment shader
+     * @param {String} vertexPickObject Vertex shader source for object picking.
+     * @param {String} fragmentPickObject Fragment shader source for object picking.
+     * @param {String} vertexPickPrimitive Vertex shader source for primitive picking.
+     * @param {String} fragmentPickPrimitive Fragment shader source for primitive picking.
+     * @param {String} vertexDraw Vertex shader source for drawing.
+     * @param {String} fragmentDraw Fragment shader source for drawing.
      */
-    XEO.renderer.ProgramSource = function (hash, pickVertex, pickFragment, drawVertex, drawFragment) {
+    XEO.renderer.ProgramSource = function (hash,
+                                           vertexPickObject, fragmentPickObject,
+                                           vertexPickPrimitive, fragmentPickPrimitive,
+                                           vertexDraw, fragmentDraw) {
 
         /**
          * Hash code identifying the capabilities of the {@link XEO.renderer.Program} that is compiled from this source
@@ -20,28 +25,40 @@
         this.hash = hash;
 
         /**
-         * Source code for pick vertex shader
+         * Vertex shader source for object picking
          * @type {Array of String]
          */
-        this.pickVertex = pickVertex;
+        this.vertexPickObject = vertexPickObject;
 
         /**
-         * Source code for pick fragment shader
+         * Fragment shader source for object picking.
          * @type {Array of String}
          */
-        this.pickFragment = pickFragment;
+        this.fragmentPickObject = fragmentPickObject;
 
         /**
-         * Source code for draw vertex shader
-         * @type {Array of String}
+         * Vertex shader source for primitive picking.
+         * @type {Array of String]
          */
-        this.drawVertex = drawVertex;
+        this.vertexPickPrimitive = vertexPickPrimitive;
 
         /**
-         * Source code for draw fragment shader
+         * Fragment shader source for primitive picking.
          * @type {Array of String}
          */
-        this.drawFragment = drawFragment;
+        this.fragmentPickPrimitive = fragmentPickPrimitive;
+
+        /**
+         * Vertex shader source for drawing.
+         * @type {Array of String}
+         */
+        this.vertexDraw = vertexDraw;
+
+        /**
+         * Fragment shader source for drawing.
+         * @type {Array of String}
+         */
+        this.fragmentDraw = fragmentDraw;
 
         /**
          * Count of {@link XEO.renderer.Program}s compiled from this program source code

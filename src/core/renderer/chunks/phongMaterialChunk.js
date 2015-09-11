@@ -14,11 +14,11 @@
 
             // Blinn-Phong base material
 
-            this._uMaterialDiffuse = draw.getUniform("xeo_uDiffuse");
-            this._uMaterialSpecular = draw.getUniform("xeo_uMaterialSpecular");
-            this._uMaterialEmissive = draw.getUniform("xeo_uMaterialEmissive");
-            this._uMaterialOpacity = draw.getUniform("xeo_uMaterialOpacity");
-            this._uMaterialShininess = draw.getUniform("xeo_uMaterialShininess");
+            this._uDiffuse = draw.getUniform("xeo_uDiffuse");
+            this._uSpecular = draw.getUniform("xeo_uSpecular");
+            this._uEmissive = draw.getUniform("xeo_uEmissive");
+            this._uOpacity = draw.getUniform("xeo_uOpacity");
+            this._uShininess = draw.getUniform("xeo_uShininess");
 
             this._uPointSize = draw.getUniform("xeo_uPointSize");
             
@@ -100,31 +100,31 @@
 
             // Diffuse color
 
-            if (this._uMaterialDiffuse) {
-                this._uMaterialDiffuse.setValue(state.diffuse);
+            if (this._uDiffuse) {
+                this._uDiffuse.setValue(state.diffuse);
             }
 
             // Specular color
 
-            if (this._uMaterialSpecular) {
-                this._uMaterialSpecular.setValue(state.specular);
+            if (this._uSpecular) {
+                this._uSpecular.setValue(state.specular);
             }
 
             // Emissive color
 
-            if (this._uMaterialEmissive) {
-                this._uMaterialEmissive.setValue(state.emissive);
+            if (this._uEmissive) {
+                this._uEmissive.setValue(state.emissive);
             }
 
             // Opacity
 
-            if (this._uMaterialOpacity) {
-                this._uMaterialOpacity.setValue(state.opacity);
+            if (this._uOpacity) {
+                this._uOpacity.setValue(state.opacity);
             }
 
 
-            if (this._uMaterialShininess) {
-                this._uMaterialShininess.setValue(state.shininess);
+            if (this._uShininess) {
+                this._uShininess.setValue(state.shininess);
             }
 
             if (frameCtx.lineWidth != state.lineWidth) {
@@ -145,6 +145,7 @@
             if (state.diffuseMap && state.diffuseMap.texture) {
 
                 draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
 
                 if (this._uDiffuseMapMatrix) {
                     this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
@@ -156,6 +157,7 @@
             if (state.specularMap && state.specularMap.texture) {
 
                 draw.bindTexture(this._uSpecularMap, state.specularMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
 
                 if (this._uSpecularMapMatrix) {
                     this._uSpecularMapMatrix.setValue(state.specularMap.matrix);
@@ -167,6 +169,7 @@
             if (state.emissiveMap && state.emissiveMap.texture) {
 
                 draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
 
                 if (this._uEmissiveMapMatrix) {
                     this._uEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
@@ -178,6 +181,7 @@
             if (state.opacityMap && state.opacityMap.texture) {
 
                 draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
 
                 if (this._uOpacityMapMatrix) {
                     this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
@@ -200,6 +204,7 @@
             if (state.bumpMap && state.bumpMap.texture) {
 
                 draw.bindTexture(this._uBumpMap, state.normalMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
 
                 if (this._uBumpMapMatrix) {
                     this._uBumpMapMatrix.setValue(state.normalMap.matrix);

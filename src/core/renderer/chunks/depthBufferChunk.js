@@ -10,9 +10,10 @@
         type: "depthBuf",
 
         // Avoid reapplication of this chunk after a program switch.
+
         programGlobal: true,
 
-        drawAndPick: function (frameCtx) {
+        draw: function (frameCtx) {
 
             var gl = this.program.gl;
 
