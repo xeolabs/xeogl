@@ -31,18 +31,48 @@
 
     // Create some random objects
 
+    var numObjects = 100;
+
     var objects = [];
     var object;
 
-    for (var i = 0; i < 20; i++) {
+    var sphere = new XEO.Sphere({
+        radius: 1.0,
+        heightSegments: 30,
+        widthSegments: 30
+    });
+
+    for (var i = 0; i < numObjects; i++) {
 
         object = new XEO.GameObject({
 
+            geometry: sphere,
+
             transform: new XEO.Translate({
+
+                parent: new XEO.Rotate({
+                            xyz: [
+                                1,
+                                1,
+                                0
+                            ],
+                            angle: 45
+                    ,
+
+                            parent: new XEO.Scale({
+
+                                xyz: [
+                                    Math.random() * 5,
+                                    Math.random() * 5,
+                                    Math.random() * 5
+                                ]
+                            })
+                        }),
+
                 xyz: [
-                    Math.random() * 15 - 7,
-                    Math.random() * 15 - 7,
-                    Math.random() * 15 - 7
+                    Math.random() * 35 - 7,
+                    Math.random() * 35 - 7,
+                    Math.random() * 35 - 7
                 ]
             }),
 
@@ -58,6 +88,17 @@
 
     var flight = new XEO.CameraFlight({
         duration: 20
+    });
+
+    var boundaryObject = new XEO.GameObject({
+        geometry: new XEO.BoundaryGeometry({
+            boundary: objects[0].worldBoundary
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
+            lineWidth:2
+        })
     });
 
     // Create a couple of camera controls so that
@@ -76,16 +117,20 @@
 
         if (prevObject) {
             prevObject.material.diffuse = prevObjectDiffuse;
+            prevObject.canvasBoundary.shown = false;
         }
 
-        object = objects[Math.floor(Math.random() * 10)];
+        object = objects[Math.floor(Math.random() * numObjects)];
 
         prevObject = object;
         prevObjectDiffuse = object.material.diffuse;
 
         object.material.diffuse = [1, 1, 0];
+        object.canvasBoundary.shown = true;
 
         flight.flyTo(object);
+
+        boundaryObject.geometry.boundary = object.worldBoundary;
 
     }, 2000);
 

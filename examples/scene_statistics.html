@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    scene statistics
+    <pre id="infoTxt" style="text-align: left; background: black; opacity: 0.7; color: white;">
+    </pre>
+</div>
+
+<script>
+
+    var geometry = new XEO.Sphere({
+        radius: 2.0
+    });
+
+    var num = 100;
+    var sqrtNum = 10;
+    var diffuse = [0, 0, 0];
+    var specular = [0, 0, 0];
+    var inc = 1.0 / sqrtNum;
+    var width = 100;
+    var halfWidth = width / 2;
+
+    for (var y = 0; y <= 1.0; y += inc) {
+        for (var x = 0; x <= 1.0; x += inc) {
+            for (var z = 0; z <= 1.0; z += inc) {
+
+                new XEO.GameObject({
+
+                    geometry: geometry,
+
+                    material: new XEO.PhongMaterial({
+                        shininess: x,
+                        reflectivity: z,
+                        diffuse: [x, z, y]
+                    }),
+
+                    transform: new XEO.Translate({
+                        xyz: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
+                    })
+                });
+            }
+        }
+    }
+
+    var scene = XEO.scene;
+
+    scene.camera.view.zoom(60);
+
+    // Spin camera
+    // Log statistics
+
+    scene.on("tick",
+            function () {
+
+                // Spin camera
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.5);
+                view.rotateEyeX(0.3);
+
+                // Get stats from scene and log them
+
+                var stats = scene.stats;
+
+                logJSON(stats);
+            });
+
+
+    function logJSON(json) {
+        document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+    }
+
+</script>
+</body>
+</html>

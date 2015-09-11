@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <pre id="infoTxt" style="text-align: left; "></pre>
+</div>
+
+<script>
+
+    new XEO.CameraControl();
+
+    var object = new XEO.GameObject({
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 0.3, 0.3]
+        })
+    });
+
+    createDiv(object.canvasBoundary);
+
+    function createDiv(canvasBoundary) {
+
+        var body = document.getElementsByTagName("body")[0];
+        var div = document.createElement('div');
+
+        var style = div.style;
+        style.position = "absolute";
+        style.padding = "10px";
+        style.margin = "0";
+        style.background = "green";
+        style.opacity = 0.4;
+        style["z-index"] = "1000";
+
+        body.appendChild(div);
+
+        canvasBoundary.on("updated",
+                function () {
+
+                    var aabb = canvasBoundary.aabb;
+
+                    div.style.left = aabb.xmin + "px";
+                    div.style.top = aabb.ymin + "px";
+                    div.style.width = (aabb.xmax - aabb.xmin) + "px";
+                    div.style.height = (aabb.ymax - aabb.ymin) + "px";
+
+                    log("object.canvasBoundary.aabb", canvasBoundary.aabb);
+                });
+    }
+
+    function log(event, params) {
+        var str = event + " = " + JSON.stringify(params, "\n", 4);
+        document.getElementById("infoTxt").innerText = str;
+    }
+
+</script>
+</body>
+</html>

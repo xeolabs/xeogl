@@ -24,7 +24,7 @@
 <body>
 
 <div id="infoDark">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Torus.html" target="_other">Torus</a>
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/BoundaryGeometry.html" target="_other">BoundaryGeometry</a>
 </div>
 <div id="dat-gui-container">
 </div>
@@ -42,13 +42,24 @@
     var object = new XEO.GameObject({
         geometry: torus,
         material: new XEO.PhongMaterial({
-            ambient: [0.9, 0.3, 0.9],
+            ambient: [0.3, 0.3, 0.3],
             shininess: 30,
             diffuseMap: new XEO.Texture({
                 src: "textures/brickWall.jpg"
             }),
             lineWidth:2,
             pointSize: 3
+        })
+    });
+
+    var boundaryObject = new XEO.GameObject({
+        geometry: new XEO.BoundaryGeometry({
+            boundary: object.worldBoundary
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
+            lineWidth:2
         })
     });
 

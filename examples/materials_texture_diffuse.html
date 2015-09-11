@@ -28,19 +28,30 @@
 
     var geometry = new XEO.Torus({
         radius: 1.0,
-        tube: 0.3,
+        tube: 0.4,
         segmentsR: 32,
         segmentsT: 24,
         arc: Math.PI * 2.0
     });
 
-    var texture = new XEO.Texture({
-        id: "myTexture",
-        src: "textures/brickWall.jpg",
+    var diffuseMap = new XEO.Texture({
+        src: "textures/crossGridColorMap.jpg",
         minFilter: "linearMipmapLinear",
         magFiler: "linear",
-//        wrapS: "repeat",
-//        wrapT: "repeat",
+        wrapS: "repeat",
+        wrapT: "repeat",
+        flipY: true,
+        translate: [0, 0, 0],
+        scale: [1, 1, 1],
+        rotate: 0
+    });
+
+    var colorMap = new XEO.Texture({
+        src: "textures/crossGridColorMap.jpg",
+        minFilter: "linearMipmapLinear",
+        magFiler: "linear",
+        wrapS: "repeat",
+        wrapT: "repeat",
         flipY: true,
         translate: [0, 0, 0],
         scale: [1, 1, 1],
@@ -49,15 +60,18 @@
 
     var material = new XEO.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
+        diffuse: [0.3, 0.5, 0.5],
         shininess: 30,
-        diffuseMap: texture
+       //diffuseMap: diffuseMap,
+        specularMap: colorMap
     });
 
     var object = new XEO.GameObject({
-        id: "myObject",
         geometry: geometry,
         material: material
     });
+
+    object.camera.view.zoom(-5);
 
     object.scene.on("tick",
             function () {

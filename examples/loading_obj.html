@@ -16,7 +16,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
 
     <script src="lib/loaders/k3d.js"></script>
     <script src="lib/loaders/objGeometry.js"></script>
@@ -29,14 +29,32 @@
 
 <script>
 
-    var control = new XEO.CameraControl();
 
     var object = new XEO.GameObject({
 
         geometry: new XEO.OBJGeometry({
             src: "models/obj/raptor.obj"
+        }),
+
+        material: new XEO.PhongMaterial({
+
+            diffuseMap: new XEO.Texture({
+                src: "models/obj/raptor.jpg"
+            })
+        }),
+
+        transform: new XEO.Rotate({
+            xyz: [1,0,0],
+            angle: 0,
+
+            parent: new XEO.Translate({
+                xyz: [10,3,10]
+            })
         })
     });
+
+
+    var control = new XEO.CameraControl();
 
     var animation = new XEO.CameraFlight();
 
@@ -45,8 +63,19 @@
         var look = object.worldBoundary.center;
 
         animation.flyTo({
-            eye: [look[0] - 10, look[1] - 10, look[2] - 10],
+            eye: [look[0] - 100, look[1] + 100, look[2] - 120],
             look: look
+        });
+
+        var boundaryObject = new XEO.GameObject({
+            geometry: new XEO.BoundaryGeometry({
+                boundary: object.worldBoundary
+            }),
+            material: new XEO.PhongMaterial({
+                diffuse: [0.5, 1.0, 0.5],
+                emissive: [0.5, 1.0, 0.5],
+                lineWidth:2
+            })
         });
     });
 

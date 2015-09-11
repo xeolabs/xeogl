@@ -14,7 +14,7 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -22,31 +22,89 @@
 <div id="infoDark">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    cloning a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a> 1000 times
+    cloning a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a> 200 times
 </div>
 
 <script>
 
     // Create a prototype GameObject with all defaults.
 
-    var object = new XEO.GameObject();
+    var object = new XEO.GameObject({
+
+        geometry: new XEO.Torus({
+            radius: 1.0,
+            tube: 0.3,
+            segmentsR: 32,
+            segmentsT: 24,
+            arc: Math.PI * 2.0
+        })
+    });
+
+    var baseMaterial = new XEO.PhongMaterial({
+
+//        reflection: new XEO.CubeMap({
+//            src: "textures/brickWall.jpg",
+//            minFilter: "linearMipmapLinear",
+//            magFiler: "linear",
+//            wrapS: "repeat",
+//            wrapT: "repeat",
+//            flipY: true,
+//            translate: [0, 0, 0],
+//            scale: [1, 1, 1],
+//            rotate: 0
+//        })
+    });
 
     // Make a bunch of clones of the GameObject,
-    // each with their own randomized Translate.
+    // each at a random position.
 
-    for (var i = 0; i < 1000; i++) {
+
+    for (var i = 0; i < 200; i++) {
+
+        var color =[
+            0.4 + Math.random() * 0.6,
+            0.4 + Math.random() * 0.6,
+            0.4 + Math.random() * 0.6
+        ];
+
 
         object.clone({
 
-            transform: new XEO.Translate({
+            transform: new XEO.Scale({
                 xyz: [
-                    Math.random() * 50 - 25,
-                    Math.random() * 50 - 25,
-                    Math.random() * 50 - 25
-                ]
+                    Math.random() * 4 + .5,
+                    Math.random() * 4 + .5,
+                    Math.random() * 4 + .5
+                ],
+
+                parent: new XEO.Rotate({
+                    xyz: [
+                        Math.random(),
+                        Math.random(),
+                        Math.random()
+                    ],
+                    angle: Math.random() * 360,
+
+                    parent: new XEO.Translate({
+                        xyz: [
+                            Math.random() * 60 - 30,
+                            Math.random() * 60 - 30,
+                            Math.random() * 60 - 30
+                        ]
+                    })
+
+                })
+            }),
+
+            material: baseMaterial.clone({
+                diffuse: color,
+                specular: color,
+                shininess: 3
             })
         });
     }
+
+    // Move the camera back a bit
 
     object.camera.view.zoom(60);
 
@@ -60,7 +118,6 @@
                 view.rotateEyeY(0.5);
                 view.rotateEyeX(0.3);
             });
-
 
 
 </script>

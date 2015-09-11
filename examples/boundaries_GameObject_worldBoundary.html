@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <pre id="infoTxt" style="text-align: left; font-size: 12px;"></pre>
+</div>
+
+<script>
+
+    var buf = [];
+
+    //---------------- Spline curve ----------------------------------------------------
+
+    var curve = new XEO.SplineCurve({
+        points: [
+            [-10, 0, 10],
+            [-5, 15, -5],
+            [20, 15, 15],
+            [10, 0, 5]]
+    });
+
+    var curveObject = new XEO.GameObject({
+        geometry: new XEO.Geometry({
+            positions: XEO.math.flatten(curve.getPoints(50))
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.3, 1, 0.3]
+        })
+    });
+
+    //---------------- Object that we'll move along the curve -------------------------
+
+    var object = new XEO.GameObject({
+        transform: new XEO.Translate(),
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 0.3, 0.3],
+            lineWidth:4
+        })
+    });
+
+    object.worldBoundary.on("updated",
+            function () {
+                log("object.viewBoundary.aabb", object.viewBoundary.obb);
+            });
+
+
+    // Move the eye back a bit to
+    // fit the whole curve in view
+
+    var scene = XEO.scene;
+
+    scene.camera.view.zoom(25);
+
+    //---------------- Render loop ------------------------------------------------
+
+    var tick = scene.on("tick",
+            function (e) {
+
+                // Move the object along the curve
+
+                curve.t = (e.time - e.startTime) * 0.00005;
+
+                var point = curve.point;
+
+                object.transform.xyz = point;
+
+
+                // Spin the camera
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.5);
+                view.rotateEyeX(0.2);
+            });
+
+    //---------------- Logging ----------------------------------------------------
+
+    function log(event, params) {
+        var str = event + " = " + JSON.stringify(params, "\n", 4);
+        document.getElementById("infoTxt").innerText = str;
+    }
+
+</script>
+</body>
+</html>

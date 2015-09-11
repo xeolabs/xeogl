@@ -28,14 +28,14 @@
 
     var geometry = new XEO.Torus({
         radius: 1.0,
-        tube: 0.3,
+        tube: 0.4,
         segmentsR: 32,
         segmentsT: 24,
         arc: Math.PI * 2.0
     });
 
     var texture = new XEO.Texture({
-        src: "textures/chesterfieldSpecularMap.png",
+        src: "textures/crossGridColorMap.jpg",
         minFilter: "linearMipmapLinear",
         magFiler: "linear",
         wrapS: "repeat",
@@ -49,13 +49,16 @@
     var material = new XEO.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         shininess: 30,
-        specularMap: texture
+        specularMap: texture,
+        diffuse: [0.1, 0.1, 0.4]
     });
 
     var object = new XEO.GameObject({
         geometry: geometry,
         material: material
     });
+
+    object.camera.view.zoom(-5);
 
     object.scene.on("tick",
             function () {

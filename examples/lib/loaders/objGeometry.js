@@ -83,7 +83,13 @@
                             if (uv.length > 0) {
                                 self.uv = uv;
                             }
-                            self.normals = normals.length > 0 ? normals : "auto";
+                            if (normals.length > 0) {
+                                self.normals = normals;
+                                self.autoNormals = false;
+                            } else {
+                                self.autoNormals = true;
+                            }
+
                             self.indices = indices;
 
                             self.fire("loaded", true);

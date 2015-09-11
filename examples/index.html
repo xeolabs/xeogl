@@ -202,16 +202,24 @@
     var files = {
 
         "Animation": [
+            "#camera animation",
             "animation_CameraFlight_GameObject",
             "animation_CameraFlight_Boundary3D",
             "animation_CameraFlight_AABB"
         ],
 
+        "Boundaries": [
+            "#getting boundaries of GameObjects",
+            "boundaries_GameObject_worldBoundary",
+            "boundaries_GameObject_viewBoundary",
+            "boundaries_GameObject_canvasBoundary"
+        ],
+
         "Camera": [
+            "#defining and updating cameras",
             "camera_perspective",
             "camera_frustum",
-            "camera_ortho",
-            "animation_cameraPath"
+            "camera_ortho"
         ],
 
         "Components": [
@@ -255,6 +263,8 @@
             "#defining",
             "geometry_triangles",
             "geometry_lines",
+            "geometry_vertexColors",
+
             "geometry_modifying",
 
             "#primitives",
@@ -262,6 +272,7 @@
             "geometry_sphere",
             "geometry_cylinder",
             "geometry_heightmap",
+            "geometry_boundaryGeometry",
 
             "#level-of-detail",
             "geometry_torus_lod",
@@ -322,7 +333,15 @@
             "scene_events_tick",
 
             "#statistics",
-            "scene_stats"
+            "scene_statistics"
+        ],
+
+        "Skyboxes": [
+            "skyboxes_skybox"
+        ],
+
+        "Transforms": [
+            "transforms_hierarchy"
         ]
     };
 

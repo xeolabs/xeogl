@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - stats test
+</div>
+
+<script>
+
+//setInterval(function() {
+
+   // XEO.scene.clear();
+
+    var geometry = new XEO.Sphere({
+        radius: 2.0
+    });
+
+    var num = 100;
+    var sqrtNum = 10;
+    var diffuse = [0, 0, 0];
+    var specular = [0, 0, 0];
+    var inc = 1.0 / sqrtNum;
+    var width = 100;
+    var halfWidth = width / 2;
+
+    for (var y = 0; y <= 1.0; y += inc) {
+        for (var x = 0; x <= 1.0; x += inc) {
+            for (var z = 0; z <= 1.0; z += inc) {
+
+                new XEO.GameObject({
+
+                    geometry: geometry,
+
+                    material: new XEO.PhongMaterial({
+                        shininess: x,
+                        reflectivity: z,
+                        diffuse: [x, z, y]
+                    }),
+
+                    transform: new XEO.Translate({
+                        xyz: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
+                    })
+                });
+            }
+        }
+    }
+    new XEO.CameraControl();
+
+    XEO.scene.camera.view.rotateEyeY(20);
+    XEO.scene.camera.view.rotateEyeX(20);
+    XEO.scene.camera.view.zoom(-100);
+
+//}, 200);
+
+
+
+    var scene = XEO.scene;
+
+    scene.on("tick",
+            function () {
+                scene.view.rotateEyeY(0.6);
+                scene.view.rotateEyeX(0.3);
+            });
+
+</script>
+</body>
+</html>

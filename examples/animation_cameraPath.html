@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+
+    <p>camera path animation</p>
+    <pre id="infoTxt" style="text-align: left;"></pre>
+</div>
+
+<script>
+
+    new XEO.CameraControl();
+
+    // Create a prototype GameObject with all defaults.
+
+    var o = new XEO.GameObject();
+
+    // Make a bunch of clones of the GameObject,
+    // each with their own randomized Translate.
+
+    for (var i = 0; i < 30; i++) {
+
+        o.clone({
+
+            transform: new XEO.Translate({
+                xyz: [
+                    Math.random() * 50 - 25,
+                    Math.random() * 50 - 25,
+                    Math.random() * 50 - 25
+                ]
+            })
+        });
+    }
+
+    var spline = new XEO.SplineCurve({
+        points: getPoints()
+    });
+
+    function getPoints() {
+        var p = [
+            [127.51, 4.616, 159.15],
+            [158.64, 4.622, 156.67],
+            [128.77, 4.683, 210.50],
+            [158.16, 4.668, 212.53],
+            [113.74, 5.006, 184.95],
+            [169.95, 5.466, 184.93],
+            [116.38, 4.880, 200.23],
+            [170.78, 4.938, 200.06],
+            [115.76, 4.886, 170.11]
+        ];
+
+        var x = 0;
+        var y = 0;
+        var z = 0;
+
+        for (var i = 0, len = p.length; i < len; i++) {
+            x += p[i][0];
+            y += p[i][1];
+            z += p[i][2];
+        }
+
+        x /= p.length;
+        y /= p.length;
+        z /= p.length;
+
+        for (var i = 0, len = p.length; i < len; i++) {
+             p[i][0] -= x;
+             p[i][1] -=y;
+             p[i][2]-=z;
+        }
+        return p;
+    }
+
+    var path = new XEO.Path({
+        curves: [
+            spline
+        ]
+    });
+
+    var pathGeometry = new XEO.PathGeometry({
+        path: path,
+        divisions: 200
+    });
+
+    var object = new XEO.GameObject({
+        geometry: pathGeometry
+    });
+
+
+    var tick = path.scene.on("tick",
+            function (e) {
+
+                path.t = (e.time - e.startTime) * 0.00001;
+
+                //     log("t = " + path.t + ", point = " + JSON.stringify(path.point) + ", tangent = " + JSON.stringify(path.tangent));
+
+                var point = path.point;
+                var tangent = path.tangent;
+
+                path.scene.camera.view.eye = point;
+                    path.scene.camera.view.look = [point[0] + tangent[0], point[1] + tangent[1], point[2] + tangent[2]];
+
+                if (path.t >= 1.0) {
+                    path.scene.off(tick);
+                }
+            });
+
+    // Logs text to the page
+    function log(msg) {
+//        document.getElementById("infoTxt").innerText += msg + "\n";
+        console.log(msg);
+    }
+
+</script>
+</body>
+</html>
