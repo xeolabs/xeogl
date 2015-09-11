@@ -262,6 +262,8 @@
                     programs: 0
                 },
                 frame: {
+                    frameCount: 0,
+                    renderTime: 0,
                     useProgram: 0,
                     setUniform: 0,
                     setUniformCacheHits: 0,

@@ -1518,6 +1518,7 @@
                 },
                 frame: {
                     frameCount: 0,
+                    renderTime: 0,
                     useProgram: 0,
                     setUniform: 0,
                     setUniformCacheHits: 0,
@@ -17650,10 +17651,15 @@ var object3 = new XEO.GameObject(scene, {
 
         } else {
 
+            var startTime = (new Date()).getTime();
+
             for (var i = 0, len = this._drawChunkListLen; i < len; i++) {
                 this._drawChunkList[i].draw(frameCtx);
             }
 
+            var endTime = (new Date()).getTime();
+
+            this.stats.frame.renderTime = (endTime - startTime) / 1000.0;
             this.stats.frame.drawElements = frameCtx.drawElements;
             this.stats.frame.useProgram = frameCtx.useProgram;
             this.stats.frame.bindTexture = frameCtx.bindTexture;
