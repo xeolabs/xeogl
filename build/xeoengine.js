@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-09-11
+ * Built on 2015-09-12
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -13134,7 +13134,8 @@ var myScene = new XEO.Scene();
             var v2;
             var v3;
 
-            for (var i = 0, len = indices.length - 3; i < len; i += 3) {
+        //    for (var i = 0, len = indices.length - 3; i < len; i += 3) {
+                for (var i = 0, len = indices.length; i < len; i += 3) {
                 j0 = indices[i + 0];
                 j1 = indices[i + 1];
                 j2 = indices[i + 2];
@@ -27909,7 +27910,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             this.lod = cfg.lod;
 
-            this.autoNormals = cfg.auitoNormals !==false;
+            this.autoNormals = cfg.autoNormals !==false;
         },
 
         _heightmapDirty: function () {
