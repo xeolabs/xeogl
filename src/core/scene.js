@@ -642,6 +642,28 @@
             },
 
             /**
+             * The default {{#crossLink "Billboard"}}Billboard{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Billboard"}}Billboard{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.billboard"
+             * and an {{#crossLink "Billboard/active:property"}}{{/crossLink}} property set to false to disable it.
+             *
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Billboard"}}Billboard{{/crossLink}} by default.
+             * @property billboard
+             * @final
+             * @type Billboard
+             */
+            billboard: {
+                get: function () {
+                    return this.components["default.billboard"] ||
+                        new XEO.Billboard(this, {
+                            id: "default.billboard",
+                            active: false
+                        });
+                }
+            },
+
+            /**
              * The default {{#crossLink "Clips"}}Clips{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Clips"}}Clips{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.clips",
@@ -688,8 +710,9 @@
             /**
              * The default {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} provided by this Scene.
              *
-             * This {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.colorTarget",
-             * with all other properties initialised to their default values.
+             * The {{#crossLink "ColorTarget"}}DepthTarget{{/crossLink}} is
+             * {{#crossLink "ColorTarget/active:property"}}inactive{{/crossLink}} and will have an
+             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} by default.
@@ -732,8 +755,9 @@
             /**
              * The default {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} provided by this Scene.
              *
-             * This {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget",
-             * with all other properties initialised to their default values.
+             * The {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} is
+             * {{#crossLink "DepthTarget/active:property"}}inactive{{/crossLink}} and has an
+             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} by default.
