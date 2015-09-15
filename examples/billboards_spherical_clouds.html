@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    spherical <a href="../docs/classes/Billboard.html" target="_other">Billboards</a>
+    <!--<pre id="infoTxt" style="text-align: left; background: black; opacity: 0.7; color: white;">-->
+    <!--</pre>-->
+</div>
+
+<script>
+
+    var geometry = new XEO.Geometry({
+        primitive: "triangles",
+        positions: [10, 10, 0, -10, 10, 0, -10, -10, 0, 10, -10, 0],
+        normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+        uv: [1, 1, 0, 1, 0, 0, 1, 0],
+        indices: [0, 1, 2, 0, 2, 3]
+    });
+
+    var material = new XEO.PhongMaterial({
+        diffuse: [0,0,0],
+        specular: [0,0,0],
+        emissive: [1, 1, 1],
+        opacityMap: new XEO.Texture({
+            src: "textures/cloudAlpha.jpg"
+        }),
+        opacity: 1.0
+    });
+
+    var lights = new XEO.Lights({
+        lights: [new XEO.AmbientLight({
+            color: [0.2, 0.2, 0.6]
+        })]
+    });
+
+    var billboard = new XEO.Billboard({
+        spherical: true
+    });
+
+    var modes = new XEO.Modes({
+        transparent: true
+    });
+
+    for (var i = 0; i < 500; i++) {
+
+        var o = new XEO.GameObject({
+            geometry: geometry,
+            material: material,
+            lights: lights,
+            billboard: billboard,
+            transform: new XEO.Translate({
+                xyz: [Math.random() * 60 - 30, Math.random() * 100 - 50, Math.random() * 100 - 50]
+            }),
+            modes: modes,
+            layer: new XEO.Layer()
+        });
+
+        o.viewBoundary.on("updated",
+                function () {
+                    var center = o.viewBoundary.center[2];
+                    var priority = Math.floor(500 + center * 100);
+                    o.layer.priority = priority;
+                });
+    }
+
+    var scene = XEO.scene;
+
+    // Move the camera back a bit
+
+    scene.camera.view.zoom(120);
+
+    // Orbit the eye position about the look position.
+
+    scene.on("tick",
+            function () {
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.5);
+                view.rotateEyeX(0.3);
+
+                logJSON(scene.stats);
+            });
+
+    new XEO.CameraControl();
+
+    function logJSON(json) {
+            //  document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+    }
+
+</script>
+</body>
+</html>

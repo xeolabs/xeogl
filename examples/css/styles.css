@@ -9,7 +9,7 @@ body {
     letter-spacing: 0;
     font-size: 0.9em;
     -webkit-font-smoothing: antialiased;
-		overflow: auto;
+    overflow: auto;
     overflow-x: hidden;
 }
 
@@ -27,52 +27,54 @@ body {
     position: relative;
     top: 0px;
     padding: 5px;
-    padding-top:20px;
+    padding-top: 20px;
     z-index: 100;
-    font-size:16px;
-    text-align:center;
+    font-size: 16px;
+    text-align: center;
 }
 
 #info a {
-    font-size:16px;
+    font-size: 16px;
     color: #ffffff;
     text-decoration: underline;
 }
 
 #infoLight {
-    position: relative;
-    top: 0px;
-    padding: 5px;
-    padding-top:20px;
-    z-index: 1000;
-    font-size:16px;
-    text-align:center;
-    color: #ffffff;
+    position: absolute;
+    top: 0;
+    /* padding: 5px; */
+    padding: 20px;
+    z-index: 100000;
+    font-size: 16px;
+    /* text-align: right; */
+    color: white;
+    /*width: 100%;*/
+    float: left;
+    /*border: 1px gray solid;*/
 }
 
 #infoLight a {
-    font-size:16px;
+    font-size: 16px;
     color: #ffffff;
     text-decoration: underline !important;
 }
 
-
 #infoDark {
-position: absolute;
-  top: 0px;
-  /* padding: 5px; */
-  padding: 20px;
-  z-index: 100000;
-  font-size: 16px;
-  /* text-align: right; */
-  color: black;
-  /*width: 100%;*/
-  float: left;
-/*border: 1px gray solid;*/
+    position: absolute;
+    top: 0;
+    /* padding: 5px; */
+    padding: 20px;
+    z-index: 100000;
+    font-size: 16px;
+    /* text-align: right; */
+    color: black;
+    /*width: 100%;*/
+    float: left;
+    /*border: 1px gray solid;*/
 }
 
 #infoDark a {
-    font-size:16px;
+    font-size: 16px;
     color: #000000;
     text-decoration: underline !important;
 }
@@ -81,13 +83,12 @@ position: absolute;
     position: relative;
     top: 0px;
     padding: 5px;
-    padding-top:20px;
+    padding-top: 20px;
     z-index: 100;
-    font-size:20px;
-    text-align:center;
+    font-size: 20px;
+    text-align: center;
     color: #333;
 }
-
 
 #dat-gui-container {
     position: absolute;
@@ -95,7 +96,7 @@ position: absolute;
     right: 20px;
     z-index: 100000;
     float: right;
-    width:300px
+    width: 300px
 }
 
 #header {

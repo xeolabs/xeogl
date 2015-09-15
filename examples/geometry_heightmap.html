@@ -36,35 +36,28 @@
     //------------------ Scene definition --------------------
 
     var heightmap = new XEO.Heightmap({
-        primitive: "lines",
+        primitive: "triangles",
         src: "textures/heightMap1.jpg",
         xSize: 10,
         ySize: 1.0,
         zSize: 10,
         xSegments: 50,
         zSegments: 50,
-        lod: 1.0 // Default
+        lod: 1.0, // Default
+        autoNormals: true // Default
     });
 
     var object = new XEO.GameObject({
         geometry: heightmap,
         material:  new XEO.PhongMaterial({
-            ambient: [0.3, 0.3, 0.3],
-            shininess: 30,
             diffuseMap: new XEO.Texture({
                 src: "textures/brickWall.jpg"
-            })
+            }),
+            pointSize:3
         })
     });
 
-    object.scene.on("tick",
-            function () {
-
-                var view = object.scene.camera.view;
-
-                view.rotateEyeY(0.6);
-                view.rotateEyeX(0.3);
-            });
+    new XEO.CameraControl();
 
     //------------------ GUI ---------------------------------
 
@@ -79,6 +72,7 @@
         this["zSize"] = heightmap.zSize;
         this["xSegments"] = heightmap.xSegments;
         this["zSegments"] = heightmap.zSegments;
+        this["autoNormals"] = heightmap.autoNormals;
         this["lod"] = heightmap.lod;
 
         var self = this;
@@ -97,6 +91,7 @@
             heightmap.xSegments = self["xSegments"];
             heightmap.zSegments = self["zSegments"];
             heightmap.lod = self["lod"];
+            heightmap.autoNormals = self["autoNormals"];
 
             requestAnimationFrame(update);
         };
@@ -123,6 +118,7 @@
     folder.add(menu, 'xSegments', 1, 50);
     folder.add(menu, 'zSegments', 1, 50);
     folder.add(menu, 'lod', 0.1, 1.0);
+    folder.add(menu, 'autoNormals');
 
     folder.open();
 

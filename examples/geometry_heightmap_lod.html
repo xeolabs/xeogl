@@ -34,7 +34,7 @@
         src: "textures/heightMap1.jpg",
         xSize: 10,
         ySize: 1.0,
-        zSize: 10,
+        zSize: 15,
         xSegments: 100,
         ySegments: 100,
         lod: 1.0
@@ -43,8 +43,10 @@
     // GameObject that uses our Geometry
     var object = new XEO.GameObject({
         geometry: geometry,
-        material: new XEO.PhongMaterial({
-            diffuse: [0, 0, 1]
+        material:  new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/brickWall.jpg"
+            })
         })
     });
 
