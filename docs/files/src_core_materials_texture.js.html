@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -290,8 +295,17 @@
             // Rendering state
 
             this._state = new XEO.renderer.Texture({
+
                 texture: null,
-                matrix: null
+                matrix: null,
+
+                // Texture properties
+
+                minFilter: null,
+                magFilter: null,
+                wrapS: null,
+                wrapT: null,
+                flipY: null
             });
 
             // Data source
@@ -305,14 +319,6 @@
             this._translate = [0, 0];
             this._scale = [1, 1];
             this._rotate = [0, 0];
-
-            // Texture properties
-
-            this._minFilter = null;
-            this._magFilter = null;
-            this._wrapS = null;
-            this._wrapT = null;
-            this._flipY = null;
 
             // Dirty flags
 
@@ -375,7 +381,7 @@
                 this.target = cfg.target; // Render target
             }
 
-            this.scene.stats.inc(&quot;textures&quot;);
+            this.scene.stats.memory.textures++;
         },
 
         // Schedules a call to #_build for the next &quot;tick&quot;
@@ -389,6 +395,7 @@
 
                 this.scene.once(&quot;tick2&quot;,
                     function () {
+
                         self._build();
 
                         self._dirty = false;
@@ -408,10 +415,10 @@
                 if (this._src) {
 
                     this._loadSrc(this._src);
+
                     this._srcDirty = false;
 
                     return;
-
                 }
             }
 
@@ -420,9 +427,12 @@
 
                 if (this._image) {
 
+                    if (state.texture &amp;&amp; state.texture.renderBuffer) {
+                        state.texture = null;
+                    }
+
                     if (!state.texture) {
                         state.texture = new XEO.renderer.webgl.Texture2D(gl);
-
                     }
 
                     state.texture.setImage(this._image);
@@ -437,10 +447,18 @@
 
             if (this._targetDirty) {
 
-                // TODO: destroy texture only if created for this state,
-                // don&#x27;t destroy texture belong to a previous target
+                if (state.texture &amp;&amp; !state.texture.renderBuffer) {
+                    state.texture.destroy();
+                    state.texture = null;
+                }
+
+                if (this._target) {
+                    state.texture = this._target.getTexture();
+                }
 
                 this._targetDirty = false;
+
+                this._propsDirty = true;
             }
 
 
@@ -646,7 +664,7 @@
 
                     this._image = null;
                     this._src = null;
-                    this._target = this._setChild(&quot;renderBuf&quot;, value); // Target is a render buffer;
+                    this._target = this._setChild(&quot;renderBuf&quot;, value);
 
                     this._imageDirty = false;
                     this._srcDirty = false;
@@ -1092,7 +1110,7 @@
                 this._state.texture.destroy();
             }
 
-            this.scene.stats.dec(&quot;textures&quot;);
+            this.scene.stats.memory.textures--;
         }
     });
 

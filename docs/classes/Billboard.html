@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>ShowBoundary - xeoengine</title>
+    <title>Billboard - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -169,36 +174,37 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>ShowBoundary Class</h1>
+<h1>Billboard Class</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Geometry.html" class="crosslink">Geometry</a>
+            Extends <a href="../classes/Transform.html" class="crosslink">Transform</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_spatial_showBoundary.js.html#l1"><code>src&#x2F;core&#x2F;spatial&#x2F;showBoundary.js:1</code></a>
+            Defined in: <a href="../files/src_core_transforms_billboard.js.html#l1"><code>src&#x2F;core&#x2F;transforms&#x2F;billboard.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/geometry.html">geometry</a><br>
+            Module: <a href="../modules/transforms.html">transforms</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>ShowBoundary</strong> defines toroid geometry for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>Billboard</strong> causes associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to be always aligned towards the viewpoint.</p>
+<h2 id="overview">Overview</h2>
+<p>TODO
+<img src="../../../assets/images/Billboard.png"></img></p>
 <h2 id="example">Example</h2>
-<pre class="code prettyprint"><code class="lang-javascript">
-
-</code></pre>
+<p>TODO</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_ShowBoundary" class="method item">
-            <h3 class="name"><code>ShowBoundary</code></h3>
+        <div id="method_Billboard" class="method item">
+            <h3 class="name"><code>Billboard</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -221,7 +227,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_spatial_showBoundary.js.html#l1"><code>src&#x2F;core&#x2F;spatial&#x2F;showBoundary.js:1</code></a>
+                <a href="../files/src_core_transforms_billboard.js.html#l1"><code>src&#x2F;core&#x2F;transforms&#x2F;billboard.js:1</code></a>
                 </p>
         
         
@@ -243,8 +249,8 @@
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this ShowBoundary in the default
-        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Billboard in the default
+         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -267,8 +273,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
-        generated automatically when omitted.</p>
+                                            <p>Optional ID, unique among all components in the parent scene, generated automatically when omitted.</p>
         
                                         </div>
         
@@ -279,58 +284,30 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this ShowBoundary.</p>
+                                            <p>Optional map of user-defined metadata to attach to this Billboard.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[radius=1]</code>
-                                            <span class="type">Number</span>
+                                            <code class="param-name optional">[active=true]</code>
+                                            <span class="type">Boolean</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>Indicates if this Billboard is active or not.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[tube=0.3]</code>
-                                            <span class="type">Number</span>
+                                            <code class="param-name optional">[spherical=true]</code>
+                                            <span class="type">Boolean</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
-                                        </div>
+                                            <p>Indicates if this Billboard is spherical (true) or cylindrical (false).</p>
         
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[segmentsR=32]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[segmentsT=24]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[arc=Math.PI / 2.0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
                                         </div>
         
                                     </li>
@@ -400,16 +377,8 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property inherited">
-                                <a href="#property_autoNormals">autoNormals</a>
-
-                            </li>
                             <li class="index-item property">
-                                <a href="#property_Boundary3D">Boundary3D</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_colors">colors</a>
+                                <a href="#property_active">active</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -421,11 +390,11 @@
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_indices">indices</a>
+                                <a href="#property_json">json</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_json">json</a>
+                            <li class="index-item property inherited inherited">
+                                <a href="#property_matrix">matrix</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -433,23 +402,15 @@
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_modelBoundary">modelBoundary</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_normals">normals</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_positions">positions</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_primitive">primitive</a>
+                                <a href="#property_parent">parent</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_spherical">spherical</a>
 
                             </li>
                             <li class="index-item property inherited inherited">
@@ -460,10 +421,6 @@
                                 <a href="#property_type">type</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_uv">uv</a>
-
-                            </li>
                     </ul>
                 </div>
 
@@ -472,16 +429,8 @@
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
-                            <li class="index-item event inherited">
-                                <a href="#event_autoNormals">autoNormals</a>
-
-                            </li>
                             <li class="index-item event">
-                                <a href="#event_boundary">boundary</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_colors">colors</a>
+                                <a href="#event_active">active</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -489,23 +438,19 @@
 
                             </li>
                             <li class="index-item event inherited">
-                                <a href="#event_indices">indices</a>
+                                <a href="#event_matrix">matrix</a>
 
                             </li>
                             <li class="index-item event inherited">
-                                <a href="#event_normals">normals</a>
+                                <a href="#event_parent">parent</a>
 
                             </li>
-                            <li class="index-item event inherited inherited">
-                                <a href="#event_positions">positions</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_primitive">primitive</a>
+                            <li class="index-item event">
+                                <a href="#event_spherical">spherical</a>
 
                             </li>
                             <li class="index-item event inherited">
-                                <a href="#event_uv">uv</a>
+                                <a href="#event_updated">updated</a>
 
                             </li>
                     </ul>
@@ -530,7 +475,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l723"><code>src&#x2F;core&#x2F;component.js:723</code></a>
+        <a href="../files/src_core_component.js.html#l732"><code>src&#x2F;core&#x2F;component.js:732</code></a>
         </p>
 
 
@@ -1046,39 +991,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_autoNormals" class="property item inherited">
-                        <h3 class="name"><code>autoNormals</code></h3>
+                    <div id="property_active" class="property item">
+                        <h3 class="name"><code>active</code></h3>
                         <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Geometry.html#property_autoNormals">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l836"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:836</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set true to make this Geometry automatically generate <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> from
-                    <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> and <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>.</p>
-                    <p>This Geomatry will auto-generate its <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> on the
-                    next <a href="../classes/Scene.html" class="crosslink">Scene</a> Scene/tick:event event.</p>
-                    <p>Fires a <a href="../classes/Geometry.html#event_autoNormals" class="crosslink">autoNormals</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
-                    
-                    
-                    </div>
-                    <div id="property_Boundary3D" class="property item">
-                        <h3 class="name"><code>Boundary3D</code></h3>
-                        <span class="type"><a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
                     
                     
                     
@@ -1087,45 +1002,18 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_spatial_showBoundary.js.html#l48"><code>src&#x2F;core&#x2F;spatial&#x2F;showBoundary.js:48</code></a>
+                            <a href="../files/src_core_transforms_billboard.js.html#l52"><code>src&#x2F;core&#x2F;transforms&#x2F;billboard.js:52</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> we are showing.</p>
-                    <p>Fires a <a href="../classes/ShowBoundary.html#event_boundary" class="crosslink">boundary</a> event on change.</p>
+                            <p>Flag which indicates whether this Billboard is active or not.</p>
+                    <p>Fires an <a href="../classes/Billboard.html#event_active" class="crosslink">active</a> event on change.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_colors" class="property item inherited">
-                        <h3 class="name"><code>colors</code></h3>
-                        <span class="type">Array of Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Geometry.html#property_colors">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l711"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:711</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Geometry&#39;s vertex colors array.</p>
-                    <p>Fires a <a href="../classes/Geometry.html#event_colors" class="crosslink">colors</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
@@ -1180,33 +1068,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_indices" class="property item inherited">
-                        <h3 class="name"><code>indices</code></h3>
-                        <span class="type">Array of Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Geometry.html#property_indices">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l751"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:751</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Geometry&#39;s indices array.</p>
-                    <p>Fires a <a href="../classes/Geometry.html#event_indices" class="crosslink">indices</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
                     <div id="property_json" class="property item inherited">
                         <h3 class="name"><code>json</code></h3>
                         <span class="type">JSON</span>
@@ -1219,7 +1080,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_core_component.js.html#l667"><code>src&#x2F;core&#x2F;component.js:667</code></a>
+                            <a href="../files/src_core_component.js.html#l673"><code>src&#x2F;core&#x2F;component.js:673</code></a>
                             </p>
                     
                     
@@ -1230,6 +1091,36 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_matrix" class="property item inherited">
+                        <h3 class="name"><code>matrix</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Transform.html#property_matrix">
+                                    Transform
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_core_transforms_transform.js.html#l230"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:230</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Transform&#39;s local matrix.</p>
+                    <p>Fires a <a href="../classes/Transform.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]</p>
                     
                     
                     </div>
@@ -1258,38 +1149,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_modelBoundary" class="property item inherited">
-                        <h3 class="name"><code>modelBoundary</code></h3>
-                        <span class="type"><a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Geometry.html#property_modelBoundary">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l791"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:791</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Model-space 3D boundary.</p>
-                    <p>If you call <a href="../classes/Component.html#method_destroy" class="crosslink">destroy</a> on this boundary, then
-                    this property will be assigned to a fresh <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> instance next
-                    time you reference it.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_normals" class="property item inherited">
-                        <h3 class="name"><code>normals</code></h3>
-                        <span class="type">Array of Number</span>
+                    <div id="property_parent" class="property item inherited">
+                        <h3 class="name"><code>parent</code></h3>
+                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
                     
                     
                     
@@ -1297,77 +1159,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Geometry.html#property_normals">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l631"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:631</code></a>
+                                    <a href="../classes/Transform.html#property_parent">Transform</a>:
+                            <a href="../files/src_core_transforms_transform.js.html#l172"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:172</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The Geometry&#39;s normal vectors array.</p>
-                    <p>Fires a <a href="../classes/Geometry.html#event_normals" class="crosslink">normals</a> event on change.</p>
+                            <p>The parent Transform.</p>
+                    <p>Fires a <a href="../classes/Transform.html#event_parent" class="crosslink">parent</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
-                    <div id="property_positions" class="property item inherited">
-                        <h3 class="name"><code>positions</code></h3>
-                        <span class="type">Array of Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Geometry.html#property_positions">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l574"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:574</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Geometry&#39;s positions array.</p>
-                    <p>This property is a one-dimensional array - use  XEO.math/flatten:method to
-                    convert two-dimensional arrays for assignment to this property.</p>
-                    <p>Fires a <a href="../classes/Geometry.html#event_positions" class="crosslink">positions</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
-                    <div id="property_primitive" class="property item inherited">
-                        <h3 class="name"><code>primitive</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Geometry.html#property_primitive">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l522"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:522</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Geometry&#39;s primitive type.</p>
-                    <p>Valid types are: &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
-                    <p>Fires a <a href="../classes/Geometry.html#event_primitive" class="crosslink">primitive</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> &quot;triangles&quot;</p>
                     
                     
                     </div>
@@ -1397,6 +1201,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_spherical" class="property item">
+                        <h3 class="name"><code>spherical</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_transforms_billboard.js.html#l89"><code>src&#x2F;core&#x2F;transforms&#x2F;billboard.js:89</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Flag which indicates whether this Billboard is spherical (true) or cylindrical (false).</p>
+                    <p>Fires an <a href="../classes/Billboard.html#event_spherical" class="crosslink">spherical</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_string" class="property item inherited">
                         <h3 class="name"><code>string</code></h3>
                         <span class="type">String</span>
@@ -1412,7 +1242,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_core_component.js.html#l694"><code>src&#x2F;core&#x2F;component.js:694</code></a>
+                            <a href="../files/src_core_component.js.html#l700"><code>src&#x2F;core&#x2F;component.js:700</code></a>
                             </p>
                     
                     
@@ -1455,83 +1285,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_uv" class="property item inherited">
-                        <h3 class="name"><code>uv</code></h3>
-                        <span class="type">Array of Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Geometry.html#property_uv">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l671"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:671</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Geometry&#39;s UV coordinate array.</p>
-                    <p>Fires a <a href="../classes/Geometry.html#event_uv" class="crosslink">uv</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
             </div>
 
 
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_autoNormals" class="events item inherited">
-                        <h3 class="name"><code>autoNormals</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l861"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:861</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_autoNormals" class="crosslink">autoNormals</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_boundary" class="events item">
-                        <h3 class="name"><code>boundary</code></h3>
+                    <div id="event_active" class="events item">
+                        <h3 class="name"><code>active</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1541,56 +1302,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_spatial_showBoundary.js.html#l71"><code>src&#x2F;core&#x2F;spatial&#x2F;showBoundary.js:71</code></a>
+                            <a href="../files/src_core_transforms_billboard.js.html#l76"><code>src&#x2F;core&#x2F;transforms&#x2F;billboard.js:76</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this ShowBoundary&#39;s  ShowBoundary/boundary:property property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_colors" class="events item inherited">
-                        <h3 class="name"><code>colors</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Geometry.html#event_colors">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l736"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:736</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_colors" class="crosslink">colors</a> property changes.</p>
+                            <p>Fired whenever this Billboard&#39;s <a href="../classes/Billboard.html#property_active" class="crosslink">active</a> property changes.</p>
                     
                         </div>
                     
@@ -1625,7 +1344,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l755"><code>src&#x2F;core&#x2F;component.js:755</code></a>
+                            <a href="../files/src_core_component.js.html#l764"><code>src&#x2F;core&#x2F;component.js:764</code></a>
                             </p>
                     
                     
@@ -1639,8 +1358,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_indices" class="events item inherited">
-                        <h3 class="name"><code>indices</code></h3>
+                    <div id="event_matrix" class="events item inherited">
+                        <h3 class="name"><code>matrix</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1649,15 +1368,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Geometry.html#event_indices">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l776"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:776</code></a>
+                                    <a href="../classes/Transform.html#event_matrix">Transform</a>:
+                            <a href="../files/src_core_transforms_transform.js.html#l258"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:258</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a> property changes.</p>
+                            <p>Fired whenever this Transform&#39;s <a href="../classes/Transform.html#property_matrix" class="crosslink">matrix</a> property changes.</p>
                     
                         </div>
                     
@@ -1681,8 +1400,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_normals" class="events item inherited">
-                        <h3 class="name"><code>normals</code></h3>
+                    <div id="event_parent" class="events item inherited">
+                        <h3 class="name"><code>parent</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1691,15 +1410,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Geometry.html#event_normals">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l656"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:656</code></a>
+                                    <a href="../classes/Transform.html#event_parent">Transform</a>:
+                            <a href="../files/src_core_transforms_transform.js.html#l193"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:193</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Geometry&#39;s Geometry/ normals:property property changes.</p>
+                            <p>Fired whenever this Transform&#39;s <a href="../classes/Transform.html#property_parent" class="crosslink">parent</a> property changes.</p>
                     
                         </div>
                     
@@ -1723,8 +1442,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_positions" class="events item inherited">
-                        <h3 class="name"><code>positions</code></h3>
+                    <div id="event_spherical" class="events item">
+                        <h3 class="name"><code>spherical</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1732,19 +1451,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Geometry.html#event_positions">
-                                    Geometry
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_core_geometry_geometry.js.html#l604"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:604</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_transforms_billboard.js.html#l113"><code>src&#x2F;core&#x2F;transforms&#x2F;billboard.js:113</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> property changes.</p>
+                            <p>Fired whenever this Billboard&#39;s <a href="../classes/Billboard.html#property_spherical" class="crosslink">spherical</a> property changes.</p>
                     
                         </div>
                     
@@ -1768,50 +1484,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_primitive" class="events item inherited">
-                        <h3 class="name"><code>primitive</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Geometry.html#event_primitive">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l558"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:558</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_primitive" class="crosslink">primitive</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_uv" class="events item inherited">
-                        <h3 class="name"><code>uv</code></h3>
+                    <div id="event_updated" class="events item inherited">
+                        <h3 class="name"><code>updated</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1820,35 +1494,20 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Geometry.html#event_uv">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l696"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:696</code></a>
+                                    <a href="../classes/Transform.html#event_updated">Transform</a>:
+                            <a href="../files/src_core_transforms_transform.js.html#l206"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:206</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a> property changes.</p>
+                            <p>Fired whenever this Transform&#39;s Transform/leafMatrix:property property changes.</p>
+                    <p>This event does not carry the updated property value. Instead, subscribers will need to read
+                    that property again to get its updated value (which may be lazy-computed then).</p>
                     
                         </div>
                     
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
                     
                     
                     </div>

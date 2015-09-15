@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -173,7 +178,6 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-
 /**
  A **GroupBoundary** configures the WebGL color buffer for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
@@ -240,6 +244,8 @@
 
         _init: function (cfg) {
 
+            this._onUpdated = {};
+
             this.group = cfg.group;
         },
 
@@ -259,20 +265,79 @@
 
                 set: function (value) {
 
+                    // Unsubscribe from old Group&#x27;s events
+
+                    var oldGroup = this._children.group;
+
+                    if (oldGroup &amp;&amp; (!value || value.id !== oldGroup.id)) {
+
+                        oldGroup.off(this._onAdded);
+                        oldGroup.off(this._onRemoved);
+
+                        oldGroup.iterate(unbind);
+                    }
+
                     /**
                      * Fired whenever this GroupBoundary&#x27;s  {{#crossLink &quot;GroupBoundary/group:property&quot;}}{{/crossLink}} property changes.
                      *
                      * @event group
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;group&quot;, value);
+                    var group = this._setChild(&quot;group&quot;, value);
+
+                    var self = this;
+
+                    if (group) {
+
+                        this._onAdded = group.on(&quot;added&quot;,
+                            function () {
+                                if (c.worldBoundary) {
+                                    bind(c);
+                                    self._setGroupDirty();
+                                }
+                            });
+
+                        this._onRemoved = group.on(&quot;removed&quot;,
+                            function (c) {
+                                if (c.worldBoundary) {
+                                    unbind(c);
+                                    self._setGroupDirty();
+                                }
+                            });
+
+                        group.iterate(bind);
+
+                        this._setGroupDirty();
+                    }
+
+                    function bind(c) {
+                        var worldBoundary = c.worldBoundary;
+                        if (!worldBoundary) {
+                            return;
+                        }
+                        self._onUpdated[c.id] = worldBoundary.on(&quot;updated&quot;,
+                            function () {
+                                self._setGroupDirty();
+                            });
+                    }
+
+                    function unbind(c) {
+                        var worldBoundary = c.worldBoundary;
+                        if (!worldBoundary) {
+                            return;
+                        }
+                        worldBoundary.off(self._onUpdated[c.id]);
+                        delete self._onUpdated[c.id];
+                    }
+
+                    this._setGroupDirty();
                 },
 
                 get: function () {
                     return this._children.group;
                 }
             },
-            
+
             /**
              * World-space 3D boundary.
              *
@@ -298,16 +363,16 @@
                                 return self._worldBoundaryDirty;
                             },
 
-                            getOBB: function () {
+                            getAABB: function () {
 
-                                // Calls our Geometry&#x27;s modelBoundary property,
-                                // lazy-inits the boundary and its obb
+                                if (self._groupDirty) {
 
-                                return self._children.geometry.modelBoundary.obb;
-                            },
+                                    self._buildAABB();
 
-                            getMatrix: function () {
-                                return self._children.transform.matrix;
+                                    self._groupDirty = false;
+                                }
+
+                                return self._aabb;
                             }
                         });
 
@@ -357,7 +422,9 @@
                             },
 
                             getMatrix: function () {
-                                return self._children.camera.view.matrix;
+
+                                // TODO:
+                                return self.scene.camera.view.matrix;
                             }
                         });
 
@@ -374,15 +441,65 @@
             }
         },
 
+        /**
+         * Canvas-space 2D boundary.
+         *
+         * If you call {{#crossLink &quot;Component/destroy:method&quot;}}{{/crossLink}} on this boundary, then
+         * this property will be assigned to a fresh {{#crossLink &quot;Boundary2D&quot;}}{{/crossLink}} instance
+         * next time you reference it.
+         *
+         * @property canvasBoundary
+         * @type Boundary2D
+         * @final
+         */
+        canvasBoundary: {
+
+            get: function () {
+
+                if (!this._canvasBoundary) {
+
+                    var self = this;
+
+                    // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
+
+                    this._canvasBoundary = new XEO.Boundary2D(this.scene, {
+
+                        getDirty: function () {
+                            return self._canvasBoundaryDirty;
+                        },
+
+                        getOBB: function () {
+                            return self.viewBoundary.obb; // Lazy-inits!
+                        },
+
+                        getMatrix: function () {
+                            return self.scene.camera.project.matrix;
+                        }
+                    });
+
+                    this._canvasBoundary.on(&quot;destroyed&quot;,
+                        function () {
+                            self._canvasBoundary = null;
+                        });
+
+                    this._setCanvasBoundaryDirty();
+                }
+
+                return this._canvasBoundary;
+            }
+        },
+
+        _setGroupDirty: function () {
+            this._groupDirty = true;
+            this._setWorldBoundaryDirty();
+        },
+
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
-            this._viewBoundaryDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire(&quot;updated&quot;, true);
             }
-            if (this._viewBoundary) {
-                this._viewBoundary.fire(&quot;updated&quot;, true);
-            }
+            this._setViewBoundaryDirty();
         },
 
         _setViewBoundaryDirty: function () {
@@ -390,20 +507,92 @@
             if (this._viewBoundary) {
                 this._viewBoundary.fire(&quot;updated&quot;, true);
             }
+            this._setCanvasBoundaryDirty();
         },
-        
+
+        _setCanvasBoundaryDirty: function () {
+            this._canvasBoundaryDirty = true;
+            if (this._canvasBoundary) {
+                this._canvasBoundary.fire(&quot;updated&quot;, true);
+            }
+        },
+
+        _buildAABB: function () {
+
+            if (!this._aabb) {
+                this._aabb = {
+                    xmin: 0, ymin: 0, zmin: 0,
+                    xmax: 0, ymax: 0, zmax: 0
+                };
+            }
+
+            var xmin = 100000;
+            var ymin = 100000;
+            var zmin = 100000;
+            var xmax = -100000;
+            var ymax = -100000;
+            var zmax = -100000;
+
+            var component;
+            var worldBoundary;
+            var aabb;
+
+            for (var componentId in this.components) {
+                if (this.components.hasOwnProperty(componentId)) {
+
+                    component = this.components[componentId];
+
+                    worldBoundary = component.worldBoundary;
+                    if (worldBoundary) {
+
+                        aabb = worldBoundary.aabb;
+
+                        if (aabb.xmin &lt; xmin) {
+                            xmin = aabb.xmin;
+                        }
+
+                        if (aabb.ymin &lt; ymin) {
+                            ymin = aabb.ymin;
+                        }
+
+                        if (aabb.zmin &lt; zmin) {
+                            zmin = aabb.zmin;
+                        }
+
+                        if (aabb.xmax &gt; xmax) {
+                            xmax = aabb.xmax;
+                        }
+
+                        if (aabb.ymax &gt; ymax) {
+                            ymax = aabb.ymax;
+                        }
+
+                        if (aabb.zmax &gt; zmax) {
+                            zmax = aabb.zmax;
+                        }
+                    }
+                }
+            }
+
+            this._aabb.xmin = xmin;
+            this._aabb.ymin = ymin;
+            this._aabb.zmin = zmin;
+            this._aabb.xmax = xmax;
+            this._aabb.ymax = ymax;
+            this._aabb.zmax = zmax;
+        },
+
         _getJSON: function () {
-            return {
-                
-            };
+            return {};
         },
 
         _destroy: function () {
-            this._state.destroy();
+            this.group = null;
         }
     });
 
-})();
+})
+();
 
     </pre>
 </div>

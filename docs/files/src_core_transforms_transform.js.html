@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -181,11 +186,10 @@
  &lt;ul&gt;
  &lt;li&gt;Sub-classes of Transform are: {{#crossLink &quot;Translate&quot;}}{{/crossLink}},
  {{#crossLink &quot;Scale&quot;}}{{/crossLink}}, {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}, and {{#crossLink &quot;Quaternion&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;Can be connected into hierarchies with other {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}} and sub-classes&lt;/li&gt;
- &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are connected to leaf Transforms
- in the hierarchy, and will be transformed by each Transform on the path up to the
- root, in that order.&lt;/li&gt;
- &lt;li&gt;See &lt;a href=&quot;./Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Transforms create within xeoEngine&#x27;s shaders.&lt;/li&gt;
+ &lt;li&gt;Instances of Transform and its sub-classes may be connected into hierarchies.&lt;/li&gt;
+ &lt;li&gt;A {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} would be connected to a leaf Transform
+ within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.&lt;/li&gt;
+ &lt;li&gt;See &lt;a href=&quot;./Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Transform create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/Transform.png&quot;&gt;&lt;/img&gt;
@@ -193,6 +197,117 @@
  ## Example
 
  TODO
+
+ &lt;img src=&quot;../../../assets/images/transformHierarchy.png&quot;&gt;&lt;/img&gt;
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+
+ // Position of entire table
+
+ var tablePos = new XEO.Translate({
+        xyz: [0, 6, 0]
+    });
+
+ // Orientation of entire table
+
+ var tableRotate = new XEO.Rotate({
+        xyz: [1, 1, 1],
+        angle: 0,
+        parent: tablePos
+    });
+
+ // Red table leg
+
+ var tableLg1 = new XEO.GameObject({
+        transform: new XEO.Scale({
+            xyz: [1, 3, 1],
+            parent: new XEO.Translate({
+                xyz: [-4, -6, -4],
+                parent: tableRotate
+            })
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 0.3, 0.3]
+        })
+    });
+
+ // Green table leg
+
+ var tableLeg2 = new XEO.GameObject({
+        transform: new XEO.Scale({
+            xyz: [1, 3, 1],
+            parent: new XEO.Translate({
+                xyz: [4, -6, -4],
+                parent: tableRotate
+            })
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.3, 1.0, 0.3]
+        })
+    });
+
+ // Blue table leg
+
+ var tableLeg3 = new XEO.GameObject({
+        transform: new XEO.Scale({
+            xyz: [1, 3, 1],
+            parent: new XEO.Translate({
+                xyz: [4, -6, 4],
+                parent: tableRotate
+            })
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.3, 0.3, 1.0]
+        })
+    });
+
+ // Yellow table leg
+
+ var tableLeg4 = new XEO.GameObject({
+        transform: new XEO.Scale({
+            xyz: [1, 3, 1],
+            parent: new XEO.Translate({
+                xyz: [-4, -6, 4],
+                parent: tableRotate
+            })
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1.0, 1.0, 0.0]
+        })
+    });
+
+ // Purple table top
+
+ var tableTop = new XEO.GameObject({
+        transform: new XEO.Scale({
+            xyz: [6, 0.5, 6],
+            parent: new XEO.Translate({
+                xyz: [0, -3, 0],
+                parent: tableRotate
+            })
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1.0, 0.3, 1.0]
+        })
+    });
+
+ // Zoom camera out a bit
+ // Get the Camera from one of the GameObjects
+
+ tableTop.camera.view.zoom(10);
+
+ // Spin the entire table
+
+ var angle = 0;
+
+ scene.on(&quot;tick&quot;,
+    function () {
+
+        angle += 0.5;
+
+        tableRotate.angle = angle;
+    });
+ &#x60;&#x60;&#x60;&#x60;
 
  @class Transform
  @module XEO
@@ -204,7 +319,7 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  You only need to supply an ID if you need to be able to find the Transform by ID within the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Transform.
- @param [cfg.parent] {String|XEO.Transform} ID or instance of a parent Transform within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+ @param [cfg.parent] {String|Transform} ID or instance of a parent Transform within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
  @param [cfg.matrix=[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]] {Array of Number} One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.
  @extends Component
  */
@@ -217,6 +332,11 @@
         type: &quot;XEO.Transform&quot;,
 
         _init: function (cfg) {
+
+            this._leafMatrixDirty = false;
+
+            this._onParentUpdated = null;
+            this._onParentDestroyed = null;
 
             this._state = new XEO.renderer.ModelTransform({
                 matrix: null,
@@ -241,6 +361,13 @@
 
                 set: function (value) {
 
+                    // Unsubscribe from old parent&#x27;s events
+
+                    if (this._parent &amp;&amp; (!value || value.id !== this._parent.id)) {
+                        this._parent.off(this._onParentUpdated);
+                        this._parent.off(this._onParentDestroyed);
+                    }
+
                     this._parent = value;
 
                     /**
@@ -249,6 +376,30 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;parent&quot;, this._parent);
+
+                    var self = this;
+
+                    var updated = function () {
+
+                        self._leafMatrixDirty = true;
+
+                        /**
+                         * Fired whenever this Transform&#x27;s {{#crossLink &quot;Transform/leafMatrix:property&quot;}}{{/crossLink}} property changes.
+                         *
+                         * This event does not carry the updated property value. Instead, subscribers will need to read
+                         * that property again to get its updated value (which may be lazy-computed then).
+                         *
+                         * @event updated
+                         */
+                        self.fire(&quot;updated&quot;, true);
+                    };
+
+                    if (this._parent) {
+                        this._onParentUpdated = this._parent.on(&quot;updated&quot;, updated);
+                        this._onParentDestroyed = this._parent.on(&quot;destroyed&quot;, updated);
+                    }
+
+                    updated();
                 },
 
                 get: function () {
@@ -257,9 +408,9 @@
             },
 
             /**
-             * The elements of this Transform&#x27;s matrix.
+             * The Transform&#x27;s local matrix.
              *
-             * Fires an {{#crossLink &quot;Transform/matrix:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;Transform/matrix:event&quot;}}{{/crossLink}} event on change.
              *
              * @property matrix
              * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
@@ -276,38 +427,111 @@
                             0, 0, 0, 1
                         ];
 
-                    this._state.matrix = new Float32Array(value);
+                    if (!this._matrix) {
+                        this._matrix = new Float32Array(value)
+                    } else {
+                        this._matrix.set(value);
+                    }
 
-                    this._state.normalMatrix = new Float32Array(
-                        XEO.math.transposeMat4(
-                            new Float32Array(
-                                XEO.math.inverseMat4(
-                                    this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
-
-                    this._renderer.imageDirty = true;
+                    this._leafMatrixDirty = true;
 
                     /**
                      * Fired whenever this Transform&#x27;s {{#crossLink &quot;Transform/matrix:property&quot;}}{{/crossLink}} property changes.
                      * @event matrix
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;matrix&quot;, this._state.matrix);
+                    this.fire(&quot;matrix&quot;, this._matrix);
+
+                    this.fire(&quot;updated&quot;, true);
                 },
 
                 get: function () {
+                    return this._matrix;
+                }
+            },
+
+
+            /**
+             * Returns the product of all {{#crossLink &quot;Transform/matrix:property&quot;}}{{/crossLink}}&#x27;s on Transforms
+             * on the path via {{#crossLink &quot;Transform/parent:property&quot;}}{{/crossLink}} up to the root.
+             *
+             * The value of this property will have a fresh value after each
+             * {{#crossLink &quot;Transform/updated:property&quot;}}{{/crossLink}} event, which is fired whenever any Transform
+             * on the path receives an update for its {{#crossLink &quot;Transform/matrix:property&quot;}}{{/crossLink}} or
+             * {{#crossLink &quot;Transform/matrix:property&quot;}}{{/crossLink}} property.
+             *
+             * @property matrix
+             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             * @type {Array of Number}
+             */
+            leafMatrix: {
+
+                get: function () {
+
+                    if (this._leafMatrixDirty) {
+                        this._buildLeafMatrix();
+                    }
+
                     return this._state.matrix;
                 }
             }
         },
 
-        _compile: function () {                    
-          this._renderer.modelTransform = this._state;
+        _compile: function () {
+            this._renderer.modelTransform = this._state;
+        },
+
+        // This is called if necessary when reading &quot;leafMatrix&quot;, to update that property.
+        // It&#x27;s also called by GameObject when the Transform is the leaf to which the
+        // GameObject is attached, in response to an &quot;updated&quot; event from the Transform.
+
+        _buildLeafMatrix: function () {
+
+            if (!this._leafMatrixDirty) {
+                return;
+            }
+
+            this._state.matrix = this._state.matrix || [];
+
+            if (!this._parent) {
+
+                var m1 = this._matrix;
+                var m2 = this._state.matrix;
+
+                for (var i = 0, len = m1.length; i &lt; len; i++) {
+                    m2[i] = m1[i];
+                }
+
+            } else {
+
+                XEO.math.mulMat4(this._parent.leafMatrix, this._matrix, this._state.matrix);
+            }
+
+            if (!this._state.normalMatrix) {
+                this._state.normalMatrix = new Float32Array(16);
+            }
+
+            // TODO: only compute normal matrix on leaf!
+
+            XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix);
+            XEO.math.transposeMat4(this._state.normalMatrix);
+
+            this._renderer.imageDirty = true;
+
+            this._leafMatrixDirty = false;
         },
 
         _getJSON: function () {
             return {
                 matrix: Array.prototype.slice.call(this._state.matrix)
             };
+        },
+
+        _destroy: function () {
+            if (this._parent) {
+                this._parent.off(this._onParentUpdated);
+                this._parent.off(this._onParentDestroyed);
+            }
         }
     });
 

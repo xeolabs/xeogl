@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -346,13 +351,8 @@
                 hash: null
             });
 
-            this._dirty = true;
-
-            this._components = {};
-            this._dirtyComponentSubs = {};
-            this._destroyedComponentSubs = {};
-
-
+            this._hashDirty = true;
+            
             this.ambient = cfg.ambient;
             this.diffuse = cfg.diffuse;
             this.specular = cfg.specular;
@@ -453,14 +453,14 @@
              Fires a {{#crossLink &quot;PhongMaterial/specular:event&quot;}}{{/crossLink}} event on change.
 
              @property specular
-             @default [0.3, 0.3, 0.3]
+             @default [1.0, 1.0, 1.0]
              @type Array(Number)
              */
             specular: {
 
                 set: function (value) {
 
-                    this._state.specular = value || [0.3, 0.3, 0.3];
+                    this._state.specular = value || [1.0, 1.0, 1.0];
 
                     this._renderer.imageDirty = true;
 
@@ -703,11 +703,11 @@
                      @event normalMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;normalMap&quot;, texture);
+                    this._setComponent(&quot;normalMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._components[&quot;normalMap&quot;];
+                    return this._children[&quot;normalMap&quot;];
                 }
             },
 
@@ -732,11 +732,11 @@
                      @event diffuseMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;diffuseMap&quot;, texture);
+                    this._setComponent(&quot;diffuseMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._components[&quot;diffuseMap&quot;];
+                    return this._children[&quot;diffuseMap&quot;];
                 }
             },
 
@@ -761,11 +761,11 @@
                      @event specularMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;specularMap&quot;, texture);
+                    this._setComponent(&quot;specularMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._components[&quot;specularMap&quot;];
+                    return this._children[&quot;specularMap&quot;];
                 }
             },
 
@@ -790,11 +790,11 @@
                      @event emissiveMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;emissiveMap&quot;, texture);
+                    this._setComponent(&quot;emissiveMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._components[&quot;emissiveMap&quot;];
+                    return this._children[&quot;emissiveMap&quot;];
                 }
             },
 
@@ -819,11 +819,11 @@
                      @event opacityMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;opacityMap&quot;, texture);
+                    this._setComponent(&quot;opacityMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._components[&quot;opacityMap&quot;];
+                    return this._children[&quot;opacityMap&quot;];
                 }
             },
 
@@ -848,11 +848,38 @@
                      @event reflectivityMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;reflectivityMap&quot;, texture);
+                    this._setComponent(&quot;reflectivityMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._components[&quot;reflectivityMap&quot;];
+                    return this._children[&quot;reflectivityMap&quot;];
+                }
+            },
+
+            /**
+             A reflection {{#crossLink &quot;CubeMap&quot;}}{{/crossLink}} attached to this PhongMaterial.
+
+             Fires a {{#crossLink &quot;PhongMaterial/reflection:event&quot;}}{{/crossLink}} event on change.
+
+             @property reflection
+             @default null
+             @type {CubeMap}
+             */
+            reflection: {
+
+                set: function (cubeMap) {
+
+                    /**
+                     Fired whenever this PhongMaterial&#x27;s {{#crossLink &quot;PhongMaterial/reflectivityMap:property&quot;}}{{/crossLink}} property changes.
+
+                     @event reflection
+                     @param value {CubeMap} The property&#x27;s new value
+                     */
+                    this._setComponent(&quot;reflection&quot;, cubeMap);
+                },
+
+                get: function () {
+                    return this._children[&quot;reflection&quot;];
                 }
             },
 
@@ -877,11 +904,11 @@
                      @event diffuseFresnel
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;diffuseFresnel&quot;, fresnel);
+                    this._setComponent(&quot;diffuseFresnel&quot;, fresnel);
                 },
 
                 get: function () {
-                    return this._components[&quot;diffuseFresnel&quot;];
+                    return this._children[&quot;diffuseFresnel&quot;];
                 }
             },
 
@@ -906,11 +933,11 @@
                      @event specularFresnel
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;specularFresnel&quot;, fresnel);
+                    this._setComponent(&quot;specularFresnel&quot;, fresnel);
                 },
 
                 get: function () {
-                    return this._components[&quot;specularFresnel&quot;];
+                    return this._children[&quot;specularFresnel&quot;];
                 }
             },
 
@@ -935,11 +962,11 @@
                      @event emissiveFresnel
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;emissiveFresnel&quot;, fresnel);
+                    this._setComponent(&quot;emissiveFresnel&quot;, fresnel);
                 },
 
                 get: function () {
-                    return this._components[&quot;emissiveFresnel&quot;];
+                    return this._children[&quot;emissiveFresnel&quot;];
                 }
             },
 
@@ -964,11 +991,11 @@
                      @event opacityFresnel
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;opacityFresnel&quot;, fresnel);
+                    this._setComponent(&quot;opacityFresnel&quot;, fresnel);
                 },
 
                 get: function () {
-                    return this._components[&quot;opacityFresnel&quot;];
+                    return this._children[&quot;opacityFresnel&quot;];
                 }
             },
 
@@ -993,86 +1020,26 @@
                      @event reflectivityFresnel
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;reflectivityFresnel&quot;, fresnel);
+                    this._setComponent(&quot;reflectivityFresnel&quot;, fresnel);
                 },
 
                 get: function () {
-                    return this._components[&quot;reflectivityFresnel&quot;];
+                    return this._children[&quot;reflectivityFresnel&quot;];
                 }
             }
         },
 
-        _attachComponent: function (type, component) {
-
-            if (XEO._isString(component)) {
-
-                // ID given for component - find the component
-                var id = component;
-
-                component = this.scene.components[id];
-
-                if (!component) {
-                    this.error(&quot;Component not found: &quot; + XEO._inQuotes(id));
-                    return;
-                }
-            }
-
-            if (component &amp;&amp; component.type !== &quot;XEO.Texture&quot; &amp;&amp; component.type !== &quot;XEO.Fresnel&quot;) {
-                this.error(&quot;Component &quot; + XEO._inQuotes(id) + &quot; is not a XEO.Texture or XEO.Fresnel&quot;);
-                return;
-            }
-
-            var oldComponent = this._components[type];
-
-            if (oldComponent) {
-
-                // Replacing old component
-
-                oldComponent.off(this._dirtyComponentSubs[type]);
-                oldComponent.off(this._destroyedComponentSubs[type]);
-
-                delete this._components[type];
-            }
-
-            var self = this;
-
-            if (component) {
-
-                this._dirtyComponentSubs[type] = component.on(&quot;dirty&quot;,
-                    function () {
-                        self.fire(&quot;dirty&quot;, true);
-                    });
-
-                this._destroyedComponentSubs[type] = component.on(&quot;destroyed&quot;,
-                    function () {
-
-                        delete self._dirtyComponentSubs[type];
-                        delete self._destroyedComponentSubs[type];
-
-                        self._dirty = true;
-
-                        self.fire(&quot;dirty&quot;, true);
-                        self.fire(type, null);
-                    });
-
-                this._components[type] = component;
-            }
-
-            this._state[type] = component ? component._state : null;
-
-            this._dirty = true;
-
-            this.fire(&quot;dirty&quot;, true);
-            this.fire(type, component || null);
+        _setComponent: function (name, child) {
+            child = this._setChild(name, child, false);
+            this._state[name] = child ? child._state : null;
+            this._hashDirty = true;
         },
 
         _compile: function () {
 
-            if (this._dirty) {
-
+            if (this._hashDirty) {
                 this._makeHash();
-
-                this._dirty = false;
+                this._hashDirty = false;
             }
 
             this._renderer.material = this._state;
@@ -1188,7 +1155,7 @@
 
             // Textures
 
-            var components = this._components;
+            var components = this._children;
 
             if (components.normalMap) {
                 json.normalMap = components.normalMap.id;

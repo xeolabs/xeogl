@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -192,16 +197,123 @@
 <ul>
 <li>Sub-classes of Transform are: <a href="../classes/Translate.html" class="crosslink">Translate</a>,
 <a href="../classes/Scale.html" class="crosslink">Scale</a>, <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, and <a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></li>
-<li>Can be connected into hierarchies with other <a href="../classes/Transform.html" class="crosslink">Transforms</a> and sub-classes</li>
-<li><a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are connected to leaf Transforms
-in the hierarchy, and will be transformed by each Transform on the path up to the
-root, in that order.</li>
-<li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transforms create within xeoEngine&#39;s shaders.</li>
+<li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
+<li>A <a href="../classes/GameObject.html" class="crosslink">GameObject</a> would be connected to a leaf Transform
+within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+<li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine&#39;s shaders.</li>
 </ul>
 
 <p><img src="../../../assets/images/Transform.png"></img></p>
 <h2 id="example">Example</h2>
 <p>TODO</p>
+<p><img src="../../../assets/images/transformHierarchy.png"></img></p>
+<pre class="code prettyprint"><code class="lang-javascript">
+// Position of entire table
+
+var tablePos = new XEO.Translate({
+       xyz: [0, 6, 0]
+   });
+
+// Orientation of entire table
+
+var tableRotate = new XEO.Rotate({
+       xyz: [1, 1, 1],
+       angle: 0,
+       parent: tablePos
+   });
+
+// Red table leg
+
+var tableLg1 = new XEO.GameObject({
+       transform: new XEO.Scale({
+           xyz: [1, 3, 1],
+           parent: new XEO.Translate({
+               xyz: [-4, -6, -4],
+               parent: tableRotate
+           })
+       }),
+       material: new XEO.PhongMaterial({
+           diffuse: [1, 0.3, 0.3]
+       })
+   });
+
+// Green table leg
+
+var tableLeg2 = new XEO.GameObject({
+       transform: new XEO.Scale({
+           xyz: [1, 3, 1],
+           parent: new XEO.Translate({
+               xyz: [4, -6, -4],
+               parent: tableRotate
+           })
+       }),
+       material: new XEO.PhongMaterial({
+           diffuse: [0.3, 1.0, 0.3]
+       })
+   });
+
+// Blue table leg
+
+var tableLeg3 = new XEO.GameObject({
+       transform: new XEO.Scale({
+           xyz: [1, 3, 1],
+           parent: new XEO.Translate({
+               xyz: [4, -6, 4],
+               parent: tableRotate
+           })
+       }),
+       material: new XEO.PhongMaterial({
+           diffuse: [0.3, 0.3, 1.0]
+       })
+   });
+
+// Yellow table leg
+
+var tableLeg4 = new XEO.GameObject({
+       transform: new XEO.Scale({
+           xyz: [1, 3, 1],
+           parent: new XEO.Translate({
+               xyz: [-4, -6, 4],
+               parent: tableRotate
+           })
+       }),
+       material: new XEO.PhongMaterial({
+           diffuse: [1.0, 1.0, 0.0]
+       })
+   });
+
+// Purple table top
+
+var tableTop = new XEO.GameObject({
+       transform: new XEO.Scale({
+           xyz: [6, 0.5, 6],
+           parent: new XEO.Translate({
+               xyz: [0, -3, 0],
+               parent: tableRotate
+           })
+       }),
+       material: new XEO.PhongMaterial({
+           diffuse: [1.0, 0.3, 1.0]
+       })
+   });
+
+// Zoom camera out a bit
+// Get the Camera from one of the GameObjects
+
+tableTop.camera.view.zoom(10);
+
+// Spin the entire table
+
+var angle = 0;
+
+scene.on("tick",
+   function () {
+
+       angle += 0.5;
+
+       tableRotate.angle = angle;
+   });
+</code></pre>
 
 </div>
 
@@ -296,7 +408,7 @@ root, in that order.</li>
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[parent]</code>
-                                            <span class="type">String | XEO.Transform</span>
+                                            <span class="type">String | <a href="../classes/Transform.html" class="crosslink">Transform</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -398,6 +510,10 @@ root, in that order.</li>
                                 <a href="#property_matrix">matrix</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_matrix">matrix</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
 
@@ -438,6 +554,10 @@ root, in that order.</li>
                                 <a href="#event_parent">parent</a>
 
                             </li>
+                            <li class="index-item event">
+                                <a href="#event_updated">updated</a>
+
+                            </li>
                     </ul>
                 </div>
         </div>
@@ -460,7 +580,7 @@ root, in that order.</li>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l723"><code>src&#x2F;core&#x2F;component.js:723</code></a>
+        <a href="../files/src_core_component.js.html#l732"><code>src&#x2F;core&#x2F;component.js:732</code></a>
         </p>
 
 
@@ -1039,7 +1159,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_core_component.js.html#l667"><code>src&#x2F;core&#x2F;component.js:667</code></a>
+                            <a href="../files/src_core_component.js.html#l673"><code>src&#x2F;core&#x2F;component.js:673</code></a>
                             </p>
                     
                     
@@ -1064,15 +1184,46 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_transform.js.html#l84"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:84</code></a>
+                            <a href="../files/src_core_transforms_transform.js.html#l230"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:230</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The elements of this Transform&#39;s matrix.</p>
-                    <p>Fires an <a href="../classes/Transform.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
+                            <p>The Transform&#39;s local matrix.</p>
+                    <p>Fires a <a href="../classes/Transform.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]</p>
+                    
+                    
+                    </div>
+                    <div id="property_matrix" class="property item">
+                        <h3 class="name"><code>matrix</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_transforms_transform.js.html#l274"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:274</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Returns the product of all <a href="../classes/Transform.html#property_matrix" class="crosslink">matrix</a>&#39;s on Transforms
+                    on the path via <a href="../classes/Transform.html#property_parent" class="crosslink">parent</a> up to the root.</p>
+                    <p>The value of this property will have a fresh value after each
+                    Transform/updated:property event, which is fired whenever any Transform
+                    on the path receives an update for its <a href="../classes/Transform.html#property_matrix" class="crosslink">matrix</a> or
+                    <a href="../classes/Transform.html#property_matrix" class="crosslink">matrix</a> property.</p>
                     
                         </div>
                     
@@ -1116,7 +1267,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_transform.js.html#l57"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:57</code></a>
+                            <a href="../files/src_core_transforms_transform.js.html#l172"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:172</code></a>
                             </p>
                     
                     
@@ -1172,7 +1323,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_core_component.js.html#l694"><code>src&#x2F;core&#x2F;component.js:694</code></a>
+                            <a href="../files/src_core_component.js.html#l700"><code>src&#x2F;core&#x2F;component.js:700</code></a>
                             </p>
                     
                     
@@ -1232,7 +1383,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l755"><code>src&#x2F;core&#x2F;component.js:755</code></a>
+                            <a href="../files/src_core_component.js.html#l764"><code>src&#x2F;core&#x2F;component.js:764</code></a>
                             </p>
                     
                     
@@ -1257,7 +1408,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_transform.js.html#l114"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:114</code></a>
+                            <a href="../files/src_core_transforms_transform.js.html#l258"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:258</code></a>
                             </p>
                     
                     
@@ -1299,7 +1450,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_transforms_transform.js.html#l71"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:71</code></a>
+                            <a href="../files/src_core_transforms_transform.js.html#l193"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:193</code></a>
                             </p>
                     
                     
@@ -1327,6 +1478,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     </li>
                                 </ul>
                             </div>
+                    
+                    
+                    </div>
+                    <div id="event_updated" class="events item">
+                        <h3 class="name"><code>updated</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_transforms_transform.js.html#l206"><code>src&#x2F;core&#x2F;transforms&#x2F;transform.js:206</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Transform&#39;s Transform/leafMatrix:property property changes.</p>
+                    <p>This event does not carry the updated property value. Instead, subscribers will need to read
+                    that property again to get its updated value (which may be lazy-computed then).</p>
+                    
+                        </div>
+                    
                     
                     
                     </div>

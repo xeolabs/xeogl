@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -722,25 +727,26 @@
 
         /**
          * Adds a child component to this.
-         * When component not given, attaches the scene&#x27;s default instance for the given name.
+         * When component not given, attaches the scene&#x27;s default instance for the given name (if any).
          * Publishes the new child component on this component, keyed to the given name.
          *
          * @param {string} name component name
          * @param {Component} child The component
+         * @param {Boolean} useDefault
          * @private
          */
-        _setChild: function (name, child) {
+        _setChild: function (name, child, useDefault) {
 
-            if (!child) {
+            if (!child &amp;&amp; useDefault !== false) {
 
                 // No child given, fall back on default component class for the given name
 
                 child = this.scene[name];
 
-                if (!child) {
-                    this.error(&quot;No default component for name &#x27;&quot; + name + &quot;&#x27;&quot;);
-                    return;
-                }
+                //if (!child) {
+                //    this.error(&quot;No default component for name &#x27;&quot; + name + &quot;&#x27;&quot;);
+                //    return;
+                //}
 
             } else {
 
@@ -766,7 +772,7 @@
                 }
             }
 
-            if (child.scene.id !== this.scene.id) {
+            if (child &amp;&amp; child.scene.id !== this.scene.id) {
                 this.error(&quot;Not in same scene: &quot; + child.type + &quot; &quot; + XEO._inQuotes(child.id));
                 return;
             }
@@ -789,42 +795,48 @@
                 oldChild.off(this._childDirtySubs[name]);
             }
 
-            // Set and publish the new child on this component
+            if (child) {
 
-            this._children[name] = child;
+                // Set and publish the new child on this component
 
-            var self = this;
+                this._children[name] = child;
 
-            // Bind destruct listener to new child to remove it
-            // from this component when destroyed
+                var self = this;
 
-            this._childDestroySubs[name] = child.on(&quot;destroyed&quot;,
-                function () {
+                // Bind destruct listener to new child to remove it
+                // from this component when destroyed
 
-                    // Child destroyed
-                    delete self._children[name];
+                this._childDestroySubs[name] = child.on(&quot;destroyed&quot;,
+                    function () {
 
-                    // Try to fall back on default child
-                    var defaultComponent = self.scene[name];
+                        // Child destroyed
+                        delete self._children[name];
 
-                    if (!defaultComponent || child.id === defaultComponent.id) {
+                        // Try to fall back on default child
+                        var defaultComponent = self.scene[name];
 
-                        // Old child was the default,
-                        // so publish null child and bail
+                        if (!defaultComponent || child.id === defaultComponent.id) {
 
-                        self.fire(name, null);
+                            // Old child was the default,
+                            // so publish null child and bail
 
-                        return;
-                    }
+                            self.fire(name, null);
 
-                    // Set default child
-                    self._setChild(name, defaultComponent);
-                });
+                            return;
+                        }
 
-            this._childDirtySubs[name] = child.on(&quot;dirty&quot;,
-                function () {
-                    self.fire(&quot;dirty&quot;, true);
-                });
+                        // Set default child
+                        self._setChild(name, defaultComponent);
+                    });
+
+                this._childDirtySubs[name] = child.on(&quot;dirty&quot;,
+                    function () {
+                        self.fire(&quot;dirty&quot;, true);
+                    });
+
+            } else {
+                delete this._children[name];
+            }
 
             this.fire(&quot;dirty&quot;, true);
 
@@ -832,7 +844,6 @@
 
             return child;
         },
-
 
         _compile: function () {
         },
@@ -890,7 +901,10 @@
             js: {
 
                 get: function () {
-                    return &quot;new &quot; + this.type + &quot;(&quot; + this.jsonString + &quot;);&quot;;
+                    var json = this.json;
+                    delete json.id;
+                    var str = JSON.stringify(json, &quot;\n&quot;, 4);
+                    return &quot;new &quot; + this.type + &quot;(&quot; + str + &quot;);&quot;;
                 }
             }
         },

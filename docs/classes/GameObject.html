@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -607,7 +612,15 @@ var center = viewBoundary.center;
 
                     <ul class="index-list properties extends">
                             <li class="index-item property">
+                                <a href="#property_billboard">billboard</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_camera">camera</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_canvasBoundary">canvasBoundary</a>
 
                             </li>
                             <li class="index-item property">
@@ -731,6 +744,10 @@ var center = viewBoundary.center;
 
                     <ul class="index-list events extends">
                             <li class="index-item event">
+                                <a href="#event_billboard">billboard</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_camera">camera</a>
 
                             </li>
@@ -832,7 +849,7 @@ var center = viewBoundary.center;
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l723"><code>src&#x2F;core&#x2F;component.js:723</code></a>
+        <a href="../files/src_core_component.js.html#l732"><code>src&#x2F;core&#x2F;component.js:732</code></a>
         </p>
 
 
@@ -1348,6 +1365,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_billboard" class="property item">
+                        <h3 class="name"><code>billboard</code></h3>
+                        <span class="type"><a href="../classes/Component.html" class="crosslink">Component</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_objects_gameObject.js.html#l845"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:845</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Billboard attached to this GameObject.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this GameObject. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_billboard" class="crosslink">billboard</a>
+                    (an identity matrix) when set to a null or undefined value.</p>
+                    <p>Fires a <a href="../classes/GameObject.html#event_billboard" class="crosslink">billboard</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_camera" class="property item">
                         <h3 class="name"><code>camera</code></h3>
                         <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
@@ -1359,7 +1405,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l173"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:173</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l174"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:174</code></a>
                             </p>
                     
                     
@@ -1377,6 +1423,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_canvasBoundary" class="property item">
+                        <h3 class="name"><code>canvasBoundary</code></h3>
+                        <span class="type"><a href="../classes/Boundary2D.html" class="crosslink">Boundary2D</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_objects_gameObject.js.html#l1002"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:1002</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Canvas-space 2D boundary.</p>
+                    <p>If you call <a href="../classes/Component.html#method_destroy" class="crosslink">destroy</a> on this boundary, then
+                    this property will be assigned to a fresh <a href="../classes/Boundary2D.html" class="crosslink">Boundary2D</a> instance
+                    next time you reference it.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_clips" class="property item">
                         <h3 class="name"><code>clips</code></h3>
                         <span class="type"><a href="../classes/Clips.html" class="crosslink">Clips</a></span>
@@ -1388,7 +1463,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l238"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:238</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l247"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:247</code></a>
                             </p>
                     
                     
@@ -1417,7 +1492,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l296"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:296</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l305"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:305</code></a>
                             </p>
                     
                     
@@ -1446,7 +1521,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l267"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:267</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l276"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:276</code></a>
                             </p>
                     
                     
@@ -1475,7 +1550,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l356"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:356</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l365"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:365</code></a>
                             </p>
                     
                     
@@ -1504,7 +1579,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l326"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:326</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l335"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:335</code></a>
                             </p>
                     
                     
@@ -1558,7 +1633,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l446"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:446</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l455"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:455</code></a>
                             </p>
                     
                     
@@ -1591,7 +1666,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l933"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:933</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l1054"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:1054</code></a>
                             </p>
                     
                     
@@ -1620,7 +1695,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l966"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:966</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l1091"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:1091</code></a>
                             </p>
                     
                     
@@ -1675,7 +1750,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_core_component.js.html#l667"><code>src&#x2F;core&#x2F;component.js:667</code></a>
+                            <a href="../files/src_core_component.js.html#l673"><code>src&#x2F;core&#x2F;component.js:673</code></a>
                             </p>
                     
                     
@@ -1700,7 +1775,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l525"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:525</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l534"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:534</code></a>
                             </p>
                     
                     
@@ -1729,7 +1804,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l555"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:555</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l564"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:564</code></a>
                             </p>
                     
                     
@@ -1758,7 +1833,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l585"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:585</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l594"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:594</code></a>
                             </p>
                     
                     
@@ -1812,7 +1887,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l416"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:416</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l425"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:425</code></a>
                             </p>
                     
                     
@@ -1841,7 +1916,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l615"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:615</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l624"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:624</code></a>
                             </p>
                     
                     
@@ -1870,7 +1945,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l644"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:644</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l653"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:653</code></a>
                             </p>
                     
                     
@@ -1925,7 +2000,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l674"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:674</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l683"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:683</code></a>
                             </p>
                     
                     
@@ -1954,7 +2029,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l703"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:703</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l712"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:712</code></a>
                             </p>
                     
                     
@@ -1983,7 +2058,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l733"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:733</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l742"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:742</code></a>
                             </p>
                     
                     
@@ -2016,7 +2091,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_core_component.js.html#l694"><code>src&#x2F;core&#x2F;component.js:694</code></a>
+                            <a href="../files/src_core_component.js.html#l700"><code>src&#x2F;core&#x2F;component.js:700</code></a>
                             </p>
                     
                     
@@ -2041,7 +2116,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l763"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:763</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l772"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:772</code></a>
                             </p>
                     
                     
@@ -2103,7 +2178,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l883"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:883</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l950"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:950</code></a>
                             </p>
                     
                     
@@ -2131,7 +2206,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l386"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:386</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l395"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:395</code></a>
                             </p>
                     
                     
@@ -2161,7 +2236,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l833"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:833</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l898"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:898</code></a>
                             </p>
                     
                     
@@ -2184,6 +2259,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_billboard" class="events item">
+                        <h3 class="name"><code>billboard</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_objects_gameObject.js.html#l869"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:869</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this GameObject&#39;s <a href="../classes/GameObject.html#property_billboard" class="crosslink">billboard</a>
+                    property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_camera" class="events item">
                         <h3 class="name"><code>camera</code></h3>
                         <span class="type"></span>
@@ -2195,7 +2313,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l203"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:203</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l204"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:204</code></a>
                             </p>
                     
                     
@@ -2237,7 +2355,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l254"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:254</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l263"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:263</code></a>
                             </p>
                     
                     
@@ -2279,7 +2397,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l312"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:312</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l321"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:321</code></a>
                             </p>
                     
                     
@@ -2321,7 +2439,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l283"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:283</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l292"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:292</code></a>
                             </p>
                     
                     
@@ -2363,7 +2481,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l372"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:372</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l381"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:381</code></a>
                             </p>
                     
                     
@@ -2405,7 +2523,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l342"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:342</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l351"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:351</code></a>
                             </p>
                     
                     
@@ -2447,7 +2565,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l755"><code>src&#x2F;core&#x2F;component.js:755</code></a>
+                            <a href="../files/src_core_component.js.html#l764"><code>src&#x2F;core&#x2F;component.js:764</code></a>
                             </p>
                     
                     
@@ -2472,7 +2590,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l484"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:484</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l493"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:493</code></a>
                             </p>
                     
                     
@@ -2514,7 +2632,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l541"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:541</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l550"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:550</code></a>
                             </p>
                     
                     
@@ -2556,7 +2674,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l571"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:571</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l580"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:580</code></a>
                             </p>
                     
                     
@@ -2598,7 +2716,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l601"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:601</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l610"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:610</code></a>
                             </p>
                     
                     
@@ -2640,7 +2758,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l432"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:432</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l441"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:441</code></a>
                             </p>
                     
                     
@@ -2682,7 +2800,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l631"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:631</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l640"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:640</code></a>
                             </p>
                     
                     
@@ -2789,7 +2907,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l660"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:660</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l669"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:669</code></a>
                             </p>
                     
                     
@@ -2831,7 +2949,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l690"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:690</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l699"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:699</code></a>
                             </p>
                     
                     
@@ -2873,7 +2991,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l719"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:719</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l728"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:728</code></a>
                             </p>
                     
                     
@@ -2915,7 +3033,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l749"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:749</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l758"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:758</code></a>
                             </p>
                     
                     
@@ -2957,7 +3075,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l796"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:796</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l805"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:805</code></a>
                             </p>
                     
                     
@@ -3000,7 +3118,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_objects_gameObject.js.html#l402"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:402</code></a>
+                            <a href="../files/src_core_objects_gameObject.js.html#l411"><code>src&#x2F;core&#x2F;objects&#x2F;gameObject.js:411</code></a>
                             </p>
                     
                     

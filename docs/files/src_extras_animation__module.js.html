@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/core/spatial/showBoundary.js - xeoengine</title>
+    <title>src/extras/animation/_module.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -169,145 +174,16 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/core/spatial/showBoundary.js</h1>
+<h1 class="file-heading">File: src/extras/animation/_module.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **ShowBoundary** defines toroid geometry for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+  Animation components
 
- ## Example
-
- &#x60;&#x60;&#x60;&#x60;javascript
-
- &#x60;&#x60;&#x60;&#x60;
-
- @class ShowBoundary
- @module XEO
- @submodule geometry
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this ShowBoundary in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
- generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShowBoundary.
- @param [cfg.radius=1] {Number}
- @param [cfg.tube=0.3] {Number}
- @param [cfg.segmentsR=32] {Number}
- @param [cfg.segmentsT=24] {Number}
- @param [cfg.arc=Math.PI / 2.0] {Number}
- @extends Geometry
+  @module XEO
+  @submodule animation
  */
-(function () {
-
-    &quot;use strict&quot;;
-
-    XEO.ShowBoundary = XEO.Geometry.extend({
-
-        type: &quot;XEO.ShowBoundary&quot;,
-
-        _init: function (cfg) {
-
-            this.box = new XEO.Geometry(this.scene);
-
-            this.object = new XEO.GameObject(this.scene, {
-                    geometry: this.box
-                }
-            );
-
-            this.boundary = cfg.boundary;
-        },
-        props: {
-
-            /**
-             * The {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} we are showing.
-             *
-             * Fires a {{#crossLink &quot;ShowBoundary/boundary:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property Boundary3D
-             * @type Boundary3D
-             */
-            boundary: {
-
-                set: function (value) {
-
-                    // Unsubscribe from old boundary&#x27;s events
-
-                    var oldBoundary = this._children.boundary;
-
-                    if (oldBoundary) {
-
-                        if ((!value || (value.id !== undefined ? value.id : value) !== oldBoundary.id)) {
-                            oldBoundary.off(this._onBoundaryUpdated);
-                        }
-                    }
-
-                    /**
-                     * Fired whenever this ShowBoundary&#x27;s  {{#crossLink &quot;ShowBoundary/boundary:property&quot;}}{{/crossLink}} property changes.
-                     *
-                     * @event boundary
-                     * @param value The property&#x27;s new value
-                     */
-                    this._setChild(&quot;boundary&quot;, value);
-
-                    var boundary = this._children.boundary;
-
-                    if (boundary) {
-
-                        var self = this;
-
-                        this._onBoundaryUpdated = boundary.on(&quot;updated&quot;,
-                            function () {
-                                if (self.box) {
-                                    self.box.positions = boundary.obb;
-                                }
-                            });
-
-                        this.box.positions = boundary.obb;
-                    }
-                },
-
-                get: function () {
-                    return this._children.boundary;
-                }
-            }
-        },
-
-        children: {
-            boundary: {
-                events: {
-                    &quot;updated&quot;: function () {
-                        this._box.positions = this._children.boundary.obb;
-                    }
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var attr = {};
-
-            if (this._children.boundary) {
-                attr.boundary = this._children.boundary.id;
-            }
-
-            return attr;
-        },
-
-        _destroyed: function () {
-
-            if (this._children.boundary) {
-                this._children.boundary.off(this._onBoundaryUpdated);
-            }
-
-            this._box.destroy();
-            this._object.destroy();
-        }
-    });
-
-})();
-
     </pre>
 </div>
                     </div>

@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -175,18 +180,18 @@
     <pre class="code prettyprint linenums">
 /**
 
- A **Translate** applies a translation transformation to associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **Translate** translates associated {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  ## Overview
 
  &lt;ul&gt;
 
  &lt;li&gt;Translate is a sub-class of {{#crossLink &quot;Transform&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;Can be connected into hierarchies with other {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}} and sub-classes&lt;/li&gt;
- &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are connected to leaf {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}}
- in the hierarchy, and will be transformed by each {{#crossLink &quot;Transform&quot;}}{{/crossLink}} on the path up to the
- root, in that order.&lt;/li&gt;
- &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Transforms create within xeoEngine&#x27;s shaders.&lt;/li&gt;
+ &lt;li&gt;Instances of Transform and its sub-classes may be connected into hierarchies.&lt;/li&gt;
+ &lt;li&gt;A {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} would be connected to a leaf Transform
+ within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.&lt;/li&gt;
+ &lt;li&gt;See &lt;a href=&quot;./Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Transform create within xeoEngine&#x27;s shaders.&lt;/li&gt;
+ &lt;/ul&gt;
 
  &lt;/ul&gt;
 
@@ -198,60 +203,60 @@
  {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}, Translate and {{#crossLink &quot;Scale&quot;}}{{/crossLink}} transforms.
  The GameObjects share the same {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, which is the default 2x2x2 cube.&lt;br&gt;
 
-&#x60;&#x60;&#x60;&#x60;javascript
-var scene = new XEO.Scene();
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var scene = new XEO.Scene();
 
-var rotate = new XEO.Rotate(scene, {
+ var rotate = new XEO.Rotate(scene, {
     xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
     angle: 30
 });
 
-var translate1 = new XEO.Translate(scene, {
+ var translate1 = new XEO.Translate(scene, {
     parent: rotate,
     xyz: [-5, 0, 0] // Translate along -X axis
 });
 
-var translate2 = new XEO.Translate(scene, {
+ var translate2 = new XEO.Translate(scene, {
     parent: rotate,
     xyz: [5, 0, 0] // Translate along +X axis
 });
 
-var scale = new XEO.Scale(scene, {
+ var scale = new XEO.Scale(scene, {
     parent: translate2,
     xyz: [1, 2, 1] // Scale x2 on Y axis
 });
 
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-var gameObject1 = new XEO.GameObject(scene, {
+ var gameObject1 = new XEO.GameObject(scene, {
     transform: translate1,
     geometry: geometry
 });
 
-var gameObject2 = new XEO.GameObject(scene, {
+ var gameObject2 = new XEO.GameObject(scene, {
     transform: scale,
     geometry: geometry
 });
  &#x60;&#x60;&#x60;&#x60;
 
-Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+ Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
-Let&#x27;s insert a {{#crossLink &quot;Scale&quot;}}{{/crossLink}} between the first Translate and the first {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}:
+ Let&#x27;s insert a {{#crossLink &quot;Scale&quot;}}{{/crossLink}} between the first Translate and the first {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
-var scale2 = new XEO.Scale(scene, {
+ var scale2 = new XEO.Scale(scene, {
     parent: translate1,
     xyz: [1, 1, 2] // Scale x2 on Z axis
 });
 
-gameObject2.transform = scale2;
+ gameObject2.transform = scale2;
  &#x60;&#x60;&#x60;&#x60;
 
  And just for fun, we&#x27;ll start updating the second {{#crossLink &quot;Translate&quot;}}{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
-// Rotate 0.2 degrees on each frame
-scene.on(&quot;tick&quot;, function(e) {
+ // Rotate 0.2 degrees on each frame
+ scene.on(&quot;tick&quot;, function(e) {
     var xyz = translate2.xyz;
     xyz[0] += 0.2;
     translate2.xyz = xyz;
@@ -281,7 +286,7 @@ scene.on(&quot;tick&quot;, function(e) {
         _init: function (cfg) {
 
             this._super(cfg);
-            
+
             this.xyz = cfg.xyz;
         },
 
@@ -300,7 +305,7 @@ scene.on(&quot;tick&quot;, function(e) {
 
                     this._xyz = value || [1, 1, 1];
 
-                    this.matrix = XEO.math.translationMat4v(this._xyz);
+                    this.matrix = XEO.math.translationMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.mat4()));
 
                     /**
                      Fired whenever this Translate&#x27;s {{#crossLink &quot;Translate/xyz:property&quot;}}{{/crossLink}} property changes.

@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -227,6 +232,10 @@
                                 <a href="#property_scenes">scenes</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_version">version</a>
+
+                            </li>
                     </ul>
                 </div>
 
@@ -258,7 +267,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_xeo.js.html#l110"><code>src&#x2F;core&#x2F;xeo.js:110</code></a>
+        <a href="../files/src_core_xeo.js.html#l119"><code>src&#x2F;core&#x2F;xeo.js:119</code></a>
         </p>
 
 
@@ -307,7 +316,7 @@ This is called within the XEO.Scene constructor.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_xeo.js.html#l153"><code>src&#x2F;core&#x2F;xeo.js:153</code></a>
+        <a href="../files/src_core_xeo.js.html#l162"><code>src&#x2F;core&#x2F;xeo.js:162</code></a>
         </p>
 
 
@@ -341,7 +350,7 @@ clears the default <a href="../classes/Scene.html" class="crosslink">Scene</a>.<
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_xeo.js.html#l85"><code>src&#x2F;core&#x2F;xeo.js:85</code></a>
+                            <a href="../files/src_core_xeo.js.html#l94"><code>src&#x2F;core&#x2F;xeo.js:94</code></a>
                             </p>
                     
                     
@@ -371,7 +380,7 @@ clears the default <a href="../classes/Scene.html" class="crosslink">Scene</a>.<
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_xeo.js.html#l22"><code>src&#x2F;core&#x2F;xeo.js:22</code></a>
+                            <a href="../files/src_core_xeo.js.html#l31"><code>src&#x2F;core&#x2F;xeo.js:31</code></a>
                             </p>
                     
                     
@@ -379,6 +388,32 @@ clears the default <a href="../classes/Scene.html" class="crosslink">Scene</a>.<
                     
                         <div class="description">
                             <p>Existing  <a href="../classes/Scene.html" class="crosslink">Scene</a>s , mapped to their IDs</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_version" class="property item">
+                        <h3 class="name"><code>version</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_xeo.js.html#l15"><code>src&#x2F;core&#x2F;xeo.js:15</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Semantic version number. The value for this is set by an expression that&#39;s concatenated to
+                    the end of the built binary by the xeoEngine build script.</p>
                     
                         </div>
                     

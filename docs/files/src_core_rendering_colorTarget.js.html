@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -249,6 +254,7 @@
  @param [cfg] {*} ColorTarget configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
+ @param [cfg.active=true] {Boolean} Indicates if this ColorTarget is active or not.
  @extends Component
  */
 (function () {
@@ -259,26 +265,83 @@
 
         type: &quot;XEO.ColorTarget&quot;,
 
-        _init: function () {
+        _init: function (cfg) {
 
-          var canvas = this.scene.canvas;
+            this._state = new XEO.renderer.RenderTarget({
+                type: XEO.renderer.RenderTarget.COLOR,
+                renderBuf: null
+            });
 
-          this._state = new XEO.renderer.RenderTarget({
+            var canvas = this.scene.canvas;
+            var self = this;
 
-              type: XEO.renderer.RenderTarget.COLOR,
+            this._webglContextRestored = canvas.on(&quot;webglContextRestored&quot;,
+                function () {
+                    if (self._state.renderBuf) {
+                        self._state.renderBuf.webglRestored(canvas.gl);
+                    }
+                });
 
-              renderBuf: new XEO.renderer.webgl.RenderBuffer({
-                  canvas: canvas.canvas,
-                  gl: canvas.gl
-              })
-          });
+            this.active = cfg.active;
+        },
 
-          var self = this;
+        _props: {
 
-          this._webglContextRestored = canvas.on(&quot;webglContextRestored&quot;,
-              function () {
-                  self._state.renderBuf.webglRestored(canvas.gl);
-              });
+            /**
+             * Determines whether this ColorTarget is active or not.
+             *
+             * When active, the pixel colors of associated {{#crossLink &quot;GameObjects&quot;}}{{/crossLink}} will be rendered
+             * to this ColorTarget. When inactive, the colors will be written to the default WebGL color buffer instead.
+             *
+             * Fires a {{#crossLink &quot;ColorTarget/active:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @default true
+             * @type Number
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    var state = this._state;
+                    this._active = value;
+
+                    if (this._active) {
+
+                        var canvas = this.scene.canvas;
+
+                        state.renderBuf = new XEO.renderer.webgl.RenderBuffer({
+                            canvas: canvas.canvas,
+                            gl: canvas.gl
+                        });
+
+                    } else {
+
+                        if (state.renderBuf) {
+                            state.renderBuf.destroy();
+                            state.renderBuf = null;
+                        }
+                    }
+
+                    /**
+                     Fired whenever this ColorTarget&#x27;s {{#crossLink &quot;ColorTarget/active:property&quot;}}{{/crossLink}} property changes.
+
+                     @event active
+                     @param value {Boolean} The property&#x27;s new value
+                     */
+                    this.fire(&quot;active&quot;, this._active);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
         },
 
         _compile: function () {
@@ -286,7 +349,9 @@
         },
 
         _getJSON: function () {
-            return {};
+            return {
+                active: this._active
+            };
         },
 
         _destroy: function () {

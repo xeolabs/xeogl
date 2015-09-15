@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>math - xeoengine</title>
+    <title>XEO.math.math - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -169,12 +174,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>math Class</h1>
+<h1>XEO.math.math Class</h1>
 <div class="box meta">
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_math_math.js.html#l33"><code>src&#x2F;core&#x2F;math&#x2F;math.js:33</code></a>
+            Defined in: <a href="../files/src_core_math_math.js.html#l37"><code>src&#x2F;core&#x2F;math&#x2F;math.js:37</code></a>
         </div>
 
             Module: <a href="../modules/math.html">math</a><br>
@@ -195,6 +200,7 @@ public API and are therefore available for you to use within your application co
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
     </ul>
 
     <div>
@@ -356,12 +362,22 @@ public API and are therefore available for you to use within your application co
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
+                                <a href="#method_getAABB2Center">getAABB2Center</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
                                 <a href="#method_getAABBCenter">getAABBCenter</a>
 
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_getAABBDiag">getAABBDiag</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getPickTriangles">getPickTriangles</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -496,6 +512,11 @@ public API and are therefore available for you to use within your application co
                             </li>
                             <li class="index-item method">
                                 <a href="#method_perspectiveMatrix4v">perspectiveMatrix4v</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_points3ToAABB2">points3ToAABB2</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -662,6 +683,16 @@ public API and are therefore available for you to use within your application co
                     </ul>
                 </div>
 
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                            <li class="index-item property">
+                                <a href="#property_DEGTORAD">DEGTORAD</a>
+
+                            </li>
+                    </ul>
+                </div>
 
 
         </div>
@@ -697,7 +728,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1690"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1690</code></a>
+        <a href="../files/src_core_math_math.js.html#l1726"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1726</code></a>
         </p>
 
 
@@ -768,7 +799,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l835"><code>src&#x2F;core&#x2F;math&#x2F;math.js:835</code></a>
+        <a href="../files/src_core_math_math.js.html#l847"><code>src&#x2F;core&#x2F;math&#x2F;math.js:847</code></a>
         </p>
 
 
@@ -800,7 +831,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l863"><code>src&#x2F;core&#x2F;math&#x2F;math.js:863</code></a>
+        <a href="../files/src_core_math_math.js.html#l875"><code>src&#x2F;core&#x2F;math&#x2F;math.js:875</code></a>
         </p>
 
 
@@ -832,7 +863,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l891"><code>src&#x2F;core&#x2F;math&#x2F;math.js:891</code></a>
+        <a href="../files/src_core_math_math.js.html#l903"><code>src&#x2F;core&#x2F;math&#x2F;math.js:903</code></a>
         </p>
 
 
@@ -879,7 +910,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l199"><code>src&#x2F;core&#x2F;math&#x2F;math.js:199</code></a>
+        <a href="../files/src_core_math_math.js.html#l211"><code>src&#x2F;core&#x2F;math&#x2F;math.js:211</code></a>
         </p>
 
 
@@ -975,7 +1006,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l159"><code>src&#x2F;core&#x2F;math&#x2F;math.js:159</code></a>
+        <a href="../files/src_core_math_math.js.html#l171"><code>src&#x2F;core&#x2F;math&#x2F;math.js:171</code></a>
         </p>
 
 
@@ -1071,7 +1102,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l218"><code>src&#x2F;core&#x2F;math&#x2F;math.js:218</code></a>
+        <a href="../files/src_core_math_math.js.html#l191"><code>src&#x2F;core&#x2F;math&#x2F;math.js:191</code></a>
         </p>
 
 
@@ -1079,7 +1110,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     </div>
 
     <div class="description">
-        <p>Adds a scalar value to each element of a three-element vector.</p>
+        <p>Adds a scalar value to each element of a four-element vector.</p>
 
     </div>
 
@@ -1167,7 +1198,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l179"><code>src&#x2F;core&#x2F;math&#x2F;math.js:179</code></a>
+        <a href="../files/src_core_math_math.js.html#l230"><code>src&#x2F;core&#x2F;math&#x2F;math.js:230</code></a>
         </p>
 
 
@@ -1175,7 +1206,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     </div>
 
     <div class="description">
-        <p>Adds a scalar value to each element of a four-element vector.</p>
+        <p>Adds a scalar value to each element of a three-element vector.</p>
 
     </div>
 
@@ -1260,7 +1291,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1912"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1912</code></a>
+        <a href="../files/src_core_math_math.js.html#l2027"><code>src&#x2F;core&#x2F;math&#x2F;math.js:2027</code></a>
         </p>
 
 
@@ -1344,7 +1375,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1976"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1976</code></a>
+        <a href="../files/src_core_math_math.js.html#l2092"><code>src&#x2F;core&#x2F;math&#x2F;math.js:2092</code></a>
         </p>
 
 
@@ -1427,7 +1458,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l93"><code>src&#x2F;core&#x2F;math&#x2F;math.js:93</code></a>
+        <a href="../files/src_core_math_math.js.html#l105"><code>src&#x2F;core&#x2F;math&#x2F;math.js:105</code></a>
         </p>
 
 
@@ -1479,7 +1510,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l559"><code>src&#x2F;core&#x2F;math&#x2F;math.js:559</code></a>
+        <a href="../files/src_core_math_math.js.html#l571"><code>src&#x2F;core&#x2F;math&#x2F;math.js:571</code></a>
         </p>
 
 
@@ -1559,7 +1590,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l541"><code>src&#x2F;core&#x2F;math&#x2F;math.js:541</code></a>
+        <a href="../files/src_core_math_math.js.html#l553"><code>src&#x2F;core&#x2F;math&#x2F;math.js:553</code></a>
         </p>
 
 
@@ -1627,7 +1658,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1114"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1114</code></a>
+        <a href="../files/src_core_math_math.js.html#l1126"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1126</code></a>
         </p>
 
 
@@ -1659,7 +1690,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l765"><code>src&#x2F;core&#x2F;math&#x2F;math.js:765</code></a>
+        <a href="../files/src_core_math_math.js.html#l777"><code>src&#x2F;core&#x2F;math&#x2F;math.js:777</code></a>
         </p>
 
 
@@ -1691,7 +1722,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l774"><code>src&#x2F;core&#x2F;math&#x2F;math.js:774</code></a>
+        <a href="../files/src_core_math_math.js.html#l786"><code>src&#x2F;core&#x2F;math&#x2F;math.js:786</code></a>
         </p>
 
 
@@ -1738,7 +1769,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l450"><code>src&#x2F;core&#x2F;math&#x2F;math.js:450</code></a>
+        <a href="../files/src_core_math_math.js.html#l462"><code>src&#x2F;core&#x2F;math&#x2F;math.js:462</code></a>
         </p>
 
 
@@ -1832,7 +1863,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l509"><code>src&#x2F;core&#x2F;math&#x2F;math.js:509</code></a>
+        <a href="../files/src_core_math_math.js.html#l521"><code>src&#x2F;core&#x2F;math&#x2F;math.js:521</code></a>
         </p>
 
 
@@ -1926,7 +1957,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l411"><code>src&#x2F;core&#x2F;math&#x2F;math.js:411</code></a>
+        <a href="../files/src_core_math_math.js.html#l423"><code>src&#x2F;core&#x2F;math&#x2F;math.js:423</code></a>
         </p>
 
 
@@ -2022,7 +2053,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l469"><code>src&#x2F;core&#x2F;math&#x2F;math.js:469</code></a>
+        <a href="../files/src_core_math_math.js.html#l481"><code>src&#x2F;core&#x2F;math&#x2F;math.js:481</code></a>
         </p>
 
 
@@ -2116,7 +2147,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l430"><code>src&#x2F;core&#x2F;math&#x2F;math.js:430</code></a>
+        <a href="../files/src_core_math_math.js.html#l442"><code>src&#x2F;core&#x2F;math&#x2F;math.js:442</code></a>
         </p>
 
 
@@ -2212,7 +2243,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l488"><code>src&#x2F;core&#x2F;math&#x2F;math.js:488</code></a>
+        <a href="../files/src_core_math_math.js.html#l500"><code>src&#x2F;core&#x2F;math&#x2F;math.js:500</code></a>
         </p>
 
 
@@ -2303,7 +2334,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l595"><code>src&#x2F;core&#x2F;math&#x2F;math.js:595</code></a>
+        <a href="../files/src_core_math_math.js.html#l541"><code>src&#x2F;core&#x2F;math&#x2F;math.js:541</code></a>
         </p>
 
 
@@ -2311,7 +2342,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     </div>
 
     <div class="description">
-        <p>Returns the dot product of two three-element vectors.</p>
+        <p>Returns the dot product of two four-element vectors.</p>
 
     </div>
 
@@ -2391,7 +2422,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     </div>
 
     <div class="description">
-        <p>Returns the dot product of two two-element vectors.</p>
+        <p>Returns the dot product of two three-element vectors.</p>
 
     </div>
 
@@ -2463,7 +2494,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l529"><code>src&#x2F;core&#x2F;math&#x2F;math.js:529</code></a>
+        <a href="../files/src_core_math_math.js.html#l619"><code>src&#x2F;core&#x2F;math&#x2F;math.js:619</code></a>
         </p>
 
 
@@ -2471,7 +2502,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     </div>
 
     <div class="description">
-        <p>Returns the dot product of two four-element vectors.</p>
+        <p>Returns the dot product of two two-element vectors.</p>
 
     </div>
 
@@ -2531,7 +2562,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l697"><code>src&#x2F;core&#x2F;math&#x2F;math.js:697</code></a>
+        <a href="../files/src_core_math_math.js.html#l709"><code>src&#x2F;core&#x2F;math&#x2F;math.js:709</code></a>
         </p>
 
 
@@ -2572,7 +2603,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l2052"><code>src&#x2F;core&#x2F;math&#x2F;math.js:2052</code></a>
+        <a href="../files/src_core_math_math.js.html#l2168"><code>src&#x2F;core&#x2F;math&#x2F;math.js:2168</code></a>
         </p>
 
 
@@ -2641,7 +2672,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l121"><code>src&#x2F;core&#x2F;math&#x2F;math.js:121</code></a>
+        <a href="../files/src_core_math_math.js.html#l133"><code>src&#x2F;core&#x2F;math&#x2F;math.js:133</code></a>
         </p>
 
 
@@ -2706,7 +2737,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1495"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1495</code></a>
+        <a href="../files/src_core_math_math.js.html#l1467"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1467</code></a>
         </p>
 
 
@@ -2738,7 +2769,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1455"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1455</code></a>
+        <a href="../files/src_core_math_math.js.html#l1511"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1511</code></a>
         </p>
 
 
@@ -2747,6 +2778,38 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
     <div class="description">
         <p>Returns a 4x4 perspective projection matrix.</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_getAABB2Center" class="method item">
+    <h3 class="name"><code>getAABB2Center</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_core_math_math.js.html#l1712"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1712</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Gets the center of a 2D boundary given as minima and maxima.</p>
 
     </div>
 
@@ -2770,7 +2833,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1675"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1675</code></a>
+        <a href="../files/src_core_math_math.js.html#l1697"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1697</code></a>
         </p>
 
 
@@ -2802,7 +2865,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1651"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1651</code></a>
+        <a href="../files/src_core_math_math.js.html#l1673"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1673</code></a>
         </p>
 
 
@@ -2815,6 +2878,102 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     </div>
 
 
+
+
+</div>
+<div id="method_getPickTriangles" class="method item">
+    <h3 class="name"><code>getPickTriangles</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>}</code>
+                </li>
+                <li class="arg">
+                        <code>}</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[pickTris]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_core_math_math.js.html#l2196"><code>src&#x2F;core&#x2F;math&#x2F;math.js:2196</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Builds vertex and index arrays needed by color-indexed triangle picking.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">}</code>
+                        <span class="type">Array of Number</span>
+
+
+                    <div class="param-description">
+                        <p>positions One-dimensional flattened array of positions.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">}</code>
+                        <span class="type">Array of Number</span>
+
+
+                    <div class="param-description">
+                        <p>indices One-dimensional flattened array of indices.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[pickTris]</code>
+                        <span class="type"></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Optional object to return the arrays on.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"></span>:
+                    <p>Object containing the arrays, created by this method or reused from &#39;pickTris&#39; parameter.</p>
+
+            </div>
+        </div>
 
 
 </div>
@@ -2834,7 +2993,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l783"><code>src&#x2F;core&#x2F;math&#x2F;math.js:783</code></a>
+        <a href="../files/src_core_math_math.js.html#l795"><code>src&#x2F;core&#x2F;math&#x2F;math.js:795</code></a>
         </p>
 
 
@@ -2866,7 +3025,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1133"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1133</code></a>
+        <a href="../files/src_core_math_math.js.html#l1145"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1145</code></a>
         </p>
 
 
@@ -2898,7 +3057,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l792"><code>src&#x2F;core&#x2F;math&#x2F;math.js:792</code></a>
+        <a href="../files/src_core_math_math.js.html#l804"><code>src&#x2F;core&#x2F;math&#x2F;math.js:804</code></a>
         </p>
 
 
@@ -2939,7 +3098,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l640"><code>src&#x2F;core&#x2F;math&#x2F;math.js:640</code></a>
+        <a href="../files/src_core_math_math.js.html#l652"><code>src&#x2F;core&#x2F;math&#x2F;math.js:652</code></a>
         </p>
 
 
@@ -3005,7 +3164,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l629"><code>src&#x2F;core&#x2F;math&#x2F;math.js:629</code></a>
+        <a href="../files/src_core_math_math.js.html#l641"><code>src&#x2F;core&#x2F;math&#x2F;math.js:641</code></a>
         </p>
 
 
@@ -3071,7 +3230,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l584"><code>src&#x2F;core&#x2F;math&#x2F;math.js:584</code></a>
+        <a href="../files/src_core_math_math.js.html#l596"><code>src&#x2F;core&#x2F;math&#x2F;math.js:596</code></a>
         </p>
 
 
@@ -3128,7 +3287,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1637"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1637</code></a>
+        <a href="../files/src_core_math_math.js.html#l1659"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1659</code></a>
         </p>
 
 
@@ -3160,7 +3319,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1410"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1410</code></a>
+        <a href="../files/src_core_math_math.js.html#l1422"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1422</code></a>
         </p>
 
 
@@ -3209,7 +3368,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1315"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1315</code></a>
+        <a href="../files/src_core_math_math.js.html#l1327"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1327</code></a>
         </p>
 
 
@@ -3300,7 +3459,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l719"><code>src&#x2F;core&#x2F;math&#x2F;math.js:719</code></a>
+        <a href="../files/src_core_math_math.js.html#l731"><code>src&#x2F;core&#x2F;math&#x2F;math.js:731</code></a>
         </p>
 
 
@@ -3335,7 +3494,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l73"><code>src&#x2F;core&#x2F;math&#x2F;math.js:73</code></a>
+        <a href="../files/src_core_math_math.js.html#l85"><code>src&#x2F;core&#x2F;math&#x2F;math.js:85</code></a>
         </p>
 
 
@@ -3377,7 +3536,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l83"><code>src&#x2F;core&#x2F;math&#x2F;math.js:83</code></a>
+        <a href="../files/src_core_math_math.js.html#l95"><code>src&#x2F;core&#x2F;math&#x2F;math.js:95</code></a>
         </p>
 
 
@@ -3416,7 +3575,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l706"><code>src&#x2F;core&#x2F;math&#x2F;math.js:706</code></a>
+        <a href="../files/src_core_math_math.js.html#l718"><code>src&#x2F;core&#x2F;math&#x2F;math.js:718</code></a>
         </p>
 
 
@@ -3448,7 +3607,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l984"><code>src&#x2F;core&#x2F;math&#x2F;math.js:984</code></a>
+        <a href="../files/src_core_math_math.js.html#l996"><code>src&#x2F;core&#x2F;math&#x2F;math.js:996</code></a>
         </p>
 
 
@@ -3480,7 +3639,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1025"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1025</code></a>
+        <a href="../files/src_core_math_math.js.html#l1037"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1037</code></a>
         </p>
 
 
@@ -3512,7 +3671,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1053"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1053</code></a>
+        <a href="../files/src_core_math_math.js.html#l1065"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1065</code></a>
         </p>
 
 
@@ -3559,7 +3718,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l393"><code>src&#x2F;core&#x2F;math&#x2F;math.js:393</code></a>
+        <a href="../files/src_core_math_math.js.html#l405"><code>src&#x2F;core&#x2F;math&#x2F;math.js:405</code></a>
         </p>
 
 
@@ -3655,7 +3814,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l334"><code>src&#x2F;core&#x2F;math&#x2F;math.js:334</code></a>
+        <a href="../files/src_core_math_math.js.html#l346"><code>src&#x2F;core&#x2F;math&#x2F;math.js:346</code></a>
         </p>
 
 
@@ -3751,7 +3910,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l354"><code>src&#x2F;core&#x2F;math&#x2F;math.js:354</code></a>
+        <a href="../files/src_core_math_math.js.html#l366"><code>src&#x2F;core&#x2F;math&#x2F;math.js:366</code></a>
         </p>
 
 
@@ -3847,7 +4006,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l374"><code>src&#x2F;core&#x2F;math&#x2F;math.js:374</code></a>
+        <a href="../files/src_core_math_math.js.html#l386"><code>src&#x2F;core&#x2F;math&#x2F;math.js:386</code></a>
         </p>
 
 
@@ -3928,7 +4087,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l807"><code>src&#x2F;core&#x2F;math&#x2F;math.js:807</code></a>
+        <a href="../files/src_core_math_math.js.html#l819"><code>src&#x2F;core&#x2F;math&#x2F;math.js:819</code></a>
         </p>
 
 
@@ -3972,7 +4131,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l140"><code>src&#x2F;core&#x2F;math&#x2F;math.js:140</code></a>
+        <a href="../files/src_core_math_math.js.html#l152"><code>src&#x2F;core&#x2F;math&#x2F;math.js:152</code></a>
         </p>
 
 
@@ -4042,7 +4201,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l687"><code>src&#x2F;core&#x2F;math&#x2F;math.js:687</code></a>
+        <a href="../files/src_core_math_math.js.html#l699"><code>src&#x2F;core&#x2F;math&#x2F;math.js:699</code></a>
         </p>
 
 
@@ -4086,7 +4245,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l663"><code>src&#x2F;core&#x2F;math&#x2F;math.js:663</code></a>
+        <a href="../files/src_core_math_math.js.html#l675"><code>src&#x2F;core&#x2F;math&#x2F;math.js:675</code></a>
         </p>
 
 
@@ -4154,7 +4313,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l677"><code>src&#x2F;core&#x2F;math&#x2F;math.js:677</code></a>
+        <a href="../files/src_core_math_math.js.html#l689"><code>src&#x2F;core&#x2F;math&#x2F;math.js:689</code></a>
         </p>
 
 
@@ -4186,7 +4345,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1419"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1419</code></a>
+        <a href="../files/src_core_math_math.js.html#l1431"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1431</code></a>
         </p>
 
 
@@ -4218,7 +4377,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1526"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1526</code></a>
+        <a href="../files/src_core_math_math.js.html#l1542"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1542</code></a>
         </p>
 
 
@@ -4231,6 +4390,88 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     </div>
 
 
+
+
+</div>
+<div id="method_points3ToAABB2" class="method item">
+    <h3 class="name"><code>points3ToAABB2</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>points</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[aabb]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_core_math_math.js.html#l1947"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1947</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">points</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>3D Points.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[aabb]</code>
+                        <span class="type"></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>2D axis-aligned bounding box.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"></span>:
+                    <p>2D axis-aligned bounding box.</p>
+
+            </div>
+        </div>
 
 
 </div>
@@ -4262,7 +4503,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1841"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1841</code></a>
+        <a href="../files/src_core_math_math.js.html#l1877"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1877</code></a>
         </p>
 
 
@@ -4344,7 +4585,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1771"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1771</code></a>
+        <a href="../files/src_core_math_math.js.html#l1807"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1807</code></a>
         </p>
 
 
@@ -4366,7 +4607,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
 
                     <div class="param-description">
-                        <p>Oriented bounding box.</p>
+                        <p>Flattened 3D positions array</p>
 
                     </div>
 
@@ -4414,7 +4655,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1627"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1627</code></a>
+        <a href="../files/src_core_math_math.js.html#l1649"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1649</code></a>
         </p>
 
 
@@ -4458,7 +4699,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l651"><code>src&#x2F;core&#x2F;math&#x2F;math.js:651</code></a>
+        <a href="../files/src_core_math_math.js.html#l663"><code>src&#x2F;core&#x2F;math&#x2F;math.js:663</code></a>
         </p>
 
 
@@ -4525,7 +4766,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1275"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1275</code></a>
+        <a href="../files/src_core_math_math.js.html#l1287"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1287</code></a>
         </p>
 
 
@@ -4557,7 +4798,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1223"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1223</code></a>
+        <a href="../files/src_core_math_math.js.html#l1235"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1235</code></a>
         </p>
 
 
@@ -4589,7 +4830,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1297"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1297</code></a>
+        <a href="../files/src_core_math_math.js.html#l1309"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1309</code></a>
         </p>
 
 
@@ -4621,7 +4862,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1306"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1306</code></a>
+        <a href="../files/src_core_math_math.js.html#l1318"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1318</code></a>
         </p>
 
 
@@ -4653,7 +4894,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1284"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1284</code></a>
+        <a href="../files/src_core_math_math.js.html#l1296"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1296</code></a>
         </p>
 
 
@@ -4685,7 +4926,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l751"><code>src&#x2F;core&#x2F;math&#x2F;math.js:751</code></a>
+        <a href="../files/src_core_math_math.js.html#l763"><code>src&#x2F;core&#x2F;math&#x2F;math.js:763</code></a>
         </p>
 
 
@@ -4717,7 +4958,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l742"><code>src&#x2F;core&#x2F;math&#x2F;math.js:742</code></a>
+        <a href="../files/src_core_math_math.js.html#l754"><code>src&#x2F;core&#x2F;math&#x2F;math.js:754</code></a>
         </p>
 
 
@@ -4749,7 +4990,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l733"><code>src&#x2F;core&#x2F;math&#x2F;math.js:733</code></a>
+        <a href="../files/src_core_math_math.js.html#l745"><code>src&#x2F;core&#x2F;math&#x2F;math.js:745</code></a>
         </p>
 
 
@@ -4781,7 +5022,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l900"><code>src&#x2F;core&#x2F;math&#x2F;math.js:900</code></a>
+        <a href="../files/src_core_math_math.js.html#l912"><code>src&#x2F;core&#x2F;math&#x2F;math.js:912</code></a>
         </p>
 
 
@@ -4813,7 +5054,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l928"><code>src&#x2F;core&#x2F;math&#x2F;math.js:928</code></a>
+        <a href="../files/src_core_math_math.js.html#l940"><code>src&#x2F;core&#x2F;math&#x2F;math.js:940</code></a>
         </p>
 
 
@@ -4845,7 +5086,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l956"><code>src&#x2F;core&#x2F;math&#x2F;math.js:956</code></a>
+        <a href="../files/src_core_math_math.js.html#l968"><code>src&#x2F;core&#x2F;math&#x2F;math.js:968</code></a>
         </p>
 
 
@@ -4892,7 +5133,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l314"><code>src&#x2F;core&#x2F;math&#x2F;math.js:314</code></a>
+        <a href="../files/src_core_math_math.js.html#l326"><code>src&#x2F;core&#x2F;math&#x2F;math.js:326</code></a>
         </p>
 
 
@@ -4988,7 +5229,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l276"><code>src&#x2F;core&#x2F;math&#x2F;math.js:276</code></a>
+        <a href="../files/src_core_math_math.js.html#l288"><code>src&#x2F;core&#x2F;math&#x2F;math.js:288</code></a>
         </p>
 
 
@@ -5084,7 +5325,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l257"><code>src&#x2F;core&#x2F;math&#x2F;math.js:257</code></a>
+        <a href="../files/src_core_math_math.js.html#l269"><code>src&#x2F;core&#x2F;math&#x2F;math.js:269</code></a>
         </p>
 
 
@@ -5180,7 +5421,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l237"><code>src&#x2F;core&#x2F;math&#x2F;math.js:237</code></a>
+        <a href="../files/src_core_math_math.js.html#l249"><code>src&#x2F;core&#x2F;math&#x2F;math.js:249</code></a>
         </p>
 
 
@@ -5276,7 +5517,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l294"><code>src&#x2F;core&#x2F;math&#x2F;math.js:294</code></a>
+        <a href="../files/src_core_math_math.js.html#l306"><code>src&#x2F;core&#x2F;math&#x2F;math.js:306</code></a>
         </p>
 
 
@@ -5357,7 +5598,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1183"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1183</code></a>
+        <a href="../files/src_core_math_math.js.html#l1195"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1195</code></a>
         </p>
 
 
@@ -5389,7 +5630,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1547"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1547</code></a>
+        <a href="../files/src_core_math_math.js.html#l1563"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1563</code></a>
         </p>
 
 
@@ -5421,7 +5662,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1563"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1563</code></a>
+        <a href="../files/src_core_math_math.js.html#l1579"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1579</code></a>
         </p>
 
 
@@ -5453,7 +5694,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1598"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1598</code></a>
+        <a href="../files/src_core_math_math.js.html#l1620"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1620</code></a>
         </p>
 
 
@@ -5485,7 +5726,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1612"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1612</code></a>
+        <a href="../files/src_core_math_math.js.html#l1634"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1634</code></a>
         </p>
 
 
@@ -5517,7 +5758,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1192"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1192</code></a>
+        <a href="../files/src_core_math_math.js.html#l1204"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1204</code></a>
         </p>
 
 
@@ -5549,7 +5790,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1205"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1205</code></a>
+        <a href="../files/src_core_math_math.js.html#l1217"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1217</code></a>
         </p>
 
 
@@ -5581,7 +5822,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1214"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1214</code></a>
+        <a href="../files/src_core_math_math.js.html#l1226"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1226</code></a>
         </p>
 
 
@@ -5613,7 +5854,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l1068"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1068</code></a>
+        <a href="../files/src_core_math_math.js.html#l1080"><code>src&#x2F;core&#x2F;math&#x2F;math.js:1080</code></a>
         </p>
 
 
@@ -5648,7 +5889,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l43"><code>src&#x2F;core&#x2F;math&#x2F;math.js:43</code></a>
+        <a href="../files/src_core_math_math.js.html#l55"><code>src&#x2F;core&#x2F;math&#x2F;math.js:55</code></a>
         </p>
 
 
@@ -5690,7 +5931,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l53"><code>src&#x2F;core&#x2F;math&#x2F;math.js:53</code></a>
+        <a href="../files/src_core_math_math.js.html#l65"><code>src&#x2F;core&#x2F;math&#x2F;math.js:65</code></a>
         </p>
 
 
@@ -5732,7 +5973,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_math_math.js.html#l63"><code>src&#x2F;core&#x2F;math&#x2F;math.js:63</code></a>
+        <a href="../files/src_core_math_math.js.html#l75"><code>src&#x2F;core&#x2F;math&#x2F;math.js:75</code></a>
         </p>
 
 
@@ -5757,6 +5998,35 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 </div>
             </div>
 
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                    <div id="property_DEGTORAD" class="property item">
+                        <h3 class="name"><code>DEGTORAD</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_math_math.js.html#l47"><code>src&#x2F;core&#x2F;math&#x2F;math.js:47</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The number of radiians in a degree (0.0174532925).</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+            </div>
 
 
     </div>

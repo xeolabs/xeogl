@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/core/objects/splineCurveHelper.js - xeoengine</title>
+    <title>src/extras/input/_module.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -169,153 +174,16 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/core/objects/splineCurveHelper.js</h1>
+<h1 class="file-heading">File: src/extras/input/_module.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- Shows the shape and control points of {{#crossLink &quot;SplineCurve&quot;}}{{/crossLink}}
-
- @class SplineCurveHelper
- @module objects
- @extends Component
+ * Components for capturing user input.
+ *
+ * @module XEO
+ * @submodule input
  */
-XEO.SplineCurveHelper = XEO.Component.extend({
-
-    type: &quot;XEO.SplineCurveHelper&quot;,
-
-    _init: function (cfg) {
-
-        this._super(cfg);
-
-        this._divisions = 100;
-
-        this._line = new XEO.GameObject(this.scene, {
-            geometry: new XEO.Geometry(this.scene, {
-                primitive: &quot;lines&quot;,
-                positions: [0, 0, 0],
-                indices: [0, 1]
-            }),
-            material: new XEO.PhongMaterial(this.scene, {
-                diffuse: [1, 0, 0]
-            })
-        });
-
-        this.splineCurve = cfg.splineCurve;
-    },
-
-    __scheduleBuild: function () {
-        if (!this.__dirty) {
-            this.__dirty = true;
-            var self = this;
-            this.scene.once(&quot;tick2&quot;,
-                function () {
-                    self.__build();
-                    self.__dirty = false;
-                });
-        }
-    },
-
-    __build: function () {
-
-        var splineCurve = this._children.splineCurve;
-
-        if (!splineCurve) {
-            return;
-        }
-
-        var points = splineCurve.getPoints(this._divisions);
-
-        var positions = [];
-        var point;
-
-        for (var i = 0, len = points.length; i &lt; len; i++) {
-
-            point = points[i];
-
-            positions.push(point[0]);
-            positions.push(point[1]);
-            positions.push(point[2]);
-        }
-
-        var indices = [];
-
-        for (var i = 0, len = points.length - 1; i &lt; len; i++) {
-            indices.push(i);
-            indices.push(i + 1);
-        }
-
-        this._line.geometry.positions = positions;
-        this._line.geometry.indices = indices;
-    },
-
-    _props: {
-
-        /**
-         * The SplineCurve for this SplineCurveHelper.
-         *
-         * Fires a {{#crossLink &quot;SplineCurveHelper/splineCurve:event&quot;}}{{/crossLink}} event on change.
-         *
-         * @property splinecurve
-         * @type {Splinecurve}
-         */
-        splineCurve: {
-
-            set: function (value) {
-
-                // Unsubscribe from old Curves&#x27;s events
-
-                var oldSplineCurve = this._children.splineCurve;
-
-                if (oldSplineCurve &amp;&amp; (!value || (value.id !== undefined ? value.id : value) !== oldSplinecurve.id)) {
-                    oldSplineCurve.off(this._onSplinecurveCurves);
-                }
-
-                /**
-                 * Fired whenever this CameraPaths&#x27;s {{#crossLink &quot;CameraPath/path:property&quot;}}{{/crossLink}} property changes.
-                 * @event path
-                 * @param value The property&#x27;s new value
-                 */
-                this._setChild(&quot;path&quot;, value);
-
-                var newPath = this._children.path;
-
-                if (newPath) {
-
-                    // Subscribe to new Path&#x27;s curves
-
-                    var self = this;
-
-                    this._onPathCurves = newPath.on(&quot;curves&quot;,
-                        function () {
-                            self.__scheduleBuild();
-                        });
-                }
-            },
-
-            get: function () {
-                return this._children.path;
-            }
-        }
-    },
-
-    _getJSON: function () {
-
-        var json = {
-            divisions: this._divisions
-        };
-
-        if (this._children.path) {
-            json.path = this._children.path.id;
-        }
-
-        return json;
-    },
-
-    _destroy: function () {
-        this._line.destroy();
-    }
-});
     </pre>
 </div>
                     </div>

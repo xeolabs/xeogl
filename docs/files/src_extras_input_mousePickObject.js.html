@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -208,14 +213,14 @@ TODO
     // We want the 3D World-space coordinates
     // of each location we pick
 
-    rayPick: true
+    pickPrimitive: true
  });
 
  // Handle picked GameObjects
  mousePickObject.on(&quot;pick&quot;, function(e) {
     var object = e.object;
     var canvasPos = e.canvasPos;
-    var worldPos = e.worldPos;
+    var primitiveIndex = e.primitiveIndex;
  });
 
  // Handle nothing picked
@@ -232,7 +237,7 @@ TODO
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickObject.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
+ @param [pickPrimitive=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
  {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
  @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickObject is active.
  @extends Component
@@ -254,7 +259,7 @@ TODO
 
         _init: function (cfg) {
 
-            this.rayPick = cfg.rayPick;
+            this.pickPrimitive = cfg.pickPrimitive;
 
             this.active = cfg.active !== false;
         },
@@ -287,7 +292,7 @@ TODO
                             function (canvasPos) {
 
                                 var hit = self.scene.pick(canvasPos, {
-                                    rayPick: self._rayPick
+                                    pickPrimitive: self._pickPrimitive
                                 });
 
                                 if (hit) {
@@ -297,12 +302,13 @@ TODO
                                      * @event picked
                                      * @param {String} objectId The ID of the picked {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
                                      * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                     * @param {Array of Number} worldPos When {{#crossLink &quot;MousePickObject/rayPick&quot;}}{{/crossLink}} is true,
+                                     * @param {Array of Number} worldPos When {{#crossLink &quot;MousePickObject/pickPrimitive&quot;}}{{/crossLink}} is true,
                                      * provides the World-space coordinate that was ray-picked on the surface of the
                                      * {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.
                                      */
                                     self.fire(&quot;pick&quot;, hit);
 
+                                    console.log(JSON.stringify(hit));
                                 } else {
 
                                     /**
@@ -336,39 +342,39 @@ TODO
             },
 
             /**
-             * Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
-             * {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
+             * Indicates whether this MousePickObject will try to pick a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} primitive
+             * whenever it picks a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
              *
-             * When true, this MousePickObject returns the 3D World-space intersection in each
+             * When true, this MousePickObject will try to return the primitive index in a
              * {{#crossLink &quot;MousePickObject/picked:event&quot;}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink &quot;MousePickObject/rayPick:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;MousePickObject/pickPrimitive:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property rayPick
+             * @property pickPrimitive
              * @type Boolean
              */
-            rayPick: {
+            pickPrimitive: {
 
                 set: function (value) {
 
                     value = !!value;
 
-                    if (this._rayPick === value) {
+                    if (this._pickPrimitive === value) {
                         return;
                     }
 
                     this._dirty = false;
 
                     /**
-                     * Fired whenever this MousePickObject&#x27;s {{#crossLink &quot;MousePickObject/rayPick:property&quot;}}{{/crossLink}} property changes.
-                     * @event rayPick
+                     * Fired whenever this MousePickObject&#x27;s {{#crossLink &quot;MousePickObject/pickPrimitive:property&quot;}}{{/crossLink}} property changes.
+                     * @event pickPrimitive
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&#x27;rayPick&#x27;, this._rayPick = value);
+                    this.fire(&#x27;pickPrimitive&#x27;, this._pickPrimitive = value);
                 },
 
                 get: function () {
-                    return this._rayPick;
+                    return this._pickPrimitive;
                 }
             }
         },
@@ -376,7 +382,7 @@ TODO
         _getJSON: function () {
 
             var json = {
-                rayPick: this._rayPick,
+                pickPrimitive: this._pickPrimitive,
                 active: this._active
             };
 

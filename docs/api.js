@@ -2,7 +2,10 @@ YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [
         "AmbientLight",
+        "Billboard",
+        "Boundary2D",
         "Boundary3D",
+        "BoundaryGeometry",
         "Camera",
         "CameraControl",
         "CameraFlight",
@@ -45,6 +48,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "MousePickObject",
         "MouseZoomCamera",
         "MyComponent",
+        "ObjectBoundaryHelper",
         "Ortho",
         "PBRMaterial",
         "Path",
@@ -61,7 +65,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Shader",
         "Shader.Water",
         "ShaderParams",
-        "ShowBoundary",
+        "SkyBox",
         "Sound",
         "Sphere",
         "SplineCurve",
@@ -76,7 +80,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Translate",
         "Visibility",
         "XEO",
-        "math"
+        "XEO.math.math"
     ],
     "modules": [
         "XEO",
@@ -89,6 +93,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "curves",
         "geometry",
         "groups",
+        "helpers",
         "input",
         "lighting",
         "materials",
@@ -144,6 +149,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "groups",
             "name": "groups",
             "description": "Components for managing groups of components."
+        },
+        {
+            "displayName": "helpers",
+            "name": "helpers",
+            "description": "Components to help visualise other components."
         },
         {
             "displayName": "input",

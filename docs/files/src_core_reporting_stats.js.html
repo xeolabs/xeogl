@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -240,13 +245,17 @@
 
  Listed below are are the statistics provided by the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
 
- Don&#x27;t use these names for your own custom statistics properties.
+ Don&#x27;t use these names for your own custom statistics.
 
  | Name  | Description|
  |---|---|
- | &quot;numGeometries&quot; | Number of {{#crossLink &quot;Geometry&quot;}}Geometrys{{/crossLink}} in the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} |
- | &quot;numTextures&quot;  | Number of {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}  |
- | &quot;numGameObjects&quot;  | Number of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}  |
+ | &quot;objects&quot; | Number of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}  |
+ | &quot;geometries&quot; | Number of {{#crossLink &quot;Geometry&quot;}}Geometries{{/crossLink}} |
+ | &quot;materials&quot;  | Number of {{#crossLink &quot;Material&quot;}}Materials{{/crossLink}}  |
+ | &quot;scene.textures&quot;  | Number of {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}  |
+ | &quot;shaders&quot;  | Number of WebGL shader programs currently allocated  |
+ | &quot;webglRestored&quot;  | Number of times the WebGL context has been restored so far for this {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}  |
+ | &quot;renderer.objects&quot;  | Number of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} that are currently being rendered  |
 
  @class Stats
  @module XEO
@@ -264,14 +273,17 @@
 
         _init: function (cfg) {
 
+            var stats = cfg.stats || {};
+
             this.stats = {};
 
-            for (var key in cfg) {
-                if (cfg.hasOwnProperty(key)) {
+            if (navigator &amp;&amp; navigator.userAgent) {
+                this.set(&quot;browser&quot;, navigator.userAgent);
+            }
 
-                    this.stats[key] = cfg[key];
-
-                    this.fire(key, this.stats[key]);
+            for (var key in stats) {
+                if (stats.hasOwnProperty(key)) {
+                    this.set(key, stats[key]);
                 }
             }
         },
@@ -281,12 +293,34 @@
         },
 
         /**
-         Increments the value of a statistic property within this Stats.
+         Sets the value of a statistic within this Stats.
 
-         Publishes the new value as an event with the same name as the property.
+         Creates the statistic if it does not yet exist.
+
+         Publishes the new value as an event with the same name as the statistic.
+
+         @method set
+         @param {String} name The statistic name.
+         @param {Number} value Value to set.
+         */
+        set: function (name, value) {
+
+            value = value || 0;
+
+            this.stats[name] = value;
+
+            this.fire(name, this.stats[name]);
+        },
+
+        /**
+         Increments the value of a statistic within this Stats.
+
+         Creates the statistic if it does not yet exist.
+
+         Publishes the new value as an event with the same name as the statistic.
 
          @method inc
-         @param {String} name The statistic property name.
+         @param {String} name The statistic name.
          @param {Number} [count=1] Amount to add.
          */
         inc: function (name, count) {
@@ -303,12 +337,12 @@
         },
 
         /**
-         Decrements the value of a statistic property within this Stats.
+         Decrements the value of a statistic within this Stats.
 
-         Publishes the new value as an event with the same name as the property.
+         Publishes the new value as an event with the same name as the statistic.
 
          @method dec
-         @param {String} name The statistic property name.
+         @param {String} name The statistic name.
          @param {Number} [count=1] Amount to subtract.
          */
         dec: function (name, count) {
@@ -325,12 +359,12 @@
         },
 
         /**
-         Zeroes the value of a statistic property within this Stats.
+         Zeroes the value of a statistic within this Stats.
 
-         Publishes the new value as an event with the same name as the property.
+         Publishes the new value as an event with the same name as the statistic.
 
          @method zero
-         @param {String} name The statistic property name.
+         @param {String} name The statistic  name.
          */
         zero: function (name) {
 

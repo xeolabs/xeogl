@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -212,23 +217,22 @@ its <a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href=".
 their transformation by the GameObject&#39;s <a href="../classes/GameObject.html#property_transform" class="crosslink">Modelling transform</a>.</p>
 <p>In this example we get the boundary and subscribe to updates on it, then animate the modelling transform,
 which gives us a running update of the moving boundary extents via our update handler.</p>
-<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
-
+<pre class="code prettyprint"><code class="lang-javascript">
 // Geometry
-var geometry = new XEO.Geometry(myScene, {...});
+var geometry = new XEO.Geometry();
 
 // Modelling transform
-var translate = new XEO.Translate(scene, {
+var translate = new XEO.Translate({
    xyz: [-5, 0, 0]
 });
 
 // Game object that applies the modelling transform to the Geometry
-var object = new XEO.GameObject(myScene, {
+var object = new XEO.GameObject({
       geometry: myGeometry,
       transform: translate
  });
 
-var worldBoundary = object.worldBoundary();
+var worldBoundary = object.worldBoundary;
 
 // World-space OBB
 var obb = worldBoundary.obb;
@@ -241,7 +245,7 @@ var center = worldBoundary.center;
 
 // Subscribe to updates to the Boundary3D
 worldBoundary.on("updated",
-function() {
+   function() {
 
        // Get the updated properties again
 
@@ -349,6 +353,83 @@ scene.on("tick", function() {
         
                                         <div class="param-description">
                                             <p>Optional map of user-defined metadata to attach to this Boundary.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[obb]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional initial 3D object-aligned bounding volume (OBB).</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[aabb]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional initial 3D axis-aligned bounding volume (AABB).</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[center]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional initial 3D center</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[getDirty]</code>
+                                            <span class="type">Function</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional callback to check if parent component has new OBB, positions or transform matrix.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[getOBB]</code>
+                                            <span class="type">Function</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional callback to get new OBB from parent.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[getMatrix]</code>
+                                            <span class="type">Function</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional callback to get new transform matrix from parent.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[getPositions]</code>
+                                            <span class="type">Function</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional callback to get new positions from parent.</p>
         
                                         </div>
         
@@ -497,7 +578,7 @@ scene.on("tick", function() {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l723"><code>src&#x2F;core&#x2F;component.js:723</code></a>
+        <a href="../files/src_core_component.js.html#l732"><code>src&#x2F;core&#x2F;component.js:732</code></a>
         </p>
 
 
@@ -1025,14 +1106,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_spatial_boundary3d.js.html#l154"><code>src&#x2F;core&#x2F;spatial&#x2F;boundary3d.js:154</code></a>
+                            <a href="../files/src_core_spatial_boundary3d.js.html#l161"><code>src&#x2F;core&#x2F;spatial&#x2F;boundary3d.js:161</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>World-space axis-aligned bounding box (AABB).</p>
+                            <p>3D axis-aligned bounding box (AABB).</p>
                     
                         </div>
                     
@@ -1051,14 +1132,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_spatial_boundary3d.js.html#l173"><code>src&#x2F;core&#x2F;spatial&#x2F;boundary3d.js:173</code></a>
+                            <a href="../files/src_core_spatial_boundary3d.js.html#l180"><code>src&#x2F;core&#x2F;spatial&#x2F;boundary3d.js:180</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>World-space center point.</p>
+                            <p>3D center point.</p>
                     
                         </div>
                     
@@ -1128,7 +1209,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_core_component.js.html#l667"><code>src&#x2F;core&#x2F;component.js:667</code></a>
+                            <a href="../files/src_core_component.js.html#l673"><code>src&#x2F;core&#x2F;component.js:673</code></a>
                             </p>
                     
                     
@@ -1179,14 +1260,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_spatial_boundary3d.js.html#l135"><code>src&#x2F;core&#x2F;spatial&#x2F;boundary3d.js:135</code></a>
+                            <a href="../files/src_core_spatial_boundary3d.js.html#l142"><code>src&#x2F;core&#x2F;spatial&#x2F;boundary3d.js:142</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>World-space oriented bounding box (OBB).</p>
+                            <p>3D oriented bounding box (OBB).</p>
                     
                         </div>
                     
@@ -1234,7 +1315,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_core_component.js.html#l694"><code>src&#x2F;core&#x2F;component.js:694</code></a>
+                            <a href="../files/src_core_component.js.html#l700"><code>src&#x2F;core&#x2F;component.js:700</code></a>
                             </p>
                     
                     
@@ -1294,7 +1375,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l755"><code>src&#x2F;core&#x2F;component.js:755</code></a>
+                            <a href="../files/src_core_component.js.html#l764"><code>src&#x2F;core&#x2F;component.js:764</code></a>
                             </p>
                     
                     
@@ -1319,7 +1400,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_spatial_boundary3d.js.html#l99"><code>src&#x2F;core&#x2F;spatial&#x2F;boundary3d.js:99</code></a>
+                            <a href="../files/src_core_spatial_boundary3d.js.html#l105"><code>src&#x2F;core&#x2F;spatial&#x2F;boundary3d.js:105</code></a>
                             </p>
                     
                     

@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -179,11 +184,11 @@
  ## Contents
 
  &lt;Ul&gt;
-    &lt;li&gt;&lt;a href=&quot;#sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#sceneCanvas&quot;&gt;The Scene Canvas&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#findingByID&quot;&gt;Finding Scenes and Components by ID&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#defaults&quot;&gt;The Default Scene&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;#savingAndLoading&quot;&gt;Saving and Loading Scenes&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#sceneCanvas&quot;&gt;The Scene Canvas&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#findingByID&quot;&gt;Finding Scenes and Components by ID&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#defaults&quot;&gt;The Default Scene&lt;/a&gt;&lt;/li&gt;
+ &lt;li&gt;&lt;a href=&quot;#savingAndLoading&quot;&gt;Saving and Loading Scenes&lt;/a&gt;&lt;/li&gt;
  &lt;/ul&gt;
 
  ## &lt;a name=&quot;sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;
@@ -404,6 +409,50 @@
 
             var self = this;
 
+            /**
+             * Tracks statistics within this Scene, such as numbers of
+             * textures, geometries etc.
+             * @final
+             * @property stats
+             * @type {*}
+             * @final
+             */
+            this.stats = {
+                build: {
+                    version: XEO.version
+                },
+                client: {
+                    browser: (navigator &amp;&amp; navigator.userAgent) ? navigator.userAgent : &quot;n/a&quot;
+                },
+                canvas: {
+                    width: 0,
+                    height: 0
+                },
+                scene: {
+                    objects: 0
+                },
+                memory: {
+                    meshes: 0,
+                    positions: 0,
+                    colors: 0,
+                    normals: 0,
+                    uvs: 0,
+                    indices: 0,
+                    textures: 0,
+                    programs: 0
+                },
+                frame: {
+                    frameCount: 0,
+                    renderTime: 0,
+                    useProgram: 0,
+                    setUniform: 0,
+                    setUniformCacheHits: 0,
+                    bindTexture: 0,
+                    bindArray: 0,
+                    drawElements: 0
+                }
+            };
+
             this._componentIDMap = new XEO.utils.Map();
 
             /**
@@ -476,8 +525,7 @@
                     alert(&quot;xeoEngine failed to find WebGL!&quot;);
                 });
 
-            // The core WebGL renderer
-            this._renderer = new XEO.renderer.Renderer({
+            this._renderer = new XEO.renderer.Renderer(this.stats, {
                 canvas: this.canvas,
                 transparent: cfg.transparent
             });
@@ -501,20 +549,6 @@
              * @final
              */
             this.tasks = new XEO.Tasks(this);
-
-            /**
-             * Tracks statistics within this Scene, such as numbers of
-             * textures, geometries etc.
-             * @final
-             * @property stats
-             * @type {Stats}
-             * @final
-             */
-            this.stats = new XEO.Stats(this, {
-                objects: 0,
-                geometries: 0,
-                textures: 0
-            });
 
             // Register Scene on engine
             // Do this BEFORE we add components below
@@ -554,7 +588,7 @@
             this._initDefaults();
         },
 
-        _initDefaults: function() {
+        _initDefaults: function () {
 
             this.view;
             this.project;
@@ -640,7 +674,7 @@
                         // Unschedule any pending recompilation of
                         // the GameObject into the renderer
 
-                        self.stats.dec(&quot;objects&quot;);
+                        self.stats.scene.objects--;
 
                         delete self.objects[c.id];
 
@@ -676,7 +710,7 @@
 
                 // Update scene statistics
 
-                this.stats.inc(&quot;objects&quot;);
+                this.stats.scene.objects++;
             }
 
             /**
@@ -788,6 +822,28 @@
             },
 
             /**
+             * The default {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.billboard&quot;
+             * and an {{#crossLink &quot;Billboard/active:property&quot;}}{{/crossLink}} property set to false to disable it.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} by default.
+             * @property billboard
+             * @final
+             * @type Billboard
+             */
+            billboard: {
+                get: function () {
+                    return this.components[&quot;default.billboard&quot;] ||
+                        new XEO.Billboard(this, {
+                            id: &quot;default.billboard&quot;,
+                            active: false
+                        });
+                }
+            },
+
+            /**
              * The default {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.clips&quot;,
@@ -834,8 +890,9 @@
             /**
              * The default {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} provided by this Scene.
              *
-             * This {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.colorTarget&quot;,
-             * with all other properties initialised to their default values.
+             * The {{#crossLink &quot;ColorTarget&quot;}}DepthTarget{{/crossLink}} is
+             * {{#crossLink &quot;ColorTarget/active:property&quot;}}inactive{{/crossLink}} and will have an
+             * {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthTarget&quot;.
              *
              * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} by default.
@@ -878,8 +935,9 @@
             /**
              * The default {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} provided by this Scene.
              *
-             * This {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthTarget&quot;,
-             * with all other properties initialised to their default values.
+             * The {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} is
+             * {{#crossLink &quot;DepthTarget/active:property&quot;}}inactive{{/crossLink}} and has an
+             * {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthTarget&quot;.
              *
              * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} by default.
@@ -1011,7 +1069,7 @@
                                 new XEO.AmbientLight(this, {
                                     id: &quot;default.light0&quot;,
                                     color: [0.7, 0.7, 0.7],
-                                    intensity: 1.0
+                                    intensity: 0.5
                                 }),
 
                                 // Directional light source #1
@@ -1019,7 +1077,7 @@
                                     id: &quot;default.light1&quot;,
                                     dir: [-0.5, -0.5, -1.0],
                                     color: [1.0, 1.0, 1.0],
-                                    intensity: 1.0,
+                                    intensity: 0.5,
                                     space: &quot;view&quot;
                                 }),
 
@@ -1028,7 +1086,7 @@
                                     id: &quot;default.light2&quot;,
                                     dir: [1.0, -0.9, -0.7],
                                     color: [1.0, 1.0, 1.0],
-                                    intensity: 1.0,
+                                    intensity: 0.2,
                                     space: &quot;view&quot;
                                 })
                             ]
@@ -1182,14 +1240,14 @@
          * @method pick
          * @param {Array of Number} canvasPos Canvas-space coordinates.
          * @param {*} [options] Pick options.
-         * @param {Boolean} [options.rayPick=false] Whether to perform a 3D ray-intersect pick.
+         * @param {Boolean} [options.pickPrimitive=false] Whether to try to pick a primitive on the {{#crossLink &quot;GameObject&quot;}}GameObject&#x27;s{{/crossLink}} {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}.
          * @returns {*} Hit record when a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} is picked.
          */
         pick: function (canvasPos, options) {
 
             return this._renderer.pick({
                 canvasPos: canvasPos,
-                rayPick: options.rayPick
+                pickPrimitive: options.pickPrimitive
             });
         },
 
@@ -1198,8 +1256,10 @@
          * Resets this Scene to its default state.
          *
          * References to any components in this Scene will become invalid.
+         *
+         * @method clear
          */
-        clear: function () {
+        clear: function () {  // FIXME: should only clear user-created components
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
@@ -1218,6 +1278,15 @@
             this._dirtyObjects = {};
         },
 
+        /**
+         * Displays a simple test object.
+         *
+         * Clears the Scene first.
+         *
+         * The test object is destroyed as soon as anything else is created in this Scene.
+         *
+         * @method testPattern
+         */
         testPattern: function () {
 
             // Clear the scene
@@ -1240,7 +1309,7 @@
             var spin = this.on(&quot;tick&quot;,
                 function () {
                     object.transform.angle = angle;
-                    angle += 0.01;
+                    angle += 0.5;
                 });
 
             var self = this;
@@ -1282,7 +1351,7 @@
             }
 
             if (countCompiledObjects &gt; 0) {
-            //    this.log(&quot;Compiled &quot; + countCompiledObjects + &quot; XEO.GameObject&quot; + (countCompiledObjects &gt; 1 ? &quot;s&quot; : &quot;&quot;));
+                //    this.log(&quot;Compiled &quot; + countCompiledObjects + &quot; XEO.GameObject&quot; + (countCompiledObjects &gt; 1 ? &quot;s&quot; : &quot;&quot;));
             }
 
             // Render a frame

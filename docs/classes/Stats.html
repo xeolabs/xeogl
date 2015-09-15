@@ -39,7 +39,10 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
@@ -75,7 +78,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/math.html">math</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MouseOrbitCamera.html">MouseOrbitCamera</a></li>
@@ -83,6 +85,7 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
+                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -99,7 +102,7 @@
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/Shader.Water.html">Shader.Water</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/ShowBoundary.html">ShowBoundary</a></li>
+                                <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
                                 <li><a href="../classes/Sphere.html">Sphere</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
@@ -114,6 +117,7 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -126,6 +130,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/groups.html">groups</a></li>
+                                <li><a href="../modules/helpers.html">helpers</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -241,7 +246,7 @@ var myStatistic = configs.props["myStatistic"];
 </code></pre>
 <h2 id="native-xeoengine-statistics">Native xeoEngine statistics</h2>
 <p>Listed below are are the statistics provided by the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<p>Don&#39;t use these names for your own custom statistics properties.</p>
+<p>Don&#39;t use these names for your own custom statistics.</p>
 <table>
 <thead>
 <tr>
@@ -251,16 +256,32 @@ var myStatistic = configs.props["myStatistic"];
 </thead>
 <tbody>
 <tr>
-<td>"numGeometries"</td>
-<td>Number of <a href="../classes/Geometry.html" class="crosslink">Geometrys</a> in the <a href="../classes/Scene.html" class="crosslink">Scene</a></td>
+<td>"objects"</td>
+<td>Number of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a></td>
 </tr>
 <tr>
-<td>"numTextures"</td>
-<td>Number of <a href="../classes/Texture.html" class="crosslink">Textures</a> in the <a href="../classes/Scene.html" class="crosslink">Scene</a></td>
+<td>"geometries"</td>
+<td>Number of <a href="../classes/Geometry.html" class="crosslink">Geometries</a></td>
 </tr>
 <tr>
-<td>"numGameObjects"</td>
-<td>Number of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> in the <a href="../classes/Scene.html" class="crosslink">Scene</a></td>
+<td>"materials"</td>
+<td>Number of <a href="../classes/Material.html" class="crosslink">Materials</a></td>
+</tr>
+<tr>
+<td>"scene.textures"</td>
+<td>Number of <a href="../classes/Texture.html" class="crosslink">Textures</a></td>
+</tr>
+<tr>
+<td>"shaders"</td>
+<td>Number of WebGL shader programs currently allocated</td>
+</tr>
+<tr>
+<td>"webglRestored"</td>
+<td>Number of times the WebGL context has been restored so far for this <a href="../classes/Scene.html" class="crosslink">Scene</a></td>
+</tr>
+<tr>
+<td>"renderer.objects"</td>
+<td>Number of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> that are currently being rendered</td>
 </tr>
 </tbody>
 </table>
@@ -354,6 +375,10 @@ var myStatistic = configs.props["myStatistic"];
                                 <a href="#method_once">once</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_set">set</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_warn">warn</a>
 
@@ -440,7 +465,7 @@ var myStatistic = configs.props["myStatistic"];
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_reporting_stats.js.html#l130"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:130</code></a>
+        <a href="../files/src_core_reporting_stats.js.html#l159"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:159</code></a>
         </p>
 
 
@@ -448,8 +473,8 @@ var myStatistic = configs.props["myStatistic"];
     </div>
 
     <div class="description">
-        <p>Decrements the value of a statistic property within this Stats.</p>
-<p>Publishes the new value as an event with the same name as the property.</p>
+        <p>Decrements the value of a statistic within this Stats.</p>
+<p>Publishes the new value as an event with the same name as the statistic.</p>
 
     </div>
 
@@ -463,7 +488,7 @@ var myStatistic = configs.props["myStatistic"];
 
 
                     <div class="param-description">
-                        <p>The statistic property name.</p>
+                        <p>The statistic name.</p>
 
                     </div>
 
@@ -501,7 +526,7 @@ var myStatistic = configs.props["myStatistic"];
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_core_component.js.html#l723"><code>src&#x2F;core&#x2F;component.js:723</code></a>
+        <a href="../files/src_core_component.js.html#l732"><code>src&#x2F;core&#x2F;component.js:732</code></a>
         </p>
 
 
@@ -686,7 +711,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_reporting_stats.js.html#l108"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:108</code></a>
+        <a href="../files/src_core_reporting_stats.js.html#l135"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:135</code></a>
         </p>
 
 
@@ -694,8 +719,9 @@ any subsequent notifications on that location as they are made.</p>
     </div>
 
     <div class="description">
-        <p>Increments the value of a statistic property within this Stats.</p>
-<p>Publishes the new value as an event with the same name as the property.</p>
+        <p>Increments the value of a statistic within this Stats.</p>
+<p>Creates the statistic if it does not yet exist.</p>
+<p>Publishes the new value as an event with the same name as the statistic.</p>
 
     </div>
 
@@ -709,7 +735,7 @@ any subsequent notifications on that location as they are made.</p>
 
 
                     <div class="param-description">
-                        <p>The statistic property name.</p>
+                        <p>The statistic name.</p>
 
                     </div>
 
@@ -1025,6 +1051,76 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
+<div id="method_set" class="method item">
+    <h3 class="name"><code>set</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>name</code>
+                </li>
+                <li class="arg">
+                        <code>value</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_core_reporting_stats.js.html#l115"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:115</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Sets the value of a statistic within this Stats.</p>
+<p>Creates the statistic if it does not yet exist.</p>
+<p>Publishes the new value as an event with the same name as the statistic.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">name</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The statistic name.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">value</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>Value to set.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_warn" class="method item inherited">
     <h3 class="name"><code>warn</code></h3>
 
@@ -1103,7 +1199,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_core_reporting_stats.js.html#l152"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:152</code></a>
+        <a href="../files/src_core_reporting_stats.js.html#l181"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:181</code></a>
         </p>
 
 
@@ -1111,8 +1207,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     </div>
 
     <div class="description">
-        <p>Zeroes the value of a statistic property within this Stats.</p>
-<p>Publishes the new value as an event with the same name as the property.</p>
+        <p>Zeroes the value of a statistic within this Stats.</p>
+<p>Publishes the new value as an event with the same name as the statistic.</p>
 
     </div>
 
@@ -1126,7 +1222,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
                     <div class="param-description">
-                        <p>The statistic property name.</p>
+                        <p>The statistic  name.</p>
 
                     </div>
 
@@ -1205,7 +1301,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_core_component.js.html#l667"><code>src&#x2F;core&#x2F;component.js:667</code></a>
+                            <a href="../files/src_core_component.js.html#l673"><code>src&#x2F;core&#x2F;component.js:673</code></a>
                             </p>
                     
                     
@@ -1285,7 +1381,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_core_component.js.html#l694"><code>src&#x2F;core&#x2F;component.js:694</code></a>
+                            <a href="../files/src_core_component.js.html#l700"><code>src&#x2F;core&#x2F;component.js:700</code></a>
                             </p>
                     
                     
@@ -1345,7 +1441,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_core_component.js.html#l755"><code>src&#x2F;core&#x2F;component.js:755</code></a>
+                            <a href="../files/src_core_component.js.html#l764"><code>src&#x2F;core&#x2F;component.js:764</code></a>
                             </p>
                     
                     
