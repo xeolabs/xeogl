@@ -156,6 +156,7 @@
             this.shaderParams = cfg.shaderParams;
             this.stage = cfg.stage;
             this.transform = cfg.transform;
+            this.billboard = cfg.billboard;
 
             // Cached boundary for each coordinate space
 
@@ -842,6 +843,59 @@
             },
 
             /**
+             * The Billboard attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/billboard:property"}}billboard{{/crossLink}}
+             * (an identity matrix) when set to a null or undefined value.
+             *
+             * Fires a {{#crossLink "GameObject/billboard:event"}}{{/crossLink}} event on change.
+             *
+             * @property billboard
+             * @type Component
+             */
+            billboard: {
+
+                set: function (value) {
+
+                    // Unsubscribe from old billboard's events
+
+                    var oldBillboard = this._children.billboard;
+
+                    if (oldBillboard && (!value || value.id !== oldBillboard.id)) {
+                        oldBillboard.off(this._onBillboardDirty);
+                    }
+
+                    /**
+                     * Fired whenever this GameObject's {{#crossLink "GameObject/billboard:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event billboard
+                     * @param value The property's new value
+                     */
+                    this._setChild("billboard", value);
+
+                    // Subscribe to new billboard's events
+
+                    var newBillboard = this._children.billboard;
+
+                    if (newBillboard) {
+
+                        var self = this;
+                        
+                        this._onBillboardDirty = newBillboard.on("dirty",
+                            function () {
+                                self.fire("dirty");
+                            });
+                    }
+                },
+
+                get: function () {
+                    return this._children.billboard;
+                }
+            },
+
+            /**
              * World-space 3D boundary.
              *
              * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
@@ -860,14 +914,9 @@
 
                         var self = this;
 
-
                         // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
 
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
-
-                            meta: {
-                                description: "World-space boundary of GameObject " + this.id
-                            },
 
                             getDirty: function () {
                                 return self._worldBoundaryDirty;
@@ -920,10 +969,6 @@
                         // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
 
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
-
-                            meta: {
-                                description: "View-space boundary of GameObject " + this.id
-                            },
 
                             getDirty: function () {
                                 return self._viewBoundaryDirty;
@@ -1111,6 +1156,7 @@
             children.shaderParams._compile();
             children.stage._compile();
             children.transform._compile();
+            children.billboard._compile();
 
             // (Re)build this GameObject in the renderer
 
@@ -1126,25 +1172,28 @@
         },
 
         _getJSON: function () {
+
+            var children = this._children;
+
             return {
-                camera: this.camera.id,
-                clips: this.clips.id,
-                colorTarget: this.colorTarget.id,
-                colorBuf: this.colorBuf.id,
-                depthTarget: this.depthTarget.id,
-                depthBuf: this.depthBuf.id,
-                visibility: this.visibility.id,
-                modes: this.modes.id,
-                geometry: this.geometry.id,
-                layer: this.layer.id,
-                lights: this.lights.id,
-                material: this.material.id,
-                //  morphTargets: this.morphTargets.id,
-                reflect: this.reflect.id,
-                shader: this.shader.id,
-                shaderParams: this.shaderParams.id,
-                stage: this.stage.id,
-                transform: this.transform.id
+                camera: children.camera.id,
+                clips: children.clips.id,
+                colorTarget: children.colorTarget.id,
+                colorBuf: children.colorBuf.id,
+                depthTarget: children.depthTarget.id,
+                depthBuf: children.depthBuf.id,
+                visibility: children.visibility.id,
+                modes: children.modes.id,
+                geometry: children.geometry.id,
+                layer: children.layer.id,
+                lights: children.lights.id,
+                material: children.material.id,
+                reflect: children.reflect.id,
+                shader: children.shader.id,
+                shaderParams: children.shaderParams.id,
+                stage: children.stage.id,
+                transform: children.transform.id,
+                billboard: children.billboard.id
             };
         },
 

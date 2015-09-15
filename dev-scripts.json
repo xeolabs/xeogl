@@ -100,6 +100,7 @@
     "src/core/transforms/quaternion.js",
     "src/core/transforms/scale.js",
     "src/core/transforms/translate.js",
+    "src/core/transforms/billboard.js",
 
     "src/extras/animation/cameraFlight.js",
     "src/extras/animation/cameraPath.js",
