@@ -2,6 +2,10 @@
 
     "use strict";
 
+    var tempMat1 = new Float32Array(16);
+
+    var tempMat2 = new Float32Array(16);
+
     /*
      * Optimizations made based on glMatrix by Brandon Jones
      */
@@ -1233,7 +1237,7 @@
          * @method rotationMat4v
          * @static
          */
-        rotationMat4v: function (anglerad, axis) {
+        rotationMat4v: function (anglerad, axis, m) {
             var ax = XEO.math.normalizeVec4([axis[0], axis[1], axis[2], 0.0], []);
             var s = Math.sin(anglerad);
             var c = Math.cos(anglerad);
@@ -1255,7 +1259,7 @@
             ys = y * s;
             zs = z * s;
 
-            var m = XEO.math.mat4();
+            m = m || XEO.math.mat4();
 
             m[0] = (q * x * x) + c;
             m[1] = (q * xy) + zs;
@@ -1465,36 +1469,40 @@
          * @method frustumMat4v
          * @static
          */
-        frustumMat4v: function (fmin, fmax) {
+        frustumMat4v: function (fmin, fmax, m) {
+
+            if (!m) {
+                m = XEO.math.mat4();
+            }
+
             var fmin4 = [fmin[0], fmin[1], fmin[2], 0.0];
             var fmax4 = [fmax[0], fmax[1], fmax[2], 0.0];
-            var vsum = XEO.math.mat4();
-            XEO.math.addVec4(fmax4, fmin4, vsum);
-            var vdif = XEO.math.mat4();
-            XEO.math.subVec4(fmax4, fmin4, vdif);
+
+            XEO.math.addVec4(fmax4, fmin4, tempMat1);
+            XEO.math.subVec4(fmax4, fmin4, tempMat2);
+
             var t = 2.0 * fmin4[2];
 
-            var m = XEO.math.mat4();
-            var vdif0 = vdif[0], vdif1 = vdif[1], vdif2 = vdif[2];
+            var tempMat20 = tempMat2[0], tempMat21 = tempMat2[1], tempMat22 = tempMat2[2];
 
-            m[0] = t / vdif0;
+            m[0] = t / tempMat20;
             m[1] = 0.0;
             m[2] = 0.0;
             m[3] = 0.0;
 
             m[4] = 0.0;
-            m[5] = t / vdif1;
+            m[5] = t / tempMat21;
             m[6] = 0.0;
             m[7] = 0.0;
 
-            m[8] = vsum[0] / vdif0;
-            m[9] = vsum[1] / vdif1;
-            m[10] = -vsum[2] / vdif2;
+            m[8] = tempMat1[0] / tempMat20;
+            m[9] = tempMat1[1] / tempMat21;
+            m[10] = -tempMat1[2] / tempMat22;
             m[11] = -1.0;
 
             m[12] = 0.0;
             m[13] = 0.0;
-            m[14] = -t * fmax4[2] / vdif2;
+            m[14] = -t * fmax4[2] / tempMat22;
             m[15] = 0.0;
 
             return m;
@@ -1536,7 +1544,7 @@
          * @method perspectiveMatrix4v
          * @static
          */
-        perspectiveMatrix4: function (fovyrad, aspectratio, znear, zfar) {
+        perspectiveMatrix4: function (fovyrad, aspectratio, znear, zfar, m) {
             var pmin = [];
             var pmax = [];
 
@@ -1549,7 +1557,7 @@
             pmax[0] = pmax[1] * aspectratio;
             pmin[0] = -pmax[0];
 
-            return XEO.math.frustumMat4v(pmin, pmax);
+            return XEO.math.frustumMat4v(pmin, pmax, m);
         },
 
         /**
@@ -2035,8 +2043,8 @@
             var v2;
             var v3;
 
-        //    for (var i = 0, len = indices.length - 3; i < len; i += 3) {
-                for (var i = 0, len = indices.length; i < len; i += 3) {
+            //    for (var i = 0, len = indices.length - 3; i < len; i += 3) {
+            for (var i = 0, len = indices.length; i < len; i += 3) {
                 j0 = indices[i + 0];
                 j1 = indices[i + 1];
                 j2 = indices[i + 2];
