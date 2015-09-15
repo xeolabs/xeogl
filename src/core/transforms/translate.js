@@ -23,60 +23,60 @@
  {{#crossLink "Rotate"}}{{/crossLink}}, Translate and {{#crossLink "Scale"}}{{/crossLink}} transforms.
  The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
 
-````javascript
-var scene = new XEO.Scene();
+ ````javascript
+ var scene = new XEO.Scene();
 
-var rotate = new XEO.Rotate(scene, {
+ var rotate = new XEO.Rotate(scene, {
     xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
     angle: 30
 });
 
-var translate1 = new XEO.Translate(scene, {
+ var translate1 = new XEO.Translate(scene, {
     parent: rotate,
     xyz: [-5, 0, 0] // Translate along -X axis
 });
 
-var translate2 = new XEO.Translate(scene, {
+ var translate2 = new XEO.Translate(scene, {
     parent: rotate,
     xyz: [5, 0, 0] // Translate along +X axis
 });
 
-var scale = new XEO.Scale(scene, {
+ var scale = new XEO.Scale(scene, {
     parent: translate2,
     xyz: [1, 2, 1] // Scale x2 on Y axis
 });
 
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-var gameObject1 = new XEO.GameObject(scene, {
+ var gameObject1 = new XEO.GameObject(scene, {
     transform: translate1,
     geometry: geometry
 });
 
-var gameObject2 = new XEO.GameObject(scene, {
+ var gameObject2 = new XEO.GameObject(scene, {
     transform: scale,
     geometry: geometry
 });
  ````
 
-Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+ Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
-Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
+ Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
 
  ````javascript
-var scale2 = new XEO.Scale(scene, {
+ var scale2 = new XEO.Scale(scene, {
     parent: translate1,
     xyz: [1, 1, 2] // Scale x2 on Z axis
 });
 
-gameObject2.transform = scale2;
+ gameObject2.transform = scale2;
  ````
 
  And just for fun, we'll start updating the second {{#crossLink "Translate"}}{{/crossLink}}:
 
  ````javascript
-// Rotate 0.2 degrees on each frame
-scene.on("tick", function(e) {
+ // Rotate 0.2 degrees on each frame
+ scene.on("tick", function(e) {
     var xyz = translate2.xyz;
     xyz[0] += 0.2;
     translate2.xyz = xyz;
@@ -106,7 +106,7 @@ scene.on("tick", function(e) {
         _init: function (cfg) {
 
             this._super(cfg);
-            
+
             this.xyz = cfg.xyz;
         },
 
@@ -125,7 +125,7 @@ scene.on("tick", function(e) {
 
                     this._xyz = value || [1, 1, 1];
 
-                    this.matrix = XEO.math.translationMat4v(this._xyz);
+                    this.matrix = XEO.math.translationMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.mat4()));
 
                     /**
                      Fired whenever this Translate's {{#crossLink "Translate/xyz:property"}}{{/crossLink}} property changes.

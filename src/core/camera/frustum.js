@@ -86,7 +86,7 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.ProjTransform({
-                matrix: null
+                matrix: XEO.math.mat4()
             });
 
             this._dirty = false;
@@ -129,7 +129,7 @@
 
         _build: function () {
 
-            this._state.matrix = XEO.math.frustumMat4(
+            XEO.math.frustumMat4(
                 this._left,
                 this._right,
                 this._bottom,

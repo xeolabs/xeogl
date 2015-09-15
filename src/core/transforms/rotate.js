@@ -190,7 +190,7 @@
                 // but that will be rarely be the case, where ormally it would just be the angle that is
                 // continually updated.
 
-                this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz);
+                this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix || (this._matrix = XEO.math.mat4()));
             }
         },
 

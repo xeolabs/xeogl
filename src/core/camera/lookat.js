@@ -283,7 +283,7 @@
 
             this.eye = XEO.math.addVec3(this._state.look, XEO.math.mulVec3Scalar(dir, newLenLook), []);
         },
-        
+
         _props: {
 
             /**

@@ -66,7 +66,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Ortho.
- @param [cfg.left=-1.0] {Number} Position of the left plane on the View-space X-axis.
+ @param [cfg.left=-1.0] {Number} Position of the left plane on the View-space X-xyz.
  @param [cfg.right=1.0] {Number} Position of the right plane on the View-space X-axis.
  @param [cfg.top=1.0] {Number} Position of the top plane on the View-space Y-axis.
  @param [cfg.bottom=-1.0] {Number} Position of the bottom plane on the View-space Y-axis.
@@ -85,7 +85,7 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.ProjTransform({
-                matrix: null
+                matrix: XEO.math.mat4()
             });
 
             // Ortho view volume
@@ -121,7 +121,7 @@
         // Rebuilds the rendering state from this component
         _build: function () {
 
-            this._state.matrix = XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
+            XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
 
             this._dirty = false;
 

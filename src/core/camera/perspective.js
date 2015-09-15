@@ -63,7 +63,6 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
  @param [cfg.fovy=60.0] {Number} Field-of-view angle, in degrees, on Y-axis.
- @param [cfg.aspect=1.0] {Number} Aspect ratio.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
  @extends Component
@@ -79,7 +78,7 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.ProjTransform({
-                matrix: null
+                matrix: XEO.math.mat4()
             });
 
             this._dirty = false;
@@ -98,7 +97,6 @@
                 });
 
             this.fovy = cfg.fovy;
-         //   this.aspect = canvas.width / canvas.height;
             this.near = cfg.near;
             this.far = cfg.far;
         },
@@ -125,9 +123,8 @@
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
-            aspect = this._aspect;
+            XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
 
-            this._state.matrix = XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far);
 
             this._dirty = false;
 
@@ -172,39 +169,6 @@
 
                 get: function () {
                     return this._fovy;
-                }
-            },
-
-            /**
-             * Aspect ratio of this Perspective frustum. This is effectively the height of the frustum divided by the width.
-             *
-             * Fires an {{#crossLink "Perspective/aspect:property"}}{{/crossLink}} event on change.
-             *
-             * @property aspect
-             * @default 60.0
-             * @type Number
-             */
-            aspect: {
-
-                set: function (value) {
-
-                    this._aspect = (value !== undefined && value !== null) ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Perspective's {{#crossLink "Perspective/aspect:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event aspect
-                     * @param value The property's new value
-                     */
-                    this.fire("aspect", this._aspect);
-                },
-
-                get: function () {
-                    return this._aspect;
                 }
             },
 

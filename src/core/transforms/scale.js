@@ -113,7 +113,7 @@ scene.on("tick", function(e) {
 
                     this._xyz = value || [1, 1, 1];
 
-                    this.matrix = XEO.math.scalingMat4v(this._xyz);
+                    this.matrix = XEO.math.scalingMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.mat4()));
 
                     /**
                      Fired whenever this Scale's {{#crossLink "Scale/xyz:property"}}{{/crossLink}} property changes.
