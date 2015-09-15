@@ -201,7 +201,7 @@
                 this.target = cfg.target; // Render target
             }
 
-            this.scene.stats.memory.textures--;
+            this.scene.stats.memory.textures++;
         },
 
         // Schedules a call to #_build for the next "tick"
@@ -215,6 +215,7 @@
 
                 this.scene.once("tick2",
                     function () {
+
                         self._build();
 
                         self._dirty = false;
@@ -234,10 +235,10 @@
                 if (this._src) {
 
                     this._loadSrc(this._src);
+
                     this._srcDirty = false;
 
                     return;
-
                 }
             }
 
@@ -246,9 +247,12 @@
 
                 if (this._image) {
 
+                    if (state.texture && state.texture.renderBuffer) {
+                        state.texture = null;
+                    }
+
                     if (!state.texture) {
                         state.texture = new XEO.renderer.webgl.Texture2D(gl);
-
                     }
 
                     state.texture.setImage(this._image);
@@ -263,10 +267,18 @@
 
             if (this._targetDirty) {
 
-                // TODO: destroy texture only if created for this state,
-                // don't destroy texture belong to a previous target
+                if (state.texture && !state.texture.renderBuffer) {
+                    state.texture.destroy();
+                    state.texture = null;
+                }
+
+                if (this._target) {
+                    state.texture = this._target.getTexture();
+                }
 
                 this._targetDirty = false;
+
+                this._propsDirty = true;
             }
 
 
@@ -472,7 +484,7 @@
 
                     this._image = null;
                     this._src = null;
-                    this._target = this._setChild("renderBuf", value); // Target is a render buffer;
+                    this._target = this._setChild("renderBuf", value);
 
                     this._imageDirty = false;
                     this._srcDirty = false;
