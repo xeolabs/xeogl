@@ -211,6 +211,13 @@
         this.projTransform = null;
 
         /**
+         Billboard render state.
+         @property billboard
+         @type {renderer.Billboard}
+         */
+        this.billboard = null;
+
+        /**
          Color target render state.
          @property colorTarget
          @type {renderer.RenderTarget}
@@ -363,6 +370,7 @@
         object.geometry = this.geometry;
         object.visibility = this.visibility;
         object.modes = this.modes;
+        object.billboard = this.billboard;
 
         // Build hash of the object's state configuration. This is used
         // to hash the object's shader so that it may be reused by other
@@ -378,7 +386,8 @@
             this.clips.hash,
             this.material.hash,
             //this.reflect.hash,
-            this.lights.hash
+            this.lights.hash,
+            this.billboard.hash
 
         ]).join(";");
 
@@ -586,8 +595,8 @@
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    ((object.stage.priority + 1) * 1000000000000)
-                    + ((object.modes.transparent ? 2 : 1) * 1000000000)
+                    ((object.stage.priority + 1) * 10000000000)
+                    + ((object.modes.transparent ? 2 : 1) * 10000000)
                     + ((object.layer.priority + 1) * 1000000)
                     + ((object.program.id + 1) * 1000)
                     + object.material.id;
@@ -668,7 +677,7 @@
 
             if (9 == 8 && (object.colorTarget || object.depthTarget)) { // TODO: Enable color and depth targets
 
-                if (object.colorTarget) {
+                if (false && object.colorTarget && object.colorTarget.renderBuf) {
 
                     target = object.colorTarget;
 
@@ -688,7 +697,7 @@
                     list.push(object);
                 }
 
-                if (object.depthTarget) {
+                if (false && object.depthTarget && object.depthTarget.renderBuf) {
 
                     target = object.colorTarget;
 

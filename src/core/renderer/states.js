@@ -213,6 +213,20 @@
 
     /**
 
+     Billboard transform state.
+
+     @class renderer.Billboard
+     @module XEO
+     @submodule renderer
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Billboard = XEO.renderer.State.extend({});
+
+
+    /**
+
      Render target state.
 
      @class renderer.RenderTarget
