@@ -684,6 +684,8 @@
 
                     this._state.primitiveName = value;
 
+                    this._scheduleBuild();
+
                     this.fire("dirty", true);
 
                     /**
@@ -693,8 +695,6 @@
                      * @param value The property's new value
                      */
                     this.fire("primitive", this._state.primitiveName);
-
-                    this._scheduleBuild();
                 },
 
                 get: function () {
