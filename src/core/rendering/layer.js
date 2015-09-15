@@ -168,7 +168,7 @@ var object3 = new XEO.GameObject(scene, {
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Layer({
-                priority: 0
+                priority: null
             });
 
             this.priority = cfg.priority;
@@ -192,7 +192,15 @@ var object3 = new XEO.GameObject(scene, {
 
                 set: function (value) {
 
-                    this._state.priority = value || 0;
+                    // TODO: Only accept rendering priority in range [0...MAX_PRIORITY]
+
+                    value = value || 0;
+
+                    if (value === this._state.priority) {
+                        return;
+                    }
+
+                    this._state.priority = value;
 
                     this._renderer.stateOrderDirty = true;
 

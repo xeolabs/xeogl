@@ -102,7 +102,7 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Stage({
-                priority: 0,
+                priority: null,
                 pickable: true
             });
 
@@ -128,7 +128,13 @@
                  */
                 set: function (value) {
 
-                    this._state.priority = value || 0;
+                    value = value || 0;
+
+                    if (value === this._state.priority) {
+                        return;
+                    }
+
+                    this._state.priority = value;
 
                     this._renderer.stateOrderDirty = true;
 
