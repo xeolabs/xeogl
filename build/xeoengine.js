@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-09-12
+ * Built on 2015-09-15
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -1897,6 +1897,28 @@
             },
 
             /**
+             * The default {{#crossLink "Billboard"}}Billboard{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Billboard"}}Billboard{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.billboard"
+             * and an {{#crossLink "Billboard/active:property"}}{{/crossLink}} property set to false to disable it.
+             *
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Billboard"}}Billboard{{/crossLink}} by default.
+             * @property billboard
+             * @final
+             * @type Billboard
+             */
+            billboard: {
+                get: function () {
+                    return this.components["default.billboard"] ||
+                        new XEO.Billboard(this, {
+                            id: "default.billboard",
+                            active: false
+                        });
+                }
+            },
+
+            /**
              * The default {{#crossLink "Clips"}}Clips{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Clips"}}Clips{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.clips",
@@ -1943,8 +1965,9 @@
             /**
              * The default {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} provided by this Scene.
              *
-             * This {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.colorTarget",
-             * with all other properties initialised to their default values.
+             * The {{#crossLink "ColorTarget"}}DepthTarget{{/crossLink}} is
+             * {{#crossLink "ColorTarget/active:property"}}inactive{{/crossLink}} and will have an
+             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} by default.
@@ -1987,8 +2010,9 @@
             /**
              * The default {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} provided by this Scene.
              *
-             * This {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget",
-             * with all other properties initialised to their default values.
+             * The {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} is
+             * {{#crossLink "DepthTarget/active:property"}}inactive{{/crossLink}} and has an
+             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} by default.
@@ -2865,7 +2889,7 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.ProjTransform({
-                matrix: null
+                matrix: XEO.math.mat4()
             });
 
             this._dirty = false;
@@ -2908,7 +2932,7 @@
 
         _build: function () {
 
-            this._state.matrix = XEO.math.frustumMat4(
+            XEO.math.frustumMat4(
                 this._left,
                 this._right,
                 this._bottom,
@@ -3454,7 +3478,7 @@
 
             this.eye = XEO.math.addVec3(this._state.look, XEO.math.mulVec3Scalar(dir, newLenLook), []);
         },
-        
+
         _props: {
 
             /**
@@ -3697,7 +3721,7 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.ProjTransform({
-                matrix: null
+                matrix: XEO.math.mat4()
             });
 
             // Ortho view volume
@@ -3733,7 +3757,7 @@
         // Rebuilds the rendering state from this component
         _build: function () {
 
-            this._state.matrix = XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
+            XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
 
             this._dirty = false;
 
@@ -4057,7 +4081,6 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
  @param [cfg.fovy=60.0] {Number} Field-of-view angle, in degrees, on Y-axis.
- @param [cfg.aspect=1.0] {Number} Aspect ratio.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
  @extends Component
@@ -4073,7 +4096,7 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.ProjTransform({
-                matrix: null
+                matrix: XEO.math.mat4()
             });
 
             this._dirty = false;
@@ -4092,7 +4115,6 @@
                 });
 
             this.fovy = cfg.fovy;
-         //   this.aspect = canvas.width / canvas.height;
             this.near = cfg.near;
             this.far = cfg.far;
         },
@@ -4119,9 +4141,9 @@
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
-            aspect = this._aspect;
 
-            this._state.matrix = XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far);
+            XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
+
 
             this._dirty = false;
 
@@ -4166,39 +4188,6 @@
 
                 get: function () {
                     return this._fovy;
-                }
-            },
-
-            /**
-             * Aspect ratio of this Perspective frustum. This is effectively the height of the frustum divided by the width.
-             *
-             * Fires an {{#crossLink "Perspective/aspect:property"}}{{/crossLink}} event on change.
-             *
-             * @property aspect
-             * @default 60.0
-             * @type Number
-             */
-            aspect: {
-
-                set: function (value) {
-
-                    this._aspect = (value !== undefined && value !== null) ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
-
-                    /**
-                     * Fired whenever this Perspective's {{#crossLink "Perspective/aspect:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event aspect
-                     * @param value The property's new value
-                     */
-                    this.fire("aspect", this._aspect);
-                },
-
-                get: function () {
-                    return this._aspect;
                 }
             },
 
@@ -6152,6 +6141,8 @@ visibility.destroy();
 
                     this._state.primitiveName = value;
 
+                    this._scheduleBuild();
+
                     this.fire("dirty", true);
 
                     /**
@@ -6161,8 +6152,6 @@ visibility.destroy();
                      * @param value The property's new value
                      */
                     this.fire("primitive", this._state.primitiveName);
-
-                    this._scheduleBuild();
                 },
 
                 get: function () {
@@ -10331,7 +10320,7 @@ var myScene = new XEO.Scene();
                 this.target = cfg.target; // Render target
             }
 
-            this.scene.stats.memory.textures--;
+            this.scene.stats.memory.textures++;
         },
 
         // Schedules a call to #_build for the next "tick"
@@ -10345,6 +10334,7 @@ var myScene = new XEO.Scene();
 
                 this.scene.once("tick2",
                     function () {
+
                         self._build();
 
                         self._dirty = false;
@@ -10364,10 +10354,10 @@ var myScene = new XEO.Scene();
                 if (this._src) {
 
                     this._loadSrc(this._src);
+
                     this._srcDirty = false;
 
                     return;
-
                 }
             }
 
@@ -10376,9 +10366,12 @@ var myScene = new XEO.Scene();
 
                 if (this._image) {
 
+                    if (state.texture && state.texture.renderBuffer) {
+                        state.texture = null;
+                    }
+
                     if (!state.texture) {
                         state.texture = new XEO.renderer.webgl.Texture2D(gl);
-
                     }
 
                     state.texture.setImage(this._image);
@@ -10393,10 +10386,18 @@ var myScene = new XEO.Scene();
 
             if (this._targetDirty) {
 
-                // TODO: destroy texture only if created for this state,
-                // don't destroy texture belong to a previous target
+                if (state.texture && !state.texture.renderBuffer) {
+                    state.texture.destroy();
+                    state.texture = null;
+                }
+
+                if (this._target) {
+                    state.texture = this._target.getTexture();
+                }
 
                 this._targetDirty = false;
+
+                this._propsDirty = true;
             }
 
 
@@ -10602,7 +10603,7 @@ var myScene = new XEO.Scene();
 
                     this._image = null;
                     this._src = null;
-                    this._target = this._setChild("renderBuf", value); // Target is a render buffer;
+                    this._target = this._setChild("renderBuf", value);
 
                     this._imageDirty = false;
                     this._srcDirty = false;
@@ -11100,6 +11101,10 @@ var myScene = new XEO.Scene();
  */;(function () {
 
     "use strict";
+
+    var tempMat1 = new Float32Array(16);
+
+    var tempMat2 = new Float32Array(16);
 
     /*
      * Optimizations made based on glMatrix by Brandon Jones
@@ -12332,7 +12337,7 @@ var myScene = new XEO.Scene();
          * @method rotationMat4v
          * @static
          */
-        rotationMat4v: function (anglerad, axis) {
+        rotationMat4v: function (anglerad, axis, m) {
             var ax = XEO.math.normalizeVec4([axis[0], axis[1], axis[2], 0.0], []);
             var s = Math.sin(anglerad);
             var c = Math.cos(anglerad);
@@ -12354,7 +12359,7 @@ var myScene = new XEO.Scene();
             ys = y * s;
             zs = z * s;
 
-            var m = XEO.math.mat4();
+            m = m || XEO.math.mat4();
 
             m[0] = (q * x * x) + c;
             m[1] = (q * xy) + zs;
@@ -12564,36 +12569,40 @@ var myScene = new XEO.Scene();
          * @method frustumMat4v
          * @static
          */
-        frustumMat4v: function (fmin, fmax) {
+        frustumMat4v: function (fmin, fmax, m) {
+
+            if (!m) {
+                m = XEO.math.mat4();
+            }
+
             var fmin4 = [fmin[0], fmin[1], fmin[2], 0.0];
             var fmax4 = [fmax[0], fmax[1], fmax[2], 0.0];
-            var vsum = XEO.math.mat4();
-            XEO.math.addVec4(fmax4, fmin4, vsum);
-            var vdif = XEO.math.mat4();
-            XEO.math.subVec4(fmax4, fmin4, vdif);
+
+            XEO.math.addVec4(fmax4, fmin4, tempMat1);
+            XEO.math.subVec4(fmax4, fmin4, tempMat2);
+
             var t = 2.0 * fmin4[2];
 
-            var m = XEO.math.mat4();
-            var vdif0 = vdif[0], vdif1 = vdif[1], vdif2 = vdif[2];
+            var tempMat20 = tempMat2[0], tempMat21 = tempMat2[1], tempMat22 = tempMat2[2];
 
-            m[0] = t / vdif0;
+            m[0] = t / tempMat20;
             m[1] = 0.0;
             m[2] = 0.0;
             m[3] = 0.0;
 
             m[4] = 0.0;
-            m[5] = t / vdif1;
+            m[5] = t / tempMat21;
             m[6] = 0.0;
             m[7] = 0.0;
 
-            m[8] = vsum[0] / vdif0;
-            m[9] = vsum[1] / vdif1;
-            m[10] = -vsum[2] / vdif2;
+            m[8] = tempMat1[0] / tempMat20;
+            m[9] = tempMat1[1] / tempMat21;
+            m[10] = -tempMat1[2] / tempMat22;
             m[11] = -1.0;
 
             m[12] = 0.0;
             m[13] = 0.0;
-            m[14] = -t * fmax4[2] / vdif2;
+            m[14] = -t * fmax4[2] / tempMat22;
             m[15] = 0.0;
 
             return m;
@@ -12635,7 +12644,7 @@ var myScene = new XEO.Scene();
          * @method perspectiveMatrix4v
          * @static
          */
-        perspectiveMatrix4: function (fovyrad, aspectratio, znear, zfar) {
+        perspectiveMatrix4: function (fovyrad, aspectratio, znear, zfar, m) {
             var pmin = [];
             var pmax = [];
 
@@ -12648,7 +12657,7 @@ var myScene = new XEO.Scene();
             pmax[0] = pmax[1] * aspectratio;
             pmin[0] = -pmax[0];
 
-            return XEO.math.frustumMat4v(pmin, pmax);
+            return XEO.math.frustumMat4v(pmin, pmax, m);
         },
 
         /**
@@ -13134,8 +13143,8 @@ var myScene = new XEO.Scene();
             var v2;
             var v3;
 
-        //    for (var i = 0, len = indices.length - 3; i < len; i += 3) {
-                for (var i = 0, len = indices.length; i < len; i += 3) {
+            //    for (var i = 0, len = indices.length - 3; i < len; i += 3) {
+            for (var i = 0, len = indices.length; i < len; i += 3) {
                 j0 = indices[i + 0];
                 j1 = indices[i + 1];
                 j2 = indices[i + 2];
@@ -13608,6 +13617,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.shaderParams = cfg.shaderParams;
             this.stage = cfg.stage;
             this.transform = cfg.transform;
+            this.billboard = cfg.billboard;
 
             // Cached boundary for each coordinate space
 
@@ -14294,6 +14304,59 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             },
 
             /**
+             * The Billboard attached to this GameObject.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/billboard:property"}}billboard{{/crossLink}}
+             * (an identity matrix) when set to a null or undefined value.
+             *
+             * Fires a {{#crossLink "GameObject/billboard:event"}}{{/crossLink}} event on change.
+             *
+             * @property billboard
+             * @type Component
+             */
+            billboard: {
+
+                set: function (value) {
+
+                    // Unsubscribe from old billboard's events
+
+                    var oldBillboard = this._children.billboard;
+
+                    if (oldBillboard && (!value || value.id !== oldBillboard.id)) {
+                        oldBillboard.off(this._onBillboardDirty);
+                    }
+
+                    /**
+                     * Fired whenever this GameObject's {{#crossLink "GameObject/billboard:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event billboard
+                     * @param value The property's new value
+                     */
+                    this._setChild("billboard", value);
+
+                    // Subscribe to new billboard's events
+
+                    var newBillboard = this._children.billboard;
+
+                    if (newBillboard) {
+
+                        var self = this;
+                        
+                        this._onBillboardDirty = newBillboard.on("dirty",
+                            function () {
+                                self.fire("dirty");
+                            });
+                    }
+                },
+
+                get: function () {
+                    return this._children.billboard;
+                }
+            },
+
+            /**
              * World-space 3D boundary.
              *
              * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
@@ -14312,14 +14375,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         var self = this;
 
-
                         // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
 
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
-
-                            meta: {
-                                description: "World-space boundary of GameObject " + this.id
-                            },
 
                             getDirty: function () {
                                 return self._worldBoundaryDirty;
@@ -14372,10 +14430,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
 
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
-
-                            meta: {
-                                description: "View-space boundary of GameObject " + this.id
-                            },
 
                             getDirty: function () {
                                 return self._viewBoundaryDirty;
@@ -14563,6 +14617,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             children.shaderParams._compile();
             children.stage._compile();
             children.transform._compile();
+            children.billboard._compile();
 
             // (Re)build this GameObject in the renderer
 
@@ -14578,25 +14633,28 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         },
 
         _getJSON: function () {
+
+            var children = this._children;
+
             return {
-                camera: this.camera.id,
-                clips: this.clips.id,
-                colorTarget: this.colorTarget.id,
-                colorBuf: this.colorBuf.id,
-                depthTarget: this.depthTarget.id,
-                depthBuf: this.depthBuf.id,
-                visibility: this.visibility.id,
-                modes: this.modes.id,
-                geometry: this.geometry.id,
-                layer: this.layer.id,
-                lights: this.lights.id,
-                material: this.material.id,
-                //  morphTargets: this.morphTargets.id,
-                reflect: this.reflect.id,
-                shader: this.shader.id,
-                shaderParams: this.shaderParams.id,
-                stage: this.stage.id,
-                transform: this.transform.id
+                camera: children.camera.id,
+                clips: children.clips.id,
+                colorTarget: children.colorTarget.id,
+                colorBuf: children.colorBuf.id,
+                depthTarget: children.depthTarget.id,
+                depthBuf: children.depthBuf.id,
+                visibility: children.visibility.id,
+                modes: children.modes.id,
+                geometry: children.geometry.id,
+                layer: children.layer.id,
+                lights: children.lights.id,
+                material: children.material.id,
+                reflect: children.reflect.id,
+                shader: children.shader.id,
+                shaderParams: children.shaderParams.id,
+                stage: children.stage.id,
+                transform: children.transform.id,
+                billboard: children.billboard.id
             };
         },
 
@@ -15192,7 +15250,7 @@ var object3 = new XEO.GameObject(scene, {
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Layer({
-                priority: 0
+                priority: null
             });
 
             this.priority = cfg.priority;
@@ -15216,7 +15274,13 @@ var object3 = new XEO.GameObject(scene, {
 
                 set: function (value) {
 
-                    this._state.priority = value || 0;
+                    value = value || 0;
+
+                    if (value === this._state.priority) {
+                        return;
+                    }
+
+                    this._state.priority = value;
 
                     this._renderer.stateOrderDirty = true;
 
@@ -15327,6 +15391,7 @@ var object3 = new XEO.GameObject(scene, {
  @param [cfg] {*} ColorTarget configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
+ @param [cfg.active=true] {Boolean} Indicates if this ColorTarget is active or not.
  @extends Component
  */
 (function () {
@@ -15337,26 +15402,83 @@ var object3 = new XEO.GameObject(scene, {
 
         type: "XEO.ColorTarget",
 
-        _init: function () {
+        _init: function (cfg) {
 
-          var canvas = this.scene.canvas;
+            this._state = new XEO.renderer.RenderTarget({
+                type: XEO.renderer.RenderTarget.COLOR,
+                renderBuf: null
+            });
 
-          this._state = new XEO.renderer.RenderTarget({
+            var canvas = this.scene.canvas;
+            var self = this;
 
-              type: XEO.renderer.RenderTarget.COLOR,
+            this._webglContextRestored = canvas.on("webglContextRestored",
+                function () {
+                    if (self._state.renderBuf) {
+                        self._state.renderBuf.webglRestored(canvas.gl);
+                    }
+                });
 
-              renderBuf: new XEO.renderer.webgl.RenderBuffer({
-                  canvas: canvas.canvas,
-                  gl: canvas.gl
-              })
-          });
+            this.active = cfg.active;
+        },
 
-          var self = this;
+        _props: {
 
-          this._webglContextRestored = canvas.on("webglContextRestored",
-              function () {
-                  self._state.renderBuf.webglRestored(canvas.gl);
-              });
+            /**
+             * Determines whether this ColorTarget is active or not.
+             *
+             * When active, the pixel colors of associated {{#crossLink "GameObjects"}}{{/crossLink}} will be rendered
+             * to this ColorTarget. When inactive, the colors will be written to the default WebGL color buffer instead.
+             *
+             * Fires a {{#crossLink "ColorTarget/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @default true
+             * @type Number
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    var state = this._state;
+                    this._active = value;
+
+                    if (this._active) {
+
+                        var canvas = this.scene.canvas;
+
+                        state.renderBuf = new XEO.renderer.webgl.RenderBuffer({
+                            canvas: canvas.canvas,
+                            gl: canvas.gl
+                        });
+
+                    } else {
+
+                        if (state.renderBuf) {
+                            state.renderBuf.destroy();
+                            state.renderBuf = null;
+                        }
+                    }
+
+                    /**
+                     Fired whenever this ColorTarget's {{#crossLink "ColorTarget/active:property"}}{{/crossLink}} property changes.
+
+                     @event active
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("active", this._active);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
         },
 
         _compile: function () {
@@ -15364,7 +15486,9 @@ var object3 = new XEO.GameObject(scene, {
         },
 
         _getJSON: function () {
-            return {};
+            return {
+                active: this._active
+            };
         },
 
         _destroy: function () {
@@ -15392,7 +15516,7 @@ var object3 = new XEO.GameObject(scene, {
  <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
  the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
  <li>For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "ColorTarget"}}ColorTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
+ with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
  </ul>
 
  <img src="../../../assets/images/DepthTarget.png"></img>
@@ -15458,6 +15582,7 @@ var object3 = new XEO.GameObject(scene, {
  @param [cfg] {*} DepthTarget configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthTarget.
+ @param [cfg.active=true] {Boolean} Indicates if this DepthTarget is active or not.
 
  @extends Component
  */
@@ -15469,26 +15594,82 @@ var object3 = new XEO.GameObject(scene, {
 
         type: "XEO.DepthTarget",
 
-        _init: function () {
-
-            var canvas = this.scene.canvas;
+        _init: function (cfg) {
 
             this._state = new XEO.renderer.RenderTarget({
-
                 type: XEO.renderer.RenderTarget.DEPTH,
-
-                renderBuf: new XEO.renderer.webgl.RenderBuffer({
-                    canvas: canvas.canvas,
-                    gl: canvas.gl
-                })
+                renderBuf: null
             });
 
+            var canvas = this.scene.canvas;
             var self = this;
 
             this._webglContextRestored = canvas.on("webglContextRestored",
                 function () {
-                    self._state.renderBuf.webglRestored(canvas.gl);
+                    if (self._state.renderBuf) {
+                        self._state.renderBuf.webglRestored(canvas.gl);
+                    }
                 });
+
+            this.active = cfg.active;
+        },
+
+        _props: {
+
+            /**
+             * Indicates whether this DepthTarget is active or not.
+             *
+             * When active, the pixel depths of associated {{#crossLink "GameObjects"}}{{/crossLink}} will be rendered
+             * to this DepthTarget. When inactive, the colors will be written to the default WebGL depth buffer instead.
+             *
+             * Fires a {{#crossLink "DepthTarget/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @default true
+             * @type Number
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    this._active = value;
+                    var state = this._state;
+
+                    if (this._active) {
+
+                        var canvas = this.scene.canvas;
+
+                        state.renderBuf = new XEO.renderer.webgl.RenderBuffer({
+                            canvas: canvas.canvas,
+                            gl: canvas.gl
+                        });
+
+                    } else {
+                        if (state.renderBuf) {
+                            state.renderBuf.destroy();
+                            state.renderBuf = null;
+                        }
+                    }
+
+                    /**
+                     Fired whenever this DepthTarget's {{#crossLink "DepthTarget/active:property"}}{{/crossLink}} property changes.
+
+                     @event active
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("active", this._active);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
         },
 
         _compile: function () {
@@ -15496,7 +15677,9 @@ var object3 = new XEO.GameObject(scene, {
         },
 
         _getJSON: function () {
-            return {};
+            return {
+                active: this._active
+            };
         },
 
         _destroy: function () {
@@ -16488,7 +16671,7 @@ var object3 = new XEO.GameObject(scene, {
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Stage({
-                priority: 0,
+                priority: null,
                 pickable: true
             });
 
@@ -16514,7 +16697,13 @@ var object3 = new XEO.GameObject(scene, {
                  */
                 set: function (value) {
 
-                    this._state.priority = value || 0;
+                    value = value || 0;
+
+                    if (value === this._state.priority) {
+                        return;
+                    }
+
+                    this._state.priority = value;
 
                     this._renderer.stateOrderDirty = true;
 
@@ -16800,6 +16989,13 @@ var object3 = new XEO.GameObject(scene, {
         this.projTransform = null;
 
         /**
+         Billboard render state.
+         @property billboard
+         @type {renderer.Billboard}
+         */
+        this.billboard = null;
+
+        /**
          Color target render state.
          @property colorTarget
          @type {renderer.RenderTarget}
@@ -16952,6 +17148,7 @@ var object3 = new XEO.GameObject(scene, {
         object.geometry = this.geometry;
         object.visibility = this.visibility;
         object.modes = this.modes;
+        object.billboard = this.billboard;
 
         // Build hash of the object's state configuration. This is used
         // to hash the object's shader so that it may be reused by other
@@ -16967,7 +17164,8 @@ var object3 = new XEO.GameObject(scene, {
             this.clips.hash,
             this.material.hash,
             //this.reflect.hash,
-            this.lights.hash
+            this.lights.hash,
+            this.billboard.hash
 
         ]).join(";");
 
@@ -17175,8 +17373,8 @@ var object3 = new XEO.GameObject(scene, {
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    ((object.stage.priority + 1) * 1000000000000)
-                    + ((object.modes.transparent ? 2 : 1) * 1000000000)
+                    ((object.stage.priority + 1) * 10000000000)
+                    + ((object.modes.transparent ? 2 : 1) * 10000000)
                     + ((object.layer.priority + 1) * 1000000)
                     + ((object.program.id + 1) * 1000)
                     + object.material.id;
@@ -17257,7 +17455,7 @@ var object3 = new XEO.GameObject(scene, {
 
             if (9 == 8 && (object.colorTarget || object.depthTarget)) { // TODO: Enable color and depth targets
 
-                if (object.colorTarget) {
+                if (false && object.colorTarget && object.colorTarget.renderBuf) {
 
                     target = object.colorTarget;
 
@@ -17277,7 +17475,7 @@ var object3 = new XEO.GameObject(scene, {
                     list.push(object);
                 }
 
-                if (object.depthTarget) {
+                if (false && object.depthTarget && object.depthTarget.renderBuf) {
 
                     target = object.colorTarget;
 
@@ -17904,6 +18102,20 @@ var object3 = new XEO.GameObject(scene, {
 
     /**
 
+     Billboard transform state.
+
+     @class renderer.Billboard
+     @module XEO
+     @submodule renderer
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Billboard = XEO.renderer.State.extend({});
+
+
+    /**
+
      Render target state.
 
      @class renderer.RenderTarget
@@ -18511,8 +18723,7 @@ var object3 = new XEO.GameObject(scene, {
 
         function hasShading() {
             var primitive = states.geometry.primitiveName;
-            if (states.geometry.normals &&
-                (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+            if (states.geometry.normals && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
                 return true;
             }
             return false;
@@ -18703,6 +18914,23 @@ var object3 = new XEO.GameObject(scene, {
                 add("uniform float xeo_uPointSize;");
             }
 
+            if (states.billboard.active) {
+
+                add("void billboard(inout mat4 mat) {");
+                add("   mat[0][0] = 1.0;");
+                add("   mat[0][1] = 0.0;");
+                add("   mat[0][2] = 0.0;");
+                if (states.billboard.spherical) {
+                    add("   mat[1][0] = 0.0;");
+                    add("   mat[1][1] = 1.0;");
+                    add("   mat[1][2] = 0.0;");
+                }
+                add("   mat[2][0] = 0.0;");
+                add("   mat[2][1] = 0.0;");
+                add("   mat[2][2] = 1.0;");
+                add("}");
+            }
+
             // ------------------- main -------------------------------
 
             add();
@@ -18714,13 +18942,42 @@ var object3 = new XEO.GameObject(scene, {
                 add("   vec4 modelNormal = vec4(xeo_aNormal, 0.0); ");
             }
 
-            add("   vec4 worldPosition = xeo_uModelMatrix * modelPosition;");
-
-            add("   vec4 viewPosition  = xeo_uViewMatrix * worldPosition; ");
+            add("   mat4 modelMatrix = xeo_uModelMatrix;");
+            add("   mat4 viewMatrix = xeo_uViewMatrix;");
 
             if (shading) {
-                add("   vec3 worldNormal = (xeo_uModelNormalMatrix * modelNormal).xyz; ");
-                add("   xeo_vViewNormal = (xeo_uViewNormalMatrix * vec4(worldNormal, 1.0)).xyz;");
+                add("   mat4 modelNormalMatrix = xeo_uModelNormalMatrix;");
+                add("   mat4 viewNormalMatrix = xeo_uViewNormalMatrix;");
+            }
+            
+            add("   vec4 worldPosition;");
+
+            if (states.billboard.active) {
+                add("   mat4 modelView =  xeo_uViewMatrix * xeo_uModelMatrix ;");
+                add("   mat4 modelViewNormal =  xeo_uViewNormalMatrix * xeo_uModelNormalMatrix ;");
+
+                add("   billboard(modelMatrix);");
+                add("   billboard(viewMatrix);");
+                add("   billboard(modelView);");
+
+                if (shading) {
+                    add("   billboard(modelNormalMatrix);");
+                    add("   billboard(viewNormalMatrix);");
+                    add("   billboard(modelViewNormal);");
+                }
+
+                add("   worldPosition = modelMatrix * modelPosition;");
+                add("   vec4 viewPosition = modelView * modelPosition;");
+
+            } else {
+
+                add("   worldPosition = modelMatrix * modelPosition;");
+                add("   vec4 viewPosition  = viewMatrix * worldPosition; ");
+            }
+
+            if (shading) {
+                add("   vec3 worldNormal = (modelNormalMatrix * modelNormal).xyz; ");
+                add("   xeo_vViewNormal = (viewNormalMatrix * vec4(worldNormal, 1.0)).xyz;");
             }
 
             add("   xeo_vViewPosition = viewPosition;");
@@ -18728,7 +18985,7 @@ var object3 = new XEO.GameObject(scene, {
             if (normalMapping) {
 
                 // Compute tangent-bitangent-normal matrix
-                add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * xeo_aTangent).xyz);");
+                add("   vec3 tangent = normalize((viewNormalMatrix * modelNormalMatrix * xeo_aTangent).xyz);");
                 add("   vec3 bitangent = cross(xeo_vViewNormal, tangent);");
                 add("   mat3 TBM = mat3(tangent, bitangent, xeo_vViewNormal);");
             }
@@ -18756,7 +19013,7 @@ var object3 = new XEO.GameObject(scene, {
                             add("   tmpVec3 = xeo_uLightDir" + i + ";");
 
                             // Transform to View space
-                            add("   tmpVec3 = vec3(xeo_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            add("   tmpVec3 = vec3(viewMatrix * vec4(tmpVec3, 0.0)).xyz;");
 
                             if (normalMapping) {
 
@@ -18791,10 +19048,7 @@ var object3 = new XEO.GameObject(scene, {
 
                             // Transform into View space
 
-                            add("   tmpVec3 = xeo_uLightPos" + i + " - worldPosition.xyz;"); // Vector from World coordinate to light pos
-
-                            // Transform to View space
-                            add("   tmpVec3 = vec3(xeo_uViewMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            add("   tmpVec3 = (viewMatrix * vec4(xeo_uLightPos" + i + ", 0.0)).xyz - viewPosition.xyz;"); // Vector from World coordinate to light pos
 
                             if (normalMapping) {
                                 // Transform to Tangent space
@@ -18820,7 +19074,7 @@ var object3 = new XEO.GameObject(scene, {
                 }
             }
 
-            add("   xeo_vViewEyeVec = ((xeo_uViewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+            add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
 
             if (normalMapping) {
                 add("   xeo_vViewEyeVec *= TBM;");
@@ -18838,7 +19092,7 @@ var object3 = new XEO.GameObject(scene, {
                 add("   gl_PointSize = xeo_uPointSize;");
             }
 
-            add("   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
+            add("   gl_Position = xeo_uProjMatrix * viewPosition;");
 
             add("}");
 
@@ -18903,9 +19157,9 @@ var object3 = new XEO.GameObject(scene, {
                 }
 
                 if (states.material.opacityMap) {
-                    add("uniform sampler2D xeo_uTextureOpacity;");
+                    add("uniform sampler2D xeo_uOpacityMap;");
                     if (states.material.opacityMap.matrix) {
-                        add("uniform mat4 xeo_uTextureOpacityMatrix;");
+                        add("uniform mat4 xeo_uOpacityMapMatrix;");
                     }
                 }
 
@@ -19010,6 +19264,7 @@ var object3 = new XEO.GameObject(scene, {
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
+                    add("   textureCoord.y = -texturePos.y;");
                     add("   ambient = texture2D(xeo_uAmbientMap, textureCoord).rgb;");
                 }
 
@@ -19031,6 +19286,7 @@ var object3 = new XEO.GameObject(scene, {
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
+                    add("   textureCoord.y = -texturePos.y;");
                     add("   specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
                 }
 
@@ -19041,6 +19297,7 @@ var object3 = new XEO.GameObject(scene, {
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
+                    add("   textureCoord.y = -texturePos.y;");
                     add("   emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
                 }
 
@@ -19051,6 +19308,7 @@ var object3 = new XEO.GameObject(scene, {
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
+                    add("   textureCoord.y = -texturePos.y;");
                     add("   opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
                 }
 
@@ -19061,6 +19319,7 @@ var object3 = new XEO.GameObject(scene, {
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
+                    add("   textureCoord.y = -texturePos.y;");
                     add("   reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
                 }
             }
@@ -19852,6 +20111,8 @@ var object3 = new XEO.GameObject(scene, {
         var self = this;
 
         return {
+
+            renderBuffer: this,
 
             bind: function (unit) {
                 if (self.buffer && self.buffer.texture) {
@@ -21785,7 +22046,7 @@ var object3 = new XEO.GameObject(scene, {
         programGlobal: true,
 
         draw: function (frameCtx) {
-return;
+
             var gl = this.program.gl;
             var state = this.state;
 
@@ -23596,7 +23857,7 @@ myTask2.setFailed();
                 // but that will be rarely be the case, where ormally it would just be the angle that is
                 // continually updated.
 
-                this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz);
+                this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix || (this._matrix = XEO.math.mat4()));
             }
         },
 
@@ -23872,7 +24133,7 @@ scene.on("tick", function(e) {
 
                     this._xyz = value || [1, 1, 1];
 
-                    this.matrix = XEO.math.scalingMat4v(this._xyz);
+                    this.matrix = XEO.math.scalingMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.mat4()));
 
                     /**
                      Fired whenever this Scale's {{#crossLink "Scale/xyz:property"}}{{/crossLink}} property changes.
@@ -23922,60 +24183,60 @@ scene.on("tick", function(e) {
  {{#crossLink "Rotate"}}{{/crossLink}}, Translate and {{#crossLink "Scale"}}{{/crossLink}} transforms.
  The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
 
-````javascript
-var scene = new XEO.Scene();
+ ````javascript
+ var scene = new XEO.Scene();
 
-var rotate = new XEO.Rotate(scene, {
+ var rotate = new XEO.Rotate(scene, {
     xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
     angle: 30
 });
 
-var translate1 = new XEO.Translate(scene, {
+ var translate1 = new XEO.Translate(scene, {
     parent: rotate,
     xyz: [-5, 0, 0] // Translate along -X axis
 });
 
-var translate2 = new XEO.Translate(scene, {
+ var translate2 = new XEO.Translate(scene, {
     parent: rotate,
     xyz: [5, 0, 0] // Translate along +X axis
 });
 
-var scale = new XEO.Scale(scene, {
+ var scale = new XEO.Scale(scene, {
     parent: translate2,
     xyz: [1, 2, 1] // Scale x2 on Y axis
 });
 
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-var gameObject1 = new XEO.GameObject(scene, {
+ var gameObject1 = new XEO.GameObject(scene, {
     transform: translate1,
     geometry: geometry
 });
 
-var gameObject2 = new XEO.GameObject(scene, {
+ var gameObject2 = new XEO.GameObject(scene, {
     transform: scale,
     geometry: geometry
 });
  ````
 
-Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+ Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
-Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
+ Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
 
  ````javascript
-var scale2 = new XEO.Scale(scene, {
+ var scale2 = new XEO.Scale(scene, {
     parent: translate1,
     xyz: [1, 1, 2] // Scale x2 on Z axis
 });
 
-gameObject2.transform = scale2;
+ gameObject2.transform = scale2;
  ````
 
  And just for fun, we'll start updating the second {{#crossLink "Translate"}}{{/crossLink}}:
 
  ````javascript
-// Rotate 0.2 degrees on each frame
-scene.on("tick", function(e) {
+ // Rotate 0.2 degrees on each frame
+ scene.on("tick", function(e) {
     var xyz = translate2.xyz;
     xyz[0] += 0.2;
     translate2.xyz = xyz;
@@ -24005,7 +24266,7 @@ scene.on("tick", function(e) {
         _init: function (cfg) {
 
             this._super(cfg);
-            
+
             this.xyz = cfg.xyz;
         },
 
@@ -24024,7 +24285,7 @@ scene.on("tick", function(e) {
 
                     this._xyz = value || [1, 1, 1];
 
-                    this.matrix = XEO.math.translationMat4v(this._xyz);
+                    this.matrix = XEO.math.translationMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.mat4()));
 
                     /**
                      Fired whenever this Translate's {{#crossLink "Translate/xyz:property"}}{{/crossLink}} property changes.
@@ -24043,6 +24304,145 @@ scene.on("tick", function(e) {
         _getJSON: function () {
             return {
                 xyz: this.xyz
+            };
+        }
+    });
+
+})();
+;/**
+
+ A **Billboard** causes associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to be always aligned towards the viewpoint.
+
+ ## Overview
+
+ TODO
+
+ <img src="../../../assets/images/Billboard.png"></img>
+
+ ## Example
+
+ TODO
+
+ @class Billboard
+ @module XEO
+ @submodule transforms
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Billboard in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Billboard.
+ @param [cfg.active=true] {Boolean} Indicates if this Billboard is active or not.
+ @param [cfg.spherical=true] {Boolean} Indicates if this Billboard is spherical (true) or cylindrical (false).
+ @extends Transform
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Billboard = XEO.Transform.extend({
+
+        type: "XEO.Billboard",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this._state = new XEO.renderer.Billboard({
+                active: true,
+                spherical: true,
+                hash: "a;s;"
+            });
+
+            this.active = cfg.active !== false;
+            this.spherical = cfg.spherical !== false;
+        },
+
+        _props: {
+
+            /**
+             * Flag which indicates whether this Billboard is active or not.
+             *
+             * Fires an {{#crossLink "Billboard/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.active === value) {
+                        return;
+                    }
+
+                    this._state.active = value;
+
+                    this._state.hash = (this._state.active ? "a;" : ";") + (this._state.spherical ? "s;" : ";");
+
+                    this.fire("dirty", true);
+
+                    /**
+                     * Fired whenever this Billboard's {{#crossLink "Billboard/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._state.active);
+                },
+
+                get: function () {
+                    return this._state.active;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this Billboard is spherical (true) or cylindrical (false).
+             *
+             * Fires an {{#crossLink "Billboard/spherical:event"}}{{/crossLink}} event on change.
+             *
+             * @property spherical
+             * @type Boolean
+             */
+            spherical: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.spherical === value) {
+                        return;
+                    }
+
+                    this._state.spherical = value;
+
+                    this._state.hash = (this._state.active ? "a;" : ";") + (this._state.spherical ? "s;" : ";");
+
+                    this.fire("dirty", true);
+
+                    /**
+                     * Fired whenever this Billboard's {{#crossLink "Billboard/spherical:property"}}{{/crossLink}} property changes.
+                     * @event spherical
+                     * @param value The property's new value
+                     */
+                    this.fire('spherical', this._state.spherical);
+                },
+
+                get: function () {
+                    return this._state.spherical;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.billboard = this._state;
+        },
+
+
+        _getJSON: function () {
+            return {
+                active: this._state.active
             };
         }
     });
