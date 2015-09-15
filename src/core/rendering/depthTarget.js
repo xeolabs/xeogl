@@ -12,7 +12,7 @@
  <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
  the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
  <li>For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "ColorTarget"}}ColorTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
+ with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
  </ul>
 
  <img src="../../../assets/images/DepthTarget.png"></img>
@@ -78,6 +78,7 @@
  @param [cfg] {*} DepthTarget configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthTarget.
+ @param [cfg.active=true] {Boolean} Indicates if this DepthTarget is active or not.
 
  @extends Component
  */
@@ -89,26 +90,82 @@
 
         type: "XEO.DepthTarget",
 
-        _init: function () {
-
-            var canvas = this.scene.canvas;
+        _init: function (cfg) {
 
             this._state = new XEO.renderer.RenderTarget({
-
                 type: XEO.renderer.RenderTarget.DEPTH,
-
-                renderBuf: new XEO.renderer.webgl.RenderBuffer({
-                    canvas: canvas.canvas,
-                    gl: canvas.gl
-                })
+                renderBuf: null
             });
 
+            var canvas = this.scene.canvas;
             var self = this;
 
             this._webglContextRestored = canvas.on("webglContextRestored",
                 function () {
-                    self._state.renderBuf.webglRestored(canvas.gl);
+                    if (self._state.renderBuf) {
+                        self._state.renderBuf.webglRestored(canvas.gl);
+                    }
                 });
+
+            this.active = cfg.active;
+        },
+
+        _props: {
+
+            /**
+             * Indicates whether this DepthTarget is active or not.
+             *
+             * When active, the pixel depths of associated {{#crossLink "GameObjects"}}{{/crossLink}} will be rendered
+             * to this DepthTarget. When inactive, the colors will be written to the default WebGL depth buffer instead.
+             *
+             * Fires a {{#crossLink "DepthTarget/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @default true
+             * @type Number
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    this._active = value;
+                    var state = this._state;
+
+                    if (this._active) {
+
+                        var canvas = this.scene.canvas;
+
+                        state.renderBuf = new XEO.renderer.webgl.RenderBuffer({
+                            canvas: canvas.canvas,
+                            gl: canvas.gl
+                        });
+
+                    } else {
+                        if (state.renderBuf) {
+                            state.renderBuf.destroy();
+                            state.renderBuf = null;
+                        }
+                    }
+
+                    /**
+                     Fired whenever this DepthTarget's {{#crossLink "DepthTarget/active:property"}}{{/crossLink}} property changes.
+
+                     @event active
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("active", this._active);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
         },
 
         _compile: function () {
@@ -116,7 +173,9 @@
         },
 
         _getJSON: function () {
-            return {};
+            return {
+                active: this._active
+            };
         },
 
         _destroy: function () {

@@ -74,6 +74,7 @@
  @param [cfg] {*} ColorTarget configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
+ @param [cfg.active=true] {Boolean} Indicates if this ColorTarget is active or not.
  @extends Component
  */
 (function () {
@@ -84,26 +85,83 @@
 
         type: "XEO.ColorTarget",
 
-        _init: function () {
+        _init: function (cfg) {
 
-          var canvas = this.scene.canvas;
+            this._state = new XEO.renderer.RenderTarget({
+                type: XEO.renderer.RenderTarget.COLOR,
+                renderBuf: null
+            });
 
-          this._state = new XEO.renderer.RenderTarget({
+            var canvas = this.scene.canvas;
+            var self = this;
 
-              type: XEO.renderer.RenderTarget.COLOR,
+            this._webglContextRestored = canvas.on("webglContextRestored",
+                function () {
+                    if (self._state.renderBuf) {
+                        self._state.renderBuf.webglRestored(canvas.gl);
+                    }
+                });
 
-              renderBuf: new XEO.renderer.webgl.RenderBuffer({
-                  canvas: canvas.canvas,
-                  gl: canvas.gl
-              })
-          });
+            this.active = cfg.active;
+        },
 
-          var self = this;
+        _props: {
 
-          this._webglContextRestored = canvas.on("webglContextRestored",
-              function () {
-                  self._state.renderBuf.webglRestored(canvas.gl);
-              });
+            /**
+             * Determines whether this ColorTarget is active or not.
+             *
+             * When active, the pixel colors of associated {{#crossLink "GameObjects"}}{{/crossLink}} will be rendered
+             * to this ColorTarget. When inactive, the colors will be written to the default WebGL color buffer instead.
+             *
+             * Fires a {{#crossLink "ColorTarget/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @default true
+             * @type Number
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    var state = this._state;
+                    this._active = value;
+
+                    if (this._active) {
+
+                        var canvas = this.scene.canvas;
+
+                        state.renderBuf = new XEO.renderer.webgl.RenderBuffer({
+                            canvas: canvas.canvas,
+                            gl: canvas.gl
+                        });
+
+                    } else {
+
+                        if (state.renderBuf) {
+                            state.renderBuf.destroy();
+                            state.renderBuf = null;
+                        }
+                    }
+
+                    /**
+                     Fired whenever this ColorTarget's {{#crossLink "ColorTarget/active:property"}}{{/crossLink}} property changes.
+
+                     @event active
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("active", this._active);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
         },
 
         _compile: function () {
@@ -111,7 +169,9 @@
         },
 
         _getJSON: function () {
-            return {};
+            return {
+                active: this._active
+            };
         },
 
         _destroy: function () {

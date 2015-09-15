@@ -187,6 +187,8 @@
 
         return {
 
+            renderBuffer: this,
+
             bind: function (unit) {
                 if (self.buffer && self.buffer.texture) {
                     self.gl.activeTexture(self.gl["TEXTURE" + unit]);
