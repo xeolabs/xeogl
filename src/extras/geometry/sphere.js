@@ -18,8 +18,8 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Sphere.
  @param [cfg.radius=1] {Number}
- @param [cfg.heightSegments=8] {Number}
- @param [cfg.widthSegments=6] {Number}
+ @param [cfg.heightSegments=24] {Number}
+ @param [cfg.widthSegments=18] {Number}
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -59,12 +59,12 @@
             var heightSegments = Math.floor(this._lod * this._heightSegments);
             var widthSegments = Math.floor(this._lod * this._widthSegments);
 
-            if (heightSegments < 6) {
-                heightSegments = 6;
+            if (heightSegments < 18) {
+                heightSegments = 18;
             }
 
-            if (widthSegments < 6) {
-                widthSegments = 6;
+            if (widthSegments < 18) {
+                widthSegments = 18;
             }
 
             var positions = [];
@@ -238,14 +238,14 @@
              * Fires a {{#crossLink "Sphere/heightSegments:event"}}{{/crossLink}} event on change.
              *
              * @property heightSegments
-             * @default 6
+             * @default 18
              * @type Number
              */
             heightSegments: {
 
                 set: function (value) {
 
-                    value = value || 6;
+                    value = value || 18;
 
                     if (this._heightSegments === value) {
                         return;
@@ -280,14 +280,14 @@
              * Fires a {{#crossLink "Sphere/widthSegments:event"}}{{/crossLink}} event on change.
              *
              * @property widthSegments
-             * @default 8
+             * @default 24
              * @type Number
              */
             widthSegments: {
 
                 set: function (value) {
 
-                    value = value || 8;
+                    value = value || 24;
 
                     if (this._widthSegments === value) {
                         return;
@@ -318,13 +318,12 @@
         },
 
         _getJSON: function () {
-            return XEO._apply2({
+            return {
                 // Don't save lod
                 radius: this._radius,
                 heightSegments: this._heightSegments,
-                widthSegments: this._widthSegments,
-                wire: this._wire
-            }, {});
+                widthSegments: this._widthSegments
+            };
         }
     });
 
