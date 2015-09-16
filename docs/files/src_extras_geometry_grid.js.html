@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/core/rendering/layer.js - xeoengine</title>
+    <title>src/extras/geometry/plane.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -176,243 +176,399 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/core/rendering/layer.js</h1>
+<h1 class="file-heading">File: src/extras/geometry/plane.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-
 /**
- A **Layer** specifies the render order of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within their {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.
-
- ## Overview
-
- &lt;ul&gt;
- &lt;li&gt;When xeoEngine renders a {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, each {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} within that will render its bin
- of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in turn, from the lowest priority {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} to the highest.&lt;/li&gt;
-
- &lt;li&gt;{{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.&lt;/li&gt;
-
- &lt;li&gt;You can control the render order of the individual {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} ***within*** a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}
- by associating them with {{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}}.&lt;/li&gt;
-
- &lt;li&gt;{{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}} are typically used to &lt;a href=&quot;https://www.opengl.org/wiki/Transparency_Sorting&quot; target=&quot;_other&quot;&gt;transparency-sort&lt;/a&gt; the
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.&lt;/li&gt;
-
-
- &lt;li&gt;{{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly
- attached to the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
- {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}}. which has
- a {{#crossLink &quot;Layer/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
-
- &lt;li&gt;You can use Layers without defining any {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} if you simply let your
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} fall back on the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
- {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}. which has a {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
- &lt;/ul&gt;
-
- &lt;img src=&quot;../../../assets/images/Layer.png&quot;&gt;&lt;/img&gt;
+ A **Grid** defines a grid geometry for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  ## Example
 
- In this example we&#x27;ll use Layers to perform &lt;a href=&quot;https://www.opengl.org/wiki/Transparency_Sorting&quot; target=&quot;_other&quot;&gt;transparency sorting&lt;/a&gt;,
- which ensures that transparent objects are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.
-
- We want to render the three nested boxes shown below, in which the innermost box is opaque and blue,
- the box enclosing that is transparent and yellow, and the outermost box is transparent and green. We need the boxes to
- render in order innermost-to-outermost, in order to blend transparencies correctly.
-
- &lt;img src=&quot;../../assets/images/transparencySort.jpg&quot;&gt;&lt;/img&gt;
-
- Our scene has one {{#crossLink &quot;Stage&quot;}}{{/crossLink}}, just for completeness. As mentioned earlier, you don&#x27;t have to
- create this because the {{#crossLink &quot;Scene&quot;}}{{/crossLink}} will provide its default {{#crossLink &quot;Stage&quot;}}{{/crossLink}}.
- Then, within that {{#crossLink &quot;Stage&quot;}}{{/crossLink}}, we create a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} for each box,
- each assigned to a different prioritised {{#crossLink &quot;Layer&quot;}}{{/crossLink}} to ensure that they are rendered in the right order.
-
  &#x60;&#x60;&#x60;&#x60;javascript
-var scene = new XEO.Scene();
-
-// View transform
-var lookat = new XEO.Lookat(scene, {
-    eye: [0,0,10]
-});
-
-// Camera, using Scene&#x27;s default projection transform
-var camera = new XEO.Camera(scene, {
-    view: lookat
-});
-
-// A Stage, just for completeness
-// We could instead just implicitly use the Scene&#x27;s default Stage
-var stage = new XEO.Stage(scene, {
-    priority: 0
-});
-
-// Geometry with no parameters defaults to a 2x2x2 box
-var geometry = new XEO.Geometry(scene);
-
-//-----------------------------------------------------------------------------
-// Innermost box
-// Blue and opaque, in Layer with render order 0, renders first
- //-----------------------------------------------------------------------------
-
-var layer1 = new XEO.Layer(scene, {
-    priority: 1
-});
-
-var material1 = new XEO.PhongMaterial(scene, {
-    diffuse: [0.2, 0.2, 1.0],
-    opacity: 1.0
-});
-
-var object1 = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry,
-    stage: stage,
-    layer: layer1,
-    material: material1
-});
-
-//-----------------------------------------------------------------------------
-// Middle box
-// Red and transparent, in Layer with render order 2, renders next
- //-----------------------------------------------------------------------------
-
-var layer2 = new XEO.Layer(scene, {
-    priority: 2
-});
-
-var material2 = new XEO.PhongMaterial(scene, {
-    diffuse: [1, 0.2, 0.2],
-    opacity: 0.2
-});
-
-var scale2 = new XEO.Scale(scene, {
-    xyz: [6, 6, 6]
-});
-
-var object2 = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry,
-    stage: stage,
-    layer: layer2,
-    material: material2,
-    scale: scale2
-});
-
-//-----------------------------------------------------------------------------
-// Outermost box
-// Green and transparent, in Layer with render order 3, renders last
-//-----------------------------------------------------------------------------
-
-var layer3 = new XEO.Layer(scene, {
-    priority: 3
-});
-
-var material3 = new XEO.PhongMaterial(scene, {
-    diffuse: [0.2, 1, 0.2],
-    opacity: 0.2
-});
-
-var scale3 = new XEO.Scale(scene, {
-    xyz: [9, 9, 9]
-});
-
-var object3 = new XEO.GameObject(scene, {
-    camera: camera,
-    geometry: geometry,
-    stage: stage,
-    layer: layer3,
-    material: material3,
-    scale: scale3
-});
 
  &#x60;&#x60;&#x60;&#x60;
 
- @class Layer
+ @class Grid
  @module XEO
- @submodule rendering
+ @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Geometry in the default
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Grid in the default
  {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Layer.
- @param [cfg.priority=0] {Number} The rendering priority,
- @extends Component
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Grid.
+ @param [cfg.xSize=1] {Number} Dimension on the X-axis.
+ @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
+ @param [cfg.xSegments=4] {Number} Number of segments on the X-axis.
+ @param [cfg.ySegments=4] {Number} Number of segments on the Y-axis.
+
+ @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
+ @extends Geometry
  */
 (function () {
 
     &quot;use strict&quot;;
 
-    XEO.Layer = XEO.Component.extend({
+    XEO.Grid = XEO.Geometry.extend({
 
-        type: &quot;XEO.Layer&quot;,
+        type: &quot;XEO.Grid&quot;,
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.Layer({
-                priority: null
-            });
+            this._super(cfg);
 
-            this.priority = cfg.priority;
+            this._geometryDirty = false;
+
+            this.xSize = cfg.xSize;
+            this.ySize = cfg.ySize;
+
+            this.xSegments = cfg.xSegments;
+            this.ySegments = cfg.ySegments;
+
+            this.lod = cfg.lod;
+
+            this.autoNormals = cfg.autoNormals !== false;
         },
 
+        _gridDirty: function () {
+            if (!this.__dirty) {
+                this.__dirty = true;
+                var self = this;
+                this.scene.once(&quot;tick2&quot;,
+                    function () {
+                        self._buildGrid();
+                        self.__dirty = false;
+                    });
+            }
+        },
+
+        _buildGrid: function () {
+            
+            if (this._geometryDirty) {
+
+                // Geometry needs rebuild
+
+                var width = this._xSize;
+                var height = this._ySize;
+
+                var xSegments = Math.floor(this._lod * this._xSegments);
+                var ySegments = Math.floor(this._lod * this._ySegments);
+
+                if (ySegments &lt; 4) {
+                    ySegments = 4;
+                }
+
+                if (ySegments &lt; 4) {
+                    ySegments = 4;
+                }
+
+                var halfWidth = width / 2;
+                var halfHeight = height / 2;
+
+                var gridX = Math.floor( xSegments ) || 1;
+                var gridY = Math.floor( ySegments ) || 1;
+
+                var gridX1 = gridX + 1;
+                var gridY1 = gridY + 1;
+
+                var segmentWidth = width / gridX;
+                var segmentHeight = height / gridY;
+
+                var positions = new Float32Array( gridX1 * gridY1 * 3 );
+                var normals = new Float32Array( gridX1 * gridY1 * 3 );
+                var uvs = new Float32Array( gridX1 * gridY1 * 2 );
+
+                var offset = 0;
+                var offset2 = 0;
+
+                for ( var iy = 0; iy &lt; gridY1; iy ++ ) {
+
+                    var y = iy * segmentHeight - halfHeight;
+
+                    for ( var ix = 0; ix &lt; gridX1; ix ++ ) {
+
+                        var x = ix * segmentWidth - halfWidth;
+
+                        positions[ offset ] = x;
+                        positions[ offset + 1 ] = - y;
+
+                        normals[offset + 2] = -1;
+
+                        uvs[offset2] = (gridX -ix) / gridX;
+                        uvs[offset2 + 1] = 1 - ( (gridY-iy) / gridY );
+
+                        offset += 3;
+                        offset2 += 2;
+                    }
+                }
+
+                offset = 0;
+
+                var indices = new ( ( positions.length / 3 ) &gt; 65535 ? Uint32Array : Uint16Array )( gridX * gridY * 6 );
+
+                for ( var iy = 0; iy &lt; gridY; iy ++ ) {
+
+                    for ( var ix = 0; ix &lt; gridX; ix ++ ) {
+
+                        var a = ix + gridX1 * iy;
+                        var b = ix + gridX1 * ( iy + 1 );
+                        var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
+                        var d = ( ix + 1 ) + gridX1 * iy;
+
+                        indices[offset] = d;
+                        indices[offset + 1] = b;
+                        indices[offset + 2] = a;
+
+                        indices[offset + 3] = d;
+                        indices[offset + 4] = c;
+                        indices[offset + 5] = b;
+
+                        offset += 6;
+                    }
+                }
+
+                this.positions = positions;
+                this.normals = normals;
+                this.uv = uvs;
+                this.indices = indices;
+
+                this._geometryDirty = false;
+            }
+        },
+
+      
         _props: {
 
             /**
-             * Indicates this Layer&#x27;s rendering priority for the attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+             * The Grid&#x27;s level-of-detail factor.
              *
-             * Each {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} is also attached to a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}, which sets a *stage* rendering
-             * priority via its {{#crossLink &quot;Stage/priority:property&quot;}}priority{{/crossLink}} property.
+             * Fires a {{#crossLink &quot;Grid/lod:event&quot;}}{{/crossLink}} event on change.
              *
-             * Fires a {{#crossLink &quot;Layer/priority:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property priority
-             * @default 0
+             * @property lod
+             * @default 1
              * @type Number
              */
-            priority: {
+            lod: {
 
                 set: function (value) {
 
-                    // TODO: Only accept rendering priority in range [0...MAX_PRIORITY]
+                    value = value !== undefined ? value : 1;
 
-                    value = value || 0;
-
-                    if (value === this._state.priority) {
+                    if (this._lod === value) {
                         return;
                     }
 
-                    this._state.priority = value;
+                    if (value &lt; 0 || value &gt; 1) {
+                        this.warn(&quot;clamping lod to [0..1]&quot;);
+                        value = value &lt; 0 ? 0 : 1;
+                    }
 
-                    this._renderer.stateOrderDirty = true;
+                    this._lod = value;
+
+                    this._geometryDirty = true;
+
+                    this._gridDirty();
 
                     /**
-                     * Fired whenever this Layer&#x27;s  {{#crossLink &quot;Layer/priority:property&quot;}}{{/crossLink}} property changes.
-                     *
-                     * @event priority
+                     * Fired whenever this Grid&#x27;s {{#crossLink &quot;Grid/lod:property&quot;}}{{/crossLink}} property changes.
+                     * @event lod
+                     * @type Number
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;priority&quot;, this._state.priority);
+                    this.fire(&quot;lod&quot;, this._lod);
                 },
 
                 get: function () {
-                    return this._state.priority;
+                    return this._lod;
+                }
+            },
+            
+            /**
+             * The Grid&#x27;s dimension on the X-axis.
+             *
+             * Fires a {{#crossLink &quot;Grid/xSize:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property xSize
+             * @default 1
+             * @type Number
+             */
+            xSize: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._xSize === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative xSize not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._xSize = value;
+
+                    this._geometryDirty = true;
+
+                    this._gridDirty();
+
+                    /**
+                     * Fired whenever this Grid&#x27;s {{#crossLink &quot;Grid/xSize:property&quot;}}{{/crossLink}} property changes.
+                     * @event xSize
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;xSize&quot;, this._xSize);
+                },
+
+                get: function () {
+                    return this._xSize;
+                }
+            },
+
+            /**
+             * The Grid&#x27;s dimension on the Y-axis.
+             *
+             * Fires a {{#crossLink &quot;Grid/ySize:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property ySize
+             * @default 0.25
+             * @type Number
+             */
+            ySize: {
+
+                set: function (value) {
+
+                    value = value || 0.25;
+
+                    if (this._ySize === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative ySize not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._ySize = value;
+
+                    this._geometryDirty = true;
+
+                    this._gridDirty();
+
+                    /**
+                     * Fired whenever this Grid&#x27;s {{#crossLink &quot;Grid/ySize:property&quot;}}{{/crossLink}} property changes.
+                     * @event ySize
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;ySize&quot;, this._ySize);
+                },
+
+                get: function () {
+                    return this._ySize;
+                }
+            },
+            
+            /**
+             * The Grid&#x27;s number of segments on the X-axis.
+             *
+             * Fires a {{#crossLink &quot;Grid/xSegments:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property xSegments
+             * @default 4
+             * @type Number
+             */
+            xSegments: {
+
+                set: function (value) {
+
+                    value = value || 4;
+
+                    if (this._xSegments === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative xSegments not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._xSegments = value;
+
+                    this._geometryDirty = true;
+
+                    this._gridDirty();
+
+                    /**
+                     * Fired whenever this Grid&#x27;s {{#crossLink &quot;Grid/xSegments:property&quot;}}{{/crossLink}} property changes.
+                     * @event xSegments
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;xSegments&quot;, this._xSegments);
+                },
+
+                get: function () {
+                    return this._xSegments;
+                }
+            },
+
+            /**
+             * The Grid&#x27;s number of segments on the Y-axis.
+             *
+             * Fires a {{#crossLink &quot;Grid/ySegments:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property ySegments
+             * @default 4
+             * @type Number
+             */
+            ySegments: {
+
+                set: function (value) {
+
+                    value = value || 4;
+
+                    if (this._ySegments === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative ySegments not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._ySegments = value;
+
+                    this._geometryDirty = true;
+
+                    this._gridDirty();
+
+                    /**
+                     * Fired whenever this Grid&#x27;s {{#crossLink &quot;Grid/ySegments:property&quot;}}{{/crossLink}} property changes.
+                     * @event ySegments
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;ySegments&quot;, this._ySegments);
+                },
+
+                get: function () {
+                    return this._ySegments;
                 }
             }
         },
 
-        _compile: function () {
-            this._renderer.layer = this._state;
-        },
-
         _getJSON: function () {
             return {
-                priority: this._state.priority
+                xSize: this._xSize,
+                ySize: this._ySize,
+                xSegments: this._xSegments,
+                ySegments: this._ySegments
             };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
         }
     });
 

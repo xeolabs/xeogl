@@ -66,6 +66,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
+                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -115,6 +116,7 @@
                                 <li><a href="../classes/Torus.html">Torus</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -258,6 +260,7 @@
             
             this.camera = cfg.camera;
             this.active = cfg.active !== false;
+            this.sensitivity = cfg.sensitivity;
         },
 
         _props: {
@@ -289,6 +292,35 @@
 
                 get: function () {
                     return this._children.camera;
+                }
+            },
+
+            /**
+             * The sensitivity of this KeyboardOrbitCamera.
+             *
+             * Fires a {{#crossLink &quot;KeyboardOrbitCamera/sensitivity:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property sensitivity
+             * @type Number
+             * @default 1.0
+             */
+            sensitivity: {
+
+                set: function (value) {
+
+                    this._sensitivity = value || 1.0;
+
+                    /**
+                     * Fired whenever this KeyboardOrbitCamera&#x27;s  {{#crossLink &quot;KeyboardOrbitCamera/sensitivity:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event sensitivity
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;sensitivity&quot;, this._sensitivity);
+                },
+
+                get: function () {
+                    return this._sensitivity;
                 }
             },
 
@@ -361,8 +393,8 @@
 
                                 var elapsed = params.deltaTime;
 
-                                var yawRate = 50;
-                                var pitchRate = 50;
+                                var yawRate = self._sensitivity * 0.5;
+                                var pitchRate = self._sensitivity * 0.5;
 
                                 if (!input.ctrlDown &amp;&amp; !input.altDown) {
 

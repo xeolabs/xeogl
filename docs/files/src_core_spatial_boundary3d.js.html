@@ -66,6 +66,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
+                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -115,6 +116,7 @@
                                 <li><a href="../classes/Torus.html">Torus</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -241,7 +243,7 @@
 
  // Subscribe to updates to the Boundary3D
  worldBoundary.on(&quot;updated&quot;,
-    function() {
+ function() {
 
         // Get the updated properties again
 
@@ -315,9 +317,70 @@
             this._getAABB = cfg.getAABB;
             this._getMatrix = cfg.getMatrix;
             this._getPositions = cfg.getPositions;
+
+            this.visible = cfg.visible;
         },
 
         _props: {
+
+
+            /**
+             Indicates whether this Boundary3D is visible or not.
+
+             Fires a {{#crossLink &quot;Boundary3D/visible:event&quot;}}{{/crossLink}} event on change.
+
+             @property visible
+             @default true
+             @type Boolean
+             */
+            visible: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._visible === value) {
+                        return;
+                    }
+
+                    this._visible = value;
+
+                    if (this._visible) {
+
+                        this._boundaryObject = new XEO.GameObject(this.scene, {
+                            geometry: new XEO.BoundaryGeometry(this.scene, {
+                                boundary: this
+                            }),
+                            material: new XEO.PhongMaterial(this.scene, {
+                                diffuse: [0.5, 1.0, 0.5],
+                                emissive: [0.5, 1.0, 0.5],
+                                lineWidth: 2
+                            })
+                        });
+                    } else {
+                        if (this._boundaryObject) {
+                            this._boundaryObject.destroy();
+                        }
+                    }
+
+                    /**
+                     Fired whenever this Boundary3D&#x27;s {{#crossLink &quot;Boundary3D/visible:property&quot;}}{{/crossLink}} property changes.
+
+                     @event visible
+                     @param value {Boolean} The property&#x27;s new value
+                     */
+                    this.fire(&quot;visible&quot;, this._visible);
+                },
+
+                get: function () {
+
+                    if (this._getDirty()) {
+                        this._build();
+                    }
+
+                    return this._obb;
+                }
+            },
 
             /**
              * 3D oriented bounding box (OBB).
@@ -501,6 +564,12 @@
                 aabb: this.aabb,
                 center: this.center
             };
+        },
+
+        _destroy: function () {
+            if (this._boundaryObject) {
+                this._boundaryObject.destroy();
+            }
         }
     });
 

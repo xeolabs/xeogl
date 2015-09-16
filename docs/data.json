@@ -712,6 +712,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/extras/geometry/grid.js": {
+            "name": "src/extras/geometry/grid.js",
+            "modules": {},
+            "classes": {
+                "Grid": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/extras/geometry/heightmap.js": {
             "name": "src/extras/geometry/heightmap.js",
             "modules": {},
@@ -746,6 +755,15 @@
             "modules": {},
             "classes": {
                 "Torus": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/extras/geometry/vectorTextGeometry.js": {
+            "name": "src/extras/geometry/vectorTextGeometry.js",
+            "modules": {},
+            "classes": {
+                "VectorTextGeometry": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1038,8 +1056,10 @@
                 "SplineCurve": 1,
                 "BoundaryGeometry": 1,
                 "Cylinder": 1,
+                "Grid": 1,
                 "Heightmap": 1,
                 "Torus": 1,
+                "VectorTextGeometry": 1,
                 "Group": 1,
                 "GroupBoundary": 1,
                 "ObjectBoundaryHelper": 1,
@@ -1171,16 +1191,18 @@
                 "PathGeometry": 1,
                 "Geometry": 1,
                 "Cylinder": 1,
+                "Grid": 1,
                 "Heightmap": 1,
                 "Sphere": 1,
-                "Torus": 1
+                "Torus": 1,
+                "VectorTextGeometry": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "src/extras/geometry/torus.js",
+            "file": "src/extras/geometry/vectorTextGeometry.js",
             "line": 1,
             "description": "A path geometry.",
             "tag": "module"
@@ -3926,7 +3948,7 @@
             "namespace": "",
             "file": "src/core/spatial/boundary3d.js",
             "line": 1,
-            "description": "A **Boundary3D** provides the axis-aligned and object-aligned extents of its owner component.\n\n## Overview\n\nA Boundary3D provides its spatial info in these properties:\n\n<ul>\n<li>{{#crossLink \"Boundary3D/obb:property\"}}{{/crossLink}} - object-aligned bounding box (OBB)</li>\n<li>{{#crossLink \"Boundary3D/aabb:property\"}}{{/crossLink}} - axis-aligned bounding box (AABB)</li>\n<li>{{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}} - center coordinate </li>\n</ul>\n\nThe following components have Boundary3Ds:\n\n<ul>\n<li>A {{#crossLink \"Geometry\"}}{{/crossLink}} provides its Model-space boundary via\nproperty {{#crossLink \"Geometry/modelBoundary:property\"}}{{/crossLink}}</li>\n<li>A {{#crossLink \"GameObject\"}}{{/crossLink}} provides its World and View-space boundaries via\nproperties {{#crossLink \"GameObject/worldBoundary:property\"}}{{/crossLink}}\nand {{#crossLink \"GameObject/viewBoundary:property\"}}{{/crossLink}}</li>\n</ul>\n\n<img src=\"../../../assets/images/Boundary.png\"></img>\n\n## Example\n\nA {{#crossLink \"GameObject\"}}{{/crossLink}} provides its World-space boundary as a Boundary3D that encloses\nits {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntheir transformation by the GameObject's {{#crossLink \"GameObject/transform:property\"}}Modelling transform{{/crossLink}}.\n\nIn this example we get the boundary and subscribe to updates on it, then animate the modelling transform,\nwhich gives us a running update of the moving boundary extents via our update handler.\n\n```` javascript\n\n// Geometry\nvar geometry = new XEO.Geometry();\n\n// Modelling transform\nvar translate = new XEO.Translate({\n   xyz: [-5, 0, 0]\n});\n\n// Game object that applies the modelling transform to the Geometry\nvar object = new XEO.GameObject({\n      geometry: myGeometry,\n      transform: translate\n });\n\nvar worldBoundary = object.worldBoundary;\n\n// World-space OBB\nvar obb = worldBoundary.obb;\n\n// World-space AABB\nvar aabb = worldBoundary.aabb;\n\n// World-space center\nvar center = worldBoundary.center;\n\n// Subscribe to updates to the Boundary3D\nworldBoundary.on(\"updated\",\n   function() {\n\n       // Get the updated properties again\n\n       obb = worldBoundary.obb;\n       aabb = worldBoundary.aabb;\n       center = worldBoundary.center;\n\n       //...\n   });\n\n// Animate the modelling transform;\n// on each tick, this will update the Boundary3D and fire our\n// handler, enabling us to track the changing boundary.\n\nvar x = 0;\n\nscene.on(\"tick\", function() {\n   translate.xyz: [x, 0, 0];\n   x += 0.5;\n});\n````",
+            "description": "A **Boundary3D** provides the axis-aligned and object-aligned extents of its owner component.\n\n## Overview\n\nA Boundary3D provides its spatial info in these properties:\n\n<ul>\n<li>{{#crossLink \"Boundary3D/obb:property\"}}{{/crossLink}} - object-aligned bounding box (OBB)</li>\n<li>{{#crossLink \"Boundary3D/aabb:property\"}}{{/crossLink}} - axis-aligned bounding box (AABB)</li>\n<li>{{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}} - center coordinate </li>\n</ul>\n\nThe following components have Boundary3Ds:\n\n<ul>\n<li>A {{#crossLink \"Geometry\"}}{{/crossLink}} provides its Model-space boundary via\nproperty {{#crossLink \"Geometry/modelBoundary:property\"}}{{/crossLink}}</li>\n<li>A {{#crossLink \"GameObject\"}}{{/crossLink}} provides its World and View-space boundaries via\nproperties {{#crossLink \"GameObject/worldBoundary:property\"}}{{/crossLink}}\nand {{#crossLink \"GameObject/viewBoundary:property\"}}{{/crossLink}}</li>\n</ul>\n\n<img src=\"../../../assets/images/Boundary.png\"></img>\n\n## Example\n\nA {{#crossLink \"GameObject\"}}{{/crossLink}} provides its World-space boundary as a Boundary3D that encloses\nits {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntheir transformation by the GameObject's {{#crossLink \"GameObject/transform:property\"}}Modelling transform{{/crossLink}}.\n\nIn this example we get the boundary and subscribe to updates on it, then animate the modelling transform,\nwhich gives us a running update of the moving boundary extents via our update handler.\n\n```` javascript\n\n// Geometry\nvar geometry = new XEO.Geometry();\n\n// Modelling transform\nvar translate = new XEO.Translate({\n   xyz: [-5, 0, 0]\n});\n\n// Game object that applies the modelling transform to the Geometry\nvar object = new XEO.GameObject({\n      geometry: myGeometry,\n      transform: translate\n });\n\nvar worldBoundary = object.worldBoundary;\n\n// World-space OBB\nvar obb = worldBoundary.obb;\n\n// World-space AABB\nvar aabb = worldBoundary.aabb;\n\n// World-space center\nvar center = worldBoundary.center;\n\n// Subscribe to updates to the Boundary3D\nworldBoundary.on(\"updated\",\nfunction() {\n\n       // Get the updated properties again\n\n       obb = worldBoundary.obb;\n       aabb = worldBoundary.aabb;\n       center = worldBoundary.center;\n\n       //...\n   });\n\n// Animate the modelling transform;\n// on each tick, this will update the Boundary3D and fire our\n// handler, enabling us to track the changing boundary.\n\nvar x = 0;\n\nscene.on(\"tick\", function() {\n   translate.xyz: [x, 0, 0];\n   x += 0.5;\n});\n````",
             "submodule": "spatial",
             "is_constructor": 1,
             "params": [
@@ -4379,7 +4401,7 @@
             "namespace": "",
             "file": "src/extras/animation/cameraFlight.js",
             "line": 1,
-            "description": "A **CameraFlight** flies a {{#crossLink \"Camera\"}}{{/crossLink}} to a given target.\n\n## Overview\n\n<ul>\n   <li>A CameraFlight animates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to the {{#crossLink \"Camera\"}}{{/crossLink}}.</li>\n   <li>A CameraFlight can be attached to a different {{#crossLink \"Camera\"}}{{/crossLink}} at any time.</li>\n   <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>\n</ul>\n\nA target can be:\n\n<ul>\n   <li>a World-space {{#crossLink \"Boundary3D\"}}{{/crossLink}},</li>\n   <li>an instance or ID of any {{#crossLink \"Component\"}}{{/crossLink}} subtype that provides a World-space</li>\n   {{#crossLink \"Boundary3D\"}}{{/crossLink}} in a \"worldBoundary\" property, or</li>\n   <li>specific ````eye````, ````look```` and ````up```` positions.</li>\n</ul>\n\n## Example #1\n\nFlying to a {{#crossLink \"GameObject\"}}{{/crossLink}} (which provides a World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} via its {{#crossLink \"GameObject/worldBoundary:property\"}}{{/crossLink}} property):\n\n````Javascript\nvar camera = new XEO.Camera();\n\n// Create a CameraFlight that takes exactly ten seconds to fly\n// the Camera to each specified target\nvar cameraFlight = new XEO.CameraFlight({\n   camera: camera,\n   duration: 20\n});\n\n// Create a GameObject, which gets all the default components\nvar object = new GameObject();\n\n// Fly to the GameObject's worldBoundary\ncameraFlight.flyTo(object);\n````\n\n## Example #2\n\nFlying the CameraFlight from the previous example to specified eye, look and up positions:\n\n````Javascript\ncameraFlight.flyTo({\n   eye: [-5,-5,-5],\n   look: [0,0,0]\n   up: [0,1,0]\n}, function() {\n   // Arrived\n});\n````\n\n## Example #3\n\nFlying the CameraFlight from the previous two examples explicitly to the World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} of the {{#crossLink \"GameObject\"}}{{/crossLink}} property):\n\n````Javascript\nvar worldBoundary = object.worldBoundary;\n\ncameraFlight.flyTo(worldBoundary);\n````\n\n## Example #4\n\nFlying the CameraFlight from the previous two examples explicitly to the {{#crossLink \"Boundary3D\"}}Boundary3D's{{/crossLink}}\naxis-aligned bounding box:\n\n````Javascript\nvar worldBoundary = object.worldBoundary;\n\nvar aabb = worldBoundary.aabb;\n\ncameraFlight.flyTo(aabb);\n````",
+            "description": "A **CameraFlight** flies a {{#crossLink \"Camera\"}}{{/crossLink}} to a given target.\n\n## Overview\n\n<ul>\n<li>A CameraFlight animates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to the {{#crossLink \"Camera\"}}{{/crossLink}}.</li>\n<li>A CameraFlight can be attached to a different {{#crossLink \"Camera\"}}{{/crossLink}} at any time.</li>\n<li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>\n</ul>\n\nA target can be:\n\n<ul>\n<li>a World-space {{#crossLink \"Boundary3D\"}}{{/crossLink}},</li>\n<li>an instance or ID of any {{#crossLink \"Component\"}}{{/crossLink}} subtype that provides a World-space</li>\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} in a \"worldBoundary\" property, or</li>\n<li>specific ````eye````, ````look```` and ````up```` positions.</li>\n</ul>\n\n## Example #1\n\nFlying to a {{#crossLink \"GameObject\"}}{{/crossLink}} (which provides a World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} via its {{#crossLink \"GameObject/worldBoundary:property\"}}{{/crossLink}} property):\n\n````Javascript\nvar camera = new XEO.Camera();\n\n// Create a CameraFlight that takes exactly ten seconds to fly\n// the Camera to each specified target\nvar cameraFlight = new XEO.CameraFlight({\n   camera: camera,\n   duration: 20\n});\n\n// Create a GameObject, which gets all the default components\nvar object = new GameObject();\n\n// Fly to the GameObject's worldBoundary\ncameraFlight.flyTo(object);\n````\n\n## Example #2\n\nFlying the CameraFlight from the previous example to specified eye, look and up positions:\n\n````Javascript\ncameraFlight.flyTo({\n   eye: [-5,-5,-5],\n   look: [0,0,0]\n   up: [0,1,0]\n}, function() {\n   // Arrived\n});\n````\n\n## Example #3\n\nFlying the CameraFlight from the previous two examples explicitly to the World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} of the {{#crossLink \"GameObject\"}}{{/crossLink}} property):\n\n````Javascript\nvar worldBoundary = object.worldBoundary;\n\ncameraFlight.flyTo(worldBoundary);\n````\n\n## Example #4\n\nFlying the CameraFlight from the previous two examples explicitly to the {{#crossLink \"Boundary3D\"}}Boundary3D's{{/crossLink}}\naxis-aligned bounding box:\n\n````Javascript\nvar worldBoundary = object.worldBoundary;\n\nvar aabb = worldBoundary.aabb;\n\ncameraFlight.flyTo(aabb);\n````",
             "submodule": "animation",
             "is_constructor": 1,
             "params": [
@@ -4930,6 +4952,86 @@
             ],
             "extends": "Geometry"
         },
+        "Grid": {
+            "name": "Grid",
+            "shortname": "Grid",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/extras/geometry/grid.js",
+            "line": 1,
+            "description": "A **Grid** defines a grid geometry for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
+            "submodule": "geometry",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Grid in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Grid.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "xSize",
+                            "description": "Dimension on the X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "ySize",
+                            "description": "Dimension on the Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "xSegments",
+                            "description": "Number of segments on the X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "4"
+                        },
+                        {
+                            "name": "ySegments",
+                            "description": "Number of segments on the Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "4"
+                        },
+                        {
+                            "name": "lod",
+                            "description": ".",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1]  Level-of-detail, in range [0..1"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
+        },
         "Heightmap": {
             "name": "Heightmap",
             "shortname": "Heightmap",
@@ -4971,25 +5073,53 @@
                             "optional": true
                         },
                         {
-                            "name": "radius",
-                            "description": "",
+                            "name": "src",
+                            "description": "Path to an image file to source this Heightmap from.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "undefined"
+                        },
+                        {
+                            "name": "image",
+                            "description": "An HTML DOM Image object to source this Heightmap from.",
+                            "type": "HTMLImageElement",
+                            "optional": true,
+                            "optdefault": "undefined"
+                        },
+                        {
+                            "name": "xSize",
+                            "description": "Dimension on the X-axis.",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "1"
                         },
                         {
-                            "name": "xSize",
-                            "description": "",
+                            "name": "ySize",
+                            "description": "Dimension on the Y-axis.",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "8"
+                            "optdefault": "1"
                         },
                         {
-                            "name": "zSegments",
-                            "description": "",
+                            "name": "zSize",
+                            "description": "Dimension (height) on the Z-axis.",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "6"
+                            "optdefault": "0.25"
+                        },
+                        {
+                            "name": "xSegments",
+                            "description": "Number of segments on the X-axis (width).",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "ySegments",
+                            "description": "Number of segments on the Y-axis (depth).",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
                         },
                         {
                             "name": "lod",
@@ -5172,6 +5302,58 @@
                             "type": "Number",
                             "optional": true,
                             "optdefault": "1]  Level-of-detail, in range [0..1"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
+        },
+        "VectorTextGeometry": {
+            "name": "VectorTextGeometry",
+            "shortname": "VectorTextGeometry",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/extras/geometry/vectorTextGeometry.js",
+            "line": 1,
+            "description": "A **VectorTextGeometry** defines vector text geometry for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
+            "submodule": "geometry",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this VectorTextGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this VectorTextGeometry.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "text",
+                            "description": "The text.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"\""
                         }
                     ]
                 }
@@ -5600,7 +5782,7 @@
                             "description": "Pan sensitivity factor.",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "1.0"
+                            "optdefault": "0.5"
                         },
                         {
                             "name": "active",
@@ -5665,7 +5847,7 @@
                             "description": "Zoom sensitivity factor.",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "1.0"
+                            "optdefault": "0.5"
                         },
                         {
                             "name": "active",
@@ -5730,7 +5912,7 @@
                             "description": "Mouse drag sensitivity factor.",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "1.0"
+                            "optdefault": "0.5"
                         },
                         {
                             "name": "firstPerson",
@@ -5802,7 +5984,7 @@
                             "description": "Pan sensitivity factor.",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "1.0"
+                            "optdefault": "0.5"
                         },
                         {
                             "name": "active",
@@ -5926,7 +6108,7 @@
                             "description": "Zoom sensitivity factor.",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "1.0"
+                            "optdefault": "0.5"
                         },
                         {
                             "name": "active",
@@ -6765,7 +6947,7 @@
         },
         {
             "file": "src/core/camera/perspective.js",
-            "line": 132,
+            "line": 127,
             "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/matrix:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "matrix",
@@ -6781,7 +6963,7 @@
         },
         {
             "file": "src/core/camera/perspective.js",
-            "line": 143,
+            "line": 138,
             "description": "The angle, in degrees on the Y-axis, of this Perspective's field-of-view.\n\nFires a {{#crossLink \"Perspective/fovy:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fovy",
@@ -6793,7 +6975,7 @@
         },
         {
             "file": "src/core/camera/perspective.js",
-            "line": 162,
+            "line": 157,
             "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/fovy:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fovy",
@@ -6809,7 +6991,7 @@
         },
         {
             "file": "src/core/camera/perspective.js",
-            "line": 176,
+            "line": 171,
             "description": "Position of this Perspective's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/near:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "near",
@@ -6821,7 +7003,7 @@
         },
         {
             "file": "src/core/camera/perspective.js",
-            "line": 195,
+            "line": 190,
             "description": "Fired whenever this Perspective's   {{#crossLink \"Perspective/near:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "near",
@@ -6837,7 +7019,7 @@
         },
         {
             "file": "src/core/camera/perspective.js",
-            "line": 208,
+            "line": 203,
             "description": "Position of this Perspective's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/far:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "far",
@@ -6849,7 +7031,7 @@
         },
         {
             "file": "src/core/camera/perspective.js",
-            "line": 227,
+            "line": 222,
             "description": "Fired whenever this Perspective's  {{#crossLink \"Perspective/far:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "far",
@@ -6865,7 +7047,7 @@
         },
         {
             "file": "src/core/camera/perspective.js",
-            "line": 241,
+            "line": 236,
             "description": "The elements of this Perspective's projection transform matrix.\n\nFires a {{#crossLink \"Perspective/matrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "matrix",
@@ -12345,6 +12527,34 @@
         {
             "file": "src/core/math/math.js",
             "line": 1947,
+            "description": "Expands the second axis-aligned boundary to enclose the first, if needed.",
+            "itemtype": "method",
+            "name": "expandAABB3",
+            "static": 1,
+            "params": [
+                {
+                    "name": "aabb1",
+                    "description": "First AABB",
+                    "type": "*"
+                },
+                {
+                    "name": "aabb2",
+                    "description": "Second AABB",
+                    "type": "*"
+                }
+            ],
+            "return": {
+                "description": "The second AABB",
+                "type": "*"
+            },
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/core/math/math.js",
+            "line": 1985,
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB2",
@@ -12373,7 +12583,7 @@
         },
         {
             "file": "src/core/math/math.js",
-            "line": 2027,
+            "line": 2065,
             "description": "Builds normal vectors from positions and indices.",
             "itemtype": "method",
             "name": "buildTangents",
@@ -12401,7 +12611,7 @@
         },
         {
             "file": "src/core/math/math.js",
-            "line": 2092,
+            "line": 2130,
             "description": "Builds vertex tangent vectors from positions, UVs and indices",
             "itemtype": "method",
             "name": "buildTangents",
@@ -12434,7 +12644,7 @@
         },
         {
             "file": "src/core/math/math.js",
-            "line": 2168,
+            "line": 2206,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -12456,7 +12666,7 @@
         },
         {
             "file": "src/core/math/math.js",
-            "line": 2196,
+            "line": 2234,
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "itemtype": "method",
             "name": "getPickTriangles",
@@ -13313,7 +13523,7 @@
         },
         {
             "file": "src/core/rendering/layer.js",
-            "line": 205,
+            "line": 207,
             "description": "Fired whenever this Layer's  {{#crossLink \"Layer/priority:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "priority",
@@ -14085,7 +14295,36 @@
         },
         {
             "file": "src/core/spatial/boundary3d.js",
-            "line": 142,
+            "line": 145,
+            "description": "Indicates whether this Boundary3D is visible or not.\n\nFires a {{#crossLink \"Boundary3D/visible:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "visible",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Boundary3D",
+            "module": "XEO",
+            "submodule": "spatial"
+        },
+        {
+            "file": "src/core/spatial/boundary3d.js",
+            "line": 184,
+            "description": "Fired whenever this Boundary3D's {{#crossLink \"Boundary3D/visible:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "visible",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "Boundary3D",
+            "module": "XEO",
+            "submodule": "spatial"
+        },
+        {
+            "file": "src/core/spatial/boundary3d.js",
+            "line": 203,
             "description": "3D oriented bounding box (OBB).",
             "itemtype": "property",
             "name": "obb",
@@ -14097,7 +14336,7 @@
         },
         {
             "file": "src/core/spatial/boundary3d.js",
-            "line": 161,
+            "line": 222,
             "description": "3D axis-aligned bounding box (AABB).",
             "itemtype": "property",
             "name": "aabb",
@@ -14109,7 +14348,7 @@
         },
         {
             "file": "src/core/spatial/boundary3d.js",
-            "line": 180,
+            "line": 241,
             "description": "3D center point.",
             "itemtype": "property",
             "name": "center",
@@ -14924,7 +15163,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 353,
+            "line": 362,
             "description": "Publishes input events that occur on this Scene's canvas.",
             "final": 1,
             "itemtype": "property",
@@ -14935,7 +15174,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 364,
+            "line": 373,
             "description": "Tracks any asynchronous tasks that occur within this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -14946,7 +15185,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 504,
+            "line": 513,
             "description": "Fired whenever a component within this Scene has been destroyed.",
             "itemtype": "event",
             "name": "componentDestroyed",
@@ -14962,7 +15201,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 536,
+            "line": 545,
             "description": "Fired whenever a component has been created within this Scene.",
             "itemtype": "event",
             "name": "componentCreated",
@@ -14978,7 +15217,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 548,
+            "line": 557,
             "description": "The default projection transform provided by this Scene, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nThis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to\n\"default.project\", with all other properties set to their default\nvalues.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene\nare attached to this {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}\nby default.",
             "itemtype": "property",
             "name": "project",
@@ -14989,7 +15228,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 575,
+            "line": 584,
             "description": "The default viewing transform provided by this Scene, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nThis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.view\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "view",
@@ -15000,7 +15239,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 597,
+            "line": 606,
             "description": "The default {{#crossLink \"Camera\"}}Camera{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Camera\"}}Camera{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.camera\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Camera\"}}Camera{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "camera",
@@ -15011,7 +15250,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 621,
+            "line": 630,
             "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -15022,7 +15261,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 644,
+            "line": 653,
             "description": "The default {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.billboard\"\nand an {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property set to false to disable it.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Billboard\"}}Billboard{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "billboard",
@@ -15033,7 +15272,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 666,
+            "line": 675,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -15044,7 +15283,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 688,
+            "line": 697,
             "description": "The default {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -15055,7 +15294,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 710,
+            "line": 719,
             "description": "The default {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"ColorTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"ColorTarget/active:property\"}}inactive{{/crossLink}} and will have an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -15066,7 +15305,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 732,
+            "line": 741,
             "description": "The default {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -15077,7 +15316,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 755,
+            "line": 764,
             "description": "The default {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"DepthTarget/active:property\"}}inactive{{/crossLink}} and has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -15088,7 +15327,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 778,
+            "line": 787,
             "description": "The default {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.visibility\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Visibility\"}}Visibility{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "visibility",
@@ -15099,7 +15338,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 800,
+            "line": 809,
             "description": "The default {{#crossLink \"Modes\"}}Modes{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Modes\"}}Modes{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.modes\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Modes\"}}Modes{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "modes",
@@ -15110,7 +15349,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 821,
+            "line": 830,
             "description": "The default {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} provided by this Scene, which is a 2x2x2 box centered at the World-space origin.\n\nThis {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -15121,7 +15360,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 841,
+            "line": 850,
             "description": "The default {{#crossLink \"Layer\"}}Layer{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Layer\"}}Layer{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.layer\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Layer\"}}Layer{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "layer",
@@ -15132,7 +15371,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 863,
+            "line": 872,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided\nby this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -15143,7 +15382,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 917,
+            "line": 926,
             "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -15154,7 +15393,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 939,
+            "line": 948,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -15165,7 +15404,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 960,
+            "line": 969,
             "description": "The default {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} provided by this Scene,\n(which is initially an empty {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.reflect\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Reflect\"}}Reflect{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "reflect",
@@ -15176,7 +15415,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 982,
+            "line": 991,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is initially an empty {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -15187,7 +15426,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 1004,
+            "line": 1013,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ShaderParams\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -15198,7 +15437,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 1026,
+            "line": 1035,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -15209,7 +15448,18 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 1050,
+            "line": 1058,
+            "description": "World-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
+            "itemtype": "property",
+            "name": "worldBoundary",
+            "type": "Boundary3D",
+            "final": 1,
+            "class": "Scene",
+            "module": "XEO"
+        },
+        {
+            "file": "src/core/scene.js",
+            "line": 1134,
             "description": "Attempts to pick a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} at the given Canvas-space coordinates.\n\nIgnores {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/picking:property\"}}picking{{/crossLink}} set *false*.\n\nOn success, will fire a {{#crossLink \"Scene/picked:event\"}}{{/crossLink}} event on this Scene, along with\na separate {{#crossLink \"Object/picked:event\"}}{{/crossLink}} event on the target {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.",
             "itemtype": "method",
             "name": "pick",
@@ -15244,7 +15494,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 1075,
+            "line": 1159,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -15253,7 +15503,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 1101,
+            "line": 1185,
             "description": "Displays a simple test object.\n\nClears the Scene first.\n\nThe test object is destroyed as soon as anything else is created in this Scene.",
             "itemtype": "method",
             "name": "testPattern",
@@ -15262,7 +15512,7 @@
         },
         {
             "file": "src/core/scene.js",
-            "line": 1152,
+            "line": 1236,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -16510,8 +16760,153 @@
             "submodule": "geometry"
         },
         {
+            "file": "src/extras/geometry/grid.js",
+            "line": 162,
+            "description": "The Grid's level-of-detail factor.\n\nFires a {{#crossLink \"Grid/lod:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "lod",
+            "default": "1",
+            "type": "Number",
+            "class": "Grid",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/grid.js",
+            "line": 192,
+            "description": "Fired whenever this Grid's {{#crossLink \"Grid/lod:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "lod",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Grid",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/grid.js",
+            "line": 206,
+            "description": "The Grid's dimension on the X-axis.\n\nFires a {{#crossLink \"Grid/xSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "xSize",
+            "default": "1",
+            "type": "Number",
+            "class": "Grid",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/grid.js",
+            "line": 236,
+            "description": "Fired whenever this Grid's {{#crossLink \"Grid/xSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "xSize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Grid",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/grid.js",
+            "line": 250,
+            "description": "The Grid's dimension on the Y-axis.\n\nFires a {{#crossLink \"Grid/ySize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "ySize",
+            "default": "0.25",
+            "type": "Number",
+            "class": "Grid",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/grid.js",
+            "line": 280,
+            "description": "Fired whenever this Grid's {{#crossLink \"Grid/ySize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "ySize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Grid",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/grid.js",
+            "line": 294,
+            "description": "The Grid's number of segments on the X-axis.\n\nFires a {{#crossLink \"Grid/xSegments:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "xSegments",
+            "default": "4",
+            "type": "Number",
+            "class": "Grid",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/grid.js",
+            "line": 324,
+            "description": "Fired whenever this Grid's {{#crossLink \"Grid/xSegments:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "xSegments",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Grid",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/grid.js",
+            "line": 338,
+            "description": "The Grid's number of segments on the Y-axis.\n\nFires a {{#crossLink \"Grid/ySegments:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "ySegments",
+            "default": "4",
+            "type": "Number",
+            "class": "Grid",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/grid.js",
+            "line": 368,
+            "description": "Fired whenever this Grid's {{#crossLink \"Grid/ySegments:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "ySegments",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Grid",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 348,
+            "line": 276,
             "description": "Fired whenever this Heightmap's  {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -16528,7 +16923,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 378,
+            "line": 306,
             "description": "The Heightmap's level-of-detail factor.\n\nFires a {{#crossLink \"Heightmap/lod:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lod",
@@ -16540,7 +16935,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 408,
+            "line": 336,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/lod:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lod",
@@ -16557,7 +16952,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 422,
+            "line": 350,
             "description": "Indicates an HTML DOM Image object to source this Heightmap from.\n\nAlternatively, you could indicate the source via the\n{{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} property.\n\nFires an {{#crossLink \"Heightmap/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} to null.",
             "itemtype": "property",
             "name": "image",
@@ -16569,7 +16964,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 449,
+            "line": 377,
             "description": "Fired whenever this Heightmap's  {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -16586,7 +16981,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 462,
+            "line": 390,
             "description": "Indicates a path to an image file to source this Heightmap from.\n\nAlternatively, you could indicate the source via the\n{{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property.\n\nFires a {{#crossLink \"Heightmap/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} to null.",
             "itemtype": "property",
             "name": "src",
@@ -16598,7 +16993,7 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 489,
+            "line": 417,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -16615,8 +17010,8 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 503,
-            "description": "The Heightmap's dimension (width) on the X-axis.\n\nFires a {{#crossLink \"Sphere/xSize:event\"}}{{/crossLink}} event on change.",
+            "line": 431,
+            "description": "The Heightmap's dimension on the X-axis.\n\nFires a {{#crossLink \"Heightmap/xSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSize",
             "default": "1",
@@ -16627,8 +17022,8 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 533,
-            "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/xSize:property\"}}{{/crossLink}} property changes.",
+            "line": 461,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/xSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSize",
             "type": "Number",
@@ -16644,10 +17039,39 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 547,
-            "description": "The Heightmap's dimension (height) on the Y-axis.\n\nFires a {{#crossLink \"Sphere/ySize:event\"}}{{/crossLink}} event on change.",
+            "line": 475,
+            "description": "The Heightmap's dimension on the Y-axis.\n\nFires a {{#crossLink \"Heightmap/ySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ySize",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Heightmap",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/heightmap.js",
+            "line": 505,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/ySize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "ySize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Heightmap",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/heightmap.js",
+            "line": 519,
+            "description": "The Heightmap's dimension (height) on the Z-axis.\n\nFires a {{#crossLink \"Heightmap/zSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "zSize",
             "default": "0.25",
             "type": "Number",
             "class": "Heightmap",
@@ -16656,37 +17080,8 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 577,
-            "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/ySize:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "ySize",
-            "type": "Number",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Heightmap",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 591,
-            "description": "The Heightmap's dimension (depth) on the Z-axis.\n\nFires a {{#crossLink \"Sphere/zSize:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "zSize",
-            "default": "1",
-            "type": "Number",
-            "class": "Heightmap",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 621,
-            "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/zSize:property\"}}{{/crossLink}} property changes.",
+            "line": 549,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/zSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "zSize",
             "type": "Number",
@@ -16702,8 +17097,8 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 635,
-            "description": "The Heightmap's number of segments on the X-axis (width).\n\nFires a {{#crossLink \"Sphere/xSegments:event\"}}{{/crossLink}} event on change.",
+            "line": 563,
+            "description": "The Heightmap's number of segments on the X-axis.\n\nFires a {{#crossLink \"Heightmap/xSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSegments",
             "default": "100",
@@ -16714,8 +17109,8 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 665,
-            "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/xSegments:property\"}}{{/crossLink}} property changes.",
+            "line": 593,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/xSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSegments",
             "type": "Number",
@@ -16731,10 +17126,10 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 679,
-            "description": "The Heightmap's number of segments on the Z-axis (depth).\n\nFires a {{#crossLink \"Sphere/zSegments:event\"}}{{/crossLink}} event on change.",
+            "line": 607,
+            "description": "The Heightmap's number of segments on the Y-axis.\n\nFires a {{#crossLink \"Heightmap/ySegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "zSegments",
+            "name": "ySegments",
             "default": "100",
             "type": "Number",
             "class": "Heightmap",
@@ -16743,10 +17138,10 @@
         },
         {
             "file": "src/extras/geometry/heightmap.js",
-            "line": 709,
-            "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/zSegments:property\"}}{{/crossLink}} property changes.",
+            "line": 637,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/ySegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "zSegments",
+            "name": "ySegments",
             "type": "Number",
             "params": [
                 {
@@ -17085,6 +17480,35 @@
             "submodule": "geometry"
         },
         {
+            "file": "src/extras/geometry/vectorTextGeometry.js",
+            "line": 147,
+            "description": "The text for this VectorText\n\nFires a {{#crossLink \"VectorTextGeometry/text:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "text",
+            "default": "\"\"",
+            "type": "String",
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/vectorTextGeometry.js",
+            "line": 168,
+            "description": "Fired whenever this VectorTextGeometry's {{#crossLink \"VectorTextGeometry/text:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "text",
+            "type": "Boolean",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
             "file": "src/extras/groups/group.js",
             "line": 97,
             "description": "JavaScript class name for this Component.",
@@ -17365,7 +17789,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 123,
+            "line": 122,
             "description": "The {{#crossLink \"MouseOrbitCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mouseOrbit",
@@ -17377,7 +17801,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 135,
+            "line": 133,
             "description": "The {{#crossLink \"KeyboardPanCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardPan",
@@ -17389,7 +17813,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 147,
+            "line": 144,
             "description": "The {{#crossLink \"MousePanCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mousePan",
@@ -17401,7 +17825,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 159,
+            "line": 155,
             "description": "The {{#crossLink \"KeyboardZoomCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardZoom",
@@ -17413,7 +17837,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 171,
+            "line": 166,
             "description": "The {{#crossLink \"MouseZoomCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mouseZoom",
@@ -17425,7 +17849,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 183,
+            "line": 177,
             "description": "The {{#crossLink \"MousePickObject\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mousePickObject",
@@ -17437,7 +17861,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 195,
+            "line": 214,
             "description": "The {{#crossLink \"CameraFlight\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "cameraFly",
@@ -17449,7 +17873,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 250,
+            "line": 234,
             "description": "Flag which indicates whether this CameraControl is in \"first person\" mode.\n\nIn \"first person\" mode (disabled by default) the look position rotates about the eye position. Otherwise,\nthe eye rotates about the look.\n\nFires a {{#crossLink \"KeyboardOrbitCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "firstPerson",
@@ -17461,7 +17885,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 273,
+            "line": 257,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/firstPerson:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "firstPerson",
@@ -17477,7 +17901,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 286,
+            "line": 270,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this CameraControl.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraControl. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
@@ -17488,7 +17912,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 300,
+            "line": 284,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -17504,7 +17928,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 328,
+            "line": 312,
             "description": "Flag which indicates whether this CameraControl is active or not.\n\nFires an {{#crossLink \"CameraControl/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -17515,7 +17939,7 @@
         },
         {
             "file": "src/extras/input/cameraControl.js",
-            "line": 358,
+            "line": 342,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -17543,7 +17967,7 @@
         },
         {
             "file": "src/extras/input/keyboardAxisCamera.js",
-            "line": 84,
+            "line": 85,
             "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} attached to this KeyboardAxisCamera.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this KeyboardAxisCamera. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"KeyboardAxisCamera/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -17554,7 +17978,7 @@
         },
         {
             "file": "src/extras/input/keyboardAxisCamera.js",
-            "line": 100,
+            "line": 101,
             "description": "Fired whenever this KeyboardAxisCamera's {{#crossLink \"KeyboardAxisCamera/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
@@ -17570,7 +17994,7 @@
         },
         {
             "file": "src/extras/input/keyboardAxisCamera.js",
-            "line": 118,
+            "line": 119,
             "description": "Flag which indicates whether this KeyboardAxisCamera is active or not.\n\nFires an {{#crossLink \"KeyboardAxisCamera/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -17581,7 +18005,7 @@
         },
         {
             "file": "src/extras/input/keyboardAxisCamera.js",
-            "line": 237,
+            "line": 241,
             "description": "Fired whenever this KeyboardAxisCamera's {{#crossLink \"KeyboardAxisCamera/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -17609,7 +18033,7 @@
         },
         {
             "file": "src/extras/input/keyboardOrbitCamera.js",
-            "line": 85,
+            "line": 86,
             "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} attached to this KeyboardOrbitCamera.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this KeyboardOrbitCamera. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"KeyboardOrbitCamera/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -17620,7 +18044,7 @@
         },
         {
             "file": "src/extras/input/keyboardOrbitCamera.js",
-            "line": 101,
+            "line": 102,
             "description": "Fired whenever this KeyboardOrbitCamera's {{#crossLink \"KeyboardOrbitCamera/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
@@ -17636,7 +18060,35 @@
         },
         {
             "file": "src/extras/input/keyboardOrbitCamera.js",
-            "line": 115,
+            "line": 116,
+            "description": "The sensitivity of this KeyboardOrbitCamera.\n\nFires a {{#crossLink \"KeyboardOrbitCamera/sensitivity:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "sensitivity",
+            "type": "Number",
+            "default": "1.0",
+            "class": "KeyboardOrbitCamera",
+            "module": "XEO",
+            "submodule": "input"
+        },
+        {
+            "file": "src/extras/input/keyboardOrbitCamera.js",
+            "line": 131,
+            "description": "Fired whenever this KeyboardOrbitCamera's  {{#crossLink \"KeyboardOrbitCamera/sensitivity:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "sensitivity",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "KeyboardOrbitCamera",
+            "module": "XEO",
+            "submodule": "input"
+        },
+        {
+            "file": "src/extras/input/keyboardOrbitCamera.js",
+            "line": 145,
             "description": "Flag which indicates whether this KeyboardOrbitCamera is in \"first person\" mode.\n\nA KeyboardOrbitCamera updates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to its\ntarget {{#crossLink \"Camera\"}}{{/crossLink}}. In 'first person' mode, the\n{{#crossLink \"Lookat\"}}Lookat's{{/crossLink}} {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}\nposition orbits the {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} position, otherwise\nthe {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} orbits {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}.</li>\n\nFires a {{#crossLink \"KeyboardOrbitCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "firstPerson",
@@ -17648,7 +18100,7 @@
         },
         {
             "file": "src/extras/input/keyboardOrbitCamera.js",
-            "line": 138,
+            "line": 168,
             "description": "Fired whenever this KeyboardOrbitCamera's {{#crossLink \"KeyboardOrbitCamera/firstPerson:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "firstPerson",
@@ -17664,7 +18116,7 @@
         },
         {
             "file": "src/extras/input/keyboardOrbitCamera.js",
-            "line": 151,
+            "line": 181,
             "description": "Flag which indicates whether this KeyboardOrbitCamera is active or not.\n\nFires an {{#crossLink \"KeyboardOrbitCamera/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -17675,7 +18127,7 @@
         },
         {
             "file": "src/extras/input/keyboardOrbitCamera.js",
-            "line": 235,
+            "line": 265,
             "description": "Fired whenever this KeyboardOrbitCamera's {{#crossLink \"KeyboardOrbitCamera/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -17735,7 +18187,7 @@
             "itemtype": "property",
             "name": "sensitivity",
             "type": "Number",
-            "default": "1.0",
+            "default": "0.5",
             "class": "KeyboardPanCamera",
             "module": "XEO",
             "submodule": "input"
@@ -17829,7 +18281,7 @@
             "itemtype": "property",
             "name": "sensitivity",
             "type": "Number",
-            "default": "1.0",
+            "default": "0.5",
             "class": "KeyboardZoomCamera",
             "module": "XEO",
             "submodule": "input"
@@ -17923,7 +18375,7 @@
             "itemtype": "property",
             "name": "sensitivity",
             "type": "Number",
-            "default": "1.0",
+            "default": "0.5",
             "class": "MouseOrbitCamera",
             "module": "XEO",
             "submodule": "input"
@@ -18045,7 +18497,7 @@
             "itemtype": "property",
             "name": "sensitivity",
             "type": "Number",
-            "default": "1.0",
+            "default": "0.5",
             "class": "MousePanCamera",
             "module": "XEO",
             "submodule": "input"
@@ -18249,7 +18701,7 @@
             "itemtype": "property",
             "name": "sensitivity",
             "type": "Number",
-            "default": "1.0",
+            "default": "0.5",
             "class": "MouseZoomCamera",
             "module": "XEO",
             "submodule": "input"
@@ -18419,19 +18871,23 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/core/math/math.js:2027"
+            "line": " src/core/math/math.js:1985"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/core/math/math.js:2092"
+            "line": " src/core/math/math.js:2065"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/core/math/math.js:2168"
+            "line": " src/core/math/math.js:2130"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/core/math/math.js:2196"
+            "line": " src/core/math/math.js:2206"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/core/math/math.js:2234"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -18443,7 +18899,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/core/scene.js:1050"
+            "line": " src/core/scene.js:1134"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -18591,7 +19047,7 @@
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/core/scene.js:1152"
+            "line": " src/core/scene.js:1236"
         },
         {
             "message": "Missing item type\nTests if the given object is an array",

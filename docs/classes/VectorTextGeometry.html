@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Stats - xeoengine</title>
+    <title>VectorTextGeometry - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -176,126 +176,47 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Stats Class</h1>
+<h1>VectorTextGeometry Class</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+            Extends <a href="../classes/Geometry.html" class="crosslink">Geometry</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_reporting_stats.js.html#l1"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:1</code></a>
+            Defined in: <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorText.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/reporting.html">reporting</a><br>
+            Module: <a href="../modules/geometry.html">geometry</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>Stats</strong> provides statistics on the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<h2 id="overview">Overview</h2>
-<ul>
-<li>Each <a href="../classes/Scene.html" class="crosslink">Scene</a> provides a Stats instance on itself.</li>
-<li>You can manage your own statistics properties in a Stats, but take care not to clobber the properties that are
-provided by the <a href="../classes/Scene.html" class="crosslink">Scene</a> (see table below).</li>
-</ul>
-
-<p><img src="../../../assets/images/Stats.png"></img></p>
+    <p>A <strong>VectorTextGeometry</strong> defines vector text geometry for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <h2 id="example">Example</h2>
-<p>This example shows how to subscribe to the "numGeometries&#39; statistic, which indicates
-how many <a href="../classes/Geometry.html" class="crosslink">Geometry</a> components are in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
+<pre class="code prettyprint"><code class="lang-javascript">
 
-// Get the statistics for a Scene
-var stats = scene.stats;
-
-// Subscribe to change of a statistic
-// The subscriber is also immediately notified of the current value via the callback.
-var handle = configs.on("numGeometries", function(value) {
-    console.log("Number of Geometry components in the Scene is now " + value);
-});
-
-// Unsubscribe
-configs.off(handle);
-
-// Read the current value of a statistic
-// Normally we would asynchronously subscribe with #on though, to be sure that
-// we&#39;re getting the latest changes to the statistic.
-var numGeometries = configs.props["numGeometries"];
 </code></pre>
-<p>As mentioned, we can manage our own statistics as well (perhaps if we&#39;re extending xeoEngine):</p>
-<pre class="code prettyprint"><code class="lang-Javascript">// Create a statistic
-configs.zero("myStatistic");
-
-// Increment our statistic
-configs.inc("myStatistic");
-
-// Decrement our statistic
-configs.dec("myStatistic");
-
-// Subscribe to change of our statistic
-handle2 = configs.on("myStatistic", function(value) {
-   console.log("Value of myStatistic is now " + value);
-});
-
-// Unsubscribe
-configs.off(handle2);
-
-// Read the current value of our statistic
-var myStatistic = configs.props["myStatistic"];
-</code></pre>
-<h2 id="native-xeoengine-statistics">Native xeoEngine statistics</h2>
-<p>Listed below are are the statistics provided by the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<p>Don&#39;t use these names for your own custom statistics.</p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>"objects"</td>
-<td>Number of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a></td>
-</tr>
-<tr>
-<td>"geometries"</td>
-<td>Number of <a href="../classes/Geometry.html" class="crosslink">Geometries</a></td>
-</tr>
-<tr>
-<td>"materials"</td>
-<td>Number of <a href="../classes/Material.html" class="crosslink">Materials</a></td>
-</tr>
-<tr>
-<td>"scene.textures"</td>
-<td>Number of <a href="../classes/Texture.html" class="crosslink">Textures</a></td>
-</tr>
-<tr>
-<td>"shaders"</td>
-<td>Number of WebGL shader programs currently allocated</td>
-</tr>
-<tr>
-<td>"webglRestored"</td>
-<td>Number of times the WebGL context has been restored so far for this <a href="../classes/Scene.html" class="crosslink">Scene</a></td>
-</tr>
-<tr>
-<td>"renderer.objects"</td>
-<td>Number of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> that are currently being rendered</td>
-</tr>
-</tbody>
-</table>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Stats" class="method item">
-            <h3 class="name"><code>Stats</code></h3>
+        <div id="method_VectorTextGeometry" class="method item">
+            <h3 class="name"><code>VectorTextGeometry</code></h3>
         
-                <span class="paren">()</span>
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[scene]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
         
         
         
@@ -307,7 +228,7 @@ var myStatistic = configs.props["myStatistic"];
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_reporting_stats.js.html#l1"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:1</code></a>
+                <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorText.js:1</code></a>
                 </p>
         
         
@@ -318,6 +239,73 @@ var myStatistic = configs.props["myStatistic"];
                 
             </div>
         
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[scene]</code>
+                                <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this VectorTextGeometry in the default
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg]</code>
+                                <span class="type"></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Configs</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[id]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
+        generated automatically when omitted.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[meta]</code>
+                                            <span class="type">String:Object</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional map of user-defined metadata to attach to this VectorTextGeometry.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[text=&quot;&quot;]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The text.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
         
         
         
@@ -341,10 +329,6 @@ var myStatistic = configs.props["myStatistic"];
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
-                            <li class="index-item method">
-                                <a href="#method_dec">dec</a>
-
-                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_destroy">destroy</a>
 
@@ -355,10 +339,6 @@ var myStatistic = configs.props["myStatistic"];
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_fire">fire</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_inc">inc</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -377,16 +357,8 @@ var myStatistic = configs.props["myStatistic"];
                                 <a href="#method_once">once</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_set">set</a>
-
-                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_warn">warn</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_zero">zero</a>
 
                             </li>
                     </ul>
@@ -397,11 +369,23 @@ var myStatistic = configs.props["myStatistic"];
 
                     <ul class="index-list properties extends">
                             <li class="index-item property inherited">
+                                <a href="#property_autoNormals">autoNormals</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_colors">colors</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_indices">indices</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -413,6 +397,22 @@ var myStatistic = configs.props["myStatistic"];
 
                             </li>
                             <li class="index-item property inherited">
+                                <a href="#property_modelBoundary">modelBoundary</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_normals">normals</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_positions">positions</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_primitive">primitive</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
                             </li>
@@ -420,8 +420,16 @@ var myStatistic = configs.props["myStatistic"];
                                 <a href="#property_string">string</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_text">text</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_uv">uv</a>
 
                             </li>
                     </ul>
@@ -433,7 +441,39 @@ var myStatistic = configs.props["myStatistic"];
 
                     <ul class="index-list events extends">
                             <li class="index-item event inherited">
+                                <a href="#event_autoNormals">autoNormals</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_colors">colors</a>
+
+                            </li>
+                            <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_indices">indices</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_normals">normals</a>
+
+                            </li>
+                            <li class="index-item event inherited inherited">
+                                <a href="#event_positions">positions</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_primitive">primitive</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_text">text</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_uv">uv</a>
 
                             </li>
                     </ul>
@@ -443,76 +483,6 @@ var myStatistic = configs.props["myStatistic"];
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_dec" class="method item">
-    <h3 class="name"><code>dec</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>name</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[count=1]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_core_reporting_stats.js.html#l159"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:159</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Decrements the value of a statistic within this Stats.</p>
-<p>Publishes the new value as an event with the same name as the statistic.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">name</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The statistic name.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[count=1]</code>
-                        <span class="type">Number</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Amount to subtract.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_destroy" class="method item inherited">
     <h3 class="name"><code>destroy</code></h3>
 
@@ -679,77 +649,6 @@ any subsequent notifications on that location as they are made.</p>
 
                     <div class="param-description">
                         <p>When true, does not retain for subsequent subscribers</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_inc" class="method item">
-    <h3 class="name"><code>inc</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>name</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[count=1]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_core_reporting_stats.js.html#l135"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:135</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Increments the value of a statistic within this Stats.</p>
-<p>Creates the statistic if it does not yet exist.</p>
-<p>Publishes the new value as an event with the same name as the statistic.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">name</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The statistic name.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[count=1]</code>
-                        <span class="type">Number</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Amount to add.</p>
 
                     </div>
 
@@ -1053,76 +952,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_set" class="method item">
-    <h3 class="name"><code>set</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>name</code>
-                </li>
-                <li class="arg">
-                        <code>value</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_core_reporting_stats.js.html#l115"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:115</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Sets the value of a statistic within this Stats.</p>
-<p>Creates the statistic if it does not yet exist.</p>
-<p>Publishes the new value as an event with the same name as the statistic.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">name</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The statistic name.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                        <p>Value to set.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_warn" class="method item inherited">
     <h3 class="name"><code>warn</code></h3>
 
@@ -1180,66 +1009,68 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_zero" class="method item">
-    <h3 class="name"><code>zero</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>name</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_core_reporting_stats.js.html#l181"><code>src&#x2F;core&#x2F;reporting&#x2F;stats.js:181</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Zeroes the value of a statistic within this Stats.</p>
-<p>Publishes the new value as an event with the same name as the statistic.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">name</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The statistic  name.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_autoNormals" class="property item inherited">
+                        <h3 class="name"><code>autoNormals</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_autoNormals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l967"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:967</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set true to make this Geometry automatically generate <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> from
+                    <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> and <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>.</p>
+                    <p>This Geomatry will auto-generate its <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> on the
+                    next <a href="../classes/Scene.html" class="crosslink">Scene</a> Scene/tick:event event.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_autoNormals" class="crosslink">autoNormals</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_colors" class="property item inherited">
+                        <h3 class="name"><code>colors</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_colors">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l842"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:842</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s vertex colors array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_colors" class="crosslink">colors</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1291,6 +1122,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_indices" class="property item inherited">
+                        <h3 class="name"><code>indices</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_indices">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l882"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:882</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s indices array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_indices" class="crosslink">indices</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
                     <div id="property_json" class="property item inherited">
                         <h3 class="name"><code>json</code></h3>
                         <span class="type">JSON</span>
@@ -1339,6 +1197,119 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_modelBoundary" class="property item inherited">
+                        <h3 class="name"><code>modelBoundary</code></h3>
+                        <span class="type"><a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_modelBoundary">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l922"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:922</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Model-space 3D boundary.</p>
+                    <p>If you call <a href="../classes/Component.html#method_destroy" class="crosslink">destroy</a> on this boundary, then
+                    this property will be assigned to a fresh <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> instance next
+                    time you reference it.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_normals" class="property item inherited">
+                        <h3 class="name"><code>normals</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_normals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l762"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:762</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s normal vectors array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_normals" class="crosslink">normals</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_positions" class="property item inherited">
+                        <h3 class="name"><code>positions</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_positions">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l705"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:705</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s positions array.</p>
+                    <p>This property is a one-dimensional array - use  XEO.math/flatten:method to
+                    convert two-dimensional arrays for assignment to this property.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_positions" class="crosslink">positions</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_primitive" class="property item inherited">
+                        <h3 class="name"><code>primitive</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_primitive">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l653"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:653</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s primitive type.</p>
+                    <p>Valid types are: &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_primitive" class="crosslink">primitive</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> &quot;triangles&quot;</p>
                     
                     
                     </div>
@@ -1397,6 +1368,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_text" class="property item">
+                        <h3 class="name"><code>text</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l147"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorText.js:147</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The text for this VectorText</p>
+                    <p>Fires a <a href="../classes/VectorTextGeometry.html#event_text" class="crosslink">text</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> &quot;&quot;</p>
+                    
+                    
+                    </div>
                     <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
@@ -1426,12 +1424,123 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_uv" class="property item inherited">
+                        <h3 class="name"><code>uv</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_uv">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l802"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:802</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s UV coordinate array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_uv" class="crosslink">uv</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
             </div>
 
 
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_autoNormals" class="events item inherited">
+                        <h3 class="name"><code>autoNormals</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l992"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:992</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_autoNormals" class="crosslink">autoNormals</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_colors" class="events item inherited">
+                        <h3 class="name"><code>colors</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_colors">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l867"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:867</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_colors" class="crosslink">colors</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1454,6 +1563,261 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="event_indices" class="events item inherited">
+                        <h3 class="name"><code>indices</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_indices">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l907"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:907</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_normals" class="events item inherited">
+                        <h3 class="name"><code>normals</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_normals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l787"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:787</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s Geometry/ normals:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_positions" class="events item inherited">
+                        <h3 class="name"><code>positions</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Geometry.html#event_positions">
+                                    Geometry
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_core_geometry_geometry.js.html#l735"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:735</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_primitive" class="events item inherited">
+                        <h3 class="name"><code>primitive</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_primitive">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l691"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:691</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_primitive" class="crosslink">primitive</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_text" class="events item">
+                        <h3 class="name"><code>text</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l168"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorText.js:168</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this VectorTextGeometry&#39;s <a href="../classes/VectorTextGeometry.html#property_text" class="crosslink">text</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_uv" class="events item inherited">
+                        <h3 class="name"><code>uv</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_uv">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l827"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:827</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
                     
                     
                     </div>

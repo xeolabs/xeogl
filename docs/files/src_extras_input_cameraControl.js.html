@@ -66,6 +66,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
+                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -115,6 +116,7 @@
                                 <li><a href="../classes/Torus.html">Torus</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -296,7 +298,6 @@
              * @type KeyboardOrbitCamera
              */
             this.keyboardOrbit = new XEO.KeyboardOrbitCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -308,7 +309,6 @@
              * @type MouseOrbitCamera
              */
             this.mouseOrbit = new XEO.MouseOrbitCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -320,7 +320,6 @@
              * @type KeyboardPanCamera
              */
             this.keyboardPan = new XEO.KeyboardPanCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -332,7 +331,6 @@
              * @type MousePanCamera
              */
             this.mousePan = new XEO.MousePanCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -344,7 +342,6 @@
              * @type KeyboardZoomCamera
              */
             this.keyboardZoom = new XEO.KeyboardZoomCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -356,7 +353,6 @@
              * @type MouseZoomCamera
              */
             this.mouseZoom = new XEO.MouseZoomCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -372,19 +368,11 @@
                 camera: cfg.camera
             });
 
-            /**
-             * The {{#crossLink &quot;CameraFlight&quot;}}{{/crossLink}} within this CameraControl.
-             *
-             * @property cameraFly
-             * @final
-             * @type CameraFlight
-             */
-            this.cameraFly = new XEO.CameraFlight(scene, {
-                camera: cfg.camera
-            });
-
             this.mousePickObject.on(&quot;pick&quot;,
                 function (e) {
+
+                    // Fly camera to each picked object
+                    // Don&#x27;t change distance between look and eye
 
                     var view = self.cameraFly.camera.view;
 
@@ -400,11 +388,23 @@
                     });
                 });
 
-            // Handle when nothing is picked
             this.mousePickObject.on(&quot;nopick&quot;,
                 function (e) {
-                    alert(&quot;Mothing picked&quot;);
+                    //alert(&quot;Nothing picked&quot;);
                 });
+
+            /**
+             * The {{#crossLink &quot;CameraFlight&quot;}}{{/crossLink}} within this CameraControl.
+             *
+             * @property cameraFly
+             * @final
+             * @type CameraFlight
+             */
+            this.cameraFly = new XEO.CameraFlight(scene, {
+                camera: cfg.camera
+            });
+
+            // Set component properties
 
             this.firstPerson = cfg.firstPerson;
             this.camera = cfg.camera;
@@ -412,20 +412,6 @@
         },
 
         _props: {
-
-            //spin: {
-            //
-            //    set: function (value) {
-            //        object.scene.on(&quot;tick&quot;,
-            //            function () {
-            //
-            //                var view = object.scene.camera.view;
-            //
-            //                view.rotateEyeY(0.6);
-            //                view.rotateEyeX(0.3);
-            //            });
-            //    }
-            //},
 
             /**
              * Flag which indicates whether this CameraControl is in &quot;first person&quot; mode.
@@ -501,7 +487,7 @@
                 },
 
                 get: function () {
-                    return this._camera;
+                    return this._children.camera;
                 }
             },
 
@@ -552,7 +538,7 @@
         _getJSON: function () {
 
             var json = {
-                sensitivity: this._sensitivity,
+                firstPerson: this._firstPerson,
                 active: this._active
             };
 

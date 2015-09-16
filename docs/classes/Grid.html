@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>PBRMaterial - xeoengine</title>
+    <title>Grid - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -176,101 +176,36 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>PBRMaterial Class</h1>
+<h1>Grid Class</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Material.html" class="crosslink">Material</a>
+            Extends <a href="../classes/Geometry.html" class="crosslink">Geometry</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_core_materials_pbrMaterial.js.html#l1"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:1</code></a>
+            Defined in: <a href="../files/src_extras_geometry_grid.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/materials.html">materials</a><br>
+            Module: <a href="../modules/geometry.html">geometry</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>PBRMaterial</strong> is a <a href="../classes/Material.html" class="crosslink">Material</a> that defines the appearance of
-attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> using a physically-based rendering model.</p>
-<h2 id="overview">Overview</h2>
-<ul>
-<li>Physically Based Rendering (PBR) is a method of shading and rendering that provides a more accurate representation
-of how light interacts with surfaces. It can be referred to as Physically Based Rendering (PBR) or Physically Based Shading (PBS).
-Depending on what aspect of the pipeline is being discussed, PBS is usually specific to shading concepts and PBR specific
-to rendering and lighting. However, both terms describe on a whole, the process of representing assets from a physically
-accurate standpoint. - <em>Wes McDermott, Allegorithmic PBR Guide, Vol. 2</em></li>
-<li>The xeoEngine PBRMaterial is based on the once used in <a href="https://docs.unrealengine.com/latest/INT/Engine/Rendering/Materials/PhysicallyBased/index.html">Unreal Engine</a></li>
-</ul>
+    <p>A <strong>Grid</strong> defines a grid geometry for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+<h2 id="example">Example</h2>
+<pre class="code prettyprint"><code class="lang-javascript">
 
-<p><img src="../../../assets/images/PBRMaterial.png"></img></p>
-<h3 id="material-attributes">Material attributes</h3>
-<ul>
-<li><strong><a href="../classes/PBRMaterial.html#property_metallic" class="crosslink">metallic</a></strong> - degree of metallicity in range <code>[0..1]</code>, where <code>0</code> is fully dialectric (non-metal) and <code>1</code> is fully metallic.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_color" class="crosslink">color</a></strong> - base color.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_colorMap" class="crosslink">colorMap</a></strong> - color map <a href="../classes/Texture.html" class="crosslink">Texture</a> to replace <a href="../classes/PBRMaterial.html#property_color" class="crosslink">color</a>.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_emissive" class="crosslink">emissive</a></strong> - emissive color.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a></strong> - emissive map <a href="../classes/Texture.html" class="crosslink">Texture</a> to replace <a href="../classes/PBRMaterial.html#property_emissive" class="crosslink">emissive</a>.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_opacity" class="crosslink">opacity</a></strong> - opacity in range <code>[0..1]</code>.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_opacityMap" class="crosslink">opacityMap</a></strong> - opacity map <a href="../classes/Texture.html" class="crosslink">Texture</a> to replace <a href="../classes/PBRMaterial.html#property_opacity" class="crosslink">opacity</a>.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_roughness" class="crosslink">roughness</a></strong> - surface roughness in range <code>[0..1]</code>, where <code>0</code> is 100% smooth and <code>1</code> is 100% rough.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_roughnessMap" class="crosslink">roughnessMap</a></strong> - roughness map <a href="../classes/Texture.html" class="crosslink">Texture</a> to replace <a href="../classes/PBRMaterial.html#property_roughness" class="crosslink">roughness</a>.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_normalMap" class="crosslink">normalMap</a></strong> - normal map <a href="../classes/Texture.html" class="crosslink">Texture</a>.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_specular" class="crosslink">specular</a></strong> - specular reflection color.</li>
-<li><strong><a href="../classes/PBRMaterial.html#property_specularMap" class="crosslink">specularMap</a></strong> - specular map <a href="../classes/Texture.html" class="crosslink">Texture</a> to replace <a href="../classes/PBRMaterial.html#property_specular" class="crosslink">specular</a>.</li>
-</ul>
-<h2 id="example-1-non-metallic-material">Example 1: Non-metallic material</h2>
-<p>In this example we have</p>
-<ul>
-<li>a dialectric (non-metallic) PBRMaterial,</li>
-<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape, and
-<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
-</ul>
-
-
-<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
-
-var material1 = new XEO.PBRMaterial(scene, {
-   metallic: 0.0, // Default
-   color: [1.0, 0.8, 0.0],
-   specular: [1.0, 1.0, 1.0]
-});
-
-var geometry = new XEO.Geometry(scene);  // Default box
-
-var object = new XEO.GameObject(scene, {
-   material: material1,
-   geometry: geometry
-});
-</code></pre>
-<h2 id="example-2-metallic-material">Example 2: Metallic material</h2>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = new XEO.PBRMaterial(scene, {
-   metallic: 1.0,
-   color: [1.0, 0.8, 0.0],
-   roughness: 0.3
-});
-</code></pre>
-<h2 id="example-3-metallic-material-with-color-map">Example 3: Metallic material with color map</h2>
-<pre class="code prettyprint"><code class="lang-javascript">var colorMap = new XEO.Texture(scene, {
-   src: "colorMap.jpg"
-});
-
-var material3 = new XEO.PBRMaterial(scene, {
-   metallic: 1.0,
-   colorMap: colorMap,
-   roughness: 0.3
-});
 </code></pre>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_PBRMaterial" class="method item">
-            <h3 class="name"><code>PBRMaterial</code></h3>
+        <div id="method_Grid" class="method item">
+            <h3 class="name"><code>Grid</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -293,7 +228,7 @@ var material3 = new XEO.PBRMaterial(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_core_materials_pbrMaterial.js.html#l1"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:1</code></a>
+                <a href="../files/src_extras_geometry_grid.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:1</code></a>
                 </p>
         
         
@@ -315,8 +250,8 @@ var material3 = new XEO.PBRMaterial(scene, {
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this PBRMaterial within the
-        default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Grid in the default
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -328,7 +263,7 @@ var material3 = new XEO.PBRMaterial(scene, {
         
         
                             <div class="param-description">
-                                <p>The PBRMaterial configuration</p>
+                                <p>Configs</p>
         
                             </div>
         
@@ -339,150 +274,74 @@ var material3 = new XEO.PBRMaterial(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
+        generated automatically when omitted.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[meta=null]</code>
+                                            <code class="param-name optional">[meta]</code>
                                             <span class="type">String:Object</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Metadata to attach to this PBRMaterial.</p>
+                                            <p>Optional map of user-defined metadata to attach to this Grid.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[metallic=0.0]</code>
+                                            <code class="param-name optional">[xSize=1]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Scalar in range 0-1 that controls how metallic the PBRMaterial is.</p>
+                                            <p>Dimension on the X-axis.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[color=[ 1.0, 1.0, 1.0 ]]</code>
-                                            <span class="type">Array of Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Base color.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[colorMap=null]</code>
-                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>A color map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the color property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PBRMaterial.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[emissive=[ 1.0, 1.0, 1.0 ]]</code>
-                                            <span class="type">Array of Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Emissive color.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[emissiveMap=null]</code>
-                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>An emissive map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the emissive property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PBRMaterial.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[opacity=1]</code>
+                                            <code class="param-name optional">[ySize=1]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque. Only applies while <a href="../classes/Modes.html" class="crosslink">Modes</a> <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a> equals <code>true</code>.</p>
+                                            <p>Dimension on the Y-axis.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[opacityMap=null]</code>
-                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>An opacity map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the opacity property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PBRMaterial.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[roughness=0.0]</code>
+                                            <code class="param-name optional">[xSegments=4]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Scalar in range 0-1 that controls roughness, where 0 is 100% glossiness and 1 is 100% roughness.</p>
+                                            <p>Number of segments on the X-axis.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[roughnessMap=null]</code>
-                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                                            <code class="param-name optional">[ySegments=4]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A roughness map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the roughness property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PBRMaterial.</p>
+                                            <p>Number of segments on the Y-axis.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[normalMap=null]</code>
-                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                                            <code class="param-name optional">[lod=1]  Level-of-detail, in range [0..1]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A normal map <a href="../classes/Texture.html" class="crosslink">Texture</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PBRMaterial.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[specular=[ 1.0, 1.0, 1.0 ]]</code>
-                                            <span class="type">Array of Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Specular color.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[specularMap=null]</code>
-                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>A specular map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will override the effect of the specular property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PBRMaterial.</p>
+                                            <p>.</p>
         
                                         </div>
         
@@ -553,24 +412,16 @@ var material3 = new XEO.PBRMaterial(scene, {
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property">
-                                <a href="#property_color">color</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_autoNormals">autoNormals</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_colorMap">colorMap</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_colors">colors</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_emissive">emissive</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_emissiveMap">emissiveMap</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -578,55 +429,39 @@ var material3 = new XEO.PBRMaterial(scene, {
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_json">json</a>
+                                <a href="#property_indices">indices</a>
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_lineWidth">lineWidth</a>
+                                <a href="#property_json">json</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_lod">lod</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_metallic">metallic</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_normalMap">normalMap</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_opacity">opacity</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_opacityMap">opacityMap</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_modelBoundary">modelBoundary</a>
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_pointSize">pointSize</a>
+                                <a href="#property_normals">normals</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_roughness">roughness</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_positions">positions</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_roughnessMap">roughnessMap</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_primitive">primitive</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_specular">specular</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_specularMap">specularMap</a>
 
                             </li>
                             <li class="index-item property inherited inherited">
@@ -637,6 +472,26 @@ var material3 = new XEO.PBRMaterial(scene, {
                                 <a href="#property_type">type</a>
 
                             </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_uv">uv</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_xSegments">xSegments</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_xSize">xSize</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_ySegments">ySegments</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_ySize">ySize</a>
+
+                            </li>
                     </ul>
                 </div>
 
@@ -645,64 +500,56 @@ var material3 = new XEO.PBRMaterial(scene, {
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
-                            <li class="index-item event">
-                                <a href="#event_color">color</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_autoNormals">autoNormals</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_colorMap">colorMap</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_colors">colors</a>
 
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_emissive">emissive</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_indices">indices</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_emissiveMap">emissiveMap</a>
+                                <a href="#event_lod">lod</a>
 
                             </li>
                             <li class="index-item event inherited">
-                                <a href="#event_lineWidth">lineWidth</a>
+                                <a href="#event_normals">normals</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_metallic">metallic</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_normalMap">normalMap</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_opacity">opacity</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_opacityMap">opacityMap</a>
+                            <li class="index-item event inherited inherited">
+                                <a href="#event_positions">positions</a>
 
                             </li>
                             <li class="index-item event inherited">
-                                <a href="#event_pointSize">pointSize</a>
+                                <a href="#event_primitive">primitive</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_uv">uv</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_roughness">roughness</a>
+                                <a href="#event_xSegments">xSegments</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_roughnessMap">roughnessMap</a>
+                                <a href="#event_xSize">xSize</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_specular">specular</a>
+                                <a href="#event_ySegments">ySegments</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_specularMap">specularMap</a>
+                                <a href="#event_ySize">ySize</a>
 
                             </li>
                     </ul>
@@ -1243,54 +1090,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_color" class="property item">
-                        <h3 class="name"><code>color</code></h3>
-                        <span class="type">Array(Number)</span>
+                    <div id="property_autoNormals" class="property item inherited">
+                        <h3 class="name"><code>autoNormals</code></h3>
+                        <span class="type">Boolean</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l218"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:218</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_autoNormals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l967"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:967</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Base color of this material.</p>
-                    <p>This property may be overridden by <a href="../classes/PBRMaterial.html#property_colorMap" class="crosslink">colorMap</a>.</p>
-                    <p>Fires a <a href="../classes/PBRMaterial.html#event_color" class="crosslink">color</a> event on change.</p>
+                            <p>Set true to make this Geometry automatically generate <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> from
+                    <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> and <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>.</p>
+                    <p>This Geomatry will auto-generate its <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> on the
+                    next <a href="../classes/Scene.html" class="crosslink">Scene</a> Scene/tick:event event.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_autoNormals" class="crosslink">autoNormals</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
+                            <p><strong>Default:</strong> false</p>
                     
                     
                     </div>
-                    <div id="property_colorMap" class="property item">
-                        <h3 class="name"><code>colorMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    <div id="property_colors" class="property item inherited">
+                        <h3 class="name"><code>colors</code></h3>
+                        <span class="type">Array of Number</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l251"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:251</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_colors">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l842"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:842</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Color <a href="../classes/Texture.html" class="crosslink">Texture</a>, to apply instead of <a href="../classes/PBRMaterial.html#property_color" class="crosslink">color</a>.</p>
-                    <p>Fires a <a href="../classes/PBRMaterial.html#event_colorMap" class="crosslink">colorMap</a> event on change.</p>
+                            <p>The Geometry&#39;s vertex colors array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_colors" class="crosslink">colors</a> event on change.</p>
                     
                         </div>
                     
@@ -1323,61 +1172,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_emissive" class="property item">
-                        <h3 class="name"><code>emissive</code></h3>
-                        <span class="type">Array(Number)</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l278"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:278</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Emissive color of this material.</p>
-                    <p>This property may be overridden by <a href="../classes/PBRMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a>.</p>
-                    <p>Fires an <a href="../classes/PBRMaterial.html#event_emissive" class="crosslink">emissive</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
-                    
-                    
-                    </div>
-                    <div id="property_emissiveMap" class="property item">
-                        <h3 class="name"><code>emissiveMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l311"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:311</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Emissive <a href="../classes/Texture.html" class="crosslink">Texture</a>, to apply instead of <a href="../classes/PBRMaterial.html#property_emissive" class="crosslink">emissive</a>.</p>
-                    <p>Fires an <a href="../classes/PBRMaterial.html#event_emissiveMap" class="crosslink">emissiveMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
                     <div id="property_id" class="property item inherited">
                         <h3 class="name"><code>id</code></h3>
                         <span class="type">String</span>
@@ -1401,6 +1195,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_indices" class="property item inherited">
+                        <h3 class="name"><code>indices</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_indices">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l882"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:882</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s indices array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_indices" class="crosslink">indices</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
@@ -1430,8 +1251,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_lineWidth" class="property item inherited">
-                        <h3 class="name"><code>lineWidth</code></h3>
+                    <div id="property_lod" class="property item">
+                        <h3 class="name"><code>lod</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -1439,21 +1260,21 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Material.html#property_lineWidth">Material</a>:
-                            <a href="../files/src_core_materials_material.js.html#l34"><code>src&#x2F;core&#x2F;materials&#x2F;material.js:34</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_grid.js.html#l162"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:162</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The Material&#39;s line width.</p>
-                    <p>Fires a <a href="../classes/Material.html#event_lineWidth" class="crosslink">lineWidth</a> event on change.</p>
+                            <p>The Grid&#39;s level-of-detail factor.</p>
+                    <p>Fires a <a href="../classes/Grid.html#event_lod" class="crosslink">lod</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> 1.0</p>
+                            <p><strong>Default:</strong> 1</p>
                     
                     
                     </div>
@@ -1482,126 +1303,38 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_metallic" class="property item">
-                        <h3 class="name"><code>metallic</code></h3>
-                        <span class="type">Number</span>
+                    <div id="property_modelBoundary" class="property item inherited">
+                        <h3 class="name"><code>modelBoundary</code></h3>
+                        <span class="type"><a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
                     
                     
                     
+                            <span class="flag final">final</span>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l182"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:182</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_modelBoundary">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l922"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:922</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Controls how metallic this material is.</p>
-                    <p>Nonmetals have a value of <code>0</code>, while metals have a value of <code>1</code>. For pure surfaces, such as
-                    pure metal, pure stone, pure plastic, etc. this value will be 0 or 1, not anything in between. When
-                    creating hybrid surfaces like corroded, dusty, or rusty metals, you may find that you need some value
-                    between 0 and 1.</p>
-                    <p>Fires a <a href="../classes/PBRMaterial.html#event_metallic" class="crosslink">metallic</a> event on change.</p>
+                            <p>Model-space 3D boundary.</p>
+                    <p>If you call <a href="../classes/Component.html#method_destroy" class="crosslink">destroy</a> on this boundary, then
+                    this property will be assigned to a fresh <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> instance next
+                    time you reference it.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> 0.0</p>
                     
                     
                     </div>
-                    <div id="property_normalMap" class="property item">
-                        <h3 class="name"><code>normalMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l466"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:466</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>A normal map <a href="../classes/Texture.html" class="crosslink">Texture</a>.</p>
-                    <p>Fires a <a href="../classes/PBRMaterial.html#event_normalMap" class="crosslink">normalMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
-                    <div id="property_opacity" class="property item">
-                        <h3 class="name"><code>opacity</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l338"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:338</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Opacity of this material.</p>
-                    <p>Opacity is a value in the range [0..1], in which 0 is fully transparent and 1.0 is fully opaque.</p>
-                    <p>This property may be overidden by <a href="../classes/PBRMaterial.html#property_opacityMap" class="crosslink">opacityMap</a>.</p>
-                    <p>Attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> will appear transparent only if they are also attached
-                    to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
-                    set to <strong>true</strong>.</p>
-                    <p>Fires an <a href="../classes/PBRMaterial.html#event_opacity" class="crosslink">opacity</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1.0</p>
-                    
-                    
-                    </div>
-                    <div id="property_opacityMap" class="property item">
-                        <h3 class="name"><code>opacityMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l377"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:377</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Opacity <a href="../classes/Texture.html" class="crosslink">Texture</a>, to apply instead of <a href="../classes/PBRMaterial.html#property_opacity" class="crosslink">opacity</a>.</p>
-                    <p>Fires an <a href="../classes/PBRMaterial.html#event_opacityMap" class="crosslink">opacityMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
-                    <div id="property_pointSize" class="property item inherited">
-                        <h3 class="name"><code>pointSize</code></h3>
-                        <span class="type">Number</span>
+                    <div id="property_normals" class="property item inherited">
+                        <h3 class="name"><code>normals</code></h3>
+                        <span class="type">Array of Number</span>
                     
                     
                     
@@ -1609,76 +1342,77 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Material.html#property_pointSize">Material</a>:
-                            <a href="../files/src_core_materials_material.js.html#l65"><code>src&#x2F;core&#x2F;materials&#x2F;material.js:65</code></a>
+                                    <a href="../classes/Geometry.html#property_normals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l762"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:762</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The Material&#39;s point size.</p>
-                    <p>Fires a <a href="../classes/Material.html#event_pointSize" class="crosslink">pointSize</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1.0</p>
-                    
-                    
-                    </div>
-                    <div id="property_roughness" class="property item">
-                        <h3 class="name"><code>roughness</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l404"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:404</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>A factor in range [0..1] that indicates the surface roughness of this PBRMaterial.</p>
-                    <p>A value of <code>0</code> is a mirrow reflection, while <code>1</code> is completely matte.</p>
-                    <p>This property may be overidden by <a href="../classes/PBRMaterial.html#property_roughnessMap" class="crosslink">roughnessMap</a>.</p>
-                    <p>Fires a <a href="../classes/PBRMaterial.html#event_roughness" class="crosslink">roughness</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.0</p>
-                    
-                    
-                    </div>
-                    <div id="property_roughnessMap" class="property item">
-                        <h3 class="name"><code>roughnessMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l439"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:439</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Roughness <a href="../classes/Texture.html" class="crosslink">Texture</a>, to apply instead of <a href="../classes/PBRMaterial.html#property_roughness" class="crosslink">roughness</a>.</p>
-                    <p>Fires an <a href="../classes/PBRMaterial.html#event_roughnessMap" class="crosslink">roughnessMap</a> event on change.</p>
+                            <p>The Geometry&#39;s normal vectors array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_normals" class="crosslink">normals</a> event on change.</p>
                     
                         </div>
                     
                             <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_positions" class="property item inherited">
+                        <h3 class="name"><code>positions</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_positions">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l705"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:705</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s positions array.</p>
+                    <p>This property is a one-dimensional array - use  XEO.math/flatten:method to
+                    convert two-dimensional arrays for assignment to this property.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_positions" class="crosslink">positions</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_primitive" class="property item inherited">
+                        <h3 class="name"><code>primitive</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_primitive">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l653"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:653</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s primitive type.</p>
+                    <p>Valid types are: &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_primitive" class="crosslink">primitive</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> &quot;triangles&quot;</p>
                     
                     
                     </div>
@@ -1705,61 +1439,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_specular" class="property item">
-                        <h3 class="name"><code>specular</code></h3>
-                        <span class="type">Array(Number)</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l493"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:493</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Specular color of this material.</p>
-                    <p>This property may be overridden by <a href="../classes/PBRMaterial.html#property_specularMap" class="crosslink">specularMap</a>.</p>
-                    <p>Fires a <a href="../classes/PBRMaterial.html#event_specular" class="crosslink">specular</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0.3, 0.3, 0.3]</p>
-                    
-                    
-                    </div>
-                    <div id="property_specularMap" class="property item">
-                        <h3 class="name"><code>specularMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l527"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:527</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Specular <a href="../classes/Texture.html" class="crosslink">Texture</a>, to apply instead of <a href="../classes/PBRMaterial.html#property_specular" class="crosslink">specular</a>.</p>
-                    <p>Fires a <a href="../classes/PBRMaterial.html#event_specularMap" class="crosslink">specularMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
@@ -1821,73 +1500,166 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_uv" class="property item inherited">
+                        <h3 class="name"><code>uv</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_uv">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l802"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:802</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s UV coordinate array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_uv" class="crosslink">uv</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_xSegments" class="property item">
+                        <h3 class="name"><code>xSegments</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_grid.js.html#l294"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:294</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Grid&#39;s number of segments on the X-axis.</p>
+                    <p>Fires a <a href="../classes/Grid.html#event_xSegments" class="crosslink">xSegments</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 4</p>
+                    
+                    
+                    </div>
+                    <div id="property_xSize" class="property item">
+                        <h3 class="name"><code>xSize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_grid.js.html#l206"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:206</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Grid&#39;s dimension on the X-axis.</p>
+                    <p>Fires a <a href="../classes/Grid.html#event_xSize" class="crosslink">xSize</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1</p>
+                    
+                    
+                    </div>
+                    <div id="property_ySegments" class="property item">
+                        <h3 class="name"><code>ySegments</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_grid.js.html#l338"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:338</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Grid&#39;s number of segments on the Y-axis.</p>
+                    <p>Fires a <a href="../classes/Grid.html#event_ySegments" class="crosslink">ySegments</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 4</p>
+                    
+                    
+                    </div>
+                    <div id="property_ySize" class="property item">
+                        <h3 class="name"><code>ySize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_grid.js.html#l250"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:250</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Grid&#39;s dimension on the Y-axis.</p>
+                    <p>Fires a <a href="../classes/Grid.html#event_ySize" class="crosslink">ySize</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0.25</p>
+                    
+                    
+                    </div>
             </div>
 
 
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_color" class="events item">
-                        <h3 class="name"><code>color</code></h3>
-                        <span class="type"></span>
+                    <div id="event_autoNormals" class="events item inherited">
+                        <h3 class="name"><code>autoNormals</code></h3>
+                        <span class="type">Boolean</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l237"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:237</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l992"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:992</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_color" class="crosslink">color</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Array(Number)</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_colorMap" class="events item">
-                        <h3 class="name"><code>colorMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l264"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:264</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_color" class="crosslink">color</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_autoNormals" class="crosslink">autoNormals</a> property changes.</p>
                     
                         </div>
                     
@@ -1901,7 +1673,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                                         <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_colors" class="events item inherited">
+                        <h3 class="name"><code>colors</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_colors">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l867"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:867</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_colors" class="crosslink">colors</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
                     
                                         </div>
                     
@@ -1936,92 +1750,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_emissive" class="events item">
-                        <h3 class="name"><code>emissive</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l297"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:297</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_emissive" class="crosslink">emissive</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Array(Number)</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_emissiveMap" class="events item">
-                        <h3 class="name"><code>emissiveMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l324"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:324</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_lineWidth" class="events item inherited">
-                        <h3 class="name"><code>lineWidth</code></h3>
+                    <div id="event_indices" class="events item inherited">
+                        <h3 class="name"><code>indices</code></h3>
                         <span class="type"></span>
                     
                     
@@ -2030,15 +1760,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Material.html#event_lineWidth">Material</a>:
-                            <a href="../files/src_core_materials_material.js.html#l51"><code>src&#x2F;core&#x2F;materials&#x2F;material.js:51</code></a>
+                                    <a href="../classes/Geometry.html#event_indices">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l907"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:907</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_lineWidth" class="crosslink">lineWidth</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a> property changes.</p>
                     
                         </div>
                     
@@ -2048,7 +1778,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Array(Number)</span>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
@@ -2062,9 +1792,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_metallic" class="events item">
-                        <h3 class="name"><code>metallic</code></h3>
-                        <span class="type"></span>
+                    <div id="event_lod" class="events item">
+                        <h3 class="name"><code>lod</code></h3>
+                        <span class="type">Number</span>
                     
                     
                     
@@ -2073,14 +1803,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l204"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:204</code></a>
+                            <a href="../files/src_extras_geometry_grid.js.html#l192"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:192</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_metallic" class="crosslink">metallic</a> property changes.</p>
+                            <p>Fired whenever this Grid&#39;s <a href="../classes/Grid.html#property_lod" class="crosslink">lod</a> property changes.</p>
                     
                         </div>
                     
@@ -2091,90 +1821,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <li class="param">
                                             <code class="param-name">value</code>
                                             <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_normalMap" class="events item">
-                        <h3 class="name"><code>normalMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l479"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:479</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s PBRMaterial/normal:property property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_opacity" class="events item">
-                        <h3 class="name"><code>opacity</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l363"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:363</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_opacity" class="crosslink">opacity</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Number</span>
                     
                     
                                         <div class="param-description">
@@ -2188,50 +1834,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_opacityMap" class="events item">
-                        <h3 class="name"><code>opacityMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l390"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:390</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_opacityMap" class="crosslink">opacityMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_pointSize" class="events item inherited">
-                        <h3 class="name"><code>pointSize</code></h3>
+                    <div id="event_normals" class="events item inherited">
+                        <h3 class="name"><code>normals</code></h3>
                         <span class="type"></span>
                     
                     
@@ -2240,15 +1844,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Material.html#event_pointSize">Material</a>:
-                            <a href="../files/src_core_materials_material.js.html#l82"><code>src&#x2F;core&#x2F;materials&#x2F;material.js:82</code></a>
+                                    <a href="../classes/Geometry.html#event_normals">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l787"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:787</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Material&#39;s <a href="../classes/Material.html#property_pointSize" class="crosslink">pointSize</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s Geometry/ normals:property property changes.</p>
                     
                         </div>
                     
@@ -2258,7 +1862,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Array(Number)</span>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
@@ -2272,8 +1876,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_roughness" class="events item">
-                        <h3 class="name"><code>roughness</code></h3>
+                    <div id="event_positions" class="events item inherited">
+                        <h3 class="name"><code>positions</code></h3>
                         <span class="type"></span>
                     
                     
@@ -2281,16 +1885,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l425"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:425</code></a>
+                                <p>Inherited from
+                                <a href="../classes/Geometry.html#event_positions">
+                                    Geometry
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_core_geometry_geometry.js.html#l735"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:735</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_roughness" class="crosslink">roughness</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> property changes.</p>
                     
                         </div>
                     
@@ -2301,90 +1908,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <li class="param">
                                             <code class="param-name">value</code>
                                             <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_roughnessMap" class="events item">
-                        <h3 class="name"><code>roughnessMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l452"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:452</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_roughnessMap" class="crosslink">roughnessMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_specular" class="events item">
-                        <h3 class="name"><code>specular</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l512"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:512</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_specular" class="crosslink">specular</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Array(Number)</span>
                     
                     
                                         <div class="param-description">
@@ -2398,25 +1921,25 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_specularMap" class="events item">
-                        <h3 class="name"><code>specularMap</code></h3>
-                        <span class="type"></span>
+                    <div id="event_primitive" class="events item inherited">
+                        <h3 class="name"><code>primitive</code></h3>
+                        <span class="type">String</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_core_materials_pbrMaterial.js.html#l540"><code>src&#x2F;core&#x2F;materials&#x2F;pbrMaterial.js:540</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_primitive">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l691"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:691</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this PBRMaterial&#39;s <a href="../classes/PBRMaterial.html#property_specularMap" class="crosslink">specularMap</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_primitive" class="crosslink">primitive</a> property changes.</p>
                     
                         </div>
                     
@@ -2430,7 +1953,217 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                                         <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_uv" class="events item inherited">
+                        <h3 class="name"><code>uv</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_uv">Geometry</a>:
+                            <a href="../files/src_core_geometry_geometry.js.html#l827"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:827</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_xSegments" class="events item">
+                        <h3 class="name"><code>xSegments</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_grid.js.html#l324"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:324</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Grid&#39;s <a href="../classes/Grid.html#property_xSegments" class="crosslink">xSegments</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_xSize" class="events item">
+                        <h3 class="name"><code>xSize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_grid.js.html#l236"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:236</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Grid&#39;s <a href="../classes/Grid.html#property_xSize" class="crosslink">xSize</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_ySegments" class="events item">
+                        <h3 class="name"><code>ySegments</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_grid.js.html#l368"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:368</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Grid&#39;s <a href="../classes/Grid.html#property_ySegments" class="crosslink">ySegments</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_ySize" class="events item">
+                        <h3 class="name"><code>ySize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_grid.js.html#l280"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:280</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Grid&#39;s <a href="../classes/Grid.html#property_ySize" class="crosslink">ySize</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
                     
                                         </div>
                     

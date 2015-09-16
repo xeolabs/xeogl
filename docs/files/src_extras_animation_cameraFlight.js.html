@@ -66,6 +66,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
+                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -115,6 +116,7 @@
                                 <li><a href="../classes/Torus.html">Torus</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -184,18 +186,18 @@
  ## Overview
 
  &lt;ul&gt;
-    &lt;li&gt;A CameraFlight animates the {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} attached to the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}.&lt;/li&gt;
-    &lt;li&gt;A CameraFlight can be attached to a different {{#crossLink &quot;Camera&quot;}}{{/crossLink}} at any time.&lt;/li&gt;
-    &lt;li&gt;While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.&lt;/li&gt;
+ &lt;li&gt;A CameraFlight animates the {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} attached to the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;A CameraFlight can be attached to a different {{#crossLink &quot;Camera&quot;}}{{/crossLink}} at any time.&lt;/li&gt;
+ &lt;li&gt;While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.&lt;/li&gt;
  &lt;/ul&gt;
 
  A target can be:
 
  &lt;ul&gt;
-    &lt;li&gt;a World-space {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}},&lt;/li&gt;
-    &lt;li&gt;an instance or ID of any {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that provides a World-space&lt;/li&gt;
-    {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} in a &quot;worldBoundary&quot; property, or&lt;/li&gt;
-    &lt;li&gt;specific &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60; positions.&lt;/li&gt;
+ &lt;li&gt;a World-space {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;an instance or ID of any {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that provides a World-space&lt;/li&gt;
+ {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} in a &quot;worldBoundary&quot; property, or&lt;/li&gt;
+ &lt;li&gt;specific &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60; positions.&lt;/li&gt;
  &lt;/ul&gt;
 
  ## Example #1

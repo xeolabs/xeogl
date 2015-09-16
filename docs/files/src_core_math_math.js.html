@@ -66,6 +66,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
+                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -115,6 +116,7 @@
                                 <li><a href="../classes/Torus.html">Torus</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -2122,6 +2124,44 @@
             aabb.zmax = zmax;
 
             return aabb;
+        },
+
+        /**
+         * Expands the second axis-aligned boundary to enclose the first, if needed.
+         *
+         * @method expandAABB3
+         * @static
+         * @param {*} aabb1 First AABB
+         * @param {*} aabb2 Second AABB
+         * @returns {*} The second AABB
+         */
+        expandAABB3: function (aabb1, aabb2) {
+
+            if (aabb1.xmin &lt; aabb2.xmin) {
+                aabb2.xmin = aabb1.xmin;
+            }
+
+            if (aabb1.ymin &lt; aabb2.ymin) {
+                aabb2.ymin = aabb1.ymin;
+            }
+
+            if (aabb1.zmin &lt; aabb2.zmin) {
+                aabb2.zmin = aabb1.zmin;
+            }
+
+            if (aabb1.xmax &gt; aabb2.xmax) {
+                aabb2.xmax = aabb1.xmax;
+            }
+
+            if (aabb1.ymax &gt; aabb2.ymax) {
+                aabb2.ymax = aabb1.ymax;
+            }
+
+            if (aabb1.zmax &gt; aabb2.zmax) {
+                aabb2.zmax = aabb1.zmax;
+            }
+
+            return aabb2;
         },
 
         /**

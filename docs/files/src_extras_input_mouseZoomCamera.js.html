@@ -66,6 +66,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
+                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -115,6 +116,7 @@
                                 <li><a href="../classes/Torus.html">Torus</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -215,7 +217,7 @@
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this MouseZoomCamera. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/camera:property&quot;}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Zoom sensitivity factor.
+ @param [cfg.sensitivity=0.5] {Number} Zoom sensitivity factor.
  @param [cfg.active=true] {Boolean} Whether or not this MouseZoomCamera is active.
  @extends Component
  */
@@ -287,13 +289,13 @@
              *
              * @property sensitivity
              * @type Number
-             * @default 1.0
+             * @default 0.5
              */
             sensitivity: {
 
                 set: function (value) {
 
-                    this._sensitivity = value || 1.0;
+                    this._sensitivity = value || 0.5;
 
                     /**
                      * Fired whenever this MouseZoomCamera&#x27;s  {{#crossLink &quot;MouseZoomCamera/sensitivity:property&quot;}}{{/crossLink}} property changes.

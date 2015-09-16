@@ -66,6 +66,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
+                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -115,6 +116,7 @@
                                 <li><a href="../classes/Torus.html">Torus</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -519,6 +521,15 @@
                 canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
                 contextAttr: cfg.contextAttr || {}
             });
+
+            // Redraw as canvas resized
+            this.canvas.on(&quot;size&quot;,
+                function () {
+                    self._renderer.render({
+                        force: true,
+                        clear: true
+                    });
+                });
 
             this.canvas.on(&quot;webglContextFailed&quot;,
                 function () {
@@ -1224,6 +1235,81 @@
                             priority: 0
                         });
                 }
+            },
+
+            /**
+             * World-space 3D boundary.
+             *
+             * If you call {{#crossLink &quot;Component/destroy:method&quot;}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} instance next
+             * time you reference it.
+             *
+             * @property worldBoundary
+             * @type Boundary3D
+             * @final
+             */
+            worldBoundary: {
+
+                get: function () {
+
+                    if (!this._worldBoundary) {
+
+                        var self = this;
+                        var aabb = {};
+
+                        // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
+
+                        this._worldBoundary = new XEO.Boundary3D(this.scene, {
+
+                            getDirty: function () {
+
+                                return true; // This boundary always rebuilds when queried, no caching.
+
+                                //return self._worldBoundaryDirty;
+                            },
+
+                            getAABB: function () {
+
+                                aabb.xmin = 100000;
+                                aabb.ymin = 100000;
+                                aabb.zmin = 100000;
+                                aabb.xmax = -100000;
+                                aabb.ymax = -100000;
+                                aabb.zmax = -100000;
+
+                                var objects = self.objects;
+                                var object;
+
+                                for (var objectId in objects) {
+                                    if (objects.hasOwnProperty(objectId)) {
+
+                                        object = objects[objectId];
+
+                                        XEO.math.expandAABB3(object.worldBoundary.aabb, aabb);
+                                    }
+                                }
+
+                                return aabb;
+                            }
+                        });
+
+                        this._worldBoundary.on(&quot;destroyed&quot;,
+                            function () {
+                                self._worldBoundary = null;
+                            });
+
+                        this._setWorldBoundaryDirty();
+                    }
+
+                    return this._worldBoundary;
+                }
+            }
+        },
+
+        _setWorldBoundaryDirty: function () {
+            this._worldBoundaryDirty = true;
+            if (this._worldBoundary) {
+                this._worldBoundary.fire(&quot;updated&quot;, true);
             }
         },
 

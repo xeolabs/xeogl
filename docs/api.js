@@ -29,6 +29,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Geometry",
         "Geometry.OBJ",
         "Geometry.Quad",
+        "Grid",
         "Group",
         "GroupBoundary",
         "Heightmap",
@@ -78,6 +79,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Torus",
         "Transform",
         "Translate",
+        "VectorTextGeometry",
         "Visibility",
         "XEO",
         "XEO.math.math"
