@@ -35,7 +35,7 @@
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardZoomCamera. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Zoom sensitivity factor.
+ @param [cfg.sensitivity=0.5] {Number} Zoom sensitivity factor.
  @param [cfg.active=true] {Boolean} Whether or not this KeyboardZoomCamera is active.
  @extends Component
  */
@@ -106,13 +106,13 @@
              *
              * @property sensitivity
              * @type Number
-             * @default 1.0
+             * @default 0.5
              */
             sensitivity: {
 
                 set: function (value) {
 
-                    this._sensitivity = value || 1.0;
+                    this._sensitivity = value || 0.5;
 
                     /**
                      * Fired whenever this KeyboardZoomCamera's  {{#crossLink "KeyboardZoomCamera/sensitivity:property"}}{{/crossLink}} property changes.
@@ -170,7 +170,7 @@
 
                                         var z = 0;
 
-                                        var sensitivity = self.sensitivity * 15.0;
+                                        var sensitivity = self.sensitivity * 0.5;
 
                                         if (skey) {
                                             z = elapsed * sensitivity;

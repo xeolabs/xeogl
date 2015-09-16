@@ -116,7 +116,6 @@
              * @type KeyboardOrbitCamera
              */
             this.keyboardOrbit = new XEO.KeyboardOrbitCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -128,7 +127,6 @@
              * @type MouseOrbitCamera
              */
             this.mouseOrbit = new XEO.MouseOrbitCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -140,7 +138,6 @@
              * @type KeyboardPanCamera
              */
             this.keyboardPan = new XEO.KeyboardPanCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -152,7 +149,6 @@
              * @type MousePanCamera
              */
             this.mousePan = new XEO.MousePanCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -164,7 +160,6 @@
              * @type KeyboardZoomCamera
              */
             this.keyboardZoom = new XEO.KeyboardZoomCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -176,7 +171,6 @@
              * @type MouseZoomCamera
              */
             this.mouseZoom = new XEO.MouseZoomCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -188,23 +182,15 @@
              * @type MousePickObject
              */
             this.mousePickObject = new XEO.MousePickObject(scene, {
-                rayPick: true,
-                camera: cfg.camera
-            });
-
-            /**
-             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property cameraFly
-             * @final
-             * @type CameraFlight
-             */
-            this.cameraFly = new XEO.CameraFlight(scene, {
+                pickPrimitive: true,
                 camera: cfg.camera
             });
 
             this.mousePickObject.on("pick",
                 function (e) {
+
+                    // Fly camera to each picked object
+                    // Don't change distance between look and eye
 
                     var view = self.cameraFly.camera.view;
 
@@ -220,11 +206,23 @@
                     });
                 });
 
-            // Handle when nothing is picked
             this.mousePickObject.on("nopick",
                 function (e) {
-                    // alert("Mothing picked");
+                    //alert("Nothing picked");
                 });
+
+            /**
+             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property cameraFly
+             * @final
+             * @type CameraFlight
+             */
+            this.cameraFly = new XEO.CameraFlight(scene, {
+                camera: cfg.camera
+            });
+
+            // Set component properties
 
             this.firstPerson = cfg.firstPerson;
             this.camera = cfg.camera;
@@ -307,7 +305,7 @@
                 },
 
                 get: function () {
-                    return this._camera;
+                    return this._children.camera;
                 }
             },
 
@@ -358,7 +356,7 @@
         _getJSON: function () {
 
             var json = {
-                sensitivity: this._sensitivity,
+                firstPerson: this._firstPerson,
                 active: this._active
             };
 

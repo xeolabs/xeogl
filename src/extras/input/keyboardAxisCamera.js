@@ -71,6 +71,7 @@
             // Animations
 
             this._cameraFly = new XEO.CameraFlight(this.scene, {
+                duration: 1.0
             });
 
             // Init properties
@@ -148,8 +149,11 @@
                                     return;
                                 }
 
-                                var aabb = self.scene.worldAABB;
-                                var center = self.scene.worldCenter;
+                                var boundary = self.scene.worldBoundary;
+                                var aabb = boundary.aabb;
+                                var center = boundary.center;
+                                var diag = XEO.math.getAABBDiag(aabb);
+                                var dist = 200;
 
                                 switch (keyCode) {
 
@@ -159,7 +163,7 @@
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [-10, 0, 0],
+                                            eye: [center[0] - dist, center[1], center[2]],
                                             up: [0, 1, 0]
                                         });
 
@@ -172,7 +176,7 @@
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [10, 0, 0],
+                                            eye: [center[0] + dist, center[1], center[2]],
                                             up: [0, 1, 0]
                                         });
 
@@ -185,7 +189,7 @@
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [0, 0, -10],
+                                            eye: [center[0], center[1], center[2] - dist],
                                             up: [0, 1, 0]
                                         });
 
@@ -197,7 +201,7 @@
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [0, 0, 10],
+                                            eye: [center[0], center[1], center[2] + dist],
                                             up: [0, 1, 0]
                                         });
 
@@ -209,7 +213,7 @@
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [0, -10, 0],
+                                            eye: [center[0], center[1] - dist, center[2]],
                                             up: [0, 0, -1]
                                         });
 
@@ -221,7 +225,7 @@
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [0, 10, 0],
+                                            eye: [center[0], center[1] + dist, center[2]],
                                             up: [0, 0, 1]
                                         });
 

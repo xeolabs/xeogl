@@ -42,7 +42,7 @@
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MousePanCamera. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Pan sensitivity factor.
+ @param [cfg.sensitivity=0.5] {Number} Pan sensitivity factor.
  @param [cfg.active=true] {Boolean} Whether or not this MousePanCamera is active.
  @extends Component
  */
@@ -116,7 +116,7 @@
              *
              * @property sensitivity
              * @type Number
-             * @default 1.0
+             * @default 0.5
              */
             sensitivity: {
 
@@ -209,8 +209,8 @@
                         this._onMouseMove = input.on("mousemove",
                             function (e) {
                                 if (down) {
-                                    xDelta += (e[0] - lastX) * self.sensitivity;
-                                    yDelta += (e[1] - lastY) * self.sensitivity;
+                                    xDelta += (e[0] - lastX) * self._sensitivity;
+                                    yDelta += (e[1] - lastY) * self._sensitivity;
                                     lastX = e[0];
                                     lastY = e[1];
                                 }

@@ -78,6 +78,7 @@
             
             this.camera = cfg.camera;
             this.active = cfg.active !== false;
+            this.sensitivity = cfg.sensitivity;
         },
 
         _props: {
@@ -109,6 +110,35 @@
 
                 get: function () {
                     return this._children.camera;
+                }
+            },
+
+            /**
+             * The sensitivity of this KeyboardOrbitCamera.
+             *
+             * Fires a {{#crossLink "KeyboardOrbitCamera/sensitivity:event"}}{{/crossLink}} event on change.
+             *
+             * @property sensitivity
+             * @type Number
+             * @default 1.0
+             */
+            sensitivity: {
+
+                set: function (value) {
+
+                    this._sensitivity = value || 1.0;
+
+                    /**
+                     * Fired whenever this KeyboardOrbitCamera's  {{#crossLink "KeyboardOrbitCamera/sensitivity:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event sensitivity
+                     * @param value The property's new value
+                     */
+                    this.fire("sensitivity", this._sensitivity);
+                },
+
+                get: function () {
+                    return this._sensitivity;
                 }
             },
 
@@ -181,8 +211,8 @@
 
                                 var elapsed = params.deltaTime;
 
-                                var yawRate = 50;
-                                var pitchRate = 50;
+                                var yawRate = self._sensitivity * 0.5;
+                                var pitchRate = self._sensitivity * 0.5;
 
                                 if (!input.ctrlDown && !input.altDown) {
 

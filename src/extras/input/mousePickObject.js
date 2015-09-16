@@ -33,14 +33,14 @@ TODO
     // We want the 3D World-space coordinates
     // of each location we pick
 
-    rayPick: true
+    pickPrimitive: true
  });
 
  // Handle picked GameObjects
  mousePickObject.on("pick", function(e) {
     var object = e.object;
     var canvasPos = e.canvasPos;
-    var worldPos = e.worldPos;
+    var primitiveIndex = e.primitiveIndex;
  });
 
  // Handle nothing picked
@@ -57,7 +57,7 @@ TODO
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickObject.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
+ @param [pickPrimitive=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
  {{#crossLink "GameObject"}}{{/crossLink}}.
  @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickObject is active.
  @extends Component
@@ -79,7 +79,7 @@ TODO
 
         _init: function (cfg) {
 
-            this.rayPick = cfg.rayPick;
+            this.pickPrimitive = cfg.pickPrimitive;
 
             this.active = cfg.active !== false;
         },
@@ -112,7 +112,7 @@ TODO
                             function (canvasPos) {
 
                                 var hit = self.scene.pick(canvasPos, {
-                                    rayPick: self._rayPick
+                                    pickPrimitive: self._pickPrimitive
                                 });
 
                                 if (hit) {
@@ -122,12 +122,13 @@ TODO
                                      * @event picked
                                      * @param {String} objectId The ID of the picked {{#crossLink "GameObject"}}GameObject{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
                                      * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                     * @param {Array of Number} worldPos When {{#crossLink "MousePickObject/rayPick"}}{{/crossLink}} is true,
+                                     * @param {Array of Number} worldPos When {{#crossLink "MousePickObject/pickPrimitive"}}{{/crossLink}} is true,
                                      * provides the World-space coordinate that was ray-picked on the surface of the
                                      * {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
                                      */
                                     self.fire("pick", hit);
 
+                                    console.log(JSON.stringify(hit));
                                 } else {
 
                                     /**
@@ -161,39 +162,39 @@ TODO
             },
 
             /**
-             * Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
-             * {{#crossLink "GameObject"}}{{/crossLink}}.
+             * Indicates whether this MousePickObject will try to pick a {{#crossLink "Geometry"}}{{/crossLink}} primitive
+             * whenever it picks a {{#crossLink "GameObject"}}{{/crossLink}}.
              *
-             * When true, this MousePickObject returns the 3D World-space intersection in each
+             * When true, this MousePickObject will try to return the primitive index in a
              * {{#crossLink "MousePickObject/picked:event"}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink "MousePickObject/rayPick:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "MousePickObject/pickPrimitive:event"}}{{/crossLink}} event on change.
              *
-             * @property rayPick
+             * @property pickPrimitive
              * @type Boolean
              */
-            rayPick: {
+            pickPrimitive: {
 
                 set: function (value) {
 
                     value = !!value;
 
-                    if (this._rayPick === value) {
+                    if (this._pickPrimitive === value) {
                         return;
                     }
 
                     this._dirty = false;
 
                     /**
-                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/rayPick:property"}}{{/crossLink}} property changes.
-                     * @event rayPick
+                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/pickPrimitive:property"}}{{/crossLink}} property changes.
+                     * @event pickPrimitive
                      * @param value The property's new value
                      */
-                    this.fire('rayPick', this._rayPick = value);
+                    this.fire('pickPrimitive', this._pickPrimitive = value);
                 },
 
                 get: function () {
-                    return this._rayPick;
+                    return this._pickPrimitive;
                 }
             }
         },
@@ -201,7 +202,7 @@ TODO
         _getJSON: function () {
 
             var json = {
-                rayPick: this._rayPick,
+                pickPrimitive: this._pickPrimitive,
                 active: this._active
             };
 
