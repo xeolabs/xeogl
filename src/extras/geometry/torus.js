@@ -406,14 +406,14 @@
         },
 
         _getJSON: function () {
-            return XEO._apply2({
+            return {
                 // Don't save lod
                 radius: this._radius,
                 tube: this._tube,
                 segmentsR: this._segmentsR,
                 segmentsT: this._segmentsT,
                 arc: this._arc
-            }, {});
+            };
         }
     });
 
