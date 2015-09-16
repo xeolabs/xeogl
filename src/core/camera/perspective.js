@@ -83,7 +83,6 @@
 
             this._dirty = false;
             this._fovy = 60.0;
-            this._aspect = 1.0;
             this._near = 0.1;
             this._far = 10000.0;
 
@@ -92,8 +91,8 @@
 
             // Recompute aspect from change in canvas size
             this._canvasResized = canvas.on("size",
-                function (e) {
-                    self.aspect = e.width / e.height;
+                function () {
+                    self._scheduleBuild();
                 });
 
             this.fovy = cfg.fovy;
@@ -101,7 +100,6 @@
             this.far = cfg.far;
         },
 
-        // Schedules a call to #_build on the next "tick"
         _scheduleBuild: function () {
 
             if (!this._dirty) {
@@ -117,14 +115,12 @@
             }
         },
 
-        // Rebuilds renderer state from component state
         _build: function () {
 
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
             XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
-
 
             this._dirty = false;
 
