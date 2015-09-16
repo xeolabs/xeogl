@@ -340,6 +340,15 @@
                 contextAttr: cfg.contextAttr || {}
             });
 
+            // Redraw as canvas resized
+            this.canvas.on("size",
+                function () {
+                    self._renderer.render({
+                        force: true,
+                        clear: true
+                    });
+                });
+
             this.canvas.on("webglContextFailed",
                 function () {
                     alert("xeoEngine failed to find WebGL!");
@@ -1044,6 +1053,81 @@
                             priority: 0
                         });
                 }
+            },
+
+            /**
+             * World-space 3D boundary.
+             *
+             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
+             * time you reference it.
+             *
+             * @property worldBoundary
+             * @type Boundary3D
+             * @final
+             */
+            worldBoundary: {
+
+                get: function () {
+
+                    if (!this._worldBoundary) {
+
+                        var self = this;
+                        var aabb = {};
+
+                        // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
+
+                        this._worldBoundary = new XEO.Boundary3D(this.scene, {
+
+                            getDirty: function () {
+
+                                return true; // This boundary always rebuilds when queried, no caching.
+
+                                //return self._worldBoundaryDirty;
+                            },
+
+                            getAABB: function () {
+
+                                aabb.xmin = 100000;
+                                aabb.ymin = 100000;
+                                aabb.zmin = 100000;
+                                aabb.xmax = -100000;
+                                aabb.ymax = -100000;
+                                aabb.zmax = -100000;
+
+                                var objects = self.objects;
+                                var object;
+
+                                for (var objectId in objects) {
+                                    if (objects.hasOwnProperty(objectId)) {
+
+                                        object = objects[objectId];
+
+                                        XEO.math.expandAABB3(object.worldBoundary.aabb, aabb);
+                                    }
+                                }
+
+                                return aabb;
+                            }
+                        });
+
+                        this._worldBoundary.on("destroyed",
+                            function () {
+                                self._worldBoundary = null;
+                            });
+
+                        this._setWorldBoundaryDirty();
+                    }
+
+                    return this._worldBoundary;
+                }
+            }
+        },
+
+        _setWorldBoundaryDirty: function () {
+            this._worldBoundaryDirty = true;
+            if (this._worldBoundary) {
+                this._worldBoundary.fire("updated", true);
             }
         },
 
