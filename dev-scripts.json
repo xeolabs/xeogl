@@ -115,7 +115,9 @@
     "src/extras/geometry/sphere.js",
     "src/extras/geometry/pathGeometry.js",
     "src/extras/geometry/cylinder.js",
+    "src/extras/geometry/plane.js",
     "src/extras/geometry/heightmap.js",
+
     "src/extras/groups/_module.js",
     "src/extras/groups/group.js",
     "src/extras/groups/groupBoundary.js",
