@@ -1945,6 +1945,44 @@
         },
 
         /**
+         * Expands the second axis-aligned boundary to enclose the first, if needed.
+         *
+         * @method expandAABB3
+         * @static
+         * @param {*} aabb1 First AABB
+         * @param {*} aabb2 Second AABB
+         * @returns {*} The second AABB
+         */
+        expandAABB3: function (aabb1, aabb2) {
+
+            if (aabb1.xmin < aabb2.xmin) {
+                aabb2.xmin = aabb1.xmin;
+            }
+
+            if (aabb1.ymin < aabb2.ymin) {
+                aabb2.ymin = aabb1.ymin;
+            }
+
+            if (aabb1.zmin < aabb2.zmin) {
+                aabb2.zmin = aabb1.zmin;
+            }
+
+            if (aabb1.xmax > aabb2.xmax) {
+                aabb2.xmax = aabb1.xmax;
+            }
+
+            if (aabb1.ymax > aabb2.ymax) {
+                aabb2.ymax = aabb1.ymax;
+            }
+
+            if (aabb1.zmax > aabb2.zmax) {
+                aabb2.zmax = aabb1.zmax;
+            }
+
+            return aabb2;
+        },
+
+        /**
          * Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.
          *
          * @method points3ToAABB2
