@@ -574,7 +574,7 @@
 
                 // Both numeric and string IDs are supported
 
-                if (XEO._isNumeric(child) || XEO._isString(child)) {
+                if (child && XEO._isNumeric(child) || XEO._isString(child)) {
 
                     // Child ID given
 
@@ -603,7 +603,7 @@
 
                 // Child of given name already attached
 
-                if (oldChild.id === child.id) {
+                if (child && oldChild.id === child.id) {
 
                     // Reject attempt to reattach same child
                     return;
