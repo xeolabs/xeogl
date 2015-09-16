@@ -523,7 +523,7 @@
         },
 
         _getJSON: function () {
-            return XEO._apply2({
+            return {
                 // Don't save lod
                 radiusTop: this._radiusTop,
                 radiusBottom: this._radiusBottom,
@@ -531,7 +531,7 @@
                 radialSegments: this._radialSegments,
                 heightSegments: this._heightSegments,
                 openEnded: this._openEnded
-            }, {});
+            };
         }
     });
 
