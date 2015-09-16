@@ -21,7 +21,9 @@
 
 <div id="infoDark">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a> - diffuse <a href="../docs/classes/Texture.html"
-                                                                               target="_other">Texture</a>
+                                                                              target="_other">Texture</a>
+    <br><br>
+    <img src="textures/testDiffuseMap.png" width="300px" height="300px">
 </div>
 
 <script>
@@ -35,19 +37,7 @@
     });
 
     var diffuseMap = new XEO.Texture({
-        src: "textures/crossGridColorMap.jpg",
-        minFilter: "linearMipmapLinear",
-        magFiler: "linear",
-        wrapS: "repeat",
-        wrapT: "repeat",
-        flipY: true,
-        translate: [0, 0, 0],
-        scale: [1, 1, 1],
-        rotate: 0
-    });
-
-    var colorMap = new XEO.Texture({
-        src: "textures/crossGridColorMap.jpg",
+        src: "textures/testDiffuseMap.png",
         minFilter: "linearMipmapLinear",
         magFiler: "linear",
         wrapS: "repeat",
@@ -62,8 +52,7 @@
         ambient: [0.3, 0.3, 0.3],
         diffuse: [0.3, 0.5, 0.5],
         shininess: 30,
-       //diffuseMap: diffuseMap,
-        specularMap: colorMap
+        diffuseMap: diffuseMap
     });
 
     var object = new XEO.GameObject({

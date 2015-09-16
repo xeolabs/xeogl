@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - diffuse <a href="../docs/classes/Texture.html"
+                                                                              target="_other">Texture</a>
+</div>
+
+<script>
+
+    var geometry = new XEO.Sphere({
+        radius: 1.0,
+        tube: 0.4,
+        segmentsR: 32,
+        segmentsT: 24,
+        arc: Math.PI * 2.0
+    });
+
+    var ambientMap = new XEO.Texture({
+        src: "textures/crossGridColorMap.jpg"
+    });
+
+    var diffuseMap = new XEO.Texture({
+        src: "textures/crossGridColorMap.jpg"
+    });
+
+    var emissiveMap = new XEO.Texture({
+        src: "textures/emissiveMap.jpg"
+    });
+
+    var specularMap = new XEO.Texture({
+        src: "textures/emissiveMap.jpg"
+    });
+
+    var opacityMap = new XEO.Texture({
+        src: "textures/crossGridOpacityMap.jpg"
+    });
+
+    // Diffuse map
+
+    new XEO.GameObject({
+        geometry: geometry,
+        material: new XEO.PhongMaterial({
+            diffuseMap: diffuseMap
+        }),
+        transform: new XEO.Translate({
+            xyz: [-6, 0, 0]
+        })
+    });
+
+    // Emissive map
+
+    new XEO.GameObject({
+        geometry: geometry,
+        material: new XEO.PhongMaterial({
+            diffuse: [0,0,0],
+            emissiveMap: emissiveMap
+        }),
+        transform: new XEO.Translate({
+            xyz: [-3, 0, 0]
+        })
+    });
+
+    // Ambient map
+
+    new XEO.GameObject({
+        geometry: geometry,
+        material: new XEO.PhongMaterial({
+            ambientMap: ambientMap
+        }),
+        transform: new XEO.Translate({
+            xyz: [0, 0, 0]
+        })
+    });
+
+    // Specular map
+
+    new XEO.GameObject({
+        geometry: geometry,
+        material: new XEO.PhongMaterial({
+            shininess: 30,
+            specularMap: specularMap,
+            diffuse: [0.1, 0.1, 0.4]
+        }),
+        transform: new XEO.Translate({
+            xyz: [3, 0, 0]
+        })
+    });
+
+    var scene = XEO.scene;
+
+    scene.camera.view.zoom(10);
+
+    new XEO.CameraControl();
+
+</script>
+</body>
+</html>

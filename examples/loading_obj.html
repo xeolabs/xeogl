@@ -53,6 +53,9 @@
         })
     });
 
+  //  object.canvasBoundary.shown = true;
+    object.worldBoundary.visible = true;
+
 
     var control = new XEO.CameraControl();
 
@@ -65,17 +68,6 @@
         animation.flyTo({
             eye: [look[0] - 100, look[1] + 100, look[2] - 120],
             look: look
-        });
-
-        var boundaryObject = new XEO.GameObject({
-            geometry: new XEO.BoundaryGeometry({
-                boundary: object.worldBoundary
-            }),
-            material: new XEO.PhongMaterial({
-                diffuse: [0.5, 1.0, 0.5],
-                emissive: [0.5, 1.0, 0.5],
-                lineWidth:2
-            })
         });
     });
 

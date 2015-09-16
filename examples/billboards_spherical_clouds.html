@@ -77,8 +77,8 @@
 
         o.viewBoundary.on("updated",
                 function () {
-                    var center = o.viewBoundary.center[2];
-                    var priority = Math.floor(500 + center * 100);
+                    var center = o.viewBoundary.center;
+                    var priority = Math.floor(500 + center[2] * 100);
                     o.layer.priority = priority;
                 });
     }
@@ -96,8 +96,8 @@
 
                 var view = scene.camera.view;
 
-                view.rotateEyeY(0.5);
-                view.rotateEyeX(0.3);
+//                view.rotateEyeY(0.5);
+//                view.rotateEyeX(0.3);
 
                 logJSON(scene.stats);
             });

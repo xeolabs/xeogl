@@ -37,25 +37,39 @@
 
     var heightmap = new XEO.Heightmap({
         primitive: "triangles",
-        src: "textures/heightMap1.jpg",
+        src: "textures/heightMap2.png",
         xSize: 10,
-        ySize: 1.0,
-        zSize: 10,
-        xSegments: 50,
-        zSegments: 50,
+        ySize: 10,
+        zSize: 5,
+        xSegments: 70,
+        ySegments: 70,
         lod: 1.0, // Default
         autoNormals: true // Default
     });
 
+    var diffuseMap = new XEO.Texture({
+        src: "textures/uvGrid2.jpg"
+    });
+
     var object = new XEO.GameObject({
         geometry: heightmap,
-        material:  new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
-                src: "textures/brickWall.jpg"
-            }),
-            pointSize:3
+        material: new XEO.PhongMaterial({
+            diffuseMap: diffuseMap,
+            pointSize: 3
         })
     });
+
+    object.worldBoundary.visible = true;
+
+    // Position camera
+
+    var view = object.scene.camera.view;
+
+    view.zoom(2);
+    view.rotateEyeX(-60);
+    view.rotateEyeY(-20);
+
+    // Let user move camera
 
     new XEO.CameraControl();
 
@@ -71,15 +85,18 @@
         this["ySize"] = heightmap.ySize;
         this["zSize"] = heightmap.zSize;
         this["xSegments"] = heightmap.xSegments;
-        this["zSegments"] = heightmap.zSegments;
+        this["ySegments"] = heightmap.ySegments;
         this["autoNormals"] = heightmap.autoNormals;
         this["lod"] = heightmap.lod;
+        this["texture"] = true;
 
         var self = this;
 
         // This is actually quite inefficient because it continually updates
         // the scene graph, forcing frames to continually re-render.
         // Your GPU's not going to like it, but it's just for a quick and dirty demo.
+
+        var textured = true;
 
         var update = function () {
 
@@ -89,7 +106,7 @@
             heightmap.ySize = self["ySize"];
             heightmap.zSize = self["zSize"];
             heightmap.xSegments = self["xSegments"];
-            heightmap.zSegments = self["zSegments"];
+            heightmap.ySegments = self["ySegments"];
             heightmap.lod = self["lod"];
             heightmap.autoNormals = self["autoNormals"];
 
@@ -115,10 +132,11 @@
     folder.add(menu, 'xSize', 0.1, 10.0);
     folder.add(menu, 'ySize', 0.1, 10.0);
     folder.add(menu, 'zSize', 0.1, 10.0);
-    folder.add(menu, 'xSegments', 1, 50);
-    folder.add(menu, 'zSegments', 1, 50);
+    folder.add(menu, 'xSegments', 1, 70);
+    folder.add(menu, 'ySegments', 1, 70);
     folder.add(menu, 'lod', 0.1, 1.0);
     folder.add(menu, 'autoNormals');
+    folder.add(menu, 'texture');
 
     folder.open();
 
