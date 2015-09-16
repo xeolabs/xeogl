@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-09-15
+ * Built on 2015-09-16
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -1053,7 +1053,7 @@
 
                 // Both numeric and string IDs are supported
 
-                if (XEO._isNumeric(child) || XEO._isString(child)) {
+                if (child && XEO._isNumeric(child) || XEO._isString(child)) {
 
                     // Child ID given
 
@@ -1082,7 +1082,7 @@
 
                 // Child of given name already attached
 
-                if (oldChild.id === child.id) {
+                if (child && oldChild.id === child.id) {
 
                     // Reject attempt to reattach same child
                     return;
@@ -1594,6 +1594,15 @@
                 canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
                 contextAttr: cfg.contextAttr || {}
             });
+
+            // Redraw as canvas resized
+            this.canvas.on("size",
+                function () {
+                    self._renderer.render({
+                        force: true,
+                        clear: true
+                    });
+                });
 
             this.canvas.on("webglContextFailed",
                 function () {
@@ -2299,6 +2308,81 @@
                             priority: 0
                         });
                 }
+            },
+
+            /**
+             * World-space 3D boundary.
+             *
+             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
+             * time you reference it.
+             *
+             * @property worldBoundary
+             * @type Boundary3D
+             * @final
+             */
+            worldBoundary: {
+
+                get: function () {
+
+                    if (!this._worldBoundary) {
+
+                        var self = this;
+                        var aabb = {};
+
+                        // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
+
+                        this._worldBoundary = new XEO.Boundary3D(this.scene, {
+
+                            getDirty: function () {
+
+                                return true; // This boundary always rebuilds when queried, no caching.
+
+                                //return self._worldBoundaryDirty;
+                            },
+
+                            getAABB: function () {
+
+                                aabb.xmin = 100000;
+                                aabb.ymin = 100000;
+                                aabb.zmin = 100000;
+                                aabb.xmax = -100000;
+                                aabb.ymax = -100000;
+                                aabb.zmax = -100000;
+
+                                var objects = self.objects;
+                                var object;
+
+                                for (var objectId in objects) {
+                                    if (objects.hasOwnProperty(objectId)) {
+
+                                        object = objects[objectId];
+
+                                        XEO.math.expandAABB3(object.worldBoundary.aabb, aabb);
+                                    }
+                                }
+
+                                return aabb;
+                            }
+                        });
+
+                        this._worldBoundary.on("destroyed",
+                            function () {
+                                self._worldBoundary = null;
+                            });
+
+                        this._setWorldBoundaryDirty();
+                    }
+
+                    return this._worldBoundary;
+                }
+            }
+        },
+
+        _setWorldBoundaryDirty: function () {
+            this._worldBoundaryDirty = true;
+            if (this._worldBoundary) {
+                this._worldBoundary.fire("updated", true);
             }
         },
 
@@ -4101,7 +4185,6 @@
 
             this._dirty = false;
             this._fovy = 60.0;
-            this._aspect = 1.0;
             this._near = 0.1;
             this._far = 10000.0;
 
@@ -4110,8 +4193,8 @@
 
             // Recompute aspect from change in canvas size
             this._canvasResized = canvas.on("size",
-                function (e) {
-                    self.aspect = e.width / e.height;
+                function () {
+                    self._scheduleBuild();
                 });
 
             this.fovy = cfg.fovy;
@@ -4119,7 +4202,6 @@
             this.far = cfg.far;
         },
 
-        // Schedules a call to #_build on the next "tick"
         _scheduleBuild: function () {
 
             if (!this._dirty) {
@@ -4135,15 +4217,12 @@
             }
         },
 
-        // Rebuilds renderer state from component state
         _build: function () {
 
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
-
             XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
-
 
             this._dirty = false;
 
@@ -13045,6 +13124,44 @@ var myScene = new XEO.Scene();
         },
 
         /**
+         * Expands the second axis-aligned boundary to enclose the first, if needed.
+         *
+         * @method expandAABB3
+         * @static
+         * @param {*} aabb1 First AABB
+         * @param {*} aabb2 Second AABB
+         * @returns {*} The second AABB
+         */
+        expandAABB3: function (aabb1, aabb2) {
+
+            if (aabb1.xmin < aabb2.xmin) {
+                aabb2.xmin = aabb1.xmin;
+            }
+
+            if (aabb1.ymin < aabb2.ymin) {
+                aabb2.ymin = aabb1.ymin;
+            }
+
+            if (aabb1.zmin < aabb2.zmin) {
+                aabb2.zmin = aabb1.zmin;
+            }
+
+            if (aabb1.xmax > aabb2.xmax) {
+                aabb2.xmax = aabb1.xmax;
+            }
+
+            if (aabb1.ymax > aabb2.ymax) {
+                aabb2.ymax = aabb1.ymax;
+            }
+
+            if (aabb1.zmax > aabb2.zmax) {
+                aabb2.zmax = aabb1.zmax;
+            }
+
+            return aabb2;
+        },
+
+        /**
          * Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.
          *
          * @method points3ToAABB2
@@ -15273,6 +15390,8 @@ var object3 = new XEO.GameObject(scene, {
             priority: {
 
                 set: function (value) {
+
+                    // TODO: Only accept rendering priority in range [0...MAX_PRIORITY]
 
                     value = value || 0;
 
@@ -23038,7 +23157,7 @@ myTask2.setFailed();
 
  // Subscribe to updates to the Boundary3D
  worldBoundary.on("updated",
-    function() {
+ function() {
 
         // Get the updated properties again
 
@@ -23112,9 +23231,70 @@ myTask2.setFailed();
             this._getAABB = cfg.getAABB;
             this._getMatrix = cfg.getMatrix;
             this._getPositions = cfg.getPositions;
+
+            this.visible = cfg.visible;
         },
 
         _props: {
+
+
+            /**
+             Indicates whether this Boundary3D is visible or not.
+
+             Fires a {{#crossLink "Boundary3D/visible:event"}}{{/crossLink}} event on change.
+
+             @property visible
+             @default true
+             @type Boolean
+             */
+            visible: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._visible === value) {
+                        return;
+                    }
+
+                    this._visible = value;
+
+                    if (this._visible) {
+
+                        this._boundaryObject = new XEO.GameObject(this.scene, {
+                            geometry: new XEO.BoundaryGeometry(this.scene, {
+                                boundary: this
+                            }),
+                            material: new XEO.PhongMaterial(this.scene, {
+                                diffuse: [0.5, 1.0, 0.5],
+                                emissive: [0.5, 1.0, 0.5],
+                                lineWidth: 2
+                            })
+                        });
+                    } else {
+                        if (this._boundaryObject) {
+                            this._boundaryObject.destroy();
+                        }
+                    }
+
+                    /**
+                     Fired whenever this Boundary3D's {{#crossLink "Boundary3D/visible:property"}}{{/crossLink}} property changes.
+
+                     @event visible
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("visible", this._visible);
+                },
+
+                get: function () {
+
+                    if (this._getDirty()) {
+                        this._build();
+                    }
+
+                    return this._obb;
+                }
+            },
 
             /**
              * 3D oriented bounding box (OBB).
@@ -23298,6 +23478,12 @@ myTask2.setFailed();
                 aabb: this.aabb,
                 center: this.center
             };
+        },
+
+        _destroy: function () {
+            if (this._boundaryObject) {
+                this._boundaryObject.destroy();
+            }
         }
     });
 
@@ -24454,18 +24640,18 @@ scene.on("tick", function(e) {
  ## Overview
 
  <ul>
-    <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
-    <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
-    <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
+ <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
+ <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
+ <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
  </ul>
 
  A target can be:
 
  <ul>
-    <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
-    <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
-    {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
-    <li>specific ````eye````, ````look```` and ````up```` positions.</li>
+ <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
+ <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
+ {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
+ <li>specific ````eye````, ````look```` and ````up```` positions.</li>
  </ul>
 
  ## Example #1
@@ -28247,6 +28433,399 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
 })();
 ;/**
+ A **Grid** defines a grid geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Example
+
+ ````javascript
+
+ ````
+
+ @class Grid
+ @module XEO
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Grid in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Grid.
+ @param [cfg.xSize=1] {Number} Dimension on the X-axis.
+ @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
+ @param [cfg.xSegments=4] {Number} Number of segments on the X-axis.
+ @param [cfg.ySegments=4] {Number} Number of segments on the Y-axis.
+
+ @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
+ @extends Geometry
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Grid = XEO.Geometry.extend({
+
+        type: "XEO.Grid",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this._geometryDirty = false;
+
+            this.xSize = cfg.xSize;
+            this.ySize = cfg.ySize;
+
+            this.xSegments = cfg.xSegments;
+            this.ySegments = cfg.ySegments;
+
+            this.lod = cfg.lod;
+
+            this.autoNormals = cfg.autoNormals !== false;
+        },
+
+        _gridDirty: function () {
+            if (!this.__dirty) {
+                this.__dirty = true;
+                var self = this;
+                this.scene.once("tick2",
+                    function () {
+                        self._buildGrid();
+                        self.__dirty = false;
+                    });
+            }
+        },
+
+        _buildGrid: function () {
+            
+            if (this._geometryDirty) {
+
+                // Geometry needs rebuild
+
+                var width = this._xSize;
+                var height = this._ySize;
+
+                var xSegments = Math.floor(this._lod * this._xSegments);
+                var ySegments = Math.floor(this._lod * this._ySegments);
+
+                if (ySegments < 4) {
+                    ySegments = 4;
+                }
+
+                if (ySegments < 4) {
+                    ySegments = 4;
+                }
+
+                var halfWidth = width / 2;
+                var halfHeight = height / 2;
+
+                var gridX = Math.floor( xSegments ) || 1;
+                var gridY = Math.floor( ySegments ) || 1;
+
+                var gridX1 = gridX + 1;
+                var gridY1 = gridY + 1;
+
+                var segmentWidth = width / gridX;
+                var segmentHeight = height / gridY;
+
+                var positions = new Float32Array( gridX1 * gridY1 * 3 );
+                var normals = new Float32Array( gridX1 * gridY1 * 3 );
+                var uvs = new Float32Array( gridX1 * gridY1 * 2 );
+
+                var offset = 0;
+                var offset2 = 0;
+
+                for ( var iy = 0; iy < gridY1; iy ++ ) {
+
+                    var y = iy * segmentHeight - halfHeight;
+
+                    for ( var ix = 0; ix < gridX1; ix ++ ) {
+
+                        var x = ix * segmentWidth - halfWidth;
+
+                        positions[ offset ] = x;
+                        positions[ offset + 1 ] = - y;
+
+                        normals[offset + 2] = -1;
+
+                        uvs[offset2] = (gridX -ix) / gridX;
+                        uvs[offset2 + 1] = 1 - ( (gridY-iy) / gridY );
+
+                        offset += 3;
+                        offset2 += 2;
+                    }
+                }
+
+                offset = 0;
+
+                var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )( gridX * gridY * 6 );
+
+                for ( var iy = 0; iy < gridY; iy ++ ) {
+
+                    for ( var ix = 0; ix < gridX; ix ++ ) {
+
+                        var a = ix + gridX1 * iy;
+                        var b = ix + gridX1 * ( iy + 1 );
+                        var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
+                        var d = ( ix + 1 ) + gridX1 * iy;
+
+                        indices[offset] = d;
+                        indices[offset + 1] = b;
+                        indices[offset + 2] = a;
+
+                        indices[offset + 3] = d;
+                        indices[offset + 4] = c;
+                        indices[offset + 5] = b;
+
+                        offset += 6;
+                    }
+                }
+
+                this.positions = positions;
+                this.normals = normals;
+                this.uv = uvs;
+                this.indices = indices;
+
+                this._geometryDirty = false;
+            }
+        },
+
+      
+        _props: {
+
+            /**
+             * The Grid's level-of-detail factor.
+             *
+             * Fires a {{#crossLink "Grid/lod:event"}}{{/crossLink}} event on change.
+             *
+             * @property lod
+             * @default 1
+             * @type Number
+             */
+            lod: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._lod === value) {
+                        return;
+                    }
+
+                    if (value < 0 || value > 1) {
+                        this.warn("clamping lod to [0..1]");
+                        value = value < 0 ? 0 : 1;
+                    }
+
+                    this._lod = value;
+
+                    this._geometryDirty = true;
+
+                    this._gridDirty();
+
+                    /**
+                     * Fired whenever this Grid's {{#crossLink "Grid/lod:property"}}{{/crossLink}} property changes.
+                     * @event lod
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("lod", this._lod);
+                },
+
+                get: function () {
+                    return this._lod;
+                }
+            },
+            
+            /**
+             * The Grid's dimension on the X-axis.
+             *
+             * Fires a {{#crossLink "Grid/xSize:event"}}{{/crossLink}} event on change.
+             *
+             * @property xSize
+             * @default 1
+             * @type Number
+             */
+            xSize: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._xSize === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative xSize not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._xSize = value;
+
+                    this._geometryDirty = true;
+
+                    this._gridDirty();
+
+                    /**
+                     * Fired whenever this Grid's {{#crossLink "Grid/xSize:property"}}{{/crossLink}} property changes.
+                     * @event xSize
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("xSize", this._xSize);
+                },
+
+                get: function () {
+                    return this._xSize;
+                }
+            },
+
+            /**
+             * The Grid's dimension on the Y-axis.
+             *
+             * Fires a {{#crossLink "Grid/ySize:event"}}{{/crossLink}} event on change.
+             *
+             * @property ySize
+             * @default 0.25
+             * @type Number
+             */
+            ySize: {
+
+                set: function (value) {
+
+                    value = value || 0.25;
+
+                    if (this._ySize === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative ySize not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._ySize = value;
+
+                    this._geometryDirty = true;
+
+                    this._gridDirty();
+
+                    /**
+                     * Fired whenever this Grid's {{#crossLink "Grid/ySize:property"}}{{/crossLink}} property changes.
+                     * @event ySize
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("ySize", this._ySize);
+                },
+
+                get: function () {
+                    return this._ySize;
+                }
+            },
+            
+            /**
+             * The Grid's number of segments on the X-axis.
+             *
+             * Fires a {{#crossLink "Grid/xSegments:event"}}{{/crossLink}} event on change.
+             *
+             * @property xSegments
+             * @default 4
+             * @type Number
+             */
+            xSegments: {
+
+                set: function (value) {
+
+                    value = value || 4;
+
+                    if (this._xSegments === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative xSegments not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._xSegments = value;
+
+                    this._geometryDirty = true;
+
+                    this._gridDirty();
+
+                    /**
+                     * Fired whenever this Grid's {{#crossLink "Grid/xSegments:property"}}{{/crossLink}} property changes.
+                     * @event xSegments
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("xSegments", this._xSegments);
+                },
+
+                get: function () {
+                    return this._xSegments;
+                }
+            },
+
+            /**
+             * The Grid's number of segments on the Y-axis.
+             *
+             * Fires a {{#crossLink "Grid/ySegments:event"}}{{/crossLink}} event on change.
+             *
+             * @property ySegments
+             * @default 4
+             * @type Number
+             */
+            ySegments: {
+
+                set: function (value) {
+
+                    value = value || 4;
+
+                    if (this._ySegments === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        this.warn("negative ySegments not allowed - will invert");
+                        value = value * -1;
+                    }
+
+                    this._ySegments = value;
+
+                    this._geometryDirty = true;
+
+                    this._gridDirty();
+
+                    /**
+                     * Fired whenever this Grid's {{#crossLink "Grid/ySegments:property"}}{{/crossLink}} property changes.
+                     * @event ySegments
+                     * @type Number
+                     * @param value The property's new value
+                     */
+                    this.fire("ySegments", this._ySegments);
+                },
+
+                get: function () {
+                    return this._ySegments;
+                }
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                xSize: this._xSize,
+                ySize: this._ySize,
+                xSegments: this._xSegments,
+                ySegments: this._ySegments
+            };
+        }
+    });
+
+})();
+;/**
  A **Heightmap** defines spherical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Example
@@ -28265,9 +28844,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Heightmap.
- @param [cfg.radius=1] {Number}
- @param [cfg.xSize=8] {Number}
- @param [cfg.zSegments=6] {Number}
+ @param [cfg.src=undefined] {String} Path to an image file to source this Heightmap from.
+ @param [cfg.image=undefined] {HTMLImageElement} An HTML DOM Image object to source this Heightmap from.
+ @param [cfg.xSize=1] {Number} Dimension on the X-axis.
+ @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
+ @param [cfg.zSize=0.25] {Number} Dimension (height) on the Z-axis.
+ @param [cfg.xSegments=1] {Number} Number of segments on the X-axis (width).
+ @param [cfg.ySegments=1] {Number} Number of segments on the Y-axis (depth).
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -28292,7 +28875,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             // Set component properties
 
-          //  this.autoNormals = true;
+            //  this.autoNormals = true;
 
             if (cfg.src) {
                 this.src = cfg.src;
@@ -28306,11 +28889,11 @@ XEO.PathGeometry = XEO.Geometry.extend({
             this.zSize = cfg.zSize;
 
             this.xSegments = cfg.xSegments;
-            this.zSegments = cfg.zSegments;
+            this.ySegments = cfg.ySegments;
 
             this.lod = cfg.lod;
 
-            this.autoNormals = cfg.autoNormals !==false;
+            this.autoNormals = cfg.autoNormals !== false;
         },
 
         _heightmapDirty: function () {
@@ -28360,108 +28943,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 var ctx = element.getContext("2d");
                 ctx.drawImage(this._image, 0, 0);
                 this._imageData = ctx.getImageData(0, 0, this._image.width, this._image.height).data;
-             //   element.parentNode.removeChild(element);
+                //   element.parentNode.removeChild(element);
 
                 // Now need to rebuild geometry
 
                 this._imageDirty = false;
                 this._geometryDirty = true;
             }
-
-            //if (this._geometryDirty) {
-            //
-            //    var imageWidth = this._image.width;
-            //    var imageHeight = this._image.height;
-            //
-            //    var positions = [];
-            //    var uvs = [];
-            //    var indices = [];
-            //
-            //    var width = this._xSize;
-            //    var height = this._zSize;
-            //
-            //    var xSegments = this._xSegments;
-            //    var zSegments = this._zSegments;
-            //
-            //    var halfWidth = width / 2;
-            //    var halfHeight = height / 2;
-            //
-            //    var gridX = xSegments;
-            //    var gridZ = zSegments;
-            //
-            //    var gridX1 = gridX + 1;
-            //    var gridZ1 = gridZ + 1;
-            //
-            //    var segWidth = width / gridX;
-            //    var segHeight = height / gridZ;
-            //
-            //    var imgX;
-            //    var imgY;
-            //
-            //    var x;
-            //    var y;
-            //    var z;
-            //
-            //    for (var px = 0; px <= gridZ; px++) {
-            //        for (var py = 0; py <= gridX; py++) {
-            //
-            //            x = px * segWidth;
-            //            y = py * segHeight;
-            //
-            //            imgX = Math.round((x / width) * (imageWidth - 1));
-            //            imgY = Math.round((y / height) * (imageHeight - 1));
-            //
-            //            z = (this._imageData[(imageWidth * imgY + imgX) * 4]) / 255 * this._ySize;
-            //
-            //            if (z == undefined || isNaN(z)) {
-            //                z = 0;
-            //            }
-            //
-            //            positions.push(x - halfWidth);
-            //            positions.push(-y + halfHeight);
-            //            positions.push(-z);
-            //
-            //            uvs.push(py / gridX);
-            //            uvs.push(1 - px / gridZ);
-            //        }
-            //    }
-            //
-            //    var a;
-            //    var b;
-            //    var c;
-            //    var d;
-            //
-            //    for (var iz = 0; iz < gridZ; iz++) {
-            //        for (var ix = 0; ix < gridX; ix++) {
-            //
-            //            a = ix + gridX1 * iz;
-            //            b = ix + gridX1 * ( iz + 1 );
-            //            c = ( ix + 1 ) + gridX1 * ( iz + 1 );
-            //            d = ( ix + 1 ) + gridX1 * iz;
-            //
-            //            if (a >= positions.length || b >= positions.length || c >= positions.length || d >= positions.length) {
-            //                continue;
-            //            }
-            //            indices.push(a);
-            //            indices.push(b);
-            //            indices.push(c);
-            //
-            //            indices.push(c);
-            //            indices.push(d);
-            //            indices.push(a);
-            //        }
-            //    }
-            //
-            //    this.positions = positions;
-            //    this.normals = null;
-            //    //this.normals = normals;
-            //    this.uv = uvs;
-            //    this.indices = indices;
-            //
-            //    this._geometryDirty = false;
-            //}
-            //
-            //return;
 
             if (this._geometryDirty) {
 
@@ -28474,33 +28962,39 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 var imageWidth = this._image.width;
                 var imageHeight = this._image.height;
 
-                var xSize = this._xSize;
-                var ySize = this._ySize;
-                var zSize = this._zSize;
-
                 var xSegments = Math.floor(this._lod * this._xSegments);
-                var zSegments = Math.floor(this._lod * this._zSegments);
+                var ySegments = Math.floor(this._lod * this._ySegments);
 
                 if (xSegments < 4) {
                     xSegments = 4;
                 }
 
-                if (zSegments < 4) {
-                    zSegments = 4;
+                if (ySegments < 4) {
+                    ySegments = 4;
                 }
 
-                var positions = [];
-                var uvs = [];
-                var indices = [];
+                var width = this._xSize;
+                var height = this._ySize;
+                var depth = this._zSize;
 
-                var halfXSize = xSize / 2;
-                var halfYSize = zSize / 2;
+                var halfWidth = width / 2;
+                var halfHeight = height / 2;
 
-                var xSegments1 = xSegments + 1;
-                var zSegments1 = zSegments + 1;
+                var gridX = Math.floor(xSegments) || 1;
+                var gridY = Math.floor(ySegments) || 1;
 
-                var segWidth = xSize / xSegments;
-                var segHeight = zSize / zSegments;
+                var gridX1 = gridX + 1;
+                var gridY1 = gridY + 1;
+
+                var segmentWidth = width / gridX;
+                var segmentHeight = height / gridY;
+
+                var positions = new Float32Array(gridX1 * gridY1 * 3);
+                var normals = new Float32Array(gridX1 * gridY1 * 3);
+                var uvs = new Float32Array(gridX1 * gridY1 * 2);
+
+                var offset = 0;
+                var offset2 = 0;
 
                 var imgX;
                 var imgY;
@@ -28509,56 +29003,69 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 var y;
                 var z;
 
-                for (var px = 0; px <= zSegments; px++) {
-                    for (var py = 0; py <= xSegments; py++) {
+                for (var iy = 0; iy < gridY1; iy++) {
 
-                        x = px * segWidth;
-                        y = py * segHeight;
+                    y = iy * segmentHeight - halfHeight;
 
-                        imgX = Math.round((x / xSize) * (imageWidth - 1));
-                        imgY = Math.round((y / zSize) * (imageHeight - 1));
+                    for (var ix = 0; ix < gridX1; ix++) {
 
-                        z = (this._imageData[(imageWidth * imgY + imgX) * 4]) / 255 * ySize;
+                        x = ix * segmentWidth - halfWidth;
+
+                        var x2 = ix * segmentWidth;
+                        var y2 = iy * segmentHeight;
+
+                        imgX = Math.round((x2 / width) * (imageWidth - 1));
+                        imgY = Math.round((y2 / height) * (imageHeight - 1));
+
+                        z = (this._imageData[(imageWidth * imgY + imgX) * 4]) / 255 * depth;
 
                         if (z == undefined || isNaN(z)) {
                             z = 0;
                         }
 
-                        positions.push(x - halfXSize);
-                        positions.push(-y + halfYSize);
-                        positions.push(-z);
+                        positions[offset] = x;
+                        positions[offset + 1] = -y;
+                        positions[offset + 2] = -z;
 
-                        uvs.push(py / xSegments);
-                        uvs.push(1 - px / zSegments);
+                        normals[offset + 2] = -1;
+
+                        uvs[offset2] = (gridX -ix) / gridX;
+                        uvs[offset2 + 1] = 1 - ( iy / gridY );
+
+                        offset += 3;
+                        offset2 += 2;
+
                     }
                 }
 
-                var a;
-                var b;
-                var c;
-                var d;
+                offset = 0;
 
-                for (var iz = 0; iz < zSegments; iz++) {
-                    for (var ix = 0; ix < xSegments; ix++) {
+                var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(gridX * gridY * 6);
 
-                        a = ix + xSegments1 * iz;
-                        b = ix + xSegments1 * ( iz + 1 );
-                        c = ( ix + 1 ) + xSegments1 * ( iz + 1 );
-                        d = ( ix + 1 ) + xSegments1 * iz;
+                for (var iy = 0; iy < gridY; iy++) {
 
-                        indices.push(a);
-                        indices.push(b);
-                        indices.push(c);
+                    for (var ix = 0; ix < gridX; ix++) {
 
-                        indices.push(c);
-                        indices.push(d);
-                        indices.push(a);
+                        var a = ix + gridX1 * iy;
+                        var b = ix + gridX1 * ( iy + 1 );
+                        var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
+                        var d = ( ix + 1 ) + gridX1 * iy;
+
+                        indices[offset] = d;
+                        indices[offset + 1] = b;
+                        indices[offset + 2] = a;
+
+                        indices[offset + 3] = d;
+                        indices[offset + 4] = c;
+                        indices[offset + 5] = b;
+
+                        offset += 6;
                     }
                 }
+
 
                 this.positions = positions;
                 this.normals = positions;
-
                 this.uv = uvs;
                 this.indices = indices;
 
@@ -28601,7 +29108,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     self.fire("image", self._image);
                 }
 
-            ///    task.setCompleted();
+                ///    task.setCompleted();
             };
 
             image.onerror = function () {
@@ -28749,9 +29256,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Heightmap's dimension (width) on the X-axis.
+             * The Heightmap's dimension on the X-axis.
              *
-             * Fires a {{#crossLink "Sphere/xSize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/xSize:event"}}{{/crossLink}} event on change.
              *
              * @property xSize
              * @default 1
@@ -28779,7 +29286,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._heightmapDirty();
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/xSize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSize:property"}}{{/crossLink}} property changes.
                      * @event xSize
                      * @type Number
                      * @param value The property's new value
@@ -28793,19 +29300,19 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Heightmap's dimension (height) on the Y-axis.
+             * The Heightmap's dimension on the Y-axis.
              *
-             * Fires a {{#crossLink "Sphere/ySize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/ySize:event"}}{{/crossLink}} event on change.
              *
              * @property ySize
-             * @default 0.25
+             * @default 1.0
              * @type Number
              */
             ySize: {
 
                 set: function (value) {
 
-                    value = value || 0.25;
+                    value = value || 1.0;
 
                     if (this._ySize === value) {
                         return;
@@ -28823,7 +29330,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._heightmapDirty();
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/ySize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySize:property"}}{{/crossLink}} property changes.
                      * @event ySize
                      * @type Number
                      * @param value The property's new value
@@ -28837,19 +29344,19 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Heightmap's dimension (depth) on the Z-axis.
+             * The Heightmap's dimension (height) on the Z-axis.
              *
-             * Fires a {{#crossLink "Sphere/zSize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/zSize:event"}}{{/crossLink}} event on change.
              *
              * @property zSize
-             * @default 1
+             * @default 0.25
              * @type Number
              */
             zSize: {
 
                 set: function (value) {
 
-                    value = value || 1;
+                    value = value || 0.25;
 
                     if (this._zSize === value) {
                         return;
@@ -28867,7 +29374,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._heightmapDirty();
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/zSize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/zSize:property"}}{{/crossLink}} property changes.
                      * @event zSize
                      * @type Number
                      * @param value The property's new value
@@ -28881,9 +29388,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Heightmap's number of segments on the X-axis (width).
+             * The Heightmap's number of segments on the X-axis.
              *
-             * Fires a {{#crossLink "Sphere/xSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/xSegments:event"}}{{/crossLink}} event on change.
              *
              * @property xSegments
              * @default 100
@@ -28911,7 +29418,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._heightmapDirty();
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/xSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSegments:property"}}{{/crossLink}} property changes.
                      * @event xSegments
                      * @type Number
                      * @param value The property's new value
@@ -28925,46 +29432,46 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Heightmap's number of segments on the Z-axis (depth).
+             * The Heightmap's number of segments on the Y-axis.
              *
-             * Fires a {{#crossLink "Sphere/zSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/ySegments:event"}}{{/crossLink}} event on change.
              *
-             * @property zSegments
+             * @property ySegments
              * @default 100
              * @type Number
              */
-            zSegments: {
+            ySegments: {
 
                 set: function (value) {
 
                     value = value || 100;
 
-                    if (this._zSegments === value) {
+                    if (this._ySegments === value) {
                         return;
                     }
 
                     if (value < 0) {
-                        this.warn("negative zSegments not allowed - will invert");
+                        this.warn("negative ySegments not allowed - will invert");
                         value = value * -1;
                     }
 
-                    this._zSegments = value;
+                    this._ySegments = value;
 
                     this._geometryDirty = true;
 
                     this._heightmapDirty();
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/zSegments:property"}}{{/crossLink}} property changes.
-                     * @event zSegments
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySegments:property"}}{{/crossLink}} property changes.
+                     * @event ySegments
                      * @type Number
                      * @param value The property's new value
                      */
-                    this.fire("zSegments", this._zSegments);
+                    this.fire("ySegments", this._ySegments);
                 },
 
                 get: function () {
-                    return this._zSegments;
+                    return this._ySegments;
                 }
             }
         },
@@ -28978,7 +29485,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 zSize: this._zSize,
 
                 xSegments: this._xSegments,
-                zSegments: this._zSegments
+                ySegments: this._ySegments
             };
 
             if (this._src) {
@@ -28989,10 +29496,1777 @@ XEO.PathGeometry = XEO.Geometry.extend({
             }
 
             return json;
-
         }
     });
 
+})();
+;/**
+ A **VectorTextGeometry** defines vector text geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+
+ ## Example
+
+ ````javascript
+
+ ````
+
+ @class VectorTextGeometry
+ @module XEO
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this VectorTextGeometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this VectorTextGeometry.
+ @param [cfg.text=""] {String} The text.
+ @extends Geometry
+ */
+(function () {
+
+    "use strict";
+
+    var letters;
+
+    XEO.VectorTextGeometry = XEO.Geometry.extend({
+
+        type: "XEO.VectorTextGeometry",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.text = cfg.text;
+        },
+
+        _textDirty: function () {
+            if (!this.__dirty) {
+                this.__dirty = true;
+                var self = this;
+                this.scene.once("tick2",
+                    function () {
+                        self._buildText();
+                        self.__dirty = false;
+                    });
+            }
+        },
+
+        _buildText: function () {
+
+            if (!letters) {
+                letters = buildStrokeData();
+            }
+
+            var positions = [];
+            var indices = [];
+            var lines = this._text.split("\n");
+            var countVerts = 0;
+            var y = 0;
+            var x;
+            var str;
+            var len;
+            var c;
+            var mag = 1.0 / 25.0;
+            var penUp;
+            var p1;
+            var p2;
+            var needLine;
+            var pointsLen;
+            var a;
+
+            for (var iLine = 0; iLine < lines.length; iLine++) {
+
+                x = 0;
+                str = lines[iLine];
+                len = str.length;
+
+                for (var i = 0; i < len; i++) {
+
+                    c = letters[str.charAt(i)];
+
+                    if (c == '\n') {
+                        //alert("newline");
+                    }
+
+                    if (!c) {
+                        continue;
+                    }
+
+                    penUp = 1;
+                    p1 = -1;
+                    p2 = -1;
+                    needLine = false;
+
+                    pointsLen = c.points.length;
+
+                    for (var j = 0; j < pointsLen; j++) {
+                        a = c.points[j];
+
+                        if (a[0] == -1 && a[1] == -1) {
+                            penUp = 1;
+                            needLine = false;
+                            continue;
+                        }
+
+                        positions.push(x + a[0] * mag);
+                        positions.push(y + a[1] * mag);
+                        positions.push(0);
+
+                        if (p1 == -1) {
+                            p1 = countVerts;
+                        } else if (p2 == -1) {
+                            p2 = countVerts;
+                        } else {
+                            p1 = p2;
+                            p2 = countVerts;
+                        }
+                        countVerts++;
+
+                        if (penUp) {
+                            penUp = false;
+
+                        } else {
+                            indices.push(p1);
+                            indices.push(p2);
+                        }
+
+                        needLine = true;
+                    }
+                    x += c.width * mag;
+
+                }
+                y += 25 * mag;
+            }
+
+            this.positions = positions;
+            this.normals = normals;
+            this.uv = uvs;
+            this.indices = indices;
+        },
+
+        _props: {
+
+            /**
+             * The text for this VectorText
+             *
+             * Fires a {{#crossLink "VectorTextGeometry/text:event"}}{{/crossLink}} event on change.
+             *
+             * @property text
+             * @default ""
+             * @type String
+             */
+            text: {
+
+                set: function (value) {
+
+                    value = value || "";
+
+                    if (this._text === value) {
+                        return;
+                    }
+
+                    this._text = value;
+
+                    /**
+                     * Fired whenever this VectorTextGeometry's {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property changes.
+                     * @event text
+                     * @type Boolean
+                     * @param value The property's new value
+                     */
+                    this.fire("text", this._text);
+
+                    this._textDirty();
+                },
+
+                get: function () {
+                    return this._text;
+                }
+            },
+
+            _getJSON: function () {
+                return {
+                    text: this._text
+                };
+            }
+        }
+    });
+
+    function buildStrokeData() {
+        return {
+            ' ': {width: 16, points: []},
+            '!': {
+                width: 10, points: [
+                    [5, 21],
+                    [5, 7],
+                    [-1, -1],
+                    [5, 2],
+                    [4, 1],
+                    [5, 0],
+                    [6, 1],
+                    [5, 2]
+                ]
+            },
+            '"': {
+                width: 16, points: [
+                    [4, 21],
+                    [4, 14],
+                    [-1, -1],
+                    [12, 21],
+                    [12, 14]
+                ]
+            },
+            '#': {
+                width: 21, points: [
+                    [11, 25],
+                    [4, -7],
+                    [-1, -1],
+                    [17, 25],
+                    [10, -7],
+                    [-1, -1],
+                    [4, 12],
+                    [18, 12],
+                    [-1, -1],
+                    [3, 6],
+                    [17, 6]
+                ]
+            },
+            '$': {
+                width: 20, points: [
+                    [8, 25],
+                    [8, -4],
+                    [-1, -1],
+                    [12, 25],
+                    [12, -4],
+                    [-1, -1],
+                    [17, 18],
+                    [15, 20],
+                    [12, 21],
+                    [8, 21],
+                    [5, 20],
+                    [3, 18],
+                    [3, 16],
+                    [4, 14],
+                    [5, 13],
+                    [7, 12],
+                    [13, 10],
+                    [15, 9],
+                    [16, 8],
+                    [17, 6],
+                    [17, 3],
+                    [15, 1],
+                    [12, 0],
+                    [8, 0],
+                    [5, 1],
+                    [3, 3]
+                ]
+            },
+            '%': {
+                width: 24, points: [
+                    [21, 21],
+                    [3, 0],
+                    [-1, -1],
+                    [8, 21],
+                    [10, 19],
+                    [10, 17],
+                    [9, 15],
+                    [7, 14],
+                    [5, 14],
+                    [3, 16],
+                    [3, 18],
+                    [4, 20],
+                    [6, 21],
+                    [8, 21],
+                    [10, 20],
+                    [13, 19],
+                    [16, 19],
+                    [19, 20],
+                    [21, 21],
+                    [-1, -1],
+                    [17, 7],
+                    [15, 6],
+                    [14, 4],
+                    [14, 2],
+                    [16, 0],
+                    [18, 0],
+                    [20, 1],
+                    [21, 3],
+                    [21, 5],
+                    [19, 7],
+                    [17, 7]
+                ]
+            },
+            '&': {
+                width: 26, points: [
+                    [23, 12],
+                    [23, 13],
+                    [22, 14],
+                    [21, 14],
+                    [20, 13],
+                    [19, 11],
+                    [17, 6],
+                    [15, 3],
+                    [13, 1],
+                    [11, 0],
+                    [7, 0],
+                    [5, 1],
+                    [4, 2],
+                    [3, 4],
+                    [3, 6],
+                    [4, 8],
+                    [5, 9],
+                    [12, 13],
+                    [13, 14],
+                    [14, 16],
+                    [14, 18],
+                    [13, 20],
+                    [11, 21],
+                    [9, 20],
+                    [8, 18],
+                    [8, 16],
+                    [9, 13],
+                    [11, 10],
+                    [16, 3],
+                    [18, 1],
+                    [20, 0],
+                    [22, 0],
+                    [23, 1],
+                    [23, 2]
+                ]
+            },
+            '\'': {
+                width: 10, points: [
+                    [5, 19],
+                    [4, 20],
+                    [5, 21],
+                    [6, 20],
+                    [6, 18],
+                    [5, 16],
+                    [4, 15]
+                ]
+            },
+            '(': {
+                width: 14, points: [
+                    [11, 25],
+                    [9, 23],
+                    [7, 20],
+                    [5, 16],
+                    [4, 11],
+                    [4, 7],
+                    [5, 2],
+                    [7, -2],
+                    [9, -5],
+                    [11, -7]
+                ]
+            },
+            ')': {
+                width: 14, points: [
+                    [3, 25],
+                    [5, 23],
+                    [7, 20],
+                    [9, 16],
+                    [10, 11],
+                    [10, 7],
+                    [9, 2],
+                    [7, -2],
+                    [5, -5],
+                    [3, -7]
+                ]
+            },
+            '*': {
+                width: 16, points: [
+                    [8, 21],
+                    [8, 9],
+                    [-1, -1],
+                    [3, 18],
+                    [13, 12],
+                    [-1, -1],
+                    [13, 18],
+                    [3, 12]
+                ]
+            },
+            '+': {
+                width: 26, points: [
+                    [13, 18],
+                    [13, 0],
+                    [-1, -1],
+                    [4, 9],
+                    [22, 9]
+                ]
+            },
+            ',': {
+                width: 10, points: [
+                    [6, 1],
+                    [5, 0],
+                    [4, 1],
+                    [5, 2],
+                    [6, 1],
+                    [6, -1],
+                    [5, -3],
+                    [4, -4]
+                ]
+            },
+            '-': {
+                width: 26, points: [
+                    [4, 9],
+                    [22, 9]
+                ]
+            },
+            '.': {
+                width: 10, points: [
+                    [5, 2],
+                    [4, 1],
+                    [5, 0],
+                    [6, 1],
+                    [5, 2]
+                ]
+            },
+            '/': {
+                width: 22, points: [
+                    [20, 25],
+                    [2, -7]
+                ]
+            },
+            '0': {
+                width: 20, points: [
+                    [9, 21],
+                    [6, 20],
+                    [4, 17],
+                    [3, 12],
+                    [3, 9],
+                    [4, 4],
+                    [6, 1],
+                    [9, 0],
+                    [11, 0],
+                    [14, 1],
+                    [16, 4],
+                    [17, 9],
+                    [17, 12],
+                    [16, 17],
+                    [14, 20],
+                    [11, 21],
+                    [9, 21]
+                ]
+            },
+            '1': {
+                width: 20, points: [
+                    [6, 17],
+                    [8, 18],
+                    [11, 21],
+                    [11, 0]
+                ]
+            },
+            '2': {
+                width: 20, points: [
+                    [4, 16],
+                    [4, 17],
+                    [5, 19],
+                    [6, 20],
+                    [8, 21],
+                    [12, 21],
+                    [14, 20],
+                    [15, 19],
+                    [16, 17],
+                    [16, 15],
+                    [15, 13],
+                    [13, 10],
+                    [3, 0],
+                    [17, 0]
+                ]
+            },
+            '3': {
+                width: 20, points: [
+                    [5, 21],
+                    [16, 21],
+                    [10, 13],
+                    [13, 13],
+                    [15, 12],
+                    [16, 11],
+                    [17, 8],
+                    [17, 6],
+                    [16, 3],
+                    [14, 1],
+                    [11, 0],
+                    [8, 0],
+                    [5, 1],
+                    [4, 2],
+                    [3, 4]
+                ]
+            },
+            '4': {
+                width: 20, points: [
+                    [13, 21],
+                    [3, 7],
+                    [18, 7],
+                    [-1, -1],
+                    [13, 21],
+                    [13, 0]
+                ]
+            },
+            '5': {
+                width: 20, points: [
+                    [15, 21],
+                    [5, 21],
+                    [4, 12],
+                    [5, 13],
+                    [8, 14],
+                    [11, 14],
+                    [14, 13],
+                    [16, 11],
+                    [17, 8],
+                    [17, 6],
+                    [16, 3],
+                    [14, 1],
+                    [11, 0],
+                    [8, 0],
+                    [5, 1],
+                    [4, 2],
+                    [3, 4]
+                ]
+            },
+            '6': {
+                width: 20, points: [
+                    [16, 18],
+                    [15, 20],
+                    [12, 21],
+                    [10, 21],
+                    [7, 20],
+                    [5, 17],
+                    [4, 12],
+                    [4, 7],
+                    [5, 3],
+                    [7, 1],
+                    [10, 0],
+                    [11, 0],
+                    [14, 1],
+                    [16, 3],
+                    [17, 6],
+                    [17, 7],
+                    [16, 10],
+                    [14, 12],
+                    [11, 13],
+                    [10, 13],
+                    [7, 12],
+                    [5, 10],
+                    [4, 7]
+                ]
+            },
+            '7': {
+                width: 20, points: [
+                    [17, 21],
+                    [7, 0],
+                    [-1, -1],
+                    [3, 21],
+                    [17, 21]
+                ]
+            },
+            '8': {
+                width: 20, points: [
+                    [8, 21],
+                    [5, 20],
+                    [4, 18],
+                    [4, 16],
+                    [5, 14],
+                    [7, 13],
+                    [11, 12],
+                    [14, 11],
+                    [16, 9],
+                    [17, 7],
+                    [17, 4],
+                    [16, 2],
+                    [15, 1],
+                    [12, 0],
+                    [8, 0],
+                    [5, 1],
+                    [4, 2],
+                    [3, 4],
+                    [3, 7],
+                    [4, 9],
+                    [6, 11],
+                    [9, 12],
+                    [13, 13],
+                    [15, 14],
+                    [16, 16],
+                    [16, 18],
+                    [15, 20],
+                    [12, 21],
+                    [8, 21]
+                ]
+            },
+            '9': {
+                width: 20, points: [
+                    [16, 14],
+                    [15, 11],
+                    [13, 9],
+                    [10, 8],
+                    [9, 8],
+                    [6, 9],
+                    [4, 11],
+                    [3, 14],
+                    [3, 15],
+                    [4, 18],
+                    [6, 20],
+                    [9, 21],
+                    [10, 21],
+                    [13, 20],
+                    [15, 18],
+                    [16, 14],
+                    [16, 9],
+                    [15, 4],
+                    [13, 1],
+                    [10, 0],
+                    [8, 0],
+                    [5, 1],
+                    [4, 3]
+                ]
+            },
+            ':': {
+                width: 10, points: [
+                    [5, 14],
+                    [4, 13],
+                    [5, 12],
+                    [6, 13],
+                    [5, 14],
+                    [-1, -1],
+                    [5, 2],
+                    [4, 1],
+                    [5, 0],
+                    [6, 1],
+                    [5, 2]
+                ]
+            },
+            ';': {
+                width: 10, points: [
+                    [5, 14],
+                    [4, 13],
+                    [5, 12],
+                    [6, 13],
+                    [5, 14],
+                    [-1, -1],
+                    [6, 1],
+                    [5, 0],
+                    [4, 1],
+                    [5, 2],
+                    [6, 1],
+                    [6, -1],
+                    [5, -3],
+                    [4, -4]
+                ]
+            },
+            '<': {
+                width: 24, points: [
+                    [20, 18],
+                    [4, 9],
+                    [20, 0]
+                ]
+            },
+            '=': {
+                width: 26, points: [
+                    [4, 12],
+                    [22, 12],
+                    [-1, -1],
+                    [4, 6],
+                    [22, 6]
+                ]
+            },
+            '>': {
+                width: 24, points: [
+                    [4, 18],
+                    [20, 9],
+                    [4, 0]
+                ]
+            },
+            '?': {
+                width: 18, points: [
+                    [3, 16],
+                    [3, 17],
+                    [4, 19],
+                    [5, 20],
+                    [7, 21],
+                    [11, 21],
+                    [13, 20],
+                    [14, 19],
+                    [15, 17],
+                    [15, 15],
+                    [14, 13],
+                    [13, 12],
+                    [9, 10],
+                    [9, 7],
+                    [-1, -1],
+                    [9, 2],
+                    [8, 1],
+                    [9, 0],
+                    [10, 1],
+                    [9, 2]
+                ]
+            },
+            '@': {
+                width: 27, points: [
+                    [18, 13],
+                    [17, 15],
+                    [15, 16],
+                    [12, 16],
+                    [10, 15],
+                    [9, 14],
+                    [8, 11],
+                    [8, 8],
+                    [9, 6],
+                    [11, 5],
+                    [14, 5],
+                    [16, 6],
+                    [17, 8],
+                    [-1, -1],
+                    [12, 16],
+                    [10, 14],
+                    [9, 11],
+                    [9, 8],
+                    [10, 6],
+                    [11, 5],
+                    [-1, -1],
+                    [18, 16],
+                    [17, 8],
+                    [17, 6],
+                    [19, 5],
+                    [21, 5],
+                    [23, 7],
+                    [24, 10],
+                    [24, 12],
+                    [23, 15],
+                    [22, 17],
+                    [20, 19],
+                    [18, 20],
+                    [15, 21],
+                    [12, 21],
+                    [9, 20],
+                    [7, 19],
+                    [5, 17],
+                    [4, 15],
+                    [3, 12],
+                    [3, 9],
+                    [4, 6],
+                    [5, 4],
+                    [7, 2],
+                    [9, 1],
+                    [12, 0],
+                    [15, 0],
+                    [18, 1],
+                    [20, 2],
+                    [21, 3],
+                    [-1, -1],
+                    [19, 16],
+                    [18, 8],
+                    [18, 6],
+                    [19, 5]
+                ]
+            },
+            'A': {
+                width: 18, points: [
+                    [9, 21],
+                    [1, 0],
+                    [-1, -1],
+                    [9, 21],
+                    [17, 0],
+                    [-1, -1],
+                    [4, 7],
+                    [14, 7]
+                ]
+            },
+            'B': {
+                width: 21, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [13, 21],
+                    [16, 20],
+                    [17, 19],
+                    [18, 17],
+                    [18, 15],
+                    [17, 13],
+                    [16, 12],
+                    [13, 11],
+                    [-1, -1],
+                    [4, 11],
+                    [13, 11],
+                    [16, 10],
+                    [17, 9],
+                    [18, 7],
+                    [18, 4],
+                    [17, 2],
+                    [16, 1],
+                    [13, 0],
+                    [4, 0]
+                ]
+            },
+            'C': {
+                width: 21, points: [
+                    [18, 16],
+                    [17, 18],
+                    [15, 20],
+                    [13, 21],
+                    [9, 21],
+                    [7, 20],
+                    [5, 18],
+                    [4, 16],
+                    [3, 13],
+                    [3, 8],
+                    [4, 5],
+                    [5, 3],
+                    [7, 1],
+                    [9, 0],
+                    [13, 0],
+                    [15, 1],
+                    [17, 3],
+                    [18, 5]
+                ]
+            },
+            'D': {
+                width: 21, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [11, 21],
+                    [14, 20],
+                    [16, 18],
+                    [17, 16],
+                    [18, 13],
+                    [18, 8],
+                    [17, 5],
+                    [16, 3],
+                    [14, 1],
+                    [11, 0],
+                    [4, 0]
+                ]
+            },
+            'E': {
+                width: 19, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [17, 21],
+                    [-1, -1],
+                    [4, 11],
+                    [12, 11],
+                    [-1, -1],
+                    [4, 0],
+                    [17, 0]
+                ]
+            },
+            'F': {
+                width: 18, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [17, 21],
+                    [-1, -1],
+                    [4, 11],
+                    [12, 11]
+                ]
+            },
+            'G': {
+                width: 21, points: [
+                    [18, 16],
+                    [17, 18],
+                    [15, 20],
+                    [13, 21],
+                    [9, 21],
+                    [7, 20],
+                    [5, 18],
+                    [4, 16],
+                    [3, 13],
+                    [3, 8],
+                    [4, 5],
+                    [5, 3],
+                    [7, 1],
+                    [9, 0],
+                    [13, 0],
+                    [15, 1],
+                    [17, 3],
+                    [18, 5],
+                    [18, 8],
+                    [-1, -1],
+                    [13, 8],
+                    [18, 8]
+                ]
+            },
+            'H': {
+                width: 22, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [18, 21],
+                    [18, 0],
+                    [-1, -1],
+                    [4, 11],
+                    [18, 11]
+                ]
+            },
+            'I': {
+                width: 8, points: [
+                    [4, 21],
+                    [4, 0]
+                ]
+            },
+            'J': {
+                width: 16, points: [
+                    [12, 21],
+                    [12, 5],
+                    [11, 2],
+                    [10, 1],
+                    [8, 0],
+                    [6, 0],
+                    [4, 1],
+                    [3, 2],
+                    [2, 5],
+                    [2, 7]
+                ]
+            },
+            'K': {
+                width: 21, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [18, 21],
+                    [4, 7],
+                    [-1, -1],
+                    [9, 12],
+                    [18, 0]
+                ]
+            },
+            'L': {
+                width: 17, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 0],
+                    [16, 0]
+                ]
+            },
+            'M': {
+                width: 24, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [12, 0],
+                    [-1, -1],
+                    [20, 21],
+                    [12, 0],
+                    [-1, -1],
+                    [20, 21],
+                    [20, 0]
+                ]
+            },
+            'N': {
+                width: 22, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [18, 0],
+                    [-1, -1],
+                    [18, 21],
+                    [18, 0]
+                ]
+            },
+            'O': {
+                width: 22, points: [
+                    [9, 21],
+                    [7, 20],
+                    [5, 18],
+                    [4, 16],
+                    [3, 13],
+                    [3, 8],
+                    [4, 5],
+                    [5, 3],
+                    [7, 1],
+                    [9, 0],
+                    [13, 0],
+                    [15, 1],
+                    [17, 3],
+                    [18, 5],
+                    [19, 8],
+                    [19, 13],
+                    [18, 16],
+                    [17, 18],
+                    [15, 20],
+                    [13, 21],
+                    [9, 21]
+                ]
+            },
+            'P': {
+                width: 21, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [13, 21],
+                    [16, 20],
+                    [17, 19],
+                    [18, 17],
+                    [18, 14],
+                    [17, 12],
+                    [16, 11],
+                    [13, 10],
+                    [4, 10]
+                ]
+            },
+            'Q': {
+                width: 22, points: [
+                    [9, 21],
+                    [7, 20],
+                    [5, 18],
+                    [4, 16],
+                    [3, 13],
+                    [3, 8],
+                    [4, 5],
+                    [5, 3],
+                    [7, 1],
+                    [9, 0],
+                    [13, 0],
+                    [15, 1],
+                    [17, 3],
+                    [18, 5],
+                    [19, 8],
+                    [19, 13],
+                    [18, 16],
+                    [17, 18],
+                    [15, 20],
+                    [13, 21],
+                    [9, 21],
+                    [-1, -1],
+                    [12, 4],
+                    [18, -2]
+                ]
+            },
+            'R': {
+                width: 21, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [13, 21],
+                    [16, 20],
+                    [17, 19],
+                    [18, 17],
+                    [18, 15],
+                    [17, 13],
+                    [16, 12],
+                    [13, 11],
+                    [4, 11],
+                    [-1, -1],
+                    [11, 11],
+                    [18, 0]
+                ]
+            },
+            'S': {
+                width: 20, points: [
+                    [17, 18],
+                    [15, 20],
+                    [12, 21],
+                    [8, 21],
+                    [5, 20],
+                    [3, 18],
+                    [3, 16],
+                    [4, 14],
+                    [5, 13],
+                    [7, 12],
+                    [13, 10],
+                    [15, 9],
+                    [16, 8],
+                    [17, 6],
+                    [17, 3],
+                    [15, 1],
+                    [12, 0],
+                    [8, 0],
+                    [5, 1],
+                    [3, 3]
+                ]
+            },
+            'T': {
+                width: 16, points: [
+                    [8, 21],
+                    [8, 0],
+                    [-1, -1],
+                    [1, 21],
+                    [15, 21]
+                ]
+            },
+            'U': {
+                width: 22, points: [
+                    [4, 21],
+                    [4, 6],
+                    [5, 3],
+                    [7, 1],
+                    [10, 0],
+                    [12, 0],
+                    [15, 1],
+                    [17, 3],
+                    [18, 6],
+                    [18, 21]
+                ]
+            },
+            'V': {
+                width: 18, points: [
+                    [1, 21],
+                    [9, 0],
+                    [-1, -1],
+                    [17, 21],
+                    [9, 0]
+                ]
+            },
+            'W': {
+                width: 24, points: [
+                    [2, 21],
+                    [7, 0],
+                    [-1, -1],
+                    [12, 21],
+                    [7, 0],
+                    [-1, -1],
+                    [12, 21],
+                    [17, 0],
+                    [-1, -1],
+                    [22, 21],
+                    [17, 0]
+                ]
+            },
+            'X': {
+                width: 20, points: [
+                    [3, 21],
+                    [17, 0],
+                    [-1, -1],
+                    [17, 21],
+                    [3, 0]
+                ]
+            },
+            'Y': {
+                width: 18, points: [
+                    [1, 21],
+                    [9, 11],
+                    [9, 0],
+                    [-1, -1],
+                    [17, 21],
+                    [9, 11]
+                ]
+            },
+            'Z': {
+                width: 20, points: [
+                    [17, 21],
+                    [3, 0],
+                    [-1, -1],
+                    [3, 21],
+                    [17, 21],
+                    [-1, -1],
+                    [3, 0],
+                    [17, 0]
+                ]
+            },
+            '[': {
+                width: 14, points: [
+                    [4, 25],
+                    [4, -7],
+                    [-1, -1],
+                    [5, 25],
+                    [5, -7],
+                    [-1, -1],
+                    [4, 25],
+                    [11, 25],
+                    [-1, -1],
+                    [4, -7],
+                    [11, -7]
+                ]
+            },
+            '\\': {
+                width: 14, points: [
+                    [0, 21],
+                    [14, -3]
+                ]
+            },
+            ']': {
+                width: 14, points: [
+                    [9, 25],
+                    [9, -7],
+                    [-1, -1],
+                    [10, 25],
+                    [10, -7],
+                    [-1, -1],
+                    [3, 25],
+                    [10, 25],
+                    [-1, -1],
+                    [3, -7],
+                    [10, -7]
+                ]
+            },
+            '^': {
+                width: 16, points: [
+                    [6, 15],
+                    [8, 18],
+                    [10, 15],
+                    [-1, -1],
+                    [3, 12],
+                    [8, 17],
+                    [13, 12],
+                    [-1, -1],
+                    [8, 17],
+                    [8, 0]
+                ]
+            },
+            '_': {
+                width: 16, points: [
+                    [0, -2],
+                    [16, -2]
+                ]
+            },
+            '`': {
+                width: 10, points: [
+                    [6, 21],
+                    [5, 20],
+                    [4, 18],
+                    [4, 16],
+                    [5, 15],
+                    [6, 16],
+                    [5, 17]
+                ]
+            },
+            'a': {
+                width: 19, points: [
+                    [15, 14],
+                    [15, 0],
+                    [-1, -1],
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            'b': {
+                width: 19, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 11],
+                    [6, 13],
+                    [8, 14],
+                    [11, 14],
+                    [13, 13],
+                    [15, 11],
+                    [16, 8],
+                    [16, 6],
+                    [15, 3],
+                    [13, 1],
+                    [11, 0],
+                    [8, 0],
+                    [6, 1],
+                    [4, 3]
+                ]
+            },
+            'c': {
+                width: 18, points: [
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            'd': {
+                width: 19, points: [
+                    [15, 21],
+                    [15, 0],
+                    [-1, -1],
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            'e': {
+                width: 18, points: [
+                    [3, 8],
+                    [15, 8],
+                    [15, 10],
+                    [14, 12],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            'f': {
+                width: 12, points: [
+                    [10, 21],
+                    [8, 21],
+                    [6, 20],
+                    [5, 17],
+                    [5, 0],
+                    [-1, -1],
+                    [2, 14],
+                    [9, 14]
+                ]
+            },
+            'g': {
+                width: 19, points: [
+                    [15, 14],
+                    [15, -2],
+                    [14, -5],
+                    [13, -6],
+                    [11, -7],
+                    [8, -7],
+                    [6, -6],
+                    [-1, -1],
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            'h': {
+                width: 19, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 10],
+                    [7, 13],
+                    [9, 14],
+                    [12, 14],
+                    [14, 13],
+                    [15, 10],
+                    [15, 0]
+                ]
+            },
+            'i': {
+                width: 8, points: [
+                    [3, 21],
+                    [4, 20],
+                    [5, 21],
+                    [4, 22],
+                    [3, 21],
+                    [-1, -1],
+                    [4, 14],
+                    [4, 0]
+                ]
+            },
+            'j': {
+                width: 10, points: [
+                    [5, 21],
+                    [6, 20],
+                    [7, 21],
+                    [6, 22],
+                    [5, 21],
+                    [-1, -1],
+                    [6, 14],
+                    [6, -3],
+                    [5, -6],
+                    [3, -7],
+                    [1, -7]
+                ]
+            },
+            'k': {
+                width: 17, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [14, 14],
+                    [4, 4],
+                    [-1, -1],
+                    [8, 8],
+                    [15, 0]
+                ]
+            },
+            'l': {
+                width: 8, points: [
+                    [4, 21],
+                    [4, 0]
+                ]
+            },
+            'm': {
+                width: 30, points: [
+                    [4, 14],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 10],
+                    [7, 13],
+                    [9, 14],
+                    [12, 14],
+                    [14, 13],
+                    [15, 10],
+                    [15, 0],
+                    [-1, -1],
+                    [15, 10],
+                    [18, 13],
+                    [20, 14],
+                    [23, 14],
+                    [25, 13],
+                    [26, 10],
+                    [26, 0]
+                ]
+            },
+            'n': {
+                width: 19, points: [
+                    [4, 14],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 10],
+                    [7, 13],
+                    [9, 14],
+                    [12, 14],
+                    [14, 13],
+                    [15, 10],
+                    [15, 0]
+                ]
+            },
+            'o': {
+                width: 19, points: [
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3],
+                    [16, 6],
+                    [16, 8],
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14]
+                ]
+            },
+            'p': {
+                width: 19, points: [
+                    [4, 14],
+                    [4, -7],
+                    [-1, -1],
+                    [4, 11],
+                    [6, 13],
+                    [8, 14],
+                    [11, 14],
+                    [13, 13],
+                    [15, 11],
+                    [16, 8],
+                    [16, 6],
+                    [15, 3],
+                    [13, 1],
+                    [11, 0],
+                    [8, 0],
+                    [6, 1],
+                    [4, 3]
+                ]
+            },
+            'q': {
+                width: 19, points: [
+                    [15, 14],
+                    [15, -7],
+                    [-1, -1],
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            'r': {
+                width: 13, points: [
+                    [4, 14],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 8],
+                    [5, 11],
+                    [7, 13],
+                    [9, 14],
+                    [12, 14]
+                ]
+            },
+            's': {
+                width: 17, points: [
+                    [14, 11],
+                    [13, 13],
+                    [10, 14],
+                    [7, 14],
+                    [4, 13],
+                    [3, 11],
+                    [4, 9],
+                    [6, 8],
+                    [11, 7],
+                    [13, 6],
+                    [14, 4],
+                    [14, 3],
+                    [13, 1],
+                    [10, 0],
+                    [7, 0],
+                    [4, 1],
+                    [3, 3]
+                ]
+            },
+            't': {
+                width: 12, points: [
+                    [5, 21],
+                    [5, 4],
+                    [6, 1],
+                    [8, 0],
+                    [10, 0],
+                    [-1, -1],
+                    [2, 14],
+                    [9, 14]
+                ]
+            },
+            'u': {
+                width: 19, points: [
+                    [4, 14],
+                    [4, 4],
+                    [5, 1],
+                    [7, 0],
+                    [10, 0],
+                    [12, 1],
+                    [15, 4],
+                    [-1, -1],
+                    [15, 14],
+                    [15, 0]
+                ]
+            },
+            'v': {
+                width: 16, points: [
+                    [2, 14],
+                    [8, 0],
+                    [-1, -1],
+                    [14, 14],
+                    [8, 0]
+                ]
+            },
+            'w': {
+                width: 22, points: [
+                    [3, 14],
+                    [7, 0],
+                    [-1, -1],
+                    [11, 14],
+                    [7, 0],
+                    [-1, -1],
+                    [11, 14],
+                    [15, 0],
+                    [-1, -1],
+                    [19, 14],
+                    [15, 0]
+                ]
+            },
+            'x': {
+                width: 17, points: [
+                    [3, 14],
+                    [14, 0],
+                    [-1, -1],
+                    [14, 14],
+                    [3, 0]
+                ]
+            },
+            'y': {
+                width: 16, points: [
+                    [2, 14],
+                    [8, 0],
+                    [-1, -1],
+                    [14, 14],
+                    [8, 0],
+                    [6, -4],
+                    [4, -6],
+                    [2, -7],
+                    [1, -7]
+                ]
+            },
+            'z': {
+                width: 17, points: [
+                    [14, 14],
+                    [3, 0],
+                    [-1, -1],
+                    [3, 14],
+                    [14, 14],
+                    [-1, -1],
+                    [3, 0],
+                    [14, 0]
+                ]
+            },
+            '{': {
+                width: 14, points: [
+                    [9, 25],
+                    [7, 24],
+                    [6, 23],
+                    [5, 21],
+                    [5, 19],
+                    [6, 17],
+                    [7, 16],
+                    [8, 14],
+                    [8, 12],
+                    [6, 10],
+                    [-1, -1],
+                    [7, 24],
+                    [6, 22],
+                    [6, 20],
+                    [7, 18],
+                    [8, 17],
+                    [9, 15],
+                    [9, 13],
+                    [8, 11],
+                    [4, 9],
+                    [8, 7],
+                    [9, 5],
+                    [9, 3],
+                    [8, 1],
+                    [7, 0],
+                    [6, -2],
+                    [6, -4],
+                    [7, -6],
+                    [-1, -1],
+                    [6, 8],
+                    [8, 6],
+                    [8, 4],
+                    [7, 2],
+                    [6, 1],
+                    [5, -1],
+                    [5, -3],
+                    [6, -5],
+                    [7, -6],
+                    [9, -7]
+                ]
+            },
+            '|': {
+                width: 8, points: [
+                    [4, 25],
+                    [4, -7]
+                ]
+            },
+            '}': {
+                width: 14, points: [
+                    [5, 25],
+                    [7, 24],
+                    [8, 23],
+                    [9, 21],
+                    [9, 19],
+                    [8, 17],
+                    [7, 16],
+                    [6, 14],
+                    [6, 12],
+                    [8, 10],
+                    [-1, -1],
+                    [7, 24],
+                    [8, 22],
+                    [8, 20],
+                    [7, 18],
+                    [6, 17],
+                    [5, 15],
+                    [5, 13],
+                    [6, 11],
+                    [10, 9],
+                    [6, 7],
+                    [5, 5],
+                    [5, 3],
+                    [6, 1],
+                    [7, 0],
+                    [8, -2],
+                    [8, -4],
+                    [7, -6],
+                    [-1, -1],
+                    [8, 8],
+                    [6, 6],
+                    [6, 4],
+                    [7, 2],
+                    [8, 1],
+                    [9, -1],
+                    [9, -3],
+                    [8, -5],
+                    [7, -6],
+                    [5, -7]
+                ]
+            },
+            '~': {
+                width: 24, points: [
+                    [3, 6],
+                    [3, 8],
+                    [4, 11],
+                    [6, 12],
+                    [8, 12],
+                    [10, 11],
+                    [14, 8],
+                    [16, 7],
+                    [18, 7],
+                    [20, 8],
+                    [21, 10],
+                    [-1, -1],
+                    [3, 8],
+                    [4, 10],
+                    [6, 11],
+                    [8, 11],
+                    [10, 10],
+                    [14, 7],
+                    [16, 6],
+                    [18, 6],
+                    [20, 7],
+                    [21, 10],
+                    [21, 12]
+                ]
+            }
+        };
+
+    }
 })();
 ;/**
  * Components for managing groups of components.
@@ -29903,7 +32177,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * @type KeyboardOrbitCamera
              */
             this.keyboardOrbit = new XEO.KeyboardOrbitCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -29915,7 +32188,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * @type MouseOrbitCamera
              */
             this.mouseOrbit = new XEO.MouseOrbitCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -29927,7 +32199,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * @type KeyboardPanCamera
              */
             this.keyboardPan = new XEO.KeyboardPanCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -29939,7 +32210,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * @type MousePanCamera
              */
             this.mousePan = new XEO.MousePanCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -29951,7 +32221,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * @type KeyboardZoomCamera
              */
             this.keyboardZoom = new XEO.KeyboardZoomCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -29963,7 +32232,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * @type MouseZoomCamera
              */
             this.mouseZoom = new XEO.MouseZoomCamera(scene, {
-                sensitivity: 1,
                 camera: cfg.camera
             });
 
@@ -29979,19 +32247,11 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 camera: cfg.camera
             });
 
-            /**
-             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property cameraFly
-             * @final
-             * @type CameraFlight
-             */
-            this.cameraFly = new XEO.CameraFlight(scene, {
-                camera: cfg.camera
-            });
-
             this.mousePickObject.on("pick",
                 function (e) {
+
+                    // Fly camera to each picked object
+                    // Don't change distance between look and eye
 
                     var view = self.cameraFly.camera.view;
 
@@ -30007,11 +32267,23 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     });
                 });
 
-            // Handle when nothing is picked
             this.mousePickObject.on("nopick",
                 function (e) {
-                    alert("Mothing picked");
+                    //alert("Nothing picked");
                 });
+
+            /**
+             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
+             *
+             * @property cameraFly
+             * @final
+             * @type CameraFlight
+             */
+            this.cameraFly = new XEO.CameraFlight(scene, {
+                camera: cfg.camera
+            });
+
+            // Set component properties
 
             this.firstPerson = cfg.firstPerson;
             this.camera = cfg.camera;
@@ -30019,20 +32291,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
         },
 
         _props: {
-
-            //spin: {
-            //
-            //    set: function (value) {
-            //        object.scene.on("tick",
-            //            function () {
-            //
-            //                var view = object.scene.camera.view;
-            //
-            //                view.rotateEyeY(0.6);
-            //                view.rotateEyeX(0.3);
-            //            });
-            //    }
-            //},
 
             /**
              * Flag which indicates whether this CameraControl is in "first person" mode.
@@ -30108,7 +32366,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 },
 
                 get: function () {
-                    return this._camera;
+                    return this._children.camera;
                 }
             },
 
@@ -30159,7 +32417,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
         _getJSON: function () {
 
             var json = {
-                sensitivity: this._sensitivity,
+                firstPerson: this._firstPerson,
                 active: this._active
             };
 
@@ -30260,6 +32518,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             // Animations
 
             this._cameraFly = new XEO.CameraFlight(this.scene, {
+                duration: 1.0
             });
 
             // Init properties
@@ -30337,8 +32596,11 @@ XEO.PathGeometry = XEO.Geometry.extend({
                                     return;
                                 }
 
-                                var aabb = self.scene.worldAABB;
-                                var center = self.scene.worldCenter;
+                                var boundary = self.scene.worldBoundary;
+                                var aabb = boundary.aabb;
+                                var center = boundary.center;
+                                var diag = XEO.math.getAABBDiag(aabb);
+                                var dist = 200;
 
                                 switch (keyCode) {
 
@@ -30348,7 +32610,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [-10, 0, 0],
+                                            eye: [center[0] - dist, center[1], center[2]],
                                             up: [0, 1, 0]
                                         });
 
@@ -30361,7 +32623,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [10, 0, 0],
+                                            eye: [center[0] + dist, center[1], center[2]],
                                             up: [0, 1, 0]
                                         });
 
@@ -30374,7 +32636,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [0, 0, -10],
+                                            eye: [center[0], center[1], center[2] - dist],
                                             up: [0, 1, 0]
                                         });
 
@@ -30386,7 +32648,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [0, 0, 10],
+                                            eye: [center[0], center[1], center[2] + dist],
                                             up: [0, 1, 0]
                                         });
 
@@ -30398,7 +32660,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [0, -10, 0],
+                                            eye: [center[0], center[1] - dist, center[2]],
                                             up: [0, 0, -1]
                                         });
 
@@ -30410,7 +32672,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                         self._cameraFly.flyTo({
                                             look: center,
-                                            eye: [0, 10, 0],
+                                            eye: [center[0], center[1] + dist, center[2]],
                                             up: [0, 0, 1]
                                         });
 
@@ -30539,6 +32801,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             
             this.camera = cfg.camera;
             this.active = cfg.active !== false;
+            this.sensitivity = cfg.sensitivity;
         },
 
         _props: {
@@ -30570,6 +32833,35 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                 get: function () {
                     return this._children.camera;
+                }
+            },
+
+            /**
+             * The sensitivity of this KeyboardOrbitCamera.
+             *
+             * Fires a {{#crossLink "KeyboardOrbitCamera/sensitivity:event"}}{{/crossLink}} event on change.
+             *
+             * @property sensitivity
+             * @type Number
+             * @default 1.0
+             */
+            sensitivity: {
+
+                set: function (value) {
+
+                    this._sensitivity = value || 1.0;
+
+                    /**
+                     * Fired whenever this KeyboardOrbitCamera's  {{#crossLink "KeyboardOrbitCamera/sensitivity:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event sensitivity
+                     * @param value The property's new value
+                     */
+                    this.fire("sensitivity", this._sensitivity);
+                },
+
+                get: function () {
+                    return this._sensitivity;
                 }
             },
 
@@ -30642,8 +32934,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                 var elapsed = params.deltaTime;
 
-                                var yawRate = 50;
-                                var pitchRate = 50;
+                                var yawRate = self._sensitivity * 0.5;
+                                var pitchRate = self._sensitivity * 0.5;
 
                                 if (!input.ctrlDown && !input.altDown) {
 
@@ -30770,7 +33062,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardPanCamera. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Pan sensitivity factor.
+ @param [cfg.sensitivity=0.5] {Number} Pan sensitivity factor.
  @param [cfg.active=true] {Boolean} Whether or not this KeyboardPanCamera is active.
  @extends Component
  */
@@ -30841,13 +33133,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
              *
              * @property sensitivity
              * @type Number
-             * @default 1.0
+             * @default 0.5
              */
             sensitivity: {
 
                 set: function (value) {
 
-                    this._sensitivity = value || 1.0;
+                    this._sensitivity = value || 0.5;
 
                     /**
                      * Fired whenever this KeyboardPanCamera's  {{#crossLink "KeyboardPanCamera/sensitivity:property"}}{{/crossLink}} property changes.
@@ -30911,7 +33203,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                                         var y = 0;
                                         var z = 0;
 
-                                        var sensitivity = self.sensitivity;
+                                        var sensitivity = self._sensitivity;
 
                                         if (skey) {
                                             y = elapsed * sensitivity;
@@ -31017,7 +33309,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardZoomCamera. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Zoom sensitivity factor.
+ @param [cfg.sensitivity=0.5] {Number} Zoom sensitivity factor.
  @param [cfg.active=true] {Boolean} Whether or not this KeyboardZoomCamera is active.
  @extends Component
  */
@@ -31088,13 +33380,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
              *
              * @property sensitivity
              * @type Number
-             * @default 1.0
+             * @default 0.5
              */
             sensitivity: {
 
                 set: function (value) {
 
-                    this._sensitivity = value || 1.0;
+                    this._sensitivity = value || 0.5;
 
                     /**
                      * Fired whenever this KeyboardZoomCamera's  {{#crossLink "KeyboardZoomCamera/sensitivity:property"}}{{/crossLink}} property changes.
@@ -31152,7 +33444,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                         var z = 0;
 
-                                        var sensitivity = self.sensitivity * 15.0;
+                                        var sensitivity = self.sensitivity * 0.5;
 
                                         if (skey) {
                                             z = elapsed * sensitivity;
@@ -31256,7 +33548,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MouseOrbitCamera. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Mouse drag sensitivity factor.
+ @param [cfg.sensitivity=0.5] {Number} Mouse drag sensitivity factor.
  @param [cfg.firstPerson=false] {Boolean}  Indicates whether this MouseOrbitCamera is in "first person" mode.
  @param [cfg.active=true] {Boolean} Whether or not this MouseOrbitCamera is active.
  @extends Component
@@ -31331,13 +33623,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
              *
              * @property sensitivity
              * @type Number
-             * @default 1.0
+             * @default 0.5
              */
             sensitivity: {
 
                 set: function (value) {
 
-                    this._sensitivity = value || 1.0;
+                    this._sensitivity = value || 0.5;
 
                     /**
                      * Fired whenever this MouseOrbitCamera's  {{#crossLink "MouseOrbitCamera/sensitivity:property"}}{{/crossLink}} property changes.
@@ -31557,7 +33849,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MousePanCamera. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Pan sensitivity factor.
+ @param [cfg.sensitivity=0.5] {Number} Pan sensitivity factor.
  @param [cfg.active=true] {Boolean} Whether or not this MousePanCamera is active.
  @extends Component
  */
@@ -31631,7 +33923,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
              *
              * @property sensitivity
              * @type Number
-             * @default 1.0
+             * @default 0.5
              */
             sensitivity: {
 
@@ -31724,8 +34016,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
                         this._onMouseMove = input.on("mousemove",
                             function (e) {
                                 if (down) {
-                                    xDelta += (e[0] - lastX) * self.sensitivity;
-                                    yDelta += (e[1] - lastY) * self.sensitivity;
+                                    xDelta += (e[0] - lastX) * self._sensitivity;
+                                    yDelta += (e[1] - lastY) * self._sensitivity;
                                     lastX = e[0];
                                     lastY = e[1];
                                 }
@@ -32029,7 +34321,7 @@ TODO
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MouseZoomCamera. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.sensitivity=1.0] {Number} Zoom sensitivity factor.
+ @param [cfg.sensitivity=0.5] {Number} Zoom sensitivity factor.
  @param [cfg.active=true] {Boolean} Whether or not this MouseZoomCamera is active.
  @extends Component
  */
@@ -32101,13 +34393,13 @@ TODO
              *
              * @property sensitivity
              * @type Number
-             * @default 1.0
+             * @default 0.5
              */
             sensitivity: {
 
                 set: function (value) {
 
-                    this._sensitivity = value || 1.0;
+                    this._sensitivity = value || 0.5;
 
                     /**
                      * Fired whenever this MouseZoomCamera's  {{#crossLink "MouseZoomCamera/sensitivity:property"}}{{/crossLink}} property changes.
