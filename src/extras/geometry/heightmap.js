@@ -17,9 +17,13 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Heightmap.
- @param [cfg.radius=1] {Number}
- @param [cfg.xSize=8] {Number}
- @param [cfg.zSegments=6] {Number}
+ @param [cfg.src=undefined] {String} Path to an image file to source this Heightmap from.
+ @param [cfg.image=undefined] {HTMLImageElement} An HTML DOM Image object to source this Heightmap from.
+ @param [cfg.xSize=1] {Number} Dimension on the X-axis.
+ @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
+ @param [cfg.zSize=0.25] {Number} Dimension (height) on the Z-axis.
+ @param [cfg.xSegments=1] {Number} Number of segments on the X-axis (width).
+ @param [cfg.ySegments=1] {Number} Number of segments on the Y-axis (depth).
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -44,7 +48,7 @@
 
             // Set component properties
 
-          //  this.autoNormals = true;
+            //  this.autoNormals = true;
 
             if (cfg.src) {
                 this.src = cfg.src;
@@ -58,11 +62,11 @@
             this.zSize = cfg.zSize;
 
             this.xSegments = cfg.xSegments;
-            this.zSegments = cfg.zSegments;
+            this.ySegments = cfg.ySegments;
 
             this.lod = cfg.lod;
 
-            this.autoNormals = cfg.autoNormals !==false;
+            this.autoNormals = cfg.autoNormals !== false;
         },
 
         _heightmapDirty: function () {
@@ -112,108 +116,13 @@
                 var ctx = element.getContext("2d");
                 ctx.drawImage(this._image, 0, 0);
                 this._imageData = ctx.getImageData(0, 0, this._image.width, this._image.height).data;
-             //   element.parentNode.removeChild(element);
+                //   element.parentNode.removeChild(element);
 
                 // Now need to rebuild geometry
 
                 this._imageDirty = false;
                 this._geometryDirty = true;
             }
-
-            //if (this._geometryDirty) {
-            //
-            //    var imageWidth = this._image.width;
-            //    var imageHeight = this._image.height;
-            //
-            //    var positions = [];
-            //    var uvs = [];
-            //    var indices = [];
-            //
-            //    var width = this._xSize;
-            //    var height = this._zSize;
-            //
-            //    var xSegments = this._xSegments;
-            //    var zSegments = this._zSegments;
-            //
-            //    var halfWidth = width / 2;
-            //    var halfHeight = height / 2;
-            //
-            //    var gridX = xSegments;
-            //    var gridZ = zSegments;
-            //
-            //    var gridX1 = gridX + 1;
-            //    var gridZ1 = gridZ + 1;
-            //
-            //    var segWidth = width / gridX;
-            //    var segHeight = height / gridZ;
-            //
-            //    var imgX;
-            //    var imgY;
-            //
-            //    var x;
-            //    var y;
-            //    var z;
-            //
-            //    for (var px = 0; px <= gridZ; px++) {
-            //        for (var py = 0; py <= gridX; py++) {
-            //
-            //            x = px * segWidth;
-            //            y = py * segHeight;
-            //
-            //            imgX = Math.round((x / width) * (imageWidth - 1));
-            //            imgY = Math.round((y / height) * (imageHeight - 1));
-            //
-            //            z = (this._imageData[(imageWidth * imgY + imgX) * 4]) / 255 * this._ySize;
-            //
-            //            if (z == undefined || isNaN(z)) {
-            //                z = 0;
-            //            }
-            //
-            //            positions.push(x - halfWidth);
-            //            positions.push(-y + halfHeight);
-            //            positions.push(-z);
-            //
-            //            uvs.push(py / gridX);
-            //            uvs.push(1 - px / gridZ);
-            //        }
-            //    }
-            //
-            //    var a;
-            //    var b;
-            //    var c;
-            //    var d;
-            //
-            //    for (var iz = 0; iz < gridZ; iz++) {
-            //        for (var ix = 0; ix < gridX; ix++) {
-            //
-            //            a = ix + gridX1 * iz;
-            //            b = ix + gridX1 * ( iz + 1 );
-            //            c = ( ix + 1 ) + gridX1 * ( iz + 1 );
-            //            d = ( ix + 1 ) + gridX1 * iz;
-            //
-            //            if (a >= positions.length || b >= positions.length || c >= positions.length || d >= positions.length) {
-            //                continue;
-            //            }
-            //            indices.push(a);
-            //            indices.push(b);
-            //            indices.push(c);
-            //
-            //            indices.push(c);
-            //            indices.push(d);
-            //            indices.push(a);
-            //        }
-            //    }
-            //
-            //    this.positions = positions;
-            //    this.normals = null;
-            //    //this.normals = normals;
-            //    this.uv = uvs;
-            //    this.indices = indices;
-            //
-            //    this._geometryDirty = false;
-            //}
-            //
-            //return;
 
             if (this._geometryDirty) {
 
@@ -226,33 +135,39 @@
                 var imageWidth = this._image.width;
                 var imageHeight = this._image.height;
 
-                var xSize = this._xSize;
-                var ySize = this._ySize;
-                var zSize = this._zSize;
-
                 var xSegments = Math.floor(this._lod * this._xSegments);
-                var zSegments = Math.floor(this._lod * this._zSegments);
+                var ySegments = Math.floor(this._lod * this._ySegments);
 
                 if (xSegments < 4) {
                     xSegments = 4;
                 }
 
-                if (zSegments < 4) {
-                    zSegments = 4;
+                if (ySegments < 4) {
+                    ySegments = 4;
                 }
 
-                var positions = [];
-                var uvs = [];
-                var indices = [];
+                var width = this._xSize;
+                var height = this._ySize;
+                var depth = this._zSize;
 
-                var halfXSize = xSize / 2;
-                var halfYSize = zSize / 2;
+                var halfWidth = width / 2;
+                var halfHeight = height / 2;
 
-                var xSegments1 = xSegments + 1;
-                var zSegments1 = zSegments + 1;
+                var gridX = Math.floor(xSegments) || 1;
+                var gridY = Math.floor(ySegments) || 1;
 
-                var segWidth = xSize / xSegments;
-                var segHeight = zSize / zSegments;
+                var gridX1 = gridX + 1;
+                var gridY1 = gridY + 1;
+
+                var segmentWidth = width / gridX;
+                var segmentHeight = height / gridY;
+
+                var positions = new Float32Array(gridX1 * gridY1 * 3);
+                var normals = new Float32Array(gridX1 * gridY1 * 3);
+                var uvs = new Float32Array(gridX1 * gridY1 * 2);
+
+                var offset = 0;
+                var offset2 = 0;
 
                 var imgX;
                 var imgY;
@@ -261,56 +176,69 @@
                 var y;
                 var z;
 
-                for (var px = 0; px <= zSegments; px++) {
-                    for (var py = 0; py <= xSegments; py++) {
+                for (var iy = 0; iy < gridY1; iy++) {
 
-                        x = px * segWidth;
-                        y = py * segHeight;
+                    y = iy * segmentHeight - halfHeight;
 
-                        imgX = Math.round((x / xSize) * (imageWidth - 1));
-                        imgY = Math.round((y / zSize) * (imageHeight - 1));
+                    for (var ix = 0; ix < gridX1; ix++) {
 
-                        z = (this._imageData[(imageWidth * imgY + imgX) * 4]) / 255 * ySize;
+                        x = ix * segmentWidth - halfWidth;
+
+                        var x2 = ix * segmentWidth;
+                        var y2 = iy * segmentHeight;
+
+                        imgX = Math.round((x2 / width) * (imageWidth - 1));
+                        imgY = Math.round((y2 / height) * (imageHeight - 1));
+
+                        z = (this._imageData[(imageWidth * imgY + imgX) * 4]) / 255 * depth;
 
                         if (z == undefined || isNaN(z)) {
                             z = 0;
                         }
 
-                        positions.push(x - halfXSize);
-                        positions.push(-y + halfYSize);
-                        positions.push(-z);
+                        positions[offset] = x;
+                        positions[offset + 1] = -y;
+                        positions[offset + 2] = -z;
 
-                        uvs.push(py / xSegments);
-                        uvs.push(1 - px / zSegments);
+                        normals[offset + 2] = -1;
+
+                        uvs[offset2] = (gridX -ix) / gridX;
+                        uvs[offset2 + 1] = 1 - ( iy / gridY );
+
+                        offset += 3;
+                        offset2 += 2;
+
                     }
                 }
 
-                var a;
-                var b;
-                var c;
-                var d;
+                offset = 0;
 
-                for (var iz = 0; iz < zSegments; iz++) {
-                    for (var ix = 0; ix < xSegments; ix++) {
+                var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(gridX * gridY * 6);
 
-                        a = ix + xSegments1 * iz;
-                        b = ix + xSegments1 * ( iz + 1 );
-                        c = ( ix + 1 ) + xSegments1 * ( iz + 1 );
-                        d = ( ix + 1 ) + xSegments1 * iz;
+                for (var iy = 0; iy < gridY; iy++) {
 
-                        indices.push(a);
-                        indices.push(b);
-                        indices.push(c);
+                    for (var ix = 0; ix < gridX; ix++) {
 
-                        indices.push(c);
-                        indices.push(d);
-                        indices.push(a);
+                        var a = ix + gridX1 * iy;
+                        var b = ix + gridX1 * ( iy + 1 );
+                        var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
+                        var d = ( ix + 1 ) + gridX1 * iy;
+
+                        indices[offset] = d;
+                        indices[offset + 1] = b;
+                        indices[offset + 2] = a;
+
+                        indices[offset + 3] = d;
+                        indices[offset + 4] = c;
+                        indices[offset + 5] = b;
+
+                        offset += 6;
                     }
                 }
+
 
                 this.positions = positions;
                 this.normals = positions;
-
                 this.uv = uvs;
                 this.indices = indices;
 
@@ -353,7 +281,7 @@
                     self.fire("image", self._image);
                 }
 
-            ///    task.setCompleted();
+                ///    task.setCompleted();
             };
 
             image.onerror = function () {
@@ -501,9 +429,9 @@
             },
 
             /**
-             * The Heightmap's dimension (width) on the X-axis.
+             * The Heightmap's dimension on the X-axis.
              *
-             * Fires a {{#crossLink "Sphere/xSize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/xSize:event"}}{{/crossLink}} event on change.
              *
              * @property xSize
              * @default 1
@@ -531,7 +459,7 @@
                     this._heightmapDirty();
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/xSize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSize:property"}}{{/crossLink}} property changes.
                      * @event xSize
                      * @type Number
                      * @param value The property's new value
@@ -545,19 +473,19 @@
             },
 
             /**
-             * The Heightmap's dimension (height) on the Y-axis.
+             * The Heightmap's dimension on the Y-axis.
              *
-             * Fires a {{#crossLink "Sphere/ySize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/ySize:event"}}{{/crossLink}} event on change.
              *
              * @property ySize
-             * @default 0.25
+             * @default 1.0
              * @type Number
              */
             ySize: {
 
                 set: function (value) {
 
-                    value = value || 0.25;
+                    value = value || 1.0;
 
                     if (this._ySize === value) {
                         return;
@@ -575,7 +503,7 @@
                     this._heightmapDirty();
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/ySize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySize:property"}}{{/crossLink}} property changes.
                      * @event ySize
                      * @type Number
                      * @param value The property's new value
@@ -589,19 +517,19 @@
             },
 
             /**
-             * The Heightmap's dimension (depth) on the Z-axis.
+             * The Heightmap's dimension (height) on the Z-axis.
              *
-             * Fires a {{#crossLink "Sphere/zSize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/zSize:event"}}{{/crossLink}} event on change.
              *
              * @property zSize
-             * @default 1
+             * @default 0.25
              * @type Number
              */
             zSize: {
 
                 set: function (value) {
 
-                    value = value || 1;
+                    value = value || 0.25;
 
                     if (this._zSize === value) {
                         return;
@@ -619,7 +547,7 @@
                     this._heightmapDirty();
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/zSize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/zSize:property"}}{{/crossLink}} property changes.
                      * @event zSize
                      * @type Number
                      * @param value The property's new value
@@ -633,9 +561,9 @@
             },
 
             /**
-             * The Heightmap's number of segments on the X-axis (width).
+             * The Heightmap's number of segments on the X-axis.
              *
-             * Fires a {{#crossLink "Sphere/xSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/xSegments:event"}}{{/crossLink}} event on change.
              *
              * @property xSegments
              * @default 100
@@ -663,7 +591,7 @@
                     this._heightmapDirty();
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/xSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSegments:property"}}{{/crossLink}} property changes.
                      * @event xSegments
                      * @type Number
                      * @param value The property's new value
@@ -677,46 +605,46 @@
             },
 
             /**
-             * The Heightmap's number of segments on the Z-axis (depth).
+             * The Heightmap's number of segments on the Y-axis.
              *
-             * Fires a {{#crossLink "Sphere/zSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/ySegments:event"}}{{/crossLink}} event on change.
              *
-             * @property zSegments
+             * @property ySegments
              * @default 100
              * @type Number
              */
-            zSegments: {
+            ySegments: {
 
                 set: function (value) {
 
                     value = value || 100;
 
-                    if (this._zSegments === value) {
+                    if (this._ySegments === value) {
                         return;
                     }
 
                     if (value < 0) {
-                        this.warn("negative zSegments not allowed - will invert");
+                        this.warn("negative ySegments not allowed - will invert");
                         value = value * -1;
                     }
 
-                    this._zSegments = value;
+                    this._ySegments = value;
 
                     this._geometryDirty = true;
 
                     this._heightmapDirty();
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/zSegments:property"}}{{/crossLink}} property changes.
-                     * @event zSegments
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySegments:property"}}{{/crossLink}} property changes.
+                     * @event ySegments
                      * @type Number
                      * @param value The property's new value
                      */
-                    this.fire("zSegments", this._zSegments);
+                    this.fire("ySegments", this._ySegments);
                 },
 
                 get: function () {
-                    return this._zSegments;
+                    return this._ySegments;
                 }
             }
         },
@@ -730,7 +658,7 @@
                 zSize: this._zSize,
 
                 xSegments: this._xSegments,
-                zSegments: this._zSegments
+                ySegments: this._ySegments
             };
 
             if (this._src) {
@@ -741,7 +669,6 @@
             }
 
             return json;
-
         }
     });
 
