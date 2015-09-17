@@ -100,7 +100,11 @@
 
         this.linked = gl.getProgramParameter(this.handle, gl.LINK_STATUS);
 
-        this.validated = this.linked ? gl.getProgramParameter(this.handle, gl.VALIDATE_STATUS) : false;
+        // HACK: Disable validation temporarily: https://github.com/xeolabs/xeoengine/issues/5
+        // Perhaps we should defer validation until render-time, when the program has values set for all inputs?
+
+        //this.validated = this.linked ? gl.getProgramParameter(this.handle, gl.VALIDATE_STATUS) : false;
+        this.validated = true;
 
         if (!this.linked || !this.validated) {
 
