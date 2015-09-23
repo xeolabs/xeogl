@@ -258,7 +258,7 @@
                 add("varying vec4 xeo_vColor;");
             }
 
-            if (states.geometry.primitive === "points") {
+            if (states.geometry.primitiveName === "points") {
                 add("uniform float xeo_uPointSize;");
             }
 
@@ -302,7 +302,10 @@
 
             if (states.billboard.active) {
                 add("   mat4 modelView =  xeo_uViewMatrix * xeo_uModelMatrix ;");
-                add("   mat4 modelViewNormal =  xeo_uViewNormalMatrix * xeo_uModelNormalMatrix ;");
+
+                if (shading) {
+                    add("   mat4 modelViewNormal =  xeo_uViewNormalMatrix * xeo_uModelNormalMatrix ;");
+                }
 
                 add("   billboard(modelMatrix);");
                 add("   billboard(viewMatrix);");
