@@ -17,6 +17,7 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Cylinder.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.radiusTop=1] {Number} Radius of top.
  @param [cfg.radiusBottom=1] {Number} Radius of bottom.
  @param [cfg.height=1] {Number} Height.

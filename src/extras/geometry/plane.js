@@ -17,6 +17,7 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Plane.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
  @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
  @param [cfg.xSegments=4] {Number} Number of segments on the X-axis.

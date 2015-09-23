@@ -17,6 +17,7 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Heightmap.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.src=undefined] {String} Path to an image file to source this Heightmap from.
  @param [cfg.image=undefined] {HTMLImageElement} An HTML DOM Image object to source this Heightmap from.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
