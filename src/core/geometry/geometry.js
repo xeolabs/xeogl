@@ -989,6 +989,8 @@
 
                     this._autoNormals = value;
 
+                    this._normalsDirty = true;
+
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} property changes.
                      * @event autoNormals
