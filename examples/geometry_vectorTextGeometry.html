@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    100 spherical <a href="../docs/classes/Billboard.html" target="_other">Billboards</a>,<br>each containing a <a href="../docs/classes/VectorTextGeometry.html" target="_other">VectorTextGeometry</a>
+</div>
+
+<script>
+
+    // VectorTextGeometry
+
+    var geometry = new XEO.VectorTextGeometry({
+        text: "xeoEngine",
+        xSize: 5,
+        ySize: 5
+    });
+
+    // Override default Lights
+
+    var lights = new XEO.Lights({
+        lights: []
+    });
+
+    // Billboard transform
+
+    var billboard = new XEO.Billboard({
+        spherical: true
+    });
+
+    // 100 GameObjects
+
+    for (var i = 0; i < 100; i++) {
+
+        new XEO.GameObject({
+            geometry: geometry,
+            material: new XEO.PhongMaterial({
+                diffuse:[
+                    0.3 + Math.random() * 0.7,
+                    0.3 + Math.random() * 0.7,
+                    0.3 + Math.random() * 0.7
+                ],
+                lineWidth:3
+
+            }),
+            lights: lights,
+            billboard: billboard,
+            transform: new XEO.Translate({
+                xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
+            })
+        });
+    }
+
+    var scene = XEO.scene;
+
+    // Move the camera back a bit
+
+    scene.camera.view.zoom(120);
+
+    // Orbit the eye position about the look position.
+
+    scene.on("tick",
+            function () {
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.2);
+                view.rotateEyeX(0.1);
+            });
+
+    // Rotate and pan camera with mouse and keyboard
+
+    var cameraControl = new XEO.CameraControl();
+    cameraControl.mouseZoom.sensitivity = 5;
+
+</script>
+</body>
+</html>

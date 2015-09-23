@@ -118,6 +118,7 @@
     "src/extras/geometry/plane.js",
     "src/extras/geometry/heightmap.js",
     "src/extras/geometry/lathe.js",
+    "src/extras/geometry/vectorText.js",
 
     "src/extras/groups/_module.js",
     "src/extras/groups/group.js",
