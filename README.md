@@ -14,7 +14,7 @@ It's currently at **alpha** status, where in order to get the design right, the 
  - [Live examples](http://xeoengine.org/examples) 
  - [API documentation](http://xeoengine.org/docs/index.html)
  
- ## Building
+## Building
  
  Install node (Ubuntu):
  
