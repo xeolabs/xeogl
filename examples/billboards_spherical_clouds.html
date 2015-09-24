@@ -23,8 +23,6 @@
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
     spherical <a href="../docs/classes/Billboard.html" target="_other">Billboards</a>
-    <!--<pre id="infoTxt" style="text-align: left; background: black; opacity: 0.7; color: white;">-->
-    <!--</pre>-->
 </div>
 
 <script>
@@ -61,25 +59,27 @@
         transparent: true
     });
 
-    for (var i = 0; i < 500; i++) {
+    var numClouds = 500;
 
-        var o = new XEO.GameObject({
+    for (var i = 0; i < numClouds; i++) {
+
+        var object = new XEO.GameObject({
             geometry: geometry,
             material: material,
             lights: lights,
             billboard: billboard,
             transform: new XEO.Translate({
-                xyz: [Math.random() * 60 - 30, Math.random() * 100 - 50, Math.random() * 100 - 50]
+                xyz: [Math.random() * Math.random() * 60 - 30, Math.random() * Math.random() * 100 - 50, Math.random() * Math.random() * 100 - 50]
             }),
             modes: modes,
             layer: new XEO.Layer()
         });
 
-        o.viewBoundary.on("updated",
+        object.viewBoundary.on("updated",
                 function () {
-                    var center = o.viewBoundary.center;
+                    var center = object.viewBoundary.center;
                     var priority = Math.floor(500 + center[2] * 100);
-                    o.layer.priority = priority;
+                    object.layer.priority = priority;
                 });
     }
 
@@ -96,17 +96,13 @@
 
                 var view = scene.camera.view;
 
-//                view.rotateEyeY(0.5);
-//                view.rotateEyeX(0.3);
-
-                logJSON(scene.stats);
+                view.rotateEyeY(0.5);
+                view.rotateEyeX(0.3);
             });
 
-    new XEO.CameraControl();
+    var cameraControl = new XEO.CameraControl();
+    cameraControl.mouseZoom.sensitivity = 5;
 
-    function logJSON(json) {
-            //  document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
-    }
 
 </script>
 </body>

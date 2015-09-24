@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    100 spherical <a href="../docs/classes/Billboard.html" target="_other">Billboards</a>,<br>each containing a <a
+        href="../docs/classes/VectorTextGeometry.html" target="_other">VectorTextGeometry</a>
+</div>
+
+<script id="sourceCode">
+
+    // VectorTextGeometry Demo
+    // @xeolabs
+
+    var geometry = new XEO.VectorTextGeometry({
+        text: document.getElementById("sourceCode").innerText,
+        xSize: 2,
+        ySize: 2
+    });
+
+    new XEO.GameObject({
+        geometry: geometry,
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 0.5, 0.8],
+            lineWidth: 2
+
+        }),
+        lights: new XEO.Lights({
+            lights: []
+        }),
+        transform: new XEO.Translate({
+            xyz: [40, 40, 0]
+        })
+    });
+
+    // Move the camera back a bit, then orbit the
+    // eye position about the look position
+
+    var scene = XEO.scene;
+
+    scene.camera.view.zoom(120);
+
+    scene.on("tick",
+            function () {
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.2);
+                view.rotateEyeX(0.1);
+            });
+
+    // Create user camera control
+    // Make mouse zoom more sensitive
+
+    var cameraControl = new XEO.CameraControl();
+    cameraControl.mouseZoom.sensitivity = 5;
+
+</script>
+</body>
+</html>

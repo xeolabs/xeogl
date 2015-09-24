@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="lib/dat.gui.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/dat-gui-swec.css">
+
+    <script src="../build/xeoengine.js"></script>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <br><br><a href="../docs/classes/HeightmapGeometry.html"
+               target="_other">HeightmapGeometry</a>
+</div>
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    //------------------ Scene definition --------------------
+
+    var heightmap = new XEO.HeightmapGeometry({
+        primitive: "triangles",
+        src: "textures/heightMap2.png",
+        xSize: 10,
+        ySize: 10,
+        zSize: 5,
+        xSegments: 70,
+        ySegments: 70,
+        lod: 1.0, // Default
+        autoNormals: true // Default
+    });
+
+    var diffuseMap = new XEO.Texture({
+        src: "textures/uvGrid2.jpg"
+    });
+
+    var object = new XEO.GameObject({
+        geometry: heightmap,
+        material: new XEO.PhongMaterial({
+            diffuseMap: diffuseMap,
+            lineWidth: 3,
+            pointSize: 5
+        })
+    });
+
+    // Position camera
+
+    var view = object.scene.camera.view;
+
+    view.zoom(2);
+    view.rotateEyeX(-60);
+    view.rotateEyeY(-20);
+
+    // Let user move camera
+
+    new XEO.CameraControl();
+
+    // Show boundary
+
+//    new XEO.GameObject({
+//        geometry: new XEO.BoundaryGeometry({
+//            boundary: object.worldBoundary
+//        }),
+//        material: new XEO.PhongMaterial(this.scene, {
+//            diffuse: [0.5, 1.0, 0.5],
+//            emissive: [0.5, 1.0, 0.5],
+//            lineWidth: 2
+//        })
+//    });
+
+    //------------------ GUI ---------------------------------
+
+    var Menu = function () {
+
+        this.message = "XEO.HeightmapGeometry";
+
+        this["primitive"] = heightmap.primitive;
+        this["src"] = heightmap.src.substring("textures/".length);
+        this["xSize"] = heightmap.xSize;
+        this["ySize"] = heightmap.ySize;
+        this["zSize"] = heightmap.zSize;
+        this["xSegments"] = heightmap.xSegments;
+        this["ySegments"] = heightmap.ySegments;
+        this["autoNormals"] = heightmap.autoNormals;
+        this["lod"] = heightmap.lod;
+
+        var self = this;
+
+        // This is actually quite inefficient because it continually updates
+        // the scene graph, forcing frames to continually re-render.
+        // Your GPU's not going to like it, but it's just for a quick and dirty demo.
+
+        var textured = true;
+
+        var update = function () {
+
+            heightmap.primitive = self["primitive"];
+            heightmap.src = "textures/" + self["src"];
+            heightmap.xSize = self["xSize"];
+            heightmap.ySize = self["ySize"];
+            heightmap.zSize = self["zSize"];
+            heightmap.xSegments = self["xSegments"];
+            heightmap.ySegments = self["ySegments"];
+            heightmap.lod = self["lod"];
+            heightmap.autoNormals = self["autoNormals"];
+
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var gui = new dat.GUI({autoPlace: false});
+
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+    var menu = new Menu();
+
+    var folder = gui.addFolder('heightmap');
+    folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
+    folder.add(menu, 'src', [
+        "heightMap1.jpg",
+        "heightMap2.png"
+    ]);
+    folder.add(menu, 'xSize', 0.1, 10.0);
+    folder.add(menu, 'ySize', 0.1, 10.0);
+    folder.add(menu, 'zSize', 0.1, 10.0);
+    folder.add(menu, 'xSegments', 1, 70);
+    folder.add(menu, 'ySegments', 1, 70);
+    folder.add(menu, 'lod', 0.1, 1.0);
+    folder.add(menu, 'autoNormals');
+
+    folder.open();
+
+</script>
+</body>
+</html>

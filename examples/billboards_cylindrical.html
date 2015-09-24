@@ -22,46 +22,38 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    100 spherical <a href="../docs/classes/Billboard.html" target="_other">Billboards</a>,<br>each containing a <a href="../docs/classes/VectorTextGeometry.html" target="_other">VectorTextGeometry</a>
+   1000 cylindrical <a href="../docs/classes/Billboard.html" target="_other">Billboards</a>
 </div>
 
 <script>
 
-    // VectorTextGeometry
-
-    var geometry = new XEO.VectorTextGeometry({
-        text: "xeoEngine",
-        xSize: 5,
-        ySize: 5
+    var geometry = new XEO.Geometry({
+        primitive: "triangles",
+        positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
+        normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+        uv: [1, 1, 0, 1, 0, 0, 1, 0],
+        indices: [0, 1, 2, 0, 2, 3]
     });
 
-    // Override default Lights
+    var material = new XEO.PhongMaterial({
+        emissiveMap: new XEO.Texture({
+            src: "textures/teapot.jpg"
+        })
+    });
 
     var lights = new XEO.Lights({
         lights: []
     });
 
-    // Billboard transform
-
     var billboard = new XEO.Billboard({
-        spherical: true
+        spherical: false
     });
 
-    // 100 GameObjects
-
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < 1000; i++) {
 
         new XEO.GameObject({
             geometry: geometry,
-            material: new XEO.PhongMaterial({
-                diffuse:[
-                    0.3 + Math.random() * 0.7,
-                    0.3 + Math.random() * 0.7,
-                    0.3 + Math.random() * 0.7
-                ],
-                lineWidth:3
-
-            }),
+            material: material,
             lights: lights,
             billboard: billboard,
             transform: new XEO.Translate({
@@ -84,10 +76,10 @@
                 var view = scene.camera.view;
 
                 view.rotateEyeY(0.2);
-                view.rotateEyeX(0.1);
+               // view.rotateEyeX(0.1);
             });
 
-    // Rotate and pan camera with mouse and keyboard
+    // Control camera with mouse and keyboard
 
     var cameraControl = new XEO.CameraControl();
     cameraControl.mouseZoom.sensitivity = 5;

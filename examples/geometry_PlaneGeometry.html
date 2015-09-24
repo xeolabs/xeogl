@@ -25,8 +25,8 @@
 
 <div id="infoDark">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a>
-    <br><br><a href="../docs/classes/Grid.html"
-               target="_other">Grid</a>
+    <br><br><a href="../docs/classes/PlaneGeometry.html"
+               target="_other">PlaneGeometry</a>
 </div>
 <div id="dat-gui-container">
 </div>
@@ -35,7 +35,7 @@
 
     //------------------ Scene definition --------------------
 
-    var grid = new XEO.Grid({
+    var plane = new XEO.PlaneGeometry({
         primitive: "triangles",
         xSize: 10,
         ySize: 10,
@@ -45,12 +45,12 @@
     });
 
     var object = new XEO.GameObject({
-        geometry: grid,
-        material:  new XEO.PhongMaterial({
+        geometry: plane,
+        material: new XEO.PhongMaterial({
             diffuseMap: new XEO.Texture({
-                src: "textures/uvGrid2.jpg"
+                src: "textures/UVCheckerMap11-1024.png"
             }),
-            pointSize:3
+            pointSize: 5
         })
     });
 
@@ -70,14 +70,14 @@
 
     var Menu = function () {
 
-        this.message = "grid";
+        this.message = "XEO.PlaneGeometry";
 
-        this["primitive"] = grid.primitive;
-        this["xSize"] = grid.xSize;
-        this["ySize"] = grid.ySize;
-        this["xSegments"] = grid.xSegments;
-        this["ySegments"] = grid.ySegments;
-        this["lod"] = grid.lod;
+        this["primitive"] = plane.primitive;
+        this["xSize"] = plane.xSize;
+        this["ySize"] = plane.ySize;
+        this["xSegments"] = plane.xSegments;
+        this["ySegments"] = plane.ySegments;
+        this["lod"] = plane.lod;
 
         var self = this;
 
@@ -87,12 +87,12 @@
 
         var update = function () {
 
-            grid.primitive = self["primitive"];
-            grid.xSize = self["xSize"];
-            grid.ySize = self["ySize"];
-            grid.xSegments = self["xSegments"];
-            grid.ySegments = self["ySegments"];
-            grid.lod = self["lod"];
+            plane.primitive = self["primitive"];
+            plane.xSize = self["xSize"];
+            plane.ySize = self["ySize"];
+            plane.xSegments = self["xSegments"];
+            plane.ySegments = self["ySegments"];
+            plane.lod = self["lod"];
 
             requestAnimationFrame(update);
         };
@@ -106,7 +106,7 @@
 
     var menu = new Menu();
 
-    var folder = gui.addFolder('grid');
+    var folder = gui.addFolder('plane');
     folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
     folder.add(menu, 'xSize', 0.1, 10.0);
     folder.add(menu, 'ySize', 0.1, 10.0);

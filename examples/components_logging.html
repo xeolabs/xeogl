@@ -29,6 +29,21 @@
 
 <script>
 
+    var buf = [];
+
+    // Logs text to the page
+    function log(event, params) {
+        var txt = event;
+        if (params) {
+            txt += ": " + JSON.stringify(params)
+        }
+        buf.push(txt);
+        if (buf.length > 30) {
+            buf.shift();
+        }
+        document.getElementById("infoTxt").innerText = buf.join("\n");
+    }
+
     // Create a GameObject
     var object = new XEO.GameObject({
         id: "myObject"
@@ -39,11 +54,6 @@
     scene.on("log", log);
     scene.on("warn", log);
     scene.on("error", log);
-
-    function log(str) {
-        document.getElementById("infoTxt").innerHTML += (str + "\n\n");
-    }
-
 
     // Log a message in context of this GameObject
     // Message will appear in console as "[LOG] myObject: Everything is fine, situation normal."

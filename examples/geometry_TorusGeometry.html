@@ -24,14 +24,14 @@
 <body>
 
 <div id="infoDark">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Torus.html" target="_other">Torus</a>
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/TorusGeometry.html" target="_other">TorusGeometry</a>
 </div>
 <div id="dat-gui-container">
 </div>
 
 <script>
 
-    var torus = new XEO.Torus({
+    var torus = new XEO.TorusGeometry({
         radius: 1.0,
         tube: 0.3,
         segmentsR: 32,
@@ -45,10 +45,13 @@
             ambient: [0.9, 0.3, 0.9],
             shininess: 30,
             diffuseMap: new XEO.Texture({
-                src: "textures/uvGrid2.jpg"
+                src: "textures/UVCheckerMap08-1024.png",
+                wrapS: "repeat",
+                wrapT: "repeat",
+                scale: [0.1,0.5]
             }),
             lineWidth:2,
-            pointSize: 3
+            pointSize: 5
         })
     });
 
@@ -67,7 +70,7 @@
 
     var Menu = function () {
 
-        this.message = "Torus";
+        this.message = "XEO.TorusGeometry";
 
         this["primitive"] = torus.primitive;
         this["radius"] = torus.radius;
@@ -105,7 +108,7 @@
 
     var menu = new Menu();
 
-    var folder = gui.addFolder('Torus');
+    var folder = gui.addFolder('XEO.TorusGeometry');
     folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
     folder.add(menu, 'radius', 0.1, 5.0);
     folder.add(menu, 'tube', 0.1, 1.0);

@@ -79,7 +79,8 @@
                 view.rotateEyeX(0.1);
             });
 
-    new XEO.CameraControl()
+    var cameraControl = new XEO.CameraControl();
+    cameraControl.mouseZoom.sensitivity = 5;
 
 </script>
 </body>
