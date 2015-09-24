@@ -1,5 +1,5 @@
 /**
- A **Sphere** defines spherical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **SphereGeometry** defines spherical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Example
 
@@ -7,16 +7,16 @@
 
  ````
 
- @class Sphere
+ @class SphereGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Sphere in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this SphereGeometry in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Sphere.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SphereGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.radius=1] {Number}
  @param [cfg.heightSegments=24] {Number}
@@ -28,9 +28,9 @@
 
     "use strict";
 
-    XEO.Sphere = XEO.Geometry.extend({
+    XEO.SphereGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Sphere",
+        type: "XEO.SphereGeometry",
 
         _init: function (cfg) {
 
@@ -149,9 +149,9 @@
         _props: {
 
             /**
-             * The Sphere's level-of-detail factor.
+             * The SphereGeometry's level-of-detail factor.
              *
-             * Fires a {{#crossLink "Sphere/lod:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "SphereGeometry/lod:event"}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -175,7 +175,7 @@
                     this._lod = value;
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/lod:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property's new value
@@ -191,9 +191,9 @@
             },
 
             /**
-             * The Sphere's radius.
+             * The SphereGeometry's radius.
              *
-             * Fires a {{#crossLink "Sphere/radius:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "SphereGeometry/radius:event"}}{{/crossLink}} event on change.
              *
              * @property radius
              * @default 1
@@ -217,7 +217,7 @@
                     this._radius = value;
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/radius:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}} property changes.
                      * @event radius
                      * @type Number
                      * @param value The property's new value
@@ -234,9 +234,9 @@
 
 
             /**
-             * The Sphere's number of latitude bands.
+             * The SphereGeometry's number of latitude bands.
              *
-             * Fires a {{#crossLink "Sphere/heightSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "SphereGeometry/heightSegments:event"}}{{/crossLink}} event on change.
              *
              * @property heightSegments
              * @default 18
@@ -260,7 +260,7 @@
                     this._heightSegments = value;
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/heightSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} property changes.
                      * @event heightSegments
                      * @type Number
                      * @param value The property's new value
@@ -276,9 +276,9 @@
             },
 
             /**
-             * The Sphere's number of longitude bands.
+             * The SphereGeometry's number of longitude bands.
              *
-             * Fires a {{#crossLink "Sphere/widthSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "SphereGeometry/widthSegments:event"}}{{/crossLink}} event on change.
              *
              * @property widthSegments
              * @default 24
@@ -302,7 +302,7 @@
                     this._widthSegments = value;
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/widthSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} property changes.
                      * @event widthSegments
                      * @type Number
                      * @param value The property's new value

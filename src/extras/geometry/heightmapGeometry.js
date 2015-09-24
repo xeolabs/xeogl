@@ -32,9 +32,9 @@
 
     "use strict";
 
-    XEO.Heightmap = XEO.Geometry.extend({
+    XEO.HeightmapGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Heightmap",
+        type: "XEO.HeightmapGeometry",
 
         _init: function (cfg) {
 

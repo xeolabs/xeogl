@@ -1,5 +1,6 @@
 /**
- A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the axis-aligned boundary of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the object-aligned bounding box (OBB)
+ of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  ## Example
 
@@ -69,13 +70,15 @@
                     var oldBoundary = this._children.boundary;
 
                     if (oldBoundary) {
+
                         if ((!value || (value.id !== undefined ? value.id : value) !== oldBoundary.id)) {
                             oldBoundary.off(this._onBoundaryUpdated);
+                            oldBoundary.off(this._onBoundaryDestroyed);
                         }
                     }
 
                     /**
-                     * Fired whenever this BoundaryGeometry's {{#crossLink "BoundaryGeometry/boundary:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this BoundaryGeometry's  {{#crossLink "BoundaryGeometry/boundary:property"}}{{/crossLink}} property changes.
                      *
                      * @event boundary
                      * @param value The property's new value
@@ -90,52 +93,15 @@
 
                         this._onBoundaryUpdated = boundary.on("updated",
                             function () {
-
-                                var obb = boundary.obb;
-
-
-                                //self.positions = [
-                                //    obb[6][0], obb[6][1], obb[6][2],
-                                //    obb[6][0], obb[6][1], obb[6][2],
-                                //    obb[4][0], obb[4][1], obb[4][2],
-                                //    obb[4][0], obb[3][1], obb[4][2],
-                                //    obb[5][0], obb[3][1], obb[3][2],
-                                //    obb[5][0], obb[4][1], obb[3][2],
-                                //    obb[4][0], obb[4][1], obb[3][2],
-                                //    obb[4][0], obb[3][1], obb[3][2]
-                                //];
-
-                                self.positions = [
-                                    obb[2][0], obb[2][1], obb[4][2],
-                                    obb[2][0], obb[4][1], obb[4][2],
-                                    obb[0][0], obb[4][1], obb[4][2],
-                                    obb[0][0], obb[2][1], obb[4][2],
-                                    obb[2][0], obb[2][1], obb[3][2],
-                                    obb[2][0], obb[4][1], obb[3][2],
-                                    obb[0][0], obb[4][1], obb[3][2],
-                                    obb[0][0], obb[2][1], obb[3][2]
-                                ];
-
-                            //    var aabb = boundary.aabb;
-                            //
-                            //    var xmin = aabb.xmin;
-                            //    var ymin = aabb.ymin;
-                            //    var zmin = aabb.zmin;
-                            //    var xmax = aabb.xmax;
-                            //    var ymax = aabb.ymax;
-                            //    var zmax = aabb.zmax;
-                            //
-                            //    self.positions = [
-                            //        xmax, ymax, zmax,
-                            //        xmax, ymin, zmax,
-                            //        xmin, ymin, zmax,
-                            //        xmin, ymax, zmax,
-                            //        xmax, ymax, zmin,
-                            //        xmax, ymin, zmin,
-                            //        xmin, ymin, zmin,
-                            //        xmin, ymax, zmin
-                            //    ];
+                                self._setPositions(boundary.obb);
                             });
+
+                        this._onBoundaryDestroyed = boundary.on("destroyed",
+                            function () {
+                                self.boundary = null;
+                            });
+
+                        //     this._setPositions(boundary.obb);
                     }
                 },
 
@@ -143,6 +109,19 @@
                     return this._children.boundary;
                 }
             }
+        },
+
+        _setPositions: function (obb) {
+            this.positions = [
+                obb[2][0], obb[2][1], obb[4][2],
+                obb[2][0], obb[4][1], obb[4][2],
+                obb[0][0], obb[4][1], obb[4][2],
+                obb[0][0], obb[2][1], obb[4][2],
+                obb[2][0], obb[2][1], obb[3][2],
+                obb[2][0], obb[4][1], obb[3][2],
+                obb[0][0], obb[4][1], obb[3][2],
+                obb[0][0], obb[2][1], obb[3][2]
+            ];
         },
 
         _getJSON: function () {
@@ -156,12 +135,14 @@
             return attr;
         },
 
-        _destroyed: function () {
+        _destroy: function () {
 
             if (this._children.boundary) {
                 this._children.boundary.off(this._onBoundaryUpdated);
+                this._children.boundary.off(this._onBoundaryDestroyed);
             }
+
+            this._super();
         }
     });
-
 })();

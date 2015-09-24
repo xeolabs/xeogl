@@ -1,5 +1,5 @@
 /**
- A **Torus** defines toroid geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **TorusGeometry** defines toroid geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Example
 
@@ -7,16 +7,16 @@
 
  ````
 
- @class Torus
+ @class TorusGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Torus in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this TorusGeometry in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Torus.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TorusGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.radius=1] {Number}
  @param [cfg.tube=0.3] {Number}
@@ -30,9 +30,9 @@
 
     "use strict";
 
-    XEO.Torus = XEO.Geometry.extend({
+    XEO.TorusGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Torus",
+        type: "XEO.TorusGeometry",
 
         _init: function (cfg) {
 
@@ -152,9 +152,9 @@
         _props: {
 
             /**
-             * The Torus's level-of-detail factor.
+             * The TorusGeometry's level-of-detail factor.
              *
-             * Fires a {{#crossLink "Torus/lod:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/lod:event"}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -178,7 +178,7 @@
                     this._lod = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/lod:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property's new value
@@ -194,9 +194,9 @@
             },
 
             /**
-             * The Torus's radius.
+             * The TorusGeometry's radius.
              *
-             * Fires a {{#crossLink "Torus/radius:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/radius:event"}}{{/crossLink}} event on change.
              *
              * @property radius
              * @default 1
@@ -220,7 +220,7 @@
                     this._radius = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/radius:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radius:property"}}{{/crossLink}} property changes.
                      * @event radius
                      * @type Number
                      * @param value The property's new value
@@ -237,9 +237,9 @@
 
 
             /**
-             * The Torus's tube.
+             * The TorusGeometry's tube.
              *
-             * Fires a {{#crossLink "Torus/tube:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/tube:event"}}{{/crossLink}} event on change.
              *
              * @property tube
              * @default 0.3
@@ -263,7 +263,7 @@
                     this._tube = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/tube:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tube:property"}}{{/crossLink}} property changes.
                      * @event tube
                      * @type Number
                      * @param value The property's new value
@@ -279,9 +279,9 @@
             },
 
             /**
-             * The Torus's segmentsR.
+             * The TorusGeometry's segmentsR.
              *
-             * Fires a {{#crossLink "Torus/segmentsR:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/segmentsR:event"}}{{/crossLink}} event on change.
              *
              * @property segmentsR
              * @default 32
@@ -305,7 +305,7 @@
                     this._segmentsR = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/segmentsR:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/segmentsR:property"}}{{/crossLink}} property changes.
                      * @event segmentsR
                      * @type Number
                      * @param value The property's new value
@@ -322,9 +322,9 @@
 
 
             /**
-             * The Torus's segmentsT.
+             * The TorusGeometry's segmentsT.
              *
-             * Fires a {{#crossLink "Torus/segmentsT:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/segmentsT:event"}}{{/crossLink}} event on change.
              *
              * @property segmentsT
              * @default 24
@@ -348,7 +348,7 @@
                     this._segmentsT = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/segmentsT:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/segmentsT:property"}}{{/crossLink}} property changes.
                      * @event segmentsT
                      * @type Number
                      * @param value The property's new value
@@ -364,9 +364,9 @@
             },
 
             /**
-             * The Torus's arc.
+             * The TorusGeometry's arc.
              *
-             * Fires a {{#crossLink "Torus/arc:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/arc:event"}}{{/crossLink}} event on change.
              *
              * @property arc
              * @default Math.PI * 2
@@ -390,7 +390,7 @@
                     this._arc = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/arc:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} property changes.
                      * @event arc
                      * @type Number
                      * @param value The property's new value

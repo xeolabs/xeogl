@@ -1,5 +1,5 @@
 /**
- A **Plane** defines a plane geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Example
 
@@ -7,16 +7,16 @@
 
  ````
 
- @class Plane
+ @class PlaneGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Plane in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this PlaneGeometry in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Plane.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PlaneGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
  @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
@@ -30,9 +30,9 @@
 
     "use strict";
 
-    XEO.Plane = XEO.Geometry.extend({
+    XEO.PlaneGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Plane",
+        type: "XEO.PlaneGeometry",
 
         _init: function (cfg) {
 
@@ -154,9 +154,9 @@
         _props: {
 
             /**
-             * The Plane's level-of-detail factor.
+             * The PlaneGeometry's level-of-detail factor.
              *
-             * Fires a {{#crossLink "Plane/lod:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/lod:event"}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -182,7 +182,7 @@
                     this._gridDirty();
 
                     /**
-                     * Fired whenever this Plane's {{#crossLink "Plane/lod:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property's new value
@@ -196,9 +196,9 @@
             },
             
             /**
-             * The Plane's dimension on the X-axis.
+             * The PlaneGeometry's dimension on the X-axis.
              *
-             * Fires a {{#crossLink "Plane/xSize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/xSize:event"}}{{/crossLink}} event on change.
              *
              * @property xSize
              * @default 1
@@ -224,7 +224,7 @@
                     this._gridDirty();
 
                     /**
-                     * Fired whenever this Plane's {{#crossLink "Plane/xSize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}} property changes.
                      * @event xSize
                      * @type Number
                      * @param value The property's new value
@@ -238,9 +238,9 @@
             },
 
             /**
-             * The Plane's dimension on the Y-axis.
+             * The PlaneGeometry's dimension on the Y-axis.
              *
-             * Fires a {{#crossLink "Plane/ySize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/ySize:event"}}{{/crossLink}} event on change.
              *
              * @property ySize
              * @default 0.25
@@ -266,7 +266,7 @@
                     this._gridDirty();
 
                     /**
-                     * Fired whenever this Plane's {{#crossLink "Plane/ySize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySize:property"}}{{/crossLink}} property changes.
                      * @event ySize
                      * @type Number
                      * @param value The property's new value
@@ -280,9 +280,9 @@
             },
             
             /**
-             * The Plane's number of segments on the X-axis.
+             * The PlaneGeometry's number of segments on the X-axis.
              *
-             * Fires a {{#crossLink "Plane/xSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/xSegments:event"}}{{/crossLink}} event on change.
              *
              * @property xSegments
              * @default 4
@@ -308,7 +308,7 @@
                     this._gridDirty();
 
                     /**
-                     * Fired whenever this Plane's {{#crossLink "Plane/xSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} property changes.
                      * @event xSegments
                      * @type Number
                      * @param value The property's new value
@@ -322,9 +322,9 @@
             },
 
             /**
-             * The Plane's number of segments on the Y-axis.
+             * The PlaneGeometry's number of segments on the Y-axis.
              *
-             * Fires a {{#crossLink "Plane/ySegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/ySegments:event"}}{{/crossLink}} event on change.
              *
              * @property ySegments
              * @default 4
@@ -350,7 +350,7 @@
                     this._gridDirty();
 
                     /**
-                     * Fired whenever this Plane's {{#crossLink "Plane/ySegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySegments:property"}}{{/crossLink}} property changes.
                      * @event ySegments
                      * @type Number
                      * @param value The property's new value

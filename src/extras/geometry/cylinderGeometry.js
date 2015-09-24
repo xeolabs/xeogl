@@ -31,9 +31,9 @@
 
     "use strict";
 
-    XEO.Cylinder = XEO.Geometry.extend({
+    XEO.CylinderGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Cylinder",
+        type: "XEO.CylinderGeometry",
 
         _init: function (cfg) {
 

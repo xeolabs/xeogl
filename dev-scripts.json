@@ -93,7 +93,6 @@
     "src/core/spatial/_module.js",
     "src/core/spatial/boundary2d.js",
     "src/core/spatial/boundary3d.js",
-
     "src/core/transforms/_module.js",
     "src/core/transforms/transform.js",
     "src/core/transforms/rotate.js",
@@ -101,7 +100,6 @@
     "src/core/transforms/scale.js",
     "src/core/transforms/translate.js",
     "src/core/transforms/billboard.js",
-
     "src/extras/animation/cameraFlight.js",
     "src/extras/animation/cameraPath.js",
     "src/extras/curves/_module.js",
@@ -110,22 +108,22 @@
     "src/extras/curves/splineCurve.js",
     "src/extras/curves/quadraticBezierCurve.js",
     "src/extras/curves/path.js",
+
     "src/extras/geometry/boundaryGeometry.js",
-    "src/extras/geometry/torus.js",
-    "src/extras/geometry/sphere.js",
+    "src/extras/geometry/torusGeometry.js",
+    "src/extras/geometry/sphereGeometry.js",
     "src/extras/geometry/pathGeometry.js",
-    "src/extras/geometry/cylinder.js",
-    "src/extras/geometry/plane.js",
-    "src/extras/geometry/heightmap.js",
-    "src/extras/geometry/lathe.js",
-    "src/extras/geometry/vectorText.js",
+    "src/extras/geometry/cylinderGeometry.js",
+    "src/extras/geometry/planeGeometry.js",
+    "src/extras/geometry/heightmapGeometry.js",
+    "src/extras/geometry/latheGeometry.js",
+    "src/extras/geometry/vectorTextGeometry.js",
 
     "src/extras/groups/_module.js",
     "src/extras/groups/group.js",
     "src/extras/groups/groupBoundary.js",
 
     "src/extras/helpers/_module.js",
-
 
     "src/extras/input/cameraControl.js",
     "src/extras/input/keyboardAxisCamera.js",
