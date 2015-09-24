@@ -34,7 +34,7 @@
   });
 
  // Get the World-space Boundary3D
- var worldBoundary = object.worldBoundary();
+ var worldBoundary = object.worldBoundary;
 
  // Get World-space object-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
@@ -59,7 +59,7 @@
 
  ```` javascript
  // Get the View-space Boundary3D
- var viewBoundary = object.viewBoundary();
+ var viewBoundary = object.viewBoundary;
 
  // Get View-space object-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
@@ -189,7 +189,7 @@
 
                     // Invalidate cached World-space bounding boxes
 
-                    this._setWorldBoundaryDirty();
+                    this._setViewBoundaryDirty();
 
                     // Unsubscribe from old Cameras's events
 
@@ -199,6 +199,7 @@
                         oldCamera.off(this._onCameraDestroyed);
                         oldCamera.off(this._onCameraView);
                         oldCamera.off(this._onCameraViewMatrix);
+                        oldCamera.off(this._onCameraProjMatrix);
                     }
 
                     /**
@@ -483,8 +484,6 @@
                     if (oldGeometry) {
 
                         if (!value || (value.id !== undefined ? value.id : value) != oldGeometry.id) {
-
-                            oldGeometry.off(this._onGeometryDirty);
                             oldGeometry.off(this._onGeometryPositions);
                             oldGeometry.off(this._onGeometryDestroyed);
                         }
@@ -508,11 +507,6 @@
                         // positions are updated or Geometry is destroyed.
 
                         var self = this;
-
-                        this._onGeometryDirty = newGeometry.on("dirty",
-                            function () {
-                                self.fire("dirty", true);
-                            });
 
                         this._onGeometryPositions = newGeometry.on("positions",
                             function () {
@@ -858,14 +852,6 @@
 
                 set: function (value) {
 
-                    // Unsubscribe from old billboard's events
-
-                    var oldBillboard = this._children.billboard;
-
-                    if (oldBillboard && (!value || value.id !== oldBillboard.id)) {
-                        oldBillboard.off(this._onBillboardDirty);
-                    }
-
                     /**
                      * Fired whenever this GameObject's {{#crossLink "GameObject/billboard:property"}}{{/crossLink}}
                      * property changes.
@@ -874,20 +860,6 @@
                      * @param value The property's new value
                      */
                     this._setChild("billboard", value);
-
-                    // Subscribe to new billboard's events
-
-                    var newBillboard = this._children.billboard;
-
-                    if (newBillboard) {
-
-                        var self = this;
-                        
-                        this._onBillboardDirty = newBillboard.on("dirty",
-                            function () {
-                                self.fire("dirty");
-                            });
-                    }
                 },
 
                 get: function () {
@@ -913,8 +885,6 @@
                     if (!this._worldBoundary) {
 
                         var self = this;
-
-                        // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
 
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
@@ -966,8 +936,6 @@
 
                         var self = this;
 
-                        // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
-
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
                             getDirty: function () {
@@ -1018,13 +986,7 @@
 
                         var self = this;
 
-                        // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
-
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
-
-                            meta: {
-                                description: "Canvas-space boundary of GameObject " + this.id
-                            },
 
                             getDirty: function () {
                                 return self._canvasBoundaryDirty;
