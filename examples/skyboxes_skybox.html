@@ -19,12 +19,12 @@
     <script src="lib/dat.gui.min.js"></script>
     <link type="text/css" rel="stylesheet" href="css/dat-gui-swec.css">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeoengine.min.js"></script>
 
 <body>
 
 <div id="infoDark">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/Torus.html" target="_other">Torus</a>
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - <a href="../docs/classes/SkyBox.html" target="_other">SkyBox</a>
 </div>
 <div id="dat-gui-container">
 </div>
@@ -45,7 +45,7 @@
     });
 
     var object = new XEO.GameObject({
-        geometry: new XEO.Torus(),
+        geometry: new XEO.TorusGeometry(),
         material: new XEO.PhongMaterial({
             ambient: [0.3, 0.3, 0.3],
             shininess: 30,
