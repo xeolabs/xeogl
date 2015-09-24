@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-09-23
+ * Built on 2015-09-24
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -13614,7 +13614,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
   });
 
  // Get the World-space Boundary3D
- var worldBoundary = object.worldBoundary();
+ var worldBoundary = object.worldBoundary;
 
  // Get World-space object-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
@@ -13639,7 +13639,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  ```` javascript
  // Get the View-space Boundary3D
- var viewBoundary = object.viewBoundary();
+ var viewBoundary = object.viewBoundary;
 
  // Get View-space object-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
@@ -13769,7 +13769,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     // Invalidate cached World-space bounding boxes
 
-                    this._setWorldBoundaryDirty();
+                    this._setViewBoundaryDirty();
 
                     // Unsubscribe from old Cameras's events
 
@@ -13779,6 +13779,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         oldCamera.off(this._onCameraDestroyed);
                         oldCamera.off(this._onCameraView);
                         oldCamera.off(this._onCameraViewMatrix);
+                        oldCamera.off(this._onCameraProjMatrix);
                     }
 
                     /**
@@ -14063,8 +14064,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     if (oldGeometry) {
 
                         if (!value || (value.id !== undefined ? value.id : value) != oldGeometry.id) {
-
-                            oldGeometry.off(this._onGeometryDirty);
                             oldGeometry.off(this._onGeometryPositions);
                             oldGeometry.off(this._onGeometryDestroyed);
                         }
@@ -14088,11 +14087,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         // positions are updated or Geometry is destroyed.
 
                         var self = this;
-
-                        this._onGeometryDirty = newGeometry.on("dirty",
-                            function () {
-                                self.fire("dirty", true);
-                            });
 
                         this._onGeometryPositions = newGeometry.on("positions",
                             function () {
@@ -14438,14 +14432,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 set: function (value) {
 
-                    // Unsubscribe from old billboard's events
-
-                    var oldBillboard = this._children.billboard;
-
-                    if (oldBillboard && (!value || value.id !== oldBillboard.id)) {
-                        oldBillboard.off(this._onBillboardDirty);
-                    }
-
                     /**
                      * Fired whenever this GameObject's {{#crossLink "GameObject/billboard:property"}}{{/crossLink}}
                      * property changes.
@@ -14454,20 +14440,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @param value The property's new value
                      */
                     this._setChild("billboard", value);
-
-                    // Subscribe to new billboard's events
-
-                    var newBillboard = this._children.billboard;
-
-                    if (newBillboard) {
-
-                        var self = this;
-                        
-                        this._onBillboardDirty = newBillboard.on("dirty",
-                            function () {
-                                self.fire("dirty");
-                            });
-                    }
                 },
 
                 get: function () {
@@ -14493,8 +14465,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     if (!this._worldBoundary) {
 
                         var self = this;
-
-                        // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
 
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
@@ -14546,8 +14516,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         var self = this;
 
-                        // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
-
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
                             getDirty: function () {
@@ -14598,13 +14566,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         var self = this;
 
-                        // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
-
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
-
-                            meta: {
-                                description: "Canvas-space boundary of GameObject " + this.id
-                            },
 
                             getDirty: function () {
                                 return self._canvasBoundaryDirty;
@@ -23240,70 +23202,9 @@ myTask2.setFailed();
             this._getAABB = cfg.getAABB;
             this._getMatrix = cfg.getMatrix;
             this._getPositions = cfg.getPositions;
-
-            this.visible = cfg.visible;
         },
 
         _props: {
-
-
-            /**
-             Indicates whether this Boundary3D is visible or not.
-
-             Fires a {{#crossLink "Boundary3D/visible:event"}}{{/crossLink}} event on change.
-
-             @property visible
-             @default true
-             @type Boolean
-             */
-            visible: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._visible === value) {
-                        return;
-                    }
-
-                    this._visible = value;
-
-                    if (this._visible) {
-
-                        this._boundaryObject = new XEO.GameObject(this.scene, {
-                            geometry: new XEO.BoundaryGeometry(this.scene, {
-                                boundary: this
-                            }),
-                            material: new XEO.PhongMaterial(this.scene, {
-                                diffuse: [0.5, 1.0, 0.5],
-                                emissive: [0.5, 1.0, 0.5],
-                                lineWidth: 2
-                            })
-                        });
-                    } else {
-                        if (this._boundaryObject) {
-                            this._boundaryObject.destroy();
-                        }
-                    }
-
-                    /**
-                     Fired whenever this Boundary3D's {{#crossLink "Boundary3D/visible:property"}}{{/crossLink}} property changes.
-
-                     @event visible
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("visible", this._visible);
-                },
-
-                get: function () {
-
-                    if (this._getDirty()) {
-                        this._build();
-                    }
-
-                    return this._obb;
-                }
-            },
 
             /**
              * 3D oriented bounding box (OBB).
@@ -23487,12 +23388,6 @@ myTask2.setFailed();
                 aabb: this.aabb,
                 center: this.center
             };
-        },
-
-        _destroy: function () {
-            if (this._boundaryObject) {
-                this._boundaryObject.destroy();
-            }
         }
     });
 
@@ -26817,13 +26712,16 @@ scene.on("tick", function(e) {
                 curve.off(this._dirtySubs[i]);
                 curve.off(this._destroyedSubs[i]);
             }
+
+            this._super();
         }
     });
 
 })();
 
 ;/**
- A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the axis-aligned boundary of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the object-aligned bounding box (OBB)
+ of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  ## Example
 
@@ -26841,7 +26739,6 @@ scene.on("tick", function(e) {
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoundaryGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.boundary] {Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}
  @extends Component
  */
@@ -26894,13 +26791,15 @@ scene.on("tick", function(e) {
                     var oldBoundary = this._children.boundary;
 
                     if (oldBoundary) {
+
                         if ((!value || (value.id !== undefined ? value.id : value) !== oldBoundary.id)) {
                             oldBoundary.off(this._onBoundaryUpdated);
+                            oldBoundary.off(this._onBoundaryDestroyed);
                         }
                     }
 
                     /**
-                     * Fired whenever this BoundaryGeometry's {{#crossLink "BoundaryGeometry/boundary:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this BoundaryGeometry's  {{#crossLink "BoundaryGeometry/boundary:property"}}{{/crossLink}} property changes.
                      *
                      * @event boundary
                      * @param value The property's new value
@@ -26915,52 +26814,15 @@ scene.on("tick", function(e) {
 
                         this._onBoundaryUpdated = boundary.on("updated",
                             function () {
-
-                                var obb = boundary.obb;
-
-
-                                //self.positions = [
-                                //    obb[6][0], obb[6][1], obb[6][2],
-                                //    obb[6][0], obb[6][1], obb[6][2],
-                                //    obb[4][0], obb[4][1], obb[4][2],
-                                //    obb[4][0], obb[3][1], obb[4][2],
-                                //    obb[5][0], obb[3][1], obb[3][2],
-                                //    obb[5][0], obb[4][1], obb[3][2],
-                                //    obb[4][0], obb[4][1], obb[3][2],
-                                //    obb[4][0], obb[3][1], obb[3][2]
-                                //];
-
-                                self.positions = [
-                                    obb[2][0], obb[2][1], obb[4][2],
-                                    obb[2][0], obb[4][1], obb[4][2],
-                                    obb[0][0], obb[4][1], obb[4][2],
-                                    obb[0][0], obb[2][1], obb[4][2],
-                                    obb[2][0], obb[2][1], obb[3][2],
-                                    obb[2][0], obb[4][1], obb[3][2],
-                                    obb[0][0], obb[4][1], obb[3][2],
-                                    obb[0][0], obb[2][1], obb[3][2]
-                                ];
-
-                            //    var aabb = boundary.aabb;
-                            //
-                            //    var xmin = aabb.xmin;
-                            //    var ymin = aabb.ymin;
-                            //    var zmin = aabb.zmin;
-                            //    var xmax = aabb.xmax;
-                            //    var ymax = aabb.ymax;
-                            //    var zmax = aabb.zmax;
-                            //
-                            //    self.positions = [
-                            //        xmax, ymax, zmax,
-                            //        xmax, ymin, zmax,
-                            //        xmin, ymin, zmax,
-                            //        xmin, ymax, zmax,
-                            //        xmax, ymax, zmin,
-                            //        xmax, ymin, zmin,
-                            //        xmin, ymin, zmin,
-                            //        xmin, ymax, zmin
-                            //    ];
+                                self._setPositions(boundary.obb);
                             });
+
+                        this._onBoundaryDestroyed = boundary.on("destroyed",
+                            function () {
+                                self.boundary = null;
+                            });
+
+                        //     this._setPositions(boundary.obb);
                     }
                 },
 
@@ -26968,6 +26830,19 @@ scene.on("tick", function(e) {
                     return this._children.boundary;
                 }
             }
+        },
+
+        _setPositions: function (obb) {
+            this.positions = [
+                obb[2][0], obb[2][1], obb[4][2],
+                obb[2][0], obb[4][1], obb[4][2],
+                obb[0][0], obb[4][1], obb[4][2],
+                obb[0][0], obb[2][1], obb[4][2],
+                obb[2][0], obb[2][1], obb[3][2],
+                obb[2][0], obb[4][1], obb[3][2],
+                obb[0][0], obb[4][1], obb[3][2],
+                obb[0][0], obb[2][1], obb[3][2]
+            ];
         },
 
         _getJSON: function () {
@@ -26981,17 +26856,19 @@ scene.on("tick", function(e) {
             return attr;
         },
 
-        _destroyed: function () {
+        _destroy: function () {
 
             if (this._children.boundary) {
                 this._children.boundary.off(this._onBoundaryUpdated);
+                this._children.boundary.off(this._onBoundaryDestroyed);
             }
+
+            this._super();
         }
     });
-
 })();
 ;/**
- A **Torus** defines toroid geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **TorusGeometry** defines toroid geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Example
 
@@ -26999,16 +26876,16 @@ scene.on("tick", function(e) {
 
  ````
 
- @class Torus
+ @class TorusGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Torus in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this TorusGeometry in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Torus.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TorusGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.radius=1] {Number}
  @param [cfg.tube=0.3] {Number}
@@ -27022,9 +26899,9 @@ scene.on("tick", function(e) {
 
     "use strict";
 
-    XEO.Torus = XEO.Geometry.extend({
+    XEO.TorusGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Torus",
+        type: "XEO.TorusGeometry",
 
         _init: function (cfg) {
 
@@ -27144,9 +27021,9 @@ scene.on("tick", function(e) {
         _props: {
 
             /**
-             * The Torus's level-of-detail factor.
+             * The TorusGeometry's level-of-detail factor.
              *
-             * Fires a {{#crossLink "Torus/lod:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/lod:event"}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -27170,7 +27047,7 @@ scene.on("tick", function(e) {
                     this._lod = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/lod:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property's new value
@@ -27186,9 +27063,9 @@ scene.on("tick", function(e) {
             },
 
             /**
-             * The Torus's radius.
+             * The TorusGeometry's radius.
              *
-             * Fires a {{#crossLink "Torus/radius:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/radius:event"}}{{/crossLink}} event on change.
              *
              * @property radius
              * @default 1
@@ -27212,7 +27089,7 @@ scene.on("tick", function(e) {
                     this._radius = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/radius:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radius:property"}}{{/crossLink}} property changes.
                      * @event radius
                      * @type Number
                      * @param value The property's new value
@@ -27229,9 +27106,9 @@ scene.on("tick", function(e) {
 
 
             /**
-             * The Torus's tube.
+             * The TorusGeometry's tube.
              *
-             * Fires a {{#crossLink "Torus/tube:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/tube:event"}}{{/crossLink}} event on change.
              *
              * @property tube
              * @default 0.3
@@ -27255,7 +27132,7 @@ scene.on("tick", function(e) {
                     this._tube = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/tube:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tube:property"}}{{/crossLink}} property changes.
                      * @event tube
                      * @type Number
                      * @param value The property's new value
@@ -27271,9 +27148,9 @@ scene.on("tick", function(e) {
             },
 
             /**
-             * The Torus's segmentsR.
+             * The TorusGeometry's segmentsR.
              *
-             * Fires a {{#crossLink "Torus/segmentsR:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/segmentsR:event"}}{{/crossLink}} event on change.
              *
              * @property segmentsR
              * @default 32
@@ -27297,7 +27174,7 @@ scene.on("tick", function(e) {
                     this._segmentsR = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/segmentsR:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/segmentsR:property"}}{{/crossLink}} property changes.
                      * @event segmentsR
                      * @type Number
                      * @param value The property's new value
@@ -27314,9 +27191,9 @@ scene.on("tick", function(e) {
 
 
             /**
-             * The Torus's segmentsT.
+             * The TorusGeometry's segmentsT.
              *
-             * Fires a {{#crossLink "Torus/segmentsT:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/segmentsT:event"}}{{/crossLink}} event on change.
              *
              * @property segmentsT
              * @default 24
@@ -27340,7 +27217,7 @@ scene.on("tick", function(e) {
                     this._segmentsT = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/segmentsT:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/segmentsT:property"}}{{/crossLink}} property changes.
                      * @event segmentsT
                      * @type Number
                      * @param value The property's new value
@@ -27356,9 +27233,9 @@ scene.on("tick", function(e) {
             },
 
             /**
-             * The Torus's arc.
+             * The TorusGeometry's arc.
              *
-             * Fires a {{#crossLink "Torus/arc:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/arc:event"}}{{/crossLink}} event on change.
              *
              * @property arc
              * @default Math.PI * 2
@@ -27382,7 +27259,7 @@ scene.on("tick", function(e) {
                     this._arc = value;
 
                     /**
-                     * Fired whenever this Torus's {{#crossLink "Torus/arc:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} property changes.
                      * @event arc
                      * @type Number
                      * @param value The property's new value
@@ -27412,7 +27289,7 @@ scene.on("tick", function(e) {
 
 })();
 ;/**
- A **Sphere** defines spherical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **SphereGeometry** defines spherical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Example
 
@@ -27420,16 +27297,16 @@ scene.on("tick", function(e) {
 
  ````
 
- @class Sphere
+ @class SphereGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Sphere in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this SphereGeometry in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Sphere.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SphereGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.radius=1] {Number}
  @param [cfg.heightSegments=24] {Number}
@@ -27441,9 +27318,9 @@ scene.on("tick", function(e) {
 
     "use strict";
 
-    XEO.Sphere = XEO.Geometry.extend({
+    XEO.SphereGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Sphere",
+        type: "XEO.SphereGeometry",
 
         _init: function (cfg) {
 
@@ -27562,9 +27439,9 @@ scene.on("tick", function(e) {
         _props: {
 
             /**
-             * The Sphere's level-of-detail factor.
+             * The SphereGeometry's level-of-detail factor.
              *
-             * Fires a {{#crossLink "Sphere/lod:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "SphereGeometry/lod:event"}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -27588,7 +27465,7 @@ scene.on("tick", function(e) {
                     this._lod = value;
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/lod:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property's new value
@@ -27604,9 +27481,9 @@ scene.on("tick", function(e) {
             },
 
             /**
-             * The Sphere's radius.
+             * The SphereGeometry's radius.
              *
-             * Fires a {{#crossLink "Sphere/radius:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "SphereGeometry/radius:event"}}{{/crossLink}} event on change.
              *
              * @property radius
              * @default 1
@@ -27630,7 +27507,7 @@ scene.on("tick", function(e) {
                     this._radius = value;
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/radius:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}} property changes.
                      * @event radius
                      * @type Number
                      * @param value The property's new value
@@ -27647,9 +27524,9 @@ scene.on("tick", function(e) {
 
 
             /**
-             * The Sphere's number of latitude bands.
+             * The SphereGeometry's number of latitude bands.
              *
-             * Fires a {{#crossLink "Sphere/heightSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "SphereGeometry/heightSegments:event"}}{{/crossLink}} event on change.
              *
              * @property heightSegments
              * @default 18
@@ -27673,7 +27550,7 @@ scene.on("tick", function(e) {
                     this._heightSegments = value;
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/heightSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} property changes.
                      * @event heightSegments
                      * @type Number
                      * @param value The property's new value
@@ -27689,9 +27566,9 @@ scene.on("tick", function(e) {
             },
 
             /**
-             * The Sphere's number of longitude bands.
+             * The SphereGeometry's number of longitude bands.
              *
-             * Fires a {{#crossLink "Sphere/widthSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "SphereGeometry/widthSegments:event"}}{{/crossLink}} event on change.
              *
              * @property widthSegments
              * @default 24
@@ -27715,7 +27592,7 @@ scene.on("tick", function(e) {
                     this._widthSegments = value;
 
                     /**
-                     * Fired whenever this Sphere's {{#crossLink "Sphere/widthSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} property changes.
                      * @event widthSegments
                      * @type Number
                      * @param value The property's new value
@@ -27902,9 +27779,12 @@ XEO.PathGeometry = XEO.Geometry.extend({
     },
 
     _destroy: function () {
+
         if (this._children.path) {
             this._children.path.off(this._onPathCurves);
         }
+
+        this._super();
     }
 });;/**
  A **Cylinder** defines cylindrical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
@@ -27939,9 +27819,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
     "use strict";
 
-    XEO.Cylinder = XEO.Geometry.extend({
+    XEO.CylinderGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Cylinder",
+        type: "XEO.CylinderGeometry",
 
         _init: function (cfg) {
 
@@ -28390,46 +28270,46 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 get: function () {
                     return this._heightSegments;
                 }
-            }
-        },
-
-
-        /**
-         * Indicates whether this Cylinder's is open-ended.
-         *
-         * Fires a {{#crossLink "Cylinder/openEnded:event"}}{{/crossLink}} event on change.
-         *
-         * @property openEnded
-         * @default false
-         * @type Boolean
-         */
-        openEnded: {
-
-            set: function (value) {
-
-                value = value === undefined ? false : value;
-
-                if (this._openEnded === value) {
-                    return;
-                }
-
-                this._openEnded = value;
-
-                /**
-                 * Fired whenever this Cylinder's {{#crossLink "Cylinder/openEnded:property"}}{{/crossLink}} property changes.
-                 * @event openEnded
-                 * @type Boolean
-                 * @param value The property's new value
-                 */
-                this.fire("openEnded", this._openEnded);
-
-                this._cylinderDirty();
             },
 
-            get: function () {
-                return this._openEnded;
+            /**
+             * Indicates whether this Cylinder's is open-ended.
+             *
+             * Fires a {{#crossLink "Cylinder/openEnded:event"}}{{/crossLink}} event on change.
+             *
+             * @property openEnded
+             * @default false
+             * @type Boolean
+             */
+            openEnded: {
+
+                set: function (value) {
+
+                    value = value === undefined ? false : value;
+
+                    if (this._openEnded === value) {
+                        return;
+                    }
+
+                    this._openEnded = value;
+
+                    /**
+                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/openEnded:property"}}{{/crossLink}} property changes.
+                     * @event openEnded
+                     * @type Boolean
+                     * @param value The property's new value
+                     */
+                    this.fire("openEnded", this._openEnded);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._openEnded;
+                }
             }
         },
+
 
         _getJSON: function () {
             return {
@@ -28446,7 +28326,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
 })();
 ;/**
- A **Plane** defines a plane geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Example
 
@@ -28454,16 +28334,16 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  ````
 
- @class Plane
+ @class PlaneGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Plane in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this PlaneGeometry in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Plane.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PlaneGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
  @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
@@ -28477,9 +28357,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
     "use strict";
 
-    XEO.Plane = XEO.Geometry.extend({
+    XEO.PlaneGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Plane",
+        type: "XEO.PlaneGeometry",
 
         _init: function (cfg) {
 
@@ -28601,9 +28481,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
         _props: {
 
             /**
-             * The Plane's level-of-detail factor.
+             * The PlaneGeometry's level-of-detail factor.
              *
-             * Fires a {{#crossLink "Plane/lod:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/lod:event"}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -28629,7 +28509,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._gridDirty();
 
                     /**
-                     * Fired whenever this Plane's {{#crossLink "Plane/lod:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property's new value
@@ -28643,9 +28523,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
             
             /**
-             * The Plane's dimension on the X-axis.
+             * The PlaneGeometry's dimension on the X-axis.
              *
-             * Fires a {{#crossLink "Plane/xSize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/xSize:event"}}{{/crossLink}} event on change.
              *
              * @property xSize
              * @default 1
@@ -28671,7 +28551,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._gridDirty();
 
                     /**
-                     * Fired whenever this Plane's {{#crossLink "Plane/xSize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}} property changes.
                      * @event xSize
                      * @type Number
                      * @param value The property's new value
@@ -28685,9 +28565,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Plane's dimension on the Y-axis.
+             * The PlaneGeometry's dimension on the Y-axis.
              *
-             * Fires a {{#crossLink "Plane/ySize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/ySize:event"}}{{/crossLink}} event on change.
              *
              * @property ySize
              * @default 0.25
@@ -28713,7 +28593,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._gridDirty();
 
                     /**
-                     * Fired whenever this Plane's {{#crossLink "Plane/ySize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySize:property"}}{{/crossLink}} property changes.
                      * @event ySize
                      * @type Number
                      * @param value The property's new value
@@ -28727,9 +28607,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
             
             /**
-             * The Plane's number of segments on the X-axis.
+             * The PlaneGeometry's number of segments on the X-axis.
              *
-             * Fires a {{#crossLink "Plane/xSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/xSegments:event"}}{{/crossLink}} event on change.
              *
              * @property xSegments
              * @default 4
@@ -28755,7 +28635,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._gridDirty();
 
                     /**
-                     * Fired whenever this Plane's {{#crossLink "Plane/xSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} property changes.
                      * @event xSegments
                      * @type Number
                      * @param value The property's new value
@@ -28769,9 +28649,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Plane's number of segments on the Y-axis.
+             * The PlaneGeometry's number of segments on the Y-axis.
              *
-             * Fires a {{#crossLink "Plane/ySegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/ySegments:event"}}{{/crossLink}} event on change.
              *
              * @property ySegments
              * @default 4
@@ -28797,7 +28677,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._gridDirty();
 
                     /**
-                     * Fired whenever this Plane's {{#crossLink "Plane/ySegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySegments:property"}}{{/crossLink}} property changes.
                      * @event ySegments
                      * @type Number
                      * @param value The property's new value
@@ -28856,9 +28736,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
     "use strict";
 
-    XEO.Heightmap = XEO.Geometry.extend({
+    XEO.HeightmapGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Heightmap",
+        type: "XEO.HeightmapGeometry",
 
         _init: function (cfg) {
 
@@ -29499,7 +29379,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
 })();
 ;/**
- A **Lathe** is a {{#crossLink "Geometry"}}{{/crossLink}} that's defined as the revolution of a profile about an exis.
+ A **LatheGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's defined as the revolution of a profile about an exis.
 
  ## Example
 
@@ -29507,16 +29387,16 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  ````
 
- @class Lathe
+ @class LatheGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Lathe in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this LatheGeometry in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lathe.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this LatheGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.points=[]] Profile points.
  @param [cfg.segments=4] {Number} Number of revolution segments.
@@ -29529,9 +29409,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
     "use strict";
 
-    XEO.Lathe = XEO.Geometry.extend({
+    XEO.LatheGeometry = XEO.Geometry.extend({
 
-        type: "XEO.Lathe",
+        type: "XEO.LatheGeometry",
 
         _init: function (cfg) {
 
@@ -29643,9 +29523,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
         _props: {
 
             /**
-             Profile points on this Lathe.
+             Profile points on this LatheGeometry.
 
-             Fires a {{#crossLink "Lathe/points:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "LatheGeometry/points:event"}}{{/crossLink}} event on change.
 
              @property points
              @default []
@@ -29660,8 +29540,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._latheDirty();
 
                     /**
-                     * Fired whenever this Lathe's
-                     * {{#crossLink "Lathe/points:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this LatheGeometry's
+                     * {{#crossLink "LatheGeometry/points:property"}}{{/crossLink}} property changes.
                      * @event points
                      * @param value The property's new value
                      */
@@ -29674,9 +29554,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Lathe's level-of-detail factor.
+             * The LatheGeometry's level-of-detail factor.
              *
-             * Fires a {{#crossLink "Lathe/lod:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "LatheGeometry/lod:event"}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -29702,7 +29582,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._latheDirty();
 
                     /**
-                     * Fired whenever this Lathe's {{#crossLink "Lathe/lod:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property's new value
@@ -29716,9 +29596,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * Angle at which this Lathe's rotation starts.
+             * Angle at which this LatheGeometry's rotation starts.
              *
-             * Fires a {{#crossLink "Lathe/phiStart:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "LatheGeometry/phiStart:event"}}{{/crossLink}} event on change.
              *
              * @property phiStart
              * @default 0
@@ -29744,7 +29624,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._latheDirty();
 
                     /**
-                     * Fired whenever this Lathe's {{#crossLink "Lathe/phiStart:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/phiStart:property"}}{{/crossLink}} property changes.
                      * @event phiStart
                      * @type Number
                      * @param value The property's new value
@@ -29758,9 +29638,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * Angle at which this Lathe's rotation starts.
+             * Angle at which this LatheGeometry's rotation starts.
              *
-             * Fires a {{#crossLink "Lathe/phiLength:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "LatheGeometry/phiLength:event"}}{{/crossLink}} event on change.
              *
              * @property phiLength
              * @default 1
@@ -29786,7 +29666,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._latheDirty();
 
                     /**
-                     * Fired whenever this Lathe's {{#crossLink "Lathe/phiLength:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/phiLength:property"}}{{/crossLink}} property changes.
                      * @event phiLength
                      * @type Number
                      * @param value The property's new value
@@ -29800,9 +29680,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Lathe's number of segments of rotation.
+             * The LatheGeometry's number of segments of rotation.
              *
-             * Fires a {{#crossLink "Lathe/segments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "LatheGeometry/segments:event"}}{{/crossLink}} event on change.
              *
              * @property segments
              * @default 4
@@ -29828,7 +29708,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._latheDirty();
 
                     /**
-                     * Fired whenever this Lathe's {{#crossLink "Lathe/segments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/segments:property"}}{{/crossLink}} property changes.
                      * @event segments
                      * @type Number
                      * @param value The property's new value
@@ -29964,7 +29844,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                             continue;
                         }
 
-                        positions.push(x + (a[0] * this._xSize) * mag);
+                        positions.push(x - (a[0] * this._xSize) * mag);
                         positions.push(y + (a[1] * this._ySize) * mag);
                         positions.push(0);
 
@@ -29988,10 +29868,10 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                         needLine = true;
                     }
-                    x += c.width * mag * this._xSize;
+                    x -= c.width * mag * this._xSize;
 
                 }
-                y += 25 * mag * this._ySize;
+                y -= 35 * mag * this._ySize;
             }
 
             this.primitive = "lines";
@@ -32081,542 +31961,11 @@ XEO.PathGeometry = XEO.Geometry.extend({
     });
 
 })();;/**
- A **GroupBoundary** configures the WebGL color buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
- ## Overview
-
- <ul>
-
- <li>A GroupBoundary configures **the way** that pixels are written to the WebGL color buffer.</li>
- <li>GroupBoundary is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
- colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
-
- </ul>
-
- <img src="../../../assets/images/GroupBoundary.png"></img>
-
- ## Example
-
- In this example we're configuring the WebGL color buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
-
- This example scene contains:
-
- <ul>
- <li>a GroupBoundary that enables blending and sets the color mask,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
-
- ````javascript
- var scene = new XEO.Scene();
-
- var GroupBoundary = new XEO.GroupBoundary(scene, {
-    blendEnabled: true,
-    colorMask: [true, true, true, true]
-});
-
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
- var gameObject = new XEO.GameObject(scene, {
-    GroupBoundary: GroupBoundary,
-    geometry: geometry
-});
- ````
-
- @class GroupBoundary
- @module XEO
- @submodule groups
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this GroupBoundary within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} GroupBoundary configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GroupBoundary.
- @param [cfg.blendEnabled=false] {Boolean} Indicates if blending is enabled.
- @param [cfg.colorMask=[true, true, true, true]] {Array of Boolean} The color mask,
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.GroupBoundary = XEO.Component.extend({
-
-        type: "XEO.GroupBoundary",
-
-        _init: function (cfg) {
-
-            this._onUpdated = {};
-
-            this.group = cfg.group;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GameObject.
-             *
-             * Defaults to an empty internally-managed {{#crossLink "Group"}}{{/crossLink}}.
-             *
-             * Fires a {{#crossLink "GroupBoundary/group:event"}}{{/crossLink}} event on change.
-             *
-             * @property group
-             * @type Group
-             */
-            group: {
-
-                set: function (value) {
-
-                    // Unsubscribe from old Group's events
-
-                    var oldGroup = this._children.group;
-
-                    if (oldGroup && (!value || value.id !== oldGroup.id)) {
-
-                        oldGroup.off(this._onAdded);
-                        oldGroup.off(this._onRemoved);
-
-                        oldGroup.iterate(unbind);
-                    }
-
-                    /**
-                     * Fired whenever this GroupBoundary's  {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event group
-                     * @param value The property's new value
-                     */
-                    var group = this._setChild("group", value);
-
-                    var self = this;
-
-                    if (group) {
-
-                        this._onAdded = group.on("added",
-                            function () {
-                                if (c.worldBoundary) {
-                                    bind(c);
-                                    self._setGroupDirty();
-                                }
-                            });
-
-                        this._onRemoved = group.on("removed",
-                            function (c) {
-                                if (c.worldBoundary) {
-                                    unbind(c);
-                                    self._setGroupDirty();
-                                }
-                            });
-
-                        group.iterate(bind);
-
-                        this._setGroupDirty();
-                    }
-
-                    function bind(c) {
-                        var worldBoundary = c.worldBoundary;
-                        if (!worldBoundary) {
-                            return;
-                        }
-                        self._onUpdated[c.id] = worldBoundary.on("updated",
-                            function () {
-                                self._setGroupDirty();
-                            });
-                    }
-
-                    function unbind(c) {
-                        var worldBoundary = c.worldBoundary;
-                        if (!worldBoundary) {
-                            return;
-                        }
-                        worldBoundary.off(self._onUpdated[c.id]);
-                        delete self._onUpdated[c.id];
-                    }
-
-                    this._setGroupDirty();
-                },
-
-                get: function () {
-                    return this._children.group;
-                }
-            },
-
-            /**
-             * World-space 3D boundary.
-             *
-             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
-             * time you reference it.
-             *
-             * @property worldBoundary
-             * @type Boundary3D
-             * @final
-             */
-            worldBoundary: {
-
-                get: function () {
-
-                    if (!this._worldBoundary) {
-
-                        var self = this;
-
-                        this._worldBoundary = new XEO.Boundary3D(this.scene, {
-
-                            getDirty: function () {
-                                return self._worldBoundaryDirty;
-                            },
-
-                            getAABB: function () {
-
-                                if (self._groupDirty) {
-
-                                    self._buildAABB();
-
-                                    self._groupDirty = false;
-                                }
-
-                                return self._aabb;
-                            }
-                        });
-
-                        this._worldBoundary.on("destroyed",
-                            function () {
-                                self._worldBoundary = null;
-                            });
-
-                        this._setWorldBoundaryDirty();
-                    }
-
-                    return this._worldBoundary;
-                }
-            },
-
-            /**
-             * View-space 3D boundary.
-             *
-             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance
-             * next time you reference it.
-             *
-             * @property viewBoundary
-             * @type Boundary3D
-             * @final
-             */
-            viewBoundary: {
-
-                get: function () {
-
-                    if (!this._viewBoundary) {
-
-                        var self = this;
-
-                        this._viewBoundary = new XEO.Boundary3D(this.scene, {
-
-                            getDirty: function () {
-                                return self._viewBoundaryDirty;
-                            },
-
-                            getOBB: function () {
-
-                                // Calls our worldBoundary property,
-                                // lazy-inits the boundary and its obb
-
-                                return self.worldBoundary.obb;
-                            },
-
-                            getMatrix: function () {
-
-                                // TODO:
-                                return self.scene.camera.view.matrix;
-                            }
-                        });
-
-                        this._viewBoundary.on("destroyed",
-                            function () {
-                                self._viewBoundary = null;
-                            });
-
-                        this._setViewBoundaryDirty();
-                    }
-
-                    return this._viewBoundary;
-                }
-            }
-        },
-
-        /**
-         * Canvas-space 2D boundary.
-         *
-         * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-         * this property will be assigned to a fresh {{#crossLink "Boundary2D"}}{{/crossLink}} instance
-         * next time you reference it.
-         *
-         * @property canvasBoundary
-         * @type Boundary2D
-         * @final
-         */
-        canvasBoundary: {
-
-            get: function () {
-
-                if (!this._canvasBoundary) {
-
-                    var self = this;
-
-                    // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
-
-                    this._canvasBoundary = new XEO.Boundary2D(this.scene, {
-
-                        getDirty: function () {
-                            return self._canvasBoundaryDirty;
-                        },
-
-                        getOBB: function () {
-                            return self.viewBoundary.obb; // Lazy-inits!
-                        },
-
-                        getMatrix: function () {
-                            return self.scene.camera.project.matrix;
-                        }
-                    });
-
-                    this._canvasBoundary.on("destroyed",
-                        function () {
-                            self._canvasBoundary = null;
-                        });
-
-                    this._setCanvasBoundaryDirty();
-                }
-
-                return this._canvasBoundary;
-            }
-        },
-
-        _setGroupDirty: function () {
-            this._groupDirty = true;
-            this._setWorldBoundaryDirty();
-        },
-
-        _setWorldBoundaryDirty: function () {
-            this._worldBoundaryDirty = true;
-            if (this._worldBoundary) {
-                this._worldBoundary.fire("updated", true);
-            }
-            this._setViewBoundaryDirty();
-        },
-
-        _setViewBoundaryDirty: function () {
-            this._viewBoundaryDirty = true;
-            if (this._viewBoundary) {
-                this._viewBoundary.fire("updated", true);
-            }
-            this._setCanvasBoundaryDirty();
-        },
-
-        _setCanvasBoundaryDirty: function () {
-            this._canvasBoundaryDirty = true;
-            if (this._canvasBoundary) {
-                this._canvasBoundary.fire("updated", true);
-            }
-        },
-
-        _buildAABB: function () {
-
-            if (!this._aabb) {
-                this._aabb = {
-                    xmin: 0, ymin: 0, zmin: 0,
-                    xmax: 0, ymax: 0, zmax: 0
-                };
-            }
-
-            var xmin = 100000;
-            var ymin = 100000;
-            var zmin = 100000;
-            var xmax = -100000;
-            var ymax = -100000;
-            var zmax = -100000;
-
-            var component;
-            var worldBoundary;
-            var aabb;
-
-            for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId)) {
-
-                    component = this.components[componentId];
-
-                    worldBoundary = component.worldBoundary;
-                    if (worldBoundary) {
-
-                        aabb = worldBoundary.aabb;
-
-                        if (aabb.xmin < xmin) {
-                            xmin = aabb.xmin;
-                        }
-
-                        if (aabb.ymin < ymin) {
-                            ymin = aabb.ymin;
-                        }
-
-                        if (aabb.zmin < zmin) {
-                            zmin = aabb.zmin;
-                        }
-
-                        if (aabb.xmax > xmax) {
-                            xmax = aabb.xmax;
-                        }
-
-                        if (aabb.ymax > ymax) {
-                            ymax = aabb.ymax;
-                        }
-
-                        if (aabb.zmax > zmax) {
-                            zmax = aabb.zmax;
-                        }
-                    }
-                }
-            }
-
-            this._aabb.xmin = xmin;
-            this._aabb.ymin = ymin;
-            this._aabb.zmin = zmin;
-            this._aabb.xmax = xmax;
-            this._aabb.ymax = ymax;
-            this._aabb.zmax = zmax;
-        },
-
-        _getJSON: function () {
-            return {};
-        },
-
-        _destroy: function () {
-            this.group = null;
-        }
-    });
-
-})
-();
-;/**
  * Components to help visualise other components.
  *
  * @module XEO
  * @submodule helpers
  */;/**
- A **AxisHelper** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the axis-aligned boundary of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
-
- ## Example
-
- ````javascript
-
- ````
-
- @class AxisHelper
- @module XEO
- @submodule helpers
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this AxisHelper in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
- generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this AxisHelper.
- @param [cfg.boundary] {Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.AxisHelper = XEO.GameObject.extend({
-
-        type: "XEO.AxisHelper",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this._c = [];
-
-            var arrowGeometry = this._push(new XEO.Lathe(this.scene, {
-                primitive: "triangles",
-                points: [
-                    [0, 0, 10],
-                    [-1.5, 0, 7],
-                    [-.5, 0, 7.1],
-                    [-.5, 0, 0],
-                    [0, 0, 0]
-                ],
-                segments: 30,
-                phiStart: 0,
-                phiLength: 360
-            }));
-
-            this._push(new XEO.GameObject(this.scene, {
-                geometry: arrowGeometry,
-                material: this._push(new XEO.PhongMaterial(this.scene, {
-                    diffuse: [1, 0, 0]
-                })),
-                transform: this._push(new XEO.Rotate(this.scene, {
-                    xyz: [1, 0, 0],
-                    angle: 0
-                }))
-            }));
-
-            this._push(new XEO.GameObject(this.scene, {
-                geometry: arrowGeometry,
-                material: this._push(new XEO.PhongMaterial(this.scene, {
-                    diffuse: [0, 1, 0]
-                })),
-                transform: this._push(new XEO.Rotate(this.scene, {
-                    xyz: [1, 0, 0],
-                    angle: 90
-                }))
-            }));
-
-            this._push(new XEO.GameObject(this.scene, {
-                geometry: arrowGeometry,
-                material: this._push(new XEO.PhongMaterial(this.scene, {
-                    diffuse: [0, 0, 1]
-                })),
-                transform: this._push(new XEO.Rotate(this.scene, {
-                    xyz: [0, 1, 0],
-                    angle: 90
-                }))
-            }));
-
-            this._push(new XEO.GameObject(this.scene, {
-                geometry: this._push(new XEO.Sphere(this.scene, {
-                    radius: 1.0
-                })),
-                material: this._push(new XEO.PhongMaterial(this.scene, {
-                    diffuse: [1, 1, 0]
-                }))
-            }));
-
-            this._push(new XEO.GameObject(this.scene, {
-                geometry: this._push(new XEO.Plane(this.scene, {
-                    xSize: 100,
-                    ySize: 100
-                })),
-                material: this._push(new XEO.PhongMaterial(this.scene, {
-                    diffuse: [1, 1, 0]
-                }))
-            }));
-        },
-
-        _push: function (c) {
-            this._c.push(c);
-            return c;
-        },
-
-        _destroyed: function () {
-            while (this._c.length > 0) {
-                this._c.pop().destroy();
-            }
-        }
-    });
-
-})();
-;/**
  A **CameraControl** pans, rotates and zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse and keyboard,
  as well as switches it between preset left, right, anterior, posterior, superior and inferior views.
 
