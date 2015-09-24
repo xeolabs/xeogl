@@ -469,7 +469,7 @@
             var lines = source.split('\n');
             var start = 0, end = lines.length;
             for (var i = 0; i < lines.length; i++) {
-                if (lines[i].trim() == '<script>') {
+                if (lines[i].trim().substring(0,7) === ('<script')) {
                     start = i;
                 }
                 if (lines[i].trim() == '<\/script>') {
