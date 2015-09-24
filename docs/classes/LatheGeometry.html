@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Torus - xeoengine</title>
+    <title>LatheGeometry - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -176,7 +176,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Torus Class</h1>
+<h1>LatheGeometry Class</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -184,7 +184,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_extras_geometry_torus.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:1</code></a>
+            Defined in: <a href="../files/src_extras_geometry_latheGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:1</code></a>
         </div>
 
             Module: <a href="../modules/geometry.html">geometry</a><br>
@@ -194,7 +194,7 @@
 
 
 <div class="box intro">
-    <p>A <strong>Torus</strong> defines toroid geometry for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>LatheGeometry</strong> is a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that&#39;s defined as the revolution of a profile about an exis.</p>
 <h2 id="example">Example</h2>
 <pre class="code prettyprint"><code class="lang-javascript">
 
@@ -204,8 +204,8 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Torus" class="method item">
-            <h3 class="name"><code>Torus</code></h3>
+        <div id="method_LatheGeometry" class="method item">
+            <h3 class="name"><code>LatheGeometry</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -228,7 +228,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_extras_geometry_torus.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:1</code></a>
+                <a href="../files/src_extras_geometry_latheGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:1</code></a>
                 </p>
         
         
@@ -250,7 +250,7 @@
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Torus in the default
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this LatheGeometry in the default
         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
@@ -286,58 +286,63 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this Torus.</p>
+                                            <p>Optional map of user-defined metadata to attach to this LatheGeometry.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[radius=1]</code>
-                                            <span class="type">Number</span>
+                                            <code class="param-name optional">[primitive=&quot;triangles&quot;]</code>
+                                            <span class="type">String</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>The primitive type. Accepted values are &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[tube=0.3]</code>
-                                            <span class="type">Number</span>
+                                            <code class="param-name optional">[points=[]]</code>
+                                            <span class="type"></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>Profile points.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[segmentsR=32]</code>
+                                            <code class="param-name optional">[segments=4]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>Number of revolution segments.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[segmentsT=24]</code>
+                                            <code class="param-name optional">[phiStart=0]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>Angle in degrees at which revolution starts.</p>
+        
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[arc=Math.PI / 2.0]</code>
+                                            <code class="param-name optional">[phiLength=360]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            
+                                            <p>Length of revolution in degrees.</p>
+        
                                         </div>
         
                                     </li>
@@ -418,10 +423,6 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property">
-                                <a href="#property_arc">arc</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_autoNormals">autoNormals</a>
 
@@ -462,6 +463,18 @@
                                 <a href="#property_normals">normals</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_phiLength">phiLength</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_phiStart">phiStart</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_points">points</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_positions">positions</a>
 
@@ -470,28 +483,16 @@
                                 <a href="#property_primitive">primitive</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_radius">radius</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_segmentsR">segmentsR</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_segmentsT">segmentsT</a>
+                                <a href="#property_segments">segments</a>
 
                             </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_tube">tube</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -510,10 +511,6 @@
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
-                            <li class="index-item event">
-                                <a href="#event_arc">arc</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_autoNormals">autoNormals</a>
 
@@ -538,6 +535,18 @@
                                 <a href="#event_normals">normals</a>
 
                             </li>
+                            <li class="index-item event">
+                                <a href="#event_phiLength">phiLength</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_phiStart">phiStart</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_points">points</a>
+
+                            </li>
                             <li class="index-item event inherited inherited">
                                 <a href="#event_positions">positions</a>
 
@@ -547,19 +556,7 @@
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_radius">radius</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_segmentsR">segmentsR</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_segmentsT">segmentsT</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_tube">tube</a>
+                                <a href="#event_segments">segments</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -1104,33 +1101,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_arc" class="property item">
-                        <h3 class="name"><code>arc</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l365"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:365</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Torus&#39;s arc.</p>
-                    <p>Fires a <a href="../classes/Torus.html#event_arc" class="crosslink">arc</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> Math.PI * 2</p>
-                    
-                    
-                    </div>
                     <div id="property_autoNormals" class="property item inherited">
                         <h3 class="name"><code>autoNormals</code></h3>
                         <span class="type">Boolean</span>
@@ -1303,15 +1273,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l153"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:153</code></a>
+                            <a href="../files/src_extras_geometry_latheGeometry.js.html#l176"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:176</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The Torus&#39;s level-of-detail factor.</p>
-                    <p>Fires a <a href="../classes/Torus.html#event_lod" class="crosslink">lod</a> event on change.</p>
+                            <p>The LatheGeometry&#39;s level-of-detail factor.</p>
+                    <p>Fires a <a href="../classes/LatheGeometry.html#event_lod" class="crosslink">lod</a> event on change.</p>
                     
                         </div>
                     
@@ -1400,6 +1370,87 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_phiLength" class="property item">
+                        <h3 class="name"><code>phiLength</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_latheGeometry.js.html#l260"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:260</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Angle at which this LatheGeometry&#39;s rotation starts.</p>
+                    <p>Fires a <a href="../classes/LatheGeometry.html#event_phiLength" class="crosslink">phiLength</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1</p>
+                    
+                    
+                    </div>
+                    <div id="property_phiStart" class="property item">
+                        <h3 class="name"><code>phiStart</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_latheGeometry.js.html#l218"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:218</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Angle at which this LatheGeometry&#39;s rotation starts.</p>
+                    <p>Fires a <a href="../classes/LatheGeometry.html#event_phiStart" class="crosslink">phiStart</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0</p>
+                    
+                    
+                    </div>
+                    <div id="property_points" class="property item">
+                        <h3 class="name"><code>points</code></h3>
+                        <span class="type">Array(Number)</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_latheGeometry.js.html#l145"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:145</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Profile points on this LatheGeometry.</p>
+                    <p>Fires a <a href="../classes/LatheGeometry.html#event_points" class="crosslink">points</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> []</p>
+                    
+                    
+                    </div>
                     <div id="property_positions" class="property item inherited">
                         <h3 class="name"><code>positions</code></h3>
                         <span class="type">Array of Number</span>
@@ -1457,33 +1508,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_radius" class="property item">
-                        <h3 class="name"><code>radius</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l195"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:195</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Torus&#39;s radius.</p>
-                    <p>Fires a <a href="../classes/Torus.html#event_radius" class="crosslink">radius</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1</p>
-                    
-                    
-                    </div>
                     <div id="property_scene" class="property item inherited">
                         <h3 class="name"><code>scene</code></h3>
                         <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
@@ -1510,8 +1534,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_segmentsR" class="property item">
-                        <h3 class="name"><code>segmentsR</code></h3>
+                    <div id="property_segments" class="property item">
+                        <h3 class="name"><code>segments</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -1521,46 +1545,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l280"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:280</code></a>
+                            <a href="../files/src_extras_geometry_latheGeometry.js.html#l302"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:302</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The Torus&#39;s segmentsR.</p>
-                    <p>Fires a <a href="../classes/Torus.html#event_segmentsR" class="crosslink">segmentsR</a> event on change.</p>
+                            <p>The LatheGeometry&#39;s number of segments of rotation.</p>
+                    <p>Fires a <a href="../classes/LatheGeometry.html#event_segments" class="crosslink">segments</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> 32</p>
-                    
-                    
-                    </div>
-                    <div id="property_segmentsT" class="property item">
-                        <h3 class="name"><code>segmentsT</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l323"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:323</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Torus&#39;s segmentsT.</p>
-                    <p>Fires a <a href="../classes/Torus.html#event_segmentsT" class="crosslink">segmentsT</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 24</p>
+                            <p><strong>Default:</strong> 4</p>
                     
                     
                     </div>
@@ -1590,33 +1587,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_tube" class="property item">
-                        <h3 class="name"><code>tube</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l238"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:238</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Torus&#39;s tube.</p>
-                    <p>Fires a <a href="../classes/Torus.html#event_tube" class="crosslink">tube</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.3</p>
                     
                     
                     </div>
@@ -1682,48 +1652,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_arc" class="events item">
-                        <h3 class="name"><code>arc</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l391"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:391</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Torus&#39;s <a href="../classes/Torus.html#property_arc" class="crosslink">arc</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_autoNormals" class="events item inherited">
                         <h3 class="name"><code>autoNormals</code></h3>
                         <span class="type">Boolean</span>
@@ -1735,7 +1663,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l992"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:992</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l994"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:994</code></a>
                             </p>
                     
                     
@@ -1886,14 +1814,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l179"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:179</code></a>
+                            <a href="../files/src_extras_geometry_latheGeometry.js.html#l204"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:204</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Torus&#39;s <a href="../classes/Torus.html#property_lod" class="crosslink">lod</a> property changes.</p>
+                            <p>Fired whenever this LatheGeometry&#39;s <a href="../classes/LatheGeometry.html#property_lod" class="crosslink">lod</a> property changes.</p>
                     
                         </div>
                     
@@ -1936,6 +1864,133 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Geometry&#39;s Geometry/ normals:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_phiLength" class="events item">
+                        <h3 class="name"><code>phiLength</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_latheGeometry.js.html#l288"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:288</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this LatheGeometry&#39;s <a href="../classes/LatheGeometry.html#property_phiLength" class="crosslink">phiLength</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_phiStart" class="events item">
+                        <h3 class="name"><code>phiStart</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_latheGeometry.js.html#l246"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:246</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this LatheGeometry&#39;s <a href="../classes/LatheGeometry.html#property_phiStart" class="crosslink">phiStart</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_points" class="events item">
+                        <h3 class="name"><code>points</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_latheGeometry.js.html#l162"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:162</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this LatheGeometry&#39;s
+                    <a href="../classes/LatheGeometry.html#property_points" class="crosslink">points</a> property changes.</p>
                     
                         </div>
                     
@@ -2046,8 +2101,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_radius" class="events item">
-                        <h3 class="name"><code>radius</code></h3>
+                    <div id="event_segments" class="events item">
+                        <h3 class="name"><code>segments</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -2057,140 +2112,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l221"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:221</code></a>
+                            <a href="../files/src_extras_geometry_latheGeometry.js.html#l330"><code>src&#x2F;extras&#x2F;geometry&#x2F;latheGeometry.js:330</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Torus&#39;s <a href="../classes/Torus.html#property_radius" class="crosslink">radius</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_segmentsR" class="events item">
-                        <h3 class="name"><code>segmentsR</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l306"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:306</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Torus&#39;s <a href="../classes/Torus.html#property_segmentsR" class="crosslink">segmentsR</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_segmentsT" class="events item">
-                        <h3 class="name"><code>segmentsT</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l349"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:349</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Torus&#39;s <a href="../classes/Torus.html#property_segmentsT" class="crosslink">segmentsT</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_tube" class="events item">
-                        <h3 class="name"><code>tube</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_torus.js.html#l264"><code>src&#x2F;extras&#x2F;geometry&#x2F;torus.js:264</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Torus&#39;s <a href="../classes/Torus.html#property_tube" class="crosslink">tube</a> property changes.</p>
+                            <p>Fired whenever this LatheGeometry&#39;s <a href="../classes/LatheGeometry.html#property_segments" class="crosslink">segments</a> property changes.</p>
                     
                         </div>
                     

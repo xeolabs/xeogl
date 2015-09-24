@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/extras/geometry.obj.js - xeoengine</title>
+    <title>src/extras/helpers/axisHelper.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -176,47 +176,127 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/extras/geometry.obj.js</h1>
+<h1 class="file-heading">File: src/extras/helpers/axisHelper.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
+ A **AxisHelper** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that shows the axis-aligned boundary of a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
 
- A Geometry imported from a Wavefront .OBJ file.
+ ## Example
 
- &#x60;&#x60;&#x60;&#x60; javascript
- var geometry = new XEO.Geometry.OBJ(scene, {
-    src: &quot;file.obj&quot;
- });
+ &#x60;&#x60;&#x60;&#x60;javascript
 
- var object = new XEO.GameObject(myScene, {
-    geometry: geometry
- });
  &#x60;&#x60;&#x60;&#x60;
 
- @class Geometry.OBJ
+ @class AxisHelper
  @module XEO
- @extends Geometry
+ @submodule helpers
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this AxisHelper in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this AxisHelper.
+ @param [cfg.boundary] {Boundary3D} ID or instance of a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}
+ @extends Component
  */
-XEO.Geometry.OBJ = XEO.Geometry.extend({
+(function () {
 
-    type: &quot;XEO.Geometry.OBJ&quot;,
+    &quot;use strict&quot;;
 
-    // Constructor
+    XEO.AxisHelper = XEO.GameObject.extend({
 
-    _init: function (cfg) {
+        type: &quot;XEO.AxisHelper&quot;,
 
-        // Call XEO.Component&#x27;s init method
-        this._super(cfg);
+        _init: function (cfg) {
 
-        // Now load .OBJ and update arrays
+            this._super(cfg);
 
-    },
+            this._c = [];
 
-    _getJSON: function () {
-        return {};
-    }
-});
+            var arrowGeometry = this._push(new XEO.LatheGeometry(this.scene, {
+                primitive: &quot;triangles&quot;,
+                points: [
+                    [0, 0, 10],
+                    [-1.5, 0, 7],
+                    [-.5, 0, 7.1],
+                    [-.5, 0, 0],
+                    [0, 0, 0]
+                ],
+                segments: 30,
+                phiStart: 0,
+                phiLength: 360
+            }));
+
+            this._push(new XEO.GameObject(this.scene, {
+                geometry: arrowGeometry,
+                material: this._push(new XEO.PhongMaterial(this.scene, {
+                    diffuse: [1, 0, 0]
+                })),
+                transform: this._push(new XEO.Rotate(this.scene, {
+                    xyz: [1, 0, 0],
+                    angle: 0
+                }))
+            }));
+
+            this._push(new XEO.GameObject(this.scene, {
+                geometry: arrowGeometry,
+                material: this._push(new XEO.PhongMaterial(this.scene, {
+                    diffuse: [0, 1, 0]
+                })),
+                transform: this._push(new XEO.Rotate(this.scene, {
+                    xyz: [1, 0, 0],
+                    angle: 90
+                }))
+            }));
+
+            this._push(new XEO.GameObject(this.scene, {
+                geometry: arrowGeometry,
+                material: this._push(new XEO.PhongMaterial(this.scene, {
+                    diffuse: [0, 0, 1]
+                })),
+                transform: this._push(new XEO.Rotate(this.scene, {
+                    xyz: [0, 1, 0],
+                    angle: 90
+                }))
+            }));
+
+            this._push(new XEO.GameObject(this.scene, {
+                geometry: this._push(new XEO.Sphere(this.scene, {
+                    radius: 1.0
+                })),
+                material: this._push(new XEO.PhongMaterial(this.scene, {
+                    diffuse: [1, 1, 0]
+                }))
+            }));
+
+            this._push(new XEO.GameObject(this.scene, {
+                geometry: this._push(new XEO.PlaneGeometry(this.scene, {
+                    xSize: 100,
+                    ySize: 100
+                })),
+                material: this._push(new XEO.PhongMaterial(this.scene, {
+                    diffuse: [1, 1, 0]
+                }))
+            }));
+        },
+
+        _push: function (c) {
+            this._c.push(c);
+            return c;
+        },
+
+        _destroyed: function () {
+            while (this._c.length &gt; 0) {
+                this._c.pop().destroy();
+            }
+        }
+    });
+
+})();
+
     </pre>
 </div>
                     </div>

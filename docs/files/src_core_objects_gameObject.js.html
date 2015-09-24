@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -216,7 +216,7 @@
   });
 
  // Get the World-space Boundary3D
- var worldBoundary = object.worldBoundary();
+ var worldBoundary = object.worldBoundary;
 
  // Get World-space object-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
@@ -241,7 +241,7 @@
 
  &#x60;&#x60;&#x60;&#x60; javascript
  // Get the View-space Boundary3D
- var viewBoundary = object.viewBoundary();
+ var viewBoundary = object.viewBoundary;
 
  // Get View-space object-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
@@ -371,7 +371,7 @@
 
                     // Invalidate cached World-space bounding boxes
 
-                    this._setWorldBoundaryDirty();
+                    this._setViewBoundaryDirty();
 
                     // Unsubscribe from old Cameras&#x27;s events
 
@@ -381,6 +381,7 @@
                         oldCamera.off(this._onCameraDestroyed);
                         oldCamera.off(this._onCameraView);
                         oldCamera.off(this._onCameraViewMatrix);
+                        oldCamera.off(this._onCameraProjMatrix);
                     }
 
                     /**
@@ -665,8 +666,6 @@
                     if (oldGeometry) {
 
                         if (!value || (value.id !== undefined ? value.id : value) != oldGeometry.id) {
-
-                            oldGeometry.off(this._onGeometryDirty);
                             oldGeometry.off(this._onGeometryPositions);
                             oldGeometry.off(this._onGeometryDestroyed);
                         }
@@ -690,11 +689,6 @@
                         // positions are updated or Geometry is destroyed.
 
                         var self = this;
-
-                        this._onGeometryDirty = newGeometry.on(&quot;dirty&quot;,
-                            function () {
-                                self.fire(&quot;dirty&quot;, true);
-                            });
 
                         this._onGeometryPositions = newGeometry.on(&quot;positions&quot;,
                             function () {
@@ -1040,14 +1034,6 @@
 
                 set: function (value) {
 
-                    // Unsubscribe from old billboard&#x27;s events
-
-                    var oldBillboard = this._children.billboard;
-
-                    if (oldBillboard &amp;&amp; (!value || value.id !== oldBillboard.id)) {
-                        oldBillboard.off(this._onBillboardDirty);
-                    }
-
                     /**
                      * Fired whenever this GameObject&#x27;s {{#crossLink &quot;GameObject/billboard:property&quot;}}{{/crossLink}}
                      * property changes.
@@ -1056,20 +1042,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this._setChild(&quot;billboard&quot;, value);
-
-                    // Subscribe to new billboard&#x27;s events
-
-                    var newBillboard = this._children.billboard;
-
-                    if (newBillboard) {
-
-                        var self = this;
-                        
-                        this._onBillboardDirty = newBillboard.on(&quot;dirty&quot;,
-                            function () {
-                                self.fire(&quot;dirty&quot;);
-                            });
-                    }
                 },
 
                 get: function () {
@@ -1095,8 +1067,6 @@
                     if (!this._worldBoundary) {
 
                         var self = this;
-
-                        // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
 
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
@@ -1148,8 +1118,6 @@
 
                         var self = this;
 
-                        // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
-
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
                             getDirty: function () {
@@ -1200,13 +1168,7 @@
 
                         var self = this;
 
-                        // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
-
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
-
-                            meta: {
-                                description: &quot;Canvas-space boundary of GameObject &quot; + this.id
-                            },
 
                             getDirty: function () {
                                 return self._canvasBoundaryDirty;

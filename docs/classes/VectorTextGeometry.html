@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -184,7 +184,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorText.js:1</code></a>
+            Defined in: <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorTextGeometry.js:1</code></a>
         </div>
 
             Module: <a href="../modules/geometry.html">geometry</a><br>
@@ -228,7 +228,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorText.js:1</code></a>
+                <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorTextGeometry.js:1</code></a>
                 </p>
         
         
@@ -432,6 +432,14 @@
                                 <a href="#property_uv">uv</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_xSize">xSize</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_ySize">ySize</a>
+
+                            </li>
                     </ul>
                 </div>
 
@@ -474,6 +482,14 @@
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_uv">uv</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_xSize">xSize</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_ySize">ySize</a>
 
                             </li>
                     </ul>
@@ -1379,7 +1395,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l147"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorText.js:147</code></a>
+                            <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l151"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorTextGeometry.js:151</code></a>
                             </p>
                     
                     
@@ -1451,6 +1467,60 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_xSize" class="property item">
+                        <h3 class="name"><code>xSize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l188"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorTextGeometry.js:188</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The VectorText&#39;s size on the X-axis.</p>
+                    <p>Fires a VectorText/xSize:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1</p>
+                    
+                    
+                    </div>
+                    <div id="property_ySize" class="property item">
+                        <h3 class="name"><code>ySize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l230"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorTextGeometry.js:230</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The VectorText&#39;s size on the Y-axis.</p>
+                    <p>Fires a VectorText/ySize:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1.0</p>
+                    
+                    
+                    </div>
             </div>
 
 
@@ -1468,7 +1538,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l992"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:992</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l994"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:994</code></a>
                             </p>
                     
                     
@@ -1748,7 +1818,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l168"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorText.js:168</code></a>
+                            <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l172"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorTextGeometry.js:172</code></a>
                             </p>
                     
                     
@@ -1798,6 +1868,90 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_xSize" class="events item">
+                        <h3 class="name"><code>xSize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l216"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorTextGeometry.js:216</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this VectorText&#39;s VectorText/xSize:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_ySize" class="events item">
+                        <h3 class="name"><code>ySize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_vectorTextGeometry.js.html#l258"><code>src&#x2F;extras&#x2F;geometry&#x2F;vectorTextGeometry.js:258</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this VectorText&#39;s VectorText/ySize:property property changes.</p>
                     
                         </div>
                     

@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -181,7 +181,8 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **BoundaryGeometry** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that shows the axis-aligned boundary of a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
+ A **BoundaryGeometry** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that shows the object-aligned bounding box (OBB)
+ of a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
 
  ## Example
 
@@ -251,13 +252,15 @@
                     var oldBoundary = this._children.boundary;
 
                     if (oldBoundary) {
+
                         if ((!value || (value.id !== undefined ? value.id : value) !== oldBoundary.id)) {
                             oldBoundary.off(this._onBoundaryUpdated);
+                            oldBoundary.off(this._onBoundaryDestroyed);
                         }
                     }
 
                     /**
-                     * Fired whenever this BoundaryGeometry&#x27;s {{#crossLink &quot;BoundaryGeometry/boundary:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this BoundaryGeometry&#x27;s  {{#crossLink &quot;BoundaryGeometry/boundary:property&quot;}}{{/crossLink}} property changes.
                      *
                      * @event boundary
                      * @param value The property&#x27;s new value
@@ -272,52 +275,15 @@
 
                         this._onBoundaryUpdated = boundary.on(&quot;updated&quot;,
                             function () {
-
-                                var obb = boundary.obb;
-
-
-                                //self.positions = [
-                                //    obb[6][0], obb[6][1], obb[6][2],
-                                //    obb[6][0], obb[6][1], obb[6][2],
-                                //    obb[4][0], obb[4][1], obb[4][2],
-                                //    obb[4][0], obb[3][1], obb[4][2],
-                                //    obb[5][0], obb[3][1], obb[3][2],
-                                //    obb[5][0], obb[4][1], obb[3][2],
-                                //    obb[4][0], obb[4][1], obb[3][2],
-                                //    obb[4][0], obb[3][1], obb[3][2]
-                                //];
-
-                                self.positions = [
-                                    obb[2][0], obb[2][1], obb[4][2],
-                                    obb[2][0], obb[4][1], obb[4][2],
-                                    obb[0][0], obb[4][1], obb[4][2],
-                                    obb[0][0], obb[2][1], obb[4][2],
-                                    obb[2][0], obb[2][1], obb[3][2],
-                                    obb[2][0], obb[4][1], obb[3][2],
-                                    obb[0][0], obb[4][1], obb[3][2],
-                                    obb[0][0], obb[2][1], obb[3][2]
-                                ];
-
-                            //    var aabb = boundary.aabb;
-                            //
-                            //    var xmin = aabb.xmin;
-                            //    var ymin = aabb.ymin;
-                            //    var zmin = aabb.zmin;
-                            //    var xmax = aabb.xmax;
-                            //    var ymax = aabb.ymax;
-                            //    var zmax = aabb.zmax;
-                            //
-                            //    self.positions = [
-                            //        xmax, ymax, zmax,
-                            //        xmax, ymin, zmax,
-                            //        xmin, ymin, zmax,
-                            //        xmin, ymax, zmax,
-                            //        xmax, ymax, zmin,
-                            //        xmax, ymin, zmin,
-                            //        xmin, ymin, zmin,
-                            //        xmin, ymax, zmin
-                            //    ];
+                                self._setPositions(boundary.obb);
                             });
+
+                        this._onBoundaryDestroyed = boundary.on(&quot;destroyed&quot;,
+                            function () {
+                                self.boundary = null;
+                            });
+
+                        //     this._setPositions(boundary.obb);
                     }
                 },
 
@@ -325,6 +291,19 @@
                     return this._children.boundary;
                 }
             }
+        },
+
+        _setPositions: function (obb) {
+            this.positions = [
+                obb[2][0], obb[2][1], obb[4][2],
+                obb[2][0], obb[4][1], obb[4][2],
+                obb[0][0], obb[4][1], obb[4][2],
+                obb[0][0], obb[2][1], obb[4][2],
+                obb[2][0], obb[2][1], obb[3][2],
+                obb[2][0], obb[4][1], obb[3][2],
+                obb[0][0], obb[4][1], obb[3][2],
+                obb[0][0], obb[2][1], obb[3][2]
+            ];
         },
 
         _getJSON: function () {
@@ -338,14 +317,16 @@
             return attr;
         },
 
-        _destroyed: function () {
+        _destroy: function () {
 
             if (this._children.boundary) {
                 this._children.boundary.off(this._onBoundaryUpdated);
+                this._children.boundary.off(this._onBoundaryDestroyed);
             }
+
+            this._super();
         }
     });
-
 })();
 
     </pre>

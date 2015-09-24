@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -184,7 +184,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_extras_geometry_heightmap.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:1</code></a>
+            Defined in: <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:1</code></a>
         </div>
 
             Module: <a href="../modules/geometry.html">geometry</a><br>
@@ -228,7 +228,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_extras_geometry_heightmap.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:1</code></a>
+                <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:1</code></a>
                 </p>
         
         
@@ -287,6 +287,17 @@
         
                                         <div class="param-description">
                                             <p>Optional map of user-defined metadata to attach to this Heightmap.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[primitive=&quot;triangles&quot;]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The primitive type. Accepted values are &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
         
                                         </div>
         
@@ -1270,7 +1281,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l350"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:350</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l351"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:351</code></a>
                             </p>
                     
                     
@@ -1353,7 +1364,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l306"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:306</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l307"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:307</code></a>
                             </p>
                     
                     
@@ -1544,7 +1555,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l390"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:390</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l391"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:391</code></a>
                             </p>
                     
                     
@@ -1659,7 +1670,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l563"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:563</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l564"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:564</code></a>
                             </p>
                     
                     
@@ -1686,7 +1697,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l431"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:431</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l432"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:432</code></a>
                             </p>
                     
                     
@@ -1713,7 +1724,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l607"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:607</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l608"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:608</code></a>
                             </p>
                     
                     
@@ -1740,7 +1751,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l475"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:475</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l476"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:476</code></a>
                             </p>
                     
                     
@@ -1767,7 +1778,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l519"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:519</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l520"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:520</code></a>
                             </p>
                     
                     
@@ -1800,7 +1811,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l992"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:992</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l994"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:994</code></a>
                             </p>
                     
                     
@@ -1909,7 +1920,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l276"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:276</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l277"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:277</code></a>
                             </p>
                     
                     
@@ -1951,7 +1962,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l377"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:377</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l378"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:378</code></a>
                             </p>
                     
                     
@@ -2035,7 +2046,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l336"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:336</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l337"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:337</code></a>
                             </p>
                     
                     
@@ -2206,7 +2217,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l417"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:417</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l418"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:418</code></a>
                             </p>
                     
                     
@@ -2290,7 +2301,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l593"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:593</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l594"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:594</code></a>
                             </p>
                     
                     
@@ -2332,7 +2343,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l461"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:461</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l462"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:462</code></a>
                             </p>
                     
                     
@@ -2374,7 +2385,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l637"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:637</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l638"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:638</code></a>
                             </p>
                     
                     
@@ -2416,7 +2427,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l505"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:505</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l506"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:506</code></a>
                             </p>
                     
                     
@@ -2458,7 +2469,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_heightmap.js.html#l549"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmap.js:549</code></a>
+                            <a href="../files/src_extras_geometry_heightmapGeometry.js.html#l550"><code>src&#x2F;extras&#x2F;geometry&#x2F;heightmapGeometry.js:550</code></a>
                             </p>
                     
                     

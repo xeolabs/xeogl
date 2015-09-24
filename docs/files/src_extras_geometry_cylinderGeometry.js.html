@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/extras/geometry/torus.js - xeoengine</title>
+    <title>src/extras/geometry/cylinderGeometry.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -176,12 +176,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/extras/geometry/torus.js</h1>
+<h1 class="file-heading">File: src/extras/geometry/cylinderGeometry.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Torus** defines toroid geometry for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **Cylinder** defines cylindrical geometry for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  ## Example
 
@@ -189,21 +189,23 @@
 
  &#x60;&#x60;&#x60;&#x60;
 
- @class Torus
+ @class Cylinder
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Torus in the default
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Cylinder in the default
  {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Torus.
- @param [cfg.radius=1] {Number}
- @param [cfg.tube=0.3] {Number}
- @param [cfg.segmentsR=32] {Number}
- @param [cfg.segmentsT=24] {Number}
- @param [cfg.arc=Math.PI / 2.0] {Number}
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Cylinder.
+ @param [cfg.primitive=&quot;triangles&quot;] {String} The primitive type. Accepted values are &#x27;points&#x27;, &#x27;lines&#x27;, &#x27;line-loop&#x27;, &#x27;line-strip&#x27;, &#x27;triangles&#x27;, &#x27;triangle-strip&#x27; and &#x27;triangle-fan&#x27;.
+ @param [cfg.radiusTop=1] {Number} Radius of top.
+ @param [cfg.radiusBottom=1] {Number} Radius of bottom.
+ @param [cfg.height=1] {Number} Height.
+ @param [cfg.radialSegments=60] {Number} Number of segments around the Cylinder.
+ @param [cfg.heightSegments=1] {Number} Number of vertical segments.
+ @param [cfg.openEnded=false] {Boolean} Whether or not the Cylinder has solid caps on the ends.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -211,116 +213,196 @@
 
     &quot;use strict&quot;;
 
-    XEO.Torus = XEO.Geometry.extend({
+    XEO.CylinderGeometry = XEO.Geometry.extend({
 
-        type: &quot;XEO.Torus&quot;,
+        type: &quot;XEO.CylinderGeometry&quot;,
 
         _init: function (cfg) {
 
             this._super(cfg);
 
             this.lod = cfg.lod;
-            this.radius = cfg.radius;
-            this.tube = cfg.tube;
-            this.segmentsR = cfg.segmentsR;
-            this.segmentsT = cfg.segmentsT;
-            this.arc = cfg.arc;
+            this.radiusTop = cfg.radiusTop;
+            this.radiusBottom = cfg.radiusBottom;
+            this.height = cfg.height;
+            this.radialSegments = cfg.radialSegments;
+            this.heightSegments = cfg.heightSegments;
+            this.openEnded = cfg.openEnded;
         },
 
-        _torusDirty: function () {
+        _cylinderDirty: function () {
             if (!this.__dirty) {
                 this.__dirty = true;
                 var self = this;
                 this.scene.once(&quot;tick2&quot;,
                     function () {
-                        self._buildTorus();
+                        self._buildCylinder();
                         self.__dirty = false;
                     });
             }
         },
 
-        _buildTorus: function () {
+        _buildCylinder: function () {
 
-            var radius = this._radius;
-            var tube = this._tube;
-            var segmentsR = Math.floor(this._segmentsR * this._lod);
-            var segmentsT = Math.floor(this._segmentsT * this._lod);
-            var arc = this._arc;
+            var radiusTop = this._radiusTop;
+            var radiusBottom = this._radiusBottom;
+            var height = this._height;
+            var radialSegments = Math.floor(this._radialSegments * this._lod);
+            var heightSegments = Math.floor(this._heightSegments * this._lod);
 
-            if (segmentsR &lt; 4) {
-                segmentsR = 4;
+            if (radialSegments &lt; 3) {
+                radialSegments = 3;
             }
 
-            if (segmentsT &lt; 4) {
-                segmentsT = 4;
+            if (heightSegments &lt; 1) {
+                heightSegments = 1;
             }
+
+            var openEnded = this._openEnded;
+
+            var heightHalf = height / 2;
+            var heightLength = height / heightSegments;
+            var radialAngle = (2.0 * Math.PI / radialSegments);
+            var radialLength = 1.0 / radialSegments;
+            var nextRadius = this._radiusBottom;
+            var radiusChange = (radiusTop - radiusBottom) / heightSegments;
 
             var positions = [];
             var normals = [];
             var uvs = [];
             var indices = [];
 
-            var u;
-            var v;
-            var centerX;
-            var centerY;
-            var centerZ = 0;
-            var x;
-            var y;
-            var z;
-            var vec;
-
+            var h;
             var i;
-            var j;
 
-            for (j = 0; j &lt;= segmentsR; j++) {
-                for (i = 0; i &lt;= segmentsT; i++) {
+            var x;
+            var z;
 
-                    u = i / segmentsT * arc;
-                    v = j / segmentsR * Math.PI * 2;
+            var currentRadius;
+            var currentHeight;
 
-                    centerX = radius * Math.cos(u);
-                    centerY = radius * Math.sin(u);
+            var center;
+            var first;
+            var second;
 
-                    x = (radius + tube * Math.cos(v) ) * Math.cos(u);
-                    y = (radius + tube * Math.cos(v) ) * Math.sin(u);
-                    z = tube * Math.sin(v);
+            var startIndex;
+            var tu;
+            var tv;
 
-                    positions.push(x);
-                    positions.push(y);
-                    positions.push(z);
+            // create vertices
+            var normalY = (90.0 - (Math.atan(height / (radiusBottom - radiusTop))) * 180 / Math.PI) / 90.0;
 
-                    uvs.push(i / segmentsT);
-                    uvs.push(1 - j / segmentsR);
+            for (h = 0; h &lt;= heightSegments; h++) {
+                currentRadius = radiusTop - h * radiusChange;
+                currentHeight = heightHalf - h * heightLength;
 
-                    vec = XEO.math.normalizeVec3(XEO.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
+                for (i = 0; i &lt;= radialSegments; i++) {
+                    x = Math.sin(i * radialAngle);
+                    z = Math.cos(i * radialAngle);
 
-                    normals.push(vec[0]);
-                    normals.push(vec[1]);
-                    normals.push(vec[2]);
+                    normals.push(currentRadius * x);
+                    normals.push(normalY); //todo
+                    normals.push(currentRadius * z);
+                    uvs.push(1 - (i * radialLength));
+                    uvs.push(0 + h * 1 / heightSegments);
+                    positions.push(currentRadius * x);
+                    positions.push(currentHeight);
+                    positions.push(currentRadius * z);
                 }
             }
 
-            var a;
-            var b;
-            var c;
-            var d;
+            // create faces
+            for (h = 0; h &lt; heightSegments; h++) {
+                for (i = 0; i &lt;= radialSegments; i++) {
+                    first = h * (radialSegments + 1) + i;
+                    second = first + radialSegments;
+                    indices.push(first);
+                    indices.push(second);
+                    indices.push(second + 1);
 
-            for (j = 1; j &lt;= segmentsR; j++) {
-                for (i = 1; i &lt;= segmentsT; i++) {
+                    indices.push(first);
+                    indices.push(second + 1);
+                    indices.push(first + 1);
+                }
+            }
 
-                    a = ( segmentsT + 1 ) * j + i - 1;
-                    b = ( segmentsT + 1 ) * ( j - 1 ) + i - 1;
-                    c = ( segmentsT + 1 ) * ( j - 1 ) + i;
-                    d = ( segmentsT + 1 ) * j + i;
+            // create top cap
+            if (!openEnded &amp;&amp; radiusTop &gt; 0) {
+                startIndex = (positions.length / 3);
 
-                    indices.push(a);
-                    indices.push(b);
-                    indices.push(c);
+                // top center
+                normals.push(0.0);
+                normals.push(1.0);
+                normals.push(0.0);
+                uvs.push(0.5);
+                uvs.push(0.5);
+                positions.push(0);
+                positions.push(heightHalf);
+                positions.push(0);
 
-                    indices.push(c);
-                    indices.push(d);
-                    indices.push(a);
+                // top triangle fan
+                for (i = 0; i &lt;= radialSegments; i++) {
+                    x = Math.sin(i * radialAngle);
+                    z = Math.cos(i * radialAngle);
+                    tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
+                    tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
+
+                    normals.push(radiusTop * x);
+                    normals.push(1.0);
+                    normals.push(radiusTop * z);
+                    uvs.push(tu);
+                    uvs.push(tv);
+                    positions.push(radiusTop * x);
+                    positions.push(heightHalf);
+                    positions.push(radiusTop * z);
+                }
+
+                for (i = 0; i &lt; radialSegments; i++) {
+                    center = startIndex;
+                    first = startIndex + 1 + i;
+                    indices.push(first);
+                    indices.push(first + 1);
+                    indices.push(center);
+                }
+            }
+
+            // create bottom cap
+            if (!openEnded &amp;&amp; radiusBottom &gt; 0) {
+                startIndex = (positions.length / 3);
+
+                // top center
+                normals.push(0.0);
+                normals.push(-1.0);
+                normals.push(0.0);
+                uvs.push(0.5);
+                uvs.push(0.5);
+                positions.push(0);
+                positions.push(0 - heightHalf);
+                positions.push(0);
+
+                // top triangle fan
+                for (i = 0; i &lt;= radialSegments; i++) {
+                    x = Math.sin(i * radialAngle);
+                    z = Math.cos(i * radialAngle);
+                    tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
+                    tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
+
+                    normals.push(radiusBottom * x);
+                    normals.push(-1.0);
+                    normals.push(radiusBottom * z);
+                    uvs.push(tu);
+                    uvs.push(tv);
+                    positions.push(radiusBottom * x);
+                    positions.push(0 - heightHalf);
+                    positions.push(radiusBottom * z);
+                }
+
+                for (i = 0; i &lt; radialSegments; i++) {
+                    center = startIndex;
+                    first = startIndex + 1 + i;
+                    indices.push(first);
+                    indices.push(first + 1);
+                    indices.push(center);
                 }
             }
 
@@ -333,9 +415,9 @@
         _props: {
 
             /**
-             * The Torus&#x27;s level-of-detail factor.
+             * The Cylinder&#x27;s level-of-detail factor.
              *
-             * Fires a {{#crossLink &quot;Torus/lod:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;Cylinder/lod:event&quot;}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -359,14 +441,14 @@
                     this._lod = value;
 
                     /**
-                     * Fired whenever this Torus&#x27;s {{#crossLink &quot;Torus/lod:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/lod:property&quot;}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;lod&quot;, this._lod);
 
-                    this._torusDirty();
+                    this._cylinderDirty();
                 },
 
                 get: function () {
@@ -375,226 +457,263 @@
             },
 
             /**
-             * The Torus&#x27;s radius.
+             * The Cylinder&#x27;s top radius.
              *
-             * Fires a {{#crossLink &quot;Torus/radius:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;Cylinder/radiusTop:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property radius
+             * @property radiusTop
              * @default 1
              * @type Number
              */
-            radius: {
+            radiusTop: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._radiusTop === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative radiusTop not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._radiusTop = value;
+
+                    /**
+                     * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/radiusTop:property&quot;}}{{/crossLink}} property changes.
+                     * @event radiusTop
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;radiusTop&quot;, this._radiusTop);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._radiusTop;
+                }
+            },
+
+            /**
+             * The Cylinder&#x27;s bottom radius.
+             *
+             * Fires a {{#crossLink &quot;Cylinder/radiusBottom:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property radiusBottom
+             * @default 1
+             * @type Number
+             */
+            radiusBottom: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1;
+
+                    if (this._radiusBottom === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative radiusBottom not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._radiusBottom = value;
+
+                    /**
+                     * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/radiusBottom:property&quot;}}{{/crossLink}} property changes.
+                     * @event radiusBottom
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;radiusBottom&quot;, this._radiusBottom);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._radiusBottom;
+                }
+            },
+
+            /**
+             * The Cylinder&#x27;s height.
+             *
+             * Fires a {{#crossLink &quot;Cylinder/height:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property height
+             * @default 1
+             * @type Number
+             */
+            height: {
 
                 set: function (value) {
 
                     value = value || 1;
 
-                    if (this._radius === value) {
+                    if (this._height === value) {
                         return;
                     }
 
                     if (value &lt; 0) {
-                        this.warn(&quot;negative radius not allowed - will invert&quot;);
+                        this.warn(&quot;negative height not allowed - will invert&quot;);
                         value = value * -1;
                     }
 
-                    this._radius = value;
+                    this._height = value;
 
                     /**
-                     * Fired whenever this Torus&#x27;s {{#crossLink &quot;Torus/radius:property&quot;}}{{/crossLink}} property changes.
-                     * @event radius
+                     * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/height:property&quot;}}{{/crossLink}} property changes.
+                     * @event height
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;radius&quot;, this._radius);
+                    this.fire(&quot;height&quot;, this._height);
 
-                    this._torusDirty();
+                    this._cylinderDirty();
                 },
 
                 get: function () {
-                    return this._radius;
-                }
-            },
-
-
-            /**
-             * The Torus&#x27;s tube.
-             *
-             * Fires a {{#crossLink &quot;Torus/tube:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property tube
-             * @default 0.3
-             * @type Number
-             */
-            tube: {
-
-                set: function (value) {
-
-                    value = value || 0.3;
-
-                    if (this._tube === value) {
-                        return;
-                    }
-
-                    if (value &lt; 0) {
-                        this.warn(&quot;negative tube not allowed - will invert&quot;);
-                        value = value * -1;
-                    }
-
-                    this._tube = value;
-
-                    /**
-                     * Fired whenever this Torus&#x27;s {{#crossLink &quot;Torus/tube:property&quot;}}{{/crossLink}} property changes.
-                     * @event tube
-                     * @type Number
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;tube&quot;, this._tube);
-
-                    this._torusDirty();
-                },
-
-                get: function () {
-                    return this._tube;
+                    return this._height;
                 }
             },
 
             /**
-             * The Torus&#x27;s segmentsR.
+             * The Cylinder&#x27;s radial segments.
              *
-             * Fires a {{#crossLink &quot;Torus/segmentsR:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;Cylinder/radialSegments:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property segmentsR
-             * @default 32
+             * @property radialSegments
+             * @default 60
              * @type Number
              */
-            segmentsR: {
+            radialSegments: {
 
                 set: function (value) {
 
-                    value = value || 32;
+                    value = value || 60;
 
-                    if (this._segmentsR === value) {
+                    if (this._radialSegments === value) {
                         return;
                     }
 
                     if (value &lt; 0) {
-                        this.warn(&quot;negative segmentsR not allowed - will invert&quot;);
+                        this.warn(&quot;negative radialSegments not allowed - will invert&quot;);
                         value = value * -1;
                     }
 
-                    this._segmentsR = value;
+                    this._radialSegments = value;
 
                     /**
-                     * Fired whenever this Torus&#x27;s {{#crossLink &quot;Torus/segmentsR:property&quot;}}{{/crossLink}} property changes.
-                     * @event segmentsR
+                     * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/radialSegments:property&quot;}}{{/crossLink}} property changes.
+                     * @event radialSegments
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;segmentsR&quot;, this._segmentsR);
+                    this.fire(&quot;radialSegments&quot;, this._radialSegments);
 
-                    this._torusDirty();
+                    this._cylinderDirty();
                 },
 
                 get: function () {
-                    return this._segmentsR;
-                }
-            },
-
-
-            /**
-             * The Torus&#x27;s segmentsT.
-             *
-             * Fires a {{#crossLink &quot;Torus/segmentsT:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property segmentsT
-             * @default 24
-             * @type Number
-             */
-            segmentsT: {
-
-                set: function (value) {
-
-                    value = value || 24;
-
-                    if (this._segmentsT === value) {
-                        return;
-                    }
-
-                    if (value &lt; 0) {
-                        this.warn(&quot;negative segmentsT not allowed - will invert&quot;);
-                        value = value * -1;
-                    }
-
-                    this._segmentsT = value;
-
-                    /**
-                     * Fired whenever this Torus&#x27;s {{#crossLink &quot;Torus/segmentsT:property&quot;}}{{/crossLink}} property changes.
-                     * @event segmentsT
-                     * @type Number
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;segmentsT&quot;, this._segmentsT);
-
-                    this._torusDirty();
-                },
-
-                get: function () {
-                    return this._segmentsT;
+                    return this._radialSegments;
                 }
             },
 
             /**
-             * The Torus&#x27;s arc.
+             * The Cylinder&#x27;s height segments.
              *
-             * Fires a {{#crossLink &quot;Torus/arc:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;Cylinder/heightSegments:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property arc
-             * @default Math.PI * 2
+             * @property heightSegments
+             * @default 1
              * @type Number
              */
-            arc: {
+            heightSegments: {
 
                 set: function (value) {
 
-                    value = value || Math.PI * 2;
+                    value = value || 1;
 
-                    if (this._arc === value) {
+                    if (this._heightSegments === value) {
                         return;
                     }
 
                     if (value &lt; 0) {
-                        this.warn(&quot;negative arc not allowed - will invert&quot;);
+                        this.warn(&quot;negative heightSegments not allowed - will invert&quot;);
                         value = value * -1;
                     }
 
-                    this._arc = value;
+                    this._heightSegments = value;
 
                     /**
-                     * Fired whenever this Torus&#x27;s {{#crossLink &quot;Torus/arc:property&quot;}}{{/crossLink}} property changes.
-                     * @event arc
+                     * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/heightSegments:property&quot;}}{{/crossLink}} property changes.
+                     * @event heightSegments
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;arc&quot;, this._arc);
+                    this.fire(&quot;heightSegments&quot;, this._heightSegments);
 
-                    this._torusDirty();
+                    this._cylinderDirty();
                 },
 
                 get: function () {
-                    return this._arc;
+                    return this._heightSegments;
+                }
+            },
+
+            /**
+             * Indicates whether this Cylinder&#x27;s is open-ended.
+             *
+             * Fires a {{#crossLink &quot;Cylinder/openEnded:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property openEnded
+             * @default false
+             * @type Boolean
+             */
+            openEnded: {
+
+                set: function (value) {
+
+                    value = value === undefined ? false : value;
+
+                    if (this._openEnded === value) {
+                        return;
+                    }
+
+                    this._openEnded = value;
+
+                    /**
+                     * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/openEnded:property&quot;}}{{/crossLink}} property changes.
+                     * @event openEnded
+                     * @type Boolean
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;openEnded&quot;, this._openEnded);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._openEnded;
                 }
             }
         },
 
+
         _getJSON: function () {
             return {
                 // Don&#x27;t save lod
-                radius: this._radius,
-                tube: this._tube,
-                segmentsR: this._segmentsR,
-                segmentsT: this._segmentsT,
-                arc: this._arc
+                radiusTop: this._radiusTop,
+                radiusBottom: this._radiusBottom,
+                height: this._height,
+                radialSegments: this._radialSegments,
+                heightSegments: this._heightSegments,
+                openEnded: this._openEnded
             };
         }
     });

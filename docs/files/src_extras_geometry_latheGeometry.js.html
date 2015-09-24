@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/extras/geometry/sphere.js - xeoengine</title>
+    <title>src/extras/geometry/latheGeometry.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -176,12 +176,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/extras/geometry/sphere.js</h1>
+<h1 class="file-heading">File: src/extras/geometry/latheGeometry.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Sphere** defines spherical geometry for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **LatheGeometry** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that&#x27;s defined as the revolution of a profile about an exis.
 
  ## Example
 
@@ -189,19 +189,21 @@
 
  &#x60;&#x60;&#x60;&#x60;
 
- @class Sphere
+ @class LatheGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Sphere in the default
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this LatheGeometry in the default
  {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Sphere.
- @param [cfg.radius=1] {Number}
- @param [cfg.heightSegments=24] {Number}
- @param [cfg.widthSegments=18] {Number}
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this LatheGeometry.
+ @param [cfg.primitive=&quot;triangles&quot;] {String} The primitive type. Accepted values are &#x27;points&#x27;, &#x27;lines&#x27;, &#x27;line-loop&#x27;, &#x27;line-strip&#x27;, &#x27;triangles&#x27;, &#x27;triangle-strip&#x27; and &#x27;triangle-fan&#x27;.
+ @param [cfg.points=[]] Profile points.
+ @param [cfg.segments=4] {Number} Number of revolution segments.
+ @param [cfg.phiStart=0] {Number} Angle in degrees at which revolution starts.
+ @param [cfg.phiLength=360] {Number} Length of revolution in degrees.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -209,130 +211,154 @@
 
     &quot;use strict&quot;;
 
-    XEO.Sphere = XEO.Geometry.extend({
+    XEO.LatheGeometry = XEO.Geometry.extend({
 
-        type: &quot;XEO.Sphere&quot;,
+        type: &quot;XEO.LatheGeometry&quot;,
 
         _init: function (cfg) {
 
             this._super(cfg);
 
+            this.points = cfg.points;
+            this.segments = cfg.segments;
+            this.phiStart = cfg.phiStart;
+            this.phiLength = cfg.phiLength;
             this.lod = cfg.lod;
-            this.radius = cfg.radius;
-            this.heightSegments = cfg.heightSegments;
-            this.widthSegments = cfg.widthSegments;
+            this.autoNormals = cfg.autoNormals !== false;
         },
 
-        _sphereDirty: function () {
+        _latheDirty: function () {
             if (!this.__dirty) {
                 this.__dirty = true;
                 var self = this;
                 this.scene.once(&quot;tick2&quot;,
                     function () {
-                        self._buildSphere();
+                        self._buildLathe();
                         self.__dirty = false;
                     });
             }
         },
 
-        _buildSphere: function () {
-
-            var radius = this._radius;
-            var heightSegments = Math.floor(this._lod * this._heightSegments);
-            var widthSegments = Math.floor(this._lod * this._widthSegments);
-
-            if (heightSegments &lt; 18) {
-                heightSegments = 18;
-            }
-
-            if (widthSegments &lt; 18) {
-                widthSegments = 18;
-            }
+        _buildLathe: function () {
 
             var positions = [];
-            var normals = [];
             var uvs = [];
             var indices = [];
+            var segments = Math.floor(this._lod * this._segments);
+            if (segments &lt; 4) {
+                segments = 4;
+            }
+            var phiStart = this._phiStart * XEO.math.DEGTORAD;
+            var phiLength = this._phiLength * XEO.math.DEGTORAD;
+            var points = this._points;
+            var inversePointLength = 1.0 / ( points.length - 1 );
+            var inverseSegments = 1.0 / segments;
 
-            var i;
-            var j;
+            for (var i = 0, il = segments; i &lt;= il; i++) {
 
-            var theta;
-            var sinTheta;
-            var cosTheta;
+                var phi = phiStart + i * inverseSegments * phiLength;
 
-            var phi;
-            var sinPhi;
-            var cosPhi;
+                var c = Math.cos(phi);
+                var s = Math.sin(phi);
 
-            var x;
-            var y;
-            var z;
+                for (var j = 0, jl = points.length; j &lt; jl; j++) {
 
-            var u;
-            var v;
+                    var pt = points[j];
 
-            var first;
-            var second;
-
-            for (i = 0; i &lt;= heightSegments; i++) {
-
-                theta = i * Math.PI / heightSegments;
-                sinTheta = Math.sin(theta);
-                cosTheta = Math.cos(theta);
-
-                for (j = 0; j &lt;= widthSegments; j++) {
-
-                    phi = j * 2 * Math.PI / widthSegments;
-                    sinPhi = Math.sin(phi);
-                    cosPhi = Math.cos(phi);
-
-                    x = cosPhi * sinTheta;
-                    y = cosTheta;
-                    z = sinPhi * sinTheta;
-                    u = j / widthSegments;
-                    v = i / heightSegments;
-
-                    normals.push(x);
-                    normals.push(y);
-                    normals.push(z);
-
-                    uvs.push(u);
-                    uvs.push(v);
-
-                    positions.push(radius * x);
-                    positions.push(radius * y);
-                    positions.push(radius * z);
+                    positions.push(c * pt[0] - s * pt[1]);
+                    positions.push(s * pt[0] + c * pt[1]);
+                    positions.push(pt[2]);
                 }
             }
 
-            for (i = 0; i &lt; heightSegments; i++) {
-                for (j = 0; j &lt; widthSegments; j++) {
+            var np = points.length;
 
-                    first = (i * (widthSegments + 1)) + j;
-                    second = first + widthSegments + 1;
+            for (var i = 0, il = segments; i &lt; il; i++) {
 
-                    indices.push(first + 1);
-                    indices.push(second + 1);
-                    indices.push(second);
-                    indices.push(first + 1);
-                    indices.push(second);
-                    indices.push(first);
+                for (var j = 0, jl = points.length - 1; j &lt; jl; j++) {
+
+                    var base = j + np * i;
+                    var a = base;
+                    var b = base + np;
+                    var c = base + 1 + np;
+                    var d = base + 1;
+
+                    var u0 = i * inverseSegments;
+                    var v0 = j * inversePointLength;
+                    var u1 = u0 + inverseSegments;
+                    var v1 = v0 + inversePointLength;
+
+                    indices.push(a);
+                    indices.push(b);
+                    indices.push(d);
+
+                    //uvs.push(u0);
+                    //uvs.push(v0);
+                    //
+                    //uvs.push(u1);
+                    //uvs.push(v0);
+                    //
+                    //uvs.push(u0);
+                    //uvs.push(v1);
+
+                    indices.push(b);
+                    indices.push(c);
+                    indices.push(d);
+
+                    //uvs.push(u1);
+                    //uvs.push(v0);
+                    //
+                    //uvs.push(u1);
+                    //uvs.push(v1);
+                    //
+                    //uvs.push(u0);
+                    //uvs.push(v1);
                 }
             }
 
             this.positions = positions;
-            this.normals = normals;
-            this.uv = uvs;
+            this.normals = positions;
+            this.uv = positions;
             this.indices = indices;
         },
 
         _props: {
 
             /**
-             * The Sphere&#x27;s level-of-detail factor.
+             Profile points on this LatheGeometry.
+
+             Fires a {{#crossLink &quot;LatheGeometry/points:event&quot;}}{{/crossLink}} event on change.
+
+             @property points
+             @default []
+             @type Array(Number)
+             */
+            points: {
+
+                set: function (value) {
+
+                    this._points = value || [];
+
+                    this._latheDirty();
+
+                    /**
+                     * Fired whenever this LatheGeometry&#x27;s
+                     * {{#crossLink &quot;LatheGeometry/points:property&quot;}}{{/crossLink}} property changes.
+                     * @event points
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;points&quot;, this._points);
+                },
+
+                get: function () {
+                    return this._points;
+                }
+            },
+
+            /**
+             * The LatheGeometry&#x27;s level-of-detail factor.
              *
-             * Fires a {{#crossLink &quot;Sphere/lod:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;LatheGeometry/lod:event&quot;}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -355,15 +381,15 @@
 
                     this._lod = value;
 
+                    this._latheDirty();
+
                     /**
-                     * Fired whenever this Sphere&#x27;s {{#crossLink &quot;Sphere/lod:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this LatheGeometry&#x27;s {{#crossLink &quot;LatheGeometry/lod:property&quot;}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;lod&quot;, this._lod);
-
-                    this._sphereDirty();
                 },
 
                 get: function () {
@@ -372,139 +398,138 @@
             },
 
             /**
-             * The Sphere&#x27;s radius.
+             * Angle at which this LatheGeometry&#x27;s rotation starts.
              *
-             * Fires a {{#crossLink &quot;Sphere/radius:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;LatheGeometry/phiStart:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property radius
+             * @property phiStart
+             * @default 0
+             * @type Number
+             */
+            phiStart: {
+
+                set: function (value) {
+
+                    value = value || 0;
+
+                    if (this._phiStart === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative phiStart not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._phiStart = value;
+
+                    this._latheDirty();
+
+                    /**
+                     * Fired whenever this LatheGeometry&#x27;s {{#crossLink &quot;LatheGeometry/phiStart:property&quot;}}{{/crossLink}} property changes.
+                     * @event phiStart
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;phiStart&quot;, this._phiStart);
+                },
+
+                get: function () {
+                    return this._phiStart;
+                }
+            },
+
+            /**
+             * Angle at which this LatheGeometry&#x27;s rotation starts.
+             *
+             * Fires a {{#crossLink &quot;LatheGeometry/phiLength:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property phiLength
              * @default 1
              * @type Number
              */
-            radius: {
+            phiLength: {
 
                 set: function (value) {
 
                     value = value || 1;
 
-                    if (this._radius === value) {
+                    if (this._phiLength === value) {
                         return;
                     }
 
                     if (value &lt; 0) {
-                        this.warn(&quot;negative radius not allowed - will invert&quot;);
+                        this.warn(&quot;negative phiLength not allowed - will invert&quot;);
                         value = value * -1;
                     }
 
-                    this._radius = value;
+                    this._phiLength = value;
+
+                    this._latheDirty();
 
                     /**
-                     * Fired whenever this Sphere&#x27;s {{#crossLink &quot;Sphere/radius:property&quot;}}{{/crossLink}} property changes.
-                     * @event radius
+                     * Fired whenever this LatheGeometry&#x27;s {{#crossLink &quot;LatheGeometry/phiLength:property&quot;}}{{/crossLink}} property changes.
+                     * @event phiLength
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;radius&quot;, this._radius);
-
-                    this._sphereDirty();
+                    this.fire(&quot;phiLength&quot;, this._phiLength);
                 },
 
                 get: function () {
-                    return this._radius;
-                }
-            },
-
-
-            /**
-             * The Sphere&#x27;s number of latitude bands.
-             *
-             * Fires a {{#crossLink &quot;Sphere/heightSegments:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property heightSegments
-             * @default 18
-             * @type Number
-             */
-            heightSegments: {
-
-                set: function (value) {
-
-                    value = value || 18;
-
-                    if (this._heightSegments === value) {
-                        return;
-                    }
-
-                    if (value &lt; 0) {
-                        this.warn(&quot;negative heightSegments not allowed - will invert&quot;);
-                        value = value * -1;
-                    }
-
-                    this._heightSegments = value;
-
-                    /**
-                     * Fired whenever this Sphere&#x27;s {{#crossLink &quot;Sphere/heightSegments:property&quot;}}{{/crossLink}} property changes.
-                     * @event heightSegments
-                     * @type Number
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;heightSegments&quot;, this._heightSegments);
-
-                    this._sphereDirty();
-                },
-
-                get: function () {
-                    return this._heightSegments;
+                    return this._phiLength;
                 }
             },
 
             /**
-             * The Sphere&#x27;s number of longitude bands.
+             * The LatheGeometry&#x27;s number of segments of rotation.
              *
-             * Fires a {{#crossLink &quot;Sphere/widthSegments:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;LatheGeometry/segments:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property widthSegments
-             * @default 24
+             * @property segments
+             * @default 4
              * @type Number
              */
-            widthSegments: {
+            segments: {
 
                 set: function (value) {
 
-                    value = value || 24;
+                    value = Math.floor(value || 4);
 
-                    if (this._widthSegments === value) {
+                    if (this._segments === value) {
                         return;
                     }
 
                     if (value &lt; 0) {
-                        this.warn(&quot;negative widthSegments not allowed - will invert&quot;);
+                        this.warn(&quot;negative segments not allowed - will invert&quot;);
                         value = value * -1;
                     }
 
-                    this._widthSegments = value;
+                    this._segments = value;
+
+                    this._latheDirty();
 
                     /**
-                     * Fired whenever this Sphere&#x27;s {{#crossLink &quot;Sphere/widthSegments:property&quot;}}{{/crossLink}} property changes.
-                     * @event widthSegments
+                     * Fired whenever this LatheGeometry&#x27;s {{#crossLink &quot;LatheGeometry/segments:property&quot;}}{{/crossLink}} property changes.
+                     * @event segments
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;widthSegments&quot;, this._widthSegments);
-
-                    this._sphereDirty();
+                    this.fire(&quot;segments&quot;, this._segments);
                 },
 
                 get: function () {
-                    return this._widthSegments;
+                    return this._segments;
                 }
             }
         },
 
         _getJSON: function () {
             return {
-                // Don&#x27;t save lod
-                radius: this._radius,
-                heightSegments: this._heightSegments,
-                widthSegments: this._widthSegments
+                points: this._points,
+                phiStart: this._phiStart,
+                phiLength: this._phiLength,
+                segments: this._segments
             };
         }
     });

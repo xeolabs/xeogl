@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/extras/geometry/heightmap.js - xeoengine</title>
+    <title>src/extras/geometry/torusGeometry.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -176,12 +176,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/extras/geometry/heightmap.js</h1>
+<h1 class="file-heading">File: src/extras/geometry/torusGeometry.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Heightmap** defines spherical geometry for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ A **TorusGeometry** defines toroid geometry for attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
 
  ## Example
 
@@ -189,23 +189,22 @@
 
  &#x60;&#x60;&#x60;&#x60;
 
- @class Heightmap
+ @class TorusGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Heightmap in the default
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this TorusGeometry in the default
  {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Heightmap.
- @param [cfg.src=undefined] {String} Path to an image file to source this Heightmap from.
- @param [cfg.image=undefined] {HTMLImageElement} An HTML DOM Image object to source this Heightmap from.
- @param [cfg.xSize=1] {Number} Dimension on the X-axis.
- @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
- @param [cfg.zSize=0.25] {Number} Dimension (height) on the Z-axis.
- @param [cfg.xSegments=1] {Number} Number of segments on the X-axis (width).
- @param [cfg.ySegments=1] {Number} Number of segments on the Y-axis (depth).
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TorusGeometry.
+ @param [cfg.primitive=&quot;triangles&quot;] {String} The primitive type. Accepted values are &#x27;points&#x27;, &#x27;lines&#x27;, &#x27;line-loop&#x27;, &#x27;line-strip&#x27;, &#x27;triangles&#x27;, &#x27;triangle-strip&#x27; and &#x27;triangle-fan&#x27;.
+ @param [cfg.radius=1] {Number}
+ @param [cfg.tube=0.3] {Number}
+ @param [cfg.segmentsR=32] {Number}
+ @param [cfg.segmentsT=24] {Number}
+ @param [cfg.arc=Math.PI / 2.0] {Number}
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -213,282 +212,131 @@
 
     &quot;use strict&quot;;
 
-    XEO.Heightmap = XEO.Geometry.extend({
+    XEO.TorusGeometry = XEO.Geometry.extend({
 
-        type: &quot;XEO.Heightmap&quot;,
+        type: &quot;XEO.TorusGeometry&quot;,
 
         _init: function (cfg) {
 
             this._super(cfg);
 
-            this._image = null; // Cached HTML image element
-            this._imageData = null; // Cached image data
-
-            this._srcDirty = false;
-            this._imageDirty = false;
-            this._geometryDirty = false;
-
-            // Set component properties
-
-            //  this.autoNormals = true;
-
-            if (cfg.src) {
-                this.src = cfg.src;
-
-            } else if (cfg.image) {
-                this.image = cfg.image;
-            }
-
-            this.xSize = cfg.xSize;
-            this.ySize = cfg.ySize;
-            this.zSize = cfg.zSize;
-
-            this.xSegments = cfg.xSegments;
-            this.ySegments = cfg.ySegments;
-
             this.lod = cfg.lod;
-
-            this.autoNormals = cfg.autoNormals !== false;
+            this.radius = cfg.radius;
+            this.tube = cfg.tube;
+            this.segmentsR = cfg.segmentsR;
+            this.segmentsT = cfg.segmentsT;
+            this.arc = cfg.arc;
         },
 
-        _heightmapDirty: function () {
+        _torusDirty: function () {
             if (!this.__dirty) {
                 this.__dirty = true;
                 var self = this;
                 this.scene.once(&quot;tick2&quot;,
                     function () {
-                        self._buildHeightmap();
+                        self._buildTorus();
                         self.__dirty = false;
                     });
             }
         },
 
-        _buildHeightmap: function () {
+        _buildTorus: function () {
 
-            if (this._srcDirty) {
+            var radius = this._radius;
+            var tube = this._tube;
+            var segmentsR = Math.floor(this._segmentsR * this._lod);
+            var segmentsT = Math.floor(this._segmentsT * this._lod);
+            var arc = this._arc;
 
-                // src has updated
+            if (segmentsR &lt; 4) {
+                segmentsR = 4;
+            }
 
-                if (this._src) {
+            if (segmentsT &lt; 4) {
+                segmentsT = 4;
+            }
 
-                    // Load new image file
+            var positions = [];
+            var normals = [];
+            var uvs = [];
+            var indices = [];
 
-                    this._loadSrc(this._src);
+            var u;
+            var v;
+            var centerX;
+            var centerY;
+            var centerZ = 0;
+            var x;
+            var y;
+            var z;
+            var vec;
 
-                    // Now need to get image data
+            var i;
+            var j;
 
-                    this._srcDirty = false;
-                    this._imageDirty = true;
+            for (j = 0; j &lt;= segmentsR; j++) {
+                for (i = 0; i &lt;= segmentsT; i++) {
 
-                    return;
+                    u = i / segmentsT * arc;
+                    v = j / segmentsR * Math.PI * 2;
+
+                    centerX = radius * Math.cos(u);
+                    centerY = radius * Math.sin(u);
+
+                    x = (radius + tube * Math.cos(v) ) * Math.cos(u);
+                    y = (radius + tube * Math.cos(v) ) * Math.sin(u);
+                    z = tube * Math.sin(v);
+
+                    positions.push(x);
+                    positions.push(y);
+                    positions.push(z);
+
+                    uvs.push(i / segmentsT);
+                    uvs.push(1 - j / segmentsR);
+
+                    vec = XEO.math.normalizeVec3(XEO.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
+
+                    normals.push(vec[0]);
+                    normals.push(vec[1]);
+                    normals.push(vec[2]);
                 }
             }
 
-            if (this._imageDirty) {
+            var a;
+            var b;
+            var c;
+            var d;
 
-                // Image data has updated
+            for (j = 1; j &lt;= segmentsR; j++) {
+                for (i = 1; i &lt;= segmentsT; i++) {
 
-                if (!this._image) {
-                    return;
+                    a = ( segmentsT + 1 ) * j + i - 1;
+                    b = ( segmentsT + 1 ) * ( j - 1 ) + i - 1;
+                    c = ( segmentsT + 1 ) * ( j - 1 ) + i;
+                    d = ( segmentsT + 1 ) * j + i;
+
+                    indices.push(a);
+                    indices.push(b);
+                    indices.push(c);
+
+                    indices.push(c);
+                    indices.push(d);
+                    indices.push(a);
                 }
-
-                var element = window.document.createElement(&#x27;canvas&#x27;);
-                element.width = this._image.width;
-                element.height = this._image.height;
-                var ctx = element.getContext(&quot;2d&quot;);
-                ctx.drawImage(this._image, 0, 0);
-                this._imageData = ctx.getImageData(0, 0, this._image.width, this._image.height).data;
-                //   element.parentNode.removeChild(element);
-
-                // Now need to rebuild geometry
-
-                this._imageDirty = false;
-                this._geometryDirty = true;
             }
 
-            if (this._geometryDirty) {
-
-                // Geometry needs rebuild
-
-                if (!this._image || !this._imageData) {
-                    return;
-                }
-
-                var imageWidth = this._image.width;
-                var imageHeight = this._image.height;
-
-                var xSegments = Math.floor(this._lod * this._xSegments);
-                var ySegments = Math.floor(this._lod * this._ySegments);
-
-                if (xSegments &lt; 4) {
-                    xSegments = 4;
-                }
-
-                if (ySegments &lt; 4) {
-                    ySegments = 4;
-                }
-
-                var width = this._xSize;
-                var height = this._ySize;
-                var depth = this._zSize;
-
-                var halfWidth = width / 2;
-                var halfHeight = height / 2;
-
-                var gridX = Math.floor(xSegments) || 1;
-                var gridY = Math.floor(ySegments) || 1;
-
-                var gridX1 = gridX + 1;
-                var gridY1 = gridY + 1;
-
-                var segmentWidth = width / gridX;
-                var segmentHeight = height / gridY;
-
-                var positions = new Float32Array(gridX1 * gridY1 * 3);
-                var normals = new Float32Array(gridX1 * gridY1 * 3);
-                var uvs = new Float32Array(gridX1 * gridY1 * 2);
-
-                var offset = 0;
-                var offset2 = 0;
-
-                var imgX;
-                var imgY;
-
-                var x;
-                var y;
-                var z;
-
-                for (var iy = 0; iy &lt; gridY1; iy++) {
-
-                    y = iy * segmentHeight - halfHeight;
-
-                    for (var ix = 0; ix &lt; gridX1; ix++) {
-
-                        x = ix * segmentWidth - halfWidth;
-
-                        var x2 = ix * segmentWidth;
-                        var y2 = iy * segmentHeight;
-
-                        imgX = Math.round((x2 / width) * (imageWidth - 1));
-                        imgY = Math.round((y2 / height) * (imageHeight - 1));
-
-                        z = (this._imageData[(imageWidth * imgY + imgX) * 4]) / 255 * depth;
-
-                        if (z == undefined || isNaN(z)) {
-                            z = 0;
-                        }
-
-                        positions[offset] = x;
-                        positions[offset + 1] = -y;
-                        positions[offset + 2] = -z;
-
-                        normals[offset + 2] = -1;
-
-                        uvs[offset2] = (gridX -ix) / gridX;
-                        uvs[offset2 + 1] = 1 - ( iy / gridY );
-
-                        offset += 3;
-                        offset2 += 2;
-
-                    }
-                }
-
-                offset = 0;
-
-                var indices = new ( ( positions.length / 3 ) &gt; 65535 ? Uint32Array : Uint16Array )(gridX * gridY * 6);
-
-                for (var iy = 0; iy &lt; gridY; iy++) {
-
-                    for (var ix = 0; ix &lt; gridX; ix++) {
-
-                        var a = ix + gridX1 * iy;
-                        var b = ix + gridX1 * ( iy + 1 );
-                        var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
-                        var d = ( ix + 1 ) + gridX1 * iy;
-
-                        indices[offset] = d;
-                        indices[offset + 1] = b;
-                        indices[offset + 2] = a;
-
-                        indices[offset + 3] = d;
-                        indices[offset + 4] = c;
-                        indices[offset + 5] = b;
-
-                        offset += 6;
-                    }
-                }
-
-
-                this.positions = positions;
-                this.normals = positions;
-                this.uv = uvs;
-                this.indices = indices;
-
-                this._geometryDirty = false;
-            }
-        },
-
-        _loadSrc: function (src) {
-
-            //var task = this.scene.tasks.create({
-            //    description: &quot;Loading heightmap image&quot;
-            //});
-
-            var self = this;
-
-            var image = new Image();
-
-            image.onload = function () {
-
-                if (self._src === src) {
-
-                    // Ensure data source was not changed while we were loading
-
-                    // Keep self._src because that&#x27;s where we loaded the image
-                    // from, and we may need to save that in JSON later
-
-                    self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
-
-                    self._srcDirty = false;
-                    self._imageDirty = true;
-                    self._geometryDirty = true;
-
-                    self._heightmapDirty();
-
-                    /**
-                     * Fired whenever this Heightmap&#x27;s  {{#crossLink &quot;Heightmap/image:property&quot;}}{{/crossLink}} property changes.
-                     * @event image
-                     * @param value {HTML Image} The property&#x27;s new value
-                     */
-                    self.fire(&quot;image&quot;, self._image);
-                }
-
-                ///    task.setCompleted();
-            };
-
-            image.onerror = function () {
-                //task.setFailed();
-            };
-
-            if (src.indexOf(&quot;data&quot;) === 0) {
-
-                // Image data
-                image.src = src;
-
-            } else {
-
-                // Image file
-                image.crossOrigin = &quot;Anonymous&quot;;
-                image.src = src;
-            }
+            this.positions = positions;
+            this.normals = normals;
+            this.uv = uvs;
+            this.indices = indices;
         },
 
         _props: {
 
             /**
-             * The Heightmap&#x27;s level-of-detail factor.
+             * The TorusGeometry&#x27;s level-of-detail factor.
              *
-             * Fires a {{#crossLink &quot;Heightmap/lod:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;TorusGeometry/lod:event&quot;}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -511,17 +359,15 @@
 
                     this._lod = value;
 
-                    this._geometryDirty = true;
-
-                    this._heightmapDirty();
-
                     /**
-                     * Fired whenever this Heightmap&#x27;s {{#crossLink &quot;Heightmap/lod:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/lod:property&quot;}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;lod&quot;, this._lod);
+
+                    this._torusDirty();
                 },
 
                 get: function () {
@@ -530,327 +376,227 @@
             },
 
             /**
-             * Indicates an HTML DOM Image object to source this Heightmap from.
+             * The TorusGeometry&#x27;s radius.
              *
-             * Alternatively, you could indicate the source via the
-             * {{#crossLink &quot;Heightmap/src:property&quot;}}{{/crossLink}} property.
+             * Fires a {{#crossLink &quot;TorusGeometry/radius:event&quot;}}{{/crossLink}} event on change.
              *
-             * Fires an {{#crossLink &quot;Heightmap/image:event&quot;}}{{/crossLink}} event on change.
-             *
-             * Sets the {{#crossLink &quot;Heightmap/src:property&quot;}}{{/crossLink}} to null.
-             *
-             * @property image
-             * @default null
-             * @type {HTMLImageElement}
-             */
-            image: {
-
-                set: function (value) {
-
-                    this._image = value ? XEO.renderer.webgl.ensureImageSizePowerOfTwo(value) : value;
-                    this._src = null;
-
-                    this._srcDirty = false;
-                    this._imageDirty = true;
-                    this._geometryDirty = true;
-
-                    this._heightmapDirty();
-
-                    /**
-                     * Fired whenever this Heightmap&#x27;s  {{#crossLink &quot;Heightmap/image:property&quot;}}{{/crossLink}} property changes.
-                     * @event image
-                     * @param value {HTML Image} The property&#x27;s new value
-                     */
-                    this.fire(&quot;image&quot;, this._image);
-                },
-
-                get: function () {
-                    return this._state.image;
-                }
-            },
-
-            /**
-             * Indicates a path to an image file to source this Heightmap from.
-             *
-             * Alternatively, you could indicate the source via the
-             * {{#crossLink &quot;Heightmap/image:property&quot;}}{{/crossLink}} property.
-             *
-             * Fires a {{#crossLink &quot;Heightmap/src:event&quot;}}{{/crossLink}} event on change.
-             *
-             * Sets the {{#crossLink &quot;Heightmap/image:property&quot;}}{{/crossLink}} to null.
-             *
-             * @property src
-             * @default null
-             * @type String
-             */
-            src: {
-
-                set: function (value) {
-
-                    this._image = null;
-                    this._src = value;
-
-                    this._srcDirty = true;
-                    this._imageDirty = true;
-                    this._geometryDirty = true;
-
-                    this._heightmapDirty();
-
-                    /**
-                     * Fired whenever this Heightmap&#x27;s {{#crossLink &quot;Heightmap/src:property&quot;}}{{/crossLink}} property changes.
-                     * @event src
-                     * @param value The property&#x27;s new value
-                     * @type String
-                     */
-                    this.fire(&quot;src&quot;, this._src);
-                },
-
-                get: function () {
-                    return this._src;
-                }
-            },
-
-            /**
-             * The Heightmap&#x27;s dimension on the X-axis.
-             *
-             * Fires a {{#crossLink &quot;Heightmap/xSize:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property xSize
+             * @property radius
              * @default 1
              * @type Number
              */
-            xSize: {
+            radius: {
 
                 set: function (value) {
 
                     value = value || 1;
 
-                    if (this._xSize === value) {
+                    if (this._radius === value) {
                         return;
                     }
 
                     if (value &lt; 0) {
-                        this.warn(&quot;negative xSize not allowed - will invert&quot;);
+                        this.warn(&quot;negative radius not allowed - will invert&quot;);
                         value = value * -1;
                     }
 
-                    this._xSize = value;
-
-                    this._geometryDirty = true;
-
-                    this._heightmapDirty();
+                    this._radius = value;
 
                     /**
-                     * Fired whenever this Heightmap&#x27;s {{#crossLink &quot;Heightmap/xSize:property&quot;}}{{/crossLink}} property changes.
-                     * @event xSize
+                     * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/radius:property&quot;}}{{/crossLink}} property changes.
+                     * @event radius
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;xSize&quot;, this._xSize);
+                    this.fire(&quot;radius&quot;, this._radius);
+
+                    this._torusDirty();
                 },
 
                 get: function () {
-                    return this._xSize;
+                    return this._radius;
+                }
+            },
+
+
+            /**
+             * The TorusGeometry&#x27;s tube.
+             *
+             * Fires a {{#crossLink &quot;TorusGeometry/tube:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property tube
+             * @default 0.3
+             * @type Number
+             */
+            tube: {
+
+                set: function (value) {
+
+                    value = value || 0.3;
+
+                    if (this._tube === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative tube not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._tube = value;
+
+                    /**
+                     * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/tube:property&quot;}}{{/crossLink}} property changes.
+                     * @event tube
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;tube&quot;, this._tube);
+
+                    this._torusDirty();
+                },
+
+                get: function () {
+                    return this._tube;
                 }
             },
 
             /**
-             * The Heightmap&#x27;s dimension on the Y-axis.
+             * The TorusGeometry&#x27;s segmentsR.
              *
-             * Fires a {{#crossLink &quot;Heightmap/ySize:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;TorusGeometry/segmentsR:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property ySize
-             * @default 1.0
+             * @property segmentsR
+             * @default 32
              * @type Number
              */
-            ySize: {
+            segmentsR: {
 
                 set: function (value) {
 
-                    value = value || 1.0;
+                    value = value || 32;
 
-                    if (this._ySize === value) {
+                    if (this._segmentsR === value) {
                         return;
                     }
 
                     if (value &lt; 0) {
-                        this.warn(&quot;negative ySize not allowed - will invert&quot;);
+                        this.warn(&quot;negative segmentsR not allowed - will invert&quot;);
                         value = value * -1;
                     }
 
-                    this._ySize = value;
-
-                    this._geometryDirty = true;
-
-                    this._heightmapDirty();
+                    this._segmentsR = value;
 
                     /**
-                     * Fired whenever this Heightmap&#x27;s {{#crossLink &quot;Heightmap/ySize:property&quot;}}{{/crossLink}} property changes.
-                     * @event ySize
+                     * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/segmentsR:property&quot;}}{{/crossLink}} property changes.
+                     * @event segmentsR
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;ySize&quot;, this._ySize);
+                    this.fire(&quot;segmentsR&quot;, this._segmentsR);
+
+                    this._torusDirty();
                 },
 
                 get: function () {
-                    return this._ySize;
+                    return this._segmentsR;
+                }
+            },
+
+
+            /**
+             * The TorusGeometry&#x27;s segmentsT.
+             *
+             * Fires a {{#crossLink &quot;TorusGeometry/segmentsT:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property segmentsT
+             * @default 24
+             * @type Number
+             */
+            segmentsT: {
+
+                set: function (value) {
+
+                    value = value || 24;
+
+                    if (this._segmentsT === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative segmentsT not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._segmentsT = value;
+
+                    /**
+                     * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/segmentsT:property&quot;}}{{/crossLink}} property changes.
+                     * @event segmentsT
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;segmentsT&quot;, this._segmentsT);
+
+                    this._torusDirty();
+                },
+
+                get: function () {
+                    return this._segmentsT;
                 }
             },
 
             /**
-             * The Heightmap&#x27;s dimension (height) on the Z-axis.
+             * The TorusGeometry&#x27;s arc.
              *
-             * Fires a {{#crossLink &quot;Heightmap/zSize:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;TorusGeometry/arc:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property zSize
-             * @default 0.25
+             * @property arc
+             * @default Math.PI * 2
              * @type Number
              */
-            zSize: {
+            arc: {
 
                 set: function (value) {
 
-                    value = value || 0.25;
+                    value = value || Math.PI * 2;
 
-                    if (this._zSize === value) {
+                    if (this._arc === value) {
                         return;
                     }
 
                     if (value &lt; 0) {
-                        this.warn(&quot;negative zSize not allowed - will invert&quot;);
+                        this.warn(&quot;negative arc not allowed - will invert&quot;);
                         value = value * -1;
                     }
 
-                    this._zSize = value;
-
-                    this._geometryDirty = true;
-
-                    this._heightmapDirty();
+                    this._arc = value;
 
                     /**
-                     * Fired whenever this Heightmap&#x27;s {{#crossLink &quot;Heightmap/zSize:property&quot;}}{{/crossLink}} property changes.
-                     * @event zSize
+                     * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/arc:property&quot;}}{{/crossLink}} property changes.
+                     * @event arc
                      * @type Number
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;zSize&quot;, this._zSize);
+                    this.fire(&quot;arc&quot;, this._arc);
+
+                    this._torusDirty();
                 },
 
                 get: function () {
-                    return this._zSize;
-                }
-            },
-
-            /**
-             * The Heightmap&#x27;s number of segments on the X-axis.
-             *
-             * Fires a {{#crossLink &quot;Heightmap/xSegments:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property xSegments
-             * @default 100
-             * @type Number
-             */
-            xSegments: {
-
-                set: function (value) {
-
-                    value = value || 100;
-
-                    if (this._xSegments === value) {
-                        return;
-                    }
-
-                    if (value &lt; 0) {
-                        this.warn(&quot;negative xSegments not allowed - will invert&quot;);
-                        value = value * -1;
-                    }
-
-                    this._xSegments = value;
-
-                    this._geometryDirty = true;
-
-                    this._heightmapDirty();
-
-                    /**
-                     * Fired whenever this Heightmap&#x27;s {{#crossLink &quot;Heightmap/xSegments:property&quot;}}{{/crossLink}} property changes.
-                     * @event xSegments
-                     * @type Number
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;xSegments&quot;, this._xSegments);
-                },
-
-                get: function () {
-                    return this._xSegments;
-                }
-            },
-
-            /**
-             * The Heightmap&#x27;s number of segments on the Y-axis.
-             *
-             * Fires a {{#crossLink &quot;Heightmap/ySegments:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property ySegments
-             * @default 100
-             * @type Number
-             */
-            ySegments: {
-
-                set: function (value) {
-
-                    value = value || 100;
-
-                    if (this._ySegments === value) {
-                        return;
-                    }
-
-                    if (value &lt; 0) {
-                        this.warn(&quot;negative ySegments not allowed - will invert&quot;);
-                        value = value * -1;
-                    }
-
-                    this._ySegments = value;
-
-                    this._geometryDirty = true;
-
-                    this._heightmapDirty();
-
-                    /**
-                     * Fired whenever this Heightmap&#x27;s {{#crossLink &quot;Heightmap/ySegments:property&quot;}}{{/crossLink}} property changes.
-                     * @event ySegments
-                     * @type Number
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;ySegments&quot;, this._ySegments);
-                },
-
-                get: function () {
-                    return this._ySegments;
+                    return this._arc;
                 }
             }
         },
 
         _getJSON: function () {
-
-            var json = {
-
-                xSize: this._xSize,
-                ySize: this._ySize,
-                zSize: this._zSize,
-
-                xSegments: this._xSegments,
-                ySegments: this._ySegments
+            return {
+                // Don&#x27;t save lod
+                radius: this._radius,
+                tube: this._tube,
+                segmentsR: this._segmentsR,
+                segmentsT: this._segmentsT,
+                arc: this._arc
             };
-
-            if (this._src) {
-                json.src = this._src;
-
-            } else if (this._image) {
-                // TODO: json._image = &lt;image data&gt;
-            }
-
-            return json;
         }
     });
 

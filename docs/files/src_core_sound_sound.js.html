@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -228,7 +228,7 @@
  // Sound with color and intensity, pointing along
  // the negative diagonal within the View coordinate system
  var dirLight = new XEO.Sound(scene, {
-    dir:         [-1, -1, -1],
+    volume:         [-1, -1, -1],
     color:       [0.5, 0.7, 0.5],
     intensity:   1.0,
     space:      &quot;view&quot;  // Other option is &quot;world&quot;, for World-space
@@ -277,7 +277,7 @@
  @param [cfg] {*} The Sound configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Sound.
- @param [cfg.dir=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.
+ @param [cfg.volume=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.
  @param [cfg.color=[0.7, 0.7, 0.8 ]] {Array(Number)} The color of this Sound.
  @param [cfg.intensity=1.0 ] {Number} The intensity of this Sound.
  @param [cfg.space=&quot;view&quot;] {String} The coordinate system the Sound is defined in - &quot;view&quot; or &quot;space&quot;.
@@ -294,171 +294,249 @@
 
         _init: function (cfg) {
 
-            this._state = {
-                type: &quot;dir&quot;,
-                dir: [0,0,-1],
-                color: [0.7, 0.7, 0.8],
-                intensity: 1.0,
-                space: &quot;view&quot;
-            };
+            this._playing = false;
 
-            this.dir = cfg.dir;
-            this.color = cfg.color;
-            this.intensity = cfg.intensity;
+            this.src = cfg.src;
+            this.volume = cfg.volume;
+            this.loop = cfg.loop;
+            this.refDistance = cfg.refDistance;
+            this.rolloffFactor = cfg.rolloffFactor;
             this.space = cfg.space;
         },
 
         _props: {
 
             /**
-             The direction of this Sound.
+             The src of this Sound.
 
-             Fires a {{#crossLink &quot;Sound/dir:event&quot;}}{{/crossLink}} event on change.
+             Fires a {{#crossLink &quot;Sound/src:event&quot;}}{{/crossLink}} event on change.
 
-             @property dir
-             @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @property src
+             @default null
+             @type String
              */
-            dir: {
+            src: {
 
                 set: function (value) {
 
-                    value = value || [ 1.0, 1.0, 1.0 ];
+                    this._src = value;
 
-                    var dir = this._state.dir;
+                    var scope = this;
 
-                    dir[0] = value[0];
-                    dir[1] = value[1];
-                    dir[2] = value[2];
+                    var request = new XMLHttpRequest();
+                    request.open( &#x27;GET&#x27;, file, true );
+                    request.responseType = &#x27;arraybuffer&#x27;;
+                    request.onload = function ( e ) {
 
-                    this._renderer.imageDirty = true;
+                        scope.context.decodeAudioData( this.response, function ( buffer ) {
+
+                            scope.source.buffer = buffer;
+
+                            if( scope.autoplay ) scope.play();
+
+                        } );
+
+                    };
+                    request.send();
+
 
                     /**
-                     * Fired whenever this Sound&#x27;s  {{#crossLink &quot;Sound/dir:property&quot;}}{{/crossLink}} property changes.
-                     * @event dir
+                     * Fired whenever this Sound&#x27;s  {{#crossLink &quot;Sound/src:property&quot;}}{{/crossLink}} property changes.
+                     * @event src
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;dir&quot;, dir);
+                    this.fire(&quot;src&quot;, this._src);
                 },
 
                 get: function () {
-                    return this._state.dir;
+                    return this._src;
                 }
             },
-
+            
             /**
-             The color of this Sound.
+             The volume of this Sound.
 
-             Fires a {{#crossLink &quot;Sound/color:event&quot;}}{{/crossLink}} event on change.
+             Fires a {{#crossLink &quot;Sound/volume:event&quot;}}{{/crossLink}} event on change.
 
-             @property color
-             @default [0.7, 0.7, 0.8]
-             @type Array(Number)
-             */
-            color: {
-
-                set: function (value) {
-
-                    value = value || [0.7, 0.7, 0.8 ];
-
-                    var color = this._state.color;
-
-                    color[0] = value[0];
-                    color[1] = value[1];
-                    color[2] = value[2];
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this Sound&#x27;s  {{#crossLink &quot;Sound/color:property&quot;}}{{/crossLink}} property changes.
-                     * @event color
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;color&quot;, color);
-                },
-
-                get: function () {
-                    return this._state.color;
-                }
-            },
-
-            /**
-             The intensity of this Sound.
-
-             Fires a {{#crossLink &quot;Sound/intensity:event&quot;}}{{/crossLink}} event on change.
-
-             @property intensity
+             @property volume
              @default 1.0
              @type Number
              */
-            intensity: {
+            volume: {
 
                 set: function (value) {
 
-                    value = value !== undefined ? value :  1.0;
+                    value = value !== undefined ? value : 1.0;
 
-                    this._state.intensity = value;
+                    this._volume = value;
 
-                    this._renderer.imageDirty = true;
+                    this._gain.gain.value = value;
 
                     /**
-                     * Fired whenever this Sound&#x27;s  {{#crossLink &quot;Sound/intensity:property&quot;}}{{/crossLink}} property changes.
-                     * @event intensity
+                     * Fired whenever this Sound&#x27;s  {{#crossLink &quot;Sound/volume:property&quot;}}{{/crossLink}} property changes.
+                     * @event volume
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;intensity&quot;, this._state.intensity);
+                    this.fire(&quot;volume&quot;, this._volume);
                 },
 
                 get: function () {
-                    return this._state.intensity;
+                    return this._volume;
                 }
             },
 
             /**
-             Specifies which coordinate space this Sound is in.
+             Indicates whether this sound loops.
 
-             Supported values are:
+             Fires a {{#crossLink &quot;Sound/loop:event&quot;}}{{/crossLink}} event on change.
 
-             &lt;ul&gt;
-             &lt;li&gt;&quot;view&quot; - View space, aligned within the view volume as if fixed to the viewer&#x27;s head&lt;/li&gt;
-             &lt;li&gt;&quot;world&quot; - World space, fixed within the world, moving within the view volume with respect to camera&lt;/li&gt;
-             &lt;/ul&gt;
-
-             Fires a {{#crossLink &quot;Sound/space:event&quot;}}{{/crossLink}} event on change.
-
-             @property space
-             @default &quot;view&quot;
-             @type String
+             @property loop
+             @default true
+             @type Boolean
              */
-            space: {
+            loop: {
 
                 set: function (value) {
 
-                    this._state.space = value || &quot;view&quot;;
+                    value = value !== undefined ? value : true;
 
-                    this.fire(&quot;dirty&quot;, true); // Need to rebuild shader
+                    this._loop = value;
+
+                    this._source.loop = value;
 
                     /**
-                     * Fired whenever this Sound&#x27;s {{#crossLink &quot;Sound/space:property&quot;}}{{/crossLink}} property changes.
-                     * @event space
+                     * Fired whenever this Sound&#x27;s  {{#crossLink &quot;Sound/loop:property&quot;}}{{/crossLink}} property changes.
+                     * @event loop
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;space&quot;, this._state.space);
+                    this.fire(&quot;loop&quot;, this._loop);
                 },
 
                 get: function () {
-                    return this._state.space;
+                    return this._loop;
+                }
+            },
+
+            /**
+             The roll-off factor of this Sound.
+
+             Fires a {{#crossLink &quot;Sound/rolloffFactor:event&quot;}}{{/crossLink}} event on change.
+
+             @property rolloffFactor
+             @default 1.0
+             @type Number
+             */
+            rolloffFactor: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1.0;
+
+                    this._rolloffFactor = value;
+
+                    this._gain.gain.value = value;
+
+                    /**
+                     * Fired whenever this Sound&#x27;s  {{#crossLink &quot;Sound/rolloffFactor:property&quot;}}{{/crossLink}} property changes.
+                     * @event rolloffFactor
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;rolloffFactor&quot;, this._rolloffFactor);
+                },
+
+                get: function () {
+                    return this._rolloffFactor;
+                }
+            },
+
+            /**
+             The reference distance of this Sound.
+
+             Fires a {{#crossLink &quot;Sound/refDistance:event&quot;}}{{/crossLink}} event on change.
+
+             @property refDistance
+             @default 1.0
+             @type Number
+             */
+            refDistance: {
+
+                set: function (value) {
+
+                    value = value !== undefined ? value : 1.0;
+
+                    this._refDistance = value;
+
+                    this._gain.gain.value = value;
+
+                    /**
+                     * Fired whenever this Sound&#x27;s  {{#crossLink &quot;Sound/refDistance:property&quot;}}{{/crossLink}} property changes.
+                     * @event refDistance
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;refDistance&quot;, this._refDistance);
+                },
+
+                get: function () {
+                    return this._refDistance;
+                }
+            },
+
+            /**
+             Indicates if this sound is playing.
+
+             Fires a {{#crossLink &quot;Sound/playing:event&quot;}}{{/crossLink}} event on change.
+
+             @property playing
+             @default 1.0
+             @type Number
+             @final
+             */
+            playing: {
+
+                get: function () {
+                    return this._playing;
                 }
             }
         },
 
+        play: function () {
+
+            if (this._playing === true) {
+                this.warn(&quot;Already playing&quot;);
+                return;
+
+            }
+
+            var source = this._context.createBufferSource();
+
+            source.buffer = this._source.buffer;
+            source.loop = this._source.loop;
+            source.onended = this._source.onended;
+            source.connect(this._panner);
+            source.start(0, this._startTime);
+
+            this._playing = true;
+
+            this._source = source;
+        },
+
+        pause: function () {
+            this._source.stop();
+            this._startTime = this.context.currentTime;
+        },
+
+        stop: function () {
+            this._source.stop();
+            this._startTime = 0;
+        },
+
         _getJSON: function () {
             return {
-                type: this._state.type,
-                dir: this._state.dir,
-                color: this._state.color,
-                intensity: this._state.intensity,
-                space: this._state.space
+                src: this._src,
+                refDistance: this._refDistance,
+                rolloffFactor: this._rolloffFactor,
+                volume: this._volume,
+                loop: this._loop
             };
         }
     });

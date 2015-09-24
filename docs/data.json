@@ -339,9 +339,7 @@
         "src/core/objects/gameObject.js": {
             "name": "src/core/objects/gameObject.js",
             "modules": {},
-            "classes": {
-                "GameObject": 1
-            },
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -503,6 +501,15 @@
             "modules": {},
             "classes": {
                 "Boundary3D": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/core/spatial/extents.js": {
+            "name": "src/core/spatial/extents.js",
+            "modules": {},
+            "classes": {
+                "GameObject": 1
             },
             "fors": {},
             "namespaces": {}
@@ -703,8 +710,8 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/extras/geometry/cylinder.js": {
-            "name": "src/extras/geometry/cylinder.js",
+        "src/extras/geometry/cylinderGeometry.js": {
+            "name": "src/extras/geometry/cylinderGeometry.js",
             "modules": {},
             "classes": {
                 "Cylinder": 1
@@ -712,20 +719,20 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/extras/geometry/grid.js": {
-            "name": "src/extras/geometry/grid.js",
+        "src/extras/geometry/heightmapGeometry.js": {
+            "name": "src/extras/geometry/heightmapGeometry.js",
             "modules": {},
             "classes": {
-                "Grid": 1
+                "Heightmap": 1
             },
             "fors": {},
             "namespaces": {}
         },
-        "src/extras/geometry/heightmap.js": {
-            "name": "src/extras/geometry/heightmap.js",
+        "src/extras/geometry/latheGeometry.js": {
+            "name": "src/extras/geometry/latheGeometry.js",
             "modules": {},
             "classes": {
-                "Heightmap": 1
+                "LatheGeometry": 1
             },
             "fors": {},
             "namespaces": {}
@@ -741,20 +748,29 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/extras/geometry/sphere.js": {
-            "name": "src/extras/geometry/sphere.js",
+        "src/extras/geometry/planeGeometry.js": {
+            "name": "src/extras/geometry/planeGeometry.js",
             "modules": {},
             "classes": {
-                "Sphere": 1
+                "PlaneGeometry": 1
             },
             "fors": {},
             "namespaces": {}
         },
-        "src/extras/geometry/torus.js": {
-            "name": "src/extras/geometry/torus.js",
+        "src/extras/geometry/sphereGeometry.js": {
+            "name": "src/extras/geometry/sphereGeometry.js",
             "modules": {},
             "classes": {
-                "Torus": 1
+                "SphereGeometry": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/extras/geometry/torusGeometry.js": {
+            "name": "src/extras/geometry/torusGeometry.js",
+            "modules": {},
+            "classes": {
+                "TorusGeometry": 1
             },
             "fors": {},
             "namespaces": {}
@@ -786,15 +802,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/extras/groups/groupBoundary.js": {
-            "name": "src/extras/groups/groupBoundary.js",
-            "modules": {},
-            "classes": {
-                "GroupBoundary": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/extras/helpers/_module.js": {
             "name": "src/extras/helpers/_module.js",
             "modules": {
@@ -804,11 +811,11 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/extras/helpers/objectBoundaryHelper.js": {
-            "name": "src/extras/helpers/objectBoundaryHelper.js",
+        "src/extras/helpers/axisHelper.js": {
+            "name": "src/extras/helpers/axisHelper.js",
             "modules": {},
             "classes": {
-                "ObjectBoundaryHelper": 1
+                "AxisHelper": 1
             },
             "fors": {},
             "namespaces": {}
@@ -928,6 +935,24 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/extras/shaders/waterShader.js": {
+            "name": "src/extras/shaders/waterShader.js",
+            "modules": {},
+            "classes": {
+                "Shader.Water": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/extras/spatial/groupBoundary.js": {
+            "name": "src/extras/spatial/groupBoundary.js",
+            "modules": {},
+            "classes": {
+                "GroupBoundary": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/extras/boilerplate.js": {
             "name": "src/extras/boilerplate.js",
             "modules": {},
@@ -944,29 +969,11 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/extras/geometry.obj.js": {
-            "name": "src/extras/geometry.obj.js",
-            "modules": {},
-            "classes": {
-                "Geometry.OBJ": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/extras/quad.js": {
             "name": "src/extras/quad.js",
             "modules": {},
             "classes": {
                 "Geometry.Quad": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/extras/shader.water.js": {
-            "name": "src/extras/shader.water.js",
-            "modules": {},
-            "classes": {
-                "Shader.Water": 1
             },
             "fors": {},
             "namespaces": {}
@@ -997,7 +1004,7 @@
                 "groups": 1
             },
             "classes": {
-                "Sphere": 1,
+                "PlaneGeometry": 1,
                 "MorphTargets": 1,
                 "Camera": 1,
                 "Frustum": 1,
@@ -1056,13 +1063,13 @@
                 "SplineCurve": 1,
                 "BoundaryGeometry": 1,
                 "Cylinder": 1,
-                "Grid": 1,
                 "Heightmap": 1,
-                "Torus": 1,
+                "LatheGeometry": 1,
+                "SphereGeometry": 1,
+                "TorusGeometry": 1,
                 "VectorTextGeometry": 1,
                 "Group": 1,
-                "GroupBoundary": 1,
-                "ObjectBoundaryHelper": 1,
+                "AxisHelper": 1,
                 "CameraControl": 1,
                 "KeyboardAxisCamera": 1,
                 "KeyboardOrbitCamera": 1,
@@ -1073,10 +1080,10 @@
                 "MousePickObject": 1,
                 "MouseZoomCamera": 1,
                 "SkyBox": 1,
+                "Shader.Water": 1,
+                "GroupBoundary": 1,
                 "MyComponent": 1,
-                "Geometry.Quad": 1,
-                "Geometry.OBJ": 1,
-                "Shader.Water": 1
+                "Geometry.Quad": 1
             },
             "fors": {},
             "namespaces": {
@@ -1084,7 +1091,7 @@
                 "XEO": 1
             },
             "tag": "main",
-            "file": "src/extras/shader.water.js",
+            "file": "src/extras/quad.js",
             "line": 1,
             "description": "The xeoEngine namespace.",
             "itemtype": "main"
@@ -1191,10 +1198,11 @@
                 "PathGeometry": 1,
                 "Geometry": 1,
                 "Cylinder": 1,
-                "Grid": 1,
                 "Heightmap": 1,
-                "Sphere": 1,
-                "Torus": 1,
+                "LatheGeometry": 1,
+                "PlaneGeometry": 1,
+                "SphereGeometry": 1,
+                "TorusGeometry": 1,
                 "VectorTextGeometry": 1
             },
             "fors": {},
@@ -1408,14 +1416,14 @@
             "submodules": {},
             "classes": {
                 "BoundaryGeometry": 1,
-                "ObjectBoundaryHelper": 1
+                "AxisHelper": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "src/extras/helpers/objectBoundaryHelper.js",
+            "file": "src/extras/helpers/axisHelper.js",
             "line": 1,
             "description": "Components to help visualise other components."
         },
@@ -1431,7 +1439,7 @@
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "src/extras/groups/groupBoundary.js",
+            "file": "src/extras/spatial/groupBoundary.js",
             "line": 1,
             "description": "Components for managing groups of components."
         }
@@ -3061,9 +3069,9 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/core/objects/gameObject.js",
+            "file": "src/core/spatial/extents.js",
             "line": 1,
-            "description": "A **GameObject** is an entity within a xeoEngine {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\nSee the {{#crossLink \"Scene\"}}Scene{{/crossLink}} class documentation for more information on GameObjects.</li>\n\n<img src=\"../../../assets/images/GameObject.png\"></img>\n\n\n## Boundaries\n\n#### World-space\n\nA GameObject provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntransformation by the GameObject's {{#crossLink \"GameObject/transform:property\"}}Modelling transform{{/crossLink}}.</li>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar geometry = new XEO.Geometry(myScene, {\n     //...\n });\n\nvar translate = new XEO.Translate(scene, {\n   xyz: [-5, 0, 0] // Translate along -X axis\n});\n\nvar object = new XEO.GameObject(myScene, {\n      geometry: myGeometry,\n      transform: translate\n });\n\n// Get the World-space Boundary3D\nvar worldBoundary = object.worldBoundary();\n\n// Get World-space object-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the GameObjectbject\nvar obb = worldBoundary.obb;\n\n// Get the World-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = worldBoundary.aabb;\n\n// get the World-space center of the GameObject:\nvar center = worldBoundary.center;\n\n````\n\n#### View-space\n\nA GameObject also provides its View-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry/positions:property\"}}Geometry positions{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Camera/view:property\"}}View{{/crossLink}} and\n{{#crossLink \"GameObject/transform:property\"}}Modelling{{/crossLink}} transforms.</li>\n\n```` javascript\n// Get the View-space Boundary3D\nvar viewBoundary = object.viewBoundary();\n\n// Get View-space object-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the GameObjectbject\nvar obb = viewBoundary.obb;\n\n// Get the View-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = viewBoundary.aabb;\n\n// get the View-space center of the GameObject:\nvar center = viewBoundary.center;\n\n````",
+            "description": "A **GameObject** is an entity within a xeoEngine {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\nSee the {{#crossLink \"Scene\"}}Scene{{/crossLink}} class documentation for more information on GameObjects.</li>\n\n<img src=\"../../../assets/images/GameObject.png\"></img>\n\n\n## Boundaries\n\n#### World-space\n\nA GameObject provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntransformation by the GameObject's {{#crossLink \"GameObject/transform:property\"}}Modelling transform{{/crossLink}}.</li>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar geometry = new XEO.Geometry(myScene, {\n     //...\n });\n\nvar translate = new XEO.Translate(scene, {\n   xyz: [-5, 0, 0] // Translate along -X axis\n});\n\nvar object = new XEO.GameObject(myScene, {\n      geometry: myGeometry,\n      transform: translate\n });\n\n// Get the World-space Boundary3D\nvar world = object.world;\n\n// Get World-space object-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the GameObjectbject\nvar obb = world.obb;\n\n// Get the World-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = world.aabb;\n\n// get the World-space center of the GameObject:\nvar center = world.center;\n\n````\n\n#### View-space\n\nA GameObject also provides its View-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry/positions:property\"}}Geometry positions{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Camera/view:property\"}}View{{/crossLink}} and\n{{#crossLink \"GameObject/transform:property\"}}Modelling{{/crossLink}} transforms.</li>\n\n```` javascript\n// Get the View-space Boundary3D\nvar view = object.view();\n\n// Get View-space object-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the GameObjectbject\nvar obb = view.obb;\n\n// Get the View-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = view.aabb;\n\n// get the View-space center of the GameObject:\nvar center = view.center;\n\n````",
             "submodule": "objects",
             "is_constructor": 1,
             "params": [
@@ -3794,7 +3802,7 @@
             "namespace": "",
             "file": "src/core/sound/sound.js",
             "line": 1,
-            "description": "A **Sound** is a directional light source that illuminates all attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} equally\nfrom a given direction.\n\n## Overview\n\n<ul>\n<li>DirLights are grouped, along with other light source types, within {{#crossLink \"Lights\"}}Lights{{/crossLink}} components,\nwhich are attached to {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>DirLights have a direction, but no position.</li>\n<li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction\nis relative to the World coordinate system, and will appear to move as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.\nWhen in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's\nhead as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that DirLights create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Sound.png\"></img>\n\n## Example\n\nIn this example we have:\n\n<ul>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}},</li>\n<li>a Sound that points along the negative diagonal of the View coordinate system,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing the Sound,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/light_DirLight.html\"></iframe>\n\n```` javascript\nvar scene = new XEO.Scene();\n\n// A shiny PhongMaterial with quantities of reflected\n// ambient, diffuse and specular color\nvar material = new XEO.PhongMaterial(scene, {\n   ambient:    [0.3, 0.3, 0.3],\n   diffuse:    [0.7, 0.7, 0.7],\n   specular:   [1. 1, 1],\n   shininess:  30\n});\n\n// Sound with color and intensity, pointing along\n// the negative diagonal within the View coordinate system\nvar dirLight = new XEO.Sound(scene, {\n   dir:         [-1, -1, -1],\n   color:       [0.5, 0.7, 0.5],\n   intensity:   1.0,\n   space:      \"view\"  // Other option is \"world\", for World-space\n});\n\n// Lights which contains our Sound\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       dirLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\n// Object which renders our Geometry, colored with\n// the Material and illuminated with the Sound\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````\n\nAs with all components, we can observe and change properties on a DirLights, like so:\n\n````Javascript\n// Attach a change listener to a property\nvar handle = dirLight.on(\"color\",\nfunction(value) {\n       // Property value has changed\n   });\n\n// Set the property, which fires our change listener\ndirLight.color = [0.0, 0.3, 0.3];\n\n// Detach the change listener\ndirLight.off(handle);\n````",
+            "description": "A **Sound** is a directional light source that illuminates all attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} equally\nfrom a given direction.\n\n## Overview\n\n<ul>\n<li>DirLights are grouped, along with other light source types, within {{#crossLink \"Lights\"}}Lights{{/crossLink}} components,\nwhich are attached to {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>DirLights have a direction, but no position.</li>\n<li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction\nis relative to the World coordinate system, and will appear to move as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.\nWhen in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's\nhead as the {{#crossLink \"Camera\"}}{{/crossLink}} moves.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that DirLights create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Sound.png\"></img>\n\n## Example\n\nIn this example we have:\n\n<ul>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}},</li>\n<li>a Sound that points along the negative diagonal of the View coordinate system,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing the Sound,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/light_DirLight.html\"></iframe>\n\n```` javascript\nvar scene = new XEO.Scene();\n\n// A shiny PhongMaterial with quantities of reflected\n// ambient, diffuse and specular color\nvar material = new XEO.PhongMaterial(scene, {\n   ambient:    [0.3, 0.3, 0.3],\n   diffuse:    [0.7, 0.7, 0.7],\n   specular:   [1. 1, 1],\n   shininess:  30\n});\n\n// Sound with color and intensity, pointing along\n// the negative diagonal within the View coordinate system\nvar dirLight = new XEO.Sound(scene, {\n   volume:         [-1, -1, -1],\n   color:       [0.5, 0.7, 0.5],\n   intensity:   1.0,\n   space:      \"view\"  // Other option is \"world\", for World-space\n});\n\n// Lights which contains our Sound\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       dirLight\n   ]\n});\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\n// Object which renders our Geometry, colored with\n// the Material and illuminated with the Sound\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````\n\nAs with all components, we can observe and change properties on a DirLights, like so:\n\n````Javascript\n// Attach a change listener to a property\nvar handle = dirLight.on(\"color\",\nfunction(value) {\n       // Property value has changed\n   });\n\n// Set the property, which fires our change listener\ndirLight.color = [0.0, 0.3, 0.3];\n\n// Detach the change listener\ndirLight.off(handle);\n````",
             "submodule": "lighting",
             "is_constructor": 1,
             "params": [
@@ -3823,7 +3831,7 @@
                             "optional": true
                         },
                         {
-                            "name": "dir",
+                            "name": "volume",
                             "description": "A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.",
                             "type": "Array(Number)",
                             "optional": true,
@@ -4819,7 +4827,7 @@
             "namespace": "",
             "file": "src/extras/geometry/boundaryGeometry.js",
             "line": 1,
-            "description": "A **BoundaryGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that shows the axis-aligned boundary of a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
+            "description": "A **BoundaryGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that shows the object-aligned bounding box (OBB)\nof a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
             "submodule": "helpers",
             "is_constructor": 1,
             "params": [
@@ -4868,7 +4876,7 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/extras/geometry/cylinder.js",
+            "file": "src/extras/geometry/cylinderGeometry.js",
             "line": 1,
             "description": "A **Cylinder** defines cylindrical geometry for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
             "submodule": "geometry",
@@ -4897,6 +4905,13 @@
                             "description": "Optional map of user-defined metadata to attach to this Cylinder.",
                             "type": "String:Object",
                             "optional": true
+                        },
+                        {
+                            "name": "primitive",
+                            "description": "The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"triangles\""
                         },
                         {
                             "name": "radiusTop",
@@ -4952,86 +4967,6 @@
             ],
             "extends": "Geometry"
         },
-        "Grid": {
-            "name": "Grid",
-            "shortname": "Grid",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/extras/geometry/grid.js",
-            "line": 1,
-            "description": "A **Grid** defines a grid geometry for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
-            "submodule": "geometry",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Grid in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Grid.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "xSize",
-                            "description": "Dimension on the X-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1"
-                        },
-                        {
-                            "name": "ySize",
-                            "description": "Dimension on the Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1"
-                        },
-                        {
-                            "name": "xSegments",
-                            "description": "Number of segments on the X-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "4"
-                        },
-                        {
-                            "name": "ySegments",
-                            "description": "Number of segments on the Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "4"
-                        },
-                        {
-                            "name": "lod",
-                            "description": ".",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1]  Level-of-detail, in range [0..1"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Geometry"
-        },
         "Heightmap": {
             "name": "Heightmap",
             "shortname": "Heightmap",
@@ -5042,7 +4977,7 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/extras/geometry/heightmap.js",
+            "file": "src/extras/geometry/heightmapGeometry.js",
             "line": 1,
             "description": "A **Heightmap** defines spherical geometry for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
             "submodule": "geometry",
@@ -5071,6 +5006,13 @@
                             "description": "Optional map of user-defined metadata to attach to this Heightmap.",
                             "type": "String:Object",
                             "optional": true
+                        },
+                        {
+                            "name": "primitive",
+                            "description": "The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"triangles\""
                         },
                         {
                             "name": "src",
@@ -5133,24 +5075,9 @@
             ],
             "extends": "Geometry"
         },
-        "PathGeometry": {
-            "name": "PathGeometry",
-            "shortname": "PathGeometry",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "geometry",
-            "namespace": "",
-            "file": "src/extras/geometry/pathGeometry.js",
-            "line": 1,
-            "description": "A path geometry.",
-            "extends": "Geometry"
-        },
-        "Sphere": {
-            "name": "Sphere",
-            "shortname": "Sphere",
+        "LatheGeometry": {
+            "name": "LatheGeometry",
+            "shortname": "LatheGeometry",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -5158,15 +5085,15 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/extras/geometry/sphere.js",
+            "file": "src/extras/geometry/latheGeometry.js",
             "line": 1,
-            "description": "A **Sphere** defines spherical geometry for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
+            "description": "A **LatheGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that's defined as the revolution of a profile about an exis.\n\n## Example\n\n````javascript\n\n````",
             "submodule": "geometry",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Sphere in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this LatheGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -5184,9 +5111,204 @@
                         },
                         {
                             "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Sphere.",
+                            "description": "Optional map of user-defined metadata to attach to this LatheGeometry.",
                             "type": "String:Object",
                             "optional": true
+                        },
+                        {
+                            "name": "primitive",
+                            "description": "The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"triangles\""
+                        },
+                        {
+                            "name": "points",
+                            "description": "Profile points.",
+                            "optional": true,
+                            "optdefault": "[]"
+                        },
+                        {
+                            "name": "segments",
+                            "description": "Number of revolution segments.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "4"
+                        },
+                        {
+                            "name": "phiStart",
+                            "description": "Angle in degrees at which revolution starts.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        },
+                        {
+                            "name": "phiLength",
+                            "description": "Length of revolution in degrees.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "360"
+                        },
+                        {
+                            "name": "lod",
+                            "description": ".",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1]  Level-of-detail, in range [0..1"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
+        },
+        "PathGeometry": {
+            "name": "PathGeometry",
+            "shortname": "PathGeometry",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "geometry",
+            "namespace": "",
+            "file": "src/extras/geometry/pathGeometry.js",
+            "line": 1,
+            "description": "A path geometry.",
+            "extends": "Geometry"
+        },
+        "PlaneGeometry": {
+            "name": "PlaneGeometry",
+            "shortname": "PlaneGeometry",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 1,
+            "description": "A **PlaneGeometry** defines a plane geometry for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
+            "submodule": "geometry",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this PlaneGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this PlaneGeometry.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "primitive",
+                            "description": "The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"triangles\""
+                        },
+                        {
+                            "name": "xSize",
+                            "description": "Dimension on the X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "ySize",
+                            "description": "Dimension on the Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "xSegments",
+                            "description": "Number of segments on the X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "4"
+                        },
+                        {
+                            "name": "ySegments",
+                            "description": "Number of segments on the Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "4"
+                        },
+                        {
+                            "name": "lod",
+                            "description": ".",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1]  Level-of-detail, in range [0..1"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
+        },
+        "SphereGeometry": {
+            "name": "SphereGeometry",
+            "shortname": "SphereGeometry",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/extras/geometry/sphereGeometry.js",
+            "line": 1,
+            "description": "A **SphereGeometry** defines spherical geometry for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
+            "submodule": "geometry",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this SphereGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this SphereGeometry.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "primitive",
+                            "description": "The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"triangles\""
                         },
                         {
                             "name": "radius",
@@ -5221,9 +5343,9 @@
             ],
             "extends": "Geometry"
         },
-        "Torus": {
-            "name": "Torus",
-            "shortname": "Torus",
+        "TorusGeometry": {
+            "name": "TorusGeometry",
+            "shortname": "TorusGeometry",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -5231,15 +5353,15 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/extras/geometry/torus.js",
+            "file": "src/extras/geometry/torusGeometry.js",
             "line": 1,
-            "description": "A **Torus** defines toroid geometry for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
+            "description": "A **TorusGeometry** defines toroid geometry for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
             "submodule": "geometry",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Torus in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this TorusGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -5257,9 +5379,16 @@
                         },
                         {
                             "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Torus.",
+                            "description": "Optional map of user-defined metadata to attach to this TorusGeometry.",
                             "type": "String:Object",
                             "optional": true
+                        },
+                        {
+                            "name": "primitive",
+                            "description": "The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"triangles\""
                         },
                         {
                             "name": "radius",
@@ -5411,9 +5540,9 @@
             ],
             "extends": "Component"
         },
-        "GroupBoundary": {
-            "name": "GroupBoundary",
-            "shortname": "GroupBoundary",
+        "AxisHelper": {
+            "name": "AxisHelper",
+            "shortname": "AxisHelper",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -5421,74 +5550,15 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/extras/groups/groupBoundary.js",
+            "file": "src/extras/helpers/axisHelper.js",
             "line": 1,
-            "description": "A **GroupBoundary** configures the WebGL color buffer for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li>A GroupBoundary configures **the way** that pixels are written to the WebGL color buffer.</li>\n<li>GroupBoundary is not to be confused with {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}}, which stores rendered pixel\ncolors for consumption by {{#crossLink \"Texture\"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/GroupBoundary.png\"></img>\n\n## Example\n\nIn this example we're configuring the WebGL color buffer for a {{#crossLink \"GameObject\"}}{{/crossLink}}.\n\nThis example scene contains:\n\n<ul>\n<li>a GroupBoundary that enables blending and sets the color mask,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n````javascript\nvar scene = new XEO.Scene();\n\nvar GroupBoundary = new XEO.GroupBoundary(scene, {\n   blendEnabled: true,\n   colorMask: [true, true, true, true]\n});\n\nvar geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box\n\nvar gameObject = new XEO.GameObject(scene, {\n   GroupBoundary: GroupBoundary,\n   geometry: geometry\n});\n````",
-            "submodule": "groups",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this GroupBoundary within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "GroupBoundary configuration",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this GroupBoundary.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "blendEnabled",
-                            "description": "Indicates if blending is enabled.",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        },
-                        {
-                            "name": "colorMask",
-                            "description": "The color mask,",
-                            "type": "Array of Boolean",
-                            "optional": true,
-                            "optdefault": "[true, true, true, true]"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
-        "ObjectBoundaryHelper": {
-            "name": "ObjectBoundaryHelper",
-            "shortname": "ObjectBoundaryHelper",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/extras/helpers/objectBoundaryHelper.js",
-            "line": 1,
-            "description": "A **ObjectBoundaryHelper** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that shows the axis-aligned boundary of a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
+            "description": "A **AxisHelper** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that shows the axis-aligned boundary of a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
             "submodule": "helpers",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this ObjectBoundaryHelper in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this AxisHelper in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -5506,7 +5576,7 @@
                         },
                         {
                             "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this ObjectBoundaryHelper.",
+                            "description": "Optional map of user-defined metadata to attach to this AxisHelper.",
                             "type": "String:Object",
                             "optional": true
                         },
@@ -6173,6 +6243,80 @@
             ],
             "extends": "Component"
         },
+        "Shader.Water": {
+            "name": "Shader.Water",
+            "shortname": "Shader.Water",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/extras/shaders/waterShader.js",
+            "line": 1,
+            "description": "A ripply water {{#crossLink \"Shader\"}}Shader{{/crossLink}}.",
+            "extends": "Shader"
+        },
+        "GroupBoundary": {
+            "name": "GroupBoundary",
+            "shortname": "GroupBoundary",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/extras/spatial/groupBoundary.js",
+            "line": 1,
+            "description": "A **GroupBoundary** configures the WebGL color buffer for attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li>A GroupBoundary configures **the way** that pixels are written to the WebGL color buffer.</li>\n<li>GroupBoundary is not to be confused with {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}}, which stores rendered pixel\ncolors for consumption by {{#crossLink \"Texture\"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/GroupBoundary.png\"></img>\n\n## Example\n\nIn this example we're configuring the WebGL color buffer for a {{#crossLink \"GameObject\"}}{{/crossLink}}.\n\nThis example scene contains:\n\n<ul>\n<li>a GroupBoundary that enables blending and sets the color mask,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n````javascript\nvar scene = new XEO.Scene();\n\nvar GroupBoundary = new XEO.GroupBoundary(scene, {\n   blendEnabled: true,\n   colorMask: [true, true, true, true]\n});\n\nvar geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box\n\nvar gameObject = new XEO.GameObject(scene, {\n   GroupBoundary: GroupBoundary,\n   geometry: geometry\n});\n````",
+            "submodule": "groups",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this GroupBoundary within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "GroupBoundary configuration",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this GroupBoundary.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "blendEnabled",
+                            "description": "Indicates if blending is enabled.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "colorMask",
+                            "description": "The color mask,",
+                            "type": "Array of Boolean",
+                            "optional": true,
+                            "optdefault": "[true, true, true, true]"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
         "MyComponent": {
             "name": "MyComponent",
             "shortname": "MyComponent",
@@ -6202,36 +6346,6 @@
             "line": 1,
             "description": "A quad-shaped geometry.",
             "extends": "Geometry"
-        },
-        "Geometry.OBJ": {
-            "name": "Geometry.OBJ",
-            "shortname": "Geometry.OBJ",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/extras/geometry.obj.js",
-            "line": 1,
-            "description": "A Geometry imported from a Wavefront .OBJ file.\n```` javascript\n var geometry = new XEO.Geometry.OBJ(scene, {\n    src: \"file.obj\"\n });\nvar object = new XEO.GameObject(myScene, {\n    geometry: geometry\n });\n ````",
-            "extends": "Geometry"
-        },
-        "Shader.Water": {
-            "name": "Shader.Water",
-            "shortname": "Shader.Water",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/extras/shader.water.js",
-            "line": 1,
-            "description": "A ripply water shader.",
-            "extends": "Shader"
         }
     },
     "classitems": [
@@ -7552,7 +7666,7 @@
         },
         {
             "file": "src/core/geometry/geometry.js",
-            "line": 992,
+            "line": 994,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/autoNormals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoNormals",
@@ -12738,7 +12852,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 204,
+            "line": 205,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
@@ -12754,7 +12868,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 247,
+            "line": 248,
             "description": "The {{#crossLink \"Clips\"}}Clips{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/clips:property\"}}clips{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/clips:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clips",
@@ -12765,7 +12879,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 263,
+            "line": 264,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/clips:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clips",
@@ -12781,7 +12895,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 276,
+            "line": 277,
             "description": "The {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorTarget:property\"}}colorTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/colorTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -12792,7 +12906,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 292,
+            "line": 293,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/colorTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorTarget",
@@ -12808,7 +12922,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 305,
+            "line": 306,
             "description": "The {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorBuf:property\"}}colorBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/colorBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -12819,7 +12933,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 321,
+            "line": 322,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/colorBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorBuf",
@@ -12835,7 +12949,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 335,
+            "line": 336,
             "description": "The {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthTarget:property\"}}depthTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/depthTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -12846,7 +12960,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 351,
+            "line": 352,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/depthTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthTarget",
@@ -12862,7 +12976,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 365,
+            "line": 366,
             "description": "The {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthBuf:property\"}}depthBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/depthBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -12873,7 +12987,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 381,
+            "line": 382,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/depthBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthBuf",
@@ -12889,7 +13003,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 395,
+            "line": 396,
             "description": "The {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/visibility:property\"}}visibility{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/visibility:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visibility",
@@ -12900,7 +13014,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 411,
+            "line": 412,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/visibility:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visibility",
@@ -12916,7 +13030,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 425,
+            "line": 426,
             "description": "The {{#crossLink \"Modes\"}}Modes{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/modes:property\"}}modes{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/modes:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "modes",
@@ -12927,7 +13041,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 441,
+            "line": 442,
             "description": "Fired whenever this GameObject's {{#crossLink \"GameObject/modes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "modes",
@@ -12943,7 +13057,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 455,
+            "line": 456,
             "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}camera{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nFires a {{#crossLink \"GameObject/geometry:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"GameObject/boundary\"}}{{/crossLink}},\n{{#crossLink \"GameObject/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"GameObject/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "geometry",
@@ -12954,7 +13068,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 493,
+            "line": 492,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/geometry:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "geometry",
@@ -12970,7 +13084,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 534,
+            "line": 528,
             "description": "The {{#crossLink \"Layer\"}}Layer{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/layer:property\"}}layer{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/layer:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "layer",
@@ -12981,7 +13095,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 550,
+            "line": 544,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/layer:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "layer",
@@ -12997,7 +13111,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 564,
+            "line": 558,
             "description": "The {{#crossLink \"Lights\"}}Lights{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/lights:property\"}}lights{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/lights:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lights",
@@ -13008,7 +13122,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 580,
+            "line": 574,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/lights:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lights",
@@ -13024,7 +13138,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 594,
+            "line": 588,
             "description": "The {{#crossLink \"Material\"}}Material{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/material:property\"}}material{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/material:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "material",
@@ -13035,7 +13149,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 610,
+            "line": 604,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/material:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "material",
@@ -13051,7 +13165,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 624,
+            "line": 618,
             "description": "The {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/morphTargets:property\"}}morphTargets{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/morphTargets:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -13062,7 +13176,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 640,
+            "line": 634,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/morphTargets:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "morphTargets",
@@ -13078,7 +13192,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 653,
+            "line": 647,
             "description": "The {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/reflect:property\"}}reflect{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/reflect:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflect",
@@ -13089,7 +13203,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 669,
+            "line": 663,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/reflect:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflect",
@@ -13105,7 +13219,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 683,
+            "line": 677,
             "description": "The {{#crossLink \"Shader\"}}Shader{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shader:property\"}}shader{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/shader:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shader",
@@ -13116,7 +13230,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 699,
+            "line": 693,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/shader:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shader",
@@ -13132,7 +13246,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 712,
+            "line": 706,
             "description": "The {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shaderParams:property\"}}shaderParams{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/shaderParams:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -13143,7 +13257,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 728,
+            "line": 722,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/shaderParams:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shaderParams",
@@ -13159,7 +13273,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 742,
+            "line": 736,
             "description": "The {{#crossLink \"Stage\"}}Stage{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stage:property\"}}stage{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/stage:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stage",
@@ -13170,7 +13284,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 758,
+            "line": 752,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/stage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "stage",
@@ -13186,7 +13300,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 772,
+            "line": 766,
             "description": "The Model-to-World-space transform attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires a {{#crossLink \"GameObject/transform:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"GameObject/boundary\"}}{{/crossLink}},\n{{#crossLink \"GameObject/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"GameObject/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "transform",
@@ -13197,7 +13311,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 805,
+            "line": 799,
             "description": "Fired whenever this GameObject's {{#crossLink \"GameObject/transform:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "transform",
@@ -13213,7 +13327,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 845,
+            "line": 839,
             "description": "The Billboard attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/billboard:property\"}}billboard{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires a {{#crossLink \"GameObject/billboard:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "billboard",
@@ -13224,7 +13338,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 869,
+            "line": 855,
             "description": "Fired whenever this GameObject's {{#crossLink \"GameObject/billboard:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "billboard",
@@ -13240,7 +13354,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 898,
+            "line": 870,
             "description": "World-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -13252,7 +13366,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 950,
+            "line": 920,
             "description": "View-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.",
             "itemtype": "property",
             "name": "viewBoundary",
@@ -13264,7 +13378,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 1002,
+            "line": 970,
             "description": "Canvas-space 2D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary2D\"}}{{/crossLink}} instance\nnext time you reference it.",
             "itemtype": "property",
             "name": "canvasBoundary",
@@ -13276,7 +13390,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 1054,
+            "line": 1016,
             "description": "JSON object containing the (GLSL) source code of the shaders for this GameObject.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeoEngine has not yet rendered this GameObject.",
             "itemtype": "property",
             "name": "glsl",
@@ -13288,7 +13402,7 @@
         },
         {
             "file": "src/core/objects/gameObject.js",
-            "line": 1091,
+            "line": 1053,
             "description": "The (GLSL) source code of the shaders for this GameObject, as a string.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeoEngine has not yet rendered this GameObject.",
             "itemtype": "property",
             "name": "glslString",
@@ -14112,22 +14226,22 @@
         },
         {
             "file": "src/core/sound/sound.js",
-            "line": 131,
-            "description": "The direction of this Sound.\n\nFires a {{#crossLink \"Sound/dir:event\"}}{{/crossLink}} event on change.",
+            "line": 127,
+            "description": "The src of this Sound.\n\nFires a {{#crossLink \"Sound/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "dir",
-            "default": "[1.0, 1.0, 1.0]",
-            "type": "Array(Number)",
+            "name": "src",
+            "default": "null",
+            "type": "String",
             "class": "Sound",
             "module": "XEO",
             "submodule": "lighting"
         },
         {
             "file": "src/core/sound/sound.js",
-            "line": 154,
-            "description": "Fired whenever this Sound's  {{#crossLink \"Sound/dir:property\"}}{{/crossLink}} property changes.",
+            "line": 161,
+            "description": "Fired whenever this Sound's  {{#crossLink \"Sound/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "dir",
+            "name": "src",
             "params": [
                 {
                     "name": "value",
@@ -14140,38 +14254,10 @@
         },
         {
             "file": "src/core/sound/sound.js",
-            "line": 167,
-            "description": "The color of this Sound.\n\nFires a {{#crossLink \"Sound/color:event\"}}{{/crossLink}} event on change.",
+            "line": 174,
+            "description": "The volume of this Sound.\n\nFires a {{#crossLink \"Sound/volume:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "color",
-            "default": "[0.7, 0.7, 0.8]",
-            "type": "Array(Number)",
-            "class": "Sound",
-            "module": "XEO",
-            "submodule": "lighting"
-        },
-        {
-            "file": "src/core/sound/sound.js",
-            "line": 190,
-            "description": "Fired whenever this Sound's  {{#crossLink \"Sound/color:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "color",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Sound",
-            "module": "XEO",
-            "submodule": "lighting"
-        },
-        {
-            "file": "src/core/sound/sound.js",
-            "line": 203,
-            "description": "The intensity of this Sound.\n\nFires a {{#crossLink \"Sound/intensity:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "intensity",
+            "name": "volume",
             "default": "1.0",
             "type": "Number",
             "class": "Sound",
@@ -14180,10 +14266,10 @@
         },
         {
             "file": "src/core/sound/sound.js",
-            "line": 222,
-            "description": "Fired whenever this Sound's  {{#crossLink \"Sound/intensity:property\"}}{{/crossLink}} property changes.",
+            "line": 193,
+            "description": "Fired whenever this Sound's  {{#crossLink \"Sound/volume:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "intensity",
+            "name": "volume",
             "params": [
                 {
                     "name": "value",
@@ -14196,28 +14282,97 @@
         },
         {
             "file": "src/core/sound/sound.js",
-            "line": 235,
-            "description": "Specifies which coordinate space this Sound is in.\n\nSupported values are:\n\n<ul>\n<li>\"view\" - View space, aligned within the view volume as if fixed to the viewer's head</li>\n<li>\"world\" - World space, fixed within the world, moving within the view volume with respect to camera</li>\n</ul>\n\nFires a {{#crossLink \"Sound/space:event\"}}{{/crossLink}} event on change.",
+            "line": 206,
+            "description": "Indicates whether this sound loops.\n\nFires a {{#crossLink \"Sound/loop:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "space",
-            "default": "\"view\"",
-            "type": "String",
+            "name": "loop",
+            "default": "true",
+            "type": "Boolean",
             "class": "Sound",
             "module": "XEO",
             "submodule": "lighting"
         },
         {
             "file": "src/core/sound/sound.js",
-            "line": 259,
-            "description": "Fired whenever this Sound's {{#crossLink \"Sound/space:property\"}}{{/crossLink}} property changes.",
+            "line": 225,
+            "description": "Fired whenever this Sound's  {{#crossLink \"Sound/loop:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "space",
+            "name": "loop",
             "params": [
                 {
                     "name": "value",
                     "description": "The property's new value"
                 }
             ],
+            "class": "Sound",
+            "module": "XEO",
+            "submodule": "lighting"
+        },
+        {
+            "file": "src/core/sound/sound.js",
+            "line": 238,
+            "description": "The roll-off factor of this Sound.\n\nFires a {{#crossLink \"Sound/rolloffFactor:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "rolloffFactor",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Sound",
+            "module": "XEO",
+            "submodule": "lighting"
+        },
+        {
+            "file": "src/core/sound/sound.js",
+            "line": 257,
+            "description": "Fired whenever this Sound's  {{#crossLink \"Sound/rolloffFactor:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "rolloffFactor",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Sound",
+            "module": "XEO",
+            "submodule": "lighting"
+        },
+        {
+            "file": "src/core/sound/sound.js",
+            "line": 270,
+            "description": "The reference distance of this Sound.\n\nFires a {{#crossLink \"Sound/refDistance:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "refDistance",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Sound",
+            "module": "XEO",
+            "submodule": "lighting"
+        },
+        {
+            "file": "src/core/sound/sound.js",
+            "line": 289,
+            "description": "Fired whenever this Sound's  {{#crossLink \"Sound/refDistance:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "refDistance",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Sound",
+            "module": "XEO",
+            "submodule": "lighting"
+        },
+        {
+            "file": "src/core/sound/sound.js",
+            "line": 302,
+            "description": "Indicates if this sound is playing.\n\nFires a {{#crossLink \"Sound/playing:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "playing",
+            "default": "1.0",
+            "type": "Number",
+            "final": 1,
             "class": "Sound",
             "module": "XEO",
             "submodule": "lighting"
@@ -14295,36 +14450,7 @@
         },
         {
             "file": "src/core/spatial/boundary3d.js",
-            "line": 145,
-            "description": "Indicates whether this Boundary3D is visible or not.\n\nFires a {{#crossLink \"Boundary3D/visible:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "visible",
-            "default": "true",
-            "type": "Boolean",
-            "class": "Boundary3D",
-            "module": "XEO",
-            "submodule": "spatial"
-        },
-        {
-            "file": "src/core/spatial/boundary3d.js",
-            "line": 184,
-            "description": "Fired whenever this Boundary3D's {{#crossLink \"Boundary3D/visible:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "visible",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value",
-                    "type": "Boolean"
-                }
-            ],
-            "class": "Boundary3D",
-            "module": "XEO",
-            "submodule": "spatial"
-        },
-        {
-            "file": "src/core/spatial/boundary3d.js",
-            "line": 203,
+            "line": 142,
             "description": "3D oriented bounding box (OBB).",
             "itemtype": "property",
             "name": "obb",
@@ -14336,7 +14462,7 @@
         },
         {
             "file": "src/core/spatial/boundary3d.js",
-            "line": 222,
+            "line": 161,
             "description": "3D axis-aligned bounding box (AABB).",
             "itemtype": "property",
             "name": "aabb",
@@ -14348,7 +14474,7 @@
         },
         {
             "file": "src/core/spatial/boundary3d.js",
-            "line": 241,
+            "line": 180,
             "description": "3D center point.",
             "itemtype": "property",
             "name": "center",
@@ -14357,6 +14483,81 @@
             "class": "Boundary3D",
             "module": "XEO",
             "submodule": "spatial"
+        },
+        {
+            "file": "src/core/spatial/extents.js",
+            "line": 123,
+            "description": "Fired when this GameObject is *picked* via a call to the {{#crossLink \"Canvas/pick:method\"}}{{/crossLink}} method\non the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas {{/crossLink}}.",
+            "itemtype": "event",
+            "name": "picked",
+            "params": [
+                {
+                    "name": "objectId",
+                    "description": "The ID of this GameObject.",
+                    "type": "String"
+                },
+                {
+                    "name": "canvasX",
+                    "description": "The X-axis Canvas coordinate that was picked.",
+                    "type": "Number"
+                },
+                {
+                    "name": "canvasY",
+                    "description": "The Y-axis Canvas coordinate that was picked.",
+                    "type": "Number"
+                }
+            ],
+            "class": "GameObject",
+            "module": "XEO",
+            "submodule": "objects"
+        },
+        {
+            "file": "src/core/spatial/extents.js",
+            "line": 161,
+            "description": "Model-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
+            "itemtype": "property",
+            "name": "model",
+            "type": "Boundary3D",
+            "final": 1,
+            "class": "GameObject",
+            "module": "XEO",
+            "submodule": "objects"
+        },
+        {
+            "file": "src/core/spatial/extents.js",
+            "line": 201,
+            "description": "World-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
+            "itemtype": "property",
+            "name": "world",
+            "type": "Boundary3D",
+            "final": 1,
+            "class": "GameObject",
+            "module": "XEO",
+            "submodule": "objects"
+        },
+        {
+            "file": "src/core/spatial/extents.js",
+            "line": 243,
+            "description": "View-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.",
+            "itemtype": "property",
+            "name": "view",
+            "type": "Boundary3D",
+            "final": 1,
+            "class": "GameObject",
+            "module": "XEO",
+            "submodule": "objects"
+        },
+        {
+            "file": "src/core/spatial/extents.js",
+            "line": 287,
+            "description": "Canvas-space 2D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary2D\"}}{{/crossLink}} instance\nnext time you reference it.",
+            "itemtype": "property",
+            "name": "canvas",
+            "type": "Boundary2D",
+            "final": 1,
+            "class": "GameObject",
+            "module": "XEO",
+            "submodule": "objects"
         },
         {
             "file": "src/core/transforms/billboard.js",
@@ -16531,7 +16732,7 @@
         },
         {
             "file": "src/extras/geometry/boundaryGeometry.js",
-            "line": 55,
+            "line": 56,
             "description": "The {{#crossLink \"Boundary3D\"}}{{/crossLink}} we are showing.\n\nFires a {{#crossLink \"BoundaryGeometry/boundary:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "Boundary3D",
@@ -16542,8 +16743,8 @@
         },
         {
             "file": "src/extras/geometry/boundaryGeometry.js",
-            "line": 77,
-            "description": "Fired whenever this BoundaryGeometry's {{#crossLink \"BoundaryGeometry/boundary:property\"}}{{/crossLink}} property changes.",
+            "line": 80,
+            "description": "Fired whenever this BoundaryGeometry's  {{#crossLink \"BoundaryGeometry/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
             "params": [
@@ -16557,8 +16758,8 @@
             "submodule": "helpers"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 234,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 235,
             "description": "The Cylinder's level-of-detail factor.\n\nFires a {{#crossLink \"Cylinder/lod:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lod",
@@ -16569,8 +16770,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 260,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 261,
             "description": "Fired whenever this Cylinder's {{#crossLink \"Cylinder/lod:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lod",
@@ -16586,8 +16787,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 276,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 277,
             "description": "The Cylinder's top radius.\n\nFires a {{#crossLink \"Cylinder/radiusTop:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "radiusTop",
@@ -16598,8 +16799,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 302,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 303,
             "description": "Fired whenever this Cylinder's {{#crossLink \"Cylinder/radiusTop:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "radiusTop",
@@ -16615,8 +16816,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 318,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 319,
             "description": "The Cylinder's bottom radius.\n\nFires a {{#crossLink \"Cylinder/radiusBottom:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "radiusBottom",
@@ -16627,8 +16828,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 344,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 345,
             "description": "Fired whenever this Cylinder's {{#crossLink \"Cylinder/radiusBottom:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "radiusBottom",
@@ -16644,8 +16845,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 360,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 361,
             "description": "The Cylinder's height.\n\nFires a {{#crossLink \"Cylinder/height:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "height",
@@ -16656,8 +16857,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 386,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 387,
             "description": "Fired whenever this Cylinder's {{#crossLink \"Cylinder/height:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "height",
@@ -16673,8 +16874,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 402,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 403,
             "description": "The Cylinder's radial segments.\n\nFires a {{#crossLink \"Cylinder/radialSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "radialSegments",
@@ -16685,8 +16886,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 428,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 429,
             "description": "Fired whenever this Cylinder's {{#crossLink \"Cylinder/radialSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "radialSegments",
@@ -16702,8 +16903,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 444,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 445,
             "description": "The Cylinder's height segments.\n\nFires a {{#crossLink \"Cylinder/heightSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "heightSegments",
@@ -16714,8 +16915,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 470,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 471,
             "description": "Fired whenever this Cylinder's {{#crossLink \"Cylinder/heightSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "heightSegments",
@@ -16731,8 +16932,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 488,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 487,
             "description": "Indicates whether this Cylinder's is open-ended.\n\nFires a {{#crossLink \"Cylinder/openEnded:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "openEnded",
@@ -16743,8 +16944,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/cylinder.js",
-            "line": 509,
+            "file": "src/extras/geometry/cylinderGeometry.js",
+            "line": 508,
             "description": "Fired whenever this Cylinder's {{#crossLink \"Cylinder/openEnded:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "openEnded",
@@ -16760,153 +16961,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/grid.js",
-            "line": 162,
-            "description": "The Grid's level-of-detail factor.\n\nFires a {{#crossLink \"Grid/lod:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "lod",
-            "default": "1",
-            "type": "Number",
-            "class": "Grid",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/grid.js",
-            "line": 192,
-            "description": "Fired whenever this Grid's {{#crossLink \"Grid/lod:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "lod",
-            "type": "Number",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Grid",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/grid.js",
-            "line": 206,
-            "description": "The Grid's dimension on the X-axis.\n\nFires a {{#crossLink \"Grid/xSize:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "xSize",
-            "default": "1",
-            "type": "Number",
-            "class": "Grid",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/grid.js",
-            "line": 236,
-            "description": "Fired whenever this Grid's {{#crossLink \"Grid/xSize:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "xSize",
-            "type": "Number",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Grid",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/grid.js",
-            "line": 250,
-            "description": "The Grid's dimension on the Y-axis.\n\nFires a {{#crossLink \"Grid/ySize:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "ySize",
-            "default": "0.25",
-            "type": "Number",
-            "class": "Grid",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/grid.js",
-            "line": 280,
-            "description": "Fired whenever this Grid's {{#crossLink \"Grid/ySize:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "ySize",
-            "type": "Number",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Grid",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/grid.js",
-            "line": 294,
-            "description": "The Grid's number of segments on the X-axis.\n\nFires a {{#crossLink \"Grid/xSegments:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "xSegments",
-            "default": "4",
-            "type": "Number",
-            "class": "Grid",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/grid.js",
-            "line": 324,
-            "description": "Fired whenever this Grid's {{#crossLink \"Grid/xSegments:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "xSegments",
-            "type": "Number",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Grid",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/grid.js",
-            "line": 338,
-            "description": "The Grid's number of segments on the Y-axis.\n\nFires a {{#crossLink \"Grid/ySegments:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "ySegments",
-            "default": "4",
-            "type": "Number",
-            "class": "Grid",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/grid.js",
-            "line": 368,
-            "description": "Fired whenever this Grid's {{#crossLink \"Grid/ySegments:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "ySegments",
-            "type": "Number",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Grid",
-            "module": "XEO",
-            "submodule": "geometry"
-        },
-        {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 276,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 277,
             "description": "Fired whenever this Heightmap's  {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -16922,8 +16978,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 306,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 307,
             "description": "The Heightmap's level-of-detail factor.\n\nFires a {{#crossLink \"Heightmap/lod:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lod",
@@ -16934,8 +16990,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 336,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 337,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/lod:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lod",
@@ -16951,8 +17007,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 350,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 351,
             "description": "Indicates an HTML DOM Image object to source this Heightmap from.\n\nAlternatively, you could indicate the source via the\n{{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} property.\n\nFires an {{#crossLink \"Heightmap/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} to null.",
             "itemtype": "property",
             "name": "image",
@@ -16963,8 +17019,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 377,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 378,
             "description": "Fired whenever this Heightmap's  {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -16980,8 +17036,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 390,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 391,
             "description": "Indicates a path to an image file to source this Heightmap from.\n\nAlternatively, you could indicate the source via the\n{{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property.\n\nFires a {{#crossLink \"Heightmap/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} to null.",
             "itemtype": "property",
             "name": "src",
@@ -16992,8 +17048,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 417,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 418,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -17009,8 +17065,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 431,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 432,
             "description": "The Heightmap's dimension on the X-axis.\n\nFires a {{#crossLink \"Heightmap/xSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSize",
@@ -17021,8 +17077,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 461,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 462,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/xSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSize",
@@ -17038,8 +17094,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 475,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 476,
             "description": "The Heightmap's dimension on the Y-axis.\n\nFires a {{#crossLink \"Heightmap/ySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ySize",
@@ -17050,8 +17106,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 505,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 506,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/ySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ySize",
@@ -17067,8 +17123,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 519,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 520,
             "description": "The Heightmap's dimension (height) on the Z-axis.\n\nFires a {{#crossLink \"Heightmap/zSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "zSize",
@@ -17079,8 +17135,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 549,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 550,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/zSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "zSize",
@@ -17096,8 +17152,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 563,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 564,
             "description": "The Heightmap's number of segments on the X-axis.\n\nFires a {{#crossLink \"Heightmap/xSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSegments",
@@ -17108,8 +17164,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 593,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 594,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/xSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSegments",
@@ -17125,8 +17181,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 607,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 608,
             "description": "The Heightmap's number of segments on the Y-axis.\n\nFires a {{#crossLink \"Heightmap/ySegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ySegments",
@@ -17137,8 +17193,8 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/heightmap.js",
-            "line": 637,
+            "file": "src/extras/geometry/heightmapGeometry.js",
+            "line": 638,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/ySegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ySegments",
@@ -17150,6 +17206,150 @@
                 }
             ],
             "class": "Heightmap",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/latheGeometry.js",
+            "line": 145,
+            "description": "Profile points on this LatheGeometry.\n\nFires a {{#crossLink \"LatheGeometry/points:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "points",
+            "default": "[]",
+            "type": "Array(Number)",
+            "class": "LatheGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/latheGeometry.js",
+            "line": 162,
+            "description": "Fired whenever this LatheGeometry's\n{{#crossLink \"LatheGeometry/points:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "points",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "LatheGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/latheGeometry.js",
+            "line": 176,
+            "description": "The LatheGeometry's level-of-detail factor.\n\nFires a {{#crossLink \"LatheGeometry/lod:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "lod",
+            "default": "1",
+            "type": "Number",
+            "class": "LatheGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/latheGeometry.js",
+            "line": 204,
+            "description": "Fired whenever this LatheGeometry's {{#crossLink \"LatheGeometry/lod:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "lod",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "LatheGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/latheGeometry.js",
+            "line": 218,
+            "description": "Angle at which this LatheGeometry's rotation starts.\n\nFires a {{#crossLink \"LatheGeometry/phiStart:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "phiStart",
+            "default": "0",
+            "type": "Number",
+            "class": "LatheGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/latheGeometry.js",
+            "line": 246,
+            "description": "Fired whenever this LatheGeometry's {{#crossLink \"LatheGeometry/phiStart:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "phiStart",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "LatheGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/latheGeometry.js",
+            "line": 260,
+            "description": "Angle at which this LatheGeometry's rotation starts.\n\nFires a {{#crossLink \"LatheGeometry/phiLength:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "phiLength",
+            "default": "1",
+            "type": "Number",
+            "class": "LatheGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/latheGeometry.js",
+            "line": 288,
+            "description": "Fired whenever this LatheGeometry's {{#crossLink \"LatheGeometry/phiLength:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "phiLength",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "LatheGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/latheGeometry.js",
+            "line": 302,
+            "description": "The LatheGeometry's number of segments of rotation.\n\nFires a {{#crossLink \"LatheGeometry/segments:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "segments",
+            "default": "4",
+            "type": "Number",
+            "class": "LatheGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/latheGeometry.js",
+            "line": 330,
+            "description": "Fired whenever this LatheGeometry's {{#crossLink \"LatheGeometry/segments:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "segments",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "LatheGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
@@ -17190,21 +17390,21 @@
             "module": "geometry"
         },
         {
-            "file": "src/extras/geometry/sphere.js",
-            "line": 150,
-            "description": "The Sphere's level-of-detail factor.\n\nFires a {{#crossLink \"Sphere/lod:event\"}}{{/crossLink}} event on change.",
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 156,
+            "description": "The PlaneGeometry's level-of-detail factor.\n\nFires a {{#crossLink \"PlaneGeometry/lod:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lod",
             "default": "1",
             "type": "Number",
-            "class": "Sphere",
+            "class": "PlaneGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/sphere.js",
-            "line": 176,
-            "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/lod:property\"}}{{/crossLink}} property changes.",
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 184,
+            "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/lod:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lod",
             "type": "Number",
@@ -17214,26 +17414,171 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Sphere",
+            "class": "PlaneGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/sphere.js",
-            "line": 192,
-            "description": "The Sphere's radius.\n\nFires a {{#crossLink \"Sphere/radius:event\"}}{{/crossLink}} event on change.",
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 198,
+            "description": "The PlaneGeometry's dimension on the X-axis.\n\nFires a {{#crossLink \"PlaneGeometry/xSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "xSize",
+            "default": "1",
+            "type": "Number",
+            "class": "PlaneGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 226,
+            "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/xSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "xSize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "PlaneGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 240,
+            "description": "The PlaneGeometry's dimension on the Y-axis.\n\nFires a {{#crossLink \"PlaneGeometry/ySize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "ySize",
+            "default": "0.25",
+            "type": "Number",
+            "class": "PlaneGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 268,
+            "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/ySize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "ySize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "PlaneGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 282,
+            "description": "The PlaneGeometry's number of segments on the X-axis.\n\nFires a {{#crossLink \"PlaneGeometry/xSegments:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "xSegments",
+            "default": "4",
+            "type": "Number",
+            "class": "PlaneGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 310,
+            "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/xSegments:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "xSegments",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "PlaneGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 324,
+            "description": "The PlaneGeometry's number of segments on the Y-axis.\n\nFires a {{#crossLink \"PlaneGeometry/ySegments:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "ySegments",
+            "default": "4",
+            "type": "Number",
+            "class": "PlaneGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/planeGeometry.js",
+            "line": 352,
+            "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/ySegments:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "ySegments",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "PlaneGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/sphereGeometry.js",
+            "line": 151,
+            "description": "The SphereGeometry's level-of-detail factor.\n\nFires a {{#crossLink \"SphereGeometry/lod:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "lod",
+            "default": "1",
+            "type": "Number",
+            "class": "SphereGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/sphereGeometry.js",
+            "line": 177,
+            "description": "Fired whenever this SphereGeometry's {{#crossLink \"SphereGeometry/lod:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "lod",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "SphereGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/sphereGeometry.js",
+            "line": 193,
+            "description": "The SphereGeometry's radius.\n\nFires a {{#crossLink \"SphereGeometry/radius:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "radius",
             "default": "1",
             "type": "Number",
-            "class": "Sphere",
+            "class": "SphereGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/sphere.js",
-            "line": 218,
-            "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/radius:property\"}}{{/crossLink}} property changes.",
+            "file": "src/extras/geometry/sphereGeometry.js",
+            "line": 219,
+            "description": "Fired whenever this SphereGeometry's {{#crossLink \"SphereGeometry/radius:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "radius",
             "type": "Number",
@@ -17243,26 +17588,26 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Sphere",
+            "class": "SphereGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/sphere.js",
-            "line": 235,
-            "description": "The Sphere's number of latitude bands.\n\nFires a {{#crossLink \"Sphere/heightSegments:event\"}}{{/crossLink}} event on change.",
+            "file": "src/extras/geometry/sphereGeometry.js",
+            "line": 236,
+            "description": "The SphereGeometry's number of latitude bands.\n\nFires a {{#crossLink \"SphereGeometry/heightSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "heightSegments",
             "default": "18",
             "type": "Number",
-            "class": "Sphere",
+            "class": "SphereGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/sphere.js",
-            "line": 261,
-            "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/heightSegments:property\"}}{{/crossLink}} property changes.",
+            "file": "src/extras/geometry/sphereGeometry.js",
+            "line": 262,
+            "description": "Fired whenever this SphereGeometry's {{#crossLink \"SphereGeometry/heightSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "heightSegments",
             "type": "Number",
@@ -17272,26 +17617,26 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Sphere",
+            "class": "SphereGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/sphere.js",
-            "line": 277,
-            "description": "The Sphere's number of longitude bands.\n\nFires a {{#crossLink \"Sphere/widthSegments:event\"}}{{/crossLink}} event on change.",
+            "file": "src/extras/geometry/sphereGeometry.js",
+            "line": 278,
+            "description": "The SphereGeometry's number of longitude bands.\n\nFires a {{#crossLink \"SphereGeometry/widthSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "widthSegments",
             "default": "24",
             "type": "Number",
-            "class": "Sphere",
+            "class": "SphereGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/sphere.js",
-            "line": 303,
-            "description": "Fired whenever this Sphere's {{#crossLink \"Sphere/widthSegments:property\"}}{{/crossLink}} property changes.",
+            "file": "src/extras/geometry/sphereGeometry.js",
+            "line": 304,
+            "description": "Fired whenever this SphereGeometry's {{#crossLink \"SphereGeometry/widthSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "widthSegments",
             "type": "Number",
@@ -17301,26 +17646,26 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Sphere",
+            "class": "SphereGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 153,
-            "description": "The Torus's level-of-detail factor.\n\nFires a {{#crossLink \"Torus/lod:event\"}}{{/crossLink}} event on change.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 154,
+            "description": "The TorusGeometry's level-of-detail factor.\n\nFires a {{#crossLink \"TorusGeometry/lod:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lod",
             "default": "1",
             "type": "Number",
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 179,
-            "description": "Fired whenever this Torus's {{#crossLink \"Torus/lod:property\"}}{{/crossLink}} property changes.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 180,
+            "description": "Fired whenever this TorusGeometry's {{#crossLink \"TorusGeometry/lod:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lod",
             "type": "Number",
@@ -17330,26 +17675,26 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 195,
-            "description": "The Torus's radius.\n\nFires a {{#crossLink \"Torus/radius:event\"}}{{/crossLink}} event on change.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 196,
+            "description": "The TorusGeometry's radius.\n\nFires a {{#crossLink \"TorusGeometry/radius:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "radius",
             "default": "1",
             "type": "Number",
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 221,
-            "description": "Fired whenever this Torus's {{#crossLink \"Torus/radius:property\"}}{{/crossLink}} property changes.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 222,
+            "description": "Fired whenever this TorusGeometry's {{#crossLink \"TorusGeometry/radius:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "radius",
             "type": "Number",
@@ -17359,26 +17704,26 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 238,
-            "description": "The Torus's tube.\n\nFires a {{#crossLink \"Torus/tube:event\"}}{{/crossLink}} event on change.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 239,
+            "description": "The TorusGeometry's tube.\n\nFires a {{#crossLink \"TorusGeometry/tube:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "tube",
             "default": "0.3",
             "type": "Number",
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 264,
-            "description": "Fired whenever this Torus's {{#crossLink \"Torus/tube:property\"}}{{/crossLink}} property changes.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 265,
+            "description": "Fired whenever this TorusGeometry's {{#crossLink \"TorusGeometry/tube:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "tube",
             "type": "Number",
@@ -17388,26 +17733,26 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 280,
-            "description": "The Torus's segmentsR.\n\nFires a {{#crossLink \"Torus/segmentsR:event\"}}{{/crossLink}} event on change.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 281,
+            "description": "The TorusGeometry's segmentsR.\n\nFires a {{#crossLink \"TorusGeometry/segmentsR:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "segmentsR",
             "default": "32",
             "type": "Number",
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 306,
-            "description": "Fired whenever this Torus's {{#crossLink \"Torus/segmentsR:property\"}}{{/crossLink}} property changes.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 307,
+            "description": "Fired whenever this TorusGeometry's {{#crossLink \"TorusGeometry/segmentsR:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "segmentsR",
             "type": "Number",
@@ -17417,26 +17762,26 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 323,
-            "description": "The Torus's segmentsT.\n\nFires a {{#crossLink \"Torus/segmentsT:event\"}}{{/crossLink}} event on change.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 324,
+            "description": "The TorusGeometry's segmentsT.\n\nFires a {{#crossLink \"TorusGeometry/segmentsT:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "segmentsT",
             "default": "24",
             "type": "Number",
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 349,
-            "description": "Fired whenever this Torus's {{#crossLink \"Torus/segmentsT:property\"}}{{/crossLink}} property changes.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 350,
+            "description": "Fired whenever this TorusGeometry's {{#crossLink \"TorusGeometry/segmentsT:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "segmentsT",
             "type": "Number",
@@ -17446,26 +17791,26 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 365,
-            "description": "The Torus's arc.\n\nFires a {{#crossLink \"Torus/arc:event\"}}{{/crossLink}} event on change.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 366,
+            "description": "The TorusGeometry's arc.\n\nFires a {{#crossLink \"TorusGeometry/arc:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "arc",
             "default": "Math.PI * 2",
             "type": "Number",
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
-            "file": "src/extras/geometry/torus.js",
-            "line": 391,
-            "description": "Fired whenever this Torus's {{#crossLink \"Torus/arc:property\"}}{{/crossLink}} property changes.",
+            "file": "src/extras/geometry/torusGeometry.js",
+            "line": 392,
+            "description": "Fired whenever this TorusGeometry's {{#crossLink \"TorusGeometry/arc:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "arc",
             "type": "Number",
@@ -17475,13 +17820,13 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Torus",
+            "class": "TorusGeometry",
             "module": "XEO",
             "submodule": "geometry"
         },
         {
             "file": "src/extras/geometry/vectorTextGeometry.js",
-            "line": 147,
+            "line": 151,
             "description": "The text for this VectorText\n\nFires a {{#crossLink \"VectorTextGeometry/text:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "text",
@@ -17493,11 +17838,69 @@
         },
         {
             "file": "src/extras/geometry/vectorTextGeometry.js",
-            "line": 168,
+            "line": 172,
             "description": "Fired whenever this VectorTextGeometry's {{#crossLink \"VectorTextGeometry/text:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "text",
             "type": "Boolean",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/vectorTextGeometry.js",
+            "line": 188,
+            "description": "The VectorText's size on the X-axis.\n\nFires a {{#crossLink \"VectorText/xSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "xSize",
+            "default": "1",
+            "type": "Number",
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/vectorTextGeometry.js",
+            "line": 216,
+            "description": "Fired whenever this VectorText's {{#crossLink \"VectorText/xSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "xSize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/vectorTextGeometry.js",
+            "line": 230,
+            "description": "The VectorText's size on the Y-axis.\n\nFires a {{#crossLink \"VectorText/ySize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "ySize",
+            "default": "1.0",
+            "type": "Number",
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "src/extras/geometry/vectorTextGeometry.js",
+            "line": 258,
+            "description": "Fired whenever this VectorText's {{#crossLink \"VectorText/ySize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "ySize",
+            "type": "Number",
             "params": [
                 {
                     "name": "value",
@@ -17623,96 +18026,6 @@
             "class": "Group",
             "module": "XEO",
             "submodule": "groups"
-        },
-        {
-            "file": "src/extras/groups/groupBoundary.js",
-            "line": 74,
-            "description": "The {{#crossLink \"Group\"}}{{/crossLink}} attached to this GameObject.\n\nDefaults to an empty internally-managed {{#crossLink \"Group\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"GroupBoundary/group:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "group",
-            "type": "Group",
-            "class": "GroupBoundary",
-            "module": "XEO",
-            "submodule": "groups"
-        },
-        {
-            "file": "src/extras/groups/groupBoundary.js",
-            "line": 100,
-            "description": "Fired whenever this GroupBoundary's  {{#crossLink \"GroupBoundary/group:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "group",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "GroupBoundary",
-            "module": "XEO",
-            "submodule": "groups"
-        },
-        {
-            "file": "src/extras/groups/groupBoundary.js",
-            "line": 161,
-            "description": "World-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
-            "itemtype": "property",
-            "name": "worldBoundary",
-            "type": "Boundary3D",
-            "final": 1,
-            "class": "GroupBoundary",
-            "module": "XEO",
-            "submodule": "groups"
-        },
-        {
-            "file": "src/extras/groups/groupBoundary.js",
-            "line": 211,
-            "description": "View-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.",
-            "itemtype": "property",
-            "name": "viewBoundary",
-            "type": "Boundary3D",
-            "final": 1,
-            "class": "GroupBoundary",
-            "module": "XEO",
-            "submodule": "groups"
-        },
-        {
-            "file": "src/extras/groups/groupBoundary.js",
-            "line": 264,
-            "description": "Canvas-space 2D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary2D\"}}{{/crossLink}} instance\nnext time you reference it.",
-            "itemtype": "property",
-            "name": "canvasBoundary",
-            "type": "Boundary2D",
-            "final": 1,
-            "class": "GroupBoundary",
-            "module": "XEO",
-            "submodule": "groups"
-        },
-        {
-            "file": "src/extras/helpers/objectBoundaryHelper.js",
-            "line": 55,
-            "description": "The {{#crossLink \"Boundary3D\"}}{{/crossLink}} we are showing.\n\nFires a {{#crossLink \"ObjectBoundaryHelper/boundary:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "Boundary3D",
-            "type": "Boundary3D",
-            "class": "ObjectBoundaryHelper",
-            "module": "XEO",
-            "submodule": "helpers"
-        },
-        {
-            "file": "src/extras/helpers/objectBoundaryHelper.js",
-            "line": 79,
-            "description": "Fired whenever this ObjectBoundaryHelper's  {{#crossLink \"ObjectBoundaryHelper/boundary:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "boundary",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "ObjectBoundaryHelper",
-            "module": "XEO",
-            "submodule": "helpers"
         },
         {
             "file": "src/extras/helpers/splineCurveHelper.js",
@@ -18748,6 +19061,69 @@
             "class": "MouseZoomCamera",
             "module": "XEO",
             "submodule": "input"
+        },
+        {
+            "file": "src/extras/spatial/groupBoundary.js",
+            "line": 74,
+            "description": "The {{#crossLink \"Group\"}}{{/crossLink}} attached to this GameObject.\n\nDefaults to an empty internally-managed {{#crossLink \"Group\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"GroupBoundary/group:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "group",
+            "type": "Group",
+            "class": "GroupBoundary",
+            "module": "XEO",
+            "submodule": "groups"
+        },
+        {
+            "file": "src/extras/spatial/groupBoundary.js",
+            "line": 100,
+            "description": "Fired whenever this GroupBoundary's  {{#crossLink \"GroupBoundary/group:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "group",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "GroupBoundary",
+            "module": "XEO",
+            "submodule": "groups"
+        },
+        {
+            "file": "src/extras/spatial/groupBoundary.js",
+            "line": 161,
+            "description": "World-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
+            "itemtype": "property",
+            "name": "worldBoundary",
+            "type": "Boundary3D",
+            "final": 1,
+            "class": "GroupBoundary",
+            "module": "XEO",
+            "submodule": "groups"
+        },
+        {
+            "file": "src/extras/spatial/groupBoundary.js",
+            "line": 211,
+            "description": "View-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.",
+            "itemtype": "property",
+            "name": "viewBoundary",
+            "type": "Boundary3D",
+            "final": 1,
+            "class": "GroupBoundary",
+            "module": "XEO",
+            "submodule": "groups"
+        },
+        {
+            "file": "src/extras/spatial/groupBoundary.js",
+            "line": 264,
+            "description": "Canvas-space 2D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary2D\"}}{{/crossLink}} instance\nnext time you reference it.",
+            "itemtype": "property",
+            "name": "canvasBoundary",
+            "type": "Boundary2D",
+            "final": 1,
+            "class": "GroupBoundary",
+            "module": "XEO",
+            "submodule": "groups"
         },
         {
             "file": "src/extras/boilerplate.js",

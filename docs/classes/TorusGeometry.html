@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Grid - xeoengine</title>
+    <title>TorusGeometry - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,6 +39,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -64,9 +65,7 @@
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Geometry.OBJ.html">Geometry.OBJ</a></li>
                                 <li><a href="../classes/Geometry.Quad.html">Geometry.Quad</a></li>
-                                <li><a href="../classes/Grid.html">Grid</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Heightmap.html">Heightmap</a></li>
@@ -75,6 +74,7 @@
                                 <li><a href="../classes/KeyboardOrbitCamera.html">KeyboardOrbitCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -86,13 +86,13 @@
                                 <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/MyComponent.html">MyComponent</a></li>
-                                <li><a href="../classes/ObjectBoundaryHelper.html">ObjectBoundaryHelper</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -105,7 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/SkyBox.html">SkyBox</a></li>
                                 <li><a href="../classes/Sound.html">Sound</a></li>
-                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -113,7 +113,7 @@
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/Torus.html">Torus</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
@@ -176,7 +176,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Grid Class</h1>
+<h1>TorusGeometry Class</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -184,7 +184,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_extras_geometry_grid.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:1</code></a>
+            Defined in: <a href="../files/src_extras_geometry_torusGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:1</code></a>
         </div>
 
             Module: <a href="../modules/geometry.html">geometry</a><br>
@@ -194,7 +194,7 @@
 
 
 <div class="box intro">
-    <p>A <strong>Grid</strong> defines a grid geometry for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>TorusGeometry</strong> defines toroid geometry for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
 <h2 id="example">Example</h2>
 <pre class="code prettyprint"><code class="lang-javascript">
 
@@ -204,8 +204,8 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Grid" class="method item">
-            <h3 class="name"><code>Grid</code></h3>
+        <div id="method_TorusGeometry" class="method item">
+            <h3 class="name"><code>TorusGeometry</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -228,7 +228,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_extras_geometry_grid.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:1</code></a>
+                <a href="../files/src_extras_geometry_torusGeometry.js.html#l1"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:1</code></a>
                 </p>
         
         
@@ -250,7 +250,7 @@
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Grid in the default
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this TorusGeometry in the default
         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
@@ -286,52 +286,69 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this Grid.</p>
+                                            <p>Optional map of user-defined metadata to attach to this TorusGeometry.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[xSize=1]</code>
-                                            <span class="type">Number</span>
+                                            <code class="param-name optional">[primitive=&quot;triangles&quot;]</code>
+                                            <span class="type">String</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Dimension on the X-axis.</p>
+                                            <p>The primitive type. Accepted values are &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[ySize=1]</code>
+                                            <code class="param-name optional">[radius=1]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Dimension on the Y-axis.</p>
-        
+                                            
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[xSegments=4]</code>
+                                            <code class="param-name optional">[tube=0.3]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Number of segments on the X-axis.</p>
-        
+                                            
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[ySegments=4]</code>
+                                            <code class="param-name optional">[segmentsR=32]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Number of segments on the Y-axis.</p>
+                                            
+                                        </div>
         
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[segmentsT=24]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[arc=Math.PI / 2.0]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
                                         </div>
         
                                     </li>
@@ -412,6 +429,10 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_arc">arc</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_autoNormals">autoNormals</a>
 
@@ -460,12 +481,28 @@
                                 <a href="#property_primitive">primitive</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_radius">radius</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_segmentsR">segmentsR</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_segmentsT">segmentsT</a>
+
+                            </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_tube">tube</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -476,22 +513,6 @@
                                 <a href="#property_uv">uv</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_xSegments">xSegments</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_xSize">xSize</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_ySegments">ySegments</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_ySize">ySize</a>
-
-                            </li>
                     </ul>
                 </div>
 
@@ -500,6 +521,10 @@
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_arc">arc</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_autoNormals">autoNormals</a>
 
@@ -532,24 +557,24 @@
                                 <a href="#event_primitive">primitive</a>
 
                             </li>
+                            <li class="index-item event">
+                                <a href="#event_radius">radius</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_segmentsR">segmentsR</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_segmentsT">segmentsT</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_tube">tube</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_uv">uv</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_xSegments">xSegments</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_xSize">xSize</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_ySegments">ySegments</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_ySize">ySize</a>
 
                             </li>
                     </ul>
@@ -1090,6 +1115,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_arc" class="property item">
+                        <h3 class="name"><code>arc</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l366"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:366</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The TorusGeometry&#39;s arc.</p>
+                    <p>Fires a <a href="../classes/TorusGeometry.html#event_arc" class="crosslink">arc</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> Math.PI * 2</p>
+                    
+                    
+                    </div>
                     <div id="property_autoNormals" class="property item inherited">
                         <h3 class="name"><code>autoNormals</code></h3>
                         <span class="type">Boolean</span>
@@ -1262,15 +1314,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_grid.js.html#l162"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:162</code></a>
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l154"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:154</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The Grid&#39;s level-of-detail factor.</p>
-                    <p>Fires a <a href="../classes/Grid.html#event_lod" class="crosslink">lod</a> event on change.</p>
+                            <p>The TorusGeometry&#39;s level-of-detail factor.</p>
+                    <p>Fires a <a href="../classes/TorusGeometry.html#event_lod" class="crosslink">lod</a> event on change.</p>
                     
                         </div>
                     
@@ -1416,6 +1468,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_radius" class="property item">
+                        <h3 class="name"><code>radius</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l196"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:196</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The TorusGeometry&#39;s radius.</p>
+                    <p>Fires a <a href="../classes/TorusGeometry.html#event_radius" class="crosslink">radius</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1</p>
+                    
+                    
+                    </div>
                     <div id="property_scene" class="property item inherited">
                         <h3 class="name"><code>scene</code></h3>
                         <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
@@ -1439,6 +1518,60 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_segmentsR" class="property item">
+                        <h3 class="name"><code>segmentsR</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l281"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:281</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The TorusGeometry&#39;s segmentsR.</p>
+                    <p>Fires a <a href="../classes/TorusGeometry.html#event_segmentsR" class="crosslink">segmentsR</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 32</p>
+                    
+                    
+                    </div>
+                    <div id="property_segmentsT" class="property item">
+                        <h3 class="name"><code>segmentsT</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l324"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:324</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The TorusGeometry&#39;s segmentsT.</p>
+                    <p>Fires a <a href="../classes/TorusGeometry.html#event_segmentsT" class="crosslink">segmentsT</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 24</p>
                     
                     
                     </div>
@@ -1468,6 +1601,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_tube" class="property item">
+                        <h3 class="name"><code>tube</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l239"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:239</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The TorusGeometry&#39;s tube.</p>
+                    <p>Fires a <a href="../classes/TorusGeometry.html#event_tube" class="crosslink">tube</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0.3</p>
                     
                     
                     </div>
@@ -1527,120 +1687,54 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_xSegments" class="property item">
-                        <h3 class="name"><code>xSegments</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_grid.js.html#l294"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:294</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Grid&#39;s number of segments on the X-axis.</p>
-                    <p>Fires a <a href="../classes/Grid.html#event_xSegments" class="crosslink">xSegments</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 4</p>
-                    
-                    
-                    </div>
-                    <div id="property_xSize" class="property item">
-                        <h3 class="name"><code>xSize</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_grid.js.html#l206"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:206</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Grid&#39;s dimension on the X-axis.</p>
-                    <p>Fires a <a href="../classes/Grid.html#event_xSize" class="crosslink">xSize</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1</p>
-                    
-                    
-                    </div>
-                    <div id="property_ySegments" class="property item">
-                        <h3 class="name"><code>ySegments</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_grid.js.html#l338"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:338</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Grid&#39;s number of segments on the Y-axis.</p>
-                    <p>Fires a <a href="../classes/Grid.html#event_ySegments" class="crosslink">ySegments</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 4</p>
-                    
-                    
-                    </div>
-                    <div id="property_ySize" class="property item">
-                        <h3 class="name"><code>ySize</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_grid.js.html#l250"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:250</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Grid&#39;s dimension on the Y-axis.</p>
-                    <p>Fires a <a href="../classes/Grid.html#event_ySize" class="crosslink">ySize</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.25</p>
-                    
-                    
-                    </div>
             </div>
 
 
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_arc" class="events item">
+                        <h3 class="name"><code>arc</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l392"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:392</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this TorusGeometry&#39;s <a href="../classes/TorusGeometry.html#property_arc" class="crosslink">arc</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_autoNormals" class="events item inherited">
                         <h3 class="name"><code>autoNormals</code></h3>
                         <span class="type">Boolean</span>
@@ -1652,7 +1746,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
-                            <a href="../files/src_core_geometry_geometry.js.html#l992"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:992</code></a>
+                            <a href="../files/src_core_geometry_geometry.js.html#l994"><code>src&#x2F;core&#x2F;geometry&#x2F;geometry.js:994</code></a>
                             </p>
                     
                     
@@ -1803,14 +1897,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_extras_geometry_grid.js.html#l192"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:192</code></a>
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l180"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:180</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Grid&#39;s <a href="../classes/Grid.html#property_lod" class="crosslink">lod</a> property changes.</p>
+                            <p>Fired whenever this TorusGeometry&#39;s <a href="../classes/TorusGeometry.html#property_lod" class="crosslink">lod</a> property changes.</p>
                     
                         </div>
                     
@@ -1963,6 +2057,174 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_radius" class="events item">
+                        <h3 class="name"><code>radius</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l222"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:222</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this TorusGeometry&#39;s <a href="../classes/TorusGeometry.html#property_radius" class="crosslink">radius</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_segmentsR" class="events item">
+                        <h3 class="name"><code>segmentsR</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l307"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:307</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this TorusGeometry&#39;s <a href="../classes/TorusGeometry.html#property_segmentsR" class="crosslink">segmentsR</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_segmentsT" class="events item">
+                        <h3 class="name"><code>segmentsT</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l350"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:350</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this TorusGeometry&#39;s <a href="../classes/TorusGeometry.html#property_segmentsT" class="crosslink">segmentsT</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_tube" class="events item">
+                        <h3 class="name"><code>tube</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_extras_geometry_torusGeometry.js.html#l265"><code>src&#x2F;extras&#x2F;geometry&#x2F;torusGeometry.js:265</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this TorusGeometry&#39;s <a href="../classes/TorusGeometry.html#property_tube" class="crosslink">tube</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_uv" class="events item inherited">
                         <h3 class="name"><code>uv</code></h3>
                         <span class="type"></span>
@@ -1982,174 +2244,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_xSegments" class="events item">
-                        <h3 class="name"><code>xSegments</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_grid.js.html#l324"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:324</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Grid&#39;s <a href="../classes/Grid.html#property_xSegments" class="crosslink">xSegments</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_xSize" class="events item">
-                        <h3 class="name"><code>xSize</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_grid.js.html#l236"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:236</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Grid&#39;s <a href="../classes/Grid.html#property_xSize" class="crosslink">xSize</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_ySegments" class="events item">
-                        <h3 class="name"><code>ySegments</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_grid.js.html#l368"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:368</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Grid&#39;s <a href="../classes/Grid.html#property_ySegments" class="crosslink">ySegments</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_ySize" class="events item">
-                        <h3 class="name"><code>ySize</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_extras_geometry_grid.js.html#l280"><code>src&#x2F;extras&#x2F;geometry&#x2F;plane.js:280</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Grid&#39;s <a href="../classes/Grid.html#property_ySize" class="crosslink">ySize</a> property changes.</p>
                     
                         </div>
                     
