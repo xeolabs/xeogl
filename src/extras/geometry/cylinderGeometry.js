@@ -482,46 +482,46 @@
                 get: function () {
                     return this._heightSegments;
                 }
-            }
-        },
-
-
-        /**
-         * Indicates whether this Cylinder's is open-ended.
-         *
-         * Fires a {{#crossLink "Cylinder/openEnded:event"}}{{/crossLink}} event on change.
-         *
-         * @property openEnded
-         * @default false
-         * @type Boolean
-         */
-        openEnded: {
-
-            set: function (value) {
-
-                value = value === undefined ? false : value;
-
-                if (this._openEnded === value) {
-                    return;
-                }
-
-                this._openEnded = value;
-
-                /**
-                 * Fired whenever this Cylinder's {{#crossLink "Cylinder/openEnded:property"}}{{/crossLink}} property changes.
-                 * @event openEnded
-                 * @type Boolean
-                 * @param value The property's new value
-                 */
-                this.fire("openEnded", this._openEnded);
-
-                this._cylinderDirty();
             },
 
-            get: function () {
-                return this._openEnded;
+            /**
+             * Indicates whether this Cylinder's is open-ended.
+             *
+             * Fires a {{#crossLink "Cylinder/openEnded:event"}}{{/crossLink}} event on change.
+             *
+             * @property openEnded
+             * @default false
+             * @type Boolean
+             */
+            openEnded: {
+
+                set: function (value) {
+
+                    value = value === undefined ? false : value;
+
+                    if (this._openEnded === value) {
+                        return;
+                    }
+
+                    this._openEnded = value;
+
+                    /**
+                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/openEnded:property"}}{{/crossLink}} property changes.
+                     * @event openEnded
+                     * @type Boolean
+                     * @param value The property's new value
+                     */
+                    this.fire("openEnded", this._openEnded);
+
+                    this._cylinderDirty();
+                },
+
+                get: function () {
+                    return this._openEnded;
+                }
             }
         },
+
 
         _getJSON: function () {
             return {
