@@ -7,12 +7,12 @@ comprehensive [object-component-based](http://gameprogrammingpatterns.com/compon
 
 This engine is based on lessons learned from the development and application of [SceneJS](http://scenejs.org).
 
-It's currently at **alpha** status, where in order to get the design right, the documentation is released for peer review *before* the implementation.
+It's currently at **alpha** status, so stuff will change.
 
 ## Resources 
 
- - [Live examples](http://xeoengine.org/examples) 
- - [API documentation](http://xeoengine.org/docs/index.html)
+ - [Examples](http://xeoengine.org/examples) 
+ - [Documentation](http://xeoengine.org/docs/index.html)
  
 ## Building
  
