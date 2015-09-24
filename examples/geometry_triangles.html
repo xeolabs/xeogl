@@ -29,88 +29,214 @@
     // Create a 2x2x2 box centered at the World-space origin
     var geometry = new XEO.Geometry({
 
-        // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',
-        // 'triangle-strip' and 'triangle-fan'.primitive: "triangles",
+        // The primitive type - allowed values are
+        // "points", "lines", "line-loop", "line-strip",
+        // "triangles", "triangle-strip" and "triangle-fan".
+        //
+        // See the OpenGL/WebGL specification docs for
+        // how the coordinate arrays are supposed to be laid out.
         primitive: "triangles",
 
-        // Vertex positions
+        // The vertices - eight for our cube, each
+        // one spanning three array elements for X,Y and Z
         positions: [
 
-            // Front face
-            -1.0, -1.0, 1.0,
-            1.0, -1.0, 1.0,
-            1.0, 1.0, 1.0,
-            -1.0, 1.0, 1.0,
+            // v0-v1-v2-v3 front
+            2, 2, 2,
+            -2, 2, 2,
+            -2, -2, 2,
+            2, -2, 2,
 
-            // Back face
-            -1.0, -1.0, -1.0,
-            -1.0, 1.0, -1.0,
-            1.0, 1.0, -1.0,
-            1.0, -1.0, -1.0,
+            // v0-v3-v4-v1 right
+            2, 2, 2,
+            2, -2, 2,
+            2, -2, -2,
+            2, 2, -2,
 
-            // Top face
-            -1.0, 1.0, -1.0,
-            -1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-            1.0, 1.0, -1.0,
+            // v0-v1-v6-v1 top
+            2, 2, 2,
+            2, 2, -2,
+            -2, 2, -2,
+            -2, 2, 2,
 
-            // Bottom face
-            -1.0, -1.0, -1.0,
-            1.0, -1.0, -1.0,
-            1.0, -1.0, 1.0,
-            -1.0, -1.0, 1.0,
+            // v1-v6-v7-v2 left
+            -2, 2, 2,
+            -2, 2, -2,
+            -2, -2, -2,
+            -2, -2, 2,
 
-            // Right face
-            1.0, -1.0, -1.0,
-            1.0, 1.0, -1.0,
-            1.0, 1.0, 1.0,
-            1.0, -1.0, 1.0,
+            // v7-v4-v3-v2 bottom
+            -2, -2, -2,
+            2, -2, -2,
+            2, -2, 2,
+            -2, -2, 2,
 
-            // Left face
-            -1.0, -1.0, -1.0,
-            -1.0, -1.0, 1.0,
-            -1.0, 1.0, 1.0,
-            -1.0, 1.0, -1.0
+            // v4-v7-v6-v1 back
+            2, -2, -2,
+            -2, -2, -2,
+            -2, 2, -2,
+            2, 2, -2
         ],
 
-        // Vertex colors
-        colors: [
-            1.0, 1.0, 1.0, 1.0,    // Front face: white
-            1.0, 0.0, 0.0, 1.0,    // Back face: red
-            0.0, 1.0, 0.0, 1.0,    // Top face: green
-            0.0, 0.0, 1.0, 1.0,    // Bottom face: blue
-            1.0, 1.0, 0.0, 1.0,    // Right face: yellow
-            1.0, 0.0, 1.0, 1.0     // Left face: purple
-        ],
-
-        // Vertex normals
+        // Normal vectors, one for each vertex
         normals: [
-            0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-            1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-            0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
-            -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
-            0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
-            0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+
+            // v0-v1-v2-v3 front
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+
+            // v0-v3-v4-v5 right
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+
+            // v0-v5-v6-v1 top
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+
+            // v1-v6-v7-v2 left
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+
+            // v7-v4-v3-v2 bottom
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+
+            // v4-v7-v6-v5 back
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1
         ],
 
-        // UV coordinates
+        // UV coords
         uv: [
-            1, 1, 0, 1, 0, 0, 1, 0,
-            0, 1, 0, 0, 1, 0, 1, 1,
-            1, 0, 1, 1, 0, 1, 0, 0,
-            1, 1, 0, 1, 0, 0, 1, 0,
-            0, 0, 1, 0, 1, 1, 0, 1,
-            0, 0, 1, 0, 1, 1, 0, 1
+
+            // v0-v1-v2-v3 front
+            5, 5,
+            0, 5,
+            0, 0,
+            5, 0,
+
+            // v0-v3-v4-v5 right
+            0, 5,
+            0, 0,
+            5, 0,
+            5, 5,
+
+            // v0-v5-v6-v1 top
+            5, 0,
+            5, 5,
+            0, 5,
+            0, 0,
+
+            // v1-v6-v7-v2 left
+            5, 5,
+            0, 5,
+            0, 0,
+            5, 0,
+
+            // v7-v4-v3-v2 bottom
+            0, 0,
+            5, 0,
+            5, 5,
+            0, 5,
+
+            // v4-v7-v6-v5 back
+            0, 0,
+            5, 0,
+            5, 5,
+            0, 5
         ],
 
-        // Triangle indices
+        // Color for each vertex
+        colors: [
+
+            /* v0-v1-v2-v3 front
+             */
+            1.0, 0.0, 0.0, 1.5,
+            0.0, 1.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+
+            /* v0-v3-v4-v5 right
+             */
+            1.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+
+            /* v0-v5-v6-v1 top
+             */
+            1.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+
+            /* v1-v6-v7-v2 left
+             */
+            1.0, 0.0, 0.0, 1.0,
+            1.0, 1.0, 0.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+
+            /* v7-v4-v3-v2 bottom
+             */
+            0.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+
+            /* v4-v7-v6-v5 back
+             */
+            1.0, 0.0, 1.0, 1.0,
+            0.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 0.0, 1.0,
+            1.0, 1.0, 1.0, 1.0
+        ],
+
+        // Indices - these organise the
+        // positions and uv texture coordinates
+        // into geometric primitives in accordance
+        // with the "primitive" parameter,
+        // in this case a set of three indices
+        // for each triangle.
+        //
+        // Note that each triangle is specified
+        // in counter-clockwise winding order.
+        //
+        // You can specify them in clockwise
+        // order if you configure the Modes
+        // node's frontFace flag as "cw", instead of
+        // the default "ccw".
         indices: [
-            0, 1, 2, 0, 2, 3,    // front
-            4, 5, 6, 4, 6, 7,    // back
-            8, 9, 10, 8, 10, 11,   // top
-            12, 13, 14, 12, 14, 15,   // bottom
-            16, 17, 18, 16, 18, 19,   // right
-            20, 21, 22, 20, 22, 23    // left
+            0, 1, 2,
+            0, 2, 3,
+            // front
+            4, 5, 6,
+            4, 6, 7,
+            // right
+            8, 9, 10,
+            8, 10, 11,
+            // top
+            12, 13, 14,
+            12, 14, 15,
+            // left
+            16, 17, 18,
+            16, 18, 19,
+            // bottom
+            20, 21, 22,
+            20, 22, 23
+
         ]
     });
 
