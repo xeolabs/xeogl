@@ -4,18 +4,18 @@
  ## Overview
 
  <ul>
-    <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
-    <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
-    <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
+ <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
+ <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
+ <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
  </ul>
 
  A target can be:
 
  <ul>
-    <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
-    <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
-    {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
-    <li>specific ````eye````, ````look```` and ````up```` positions.</li>
+ <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
+ <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
+ {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
+ <li>specific ````eye````, ````look```` and ````up```` positions.</li>
  </ul>
 
  ## Example #1
@@ -45,7 +45,6 @@
  Flying the CameraFlight from the previous example to specified eye, look and up positions:
 
  ````Javascript
- // Fly to a target eye, look and up
  cameraFlight.flyTo({
     eye: [-5,-5,-5],
     look: [0,0,0]
@@ -68,7 +67,7 @@
 
  ## Example #4
 
- Flying the CameraFlight from the previous two examples explicitly to {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
+ Flying the CameraFlight from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
  axis-aligned bounding box:
 
  ````Javascript
