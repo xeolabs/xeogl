@@ -95,11 +95,6 @@
 
             this._super(cfg);
 
-            this._xyz = null;
-            this._angle = null;
-
-            // Set properties
-
             this.xyz = cfg.xyz;
             this.angle = cfg.angle;
         },
@@ -121,11 +116,17 @@
 
                     value = value || [0, 1, 0];
 
-                    this._xyz = this._xyz || [0, 0, 0];
-
-                    this._xyz[0] = value[0];
-                    this._xyz[1] = value[1];
-                    this._xyz[2] = value[2];
+                    if (this._xyz) {
+                        if (this._xyz[0] === value[0] && this._xyz[1] === value[1] && this._xyz[2] === value[2]) {
+                            return;
+                        } else {
+                            this._xyz[0] = value[0];
+                            this._xyz[1] = value[1];
+                            this._xyz[2] = value[2];
+                        }
+                    } else {
+                        this._xyz = value;
+                    }
 
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/xyz:property"}}{{/crossLink}} property changes.
@@ -190,7 +191,7 @@
                 // but that will be rarely be the case, where ormally it would just be the angle that is
                 // continually updated.
 
-                this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix || (this._matrix = XEO.math.mat4()));
+                this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix || (this._matrix = XEO.math.identityMat4()));
             }
         },
 

@@ -240,15 +240,10 @@
 
                 set: function (value) {
 
-                    value = value || [
-                            1, 0, 0, 0,
-                            0, 1, 0, 0,
-                            0, 0, 1, 0,
-                            0, 0, 0, 1
-                        ];
+                    value = value || XEO.math.identityMat4();
 
                     if (!this._matrix) {
-                        this._matrix = new Float32Array(value)
+                        this._matrix = XEO.math.identityMat4();
                     } else {
                         this._matrix.set(value);
                     }
@@ -311,7 +306,7 @@
                 return;
             }
 
-            this._state.matrix = this._state.matrix || [];
+            this._state.matrix = this._state.matrix || XEO.math.identityMat4();
 
             if (!this._parent) {
 
@@ -328,7 +323,7 @@
             }
 
             if (!this._state.normalMatrix) {
-                this._state.normalMatrix = new Float32Array(16);
+                this._state.normalMatrix = XEO.math.identityMat4();
             }
 
             // TODO: only compute normal matrix on leaf!
@@ -343,7 +338,7 @@
 
         _getJSON: function () {
             return {
-                matrix: Array.prototype.slice.call(this._state.matrix)
+                matrix: Array.prototype.slice.call(this._matrix)
             };
         },
 

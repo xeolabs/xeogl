@@ -123,9 +123,21 @@
 
                 set: function (value) {
 
-                    this._xyz = value || [1, 1, 1];
+                    value = value || [0, 0, 0];
 
-                    this.matrix = XEO.math.translationMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.mat4()));
+                    if (this._xyz) {
+                        if (this._xyz[0] === value[0] && this._xyz[1] === value[1] && this._xyz[2] === value[2]) {
+                            return;
+                        } else {
+                            this._xyz[0] = value[0];
+                            this._xyz[1] = value[1];
+                            this._xyz[2] = value[2];
+                        }
+                    } else {
+                        this._xyz = value;
+                    }
+
+                    this.matrix = XEO.math.translationMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.identityMat4()));
 
                     /**
                      Fired whenever this Translate's {{#crossLink "Translate/xyz:property"}}{{/crossLink}} property changes.
