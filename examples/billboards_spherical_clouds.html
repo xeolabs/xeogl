@@ -14,7 +14,7 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -27,20 +27,101 @@
 
 <script>
 
+    // Hoops
+    // Create a prototype hoop object and clone it two times
+
+    new XEO.GameObject({
+        geometry: new XEO.TorusGeometry({
+            radius: 40,
+            tube: 1,
+            segmentsR: 20,
+            segmentsT: 120
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 1, 0.4],
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/rust.jpg"
+            })
+        }),
+        transform: new XEO.Scale({
+            xyz: [2.5, 2.5, 5.5],
+            parent: new XEO.Rotate({
+                xyz: [0, 1, 0],
+                angle: 90
+            })
+        })
+    })
+            .clone({
+                transform: new XEO.Scale({
+                    xyz: [2.5, 2.5, 5.5],
+                    parent: new XEO.Rotate({
+                        xyz: [0, 1, 0],
+                        angle: 0
+                    })
+                })
+            }).clone({
+                transform: new XEO.Scale({
+                    xyz: [2.5, 2.5, 5.5],
+                    parent: new XEO.Rotate({
+                        xyz: [1, 0, 0],
+                        angle: 90
+                    })
+                })
+            });
+
+    // Balls at the intersections of the hoops
+    // Create a prototype ball object and clone it five times
+
+    new XEO.GameObject({
+        geometry: new XEO.SphereGeometry({
+            radius: 5
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 1, 0.4]
+        }),
+        transform: new XEO.Translate({
+            xyz: [-100, 0, 0]
+        })
+    })
+            .clone({
+                transform: new XEO.Translate({
+                    xyz: [100, 0, 0]
+                })
+            }).clone({
+                transform: new XEO.Translate({
+                    xyz: [0, -100, 0]
+                })
+            }).clone({
+                transform: new XEO.Translate({
+                    xyz: [0, 100, 0]
+                })
+            }).clone({
+                transform: new XEO.Translate({
+                    xyz: [0, 0, -100]
+                })
+            }).clone({
+                transform: new XEO.Translate({
+                    xyz: [0, 0, 100]
+                })
+            });
+
+
+    // Clouds
+
     var geometry = new XEO.Geometry({
         primitive: "triangles",
-        positions: [10, 10, 0, -10, 10, 0, -10, -10, 0, 10, -10, 0],
+        positions: [20, 20, 0, -20, 20, 0, -20, -20, 0, 20, -20, 0],
         normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
         uv: [1, 1, 0, 1, 0, 0, 1, 0],
         indices: [0, 1, 2, 0, 2, 3]
     });
 
     var material = new XEO.PhongMaterial({
-        diffuse: [0,0,0],
-        specular: [0,0,0],
+        diffuse: [0, 0, 0],
+        specular: [0, 0, 0],
         emissive: [1, 1, 1],
         opacityMap: new XEO.Texture({
-            src: "textures/cloudAlpha.jpg"
+            src: "textures/opacity/cloud10.png"
         }),
         opacity: 1.0
     });
@@ -63,31 +144,44 @@
 
     for (var i = 0; i < numClouds; i++) {
 
+        var r = (Math.random() + 0.1 ) * 200;
+        var halfr = r / 2;
+
         var object = new XEO.GameObject({
             geometry: geometry,
             material: material,
             lights: lights,
             billboard: billboard,
             transform: new XEO.Translate({
-                xyz: [Math.random() * Math.random() * 60 - 30, Math.random() * Math.random() * 100 - 50, Math.random() * Math.random() * 100 - 50]
+                xyz: [
+                    Math.random() * r - halfr,
+                    Math.random() * r - halfr,
+                    Math.random() * r - halfr
+                ]
             }),
             modes: modes,
             layer: new XEO.Layer()
         });
 
-        object.viewBoundary.on("updated",
-                function () {
-                    var center = object.viewBoundary.center;
-                    var priority = Math.floor(500 + center[2] * 100);
-                    object.layer.priority = priority;
-                });
+        // Dynamically set the rendering order of each
+        // GameObject in proportion to its Z-depth in View space 
+
+        (function () {
+
+            var _object = object;
+
+            object.viewBoundary.on("updated",
+                    function () {
+                        _object.layer.priority = 5000 + _object.viewBoundary.center[2];
+                    });
+        })();
     }
 
     var scene = XEO.scene;
 
     // Move the camera back a bit
 
-    scene.camera.view.zoom(120);
+    scene.camera.view.zoom(320);
 
     // Orbit the eye position about the look position.
 
