@@ -91,8 +91,8 @@
             this.up = cfg.up;
         },
 
-        // Schedules a call to #_build on the next "tick"
-        _scheduleBuild: function () {
+        // Schedules a call to #_buildLookat on the next "tick"
+        _lookatDirty: function () {
 
             if (!this._dirty) {
 
@@ -102,13 +102,13 @@
 
                 this.scene.once("tick2",
                     function () {
-                        self._build();
+                        self._buildLookat();
                     });
             }
         },
 
         // Rebuilds rendering state
-        _build: function () {
+        _buildLookat: function () {
 
             this._state.matrix = new Float32Array(XEO.math.lookAtMat4c(
                 this._state.eye[0], this._state.eye[1], this._state.eye[2],
@@ -307,7 +307,7 @@
                     eye[1] = value[1];
                     eye[2] = value[2];
 
-                    this._scheduleBuild();
+                    this._lookatDirty();
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} property changes.
@@ -344,7 +344,7 @@
                     look[1] = value[1];
                     look[2] = value[2];
 
-                    this._scheduleBuild();
+                    this._lookatDirty();
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/look:property"}}{{/crossLink}} property changes.
@@ -379,7 +379,7 @@
                     up[1] = value[1];
                     up[2] = value[2];
 
-                    this._scheduleBuild();
+                    this._lookatDirty();
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/up:property"}}{{/crossLink}} property changes.
@@ -408,7 +408,7 @@
                 get: function () {
 
                     if (this._dirty) {
-                        this._build();
+                        this._buildLookat();
                     }
 
                     return this._state.matrix;
@@ -419,7 +419,7 @@
         _compile: function () {
 
             if (this._dirty) {
-                this._build();
+                this._buildLookat();
             }
 
             this._renderer.viewTransform = this._state;
