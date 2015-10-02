@@ -49,19 +49,19 @@
             this.autoNormals = cfg.autoNormals !== false;
         },
 
-        _gridDirty: function () {
-            if (!this.__dirty) {
-                this.__dirty = true;
+        _setPlaneDirty: function () {
+            if (!this._planeDirty) {
+                this._planeDirty = true;
                 var self = this;
                 this.scene.once("tick2",
                     function () {
-                        self._buildGrid();
-                        self.__dirty = false;
+                        self._buildPlane();
+                        self._planeDirty = false;
                     });
             }
         },
 
-        _buildGrid: function () {
+        _buildPlane: function () {
 
                 // Geometry needs rebuild
 
@@ -82,27 +82,27 @@
                 var halfWidth = width / 2;
                 var halfHeight = height / 2;
 
-                var gridX = Math.floor( xSegments ) || 1;
-                var gridY = Math.floor( ySegments ) || 1;
+                var planeX = Math.floor( xSegments ) || 1;
+                var planeY = Math.floor( ySegments ) || 1;
 
-                var gridX1 = gridX + 1;
-                var gridY1 = gridY + 1;
+                var planeX1 = planeX + 1;
+                var planeY1 = planeY + 1;
 
-                var segmentWidth = width / gridX;
-                var segmentHeight = height / gridY;
+                var segmentWidth = width / planeX;
+                var segmentHeight = height / planeY;
 
-                var positions = new Float32Array( gridX1 * gridY1 * 3 );
-                var normals = new Float32Array( gridX1 * gridY1 * 3 );
-                var uvs = new Float32Array( gridX1 * gridY1 * 2 );
+                var positions = new Float32Array( planeX1 * planeY1 * 3 );
+                var normals = new Float32Array( planeX1 * planeY1 * 3 );
+                var uvs = new Float32Array( planeX1 * planeY1 * 2 );
 
                 var offset = 0;
                 var offset2 = 0;
 
-                for ( var iy = 0; iy < gridY1; iy ++ ) {
+                for ( var iy = 0; iy < planeY1; iy ++ ) {
 
                     var y = iy * segmentHeight - halfHeight;
 
-                    for ( var ix = 0; ix < gridX1; ix ++ ) {
+                    for ( var ix = 0; ix < planeX1; ix ++ ) {
 
                         var x = ix * segmentWidth - halfWidth;
 
@@ -111,8 +111,8 @@
 
                         normals[offset + 2] = -1;
 
-                        uvs[offset2] = (gridX -ix) / gridX;
-                        uvs[offset2 + 1] = 1 - ( (gridY-iy) / gridY );
+                        uvs[offset2] = (planeX -ix) / planeX;
+                        uvs[offset2 + 1] = 1 - ( (planeY-iy) / planeY );
 
                         offset += 3;
                         offset2 += 2;
@@ -121,16 +121,16 @@
 
                 offset = 0;
 
-                var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )( gridX * gridY * 6 );
+                var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )( planeX * planeY * 6 );
 
-                for ( var iy = 0; iy < gridY; iy ++ ) {
+                for ( var iy = 0; iy < planeY; iy ++ ) {
 
-                    for ( var ix = 0; ix < gridX; ix ++ ) {
+                    for ( var ix = 0; ix < planeX; ix ++ ) {
 
-                        var a = ix + gridX1 * iy;
-                        var b = ix + gridX1 * ( iy + 1 );
-                        var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
-                        var d = ( ix + 1 ) + gridX1 * iy;
+                        var a = ix + planeX1 * iy;
+                        var b = ix + planeX1 * ( iy + 1 );
+                        var c = ( ix + 1 ) + planeX1 * ( iy + 1 );
+                        var d = ( ix + 1 ) + planeX1 * iy;
 
                         indices[offset] = d;
                         indices[offset + 1] = b;
@@ -179,7 +179,7 @@
 
                     this._lod = value;
 
-                    this._gridDirty();
+                    this._setPlaneDirty();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -221,7 +221,7 @@
 
                     this._xSize = value;
 
-                    this._gridDirty();
+                    this._setPlaneDirty();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}} property changes.
@@ -263,7 +263,7 @@
 
                     this._ySize = value;
 
-                    this._gridDirty();
+                    this._setPlaneDirty();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySize:property"}}{{/crossLink}} property changes.
@@ -305,7 +305,7 @@
 
                     this._xSegments = value;
 
-                    this._gridDirty();
+                    this._setPlaneDirty();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} property changes.
@@ -347,7 +347,7 @@
 
                     this._ySegments = value;
 
-                    this._gridDirty();
+                    this._setPlaneDirty();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySegments:property"}}{{/crossLink}} property changes.

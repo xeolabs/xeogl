@@ -70,14 +70,14 @@
             this.autoNormals = cfg.autoNormals !== false;
         },
 
-        _heightmapDirty: function () {
-            if (!this.__dirty) {
-                this.__dirty = true;
+        _setHeightmapDirty: function () {
+            if (!this._heightmapDirty) {
+                this._heightmapDirty = true;
                 var self = this;
                 this.scene.once("tick2",
                     function () {
                         self._buildHeightmap();
-                        self.__dirty = false;
+                        self._heightmapDirty = false;
                     });
             }
         },
@@ -244,6 +244,14 @@
                 this.indices = indices;
 
                 this._geometryDirty = false;
+
+                /**
+                 * Fired whenever this HeightmapGeometry has rebuilt itself after an update to the
+                 * {{#crossLink "Heightmap/src:property"}}{{/crossLink}} or {{#crossLink "Heightmap/image:property"}}{{/crossLink}} properties.
+                 * @event loaded
+                 * @param value {Heightmap} This Heightmap
+                 */
+                this.fire("updated", this);
             }
         },
 
@@ -272,7 +280,7 @@
                     self._imageDirty = true;
                     self._geometryDirty = true;
 
-                    self._heightmapDirty();
+                    self._setHeightmapDirty();
 
                     /**
                      * Fired whenever this Heightmap's  {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property changes.
@@ -332,7 +340,7 @@
 
                     this._geometryDirty = true;
 
-                    this._heightmapDirty();
+                    this._setHeightmapDirty();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/lod:property"}}{{/crossLink}} property changes.
@@ -373,7 +381,7 @@
                     this._imageDirty = true;
                     this._geometryDirty = true;
 
-                    this._heightmapDirty();
+                    this._setHeightmapDirty();
 
                     /**
                      * Fired whenever this Heightmap's  {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property changes.
@@ -413,7 +421,7 @@
                     this._imageDirty = true;
                     this._geometryDirty = true;
 
-                    this._heightmapDirty();
+                    this._setHeightmapDirty();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/src:property"}}{{/crossLink}} property changes.
@@ -457,7 +465,7 @@
 
                     this._geometryDirty = true;
 
-                    this._heightmapDirty();
+                    this._setHeightmapDirty();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSize:property"}}{{/crossLink}} property changes.
@@ -501,7 +509,7 @@
 
                     this._geometryDirty = true;
 
-                    this._heightmapDirty();
+                    this._setHeightmapDirty();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySize:property"}}{{/crossLink}} property changes.
@@ -545,7 +553,7 @@
 
                     this._geometryDirty = true;
 
-                    this._heightmapDirty();
+                    this._setHeightmapDirty();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/zSize:property"}}{{/crossLink}} property changes.
@@ -589,7 +597,7 @@
 
                     this._geometryDirty = true;
 
-                    this._heightmapDirty();
+                    this._setHeightmapDirty();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSegments:property"}}{{/crossLink}} property changes.
@@ -633,7 +641,7 @@
 
                     this._geometryDirty = true;
 
-                    this._heightmapDirty();
+                    this._setHeightmapDirty();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySegments:property"}}{{/crossLink}} property changes.
