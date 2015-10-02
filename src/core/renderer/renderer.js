@@ -594,10 +594,13 @@
             if (!object.program) { // Non-visual object (eg. sound)
                 object.sortKey = -1;
             } else {
+
+                // TODO: clamp priority to [0..9999]
+
                 object.sortKey =
-                    ((object.stage.priority + 1) * 10000000000)
-                    + ((object.modes.transparent ? 2 : 1) * 10000000)
-                    + ((object.layer.priority + 1) * 1000000)
+                    ((object.stage.priority + 1) * 100000000000)
+                    + ((object.modes.transparent ? 2 : 1) * 100000000)
+                    + ((object.layer.priority + 1) * 10000000)
                     + ((object.program.id + 1) * 1000)
                     + object.material.id;
             }
