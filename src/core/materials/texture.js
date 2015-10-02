@@ -352,6 +352,14 @@
                      */
                     self.fire("image", self._image);
 
+                    /**
+                     * Fired whenever this Texture has loaded the
+                     * image file that its {{#crossLink "Texture/src:property"}}{{/crossLink}} property currently points to.
+                     * @event loaded
+                     * @param value {HTML Image} The value of the {{#crossLink "Texture/src:property"}}{{/crossLink}} property
+                     */
+                    self.fire("loaded", self._src);
+
                     self._scheduleBuild();
                 }
 
