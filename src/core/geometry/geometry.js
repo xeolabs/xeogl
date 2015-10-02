@@ -453,7 +453,7 @@
                 this._dirty = true;
                 var self = this;
 
-                this.scene.once("tick2",
+                this.scene.once("tick3",
                     function () {
                         self._build();
                     });

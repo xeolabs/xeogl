@@ -6,6 +6,8 @@
 
     var tempMat2 = new Float32Array(16);
 
+    var tempVec4 = new Float32Array(4);
+
     /*
      * Optimizations made based on glMatrix by Brandon Jones
      */
@@ -766,12 +768,12 @@
          * @static
          */
         diagonalMat4v: function (v) {
-            return [
+            return new Float32Array([
                 v[0], 0.0, 0.0, 0.0,
                 0.0, v[1], 0.0, 0.0,
                 0.0, 0.0, v[2], 0.0,
                 0.0, 0.0, 0.0, v[3]
-            ];
+            ]);
         },
 
         /**
@@ -798,7 +800,12 @@
          * @static
          */
         identityMat4: function () {
-            return XEO.math.diagonalMat4v([1.0, 1.0, 1.0, 1.0]);
+            return new Float32Array([
+                1.0, 0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                0.0, 0.0, 0.0, 1.0
+            ]);
         },
 
         /**
@@ -1298,8 +1305,8 @@
          * @method scalingMat4v
          * @static
          */
-        scalingMat4v: function (v) {
-            var m = XEO.math.identityMat4();
+        scalingMat4v: function (v, m) {
+            m = m || XEO.math.identityMat4();
             m[0] = v[0];
             m[5] = v[1];
             m[10] = v[2];
@@ -1565,14 +1572,37 @@
          * @method transformPoint3
          * @static
          */
-        transformPoint3: function (m, p) {
-            var p0 = p[0], p1 = p[1], p2 = p[2];
-            return [
-                (m[0] * p0) + (m[4] * p1) + (m[8] * p2) + m[12],
-                (m[1] * p0) + (m[5] * p1) + (m[9] * p2) + m[13],
-                (m[2] * p0) + (m[6] * p1) + (m[10] * p2) + m[14],
-                (m[3] * p0) + (m[7] * p1) + (m[11] * p2) + m[15]
-            ];
+        transformPoint3: function (m, p, dest) {
+
+            var r = dest || XEO.math.vec4();
+
+            tempVec4[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
+            tempVec4[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
+            tempVec4[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
+            //tempVec4[3] = (m[3] * p[0]) + (m[7] * p[1]) + (m[11] * p[2]) + m[15];
+
+            r[0] = tempVec4[0];
+            r[1] = tempVec4[1];
+            r[2] = tempVec4[2];
+            r[3] = 1.0;
+
+            return r;
+        },
+
+        transformPoint4: function (m, v, dest) {
+            var r = dest || XEO.math.vec4();
+
+            tempVec4[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
+            tempVec4[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
+            tempVec4[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
+            tempVec4[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
+
+            r[0] = tempVec4[0];
+            r[1] = tempVec4[1];
+            r[2] = tempVec4[2];
+            r[3] = tempVec4[3];
+
+            return r;
         },
 
 
@@ -1604,7 +1634,7 @@
                 p1 = pi[1];
                 p2 = pi[2];
 
-                r = result[i] || (result[i] = [0, 0, 0, 0]);
+                r = result[i] || (result[i] = [0, 0, 0, 1]);
 
                 r[0] = (m0 * p0) + (m4 * p1) + (m8 * p2) + m12;
                 r[1] = (m1 * p0) + (m5 * p1) + (m9 * p2) + m13;
@@ -1744,6 +1774,7 @@
             obb[0][0] = aabb.xmin;
             obb[0][1] = aabb.ymin;
             obb[0][2] = aabb.zmin;
+            obb[0][3] = 1;
 
             if (!obb[1]) {
                 obb[1] = [];
@@ -1752,6 +1783,7 @@
             obb[1][0] = aabb.xmax;
             obb[1][1] = aabb.ymin;
             obb[1][2] = aabb.zmin;
+            obb[1][3] = 1;
 
             if (!obb[2]) {
                 obb[2] = [];
@@ -1760,6 +1792,7 @@
             obb[2][0] = aabb.xmax;
             obb[2][1] = aabb.ymax;
             obb[2][2] = aabb.zmin;
+            obb[2][3] = 1;
 
             if (!obb[3]) {
                 obb[3] = [];
@@ -1768,6 +1801,7 @@
             obb[3][0] = aabb.xmin;
             obb[3][1] = aabb.ymax;
             obb[3][2] = aabb.zmin;
+            obb[3][3] = 1;
 
             if (!obb[4]) {
                 obb[4] = [];
@@ -1776,6 +1810,7 @@
             obb[4][0] = aabb.xmin;
             obb[4][1] = aabb.ymin;
             obb[4][2] = aabb.zmax;
+            obb[4][3] = 1;
 
             if (!obb[5]) {
                 obb[5] = [];
@@ -1784,6 +1819,7 @@
             obb[5][0] = aabb.xmax;
             obb[5][1] = aabb.ymin;
             obb[5][2] = aabb.zmax;
+            obb[5][3] = 1;
 
             if (!obb[6]) {
                 obb[6] = [];
@@ -1792,6 +1828,7 @@
             obb[6][0] = aabb.xmax;
             obb[6][1] = aabb.ymax;
             obb[6][2] = aabb.zmax;
+            obb[6][3] = 1;
 
             if (!obb[7]) {
                 obb[7] = [];
@@ -1800,6 +1837,7 @@
             obb[7][0] = aabb.xmin;
             obb[7][1] = aabb.ymax;
             obb[7][2] = aabb.zmax;
+            obb[7][3] = 1;
 
             return obb;
         },

@@ -1,4 +1,3 @@
-
 /**
  A **Layer** specifies the render order of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
@@ -46,42 +45,42 @@
  each assigned to a different prioritised {{#crossLink "Layer"}}{{/crossLink}} to ensure that they are rendered in the right order.
 
  ````javascript
-var scene = new XEO.Scene();
+ var scene = new XEO.Scene();
 
-// View transform
-var lookat = new XEO.Lookat(scene, {
+ // View transform
+ var lookat = new XEO.Lookat(scene, {
     eye: [0,0,10]
 });
 
-// Camera, using Scene's default projection transform
-var camera = new XEO.Camera(scene, {
+ // Camera, using Scene's default projection transform
+ var camera = new XEO.Camera(scene, {
     view: lookat
 });
 
-// A Stage, just for completeness
-// We could instead just implicitly use the Scene's default Stage
-var stage = new XEO.Stage(scene, {
+ // A Stage, just for completeness
+ // We could instead just implicitly use the Scene's default Stage
+ var stage = new XEO.Stage(scene, {
     priority: 0
 });
 
-// Geometry with no parameters defaults to a 2x2x2 box
-var geometry = new XEO.Geometry(scene);
+ // Geometry with no parameters defaults to a 2x2x2 box
+ var geometry = new XEO.Geometry(scene);
 
-//-----------------------------------------------------------------------------
-// Innermost box
-// Blue and opaque, in Layer with render order 0, renders first
+ //-----------------------------------------------------------------------------
+ // Innermost box
+ // Blue and opaque, in Layer with render order 0, renders first
  //-----------------------------------------------------------------------------
 
-var layer1 = new XEO.Layer(scene, {
+ var layer1 = new XEO.Layer(scene, {
     priority: 1
 });
 
-var material1 = new XEO.PhongMaterial(scene, {
+ var material1 = new XEO.PhongMaterial(scene, {
     diffuse: [0.2, 0.2, 1.0],
     opacity: 1.0
 });
 
-var object1 = new XEO.GameObject(scene, {
+ var object1 = new XEO.GameObject(scene, {
     camera: camera,
     geometry: geometry,
     stage: stage,
@@ -89,25 +88,25 @@ var object1 = new XEO.GameObject(scene, {
     material: material1
 });
 
-//-----------------------------------------------------------------------------
-// Middle box
-// Red and transparent, in Layer with render order 2, renders next
+ //-----------------------------------------------------------------------------
+ // Middle box
+ // Red and transparent, in Layer with render order 2, renders next
  //-----------------------------------------------------------------------------
 
-var layer2 = new XEO.Layer(scene, {
+ var layer2 = new XEO.Layer(scene, {
     priority: 2
 });
 
-var material2 = new XEO.PhongMaterial(scene, {
+ var material2 = new XEO.PhongMaterial(scene, {
     diffuse: [1, 0.2, 0.2],
     opacity: 0.2
 });
 
-var scale2 = new XEO.Scale(scene, {
+ var scale2 = new XEO.Scale(scene, {
     xyz: [6, 6, 6]
 });
 
-var object2 = new XEO.GameObject(scene, {
+ var object2 = new XEO.GameObject(scene, {
     camera: camera,
     geometry: geometry,
     stage: stage,
@@ -116,25 +115,25 @@ var object2 = new XEO.GameObject(scene, {
     scale: scale2
 });
 
-//-----------------------------------------------------------------------------
-// Outermost box
-// Green and transparent, in Layer with render order 3, renders last
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
+ // Outermost box
+ // Green and transparent, in Layer with render order 3, renders last
+ //-----------------------------------------------------------------------------
 
-var layer3 = new XEO.Layer(scene, {
+ var layer3 = new XEO.Layer(scene, {
     priority: 3
 });
 
-var material3 = new XEO.PhongMaterial(scene, {
+ var material3 = new XEO.PhongMaterial(scene, {
     diffuse: [0.2, 1, 0.2],
     opacity: 0.2
 });
 
-var scale3 = new XEO.Scale(scene, {
+ var scale3 = new XEO.Scale(scene, {
     xyz: [9, 9, 9]
 });
 
-var object3 = new XEO.GameObject(scene, {
+ var object3 = new XEO.GameObject(scene, {
     camera: camera,
     geometry: geometry,
     stage: stage,
