@@ -10,6 +10,41 @@
 
  ## Boundaries
 
+ #### Model-space
+
+ A GameObject provides its Model-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
+ the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.</li>
+
+
+ ```` javascript
+ var scene = new XEO.Scene();
+
+ var geometry = new XEO.Geometry(myScene, {
+      //...
+  });
+
+ var object = new XEO.GameObject(myScene, {
+       geometry: myGeometry,
+       transform: translate
+  });
+
+ // Get the Model-space Boundary3D
+ var modelBoundary = object.modelBoundary;
+
+ // Get Model-space object-aligned bounding box (OBB),
+ // which is an array of eight vertices that describes
+ // the box that is aligned with the GameObject's Geometry
+ var obb = modelBoundary.obb;
+
+ // Get the Model-space axis-aligned bounding box (ABB),
+ // which contains the extents of the boundary on each axis
+ var aabb = modelBoundary.aabb;
+
+ // get the Model-space center of the GameObject:
+ var center = modelBoundary.center;
+
+ ````
+
  #### World-space
 
  A GameObject provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
@@ -38,7 +73,7 @@
 
  // Get World-space object-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
- // the box that is aligned with the GameObjectbject
+ // the box that is aligned with the GameObject
  var obb = worldBoundary.obb;
 
  // Get the World-space axis-aligned bounding box (ABB),
@@ -63,7 +98,7 @@
 
  // Get View-space object-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
- // the box that is aligned with the GameObjectbject
+ // the box that is aligned with the GameObject
  var obb = viewBoundary.obb;
 
  // Get the View-space axis-aligned bounding box (ABB),
@@ -72,6 +107,26 @@
 
  // get the View-space center of the GameObject:
  var center = viewBoundary.center;
+
+ ````
+
+ #### View-space
+
+ A GameObject also provides its Canvas-space boundary as a {{#crossLink "Boundary2D"}}{{/crossLink}} that encloses
+ the {{#crossLink "Geometry/positions:property"}}Geometry positions{{/crossLink}} after
+ their transformation by the {{#crossLink "GameObject/transform:property"}}Modelling{{/crossLink}},
+ {{#crossLink "Camera/view:property"}}View{{/crossLink}} and {{#crossLink "Camera/project:property"}}Projection{{/crossLink}} transforms.</li>
+
+ ```` javascript
+ // Get the Canvas-space Boundary2D
+ var canvasBoundary = object.canvasBoundary;
+
+ // Get the Canvas-space axis-aligned bounding box (ABB),
+ // which contains the extents of the boundary on each axis
+ var aabb = canvasBoundary.aabb;
+
+ // get the Canvas-space center of the GameObject:
+ var center = canvasBoundary.center;
 
  ````
 
@@ -160,10 +215,12 @@
 
             // Cached boundary for each coordinate space
 
+            this._modelBoundary = null;
             this._worldBoundary = null;
             this._viewBoundary = null;
             this._canvasBoundary = null;
 
+            this._modelBoundaryDirty = true;
             this._worldBoundaryDirty = true;
             this._viewBoundaryDirty = true;
             this._canvasBoundaryDirty = true;
@@ -475,7 +532,7 @@
 
                     // Invalidate cached World-space bounding boxes
 
-                    this._setWorldBoundaryDirty();
+                    this._setModelBoundaryDirty();
 
                     // Unsubscribe from old Geometry's events
 
@@ -510,12 +567,12 @@
 
                         this._onGeometryPositions = newGeometry.on("positions",
                             function () {
-                                self._setWorldBoundaryDirty();
+                                self._setModelBoundaryDirty();
                             });
 
                         this._onGeometryDestroyed = newGeometry.on("destroyed",
                             function () {
-                                self._setWorldBoundaryDirty();
+                                self._setModelBoundaryDirty();
                             });
                     }
                 },
@@ -818,10 +875,16 @@
 
                         this._onTransformUpdated = newTransform.on("updated",
                             function () {
+                                if (self._XXX) {
+                                    return;
+                                }
+                                self._XXX = true;
+                                self.scene.once("tick2", function () {
+                                    newTransform._buildLeafMatrix();
 
-                                newTransform._buildLeafMatrix();
-
-                                self._setWorldBoundaryDirty();
+                                    self._setWorldBoundaryDirty();
+                                    self._XXX = false;
+                                });
                             });
 
                         this._onTransformDestroyed = newTransform.on("destroyed",
@@ -868,6 +931,52 @@
             },
 
             /**
+             * Model-space 3D boundary.
+             *
+             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
+             * time you reference it.
+             *
+             * @property modelBoundary
+             * @type Boundary3D
+             * @final
+             */
+            modelBoundary: {
+
+                get: function () {
+
+                    if (!this._modelBoundary) {
+
+                        var self = this;
+
+                        this._modelBoundary = new XEO.Boundary3D(this.scene, {
+
+                            meta: {
+                                desc: "GameObject " + self.id + " Model Boundary"
+                            },
+
+                            getDirty: function () {
+                                return self._modelBoundaryDirty;
+                            },
+
+                            getPositions: function () {
+                                return self._children.geometry.positions;
+                            }
+                        });
+
+                        this._modelBoundary.on("destroyed",
+                            function () {
+                                self._modelBoundary = null;
+                            });
+
+                        this._setModelBoundaryDirty();
+                    }
+
+                    return this._modelBoundary;
+                }
+            },
+
+            /**
              * World-space 3D boundary.
              *
              * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
@@ -888,16 +997,16 @@
 
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
+                            meta: {
+                                desc: "GameObject " + self.id + " World Boundary"
+                            },
+
                             getDirty: function () {
                                 return self._worldBoundaryDirty;
                             },
 
                             getOBB: function () {
-
-                                // Calls our Geometry's modelBoundary property,
-                                // lazy-inits the boundary and its obb
-
-                                return self._children.geometry.modelBoundary.obb;
+                                return self.modelBoundary.obb;
                             },
 
                             getMatrix: function () {
@@ -938,15 +1047,15 @@
 
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
+                            meta: {
+                                desc: "GameObject " + self.id + " View Boundary"
+                            },
+
                             getDirty: function () {
                                 return self._viewBoundaryDirty;
                             },
 
                             getOBB: function () {
-
-                                // Calls our worldBoundary property,
-                                // lazy-inits the boundary and its obb
-
                                 return self.worldBoundary.obb;
                             },
 
@@ -988,12 +1097,16 @@
 
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
 
+                            meta: {
+                                desc: "GameObject " + self.id + " Canvas Boundary"
+                            },
+
                             getDirty: function () {
                                 return self._canvasBoundaryDirty;
                             },
 
                             getOBB: function () {
-                                return self.viewBoundary.obb; // Lazy-inits!
+                                return self.viewBoundary.obb;
                             },
 
                             getMatrix: function () {
@@ -1071,6 +1184,14 @@
                     }
                 }
             }
+        },
+
+        _setModelBoundaryDirty: function () {
+            this._modelBoundaryDirty = true;
+            if (this._modelBoundary) {
+                this._modelBoundary.fire("updated", true);
+            }
+            this._setWorldBoundaryDirty();
         },
 
         _setWorldBoundaryDirty: function () {
