@@ -37,7 +37,7 @@
 
     var heightmap = new XEO.HeightmapGeometry({
         primitive: "triangles",
-        src: "textures/heightMap2.png",
+        src: "textures/height/mountain.png",
         xSize: 10,
         ySize: 10,
         zSize: 5,
@@ -48,7 +48,7 @@
     });
 
     var diffuseMap = new XEO.Texture({
-        src: "textures/uvGrid2.jpg"
+        src: "textures/diffuse/uvGrid2.jpg"
     });
 
     var object = new XEO.GameObject({
@@ -92,7 +92,7 @@
         this.message = "XEO.HeightmapGeometry";
 
         this["primitive"] = heightmap.primitive;
-        this["src"] = heightmap.src.substring("textures/".length);
+        this["src"] = heightmap.src.substring("textures/height/".length);
         this["xSize"] = heightmap.xSize;
         this["ySize"] = heightmap.ySize;
         this["zSize"] = heightmap.zSize;
@@ -112,7 +112,7 @@
         var update = function () {
 
             heightmap.primitive = self["primitive"];
-            heightmap.src = "textures/" + self["src"];
+            heightmap.src = "textures/height/" + self["src"];
             heightmap.xSize = self["xSize"];
             heightmap.ySize = self["ySize"];
             heightmap.zSize = self["zSize"];
@@ -136,8 +136,9 @@
     var folder = gui.addFolder('heightmap');
     folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
     folder.add(menu, 'src', [
-        "heightMap1.jpg",
-        "heightMap2.png"
+        "maui.png",
+        "everest.png",
+        "mountain.png"
     ]);
     folder.add(menu, 'xSize', 0.1, 10.0);
     folder.add(menu, 'ySize', 0.1, 10.0);
