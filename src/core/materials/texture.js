@@ -116,8 +116,8 @@
 
             this._state = new XEO.renderer.Texture({
 
-                texture: null,
-                matrix: null,
+                texture: null,  // XEO.renderer.webgl.Texture2D
+                matrix: null,   // Float32Array
 
                 // Texture properties
 
@@ -130,9 +130,9 @@
 
             // Data source
 
-            this._src = null;
-            this._image = null;
-            this._target = null;
+            this._src = null;   // URL string
+            this._image = null; // HTMLImageElement
+            this._target = null;// XEO.RenderTarget
 
             // Transformation
 
@@ -140,7 +140,7 @@
             this._scale = [1, 1];
             this._rotate = [0, 0];
 
-            // Dirty flags
+            // Dirty flags, processed in _buildTexture()
 
             this._dirty = false;
             this._matrixDirty = false;
@@ -172,7 +172,7 @@
                         self._targetDirty = true;
                     }
 
-                    self._scheduleBuild();
+                    self._textureDirty();
                 });
 
             // Transform
@@ -204,8 +204,8 @@
             this.scene.stats.memory.textures++;
         },
 
-        // Schedules a call to #_build for the next "tick"
-        _scheduleBuild: function () {
+        // Schedules a call to #_buildTexture for the next "tick"
+        _textureDirty: function () {
 
             if (!this._dirty) {
 
@@ -216,19 +216,18 @@
                 this.scene.once("tick2",
                     function () {
 
-                        self._build();
+                        self._buildTexture();
 
                         self._dirty = false;
                     });
             }
         },
 
-        _build: function () {
+        _buildTexture: function () {
 
             var gl = this.scene.canvas.gl;
 
             var state = this._state;
-
 
             if (this._srcDirty) {
 
@@ -238,14 +237,20 @@
 
                     this._srcDirty = false;
 
+                    // _imageDirty is set when the image has loaded
+
                     return;
                 }
             }
 
-
             if (this._imageDirty) {
 
                 if (this._image) {
+
+                    if (this._onTargetActive) {
+                        this._target.off(this._onTargetActive);
+                        this._onTargetActive = null;
+                    }
 
                     if (state.texture && state.texture.renderBuffer) {
                         state.texture = null;
@@ -258,12 +263,9 @@
                     state.texture.setImage(this._image);
 
                     this._imageDirty = false;
-
-                    // May now need to regenerate mipmaps etc
-                    this._propsDirty = true;
+                    this._propsDirty = true; // May now need to regenerate mipmaps etc
                 }
             }
-
 
             if (this._targetDirty) {
 
@@ -272,15 +274,21 @@
                     state.texture = null;
                 }
 
+                if (this._onTargetActive) {
+                    this._target.off(this._onTargetActive);
+                    this._onTargetActive = null;
+                }
+
                 if (this._target) {
-                    state.texture = this._target.getTexture();
+                    this._onTargetActive = this._target.on("active",  // Called immediately when first bound
+                        function (active) {
+                            state.texture = active ? this._state.renderBuf.getTexture() : null;
+                        });
                 }
 
                 this._targetDirty = false;
-
                 this._propsDirty = true;
             }
-
 
             if (this._matrixDirty) {
 
@@ -309,9 +317,15 @@
                 this._matrixDirty = false;
             }
 
-
             if (this._propsDirty) {
-                state.texture.setProps(state);
+
+                if (state.texture && state.texture.setProps) {
+
+                    // TODO: Ability to set props on texture from _target's RenderBuffer?
+
+                    state.texture.setProps(state);
+                }
+
                 this._propsDirty = false;
             }
 
@@ -339,7 +353,6 @@
                     // from, and we may need to save that in JSON later
 
                     self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
-                    self._target = null;
 
                     self._imageDirty = true;
                     self._srcDirty = false;
@@ -360,7 +373,7 @@
                      */
                     self.fire("loaded", self._src);
 
-                    self._scheduleBuild();
+                    self._textureDirty();
                 }
 
 //                task.setCompleted();
@@ -406,13 +419,12 @@
 
                     this._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(value);
                     this._src = null;
-                    this._target = null;
 
                     this._imageDirty = true;
                     this._srcDirty = false;
                     this._targetDirty = false;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
@@ -448,13 +460,12 @@
 
                     this._image = null;
                     this._src = value;
-                    this._target = null;
 
                     this._imageDirty = false;
                     this._srcDirty = true;
                     this._targetDirty = false;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
                     /**
                      * Fired whenever this Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}} property changes.
@@ -492,13 +503,19 @@
 
                     this._image = null;
                     this._src = null;
+
+                    if (this._onTargetActive) {
+                        this._target.off(this._onTargetActive);
+                        this._onTargetActive = null;
+                    }
+
                     this._target = this._setChild("renderBuf", value);
 
                     this._imageDirty = false;
                     this._srcDirty = false;
                     this._targetDirty = true;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/target:property"}}{{/crossLink}} property changes.
@@ -510,7 +527,7 @@
                 },
 
                 get: function () {
-                    return this._target; // Created by this._setChild()
+                    return this._children.target;
                 }
             },
 
@@ -532,7 +549,7 @@
                     this._translate = value;
                     this._matrixDirty = true;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
 
                     /**
@@ -566,7 +583,7 @@
                     this._scale = value;
                     this._matrixDirty = true;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/scale:property"}}{{/crossLink}} property changes.
@@ -599,7 +616,7 @@
                     this._rotate = value;
                     this._matrixDirty = true;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/rotate:property"}}{{/crossLink}} property changes.
@@ -676,7 +693,7 @@
                     this._state.minFilter = value;
                     this._propsDirty = true;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/minFilter:property"}}{{/crossLink}} property changes.
@@ -726,7 +743,7 @@
                     this._state.magFilter = value;
                     this._propsDirty = true;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property changes.
@@ -778,7 +795,7 @@
                     this._state.wrapS = value;
                     this._propsDirty = true;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/wrapS:property"}}{{/crossLink}} property changes.
@@ -830,7 +847,7 @@
                     this._state.wrapT = value;
                     this._propsDirty = true;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/wrapT:property"}}{{/crossLink}} property changes.
@@ -864,7 +881,7 @@
                     this._state.flipY = value;
                     this._propsDirty = true;
 
-                    this._scheduleBuild();
+                    this._textureDirty();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/flipY:property"}}{{/crossLink}} property changes.

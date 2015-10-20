@@ -312,10 +312,6 @@
                  * @event webglContextFailed
                  */
                 this.fire("webglContextFailed", true, true);
-
-                // TODO: render message in canvas
-
-
             }
         },
 

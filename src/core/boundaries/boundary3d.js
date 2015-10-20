@@ -14,8 +14,8 @@
  The following components have Boundary3Ds:
 
  <ul>
- <li>A {{#crossLink "Geometry"}}{{/crossLink}} provides its Model-space boundary via
- property {{#crossLink "Geometry/modelBoundary:property"}}{{/crossLink}}</li>
+ <li>A {{#crossLink "Geometry"}}{{/crossLink}} provides its Local-space boundary via
+ property {{#crossLink "Geometry/localBoundary:property"}}{{/crossLink}}</li>
  <li>A {{#crossLink "GameObject"}}{{/crossLink}} provides its World and View-space boundaries via
  properties {{#crossLink "GameObject/worldBoundary:property"}}{{/crossLink}}
  and {{#crossLink "GameObject/viewBoundary:property"}}{{/crossLink}}</li>
@@ -61,7 +61,7 @@
 
  // Subscribe to updates to the Boundary3D
  worldBoundary.on("updated",
-    function() {
+ function() {
 
         // Get the updated properties again
 
@@ -86,7 +86,7 @@
 
  @class Boundary3D
  @module XEO
- @submodule spatial
+ @submodule boundaries
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
  @param [cfg] {*} Configs
@@ -262,7 +262,7 @@
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
-                    math.transformPoints3(matrix, this._obb);
+                   this._obb =  math.transformPoints3(matrix, this._obb);
                     math.points3ToAABB3(this._obb, this._aabb);
                     math.getAABBCenter(this._aabb, this._center);
 
@@ -283,7 +283,7 @@
 
             if (obb) {
 
-                // Got OOBB (array of eight point objects)
+                // Got OOBB (array of eight four-element subarrays)
 
                 matrix = this._getMatrix ? this._getMatrix() : null;
 
@@ -299,14 +299,13 @@
                     math.getAABBCenter(this._aabb, this._center);
 
                     return;
-
                 }
 
                 // No transform matrix
 
                 // Copy OOBB, derive AABB and center
 
-                for (var i = 0, len = obb.length; i < lenl; i++) {
+                for (var i = 0, len = obb.length; i < len; i++) {
                     this._obb[i] = obb[i];
                 }
 

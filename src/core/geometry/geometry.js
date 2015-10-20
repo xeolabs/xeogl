@@ -296,7 +296,7 @@
                     return self._tangents;
                 },
 
-                // Arrays modified to support triangle-picking
+                // Arrays modified to support primitive-picking
 
                 getPickPositions: function () {
                     if (self._pickVBOsDirty) {
@@ -347,10 +347,10 @@
             this._indicesDirty = true;
             this._pickVBOsDirty = true;
 
-            // Model-space Boundary3D
+            // Local-space Boundary3D
 
-            this._modelBoundary = null;
-            this._modelBoundaryDirty = true;
+            this._boundary = null;
+            this._boundaryDirty = true;
 
 
             var defaultGeometry = (!cfg.positions && !cfg.normals && !cfg.uv && !cfg.indices);
@@ -434,6 +434,8 @@
             }
 
             this.autoNormals = cfg.autoNormals;
+
+            this.usage = cfg.usage;
 
             var self = this;
 
@@ -530,7 +532,7 @@
 
             if (this._normalsDirty) {
                 if (this._state.normals) {
-                    memoryStats.normals += this._state.normals.numItems;
+                    memoryStats.normals -= this._state.normals.numItems;
                     this._state.normals.destroy();
                 }
 
@@ -633,7 +635,7 @@
 
                 var usage = gl.STATIC_DRAW;
 
-                var arrays = XEO.math.getPickTriangles(this._positionsData, this._indicesData);
+                var arrays = XEO.math.getPickPrimitives(this._positionsData, this._indicesData);
 
                 var pickPositions = arrays.pickPositions;
                 var pickColors = arrays.pickColors;
@@ -649,6 +651,51 @@
 
 
         _props: {
+
+            /**
+             * The Geometry's usage type.
+             *
+             * Valid types are: 'static', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+             *
+             * Fires a {{#crossLink "Geometry/usage:event"}}{{/crossLink}} event on change.
+             *
+             * @property usage
+             * @default "triangles"
+             * @type String
+             */
+            usage: {
+
+                set: function (value) {
+
+                    value = value || "static";
+
+                    if (value !== "static" && value !== "dynamic" && value !== "stream") {
+
+                        this.error("Unsupported value for 'usage': '" + value +
+                            "' - supported values are 'static', 'dynamic' and 'stream'.");
+
+                        value = "static";
+                    }
+
+                    this._state.usageName = value;
+
+                    this._scheduleBuild();
+
+                    this.fire("dirty", true);
+
+                    /**
+                     * Fired whenever this Geometry's {{#crossLink "Geometry/usage:property"}}{{/crossLink}} property changes.
+                     * @event usage
+                     * @type String
+                     * @param value The property's new value
+                     */
+                    this.fire("usage", this._state.usageName);
+                },
+
+                get: function () {
+                    return this._state.usageName;
+                }
+            },
 
             /**
              * The Geometry's primitive type.
@@ -726,7 +773,7 @@
 
                     this._scheduleBuild();
 
-                    this._setModelBoundaryDirty();
+                    this._setBoundaryDirty();
 
                     if (dirty) {
                         this.fire("dirty", true);
@@ -920,31 +967,32 @@
             },
 
             /**
-             * Model-space 3D boundary.
+             * Local-space 3D boundary.
              *
-             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
-             * time you reference it.
+             * The a {{#crossLink "Boundary3D"}}{{/crossLink}} is lazy-instantiated the first time that this
+             * property is referenced. If {{#crossLink "Component/destroy:method"}}{{/crossLink}} is then called on it,
+             * then this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
+             * time it's referenced.
              *
-             * @property modelBoundary
+             * @property boundary
              * @type Boundary3D
              * @final
              */
-            modelBoundary: {
+            boundary: {
 
                 get: function () {
 
-                    if (!this._modelBoundary) {
+                    if (!this._boundary) {
 
                         var self = this;
 
-                        this._modelBoundary = new XEO.Boundary3D(this.scene, {
+                        this._boundary = new XEO.Boundary3D(this.scene, {
 
                             // Inject callbacks through which this Geometry
                             // can manage caching for the boundary
 
                             getDirty: function () {
-                                return self._modelBoundaryDirty;
+                                return self._boundaryDirty;
                             },
 
                             getPositions: function () {
@@ -952,15 +1000,15 @@
                             }
                         });
 
-                        this._modelBoundary.on("destroyed",
+                        this._boundary.on("destroyed",
                             function () {
-                                self._modelBoundary = null;
+                                self._boundary = null;
                             });
 
-                        this._setModelBoundaryDirty();
+                        this._setBoundaryDirty();
                     }
 
-                    return this._modelBoundary;
+                    return this._boundary;
                 }
             },
 
@@ -1051,12 +1099,12 @@
 
         },
 
-        _setModelBoundaryDirty: function () {
+        _setBoundaryDirty: function () {
 
-            this._modelBoundaryDirty = true;
+            this._boundaryDirty = true;
 
-            if (this._modelBoundary) {
-                this._modelBoundary.fire("updated", true);
+            if (this._boundary) {
+                this._boundary.fire("updated", true);
             }
         },
 
@@ -1127,8 +1175,8 @@
 
             // Destroy boundary
 
-            if (this._modelBoundary) {
-                this._modelBoundary.destroy();
+            if (this._boundary) {
+                this._boundary.destroy();
             }
 
             // Destroy state

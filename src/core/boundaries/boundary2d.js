@@ -76,7 +76,7 @@
 
  @class Boundary2D
  @module XEO
- @submodule spatial
+ @submodule boundaries
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary2D within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
  @param [cfg] {*} Configs
@@ -111,11 +111,11 @@
             this._div = null;
             this._shown = false;
 
-            // Cached canvas-space AABB and center
+            // Cached boundaries
 
-            this._obb = null;
-            this._aabb = cfg.aabb || null;
-            this._center = cfg.center || null;
+            this._obb = null; // Private 3D View-space OBB
+            this._aabb = cfg.aabb || null; // 2D Canvas-space AABB
+            this._center = cfg.center || null; // 2D Canvas-space center
 
             // Optional callbacks to lazy-pull
             // data from owner component
@@ -193,7 +193,7 @@
                             style.margin = "0";
                             style.background = "green";
                             style.opacity = 0.4;
-                            style.border="1px black solid";
+                            style.border = "1px black solid";
                             style["z-index"] = "1000";
 
                             body.appendChild(div);
