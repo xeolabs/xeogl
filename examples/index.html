@@ -211,6 +211,7 @@
         "Billboards": [
             "billboards_spherical",
             "billboards_spherical_clouds",
+            "billboards_spherical_video",
             "billboards_cylindrical"
         ],
 
@@ -291,16 +292,21 @@
         "Interaction": [
 
             "#interacting with xeoEngine",
-            "input_events",
+            "interaction_events",
 
             "#camera control components",
-            "input_CameraControl",
-            "input_KeyboardOrbitCamera",
-            "input_KeyboardPanCamera",
-            "input_KeyboardZoomCamera",
-            "input_MouseOrbitCamera",
-            "input_MousePanCamera",
-            "input_MouseZoomCamera"
+            "interaction_CameraControl",
+            "interaction_KeyboardOrbitCamera",
+            "interaction_KeyboardPanCamera",
+            "interaction_KeyboardZoomCamera",
+            "interaction_MouseOrbitCamera",
+            "interaction_MousePanCamera",
+            "interaction_MouseZoomCamera",
+
+            "#picking",
+            "interaction_picking",
+            "interaction_picking_disabling",
+            "interaction_picking_triangles"
         ],
 
         "Lights": [
@@ -329,7 +335,10 @@
             "materials_texture_normalMap",
 
             "#video textures",
-            "materials_texture_diffuse_video"
+            "materials_texture_video_diffuse",
+
+            "#procedural textures",
+            "materials_texture_procedural_diffuse"
         ],
 
         "Profiling": [
@@ -347,6 +356,7 @@
         ],
 
         "Transforms": [
+            "transforms_scale",
             "transforms_hierarchy"
         ]
     };
