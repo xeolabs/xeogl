@@ -40,28 +40,13 @@
         })
     });
 
-    var baseMaterial = new XEO.PhongMaterial({
-
-//        reflection: new XEO.CubeMap({
-//            src: "textures/brickWall.jpg",
-//            minFilter: "linearMipmapLinear",
-//            magFiler: "linear",
-//            wrapS: "repeat",
-//            wrapT: "repeat",
-//            flipY: true,
-//            translate: [0, 0, 0],
-//            scale: [1, 1, 1],
-//            rotate: 0
-//        })
-    });
-
     // Make a bunch of clones of the GameObject,
     // each at a random position.
 
 
     for (var i = 0; i < 200; i++) {
 
-        var color =[
+        var color = [
             0.4 + Math.random() * 0.6,
             0.4 + Math.random() * 0.6,
             0.4 + Math.random() * 0.6
@@ -70,33 +55,25 @@
 
         object.clone({
 
-            transform: new XEO.Scale({
+            transform: new XEO.Rotate({
                 xyz: [
-                    Math.random() * 4 + .5,
-                    Math.random() * 4 + .5,
-                    Math.random() * 4 + .5
+                    Math.random(),
+                    Math.random(),
+                    Math.random()
                 ],
+                angle: Math.random() * 360,
 
-                parent: new XEO.Rotate({
+                parent: new XEO.Translate({
                     xyz: [
-                        Math.random(),
-                        Math.random(),
-                        Math.random()
-                    ],
-                    angle: Math.random() * 360,
-
-                    parent: new XEO.Translate({
-                        xyz: [
-                            Math.random() * 60 - 30,
-                            Math.random() * 60 - 30,
-                            Math.random() * 60 - 30
-                        ]
-                    })
-
+                        Math.random() * 20 - 10,
+                        Math.random() * 20 - 10,
+                        Math.random() * 20 - 10
+                    ]
                 })
+
             }),
 
-            material: baseMaterial.clone({
+            material: new XEO.PhongMaterial({
                 diffuse: color,
                 specular: color,
                 shininess: 3
@@ -106,7 +83,7 @@
 
     // Move the camera back a bit
 
-    object.camera.view.zoom(60);
+    object.camera.view.zoom(20);
 
     // Orbit the eye position about the look position.
 
