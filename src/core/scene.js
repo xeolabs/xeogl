@@ -1150,6 +1150,8 @@
          */
         pick: function (canvasPos, options) {
 
+            options = options || {};
+
             var hit = this._renderer.pick({
                 canvasPos: canvasPos,
                 pickPrimitive: options.pickPrimitive
