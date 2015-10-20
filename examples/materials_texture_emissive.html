@@ -35,7 +35,7 @@
     });
 
     var texture = new XEO.Texture({
-        src: "textures/emissiveMap.jpg",
+        src: "textures/emissive/emissiveMap.jpg",
         minFilter: "linearMipmapLinear",
         magFiler: "linear",
         wrapS: "repeat",
@@ -47,8 +47,10 @@
     });
 
     var material = new XEO.PhongMaterial({
-        ambient: [0.3, 0.3, 0.3],
+        ambient: [0, 0, 0],
         shininess: 30,
+        diffuse: [0.2,0.2,0.2],
+        specular: [0,0,0],
         emissiveMap: texture
     });
 
@@ -56,6 +58,8 @@
         geometry: geometry,
         material: material
     });
+
+    object.scene.camera.view.zoom(-7);
 
     object.scene.on("tick",
             function () {
