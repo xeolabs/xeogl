@@ -27,7 +27,7 @@
             picking individual triangles on <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a>
         </li>
         <li>
-            click something!
+            move your mouse over the heightmap!
         </li>
     </ul>
     <br><br>
@@ -66,17 +66,17 @@
             xSize: 10,
             ySize: 10,
             zSize: 5,
-            xSegments: 10,
-            ySegments: 10,
+            xSegments: 40,
+            ySegments: 40,
             lod: 1.0, // Default
             autoNormals: true // Default
         }),
 
         material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
-                src: "textures/diffuse/uvGrid2.jpg"
-            }),
-            diffuse: [1, 1, 1],
+//            diffuseMap: new XEO.Texture({
+//                src: "textures/diffuse/uvGrid2.jpg"
+//            }),
+            diffuse: [0.3, 0.3, 1],
             lineWidth: 3,
             pointSize: 5
         })
@@ -124,16 +124,16 @@
     new XEO.CameraControl();
 
 
-    // Attempt to pick a triangle on the heightmap GameObject on each mouse click
+    // Attempt to pick a triangle on the heightmap GameObject on each mouse move
 
     var scene = terrainObject.scene;
 
     var input = scene.input;
 
-    input.on("mouseclicked",
+    input.on("mousemove",
             function (coords) {
 
-                log("Clicked: (" + coords[0] + ", " + coords[1] + ")");
+                log("Mouse pos: (" + coords[0] + ", " + coords[1] + ")");
 
                 // Attempt to pick a primitive from among whatever
                 // pickable GameObjects we have
@@ -147,7 +147,7 @@
                     // Picked a GameObject
 
                     log("Picked:");
-                    log("terrainObject ID = " + hit.object.id);
+                    log("GameObject ID = " + hit.object.id);
 
                     if (hit.primitiveIndex !== -1) {
 
