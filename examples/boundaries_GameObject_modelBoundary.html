@@ -27,6 +27,7 @@
 
     new XEO.CameraControl();
 
+
     var object = new XEO.GameObject({
 
         geometry: new XEO.TorusGeometry({
@@ -48,14 +49,16 @@
     var boundaryObject = new XEO.GameObject({
 
         geometry: new XEO.BoundaryGeometry({
-            boundary: object.worldBoundary
+            boundary: object.localBoundary
         }),
 
         material: new XEO.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
             emissive: [0.5, 1.0, 0.5],
             lineWidth: 2
-        })
+        }),
+
+        transform: getTransform()
     });
 
     function getTransform() {
