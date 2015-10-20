@@ -35,7 +35,7 @@
 
             if (this.uPickColorObject) {
 
-                frameCtx.pickObjects[frameCtx.pickIndex] = this.object;
+                frameCtx.pickObjects[frameCtx.pickIndex++] = this.object;
 
                 var b = frameCtx.pickIndex >> 16 & 0xFF;
                 var g = frameCtx.pickIndex >> 8 & 0xFF;
@@ -43,7 +43,7 @@
 
                 this.uPickColorObject.setValue([r / 255, g / 255, b / 255, 0]);
 
-                frameCtx.pickIndex++
+                //frameCtx.pickIndex++
             }
 
             if (state.indices) {
@@ -56,9 +56,11 @@
             
             var state = this.state;
             var gl= this.program.gl;
-            
-            if (state.pickIndices) {
-                gl.drawElements(state.primitive, state.pickIndices.numItems, state.pickIndices.itemType, 0);
+
+            var pickIndices = state.getPickIndices();
+
+            if (pickIndices) {
+                gl.drawElements(state.primitive, pickIndices.numItems, pickIndices.itemType, 0);
             }
         }
     });

@@ -65,6 +65,12 @@
      */
     XEO.renderer.ChunkFactory.prototype.getChunk = function (id, type, object, program, state) {
 
+        var chunk;// = this._chunks[id];
+
+        //if (chunk) {
+        //    chunk.useCount++;
+        //    return chunk;
+        //}
         var chunkClass = XEO.renderer.ChunkFactory.chunkTypes[type]; // Check type supported
 
         if (!chunkClass) {
@@ -74,8 +80,6 @@
         // Try to recycle a free chunk
 
         var freeChunks = XEO.renderer.ChunkFactory._freeChunks[type];
-
-        var chunk;
 
         if (freeChunks.chunksLen > 0) {
             chunk = freeChunks.chunks[--freeChunks.chunksLen];
@@ -96,7 +100,7 @@
 
         chunk.useCount = 1;
 
-        this._chunks[id] = chunk;
+        //this._chunks[id] = chunk;
 
         return chunk;
     };
@@ -116,8 +120,7 @@
 
         if (--chunk.useCount <= 0) {
 
-
-          delete this._chunks[chunk.id];
+            delete this._chunks[chunk.id];
 
             var freeChunks = XEO.renderer.ChunkFactory._freeChunks[chunk.type];
 

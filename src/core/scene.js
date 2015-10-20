@@ -720,7 +720,7 @@
              * The default {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} provided by this Scene.
              *
              * The {{#crossLink "ColorTarget"}}DepthTarget{{/crossLink}} is
-             * {{#crossLink "ColorTarget/active:property"}}inactive{{/crossLink}} and will have an
+             * {{#crossLink "ColorTarget/active:property"}}inactive{{/crossLink}} by default and will have an
              * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
@@ -733,7 +733,8 @@
                 get: function () {
                     return this.components["default.colorTarget"] ||
                         new XEO.ColorTarget(this, {
-                            id: "default.colorTarget"
+                            id: "default.colorTarget",
+                            active: false
                         })
                 }
             },
@@ -756,7 +757,7 @@
                     return this.components["default.depthBuf"] ||
                         new XEO.DepthBuf(this, {
                             id: "default.depthBuf",
-                            active: false // Null Object pattern
+                            active: false
                         });
                 }
             },
@@ -765,7 +766,7 @@
              * The default {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} provided by this Scene.
              *
              * The {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} is
-             * {{#crossLink "DepthTarget/active:property"}}inactive{{/crossLink}} and has an
+             * {{#crossLink "DepthTarget/active:property"}}inactive{{/crossLink}} by default and has an
              * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
@@ -779,7 +780,7 @@
                     return this.components["default.depthTarget"] ||
                         new XEO.DepthTarget(this, {
                             id: "default.depthTarget",
-                            active: false // Null Object pattern
+                            active: false
                         });
                 }
             },
@@ -1149,10 +1150,16 @@
          */
         pick: function (canvasPos, options) {
 
-            return this._renderer.pick({
+            var hit = this._renderer.pick({
                 canvasPos: canvasPos,
                 pickPrimitive: options.pickPrimitive
             });
+
+            if (hit) {
+                hit.object = this.objects[hit.object];
+            }
+
+            return hit;
         },
 
 
@@ -1259,11 +1266,10 @@
             }
 
             // Render a frame
+            // Only renders if there was a state update
 
             this._renderer.render({
-
-                // Clear buffers
-                clear: true
+                clear: true // Clear buffers
             });
         },
 

@@ -464,11 +464,13 @@
 
         var programId = object.program.id;
         var stateId = state ? state.id : -1;
-        var id = (programId * 10000000) + stateId; // FIXME: Assuming less than 1M states
+        var chunkClass = this._chunkFactory.chunkTypes[chunkType];
+        var id = (chunkClass && chunkClass.prototype.programGlobal)  ? stateId :  ((programId +1) * 10000000) + stateId;
 
         var oldChunk = object.chunks[order];
 
         if (oldChunk) {
+
             oldChunk.init(id, object, object.program, state);
             return;
         }
@@ -514,7 +516,15 @@
         var object = this.objects[objectId];
 
         if (!object) {
+
+            // Object not found
             return;
+        }
+
+        // Release draw chunks
+        var chunks = object.chunks;
+        for (var i = 0, len = chunks.length; i < len; i++) {
+            this._chunkFactory.putChunk(chunks[i]);
         }
 
         // Release object's shader
@@ -594,9 +604,6 @@
             if (!object.program) { // Non-visual object (eg. sound)
                 object.sortKey = -1;
             } else {
-
-                // TODO: clamp priority to [0..9999]
-
                 object.sortKey =
                     ((object.stage.priority + 1) * 100000000000)
                     + ((object.modes.transparent ? 2 : 1) * 100000000)
@@ -658,9 +665,12 @@
         var targetList = [];
 
         var object;
-        var targets;
+        var colorRenderBuf;
+        var depthRenderBuf;
         var target;
+        var targetChunk;
         var list;
+        var id;
 
 
         this._objectDrawList = this._objectDrawList || [];
@@ -678,47 +688,54 @@
 
             // Put objects with render targets into a bin for each target
 
-            if (9 == 8 && (object.colorTarget || object.depthTarget)) { // TODO: Enable color and depth targets
+            colorRenderBuf = object.colorTarget ? object.colorTarget.renderBuf : null;
+            depthRenderBuf = object.depthTarget ? object.depthTarget.renderBuf : null;
 
-                if (false && object.colorTarget && object.colorTarget.renderBuf) {
+            if (colorRenderBuf) {
 
-                    target = object.colorTarget;
+                target = object.colorTarget;
 
-                    list = targetObjectLists[target.id];
+                list = targetObjectLists[target.id];
 
-                    if (!list) {
+                if (!list) {
 
-                        list = [];
+                    list = [];
 
-                        targetObjectLists[target.id] = list;
+                    targetObjectLists[target.id] = list;
 
-                        targetListList.push(list);
+                    targetListList.push(list);
 
-                        targetList.push(this._chunkFactory.getChunk("renderTarget", object, object.program, target));
-                    }
+                    id = ((object.program.id +1)* 10000000) + target.id; // FIXME: Assuming less than 1M states
 
-                    list.push(object);
+                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object, object.program, target);
+
+                    targetList.push(targetChunk);
                 }
 
-                if (false && object.depthTarget && object.depthTarget.renderBuf) {
+                list.push(object);
 
-                    target = object.colorTarget;
+            } else if (depthRenderBuf) {
 
-                    list = targetObjectLists[target.id];
+                target = object.depthTarget;
 
-                    if (!list) {
+                list = targetObjectLists[target.id];
 
-                        list = [];
+                if (!list) {
 
-                        targetObjectLists[target.id] = list;
+                    list = [];
 
-                        targetListList.push(list);
+                    targetObjectLists[target.id] = list;
 
-                        targetList.push(this._chunkFactory.getChunk("renderTarget", object, object.program, target));
-                    }
+                    targetListList.push(list);
 
-                    list.push(object);
+                    id = ((object.program.id+1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
+
+                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object, object.program, target);
+
+                    targetList.push(targetChunk);
                 }
+
+                list.push(object);
 
             } else {
 
@@ -731,30 +748,35 @@
         // Append chunks for objects within render targets first
 
         var pickable;
+        var renderTargetBound = false;
 
-        //for (var i = 0, len = targetListList.length; i < len; i++) {
-        //
-        //    list = targetListList[i];
-        //    target = targetList[i];
-        //
-        //    this._appendRenderTargetChunk(target);
-        //
-        //    for (var j = 0, lenj = list.length; j < lenj; j++) {
-        //
-        //        object = list[j];
-        //
-        //        pickable = object.stage && object.stage.pickable; // We'll only pick objects in pickable stages
-        //
-        //        this._appendObjectToDrawChunkLists(object, pickable);
-        //    }
-        //}
+        for (var i = 0, len = targetListList.length; i < len; i++) {
 
-        //if (object) {
-        //
-        //    // Unbinds any render target bound previously
-        //
-        //    this._appendRenderTargetChunk(this._chunkFactory.getChunk("renderTarget", object, object.program, {}));
-        //}
+            targetChunk = targetList[i];
+            list = targetListList[i];
+
+            this._appendRenderTargetChunk(targetChunk);
+
+            for (var j = 0, lenj = list.length; j < lenj; j++) {
+
+                object = list[j];
+
+                pickable = object.stage && object.stage.pickable; // We'll only pick objects in pickable stages
+
+                this._appendObjectToDrawChunkLists(object, pickable);
+
+                renderTargetBound = true;
+            }
+        }
+
+        if (renderTargetBound) {
+
+            // Unbinds any render target bound previously
+
+            id = ((object.program.id+1) * 10000000) + object.id; // FIXME: Assuming less than 1M states
+
+            this._appendRenderTargetChunk(this._chunkFactory.getChunk(id, "renderTarget", object, object.program, {}));
+        }
 
         // Append chunks for objects not in render targets
 
@@ -762,7 +784,7 @@
 
             object = this._objectDrawList[i];
 
-            pickable = !object.stage || (object.stage && object.stage.pickable); // We'll only pick objects in pickable stages
+            pickable = !object.stage || (object.stage && object.stage.pickable); // Don't pick unpickable stages, ie. FX passes
 
             this._appendObjectToDrawChunkLists(object, pickable);
         }
@@ -917,7 +939,7 @@
 
             pickBuf = new XEO.renderer.webgl.RenderBuffer({
                 gl: this._canvas.gl,
-                canvas: this._canvas
+                canvas: this._canvas.canvas
             });
 
             this.pickBuf = pickBuf;
@@ -951,7 +973,7 @@
             // Object was picked
 
             hit = {
-                object: object,
+                object: object.id,
                 canvasPos: [
                     canvasX,
                     canvasY
@@ -1052,13 +1074,15 @@
 
         if (params.pickObject) {
 
+            // Pick an object
+
             for (var i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
                 this._pickObjectChunkList[i].pickObject(frameCtx);
             }
 
         } else if (params.pickPrimitive) {
 
-            // Process object-picking chunks for the given object
+            // Pick a primitive of an object
 
             if (params.object) {
 
@@ -1074,6 +1098,8 @@
             }
 
         } else {
+
+            // Render all visible objects
 
             var startTime = (new Date()).getTime();
 
@@ -1093,15 +1119,15 @@
         gl.flush();
 
         if (frameCtx.renderBuf) {
-            //        frameCtx.renderBuf.unbind();
+            frameCtx.renderBuf.unbind();
         }
-//
-//    var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-//    for (var ii = 0; ii < numTextureUnits; ++ii) {
-//        gl.activeTexture(gl.TEXTURE0 + ii);
-//        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-//        gl.bindTexture(gl.TEXTURE_2D, null);
-//    }
+
+        var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+        for (var ii = 0; ii < numTextureUnits; ++ii) {
+            gl.activeTexture(gl.TEXTURE0 + ii);
+            gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
     };
 
     /**
@@ -1110,5 +1136,4 @@
     XEO.renderer.Renderer.prototype.destroy = function () {
         this._programFactory.destroy();
     };
-
 })();

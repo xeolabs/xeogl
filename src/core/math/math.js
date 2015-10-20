@@ -2272,14 +2272,15 @@
         /**
          * Builds vertex and index arrays needed by color-indexed triangle picking.
          *
-         * @method getPickTriangles
+         * @method getPickPrimitives
          * @static
          * @param {{Array of Number}} positions One-dimensional flattened array of positions.
          * @param {{Array of Number}} indices One-dimensional flattened array of indices.
          * @param {*} [pickTris] Optional object to return the arrays on.
+         * @param {Boolean} [debug] Assigns random colors to triangles when true.
          * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
          */
-        getPickTriangles: function (positions, indices, pickTris) {
+        getPickPrimitives: function (positions, indices, pickTris, debug) {
 
             pickTris = pickTris || {};
 
@@ -2287,56 +2288,82 @@
             var pickColors = [];
             var pickIndices = [];
 
-            var index;
             var index2 = 0;
             var primIndex = 0;
 
+            // Triangle indices
+
+            var i;
             var r;
             var g;
             var b;
+            var a;
 
             for (var location = 0; location < indices.length; location += 3) {
 
                 // Primitive-indexed triangle pick color
 
-                b = (primIndex >> 16 & 0xFF) / 255;
-                g = (primIndex >> 8 & 0xFF) / 255;
-                r = (primIndex & 0xFF) / 255;
-
-                index = indices[location];
-                pickIndices.push(index2++);
-
-                pickPositions.push(positions[(index * 3) + 0]);
-                pickPositions.push(positions[(index * 3) + 1]);
-                pickPositions.push(positions[(index * 3) + 2]);
-
-                pickColors.push(r);
-                pickColors.push(g);
-                pickColors.push(b);
-
-                index = indices[location + 1];
-                pickIndices.push(index2++);
-
-                pickPositions.push(positions[(index * 3) + 0]);
-                pickPositions.push(positions[(index * 3) + 1]);
-                pickPositions.push(positions[(index * 3) + 2]);
-
-                pickColors.push(r);
-                pickColors.push(g);
-                pickColors.push(b);
-
-                index = indices[location + 2];
-                pickIndices.push(index2++);
-
-                pickPositions.push(positions[(index * 3) + 0]);
-                pickPositions.push(positions[(index * 3) + 1]);
-                pickPositions.push(positions[(index * 3) + 2]);
-
-                pickColors.push(r);
-                pickColors.push(g);
-                pickColors.push(b);
-
                 primIndex++;
+                primIndex = location +1;
+
+
+                if (debug) {
+                    r = Math.random();
+                    g = Math.random();
+                    b = Math.random();
+                    a = 1.0;
+                } else {
+                    b = (primIndex >> 16 & 0xFF) / 255;
+                    g = (primIndex >> 8 & 0xFF) / 255;
+                    r = (primIndex & 0xFF) / 255;
+                    a = 1.0;
+                }
+
+
+                // A
+
+                i = indices[location + 0];
+
+                pickPositions.push(positions[i * 3 + 0]);
+                pickPositions.push(positions[i * 3 + 1]);
+                pickPositions.push(positions[i * 3 + 2]);
+
+                pickColors.push(r);
+                pickColors.push(g);
+                pickColors.push(b);
+                pickColors.push(a);
+
+                pickIndices.push(index2++);
+
+                // B
+
+                i = indices[location + 1];
+
+                pickPositions.push(positions[i * 3 + 0]);
+                pickPositions.push(positions[i * 3 + 1]);
+                pickPositions.push(positions[i * 3 + 2]);
+
+                pickColors.push(r);
+                pickColors.push(g);
+                pickColors.push(b);
+                pickColors.push(a);
+
+                pickIndices.push(index2++);
+
+                // C
+
+                i = indices[location + 2];
+
+                pickPositions.push(positions[i * 3 + 0]);
+                pickPositions.push(positions[i * 3 + 1]);
+                pickPositions.push(positions[i * 3 + 2]);
+
+                pickColors.push(r);
+                pickColors.push(g);
+                pickColors.push(b);
+                pickColors.push(a);
+
+                pickIndices.push(index2++);
             }
 
             pickTris.pickPositions = pickPositions;

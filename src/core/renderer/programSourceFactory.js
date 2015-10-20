@@ -178,7 +178,7 @@
 
             add();
 
-            // Model-space vertex position
+            // Local-space vertex position
             add("attribute vec3 xeo_aPosition;");
 
             add();
@@ -193,7 +193,7 @@
 
                 add();
 
-                // Model-space vertex normal
+                // Local-space vertex normal
                 add("attribute vec3 xeo_aNormal;");
 
                 // Modelling and View normal transform matrix
@@ -284,10 +284,10 @@
             add();
             add("void main(void) {");
             add();
-            add("   vec4 modelPosition = vec4(xeo_aPosition, 1.0); ");
+            add("   vec4 localPosition = vec4(xeo_aPosition, 1.0); ");
 
             if (shading) {
-                add("   vec4 modelNormal = vec4(xeo_aNormal, 0.0); ");
+                add("   vec4 localNormal = vec4(xeo_aNormal, 0.0); ");
             }
 
             add("   mat4 modelMatrix = xeo_uModelMatrix;");
@@ -317,17 +317,17 @@
                     add("   billboard(modelViewNormal);");
                 }
 
-                add("   worldPosition = modelMatrix * modelPosition;");
-                add("   vec4 viewPosition = modelView * modelPosition;");
+                add("   worldPosition = modelMatrix * localPosition;");
+                add("   vec4 viewPosition = modelView * localPosition;");
 
             } else {
 
-                add("   worldPosition = modelMatrix * modelPosition;");
+                add("   worldPosition = modelMatrix * localPosition;");
                 add("   vec4 viewPosition  = viewMatrix * worldPosition; ");
             }
 
             if (shading) {
-                add("   vec3 worldNormal = (modelNormalMatrix * modelNormal).xyz; ");
+                add("   vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ");
                 add("   xeo_vViewNormal = (viewNormalMatrix * vec4(worldNormal, 1.0)).xyz;");
             }
 

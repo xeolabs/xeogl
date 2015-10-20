@@ -21,7 +21,7 @@
             this._uShininess = draw.getUniform("xeo_uShininess");
 
             this._uPointSize = draw.getUniform("xeo_uPointSize");
-            
+
             // Textures
 
             if (state.diffuseMap) {
@@ -138,7 +138,10 @@
 
             // Textures
 
-            frameCtx.textureUnit = 0;
+
+            if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
+                frameCtx.textureUnit = 0;
+            }
 
             // Diffuse map
 
@@ -211,10 +214,7 @@
                 }
             }
 
-
-            if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
-                frameCtx.textureUnit = 0;
-            }
+            frameCtx.textureUnit++;
 
 
             // Fresnel effects
