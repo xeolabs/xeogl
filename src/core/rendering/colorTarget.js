@@ -75,6 +75,8 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
  @param [cfg.active=true] {Boolean} Indicates if this ColorTarget is active or not.
+ @param [cfg.size=null] {Array of Number} Optional fixed size for the ColorTarget's pixel buffer. When this is null, the buffer
+ will dynamically resize to the canvas.
  @extends Component
  */
 (function () {
@@ -102,10 +104,45 @@
                     }
                 });
 
+            this.size = cfg.size;
             this.active = cfg.active;
         },
 
         _props: {
+
+            /**
+             * The resolution of this ColorTarget's pixel buffer.
+             *
+             * Fires an {{#crossLink "ColorTarget/size:event"}}{{/crossLink}} event on change.
+             *
+             * @property size
+             * @default null
+             * @type {Array of Number}
+             */
+            size: {
+
+                set: function (value) {
+
+                    value = value || null;
+
+                    this._size = value;
+
+                    if (this._active) {
+                        this._state.renderBuf.setSize(this._size);
+                    }
+
+                    /**
+                     Fired whenever this ColorTarget's {{#crossLink "ColorTarget/size:property"}}{{/crossLink}} property changes.
+                     @event size
+                     @param value {Array of Number} The property's new value
+                     */
+                    this.fire("size", this._size);
+                },
+
+                get: function () {
+                    return this._size;
+                }
+            },
 
             /**
              * Determines whether this ColorTarget is active or not.
@@ -138,7 +175,8 @@
 
                         state.renderBuf = new XEO.renderer.webgl.RenderBuffer({
                             canvas: canvas.canvas,
-                            gl: canvas.gl
+                            gl: canvas.gl,
+                            size: this._size
                         });
 
                     } else {
@@ -169,9 +207,16 @@
         },
 
         _getJSON: function () {
-            return {
+
+            var json = {
                 active: this._active
             };
+
+            if (this._size) {
+                json.size = this._size
+            }
+
+            return json;
         },
 
         _destroy: function () {

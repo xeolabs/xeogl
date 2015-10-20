@@ -10,7 +10,7 @@
         this.allocated = false;
 
         /**
-         * The canvas, to synch buffer size with when its dimensions change
+         * The HTMLCanvasElement
          */
         this.canvas = cfg.canvas;
 
@@ -28,6 +28,22 @@
          * True while this buffer is bound
          */
         this.bound = false;
+
+        /**
+         * Optional explicit buffer size - when omitted, buffer defaults to canvas size
+         */
+        this.size = cfg.size;
+    };
+
+    /**
+     * Sets custom dimensions for this buffer.
+     *
+     * Buffer dynamically re-sizes to canvas when size is null.
+     *
+     * @param size {Array of Number} Two-element size vector
+     */
+    XEO.renderer.webgl.RenderBuffer.prototype.setSize = function (size) {
+        this.size = size;
     };
 
     /**
@@ -58,8 +74,23 @@
 
     XEO.renderer.webgl.RenderBuffer.prototype._touch = function () {
 
-        var width = this.canvas.canvas.width;
-        var height = this.canvas.canvas.height;
+        var width;
+        var height;
+
+        if (this.size) {
+
+            // Buffer sized to custom dimensions
+
+            width = this.size[0];
+            height = this.size[1];
+
+        } else {
+
+            // Buffer sized to canvas (default)
+
+            width = this.canvas.clientWidth;
+            height = this.canvas.clientHeight;
+        }
 
         if (this.buffer) {
 

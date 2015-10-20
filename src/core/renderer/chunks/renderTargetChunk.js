@@ -10,6 +10,7 @@
         type: "renderTarget",
 
         // Avoid reapplication of this chunk type after a program switch.
+
         programGlobal: true,
 
         draw: function (frameCtx) {
@@ -21,7 +22,7 @@
 
             if (frameCtx.renderBuf) {
                 gl.flush();
-                frameCtx.renderBuf.unbind();
+               frameCtx.renderBuf.unbind();
                 frameCtx.renderBuf = null;
             }
 
@@ -37,13 +38,9 @@
 
             frameCtx.depthMode = (state.type === state.DEPTH);
 
-            if (!frameCtx.depthMode) {
-
-                //  Enable blending for non-depth targets
-                if (frameCtx.blendEnabled) {
-                    gl.enable(gl.BLEND);
-                    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-                }
+            if (frameCtx.blendEnabled && !frameCtx.depthMode) {
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             }
 
             gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
