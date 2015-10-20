@@ -44,46 +44,48 @@
 
     for (var i = 0; i < numObjects; i++) {
 
+        var s = Math.random() * 5;
+
         object = new XEO.GameObject({
 
-            geometry: sphere,
+        //    geometry: sphere,
 
-            transform: new XEO.Translate({
-
-                parent: new XEO.Rotate({
-                            xyz: [
-                                1,
-                                1,
-                                0
-                            ],
-                            angle: 45
-                    ,
-
-                            parent: new XEO.Scale({
-
-                                xyz: [
-                                    Math.random() * 5,
-                                    Math.random() * 5,
-                                    Math.random() * 5
-                                ]
-                            })
-                        }),
-
+            transform: new XEO.Scale({
                 xyz: [
-                    Math.random() * 35 - 7,
-                    Math.random() * 35 - 7,
-                    Math.random() * 35 - 7
-                ]
+                    1,
+                    1,
+                    1.5
+                ],
+                parent: new XEO.Rotate({
+                    xyz: [
+                        Math.random(),
+                        Math.random(),
+                        Math.random()
+                    ],
+                    angle: Math.random() * 360,
+
+                    parent: new XEO.Translate({
+                        xyz: [
+                            Math.random() * 100 - 50,
+                            Math.random() * 100 - 50,
+                            Math.random() * 100 - 50
+                        ]
+                    })
+                })
             }),
 
             material: new XEO.PhongMaterial({
-                diffuse: [0.6, 0.6, 1]
+                diffuse: [
+                    Math.random(),
+                    Math.random(),
+                    Math.random()
+                ]
             })
         });
 
         objects.push(object);
 
-    //    object.worldBoundary.visible = true;
+        //    object.worldBoundary.visible = true;
     }
 
     // Create a CameraFlight animation
@@ -99,7 +101,7 @@
         material: new XEO.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
             emissive: [0.5, 1.0, 0.5],
-            lineWidth:2
+            lineWidth: 2
         })
     });
 
