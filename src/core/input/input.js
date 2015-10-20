@@ -15,7 +15,7 @@
  a {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
 
  ````javascript
-var myScene = new XEO.Scene();
+ var myScene = new XEO.Scene();
 
  var input = myScene.input;
 
@@ -362,16 +362,22 @@ var myScene = new XEO.Scene();
                 var downX;
                 var downY;
 
+                // Tolerance between down and up positions for a mouse click
+                var tolerance = 2;
+
                 self.on("mousedown",
                     function (params) {
-                        downX = params.x;
-                        downY = params.y;
+                        downX = params[0];
+                        downY = params[1];
                     });
 
                 self.on("mouseup",
                     function (params) {
 
-                        if (downX === params.x && downY === params.y) {
+                        if (downX >= (params[0] - tolerance) &&
+                            downX <= (params[0] + tolerance) &&
+                            downY >= (params[1] - tolerance) &&
+                            downY <= (params[1] + tolerance)) {
 
                             /**
                              * Fired whenever the mouse is clicked over the parent
@@ -386,7 +392,7 @@ var myScene = new XEO.Scene();
         },
 
         _getClickCoordsWithinElement: function (event) {
-            var coords = [0,0];
+            var coords = [0, 0];
             if (!event) {
                 event = window.event;
                 coords.x = event.x;
