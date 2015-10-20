@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>
+            picking individual triangles on <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a>
+        </li>
+        <li>
+            click something!
+        </li>
+    </ul>
+    <br><br>
+    <pre id="infoTxt" style="text-align: left;"></pre>
+</div>
+
+<script>
+
+
+    // ------------ Logging -------------------------------------------------
+
+    var buf = [];
+
+    function log(event, params) {
+        var txt = event;
+        if (params) {
+            txt += ": " + JSON.stringify(params)
+        }
+        buf.push(txt);
+        if (buf.length > 30) {
+            buf.shift();
+        }
+        document.getElementById("infoTxt").innerText = buf.join("\n");
+    }
+
+
+    // ----------- Scene definition -----------------------------------------
+
+    // A GameObject that we can pick - a heightmap with a diffuse map
+
+    var terrainObject = new XEO.GameObject({
+
+        geometry: new XEO.HeightmapGeometry({
+            primitive: "triangles",
+            src: "textures/height/mountain.png",
+            xSize: 10,
+            ySize: 10,
+            zSize: 5,
+            xSegments: 10,
+            ySegments: 10,
+            lod: 1.0, // Default
+            autoNormals: true // Default
+        }),
+
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            diffuse: [1, 1, 1],
+            lineWidth: 3,
+            pointSize: 5
+        })
+
+    });
+
+    // A GameObject that renders a wireframe triangle,
+    // which we'll update whenever we get a pick hit,
+    // to show the triangle that we've picked on our
+    // heightmap GameObject
+
+    var triangleIndicatorObject = new XEO.GameObject({
+        geometry: new XEO.Geometry({
+            primitive: "lines",
+            positions: [0, 0, 0, 5, 0, 0, 5, 5, 5],
+            indices: [0, 1, 1, 2, 2, 0]
+        }),
+        material: new XEO.PhongMaterial({
+            specular: [1, .3, .3],
+            diffuse: [1, .3, .3],
+            emissive: [1, .3, .3],
+            lineWidth: 8
+        }),
+        modes: new XEO.Modes({  // This GameObject should not be pickable
+            picking: false
+        }),
+        visibility: new XEO.Visibility({ // This GameObject is initially invisible
+            visible: false
+        })
+    });
+
+    // Set initial camera position
+
+    var view = terrainObject.scene.camera.view;
+
+    view.zoom(2);
+    view.rotateEyeX(-60);
+    view.rotateEyeY(-20);
+
+
+    // ------------ Interaction ------------------------------------------
+
+    // Allow camera interaction
+
+    new XEO.CameraControl();
+
+
+    // Attempt to pick a triangle on the heightmap GameObject on each mouse click
+
+    var scene = terrainObject.scene;
+
+    var input = scene.input;
+
+    input.on("mouseclicked",
+            function (coords) {
+
+                log("Clicked: (" + coords[0] + ", " + coords[1] + ")");
+
+                // Attempt to pick a primitive from among whatever
+                // pickable GameObjects we have
+
+                var hit = scene.pick(coords, {
+                    pickPrimitive: true
+                });
+
+                if (hit) {
+
+                    // Picked a GameObject
+
+                    log("Picked:");
+                    log("terrainObject ID = " + hit.object.id);
+
+                    if (hit.primitiveIndex !== -1) {
+
+                        // Picked a triangle on the GameObject's Geometry
+
+                        log("Primitive index = " + hit.primitiveIndex);
+
+                        // Update the positions on our triangle indicator
+                        // to show the triangle we picked
+
+                        var indices = hit.object.geometry.indices;
+                        var positions = hit.object.geometry.positions;
+
+                        // The primitiveIndex indicates the position of
+                        // the triangle within the indices array
+
+                        var i = hit.primitiveIndex;
+                        var ia = indices[i];
+                        var ib = indices[i + 1];
+                        var ic = indices[i + 2];
+
+                        triangleIndicatorObject.geometry.positions = [
+                            positions[(ia * 3) + 0],
+                            positions[(ia * 3) + 1],
+                            positions[(ia * 3) + 2],
+
+                            positions[(ib * 3) + 0],
+                            positions[(ib * 3) + 1],
+                            positions[(ib * 3) + 2],
+
+                            positions[(ic * 3) + 0],
+                            positions[(ic * 3) + 1],
+                            positions[(ic * 3) + 2]
+                        ];
+
+                        triangleIndicatorObject.visibility.visible = true;
+
+                    } else {
+
+                        log("No primitive picked.");
+                    }
+
+                } else {
+                    log("Nothing picked.");
+                }
+
+                log(); // Newline between each logged pick
+            });
+
+</script>
+</body>
+</html>

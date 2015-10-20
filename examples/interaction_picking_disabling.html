@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>using <a href="../docs/classes/Modes.html" target="_other">Modes</a> components to disable picking for <a
+                href="../docs/classes/GameObject.html" target="_other">GameObjects</a></li>
+        <li>picking is disabled for the red spheres</li>
+        <li>
+            click something!
+        </li>
+    </ul>
+    <br><br>
+    <pre id="infoTxt" style="text-align: left;"></pre>
+</div>
+
+<script>
+
+
+    // ------------ Logging -------------------------------------------------
+
+    var buf = [];
+
+    function log(event, params) {
+        var txt = event;
+        if (params) {
+            txt += ": " + JSON.stringify(params)
+        }
+        buf.push(txt);
+        if (buf.length > 30) {
+            buf.shift();
+        }
+        document.getElementById("infoTxt").innerText = buf.join("\n");
+    }
+
+
+    // ----------- Scene definition -----------------------------------------
+
+    // A hundred randomly-positions spheres - the green ones are
+    // pickable, while the red ones are not
+
+    var sphere = new XEO.SphereGeometry({
+        radius: 2.0,
+        segmentsR: 32,
+        segmentsT: 24
+    });
+
+    for (var i = 0; i < 100; i++) {
+
+        var pickable = Math.random() < 0.5;
+
+        new XEO.GameObject({
+
+            id: "object" + i,
+
+            geometry: sphere,
+
+            transform: new XEO.Translate({
+                xyz: [
+                    Math.random() * 50 - 25,
+                    Math.random() * 50 - 25,
+                    Math.random() * 50 - 25
+                ]
+            }),
+
+            material: new XEO.PhongMaterial({
+                specular: [1, 1, 1],
+                diffuse: pickable ? [0.3, 1.0, 0.3] : [1.0, 0.3, 0.3],
+                shininess: 3
+            }),
+
+            modes: new XEO.Modes({
+                picking: pickable
+            })
+        });
+    }
+
+    // Set initial camera position
+
+    var scene = XEO.scene;
+
+    scene.camera.view.zoom(60);
+
+
+    // ------------ Interaction ------------------------------------------
+
+    // Allow camera interaction
+
+    new XEO.CameraControl();
+
+    // Attempt to pick a GameObject on each mouse click.
+    // Highlight each GameObject that we successfully pick.
+
+    var input = scene.input;
+
+    input.on("mouseclicked",
+            function (coords) {
+
+                log("Clicked: (" + coords[0] + ", " + coords[1] + ")");
+
+                var hit = scene.pick(coords, {
+                    triangle: true
+                });
+
+                if (hit) {
+                    log("Picked GameObject '" + hit.object.id + "'");
+
+                    hit.object.material.emissive = [1, 1, 0];
+
+                } else {
+                    log("Nothing picked.");
+                }
+
+
+                log();
+            });
+
+</script>
+</body>
+</html>
