@@ -295,9 +295,15 @@
          */
         _initWebGL: function () {
 
+            // Default context attribute values
+
+            var contextAttr = XEO._applyIf({
+                preserveDrawingBuffer: false
+            }, this.contextAttr);
+
             for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
                 try {
-                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
+                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], contextAttr);
                 } catch (e) { // Try with next context name
                 }
             }
