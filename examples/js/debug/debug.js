@@ -149,7 +149,7 @@
                 positions.push(pos[i][2]);
 
                 indices.push(i);
-                if (i < (posi-1)) {
+                if (i < (posi - 1)) {
                     indices.push(i + 1);
                 }
             }
@@ -167,7 +167,7 @@
                     material: new XEO.PhongMaterial({
                         emissive: color,
                         opacity: opacity,
-                        lineWidth: 8
+                        lineWidth: lineWidth
                     }),
                     modes: new XEO.Modes({  // This GameObject should not be pickable
                         picking: false,
@@ -223,7 +223,7 @@
                 var boxDiv = document.createElement('div');
                 boxDiv.innerText = text;
                 var style = boxDiv.style;
-                style.color = "white";
+                style.color = cssColor(color);
                 style.position = "absolute";
                 style.padding = "10px";
                 style.margin = "0";
@@ -263,6 +263,11 @@
 
                         pointDiv.style.left = center[0] - 2 + "px";
                         pointDiv.style.top = center[1] - 2 + "px";
+
+                        var zIndex = 10000 + Math.floor(object.viewBoundary.center[2]);
+
+                        boxDiv.style["z-index"] = zIndex;
+                        pointDiv.style["z-index"] = zIndex + 1;
                     });
 
                 object.boxDiv = boxDiv; // Dirty, but all is encapsulated by the debug utility
