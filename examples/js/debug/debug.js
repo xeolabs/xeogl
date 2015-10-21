@@ -131,13 +131,22 @@
             radius = 1.0;
         };
 
-        this.triangle = function () {
+        this.line = function () {
+
+            if (posi < 2) {
+                console.error("[XEO.debug.line] Not enough calls to XEO.debug.pos() for XEO.debug.line() - need at least two.");
+                return;
+            }
 
             var _id = id || "_debugTriangle";
 
-            var positions = [
-                pos[0][0], pos[0][1], pos[0][2], pos[1][0], pos[1][1], pos[1][2], pos[2][0], pos[2][1], pos[2][2]
-            ];
+            var positions = [];
+
+            for (var i = 0; i < posi; i++) {
+                positions.push(pos[i][0]);
+                positions.push(pos[i][1]);
+                positions.push(pos[i][2]);
+            }
 
             var object = getScene().objects[_id];
 
@@ -166,126 +175,6 @@
                 object.modes.transparency = opacity < 1.0;
                 object.material.lineWidth = lineWidth;
             }
-
-            this._reset();
-
-            return this;
-        };
-
-        this.vector = function () {
-
-            var _id = id || "_debugVector";
-
-            var positions = [
-                pos[0][0], pos[0][1], pos[0][2], pos[1][0], pos[1][1], pos[1][2]
-            ];
-
-            var object = getScene().objects[_id];
-
-            if (!object) {
-                new XEO.GameObject(getScene(), {
-                    id: _id,
-                    geometry: new XEO.Geometry({
-                        primitive: "lines",
-                        positions: positions,
-                        indices: [0, 1]
-                    }),
-                    material: new XEO.PhongMaterial({
-                        emissive: color,
-                        opacity: opacity,
-                        lineWidth: lineWidth
-                    }),
-                    modes: new XEO.Modes({  // This GameObject should not be pickable
-                        picking: false,
-                        transparent: opacity < 1.0
-                    })
-                });
-            } else {
-                object.geometry.positions = positions;
-                object.material.emissive = color;
-                object.material.diffuse = color;
-                object.material.opacity = opacity;
-                object.material.lineWidth = lineWidth;
-            }
-
-            this._reset();
-
-            return this;
-        };
-
-        this.line = function () {
-
-            var _id = id || "_debugLine";
-
-            var positions = [
-                pos[0][0], pos[0][1], pos[0][2], pos[1][0], pos[1][1], pos[1][2]
-            ];
-
-            var object = getScene().objects[_id];
-
-            if (!object) {
-                new XEO.GameObject(getScene(), {
-                    id: _id,
-                    geometry: new XEO.Geometry({
-                        primitive: "lines",
-                        positions: positions,
-                        indices: [0, 1]
-                    }),
-                    material: new XEO.PhongMaterial({
-                        emissive: color,
-                        opacity: opacity,
-                        lineWidth: lineWidth
-                    }),
-                    modes: new XEO.Modes({  // This GameObject should not be pickable
-                        picking: false,
-                        transparent: opacity < 1.0
-                    })
-                });
-            } else {
-                object.geometry.positions = positions;
-                object.material.emissive = color;
-                object.material.diffuse = color;
-                object.material.opacity = opacity;
-                object.material.lineWidth = lineWidth;
-            }
-
-            this._reset();
-
-            return this;
-        };
-
-        this.sphere = function () {
-
-            //var _id = id || "_debugSphere";
-            //
-            //var object = getScene().objects[_id];
-            //
-            //if (!object) {
-            //    new XEO.GameObject(getScene(), {
-            //        id: _id,
-            //        transform: new XEO.Translate({
-            //            xyz: pos[0]
-            //        }),
-            //        geometry: new XEO.SphereGeometry({
-            //            radius: radius
-            //        }),
-            //        material: new XEO.PhongMaterial({
-            //            diffuse: color,
-            //            emissive: diffuse,
-            //            opacity: opacity
-            //        }),
-            //        modes: new XEO.Modes({  // This GameObject should not be pickable
-            //            picking: false,
-            //            transparent: opacity < 1.0
-            //        })
-            //    });
-            //} else {
-            //    object.transform.xyz = pos[0];
-            //    object.geometry.radius = radius;
-            //    object.material.emissive = color;
-            //    object.material.diffuse = color;
-            //    object.material.opacity = opacity;
-            //}
 
             this._reset();
 
@@ -362,8 +251,8 @@
 
                         var center = object.canvasBoundary.center;
 
-                        boxDiv.style.left = center[0]  + "px";
-                        boxDiv.style.top = center[1]  + "px";
+                        boxDiv.style.left = center[0] + "px";
+                        boxDiv.style.top = center[1] + "px";
 
                         pointDiv.style.left = center[0] - 2 + "px";
                         pointDiv.style.top = center[1] - 2 + "px";
