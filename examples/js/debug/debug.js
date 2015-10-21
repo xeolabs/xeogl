@@ -150,7 +150,7 @@
                         indices: [0, 1, 1, 2, 2, 0]
                     }),
                     material: new XEO.PhongMaterial({
-                        emissive: [1, 0.3, 0.3],
+                        emissive: color,
                         opacity: opacity,
                         lineWidth: 8
                     }),
@@ -162,8 +162,8 @@
             } else {
                 object.geometry.positions = positions;
                 object.material.emissive = color;
-                object.material.diffuse = color;
                 object.material.opacity = opacity;
+                object.modes.transparency = opacity < 1.0;
                 object.material.lineWidth = lineWidth;
             }
 
