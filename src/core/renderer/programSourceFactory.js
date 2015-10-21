@@ -186,10 +186,10 @@
             // View-space fragment position
             add("varying vec4 xeo_vViewPosition;");
 
-            // View-space vector from fragment position to eye
-            add("varying vec3 xeo_vViewEyeVec;");
-
             if (shading) {
+
+                // View-space vector from fragment position to eye
+                add("varying vec3 xeo_vViewEyeVec;");
 
                 add();
 
@@ -297,7 +297,7 @@
                 add("   mat4 modelNormalMatrix = xeo_uModelNormalMatrix;");
                 add("   mat4 viewNormalMatrix = xeo_uViewNormalMatrix;");
             }
-            
+
             add("   vec4 worldPosition;");
 
             if (states.billboard.active) {
@@ -423,9 +423,9 @@
                         add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length(xeo_uLightPos" + i + ".xyz - worldPosition.xyz));");
                     }
                 }
-            }
 
-            add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+                add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+            }
 
             if (normalMapping) {
                 add("   xeo_vViewEyeVec *= TBM;");
@@ -463,7 +463,11 @@
 
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
             add();
-            add("varying vec4 xeo_vViewPosition;");
+
+            if (shading) {
+                add("varying vec4 xeo_vViewPosition;");
+            }
+
             add();
             add("uniform vec3 xeo_uDiffuse;");
             add("uniform vec3 xeo_uSpecular;");
@@ -528,14 +532,14 @@
 
             // Global, ambient colour - taken from clear colour
 
-            add("uniform vec3 xeo_uLightAmbientColor;");
-            add("uniform float xeo_uLightAmbientIntensity;");
-
-            // World-space vector from fragment to eye
-
-            add("varying vec3 xeo_vViewEyeVec;");
-
             if (shading) {
+
+                add("uniform vec3 xeo_uLightAmbientColor;");
+                add("uniform float xeo_uLightAmbientIntensity;");
+
+                // World-space vector from fragment to eye
+
+                add("varying vec3 xeo_vViewEyeVec;");
 
                 // View-space fragment normal
 
@@ -567,15 +571,16 @@
             add();
 
             // These may be overridden by textures below
+            if (shading) {
+                add("   vec3 ambient = xeo_uLightAmbientColor;");
+                add("   vec3 diffuse = xeo_uDiffuse;");
+                add("   vec3 specular = xeo_uSpecular;");
+                add("   float shininess = xeo_uShininess;");
+                add("   float reflectivity = xeo_uReflectivity;");
+            }
 
-            add("   vec3 ambient = xeo_uLightAmbientColor;");
-            add("   vec3 diffuse = xeo_uDiffuse;");
-            add("   vec3 specular = xeo_uSpecular;");
             add("   vec3 emissive = xeo_uEmissive;");
             add("   float opacity = xeo_uOpacity;");
-            add("   float shininess = xeo_uShininess;");
-            add("   float reflectivity = xeo_uReflectivity;");
-
 
             if (states.geometry.colors) {
 
@@ -735,7 +740,7 @@
                 // No shading
 
                 add();
-                add("   gl_FragColor = vec4(diffuse + ambient + emissive, opacity);");
+                add("   gl_FragColor = vec4(emissive, opacity);");
             }
 
             add("}");
