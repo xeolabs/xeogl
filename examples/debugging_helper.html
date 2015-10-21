@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+
+    <script src="js/debug/debug.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>
+            using the <a href="js/debug/debug.js" target="_other">XEO.debug</a> helper utility to debug a ray-triangle
+            intersection function
+        </li>
+    </ul>
+
+</div>
+
+<script>
+
+    // Triangle vertices
+
+    var a = [-3, 3, 0];
+    var b = [0, -3, 0];
+    var c = [3, 3, 0];
+
+    // The ray
+
+    var origin = [-1.2, 1.5, -3];
+    var dir = [0, 0, 6];
+
+    // Render the triangle as a polyline with labelled vertices
+
+    XEO.debug
+            .id("triangle")
+            .lineWidth(2)
+            .color([0.0, 0.0, 0.0])
+            .pos(a)
+            .pos(b)
+            .pos(c)
+            .pos(a)
+            .line();
+
+    XEO.debug
+            .id("a")
+            .fillColor([1.0, 1.0, 0.3])
+            .color([0, 0, 0])
+            .text("A")
+            .pos(a)
+            .label();
+
+    XEO.debug
+            .id("b")
+            .fillColor([1.0, 1.0, 0.3])
+            .color([0, 0, 0])
+            .text("B")
+            .pos(b)
+            .label();
+
+    XEO.debug
+            .id("c")
+            .fillColor([1.0, 1.0, 0.3])
+            .color([0, 0, 0])
+            .text("C")
+            .pos(c)
+            .label();
+
+    // Render the ray
+
+    XEO.debug
+            .id("ray")
+            .lineWidth(2)
+            .color([1.0, 0.3, 0.3])
+            .pos(origin)
+            .pos(XEO.math.addVec3(origin, dir, []))
+            .line();
+
+    XEO.debug
+            .id("origin")
+            .fillColor([0.3, 1.3, 1.0])
+            .color([0, 0, 0])
+            .text("origin")
+            .pos(origin)
+            .label();
+
+    XEO.debug
+            .id("dir")
+            .fillColor([0.3, 1.3, 1.0])
+            .color([0, 0, 0])
+            .text("dir")
+            .pos(XEO.math.addVec3(origin, dir, []))
+            .label();
+
+
+    // Get ray-triangle intersection and render it as a label
+
+    var isect = rayTriangleIntersect(origin, dir, a, b, c);
+
+    XEO.debug
+            .id("isect")
+            .fillColor([1.0, 1.0, 1.0])
+            .color([0, 0, 0])
+            .text("intersect")
+            .pos(isect)
+            .label();
+
+    // Allow user to move camera around
+
+    new XEO.CameraControl();
+
+    // Slowly orbit camera
+    XEO.scene.on("tick",
+            function () {
+                XEO.scene.camera.view.rotateEyeY(0.4);
+                XEO.scene.camera.view.rotateEyeX(0.2);
+            });
+
+
+
+    // The intersection function
+    // Just a stub for the moment
+    function rayTriangleIntersect(origin, dir, a, b, c) {
+        return [-1.2, 1.5, 0];
+    }
+
+
+</script>
+</body>
+</html>
