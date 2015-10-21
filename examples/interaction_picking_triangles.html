@@ -28,37 +28,16 @@
             picking individual triangles on a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a>
         </li>
         <li>
-            GameObject has ~9500 triangles
-        </li>
-        <li>
-            uses GPU-based color-indexing technique
+            uses the <a href="js/debug/debug.js" target="_other">XEO.debug</a> helper to show the picked triangle
         </li>
         <li>
             move your mouse over the heightmap!
         </li>
     </ul>
-    <br><br>
-    <pre id="infoTxt" style="text-align: left;"></pre>
+
 </div>
 
 <script>
-
-
-    // ------------ Logging -------------------------------------------------
-
-    var buf = [];
-
-    function log(event, params) {
-        var txt = event;
-        if (params) {
-            txt += ": " + JSON.stringify(params)
-        }
-        buf.push(txt);
-        if (buf.length > 30) {
-            buf.shift();
-        }
-        document.getElementById("infoTxt").innerText = buf.join("\n");
-    }
 
 
     // ----------- Scene definition -----------------------------------------
@@ -116,8 +95,6 @@
     input.on("mousemove",
             function (coords) {
 
-                log("Mouse pos: (" + coords[0] + ", " + coords[1] + ")");
-
                 // Attempt to pick a primitive from among whatever
                 // pickable GameObjects we have
 
@@ -129,17 +106,11 @@
 
                     // Picked a GameObject
 
-                    log("Picked:");
-                    log("GameObject ID = " + hit.object.id);
-
                     if (hit.primitiveIndex !== -1) {
 
                         // Picked a triangle on the GameObject's Geometry
 
-                        log("Primitive index = " + hit.primitiveIndex);
-
-                        // Update the positions on our triangle indicator
-                        // to show the triangle we picked
+                        // Show the triangle we picked
 
                         var indices = hit.object.geometry.indices;
                         var positions = hit.object.geometry.positions;
@@ -216,40 +187,6 @@
 
                 log(); // Newline between each logged pick
             });
-
-    function unproject(object, canvasCoords) {
-
-        var canvas = object.scene.canvas.canvas;
-        var viewMat = object.camera.view.matrix;
-        var projMat = object.camera.project.matrix;
-
-        var w = canvas.width;
-        var h = canvas.height;
-
-        // Calculate clip space coordinates, which will be in range
-        // of x=[-1..1] and y=[-1..1], with y=(+1) at top
-
-        var x = (canvasCoords[0] - w / 2) / (w / 2);           // Calculate clip space coordinates
-        var y = -(canvasCoords[1] - h / 2) / (h / 2);
-
-        var pvMat = XEO.math.mulMat4(projMat, viewMat, []);
-        var pvMatInverse = XEO.math.inverseMat4(pvMat, []);
-        var world1 = XEO.math.transformVec4(pvMatInverse, [x, y, -1, 1]);
-        world1 = XEO.math.mulVec4Scalar(world1, 1 / world1[3]);
-        var world2 = XEO.math.transformVec4(pvMatInverse, [x, y, 1, 1]);
-
-        XEO.debug
-                .color([1, 0.3, 0.3])
-                .pos(world1)
-                .pos(world2)
-                .line();
-
-        world2 = XEO.math.mulVec4Scalar(world2, 1 / world2[3]);
-        var dir = XEO.math.subVec3(world2, world1, []);
-        var vWorld = XEO.math.addVec3(world1, XEO.math.mulVec4Scalar(dir, 0, []), []);
-        return vWorld;
-    }
-
 
 </script>
 </body>
