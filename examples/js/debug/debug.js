@@ -16,12 +16,12 @@
 
      ```` javascript
      XEO.debug
-     .id("myTriangle")
-     .color([1,0,0])
-     .pos([-10, -10, 0])
-     .pos([10, -10, 0])
-     .pos([0, -4, 0])
-     .triangle();
+        .id("myTriangle")  // Supply an ID when you want to update the line if already existing
+        .color([1,0,0])
+        .pos([-10, -10, 0])
+        .pos([10, -10, 0])
+        .pos([0, -4, 0])
+        .line();
 
      ````
 
@@ -29,12 +29,12 @@
 
      ```` javascript
      XEO.debug
-     .id("myTriangle")
-     .pos([-15, -15, 0])
-     .pos([15, -15, 0])
-     .pos([0, 5, 0])
-     .color([0,1,0])
-     .triangle();
+        .id("myTriangle")
+        .pos([-15, -15, 0])
+        .pos([15, -15, 0])
+        .pos([0, 5, 0])
+        .color([0,1,0])
+        .line();
 
      ````
 
@@ -42,9 +42,9 @@
 
      ```` javascript
      XEO.debug
-     .pos([-10, 34, 2])
-     .text("Check this out!")
-     .label();
+        .pos([-10, 34, 2])
+        .text("Check this out!")
+        .label();
 
      ````
      @class XEO.debug
