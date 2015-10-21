@@ -138,7 +138,7 @@
                 return;
             }
 
-            var _id = id || "_debugTriangle";
+            var _id = id || "__debugLine";
 
             var positions = [];
 
@@ -188,7 +188,7 @@
          */
         this.label = function () {
 
-            var _id = id || "_debugLabel";
+            var _id = id || "__debugLabel";
 
             var object = getScene().objects[_id];
 
