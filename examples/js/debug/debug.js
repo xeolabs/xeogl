@@ -16,12 +16,12 @@
 
      ```` javascript
      XEO.debug
-        .id("myTriangle")  // Supply an ID when you want to update the line if already existing
-        .color([1,0,0])
-        .pos([-10, -10, 0])
-        .pos([10, -10, 0])
-        .pos([0, -4, 0])
-        .line();
+     .id("myTriangle")  // Supply an ID when you want to update the line if already existing
+     .color([1,0,0])
+     .pos([-10, -10, 0])
+     .pos([10, -10, 0])
+     .pos([0, -4, 0])
+     .line();
 
      ````
 
@@ -29,12 +29,12 @@
 
      ```` javascript
      XEO.debug
-        .id("myTriangle")
-        .pos([-15, -15, 0])
-        .pos([15, -15, 0])
-        .pos([0, 5, 0])
-        .color([0,1,0])
-        .line();
+     .id("myTriangle")
+     .pos([-15, -15, 0])
+     .pos([15, -15, 0])
+     .pos([0, 5, 0])
+     .color([0,1,0])
+     .line();
 
      ````
 
@@ -42,9 +42,9 @@
 
      ```` javascript
      XEO.debug
-        .pos([-10, 34, 2])
-        .text("Check this out!")
-        .label();
+     .pos([-10, 34, 2])
+     .text("Check this out!")
+     .label();
 
      ````
      @class XEO.debug
@@ -141,11 +141,17 @@
             var _id = id || "__debugLine";
 
             var positions = [];
+            var indices = [];
 
             for (var i = 0; i < posi; i++) {
                 positions.push(pos[i][0]);
                 positions.push(pos[i][1]);
                 positions.push(pos[i][2]);
+
+                indices.push(i);
+                if (i < (posi-1)) {
+                    indices.push(i + 1);
+                }
             }
 
             var object = getScene().objects[_id];
@@ -156,7 +162,7 @@
                     geometry: new XEO.Geometry({
                         primitive: "lines",
                         positions: positions,
-                        indices: [0, 1, 1, 2, 2, 0]
+                        indices: indices
                     }),
                     material: new XEO.PhongMaterial({
                         emissive: color,
@@ -170,6 +176,7 @@
                 });
             } else {
                 object.geometry.positions = positions;
+                object.geometry.indices = indices;
                 object.material.emissive = color;
                 object.material.opacity = opacity;
                 object.modes.transparency = opacity < 1.0;

@@ -145,11 +145,13 @@
                         // Use debug helper to show triangle with vertex labels
 
                         XEO.debug
+                                .id("triangle")
                                 .lineWidth(4)
                                 .color([0.0, 0.0, 0.0])
                                 .pos(a)
                                 .pos(b)
                                 .pos(c)
+                                .pos(a)
                                 .line();
 
                         XEO.debug
@@ -175,6 +177,8 @@
                                 .text("C")
                                 .pos(c)
                                 .label();
+
+                        var w = unproject(hit.object, coords);
                     }
                 }
             });
