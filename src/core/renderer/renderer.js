@@ -958,7 +958,7 @@
             clear: true
         });
 
-        gl.finish();
+     //   gl.finish();
 
         // Convert picked pixel color to object index
 
@@ -992,7 +992,7 @@
                     clear: true
                 });
 
-                gl.finish();
+                 gl.finish();
 
                 // Convert picked pixel color to primitive index
 
@@ -1116,7 +1116,7 @@
             this.stats.frame.bindArray = frameCtx.bindArray;
         }
 
-        gl.flush();
+        // gl.flush();
 
         if (frameCtx.renderBuf) {
             frameCtx.renderBuf.unbind();
