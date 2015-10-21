@@ -15,6 +15,7 @@
     </style>
 
     <script src="../build/xeoengine.js"></script>
+    <script src="js/debug/debug.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -72,46 +73,21 @@
             xSize: 10,
             ySize: 10,
             zSize: 5,
-            xSegments: 40,
-            ySegments: 40,
+            xSegments: 10,
+            ySegments: 10,
             lod: 1.0, // Default
             autoNormals: true // Default
         }),
 
         material: new XEO.PhongMaterial({
-//            diffuseMap: new XEO.Texture({
-//                src: "textures/diffuse/uvGrid2.jpg"
-//            }),
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
             diffuse: [0.3, 0.3, 1],
             lineWidth: 3,
             pointSize: 5
         })
 
-    });
-
-    // A GameObject that renders a wireframe triangle,
-    // which we'll update whenever we get a pick hit,
-    // to show the triangle that we've picked on our
-    // heightmap GameObject
-
-    var triangleIndicatorObject = new XEO.GameObject({
-        geometry: new XEO.Geometry({
-            primitive: "lines",
-            positions: [0, 0, 0, 5, 0, 0, 5, 5, 5],
-            indices: [0, 1, 1, 2, 2, 0]
-        }),
-        material: new XEO.PhongMaterial({
-            specular: [1, .3, .3],
-            diffuse: [1, .3, .3],
-            emissive: [1, .3, .3],
-            lineWidth: 8
-        }),
-        modes: new XEO.Modes({  // This GameObject should not be pickable
-            picking: false
-        }),
-        visibility: new XEO.Visibility({ // This GameObject is initially invisible
-            visible: false
-        })
     });
 
     // Set initial camera position
@@ -135,6 +111,7 @@
     var scene = terrainObject.scene;
 
     var input = scene.input;
+
 
     input.on("mousemove",
             function (coords) {
@@ -171,25 +148,62 @@
                         // the triangle within the indices array
 
                         var i = hit.primitiveIndex;
+
                         var ia = indices[i];
                         var ib = indices[i + 1];
                         var ic = indices[i + 2];
 
-                        triangleIndicatorObject.geometry.positions = [
+                        var a = [
                             positions[(ia * 3) + 0],
                             positions[(ia * 3) + 1],
-                            positions[(ia * 3) + 2],
+                            positions[(ia * 3) + 2]
+                        ];
 
+                        var b = [
                             positions[(ib * 3) + 0],
                             positions[(ib * 3) + 1],
-                            positions[(ib * 3) + 2],
+                            positions[(ib * 3) + 2]
+                        ];
 
+                        var c = [
                             positions[(ic * 3) + 0],
                             positions[(ic * 3) + 1],
                             positions[(ic * 3) + 2]
                         ];
 
-                        triangleIndicatorObject.visibility.visible = true;
+                        // Use debug helper to show triangle with vertex labels
+
+                        XEO.debug
+                                .lineWidth(4)
+                                .color([0.0, 0.0, 0.0])
+                                .pos(a)
+                                .pos(b)
+                                .pos(c)
+                                .triangle();
+
+                        XEO.debug
+                                .id("vertexA")
+                                .fillColor([1.0, 1.0, 0.3])
+                                .color([0, 0, 0])
+                                .text("A")
+                                .pos(a)
+                                .label();
+
+                        XEO.debug
+                                .id("vertexB")
+                                .fillColor([1.0, 1.0, 0.3])
+                                .color([0, 0, 0])
+                                .text("B")
+                                .pos(b)
+                                .label();
+
+                        XEO.debug
+                                .id("vertexC")
+                                .fillColor([1.0, 1.0, 0.3])
+                                .color([0, 0, 0])
+                                .text("C")
+                                .pos(c)
+                                .label();
 
                     } else {
 
@@ -202,6 +216,40 @@
 
                 log(); // Newline between each logged pick
             });
+
+    function unproject(object, canvasCoords) {
+
+        var canvas = object.scene.canvas.canvas;
+        var viewMat = object.camera.view.matrix;
+        var projMat = object.camera.project.matrix;
+
+        var w = canvas.width;
+        var h = canvas.height;
+
+        // Calculate clip space coordinates, which will be in range
+        // of x=[-1..1] and y=[-1..1], with y=(+1) at top
+
+        var x = (canvasCoords[0] - w / 2) / (w / 2);           // Calculate clip space coordinates
+        var y = -(canvasCoords[1] - h / 2) / (h / 2);
+
+        var pvMat = XEO.math.mulMat4(projMat, viewMat, []);
+        var pvMatInverse = XEO.math.inverseMat4(pvMat, []);
+        var world1 = XEO.math.transformVec4(pvMatInverse, [x, y, -1, 1]);
+        world1 = XEO.math.mulVec4Scalar(world1, 1 / world1[3]);
+        var world2 = XEO.math.transformVec4(pvMatInverse, [x, y, 1, 1]);
+
+        XEO.debug
+                .color([1, 0.3, 0.3])
+                .pos(world1)
+                .pos(world2)
+                .line();
+
+        world2 = XEO.math.mulVec4Scalar(world2, 1 / world2[3]);
+        var dir = XEO.math.subVec3(world2, world1, []);
+        var vWorld = XEO.math.addVec3(world1, XEO.math.mulVec4Scalar(dir, 0, []), []);
+        return vWorld;
+    }
+
 
 </script>
 </body>
