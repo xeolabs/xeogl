@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-10-20
+ * Built on 2015-10-21
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -4687,9 +4687,15 @@
          */
         _initWebGL: function () {
 
+            // Default context attribute values
+
+            var contextAttr = XEO._applyIf({
+                preserveDrawingBuffer: false
+            }, this.contextAttr);
+
             for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
                 try {
-                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
+                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], contextAttr);
                 } catch (e) { // Try with next context name
                 }
             }
@@ -9184,6 +9190,12 @@ visibility.destroy();
  {{#crossLink "Geometry"}}{{/crossLink}} surface, ie. they are not multiplied by
  the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>
 
+ <li>When the {{#crossLink "GameObject"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
+ {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines" or "points" then only the {{#crossLink "PhongMaterial"}}{{/crossLink}}'s
+ {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}},
+ {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
+ will actually be applied, since those primitive types cannot be shaded.</li>
+
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PhongMaterials create within xeoEngine's shaders.</li>
 
  </ul>
@@ -12946,8 +12958,8 @@ visibility.destroy();
         getAABB2Center: function (boundary, dest) {
             var r = dest || this.vec2();
 
-            r[0] = (boundary.xmax + boundary.xmin ) * 0.5;
-            r[1] = (boundary.ymax + boundary.ymin ) * 0.5;
+            r[0] = (boundary.xmax + boundary.xmin ) / 2;
+            r[1] = (boundary.ymax + boundary.ymin ) / 2;
 
             return r;
         },
@@ -13503,7 +13515,7 @@ visibility.destroy();
                 // Primitive-indexed triangle pick color
 
                 primIndex++;
-                primIndex = location +1;
+                primIndex = location + 1;
 
 
                 if (debug) {
@@ -18055,7 +18067,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             clear: true
         });
 
-        gl.finish();
+     //   gl.finish();
 
         // Convert picked pixel color to object index
 
@@ -18089,7 +18101,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     clear: true
                 });
 
-                gl.finish();
+                 gl.finish();
 
                 // Convert picked pixel color to primitive index
 
@@ -18213,7 +18225,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.stats.frame.bindArray = frameCtx.bindArray;
         }
 
-        gl.flush();
+        // gl.flush();
 
         if (frameCtx.renderBuf) {
             frameCtx.renderBuf.unbind();
@@ -19185,10 +19197,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             // View-space fragment position
             add("varying vec4 xeo_vViewPosition;");
 
-            // View-space vector from fragment position to eye
-            add("varying vec3 xeo_vViewEyeVec;");
-
             if (shading) {
+
+                // View-space vector from fragment position to eye
+                add("varying vec3 xeo_vViewEyeVec;");
 
                 add();
 
@@ -19296,7 +19308,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 add("   mat4 modelNormalMatrix = xeo_uModelNormalMatrix;");
                 add("   mat4 viewNormalMatrix = xeo_uViewNormalMatrix;");
             }
-            
+
             add("   vec4 worldPosition;");
 
             if (states.billboard.active) {
@@ -19422,9 +19434,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length(xeo_uLightPos" + i + ".xyz - worldPosition.xyz));");
                     }
                 }
-            }
 
-            add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+                add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+            }
 
             if (normalMapping) {
                 add("   xeo_vViewEyeVec *= TBM;");
@@ -19462,7 +19474,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
             add();
-            add("varying vec4 xeo_vViewPosition;");
+
+            if (shading) {
+                add("varying vec4 xeo_vViewPosition;");
+            }
+
             add();
             add("uniform vec3 xeo_uDiffuse;");
             add("uniform vec3 xeo_uSpecular;");
@@ -19527,14 +19543,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             // Global, ambient colour - taken from clear colour
 
-            add("uniform vec3 xeo_uLightAmbientColor;");
-            add("uniform float xeo_uLightAmbientIntensity;");
-
-            // World-space vector from fragment to eye
-
-            add("varying vec3 xeo_vViewEyeVec;");
-
             if (shading) {
+
+                add("uniform vec3 xeo_uLightAmbientColor;");
+                add("uniform float xeo_uLightAmbientIntensity;");
+
+                // World-space vector from fragment to eye
+
+                add("varying vec3 xeo_vViewEyeVec;");
 
                 // View-space fragment normal
 
@@ -19566,15 +19582,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             add();
 
             // These may be overridden by textures below
+            if (shading) {
+                add("   vec3 ambient = xeo_uLightAmbientColor;");
+                add("   vec3 diffuse = xeo_uDiffuse;");
+                add("   vec3 specular = xeo_uSpecular;");
+                add("   float shininess = xeo_uShininess;");
+                add("   float reflectivity = xeo_uReflectivity;");
+            }
 
-            add("   vec3 ambient = xeo_uLightAmbientColor;");
-            add("   vec3 diffuse = xeo_uDiffuse;");
-            add("   vec3 specular = xeo_uSpecular;");
             add("   vec3 emissive = xeo_uEmissive;");
             add("   float opacity = xeo_uOpacity;");
-            add("   float shininess = xeo_uShininess;");
-            add("   float reflectivity = xeo_uReflectivity;");
-
 
             if (states.geometry.colors) {
 
@@ -19734,7 +19751,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 // No shading
 
                 add();
-                add("   gl_FragColor = vec4(diffuse + ambient + emissive, opacity);");
+                add("   gl_FragColor = vec4(emissive, opacity);");
             }
 
             add("}");
