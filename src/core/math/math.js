@@ -11,6 +11,7 @@
     var tempVec3c = new Float32Array(3);
     var tempVec3d = new Float32Array(3);
     var tempVec3e = new Float32Array(3);
+    var tempVec3f = new Float32Array(3);
     var tempVec4 = new Float32Array(4);
 
     /*
@@ -2424,6 +2425,82 @@
             isect[2] = origin[2] + t * dir[2];
 
             return isect;
+        },
+
+        /**
+         * Gets barycentric coordinates from cartesian coordinates within a triangle.
+         *
+         * @method cartesianToBaryCentric
+         * @static
+         * @param {Array of Number} cartesian Cartesian coordinates.
+         * @param {Array of Number} a First triangle vertex.
+         * @param {Array of Number} b Second triangle vertex.
+         * @param {Array of Number} c Third triangle vertex.
+         * @param {Array of Number} [bary] The barycentric coordinates.
+         * @returns {Array of Number} The barycentric coordinates, or null if the triangle was invalid.
+         * @returns {*}
+         */
+        cartesianToBarycentric: function (cartesian, a, b, c, bary) {
+
+            var f1 = XEO.math.subVec3(a, cartesian, tempVec3);
+            var f2 = XEO.math.subVec3(b, cartesian, tempVec3b);
+            var f3 = XEO.math.subVec3(c, cartesian, tempVec3c);
+
+            var t1 = XEO.math.subVec3(a, b, tempVec3d);
+            var t2 = XEO.math.subVec3(a, c, tempVec3e);
+
+            var a0 = XEO.math.lenVec3(XEO.math.cross3Vec3(t1, t2, tempVec3f));
+
+            bary[0] = XEO.math.lenVec3(XEO.math.cross3Vec3(f2, f3, tempVec3f)) / a0;
+            bary[1] = XEO.math.lenVec3(XEO.math.cross3Vec3(f3, f1, tempVec3f)) / a0;
+            bary[2] = XEO.math.lenVec3(XEO.math.cross3Vec3(f1, f2, tempVec3f)) / a0;
+
+            return bary;
+        },
+
+        /**
+         * Returns true if the given barycentric coordinates are within their triangle.
+         *
+         * @method barycentricInsideTriangle
+         * @static
+         * @param {Array of Number} bary Barycentric coordinates.
+         * @returns {Boolean} True if the barycentric coordinates are inside their triangle.
+         * @returns {*}
+         */
+        barycentricInsideTriangle: function (bary) {
+
+            var v = bary[1];
+            var u = bary[2];
+
+            return (u >= 0) && (v >= 0) && (u + v < 1);
+        },
+
+        /**
+         * Gets cartesian coordinates from barycentric coordinates within a triangle.
+         *
+         * @method barycentricToCartesian
+         * @static
+         * @param {Array of Number} bary The barycentric coordinate.
+         * @param {Array of Number} a First triangle vertex.
+         * @param {Array of Number} b Second triangle vertex.
+         * @param {Array of Number} c Third triangle vertex.
+         * @param {Array of Number} [cartesian] Cartesian coordinates.
+         * @returns {Array of Number} The cartesian coordinates, or null if the triangle was invalid.
+         * @returns {*}
+         */
+        barycentricToCartesian: function (bary, a, b, c, cartesian) {
+
+            cartesian = cartesian || XEO.math.vec3();
+
+            var u = bary[0];
+            var v = bary[1];
+            var w = bary[2];
+
+            cartesian[0] = a[0] * u + b[0] * v + c[0] * w;
+            cartesian[1] = a[1] * u + b[1] * v + c[1] * w;
+            cartesian[2] = a[2] * u + b[2] * v + c[2] * w;
+
+            return cartesian;
         }
     };
 
