@@ -207,7 +207,7 @@
                         xyz: pos[0]
                     }),
                     geometry: new XEO.SphereGeometry({
-                        radius: 0.001
+                        radius: 0.1
                     }),
                     modes: new XEO.Modes({  // This GameObject should not be pickable
                         picking: false,
@@ -258,11 +258,11 @@
 
                         var center = object.canvasBoundary.center;
 
-                        boxDiv.style.left = center[0] + "px";
-                        boxDiv.style.top = center[1] + "px";
+                        boxDiv.style.left = center[0] - 3 + "px";
+                        boxDiv.style.top = center[1] - 3 + "px";
 
-                        pointDiv.style.left = center[0] - 2 + "px";
-                        pointDiv.style.top = center[1] - 2 + "px";
+                        pointDiv.style.left = center[0] - 5 + "px";
+                        pointDiv.style.top = center[1] - 5 + "px";
 
                         var zIndex = 10000 + Math.floor(object.viewBoundary.center[2]);
 
@@ -284,6 +284,50 @@
                 var border = lineWidth + "px solid " + cssColor(color);
                 object.boxDiv.style.border = border;
                 object.pointDiv.style.border = border;
+            }
+
+            this._reset();
+
+            return this;
+        };
+
+        this.label3d = function () {
+
+            var _id = id || "__debugLabel3d";
+
+            var object = getScene().objects[_id];
+
+            if (!object) {
+
+                object = new XEO.GameObject(getScene(), {
+                    id: _id,
+                    transform: new XEO.Translate({
+                        xyz: pos[0]
+                    }),
+                    geometry: new XEO.VectorTextGeometry({
+                        text: text
+                    }),
+                    modes: new XEO.Modes({  // This GameObject should not be pickable
+                        picking: false,
+                        transparent: true
+                    }),
+                    material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
+                        emissive: color,
+                        opacity: opacity,
+                        lineWidth: lineWidth
+                    }),
+                    billboard: new XEO.Billboard({
+                        spherical: true
+                    })
+                });
+
+            } else {
+                object.transform.xyz = pos[0];
+                object.geometry.text = text;
+                object.material.emissive = color;
+                object.material.opacity = opacity;
+                object.modes.transparency = opacity < 1.0;
+                object.material.lineWidth = lineWidth;
             }
 
             this._reset();
