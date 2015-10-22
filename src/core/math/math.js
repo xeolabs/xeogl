@@ -2,10 +2,15 @@
 
     "use strict";
 
+    // Some temporary vars to help avoid garbage collection
+
     var tempMat1 = new Float32Array(16);
-
     var tempMat2 = new Float32Array(16);
-
+    var tempVec3 = new Float32Array(3);
+    var tempVec3b = new Float32Array(3);
+    var tempVec3c = new Float32Array(3);
+    var tempVec3d = new Float32Array(3);
+    var tempVec3e = new Float32Array(3);
     var tempVec4 = new Float32Array(4);
 
     /*
@@ -1747,8 +1752,8 @@
         getAABB2Center: function (boundary, dest) {
             var r = dest || this.vec2();
 
-            r[0] = (boundary.xmax + boundary.xmin ) * 0.5;
-            r[1] = (boundary.ymax + boundary.ymin ) * 0.5;
+            r[0] = (boundary.xmax + boundary.xmin ) / 2;
+            r[1] = (boundary.ymax + boundary.ymin ) / 2;
 
             return r;
         },
@@ -2105,9 +2110,9 @@
          *
          * @method buildTangents
          * @static
-         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
-         * @param {{Array of Number}} indices One-dimensional flattened array of indices.*
-         * @returns {{Array of Number}} One-dimensional flattened array of normal vectors.
+         * @param {Array of Number} positions One-dimensional flattened array of positions.
+         * @param {Array of Number} indices One-dimensional flattened array of indices.*
+         * @returns {Array of Number} One-dimensional flattened array of normal vectors.
          */
         buildNormals: function (positions, indices) {
 
@@ -2170,10 +2175,10 @@
          *
          * @method buildTangents
          * @static
-         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
-         * @param {{Array of Number}} indices One-dimensional flattened array of indices.
-         * @param {{Array of Number}} uv One-dimensional flattened array of UV coordinates.
-         * @returns {{Array of Number}} One-dimensional flattened array of tangents.
+         * @param {Array of Number} positions One-dimensional flattened array of positions.
+         * @param {Array of Number} indices One-dimensional flattened array of indices.
+         * @param {Array of Number} uv One-dimensional flattened array of UV coordinates.
+         * @returns {Array of Number} One-dimensional flattened array of tangents.
          */
         buildTangents: function (positions, indices, uv) {
 
@@ -2274,8 +2279,8 @@
          *
          * @method getPickPrimitives
          * @static
-         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
-         * @param {{Array of Number}} indices One-dimensional flattened array of indices.
+         * @param {Array of Number} positions One-dimensional flattened array of positions.
+         * @param {Array of Number} indices One-dimensional flattened array of indices.
          * @param {*} [pickTris] Optional object to return the arrays on.
          * @param {Boolean} [debug] Assigns random colors to triangles when true.
          * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
@@ -2304,7 +2309,7 @@
                 // Primitive-indexed triangle pick color
 
                 primIndex++;
-                primIndex = location +1;
+                primIndex = location + 1;
 
 
                 if (debug) {
@@ -2371,6 +2376,54 @@
             pickTris.pickIndices = pickIndices;
 
             return pickTris;
+        },
+
+        /**
+         * Finds the intersection of a 3D ray with a 3D triangle.
+         *
+         * @method rayTriangleIntersect
+         * @static
+         * @param {Array of Number} origin Ray origin.
+         * @param {Array of Number} dir Ray direction.
+         * @param {Array of Number} a First triangle vertex.
+         * @param {Array of Number} b Second triangle vertex.
+         * @param {Array of Number} c Third triangle vertex.
+         * @param {Array of Number} [isect] Intersection point.
+         * @returns {Array of Number} The intersection point, or null if no intersection found.
+         */
+        rayTriangleIntersect: function (origin, dir, a, b, c, isect) {
+
+            isect = isect || XEO.math.vec3();
+
+            var EPSILON = 0.000001;
+
+            var edge1 = XEO.math.subVec3(b, a, tempVec3);
+            var edge2 = XEO.math.subVec3(c, a, tempVec3b);
+
+            var pvec = XEO.math.cross3Vec3(dir, edge2, tempVec3c);
+            var det = XEO.math.dotVec3(edge1, pvec);
+            if (det < EPSILON) {
+                return null;
+            }
+
+            var tvec = XEO.math.subVec3(origin, a, tempVec3d);
+            var u = XEO.math.dotVec3(tvec, pvec);
+            if (u < 0 || u > det) {
+                return null;
+            }
+
+            var qvec = XEO.math.cross3Vec3(tvec, edge1, tempVec3e);
+            var v = XEO.math.dotVec3(dir, qvec);
+            if (v < 0 || u + v > det) {
+                return null;
+            }
+
+            var t = XEO.math.dotVec3(edge2, qvec) / det;
+            isect[0] = origin[0] + t * dir[0];
+            isect[1] = origin[1] + t * dir[1];
+            isect[2] = origin[2] + t * dir[2];
+
+            return isect;
         }
     };
 
