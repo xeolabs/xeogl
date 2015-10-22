@@ -27,8 +27,8 @@
     <br><br>
     <ul>
         <li>
-            using the <a href="js/debug/debug.js" target="_other">XEO.debug</a> helper utility to debug a ray-triangle
-            intersection function
+            using the <a href="js/debug/debug.js" target="_other">XEO.debug</a> helper utility to visualize the result of
+            the <a href="../docs/classes/XEO.math.math.html#method_rayTriangleIntersect">XEO.math.rayTriangleIntersect</a> function
         </li>
     </ul>
 
@@ -44,8 +44,8 @@
 
     // The ray
 
-    var origin = [-1.2, 1.5, -3];
-    var dir = [0, 0, 6];
+    var origin = [-1.2, 1.5, 3];
+    var dir = [0, 0, -6];
 
     // Render the triangle as a polyline with labelled vertices
 
@@ -112,15 +112,20 @@
 
     // Get ray-triangle intersection and render it as a label
 
-    var isect = rayTriangleIntersect(origin, dir, a, b, c);
+    var isect = XEO.math.rayTriangleIntersect(origin, dir, a, b, c);
 
-    XEO.debug
-            .id("isect")
-            .fillColor([1.0, 1.0, 1.0])
-            .color([0, 0, 0])
-            .text("intersect")
-            .pos(isect)
-            .label();
+    if (isect) {
+
+        XEO.debug
+                .id("isect")
+                .fillColor([1.0, 1.0, 1.0])
+                .color([0, 0, 0])
+                .text("intersect")
+                .pos(isect)
+                .label();
+    } else {
+        alert("No intersection found!");
+    }
 
     // Allow user to move camera around
 
@@ -132,15 +137,6 @@
                 XEO.scene.camera.view.rotateEyeY(0.4);
                 XEO.scene.camera.view.rotateEyeX(0.2);
             });
-
-
-
-    // The intersection function
-    // Just a stub for the moment
-    function rayTriangleIntersect(origin, dir, a, b, c) {
-        return [-1.2, 1.5, 0];
-    }
-
 
 </script>
 </body>
