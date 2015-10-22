@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+
+    <script src="js/debug/debug.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>
+            ray picking demo
+        </li>
+        <li>
+            we're picking a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a>,
+            a triangle, plus interpolated normal vector and UV coordinates
+        </li>
+        <li>
+            move your mouse over the GameObject!
+        </li>
+    </ul>
+    <br><br>
+    <img id="diffuseTexture" src="textures/diffuse/uvGrid2.jpg" width="400px" height="400px">
+
+    <div id="uvPos"
+         style="position:absolute; width: 20px; height: 20px; border-radius: 10px; opacity: 0.7; border: 2px solid white; background: lightgreen;"></div>
+
+</div>
+
+<script>
+
+    var showUVPos = (function () {
+
+        var textureImg = document.getElementById("diffuseTexture");
+        var uvPosDiv = document.getElementById("uvPos");
+
+        var left = textureImg.offsetLeft;
+        var top = textureImg.offsetTop;
+
+        var width = textureImg.width;
+        var height = textureImg.height;
+
+        return function (uv) {
+            uvPosDiv.style.left = Math.floor(left + uv[0] * width) + "px";
+            uvPosDiv.style.top = Math.floor(top + height - (uv[1] * height)) + "px"; // Correct for our texture Y-flipping
+        }
+
+    })();
+
+    // ----------- Scene definition -----------------------------------------
+
+    // A GameObject that we can pick - a heightmap with a diffuse map
+
+    new XEO.GameObject({
+
+//        geometry: new XEO.HeightmapGeometry({
+//            primitive: "triangles",
+//            src: "textures/height/everest.png",
+//            xSize: 10,
+//            ySize: 10,
+//            zSize: 3,
+//            xSegments: 40,
+//            ySegments: 40,
+//            lod: 1.0, // Default
+//            autoNormals: true // Default
+//        }),
+
+        geometry: new XEO.TorusGeometry({
+            radius: 4.0,
+            tube: 1.0,
+            segmentsR: 32,
+            segmentsT: 24,
+            arc: Math.PI * 2.0
+        }),
+
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            diffuse: [0.3, 0.3, 1],
+            lineWidth: 3,
+            pointSize: 5
+        })
+    });
+
+
+    // Set initial camera position
+
+    var scene = XEO.scene;
+
+    var view = scene.camera.view;
+
+    view.zoom(2);
+    view.rotateEyeX(-60);
+    view.rotateEyeY(-20);
+
+
+    // ------------ Interaction ------------------------------------------
+
+    // Allow camera interaction
+
+    new XEO.CameraControl();
+
+
+    // Whenever mouse moves, attempt to pick a triangle on a GameObject,
+    // then show the cartesian coordinates at the picked position within
+    // the triangle, along with the interpolated normal vector and UV coordinates
+    // at the picked position.
+
+    scene.input.on("mousemove",
+            function (coords) {
+
+                // Pick a triangle on some GameObject
+
+                var hit = scene.pick(coords, {
+                    pickPrimitive: true
+                });
+
+                if (hit) {
+
+                    // GameObject picked
+
+                    if (hit.primitiveIndex !== -1) {
+
+                        // Triangle picked; this only happens when the
+                        // GameObject has a Geometry that has primitives of type "triangle"
+
+                        // Get the World-space positions of the triangle's vertices
+
+                        var indices = hit.object.geometry.indices;
+                        var positions = hit.object.geometry.positions;
+
+                        var i = hit.primitiveIndex; // Indicates the first triangle index in the indices array
+
+                        var ia = indices[i];
+                        var ib = indices[i + 1];
+                        var ic = indices[i + 2];
+
+                        var a = [
+                            positions[(ia * 3) + 0],
+                            positions[(ia * 3) + 1],
+                            positions[(ia * 3) + 2]
+                        ];
+
+                        var b = [
+                            positions[(ib * 3) + 0],
+                            positions[(ib * 3) + 1],
+                            positions[(ib * 3) + 2]
+                        ];
+
+                        var c = [
+                            positions[(ic * 3) + 0],
+                            positions[(ic * 3) + 1],
+                            positions[(ic * 3) + 2]
+                        ];
+
+                        // Attempt to ray-pick the triangle; in World-space, fire a ray
+                        // from the eye position through the mouse position
+                        // on the perspective projection plane
+
+                        var origin = XEO.math.vec3();
+                        var dir = XEO.math.vec3();
+
+                        getWorldRay(hit.object, coords, origin, dir);
+
+                        var isect = XEO.math.rayTriangleIntersect(origin, dir, a, b, c);
+
+                        if (isect) {
+
+                            // Ray intersects the triangle
+
+                            // Get cartesian coordinates of the ray-triangle intersection
+
+                            XEO.debug
+                                    .id("isect")
+                                    .color([0.1, 1.0, 0.1])
+                                    .opacity(0.8)
+                                    .pos(isect)
+                                    .radius(0.2)
+                                    .sphere();
+
+                            // Get barycentric coordinates of the ray-triangle intersection
+
+                            var bary = XEO.math.cartesianToBarycentric(isect, a, b, c, []);
+
+                            // Show interpolated normal vector at the ray-triangle intersection
+
+                            var normals = hit.object.geometry.normals;
+
+                            if (normals) {
+
+                                var na = [
+                                    normals[(ia * 3) + 0],
+                                    normals[(ia * 3) + 1],
+                                    normals[(ia * 3) + 2]
+                                ];
+
+                                var nb = [
+                                    normals[(ib * 3) + 0],
+                                    normals[(ib * 3) + 1],
+                                    normals[(ib * 3) + 2]
+                                ];
+
+                                var nc = [
+                                    normals[(ic * 3) + 0],
+                                    normals[(ic * 3) + 1],
+                                    normals[(ic * 3) + 2]
+                                ];
+
+                                var t1 = XEO.math.mulVec3Scalar(na, bary[0], []);
+                                var t2 = XEO.math.mulVec3Scalar(nb, bary[1], []);
+                                var t3 = XEO.math.mulVec3Scalar(nc, bary[2], []);
+
+                                var normal = XEO.math.addVec3(XEO.math.addVec3(t1, t2, []), t3, []);
+
+                                XEO.debug
+                                        .id("normal")
+                                        .lineWidth(4)
+                                        .color([1.0, 0.4, 0.4])
+                                        .pos(isect)
+                                        .pos(XEO.math.addVec3(isect, XEO.math.mulVec3Scalar(normal, 2, []), []))
+                                        .line();
+                            }
+
+
+                            // Show interpolated UV coordinates at the ray-triangle intersection
+
+                            var uvs = hit.object.geometry.uv;
+
+                            if (uvs) {
+
+                                var uva = [
+                                    uvs[(ia * 2) + 0],
+                                    uvs[(ia * 2) + 1]
+                                ];
+
+                                var uvb = [
+                                    uvs[(ib * 2) + 0],
+                                    uvs[(ib * 2) + 1]
+                                ];
+
+                                var uvc = [
+                                    uvs[(ic * 2) + 0],
+                                    uvs[(ic * 2) + 1]
+                                ];
+
+                                t1 = XEO.math.mulVec2Scalar(uva, bary[0], []);
+                                t2 = XEO.math.mulVec2Scalar(uvb, bary[1], []);
+                                t3 = XEO.math.mulVec2Scalar(uvc, bary[2], []);
+
+                                var uv = XEO.math.addVec3(XEO.math.addVec3(t1, t2, []), t3, []);
+
+                                showUVPos(uv);
+                            }
+                        }
+
+                    } else {
+
+                        // No Triangle picked
+
+                    }
+                }
+            });
+
+    // Given a GameObject and camvas coordinates, gets a ray
+    // originating at the World-space eye position that passes
+    // through the perspective projection plane. The ray is
+    // returned via the origin and dir arguments.
+
+    function getWorldRay(object, canvasCoords, origin, dir) {
+
+        var canvas = object.scene.canvas.canvas;
+        var viewMat = object.camera.view.matrix;
+        var projMat = object.camera.project.matrix;
+
+        var canvasWidth = canvas.width;
+        var canvasHeight = canvas.height;
+
+        // Calculate clip space coordinates, which will be in range
+        // of x=[-1..1] and y=[-1..1], with y=(+1) at top
+
+        var clipX = (canvasCoords[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
+        var clipY = -(canvasCoords[1] - canvasHeight / 2) / (canvasHeight / 2);
+
+        var pvMat = XEO.math.mulMat4(projMat, viewMat, []);
+        var pvMatInverse = XEO.math.inverseMat4(pvMat, []);
+
+        var world1 = XEO.math.transformVec4(pvMatInverse, [clipX, clipY, -1, 1]);
+        world1 = XEO.math.mulVec4Scalar(world1, 1 / world1[3]);
+
+        var world2 = XEO.math.transformVec4(pvMatInverse, [clipX, clipY, 1, 1]);
+        world2 = XEO.math.mulVec4Scalar(world2, 1 / world2[3]);
+
+        origin[0] = world1[0];
+        origin[1] = world1[1];
+        origin[2] = world1[2];
+
+        XEO.math.subVec3(world2, world1, dir);
+    }
+
+</script>
+</body>
+</html>
