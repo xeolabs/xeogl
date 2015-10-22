@@ -1622,7 +1622,7 @@
              * @final
              */
             this.input = new XEO.Input(this, {
-                canvas: this.canvas.canvas
+                element: this.canvas.overlay
             });
 
             /**
@@ -4502,13 +4502,31 @@
             /**
              * The HTML canvas. When the {{#crossLink "Viewer"}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,
              * then this property will be that element, otherwise it will be a full-page canvas that this Canvas has
-             * created by default.
+             * created by default, with a z-index of -10000.
              *
              * @property canvas
              * @type {HTMLCanvasElement}
              * @final
              */
             this.canvas = null;
+
+            /**
+             * A transparent HTML DIV overlaid over the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}}, with a z-index
+             * of 100000.
+             *
+             * The parent {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Input"}}{{/crossLink}} will relay mouse
+             * events from this DIV, instead of from the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}}.
+             *
+             * When you need to have various HTML elements floating around over
+             * the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}}, then if you give those a z-index that lies between
+             * that of the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}} and this DIV, your elements will not
+             * interfere with those events.
+             *
+             * @property canvas
+             * @type {HTMLCanvasElement}
+             * @final
+             */
+            this.overlay = null;
 
             /**
              * The WebGL rendering context.
@@ -4573,6 +4591,8 @@
 
             this.canvas.width = this.canvas.clientWidth;
             this.canvas.height = this.canvas.clientHeight;
+
+            this._createOverlay();
 
             // Get WebGL context
 
@@ -4680,6 +4700,36 @@
             body.appendChild(div);
 
             this.canvas = document.getElementById(canvasId);
+        },
+
+        /**
+         * Creates an invisible DIV over the canvas
+         * @private
+         */
+        _createOverlay: function () {
+
+            var overlayId = "XEO-overlay-" + XEO.math.createUUID();
+            var body = document.getElementsByTagName("body")[0];
+            var div = document.createElement('div');
+
+            var style = div.style;
+            style.height = this.canvas.height + "px";
+            style.width = "100%";
+            style.padding = "0";
+            style.margin = "0";
+            style.background = "black";
+            style.float = "left";
+            style.left = "0";
+            style.top = "0";
+            style.position = "absolute";
+            style.opacity = 0;
+            style["z-index"] = "100000";
+
+            div.innerHTML += '<div id="' + overlayId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;"></overlay>';
+
+            body.appendChild(div);
+
+            this.overlay = document.getElementById(overlayId);
         },
 
         /**
@@ -6951,7 +7001,7 @@ visibility.destroy();
                     }
                 });
 
-            cfg.canvas.addEventListener("mousedown",
+            cfg.element.addEventListener("mousedown",
                 this._mouseDownListener = function (e) {
 
                     if (!self.enabled) {
@@ -6987,7 +7037,7 @@ visibility.destroy();
                     self.fire("mousedown", coords, true);
                 });
 
-            cfg.canvas.addEventListener("mouseup",
+            cfg.element.addEventListener("mouseup",
                 this._mouseUpListener = function (e) {
 
                     if (!self.enabled) {
@@ -7023,7 +7073,7 @@ visibility.destroy();
                     self.fire("mouseup", coords, true);
                 });
 
-            cfg.canvas.addEventListener("dblclick",
+            cfg.element.addEventListener("dblclick",
                 this._dblClickListener = function (e) {
 
                     if (!self.enabled) {
@@ -7061,7 +7111,7 @@ visibility.destroy();
                     self.fire("dblclick", coords, true);
                 });
 
-            cfg.canvas.addEventListener("mousemove",
+            cfg.element.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
 
                     if (!self.enabled) {
@@ -7079,7 +7129,7 @@ visibility.destroy();
                     self.fire("mousemove", coords, true);
                 });
 
-            cfg.canvas.addEventListener("mousewheel",
+            cfg.element.addEventListener("mousewheel",
                 this._mouseWheelListener = function (e, d) {
                     if (!self.enabled) {
                         return;
@@ -11222,6 +11272,7 @@ visibility.destroy();
     var tempVec3c = new Float32Array(3);
     var tempVec3d = new Float32Array(3);
     var tempVec3e = new Float32Array(3);
+    var tempVec3f = new Float32Array(3);
     var tempVec4 = new Float32Array(4);
 
     /*
@@ -13321,9 +13372,9 @@ visibility.destroy();
          *
          * @method buildTangents
          * @static
-         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
-         * @param {{Array of Number}} indices One-dimensional flattened array of indices.*
-         * @returns {{Array of Number}} One-dimensional flattened array of normal vectors.
+         * @param {Array of Number} positions One-dimensional flattened array of positions.
+         * @param {Array of Number} indices One-dimensional flattened array of indices.*
+         * @returns {Array of Number} One-dimensional flattened array of normal vectors.
          */
         buildNormals: function (positions, indices) {
 
@@ -13386,10 +13437,10 @@ visibility.destroy();
          *
          * @method buildTangents
          * @static
-         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
-         * @param {{Array of Number}} indices One-dimensional flattened array of indices.
-         * @param {{Array of Number}} uv One-dimensional flattened array of UV coordinates.
-         * @returns {{Array of Number}} One-dimensional flattened array of tangents.
+         * @param {Array of Number} positions One-dimensional flattened array of positions.
+         * @param {Array of Number} indices One-dimensional flattened array of indices.
+         * @param {Array of Number} uv One-dimensional flattened array of UV coordinates.
+         * @returns {Array of Number} One-dimensional flattened array of tangents.
          */
         buildTangents: function (positions, indices, uv) {
 
@@ -13490,8 +13541,8 @@ visibility.destroy();
          *
          * @method getPickPrimitives
          * @static
-         * @param {{Array of Number}} positions One-dimensional flattened array of positions.
-         * @param {{Array of Number}} indices One-dimensional flattened array of indices.
+         * @param {Array of Number} positions One-dimensional flattened array of positions.
+         * @param {Array of Number} indices One-dimensional flattened array of indices.
          * @param {*} [pickTris] Optional object to return the arrays on.
          * @param {Boolean} [debug] Assigns random colors to triangles when true.
          * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
@@ -13600,7 +13651,7 @@ visibility.destroy();
          * @param {Array of Number} b Second triangle vertex.
          * @param {Array of Number} c Third triangle vertex.
          * @param {Array of Number} [isect] Intersection point.
-         * @returns {Array of Number} The intersection point, else null if not intersection found.
+         * @returns {Array of Number} The intersection point, or null if no intersection found.
          */
         rayTriangleIntersect: function (origin, dir, a, b, c, isect) {
 
@@ -13635,6 +13686,117 @@ visibility.destroy();
             isect[2] = origin[2] + t * dir[2];
 
             return isect;
+        },
+
+        /**
+         * Gets barycentric coordinates from cartesian coordinates within a triangle.
+         *
+         * @method cartesianToBaryCentric
+         * @static
+         * @param {Array of Number} cartesian Cartesian coordinates.
+         * @param {Array of Number} a First triangle vertex.
+         * @param {Array of Number} b Second triangle vertex.
+         * @param {Array of Number} c Third triangle vertex.
+         * @param {Array of Number} [bary] The barycentric coordinates.
+         * @returns {Array of Number} The barycentric coordinates, or null if the triangle was invalid.
+         * @returns {*}
+         */
+        //cartesianToBarycentric: function (cartesian, a, b, c, bary) {
+        //
+        //    XEO.math.subVec3(c, a, tempVec3);
+        //    XEO.math.subVec3(b, a, tempVec3b);
+        //    XEO.math.subVec3(cartesian, a, tempVec3c);
+        //
+        //    var dot00 = XEO.math.dotVec3(tempVec3, tempVec3);
+        //    var dot01 = XEO.math.dotVec3(tempVec3, tempVec3b);
+        //    var dot02 = XEO.math.dotVec3(tempVec3, tempVec3c);
+        //    var dot11 = XEO.math.dotVec3(tempVec3b, tempVec3b);
+        //    var dot12 = XEO.math.dotVec3(tempVec3b, tempVec3c);
+        //
+        //    var denom = ( dot00 * dot11 - dot01 * dot01 );
+        //
+        //    // Colinear or singular triangle
+        //
+        //    if (denom === 0) {
+        //
+        //        // Arbitrary location outside of triangle
+        //
+        //        return null;
+        //    }
+        //
+        //    var invDenom = 1 / denom;
+        //
+        //    var u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
+        //    var v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
+        //
+        //    bary[0] = 1 - u - v;
+        //    bary[1] = v;
+        //    bary[2] = u;
+        //
+        //    return bary;
+        //},
+
+        cartesianToBarycentric: function (cartesian, a, b, c, bary) {
+
+            var f1 = XEO.math.subVec3(a, cartesian, tempVec3);
+            var f2 = XEO.math.subVec3(b, cartesian, tempVec3b);
+            var f3 = XEO.math.subVec3(c, cartesian, tempVec3c);
+
+            var t1 = XEO.math.subVec3(a, b, tempVec3d);
+            var t2 = XEO.math.subVec3(a, c, tempVec3e);
+
+            var a0 = XEO.math.lenVec3(XEO.math.cross3Vec3(t1, t2, tempVec3f));
+
+            bary[0] = XEO.math.lenVec3(XEO.math.cross3Vec3(f2, f3, tempVec3f)) / a0;
+            bary[1] = XEO.math.lenVec3(XEO.math.cross3Vec3(f3, f1, tempVec3f)) / a0;
+            bary[2] = XEO.math.lenVec3(XEO.math.cross3Vec3(f1, f2, tempVec3f)) / a0;
+
+            return bary;
+        },
+
+        /**
+         * Returns true if the given barycentric coordinates are within their triangle.
+         *
+         * @method barycentricInsideTriangle
+         * @static
+         * @param {Array of Number} bary Barycentric coordinates.
+         * @returns {Boolean} True if the barycentric coordinates are inside their triangle.
+         * @returns {*}
+         */
+        barycentricInsideTriangle: function (bary) {
+
+            var v = bary[1];
+            var u = bary[2];
+
+            return (u >= 0) && (v >= 0) && (u + v < 1);
+        },
+
+        /**
+         * Gets cartesian coordinates from barycentric coordinates within a triangle.
+         *
+         * @method barycentricToCartesian
+         * @static
+         * @param {Array of Number} bary The barycentric coordinate.
+         * @param {Array of Number} a First triangle vertex.
+         * @param {Array of Number} b Second triangle vertex.
+         * @param {Array of Number} c Third triangle vertex.
+         * @param {Array of Number} [cartesian] Cartesian coordinates.
+         * @returns {Array of Number} The cartesian coordinates, or null if the triangle was invalid.
+         * @returns {*}
+         */
+        barycentricToCartesian: function (bary, a, b, c, cartesian) {
+
+            cartesian = cartesian || XEO.math.vec3();
+
+            var u = bary[0];
+            var v = bary[1];
+            var w = bary[2];
+
+            cartesian[0] = a[0] * u + b[0] * v + c[0] * w;
+            cartesian[1] = a[1] * u + b[1] * v + c[1] * w;
+            cartesian[2] = a[2] * u + b[2] * v + c[2] * w;
+
+            return cartesian;
         }
     };
 
