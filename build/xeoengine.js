@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-10-21
+ * Built on 2015-10-22
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -11213,10 +11213,15 @@ visibility.destroy();
 
     "use strict";
 
+    // Some temporary vars to help avoid garbage collection
+
     var tempMat1 = new Float32Array(16);
-
     var tempMat2 = new Float32Array(16);
-
+    var tempVec3 = new Float32Array(3);
+    var tempVec3b = new Float32Array(3);
+    var tempVec3c = new Float32Array(3);
+    var tempVec3d = new Float32Array(3);
+    var tempVec3e = new Float32Array(3);
     var tempVec4 = new Float32Array(4);
 
     /*
@@ -13582,6 +13587,54 @@ visibility.destroy();
             pickTris.pickIndices = pickIndices;
 
             return pickTris;
+        },
+
+        /**
+         * Finds the intersection of a 3D ray with a 3D triangle.
+         *
+         * @method rayTriangleIntersect
+         * @static
+         * @param {Array of Number} origin Ray origin.
+         * @param {Array of Number} dir Ray direction.
+         * @param {Array of Number} a First triangle vertex.
+         * @param {Array of Number} b Second triangle vertex.
+         * @param {Array of Number} c Third triangle vertex.
+         * @param {Array of Number} [isect] Intersection point.
+         * @returns {Array of Number} The intersection point, else null if not intersection found.
+         */
+        rayTriangleIntersect: function (origin, dir, a, b, c, isect) {
+
+            isect = isect || XEO.math.vec3();
+
+            var EPSILON = 0.000001;
+
+            var edge1 = XEO.math.subVec3(b, a, tempVec3);
+            var edge2 = XEO.math.subVec3(c, a, tempVec3b);
+
+            var pvec = XEO.math.cross3Vec3(dir, edge2, tempVec3c);
+            var det = XEO.math.dotVec3(edge1, pvec);
+            if (det < EPSILON) {
+                return null;
+            }
+
+            var tvec = XEO.math.subVec3(origin, a, tempVec3d);
+            var u = XEO.math.dotVec3(tvec, pvec);
+            if (u < 0 || u > det) {
+                return null;
+            }
+
+            var qvec = XEO.math.cross3Vec3(tvec, edge1, tempVec3e);
+            var v = XEO.math.dotVec3(dir, qvec);
+            if (v < 0 || u + v > det) {
+                return null;
+            }
+
+            var t = XEO.math.dotVec3(edge2, qvec) / det;
+            isect[0] = origin[0] + t * dir[0];
+            isect[1] = origin[1] + t * dir[1];
+            isect[2] = origin[2] + t * dir[2];
+
+            return isect;
         }
     };
 
