@@ -97,6 +97,11 @@
             return this;
         };
 
+        this.opacity = function (value) {
+            opacity = value;
+            return this;
+        };
+
         this.lineWidth = function (value) {
             lineWidth = value;
             return this;
@@ -130,6 +135,7 @@
             text = "";
             radius = 1.0;
         };
+
 
         this.line = function () {
 
@@ -188,11 +194,7 @@
             return this;
         };
 
-        /**
-         * Creates or updates a floating CSS label
-         *
-         * @returns {XEO.debug}
-         */
+
         this.label = function () {
 
             var _id = id || "__debugLabel";
@@ -291,6 +293,52 @@
             return this;
         };
 
+
+        this.sphere = function () {
+
+            var _id = id || "__debugSphere";
+
+            var object = getScene().objects[_id];
+
+            if (!object) {
+
+                object = new XEO.GameObject(getScene(), {
+                    id: _id,
+                    transform: new XEO.Translate({
+                        xyz: pos[0]
+                    }),
+                    geometry: new XEO.SphereGeometry({
+                        radius: radius
+                    }),
+                    modes: new XEO.Modes({  // This GameObject should not be pickable
+                        picking: false,
+                        transparent: opacity < 1.0,
+                        backfaces: false
+                    }),
+                    material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
+                        diffuse: color,
+                        emissive: color,
+                        opacity: opacity,
+                        specular: [1,1,1]
+                    })
+                });
+
+            } else {
+                object.transform.xyz = pos[0];
+                object.material.color = color;
+                object.material.emissive = color;
+                object.material.opacity = opacity;
+                object.modes.transparency = opacity < 1.0;
+            }
+
+            this._reset();
+
+            return this;
+        };
+
+        //---------------------------
+        // Work in progress
+        //---------------------------
         this.label3d = function () {
 
             var _id = id || "__debugLabel3d";
