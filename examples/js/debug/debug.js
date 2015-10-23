@@ -122,6 +122,22 @@
             return this;
         };
 
+        this.show = function (id) {
+            var object = getScene().objects[id];
+            if (object) {
+                object.visibility.visible = true;
+            }
+            return this;
+        };
+
+        this.hide = function (id) {
+            var object = getScene().objects[id];
+            if (object) {
+                object.visibility.visible = false;
+            }
+            return this;
+        };
+
         this._reset = function () {
             scene = undefined;
             color = [1, 0.4, 0.4];
@@ -163,6 +179,7 @@
             var object = getScene().objects[_id];
 
             if (!object) {
+
                 new XEO.GameObject(getScene(), {
                     id: _id,
                     geometry: new XEO.Geometry({
@@ -178,6 +195,9 @@
                     modes: new XEO.Modes({  // This GameObject should not be pickable
                         picking: false,
                         transparent: opacity < 1.0
+                    }),
+                    visibility: new XEO.Visibility({  // This GameObject should not be pickable
+                        visible: true
                     })
                 });
             } else {
@@ -187,13 +207,13 @@
                 object.material.opacity = opacity;
                 object.modes.transparency = opacity < 1.0;
                 object.material.lineWidth = lineWidth;
+                object.visibility.visible = true;
             }
 
             this._reset();
 
             return this;
         };
-
 
         this.label = function () {
 
@@ -302,7 +322,7 @@
 
             if (!object) {
 
-                object = new XEO.GameObject(getScene(), {
+                new XEO.GameObject(getScene(), {
                     id: _id,
                     transform: new XEO.Translate({
                         xyz: pos[0]
@@ -319,16 +339,21 @@
                         diffuse: color,
                         emissive: color,
                         opacity: opacity,
-                        specular: [1,1,1]
+                        specular: [1, 1, 1]
+                    }),
+                    visibility: new XEO.Visibility({  // This GameObject should not be pickable
+                        visible: true
                     })
                 });
 
             } else {
                 object.transform.xyz = pos[0];
+                object.geometry.radius = radius;
                 object.material.color = color;
                 object.material.emissive = color;
                 object.material.opacity = opacity;
                 object.modes.transparency = opacity < 1.0;
+                object.visibility.visible = true;
             }
 
             this._reset();
@@ -366,6 +391,9 @@
                     }),
                     billboard: new XEO.Billboard({
                         spherical: true
+                    }),
+                    visbility: new XEO.Visibility({  // This GameObject should not be pickable
+                        visible: true
                     })
                 });
 
@@ -376,6 +404,7 @@
                 object.material.opacity = opacity;
                 object.modes.transparency = opacity < 1.0;
                 object.material.lineWidth = lineWidth;
+                object.visibility.visible = true;
             }
 
             this._reset();
