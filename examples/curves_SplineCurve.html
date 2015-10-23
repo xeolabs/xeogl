@@ -15,6 +15,9 @@
     </style>
 
     <script src="../build/xeoengine.min.js"></script>
+
+    <script src="js/debug/debug.js"></script>
+
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -48,21 +51,6 @@
         })
     });
 
-    var pointObject = new XEO.GameObject({
-        geometry: new XEO.Geometry(),
-        transform: new XEO.Translate(),
-        material: new XEO.PhongMaterial({
-            diffuse: [0, 1, 0]
-        })
-    });
-
-    var tangentObject = new XEO.GameObject({
-        geometry: new XEO.Geometry({}),
-        transform: new XEO.Translate(),
-        material: new XEO.PhongMaterial({
-            diffuse: [0, 0, 1]
-        })
-    });
 
     // Move the eye back a bit to
     // fit the whole curve in view
@@ -81,8 +69,32 @@
                 var point = curve.point;
                 var tangent = curve.tangent;
 
-                pointObject.transform.xyz = point;
-                tangentObject.transform.xyz = [point[0] + tangent[0], point[1] + tangent[1], point[2] + tangent[2]];
+                // Use the helper utility to visualise the point and tangent
+                // as they move along the curve
+
+                XEO.debug
+                        .id("line")
+                        .lineWidth(4)
+                        .color([0.5, 1.0, 0.5])
+                        .pos(point)
+                        .pos([point[0] + tangent[0] * 2, point[1] + tangent[1] * 2, point[2] + tangent[2] * 2])
+                        .line();
+
+                XEO.debug
+                        .id("point")
+                        .fillColor([1.0, 0.6, 0.6])
+                        .color([0, 0, 0])
+                        .text("point")
+                        .pos(point)
+                        .label();
+
+                XEO.debug
+                        .id("tangent")
+                        .fillColor([0.6, 0.6, 1.0])
+                        .color([0, 0, 0])
+                        .text("tangent")
+                        .pos([point[0] + tangent[0] * 2, point[1] + tangent[1] * 2, point[2] + tangent[2] * 2])
+                        .label();
 
 
                 var view = scene.camera.view;
