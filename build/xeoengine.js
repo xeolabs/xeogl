@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-10-22
+ * Built on 2015-10-23
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -9289,7 +9289,7 @@ visibility.destroy();
     diffuse:         [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
     diffuseMap:      diffuseMap,
     specular:        [1, 1, 1],
-    shininess:       30,
+    shininess:       70,
     specularFresnel: fresnel
  });
 
@@ -9336,7 +9336,7 @@ visibility.destroy();
  @param [cfg.emissive=[ 0.0, 0.0, 0.0 ]] {Array of Number} PhongMaterial emissive color.
  @param [cfg.opacity=1] {Number} Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.
  Only applies while {{#crossLink "Modes"}}Modes{{/crossLink}} {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} equals ````true````.
- @param [cfg.shininess=30] {Number} Scalar in range 0-70 that determines the size and sharpness of specular highlights.
+ @param [cfg.shininess=70] {Number} Scalar in range 0-70 that determines the size and sharpness of specular highlights.
  @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
  @param [cfg.lineWidth=1] {Number} Scalar that controls the width of lines for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines".
  @param [cfg.pointSize=1] {Number} Scalar that controls the size of points for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "points".
@@ -9372,7 +9372,7 @@ visibility.destroy();
                 emissive: [0.0, 0.0, 0.0],
 
                 opacity: 1.0,
-                shininess: 30.0,
+                shininess: 20.0,
                 reflectivity: 1.0,
                 
                 lineWidth: 1.0,
@@ -9603,14 +9603,14 @@ visibility.destroy();
              Fires a {{#crossLink "PhongMaterial/shininess:event"}}{{/crossLink}} event on change.
 
              @property shininess
-             @default 30.0
+             @default 70.0
              @type Number
              */
             shininess: {
 
                 set: function (value) {
 
-                    this._state.shininess = value !== undefined ? value : 30;
+                    this._state.shininess = value !== undefined ? value : 70;
 
                     this._renderer.imageDirty = true;
 
@@ -10177,7 +10177,7 @@ visibility.destroy();
                 json.opacity = this._state.opacity;
             }
 
-            if (this._state.shininess != 30.0) {
+            if (this._state.shininess != 70.0) {
                 json.shininess = this._state.shininess;
             }
 
@@ -13701,41 +13701,6 @@ visibility.destroy();
          * @returns {Array of Number} The barycentric coordinates, or null if the triangle was invalid.
          * @returns {*}
          */
-        //cartesianToBarycentric: function (cartesian, a, b, c, bary) {
-        //
-        //    XEO.math.subVec3(c, a, tempVec3);
-        //    XEO.math.subVec3(b, a, tempVec3b);
-        //    XEO.math.subVec3(cartesian, a, tempVec3c);
-        //
-        //    var dot00 = XEO.math.dotVec3(tempVec3, tempVec3);
-        //    var dot01 = XEO.math.dotVec3(tempVec3, tempVec3b);
-        //    var dot02 = XEO.math.dotVec3(tempVec3, tempVec3c);
-        //    var dot11 = XEO.math.dotVec3(tempVec3b, tempVec3b);
-        //    var dot12 = XEO.math.dotVec3(tempVec3b, tempVec3c);
-        //
-        //    var denom = ( dot00 * dot11 - dot01 * dot01 );
-        //
-        //    // Colinear or singular triangle
-        //
-        //    if (denom === 0) {
-        //
-        //        // Arbitrary location outside of triangle
-        //
-        //        return null;
-        //    }
-        //
-        //    var invDenom = 1 / denom;
-        //
-        //    var u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
-        //    var v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
-        //
-        //    bary[0] = 1 - u - v;
-        //    bary[1] = v;
-        //    bary[2] = u;
-        //
-        //    return bary;
-        //},
-
         cartesianToBarycentric: function (cartesian, a, b, c, bary) {
 
             var f1 = XEO.math.subVec3(a, cartesian, tempVec3);
@@ -33189,8 +33154,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                 var elapsed = params.deltaTime;
 
-                                var yawRate = self._sensitivity * 0.5;
-                                var pitchRate = self._sensitivity * 0.5;
+                                var yawRate = self._sensitivity * 0.3;
+                                var pitchRate = self._sensitivity * 0.3;
 
                                 if (!input.ctrlDown && !input.altDown) {
 
@@ -33458,7 +33423,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                                         var y = 0;
                                         var z = 0;
 
-                                        var sensitivity = self._sensitivity;
+                                        var sensitivity = self._sensitivity * 0.01;
 
                                         if (skey) {
                                             y = elapsed * sensitivity;
@@ -33699,7 +33664,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                         var z = 0;
 
-                                        var sensitivity = self.sensitivity * 0.5;
+                                        var sensitivity = self.sensitivity * 0.01;
 
                                         if (skey) {
                                             z = elapsed * sensitivity;
