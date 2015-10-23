@@ -29,6 +29,9 @@
 
 <script>
 
+    // Allow user camera control
+    new XEO.CameraControl();
+
     // The Geometry we'll dynamically modify
     var geometry = new XEO.Geometry({
         primitive: "triangles"
@@ -36,7 +39,15 @@
 
     // GameObject that uses our Geometry
     var object = new XEO.GameObject({
-        geometry: geometry
+        geometry: geometry,
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            diffuse: [0.3, 0.3, 1],
+            lineWidth: 3,
+            pointSize: 5
+        })
     });
 
     // Spin the Camera
@@ -46,8 +57,8 @@
 
     // The current torus construction parameters
 
-    var radius = 1;
-    var tube = 0.3;
+    var radius = 3;
+    var tube = 0.7;
     var segmentsR = 6;
     var segmentsT = 4;
     var arc = Math.PI * 2.0;
