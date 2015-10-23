@@ -23,6 +23,12 @@
  {{#crossLink "Geometry"}}{{/crossLink}} surface, ie. they are not multiplied by
  the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>
 
+ <li>When the {{#crossLink "GameObject"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
+ {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines" or "points" then only the {{#crossLink "PhongMaterial"}}{{/crossLink}}'s
+ {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}},
+ {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
+ will actually be applied, since those primitive types cannot be shaded.</li>
+
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PhongMaterials create within xeoEngine's shaders.</li>
 
  </ul>
@@ -66,7 +72,7 @@
     diffuse:         [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
     diffuseMap:      diffuseMap,
     specular:        [1, 1, 1],
-    shininess:       30,
+    shininess:       80,
     specularFresnel: fresnel
  });
 
@@ -113,7 +119,7 @@
  @param [cfg.emissive=[ 0.0, 0.0, 0.0 ]] {Array of Number} PhongMaterial emissive color.
  @param [cfg.opacity=1] {Number} Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.
  Only applies while {{#crossLink "Modes"}}Modes{{/crossLink}} {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} equals ````true````.
- @param [cfg.shininess=30] {Number} Scalar in range 0-70 that determines the size and sharpness of specular highlights.
+ @param [cfg.shininess=80] {Number} Scalar in range 0-128 that determines the size and sharpness of specular highlights.
  @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
  @param [cfg.lineWidth=1] {Number} Scalar that controls the width of lines for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines".
  @param [cfg.pointSize=1] {Number} Scalar that controls the size of points for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "points".
@@ -149,7 +155,7 @@
                 emissive: [0.0, 0.0, 0.0],
 
                 opacity: 1.0,
-                shininess: 30.0,
+                shininess: 20.0,
                 reflectivity: 1.0,
                 
                 lineWidth: 1.0,
@@ -380,14 +386,14 @@
              Fires a {{#crossLink "PhongMaterial/shininess:event"}}{{/crossLink}} event on change.
 
              @property shininess
-             @default 30.0
+             @default 80.0
              @type Number
              */
             shininess: {
 
                 set: function (value) {
 
-                    this._state.shininess = value !== undefined ? value : 30;
+                    this._state.shininess = value !== undefined ? value : 80;
 
                     this._renderer.imageDirty = true;
 
@@ -954,7 +960,7 @@
                 json.opacity = this._state.opacity;
             }
 
-            if (this._state.shininess != 30.0) {
+            if (this._state.shininess != 80.0) {
                 json.shininess = this._state.shininess;
             }
 
