@@ -182,7 +182,7 @@
                                         var y = 0;
                                         var z = 0;
 
-                                        var sensitivity = self._sensitivity;
+                                        var sensitivity = self._sensitivity * 0.01;
 
                                         if (skey) {
                                             y = elapsed * sensitivity;

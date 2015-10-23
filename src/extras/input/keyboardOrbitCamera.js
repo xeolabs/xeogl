@@ -211,8 +211,8 @@
 
                                 var elapsed = params.deltaTime;
 
-                                var yawRate = self._sensitivity * 0.5;
-                                var pitchRate = self._sensitivity * 0.5;
+                                var yawRate = self._sensitivity * 0.3;
+                                var pitchRate = self._sensitivity * 0.3;
 
                                 if (!input.ctrlDown && !input.altDown) {
 
