@@ -67,25 +67,23 @@
 
     new XEO.GameObject({
 
-//        geometry: new XEO.HeightmapGeometry({
-//            primitive: "triangles",
-//            src: "textures/height/everest.png",
-//            xSize: 10,
-//            ySize: 10,
-//            zSize: 3,
-//            xSegments: 40,
-//            ySegments: 40,
-//            lod: 1.0, // Default
-//            autoNormals: true // Default
-//        }),
-
-        geometry: new XEO.TorusGeometry({
-            radius: 4.0,
-            tube: 1.0,
-            segmentsR: 32,
-            segmentsT: 24,
-            arc: Math.PI * 2.0
+        geometry: new XEO.HeightmapGeometry({
+            primitive: "triangles",
+            src: "textures/height/everest.png",
+            xSize: 10,
+            ySize: 10,
+            zSize: 3,
+            xSegments: 40,
+            ySegments: 40
         }),
+
+//        geometry: new XEO.TorusGeometry({
+//            radius: 4.0,
+//            tube: 1.0,
+//            segmentsR: 32,
+//            segmentsT: 24,
+//            arc: Math.PI * 2.0
+//        }),
 
         material: new XEO.PhongMaterial({
             diffuseMap: new XEO.Texture({
@@ -105,8 +103,8 @@
     var view = scene.camera.view;
 
     view.zoom(2);
-    view.rotateEyeX(-60);
-    view.rotateEyeY(-20);
+    view.rotateEyeX(-30);
+    view.rotateEyeY(-10);
 
 
     // ------------ Interaction ------------------------------------------
@@ -193,10 +191,9 @@
 
                             XEO.debug
                                     .id("isectPos")
-                                    .color([0.1, 1.0, 0.1])
-                                    .opacity(0.8)
+                                    .color([0.3, 1.0, 0.3])
                                     .pos(isectPos)
-                                    .radius(0.2)
+                                    .radius(0.3)
                                     .sphere();
 
                             // Get barycentric coordinates of the ray-triangle intersection
