@@ -237,6 +237,9 @@
                     }),
                     material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
                         opacity: 0
+                    }),
+                    visibility: new XEO.Visibility({  // This GameObject should not be pickable
+                        visible: true
                     })
                 });
 
@@ -274,6 +277,13 @@
                 style["border-radius"] = "5px";
                 style["z-index"] = "1001";
                 body.appendChild(pointDiv);
+
+                // Synch visibility of HTML elements with the GameObject
+                object.visibility.on("visible",
+                    function (visible) {
+                        boxDiv.style.visibility = visible ? "visible" : "hidden";
+                        pointDiv.style.visibility = visible ? "visible" : "hidden";
+                    });
 
                 object.canvasBoundary.on("updated",
                     function () {
