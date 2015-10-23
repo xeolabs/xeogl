@@ -124,6 +124,12 @@
     scene.input.on("mousemove",
             function (coords) {
 
+                // Hide visual indicators
+
+                XEO.debug.hide("isectPos");
+                XEO.debug.hide("isectNormal");
+
+
                 // Pick a triangle on some GameObject
 
                 var hit = scene.pick(coords, {
@@ -177,25 +183,25 @@
 
                         getWorldRay(hit.object, coords, origin, dir);
 
-                        var isect = XEO.math.rayTriangleIntersect(origin, dir, a, b, c);
+                        var isectPos = XEO.math.rayTriangleIntersect(origin, dir, a, b, c);
 
-                        if (isect) {
+                        if (isectPos) {
 
                             // Ray intersects the triangle
 
                             // Get cartesian coordinates of the ray-triangle intersection
 
                             XEO.debug
-                                    .id("isect")
+                                    .id("isectPos")
                                     .color([0.1, 1.0, 0.1])
                                     .opacity(0.8)
-                                    .pos(isect)
+                                    .pos(isectPos)
                                     .radius(0.2)
                                     .sphere();
 
                             // Get barycentric coordinates of the ray-triangle intersection
 
-                            var bary = XEO.math.cartesianToBarycentric(isect, a, b, c, []);
+                            var bary = XEO.math.cartesianToBarycentric(isectPos, a, b, c, []);
 
                             // Show interpolated normal vector at the ray-triangle intersection
 
@@ -221,18 +227,17 @@
                                     normals[(ic * 3) + 2]
                                 ];
 
-                                var t1 = XEO.math.mulVec3Scalar(na, bary[0], []);
-                                var t2 = XEO.math.mulVec3Scalar(nb, bary[1], []);
-                                var t3 = XEO.math.mulVec3Scalar(nc, bary[2], []);
-
-                                var normal = XEO.math.addVec3(XEO.math.addVec3(t1, t2, []), t3, []);
+                                var normal = XEO.math.addVec3(XEO.math.addVec3(
+                                                XEO.math.mulVec3Scalar(na, bary[0], []),
+                                                XEO.math.mulVec3Scalar(nb, bary[1], []), []),
+                                        XEO.math.mulVec3Scalar(nc, bary[2], []), []);
 
                                 XEO.debug
-                                        .id("normal")
-                                        .lineWidth(4)
+                                        .id("isectNormal")
+                                        .lineWidth(6)
                                         .color([1.0, 0.4, 0.4])
-                                        .pos(isect)
-                                        .pos(XEO.math.addVec3(isect, XEO.math.mulVec3Scalar(normal, 2, []), []))
+                                        .pos(isectPos)
+                                        .pos(XEO.math.addVec3(isectPos, XEO.math.mulVec3Scalar(normal, 2, []), []))
                                         .line();
                             }
 
@@ -258,11 +263,11 @@
                                     uvs[(ic * 2) + 1]
                                 ];
 
-                                t1 = XEO.math.mulVec2Scalar(uva, bary[0], []);
-                                t2 = XEO.math.mulVec2Scalar(uvb, bary[1], []);
-                                t3 = XEO.math.mulVec2Scalar(uvc, bary[2], []);
-
-                                var uv = XEO.math.addVec3(XEO.math.addVec3(t1, t2, []), t3, []);
+                                var uv = XEO.math.addVec3(
+                                        XEO.math.addVec3(
+                                                XEO.math.mulVec2Scalar(uva, bary[0], []),
+                                                XEO.math.mulVec2Scalar(uvb, bary[1], []), []),
+                                        XEO.math.mulVec2Scalar(uvc, bary[2], []), []);
 
                                 showUVPos(uv);
                             }
@@ -274,6 +279,7 @@
 
                     }
                 }
+
             });
 
     // Given a GameObject and camvas coordinates, gets a ray
