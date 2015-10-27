@@ -88,12 +88,12 @@
         };
 
         this.color = function (value) {
-            color = value;
+            color = [value[0], value[1], value[2]];
             return this;
         };
 
         this.fillColor = function (value) {
-            fillColor = value;
+            fillColor = [value[0], value[1], value[2]];
             return this;
         };
 
@@ -108,7 +108,7 @@
         };
 
         this.pos = function (value) {
-            pos[posi++] = value;
+            pos[posi++] = [value[0], value[1], value[2]];
             return this;
         };
 
