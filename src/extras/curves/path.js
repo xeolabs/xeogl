@@ -376,6 +376,8 @@
                 curve.off(this._dirtySubs[i]);
                 curve.off(this._destroyedSubs[i]);
             }
+
+            this._super();
         }
     });
 
