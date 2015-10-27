@@ -14,7 +14,7 @@
         }
     </style>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeoengine.min.js"></script>
 
     <script src="js/debug/debug.js"></script>
 
@@ -27,10 +27,10 @@
     <br><br>
     <ul>
         <li>
-            ray picking demo
+            ray picking performance demo
         </li>
         <li>
-            move your mouse over the object!
+            move your mouse over an object!
         </li>
     </ul>
     <br><br>
@@ -56,94 +56,42 @@
         }
     })();
 
-
-    // ----------- Scene definition -----------------------------------------
+    var geometry = new XEO.SphereGeometry({
+        radius: 1.0
+    });
 
     var material = new XEO.PhongMaterial({
         diffuseMap: new XEO.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
-        }),
-        diffuse: [0.3, 0.3, 1],
-        lineWidth: 3,
-        pointSize: 5
+        })
     });
 
-    // A GameObject that we can pick - a heightmap with a diffuse map
+    var width = 40;
+    var halfWidth = width / 2;
 
+    for (var i = 0; i < 1000; i++) {
 
-    // Heightmap
+        new XEO.GameObject({
 
-    new XEO.GameObject({
-        geometry: new XEO.HeightmapGeometry({
-            primitive: "triangles",
-            src: "textures/height/everest.png",
-            xSize: 10,
-            ySize: 10,
-            zSize: 3,
-            xSegments: 60,
-            ySegments: 60
-        }),
-        transform: new XEO.Translate({
-            xyz: [0, 0, 0]
-        }),
-        material: material
-    });
+            geometry: geometry,
 
-    // Torus
+            material: material,
 
-    new XEO.GameObject({
-        geometry: new XEO.TorusGeometry({
-            radius: 3.0,
-            tube: 1.0,
-            segmentsR: 32,
-            segmentsT: 24,
-            arc: Math.PI * 2.0
-        }),
-        transform: new XEO.Translate({
-            xyz: [-10, 0, 0]
-        }),
-        material: material
-    });
-
-    // Sphere
-
-    new XEO.GameObject({
-        geometry: new XEO.SphereGeometry({
-            radius: 3.0
-        }),
-        transform: new XEO.Translate({
-            xyz: [0, -10, 0]
-        }),
-        material: material
-    });
-
-    new XEO.GameObject({
-        geometry: new XEO.CylinderGeometry({
-            radiusTop: 1.0,
-            radiusBottom: 2.0,
-            height: 5.0,
-            radialSegments: 20,
-            heightSegments: 1,
-            openEnded: false
-        }),
-        transform: new XEO.Translate({
-            xyz: [0, 10, 0]
-        }),
-        material: material
-    });
-
-    // Set initial camera position
+            transform: new XEO.Translate({
+                xyz: [
+                    Math.random() * width - halfWidth,
+                    Math.random() * width - halfWidth,
+                    Math.random() * width - halfWidth]
+            })
+        });
+    }
 
     var scene = XEO.scene;
 
-    var view = scene.camera.view;
 
-    view.zoom(15);
-    view.rotateEyeX(-30);
-    view.rotateEyeY(-10);
-
-
-    // ------------ Interaction ------------------------------------------
+    scene.camera.view.zoom(20);
+    scene.camera.view.rotateEyeY(45);
+    scene.camera.view.rotateEyeX(45);
 
     // Allow camera interaction
 
@@ -179,9 +127,9 @@
 
                         XEO.debug
                                 .id("worldPos")
-                                .color([0.3, 1.0, 0.3])
+                                .color([1.0, 0.0, 0.0])
                                 .pos(hit.worldPos)
-                                .radius(0.3)
+                                .radius(0.2)
                                 .sphere();
                     }
 
@@ -194,7 +142,7 @@
                                 .lineWidth(6)
                                 .color([1.0, 0.4, 0.4])
                                 .pos(hit.worldPos)
-                                .pos(XEO.math.addVec3(hit.worldPos, XEO.math.mulVec3Scalar(hit.normal, 2, []), []))
+                                .pos(XEO.math.addVec3(hit.worldPos, XEO.math.mulVec3Scalar(hit.normal, 1, []), []))
                                 .line();
                     }
 
