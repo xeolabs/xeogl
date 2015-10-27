@@ -51,6 +51,10 @@
         var width = textureImg.width;
         var height = textureImg.height;
         return function (uv) {
+            if (!uv) {
+                uvPosDiv.style.left =-100 + "px";
+                return;
+            }
             uvPosDiv.style.left = Math.floor(left + uv[0] * width) + "px";
             uvPosDiv.style.top = Math.floor(top + height - (uv[1] * height)) + "px"; // Correct for our texture Y-flipping
         }
@@ -110,6 +114,7 @@
 
                 XEO.debug.hide("worldPos");
                 XEO.debug.hide("normal");
+                showUVPos(null);
 
                 // Pick a primitive on some GameObject
 
