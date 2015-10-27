@@ -209,7 +209,7 @@
                     }
                 });
 
-            cfg.canvas.addEventListener("mousedown",
+            cfg.element.addEventListener("mousedown",
                 this._mouseDownListener = function (e) {
 
                     if (!self.enabled) {
@@ -245,7 +245,7 @@
                     self.fire("mousedown", coords, true);
                 });
 
-            cfg.canvas.addEventListener("mouseup",
+            cfg.element.addEventListener("mouseup",
                 this._mouseUpListener = function (e) {
 
                     if (!self.enabled) {
@@ -281,7 +281,7 @@
                     self.fire("mouseup", coords, true);
                 });
 
-            cfg.canvas.addEventListener("dblclick",
+            cfg.element.addEventListener("dblclick",
                 this._dblClickListener = function (e) {
 
                     if (!self.enabled) {
@@ -319,7 +319,7 @@
                     self.fire("dblclick", coords, true);
                 });
 
-            cfg.canvas.addEventListener("mousemove",
+            cfg.element.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
 
                     if (!self.enabled) {
@@ -337,7 +337,7 @@
                     self.fire("mousemove", coords, true);
                 });
 
-            cfg.canvas.addEventListener("mousewheel",
+            cfg.element.addEventListener("mousewheel",
                 this._mouseWheelListener = function (e, d) {
                     if (!self.enabled) {
                         return;

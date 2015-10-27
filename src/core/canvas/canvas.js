@@ -110,13 +110,31 @@
             /**
              * The HTML canvas. When the {{#crossLink "Viewer"}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,
              * then this property will be that element, otherwise it will be a full-page canvas that this Canvas has
-             * created by default.
+             * created by default, with a z-index of -10000.
              *
              * @property canvas
              * @type {HTMLCanvasElement}
              * @final
              */
             this.canvas = null;
+
+            /**
+             * A transparent HTML DIV overlaid over the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}}, with a z-index
+             * of 100000.
+             *
+             * The parent {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Input"}}{{/crossLink}} will relay mouse
+             * events from this DIV, instead of from the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}}.
+             *
+             * When you need to have various HTML elements floating around over
+             * the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}}, then if you give those a z-index that lies between
+             * that of the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}} and this DIV, your elements will not
+             * interfere with those events.
+             *
+             * @property canvas
+             * @type {HTMLCanvasElement}
+             * @final
+             */
+            this.overlay = null;
 
             /**
              * The WebGL rendering context.
@@ -181,6 +199,8 @@
 
             this.canvas.width = this.canvas.clientWidth;
             this.canvas.height = this.canvas.clientHeight;
+
+            this._createOverlay();
 
             // Get WebGL context
 
@@ -288,6 +308,36 @@
             body.appendChild(div);
 
             this.canvas = document.getElementById(canvasId);
+        },
+
+        /**
+         * Creates an invisible DIV over the canvas
+         * @private
+         */
+        _createOverlay: function () {
+
+            var overlayId = "XEO-overlay-" + XEO.math.createUUID();
+            var body = document.getElementsByTagName("body")[0];
+            var div = document.createElement('div');
+
+            var style = div.style;
+            style.height = this.canvas.height + "px";
+            style.width = "100%";
+            style.padding = "0";
+            style.margin = "0";
+            style.background = "black";
+            style.float = "left";
+            style.left = "0";
+            style.top = "0";
+            style.position = "absolute";
+            style.opacity = 0;
+            style["z-index"] = "100000";
+
+            div.innerHTML += '<div id="' + overlayId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;"></overlay>';
+
+            body.appendChild(div);
+
+            this.overlay = document.getElementById(overlayId);
         },
 
         /**
