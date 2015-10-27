@@ -52,25 +52,6 @@
         })
     });
 
-    // GameObjects to show the point and tangent
-    // that we'll move along the CubicBezierCurve
-
-    var pointObject = new XEO.GameObject({
-        geometry: new XEO.Geometry(),
-        transform: new XEO.Translate(),
-        material: new XEO.PhongMaterial({
-            diffuse: [0, 1, 0]
-        })
-    });
-
-    var tangentObject = new XEO.GameObject({
-        geometry: new XEO.Geometry(),
-        transform: new XEO.Translate(),
-        material: new XEO.PhongMaterial({
-            diffuse: [0, 0, 1]
-        })
-    });
-
     // Move the eye back a bit to fit
     // the whole curve in view
 
