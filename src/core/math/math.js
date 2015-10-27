@@ -1658,13 +1658,13 @@
          * @method transformVec3
          * @static
          */
-        transformVec3: function (m, v) {
+        transformVec3: function (m, v, dest) {
             var v0 = v[0], v1 = v[1], v2 = v[2];
-            return [
-                (m[0] * v0) + (m[4] * v1) + (m[8] * v2),
-                (m[1] * v0) + (m[5] * v1) + (m[9] * v2),
-                (m[2] * v0) + (m[6] * v1) + (m[10] * v2)
-            ];
+            dest = dest || this.vec3();
+            dest[0] = (m[0] * v0) + (m[4] * v1) + (m[8] * v2);
+            dest[1] = (m[1] * v0) + (m[5] * v1) + (m[9] * v2);
+            dest[2] = (m[2] * v0) + (m[6] * v1) + (m[10] * v2);
+            return dest;
         },
 
         /**
@@ -1672,14 +1672,14 @@
          * @method transformVec4
          * @static
          */
-        transformVec4: function (m, v) {
+        transformVec4: function (m, v, dest) {
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
-            return [
-                m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3,
-                m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3,
-                m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3,
-                m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3
-            ];
+            dest = dest || this.vec4();
+            dest[0] = m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
+            dest[1] = m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3;
+            dest[2] = m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3;
+            dest[3] = m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3;
+            return dest;
         },
 
         /**

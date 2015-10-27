@@ -982,12 +982,12 @@
 
             // Now do a primitive-pick if requested
 
-            if (params.pickPrimitive) {
+            if (params.rayPick) {
 
                 pickBuf.clear();
 
                 this._doDrawList({
-                    pickPrimitive: true,
+                    rayPick: true,
                     object: object,
                     clear: true
                 });
@@ -1014,7 +1014,7 @@
      * @param {*} params
      * @param {Boolean} params.clear Set true to clear the color, depth and stencil buffers first
      * @param {Boolean} params.pickObject
-     * @param {Boolean} params.pickPrimitive
+     * @param {Boolean} params.rayPick
      * @param {Boolean} params.object
      * @private
      */
@@ -1080,7 +1080,7 @@
                 this._pickObjectChunkList[i].pickObject(frameCtx);
             }
 
-        } else if (params.pickPrimitive) {
+        } else if (params.rayPick) {
 
             // Pick a primitive of an object
 

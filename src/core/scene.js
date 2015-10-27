@@ -367,7 +367,7 @@
              * @final
              */
             this.input = new XEO.Input(this, {
-                canvas: this.canvas.canvas
+                element: this.canvas.overlay
             });
 
             /**
@@ -1142,28 +1142,257 @@
          * On success, will fire a {{#crossLink "Scene/picked:event"}}{{/crossLink}} event on this Scene, along with
          * a separate {{#crossLink "Object/picked:event"}}{{/crossLink}} event on the target {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
          *
+         * ````javascript
+         *
+         * pick({
+         *      canvasPos: [23, 131],
+         *      rayPick: true
+         *      });
+         *
+         * ````
          * @method pick
-         * @param {Array of Number} canvasPos Canvas-space coordinates.
+         *
          * @param {*} [options] Pick options.
-         * @param {Boolean} [options.pickPrimitive=false] Whether to try to pick a primitive on the {{#crossLink "GameObject"}}GameObject's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}.
+         * @param {Array of Number} [options.canvasPos] Canvas-space coordinates.
+         * @param {Boolean} [options.rayPick=false] Whether to ray-pick.
          * @returns {*} Hit record when a {{#crossLink "GameObject"}}{{/crossLink}} is picked.
          */
-        pick: function (canvasPos, options) {
+        pick: (function () {
 
-            options = options || {};
+            // Cached vectors to avoid garbage collection
 
-            var hit = this._renderer.pick({
-                canvasPos: canvasPos,
-                pickPrimitive: options.pickPrimitive
-            });
+            var origin = XEO.math.vec3();
+            var dir = XEO.math.vec3();
 
-            if (hit) {
-                hit.object = this.objects[hit.object];
+            var a = XEO.math.vec3();
+            var b = XEO.math.vec3();
+            var c = XEO.math.vec3();
+
+            var triangleVertices = XEO.math.vec3();
+            var position = XEO.math.vec4();
+            var worldPos = XEO.math.vec4();
+            var barycentric = XEO.math.vec3();
+
+            var na = XEO.math.vec3();
+            var nb = XEO.math.vec3();
+            var nc = XEO.math.vec3();
+
+            var uva = XEO.math.vec3();
+            var uvb = XEO.math.vec3();
+            var uvc = XEO.math.vec3();
+
+            var tempMat4 = XEO.math.mat4();
+            var tempMat4b = XEO.math.mat4();
+
+            var tempVec4 = XEO.math.vec4();
+            var tempVec4b = XEO.math.vec4();
+            var tempVec4c = XEO.math.vec4();
+
+            var tempVec3 = XEO.math.vec3();
+            var tempVec3b = XEO.math.vec3();
+            var tempVec3c = XEO.math.vec3();
+            var tempVec3d = XEO.math.vec3();
+            var tempVec3e = XEO.math.vec3();
+            var tempVec3f = XEO.math.vec3();
+            var tempVec3g = XEO.math.vec3();
+            var tempVec3h = XEO.math.vec3();
+            var tempVec3i = XEO.math.vec3();
+            var tempVec3j = XEO.math.vec3();
+
+
+            // Given a GameObject and camvas coordinates, gets a ray
+            // originating at the World-space eye position that passes
+            // through the perspective projection plane. The ray is
+            // returned via the origin and dir arguments.
+
+            function getLocalRay(object, canvasCoords, origin, dir) {
+
+                var math = XEO.math;
+
+                var canvas = object.scene.canvas.canvas;
+
+                var modelMat = object.transform.matrix;
+                var viewMat = object.camera.view.matrix;
+                var projMat = object.camera.project.matrix;
+
+                var vmMat = math.mulMat4(viewMat, modelMat, tempMat4);
+                var pvMat = math.mulMat4(projMat, vmMat, tempMat4b);
+                var pvMatInverse = math.inverseMat4(pvMat, tempMat4b);
+
+                //var modelMatInverse = math.inverseMat4(modelMat, tempMat4c);
+
+                // Calculate clip space coordinates, which will be in range
+                // of x=[-1..1] and y=[-1..1], with y=(+1) at top
+
+                var canvasWidth = canvas.width;
+                var canvasHeight = canvas.height;
+
+                var clipX = (canvasCoords[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
+                var clipY = -(canvasCoords[1] - canvasHeight / 2) / (canvasHeight / 2);
+
+                var local1 = math.transformVec4(pvMatInverse, [clipX, clipY, -1, 1], tempVec4);
+                local1 = math.mulVec4Scalar(local1, 1 / local1[3]);
+
+                var local2 = math.transformVec4(pvMatInverse, [clipX, clipY, 1, 1], tempVec4b);
+                local2 = math.mulVec4Scalar(local2, 1 / local2[3]);
+
+                origin[0] = local1[0];
+                origin[1] = local1[1];
+                origin[2] = local1[2];
+
+                math.subVec3(local2, local1, dir);
             }
 
-            return hit;
-        },
+            return function (canvasPos, options) {
 
+                var math = XEO.math;
+
+                options = options || {};
+
+                var hit = this._renderer.pick({
+                    canvasPos: canvasPos,
+                    rayPick: options.rayPick
+                });
+
+                if (hit) {
+
+                    var object = this.objects[hit.object];
+
+                    hit.object = object; // Swap string ID for XEO.Object
+
+                    if (hit.primitiveIndex !== -1) {
+
+                        var geometry = object.geometry;
+
+                        if (geometry.primitive === "triangles") {
+
+                            // Triangle picked; this only happens when the
+                            // GameObject has a Geometry that has primitives of type "triangle"
+
+                            hit.primitive = "triangle";
+
+                            // Get the World-space positions of the triangle's vertices
+
+                            var i = hit.primitiveIndex; // Indicates the first triangle index in the indices array
+
+                            var indices = geometry.indices;
+                            var positions = geometry.positions;
+
+                            var ia = indices[i];
+                            var ib = indices[i + 1];
+                            var ic = indices[i + 2];
+
+                            triangleVertices[0] = ia;
+                            triangleVertices[1] = ib;
+                            triangleVertices[2] = ic;
+
+                            hit.indices = triangleVertices;
+
+                            a[0] = positions[(ia * 3)];
+                            a[1] = positions[(ia * 3) + 1];
+                            a[2] = positions[(ia * 3) + 2];
+
+                            b[0] = positions[(ib * 3)];
+                            b[1] = positions[(ib * 3) + 1];
+                            b[2] = positions[(ib * 3) + 2];
+
+                            c[0] = positions[(ic * 3)];
+                            c[1] = positions[(ic * 3) + 1];
+                            c[2] = positions[(ic * 3) + 2];
+
+                            // Attempt to ray-pick the triangle; in World-space, fire a ray
+                            // from the eye position through the mouse position
+                            // on the perspective projection plane
+
+                            getLocalRay(object, canvasPos, origin, dir);
+
+                            if (math.rayTriangleIntersect(origin, dir, a, b, c, position)
+                                || math.rayTriangleIntersect(origin, dir, c, b, a, position)) {
+
+                                // Ray intersects the triangle
+
+                                // Get Local-space cartesian coordinates of the ray-triangle intersection
+
+                                hit.position = position;
+
+                                // Get interpolated World-space coordinates
+
+                                // Need to transform homogeneous coords
+
+                                tempVec4[0] = position[0];
+                                tempVec4[1] = position[1];
+                                tempVec4[2] = position[2];
+                                tempVec4[3] = 1;
+
+                                // Get World-space cartesian coordinates of the ray-triangle intersection
+
+                                math.transformVec4(object.transform.matrix, tempVec4, tempVec4b);
+
+                                worldPos[0] = tempVec4b[0];
+                                worldPos[1] = tempVec4b[1];
+                                worldPos[2] = tempVec4b[2];
+
+                                hit.worldPos = worldPos;
+
+                                // Get barycentric coordinates of the ray-triangle intersection
+
+                                math.cartesianToBarycentric(position, a, b, c, barycentric);
+
+                                hit.barycentric = barycentric;
+
+                                // Get interpolated normal vector
+
+                                var normals = geometry.normals;
+
+                                if (normals) {
+
+                                    na[0] = normals[(ia * 3)];
+                                    na[1] = normals[(ia * 3) + 1];
+                                    na[2] = normals[(ia * 3) + 2];
+
+                                    nb[0] = normals[(ib * 3)];
+                                    nb[1] = normals[(ib * 3) + 1];
+                                    nb[2] = normals[(ib * 3) + 2];
+
+                                    nc[0] = normals[(ic * 3)];
+                                    nc[1] = normals[(ic * 3) + 1];
+                                    nc[2] = normals[(ic * 3) + 2];
+
+                                    hit.normal = math.addVec3(math.addVec3(
+                                            math.mulVec3Scalar(na, barycentric[0], tempVec3),
+                                            math.mulVec3Scalar(nb, barycentric[1], tempVec3b), tempVec3c),
+                                        math.mulVec3Scalar(nc, barycentric[2], tempVec3d), tempVec3e);
+                                }
+
+                                // Get interpolated UV coordinates
+
+                                var uvs = geometry.uv;
+
+                                if (uvs) {
+
+                                    uva[0] = uvs[(ia * 2)];
+                                    uva[1] = uvs[(ia * 2) + 1];
+
+                                    uvb[0] = uvs[(ib * 2)];
+                                    uvb[1] = uvs[(ib * 2) + 1];
+
+                                    uvc[0] = uvs[(ic * 2)];
+                                    uvc[1] = uvs[(ic * 2) + 1];
+
+                                    hit.uv = math.addVec3(
+                                        math.addVec3(
+                                            math.mulVec2Scalar(uva, barycentric[0], tempVec3f),
+                                            math.mulVec2Scalar(uvb, barycentric[1], tempVec3g), tempVec3h),
+                                        math.mulVec2Scalar(uvc, barycentric[2], tempVec3i), tempVec3j);
+                                }
+                            }
+                        }
+                    }
+
+                    return hit;
+                }
+            };
+        })(),
 
         /**
          * Resets this Scene to its default state.
@@ -1189,7 +1418,9 @@
             this._initDefaults();
 
             this._dirtyObjects = {};
-        },
+        }
+
+        ,
 
         /**
          * Displays a simple test object.
@@ -1240,7 +1471,8 @@
                     object.destroy();
                     rotate.destroy();
                 });
-        },
+        }
+        ,
 
         /**
          * Compiles and renders this Scene
@@ -1273,7 +1505,8 @@
             this._renderer.render({
                 clear: true // Clear buffers
             });
-        },
+        }
+        ,
 
         _getJSON: function () {
 
@@ -1318,7 +1551,8 @@
             return {
                 components: componentJSONs
             };
-        },
+        }
+        ,
 
         _destroy: function () {
             this.clear();
