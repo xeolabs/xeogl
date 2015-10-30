@@ -1289,13 +1289,31 @@
          * @method identityMat4
          * @static
          */
-        identityMat4: function () {
-            return new Float32Array([
-                1.0, 0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0
-            ]);
+        identityMat4: function (mat) {
+
+            mat = mat || new Float32Array(16);
+
+            mat[0] = 1.0;
+            mat[1] = 0.0;
+            mat[2] = 0.0;
+            mat[3] = 0.0;
+
+            mat[4] = 0.0;
+            mat[5] = 1.0;
+            mat[6] = 0.0;
+            mat[7] = 0.0;
+
+            mat[8] = 0.0;
+            mat[9] = 0.0;
+            mat[10] = 1.0;
+            mat[11] = 0.0;
+
+            mat[12] = 0.0;
+            mat[13] = 0.0;
+            mat[14] = 0.0;
+            mat[15] = 1.0;
+
+            return mat;
         },
 
         /**
@@ -3022,6 +3040,161 @@
             cartesian[2] = a[2] * u + b[2] * v + c[2] * w;
 
             return cartesian;
+        },
+
+        identityQuaternion: function (dest) {
+            dest = dest || XEO.math.vec4();
+            dest[0] = 0.0;
+            dest[1] = 0.0;
+            dest[2] = 0.0;
+            dest[3] = 1.0;
+            return dest;
+        },
+
+        vec3PairToQuaternion: function (u, v, dest) {
+
+            dest = dest || XEO.math.vec4();
+
+            var math = XEO.math;
+
+            var norm_u_norm_v = Math.sqrt(math.dotVec3(u, u) * math.dotVec3(v, v));
+            var real_part = norm_u_norm_v + math.dotVec3(u, v);
+
+            var w;
+
+            if (real_part < 0.00000001 * norm_u_norm_v) {
+
+                // If u and v are exactly opposite, rotate 180 degrees
+                // around an arbitrary orthogonal axis. Axis normalisation
+                // can happen later, when we normalise the quaternion.
+
+                real_part = 0.0;
+
+                if (Math.abs(u[0]) > Math.abs(u[2])) {
+
+                    w[0] = -u[1];
+                    w[1] = u[0];
+                    w[2] = 0;
+
+                } else {
+                    w[0] = 0;
+                    w[1] = -u[2];
+                    w[2] = u[1]
+                }
+
+            } else {
+
+                // Otherwise, build quaternion the standard way.
+                w = math.cross3Vec3(u, v);
+            }
+
+            dest[0] = w[0];
+            dest[1] = w[1];
+            dest[2] = w[2];
+            dest[3] = real_part;
+
+            return math.normalizeQuaternion(dest);
+        },
+
+        angleAxisToQuaternion: function (x, y, z, degrees, dest) {
+            dest = dest || XEO.math.vec4();
+            var angleRad = (degrees / 180.0) * Math.PI;
+            var halfAngle = angleRad / 2.0;
+            var fsin = Math.sin(halfAngle);
+            dest[0] = fsin * x;
+            dest[1] = fsin * y;
+            dest[2] = fsin * z;
+            dest[4] = Math.cos(halfAngle);
+            return dest;
+        },
+
+        mulQuaternions: function (p, q, dest) {
+            dest = dest || XEO.math.vec4();
+            var p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3];
+            var q0 = q[0], q1 = q[1], q2 = q[2], q3 = q[3];
+            dest[0] = p3 * q0 + p0 * q3 + p1 * q2 - p2 * q1;
+            dest[1] = p3 * q1 + p1 * q3 + p2 * q0 - p0 * q2;
+            dest[2] = p3 * q2 + p2 * q3 + p0 * q1 - p1 * q0;
+            dest[3] = p3 * q3 - p0 * q0 - p1 * q1 - p2 * q2;
+            return dest;
+        },
+
+        quaternionToMat4: function (q, dest) {
+
+            dest = XEO.math.identityMat4(dest);
+
+            var q0 = q[0];
+            var q1 = q[1];
+            var q2 = q[2];
+            var q3 = q[3];
+
+            var tx = 2.0 * q0;
+            var ty = 2.0 * q1;
+            var tz = 2.0 * q2;
+
+            var twx = tx * q3;
+            var twy = ty * q3;
+            var twz = tz * q3;
+
+            var txx = tx * q0;
+            var txy = ty * q0;
+            var txz = tz * q0;
+
+            var tyy = ty * q1;
+            var tyz = tz * q1;
+            var tzz = tz * q2;
+
+            dest[0] = 1.0 - (tyy + tzz);
+            dest[1] = txy - twz;
+            dest[2] = txz + twy;
+
+            dest[4] = txy + twz;
+            dest[5] = 1.0 - (txx + tzz);
+            dest[6] = tyz - twx;
+
+            dest[8] = txz - twy;
+            dest[9] = tyz + twx;
+            dest[10] = 1.0 - (txx + tyy);
+
+            return dest;
+        },
+
+        normalizeQuaternion: function (q, dest) {
+            dest = dest || q;
+            var len = XEO.math.lenVec4([q[0], q[1], q[2], q[3]]);
+            dest[0] = q[0] / len;
+            dest[1] = q[1] / len;
+            dest[2] = q[2] / len;
+            dest[3] = q[3] / len;
+            return dest;
+        },
+
+        conjugateQuaternion: function (q, dest) {
+            dest = dest || q;
+            dest[0] = -q[0];
+            dest[1] = -q[1];
+            dest[2] = -q[2];
+            dest[3] = q[3];
+            return dest;
+        },
+
+        quaternionToAngleAxis: function (q, angleAxis) {
+            angleAxis = angleAxis || XEO.math.vec4();
+            q = XEO.math.normalizeQuaternion(q, tempVec4);
+            var q3 = q[3];
+            var angle = 2 * Math.acos(q3);
+            var s = Math.sqrt(1 - q3 * q3);
+            if (s < 0.001) { // test to avoid divide by zero, s is always positive due to sqrt
+                angleAxis[0] = q[0];
+                angleAxis[1] = q[1];
+                angleAxis[2] = q[2];
+            } else {
+                angleAxis[0] = q[0] / s;
+                angleAxis[0] = q[1] / s;
+                angleAxis[0] = q[2] / s;
+            }
+            angleAxis[3] = angle * 57.295779579;
+            return angleAxis;
         }
     };
 
@@ -4795,7 +4968,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     color: [1.0, 1.0, 0.9],
                                     intensity: 0.5,
                                     space: "world"
-                                })  ,
+                                }),
                                 //
                                 // Directional light source #2
                                 new XEO.DirLight(this, {
@@ -5127,6 +5300,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 origin[2] = local1[2];
 
                 math.subVec3(local2, local1, dir);
+
+                math.normalizeVec3(dir);
             }
 
             return function (canvasPos, options) {
@@ -5192,102 +5367,101 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             getLocalRay(object, canvasPos, origin, dir);
 
-                            var intersecting = math.rayTriangleIntersect(origin, dir, a, b, c, position)
-                                || math.rayTriangleIntersect(origin, dir, c, b, a, position);
+                            //var intersecting = math.rayTriangleIntersect(origin, dir, a, b, c, position)
+                            //    || math.rayTriangleIntersect(origin, dir, c, b, a, position);
 
-                            if (!intersecting) {
+                            math.rayPlaneIntersect(origin, dir, a, b, c, position);
 
-                                // Ray intersection failed, probably because the triangle was too squashed.
-                                // Fake the intersection as the average of the vertex positions.
+                            //if (!intersecting) {
+                            //
+                            //    math.rayPlaneIntersect(origin, dir, a, b, c, position);
+                            //    //
+                            //    //// Ray intersection failed, probably because the triangle was too squashed.
+                            //    //// Fake the intersection as the average of the vertex positions.
+                            //    //
+                            //    //position[0] = (a[0] + b[0] + c[0]) / 3;
+                            //    //position[1] = (a[1] + b[1] + c[1]) / 3;
+                            //    //position[2] = (a[2] + b[2] + c[2]) / 3;
+                            //    //
+                            //    //// math.rayTriangleIntersect(origin, dir, a, b, c, position)
+                            //}
 
-                                position[0] = (a[0] + b[0] + c[0]) / 3;
-                                position[1] = (a[1] + b[1] + c[1]) / 3;
-                                position[2] = (a[2] + b[2] + c[2]) / 3;
+                            // Ray intersects the triangle
 
-                               // math.rayTriangleIntersect(origin, dir, a, b, c, position)
+                            // Get Local-space cartesian coordinates of the ray-triangle intersection
+
+                            hit.position = position;
+
+                            // Get interpolated World-space coordinates
+
+                            // Need to transform homogeneous coords
+
+                            tempVec4[0] = position[0];
+                            tempVec4[1] = position[1];
+                            tempVec4[2] = position[2];
+                            tempVec4[3] = 1;
+
+                            // Get World-space cartesian coordinates of the ray-triangle intersection
+
+                            math.transformVec4(object.transform.matrix, tempVec4, tempVec4b);
+
+                            worldPos[0] = tempVec4b[0];
+                            worldPos[1] = tempVec4b[1];
+                            worldPos[2] = tempVec4b[2];
+
+                            hit.worldPos = worldPos;
+
+                            // Get barycentric coordinates of the ray-triangle intersection
+
+                            math.cartesianToBarycentric(position, a, b, c, barycentric);
+
+                            hit.barycentric = barycentric;
+
+                            // Get interpolated normal vector
+
+                            var normals = geometry.normals;
+
+                            if (normals) {
+
+                                na[0] = normals[(ia * 3)];
+                                na[1] = normals[(ia * 3) + 1];
+                                na[2] = normals[(ia * 3) + 2];
+
+                                nb[0] = normals[(ib * 3)];
+                                nb[1] = normals[(ib * 3) + 1];
+                                nb[2] = normals[(ib * 3) + 2];
+
+                                nc[0] = normals[(ic * 3)];
+                                nc[1] = normals[(ic * 3) + 1];
+                                nc[2] = normals[(ic * 3) + 2];
+
+                                hit.normal = math.addVec3(math.addVec3(
+                                        math.mulVec3Scalar(na, barycentric[0], tempVec3),
+                                        math.mulVec3Scalar(nb, barycentric[1], tempVec3b), tempVec3c),
+                                    math.mulVec3Scalar(nc, barycentric[2], tempVec3d), tempVec3e);
                             }
 
-                        ///    console.log(intersecting);
+                            // Get interpolated UV coordinates
 
-                        //    if (intersecting) {
+                            var uvs = geometry.uv;
 
-                                // Ray intersects the triangle
+                            if (uvs) {
 
-                                // Get Local-space cartesian coordinates of the ray-triangle intersection
+                                uva[0] = uvs[(ia * 2)];
+                                uva[1] = uvs[(ia * 2) + 1];
 
-                                hit.position = position;
+                                uvb[0] = uvs[(ib * 2)];
+                                uvb[1] = uvs[(ib * 2) + 1];
 
-                                // Get interpolated World-space coordinates
+                                uvc[0] = uvs[(ic * 2)];
+                                uvc[1] = uvs[(ic * 2) + 1];
 
-                                // Need to transform homogeneous coords
-
-                                tempVec4[0] = position[0];
-                                tempVec4[1] = position[1];
-                                tempVec4[2] = position[2];
-                                tempVec4[3] = 1;
-
-                                // Get World-space cartesian coordinates of the ray-triangle intersection
-
-                                math.transformVec4(object.transform.matrix, tempVec4, tempVec4b);
-
-                                worldPos[0] = tempVec4b[0];
-                                worldPos[1] = tempVec4b[1];
-                                worldPos[2] = tempVec4b[2];
-
-                                hit.worldPos = worldPos;
-
-                                // Get barycentric coordinates of the ray-triangle intersection
-
-                                math.cartesianToBarycentric(position, a, b, c, barycentric);
-
-                                hit.barycentric = barycentric;
-
-                                // Get interpolated normal vector
-
-                                var normals = geometry.normals;
-
-                                if (normals) {
-
-                                    na[0] = normals[(ia * 3)];
-                                    na[1] = normals[(ia * 3) + 1];
-                                    na[2] = normals[(ia * 3) + 2];
-
-                                    nb[0] = normals[(ib * 3)];
-                                    nb[1] = normals[(ib * 3) + 1];
-                                    nb[2] = normals[(ib * 3) + 2];
-
-                                    nc[0] = normals[(ic * 3)];
-                                    nc[1] = normals[(ic * 3) + 1];
-                                    nc[2] = normals[(ic * 3) + 2];
-
-                                    hit.normal = math.addVec3(math.addVec3(
-                                            math.mulVec3Scalar(na, barycentric[0], tempVec3),
-                                            math.mulVec3Scalar(nb, barycentric[1], tempVec3b), tempVec3c),
-                                        math.mulVec3Scalar(nc, barycentric[2], tempVec3d), tempVec3e);
-                                }
-
-                                // Get interpolated UV coordinates
-
-                                var uvs = geometry.uv;
-
-                                if (uvs) {
-
-                                    uva[0] = uvs[(ia * 2)];
-                                    uva[1] = uvs[(ia * 2) + 1];
-
-                                    uvb[0] = uvs[(ib * 2)];
-                                    uvb[1] = uvs[(ib * 2) + 1];
-
-                                    uvc[0] = uvs[(ic * 2)];
-                                    uvc[1] = uvs[(ic * 2) + 1];
-
-                                    hit.uv = math.addVec3(
-                                        math.addVec3(
-                                            math.mulVec2Scalar(uva, barycentric[0], tempVec3f),
-                                            math.mulVec2Scalar(uvb, barycentric[1], tempVec3g), tempVec3h),
-                                        math.mulVec2Scalar(uvc, barycentric[2], tempVec3i), tempVec3j);
-                                }
-                         //   }
+                                hit.uv = math.addVec3(
+                                    math.addVec3(
+                                        math.mulVec2Scalar(uva, barycentric[0], tempVec3f),
+                                        math.mulVec2Scalar(uvb, barycentric[1], tempVec3g), tempVec3h),
+                                    math.mulVec2Scalar(uvc, barycentric[2], tempVec3i), tempVec3j);
+                            }
                         }
                     }
 
@@ -28758,9 +28932,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 for (i = 0; i < radialSegments; i++) {
                     center = startIndex;
                     first = startIndex + 1 + i;
-                    indices.push(first);
-                    indices.push(first + 1);
                     indices.push(center);
+                    indices.push(first + 1);
+                    indices.push(first);
                 }
             }
 
@@ -30246,9 +30420,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     var u1 = u0 + inverseSegments;
                     var v1 = v0 + inversePointLength;
 
-                    indices.push(a);
-                    indices.push(b);
                     indices.push(d);
+                    indices.push(b);
+                    indices.push(a);
 
                     //uvs.push(u0);
                     //uvs.push(v0);
@@ -30259,9 +30433,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     //uvs.push(u0);
                     //uvs.push(v1);
 
-                    indices.push(b);
-                    indices.push(c);
                     indices.push(d);
+                    indices.push(c);
+                    indices.push(b);
 
                     //uvs.push(u1);
                     //uvs.push(v0);
@@ -30275,8 +30449,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
             }
 
             this.positions = positions;
-            this.normals = positions;
-            this.uv = positions;
+         //   this.normals = positions;
+          //  this.uv = positions;
             this.indices = indices;
         },
 
