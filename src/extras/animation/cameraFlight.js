@@ -95,6 +95,12 @@
 
     "use strict";
 
+    // Caches to avoid garbage collection
+
+    var tempVec3 = XEO.math.vec3();
+    var tempVec3b = XEO.math.vec3();
+    var tempVec3c = XEO.math.vec3();
+
     XEO.CameraFlight = XEO.Component.extend({
 
         /**
@@ -116,21 +122,11 @@
             this._eye2 = XEO.math.vec3();
             this._up2 = XEO.math.vec3();
 
-            this._eyeLookVec = XEO.math.vec3();
-            this._vec = XEO.math.vec3();
-
-            this._dist = 0;
-
             this._flying = false;
 
             this._ok = null;
 
             this._onTick = null;
-
-            this._tempVec = XEO.math.vec3();
-
-            this._eyeVec = XEO.math.vec3();
-            this._lookVec = XEO.math.vec3();
 
             this._stopFOV = 55;
 
@@ -179,34 +175,41 @@
                 return;
             }
 
-            this._flying = false;
-            this._flyToLook = false;
-            this._flyToBoundary = false;
+            this._flying = false
 
             this._ok = ok;
 
             var lookat = camera.view;
 
-            this._eye1 = lookat.eye;
-            this._look1 = lookat.look;
-            this._up1 = lookat.up;
+            this._eye1[0] = lookat.eye[0];
+            this._eye1[1] = lookat.eye[1];
+            this._eye1[2] = lookat.eye[2];
+
+            this._look1[0] = lookat.look[0];
+            this._look1[1] = lookat.look[1];
+            this._look1[2] = lookat.look[2];
+
+            this._up1[0] = lookat.up[0];
+            this._up1[1] = lookat.up[1];
+            this._up1[2] = lookat.up[2];
 
             var aabb;
             var eye;
             var look;
             var up;
 
-            if (worldBoundary = params.worldBoundary) { // Get the worldBoundary once for efficiency
+            if (worldBoundary = params.worldBoundary) {
 
                 // Argument is a Component subtype with a worldBoundary
 
                 aabb = worldBoundary.aabb;
 
-            } else if (aabb = params.aabb) { // Get the AABB once for efficiency
+            } else if (aabb = params.aabb) {
 
                 // Argument is a Boundary3D
 
-            } else if (params.xmin != undefined &&
+            } else if (
+                params.xmin != undefined &&
                 params.ymin != undefined &&
                 params.zmin != undefined &&
                 params.xmax != undefined &&
@@ -260,7 +263,6 @@
             }
 
             var offset = params.offset;
-            var backoff = params.backoff;
 
             if (aabb) {
 
@@ -278,7 +280,17 @@
                     this._look2[2] += offset[2];
                 }
 
-                this._flyToBoundary = true;
+                var vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, tempVec3));
+                var diag = XEO.math.getAABBDiag(aabb);
+                var sca = Math.abs((diag) / Math.tan(this._stopFOV / 2));
+
+                this._eye2[0] = this._look2[0] + (vec[0] * sca);
+                this._eye2[1] = this._look2[1] + (vec[1] * sca);
+                this._eye2[2] = this._look2[2] + (vec[2] * sca);
+
+                this._up2[0] = this._up1[0];
+                this._up2[1] = this._up1[1];
+                this._up2[2] = this._up1[2];
 
             } else if (eye || look || up) {
 
@@ -297,8 +309,6 @@
                 this._up2[0] = up[0];
                 this._up2[1] = up[1];
                 this._up2[2] = up[2];
-
-                this._flyToLook = true;
             }
 
             this.fire("started", params, true);
@@ -308,12 +318,12 @@
             this._time1 = (new Date()).getTime();
             this._time2 = this._time1 + this._duration;
 
+            this._flying = true; // False as soon as we stop
+
             this._tick = this.scene.on("tick",
                 function (params) {
                     self._update(params);
                 });
-
-            this._flying = true;
         },
 
         _update: function (params) {
@@ -326,57 +336,22 @@
 
             var t = (time - this._time1) / (this._time2 - this._time1);
 
+            var stopping = (t >= 1);
+
             if (t > 1) {
-                this.stop();
-                return;
+                t = 1;
             }
 
             t = this.easing ? this._ease(t, 0, 1, 1) : t;
 
             var view = this._children.camera.view;
 
-            if (this._flyToLook) {
+            view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
+            view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
+            view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, tempVec3c);
 
-                view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, []);
-                view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
-                view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, []);
-
-                return;
-            }
-
-            if (this._flyToBoundary) {
-
-                var eye = view.eye;
-                var look = view.look;
-                var up = view.up;
-
-                var newLook = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
-
-                var x = newLook[0] - look[0];
-                var y = newLook[1] - look[1];
-                var z = newLook[2] - look[2];
-
-                /*
-                 var backoff = backoff || 0.5;
-                 backoff = backoff < 0 ? 0 : (backoff > 1 ? 1 : backoff);
-                 backoff = 1 - backoff;
-
-                 var eyeLookVec = XEO.math.subVec3(eye, look, []);
-                 var normEyeLookVec = XEO.math.normalizeVec3(eyeLookVec, []);
-
-                 var dist = params.dist || 2.5;
-                 var lenVec = Math.abs(XEO.math.lenVec3(this._vec));
-                 var diag = XEO.math.getAABBDiag(aabb);
-                 var len = Math.abs((diag / (1.0 + (backoff * 0.8))) / Math.tan(this._stopFOV / 2));  /// Tweak this to set final camera distance on arrival
-                 var sca = (len / lenVec) * dist;
-
-                 this._eye2 = XEO.math.addVec3(this._look2, XEO.math.mulVec3Scalar(this._vec, sca, []), []);
-
-                 */
-
-                view.eye = [eye[0] + x, eye[1] + y, eye[2] + z];
-                view.look = newLook;
-                //     view.up = [up[0] + x, up[1] + y, up[2] + z];
+            if (stopping) {
+                this.stop();
             }
         },
 
@@ -397,20 +372,18 @@
             this.scene.off(this._tick);
 
             this._flying = false;
-            this._flyToLook = false;
-            this._flyToBoundary = false;
 
             this._time1 = null;
             this._time2 = null;
 
-            this.fire("stopped", true, true);
-
             var ok = this._ok;
 
             if (ok) {
-                this._ok = false;
+                this._ok = null;
                 ok();
             }
+
+            this.fire("stopped", true, true);
         },
 
         _props: {
