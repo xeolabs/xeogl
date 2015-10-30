@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-10-26
+ * Built on 2015-10-30
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -2197,8 +2197,8 @@
          */
         getAABBDiag: function (boundary) {
 
-            var min = this.vec3();
-            var max = this.vec3();
+            var min = tempVec3;
+            var max = tempVec3b;
 
             min[0] = boundary.xmin;
             min[1] = boundary.ymin;
@@ -2208,10 +2208,9 @@
             max[1] = boundary.ymax;
             max[2] = boundary.zmax;
 
-            var tempVec = this.vec3();
-            this.subVec3(max, min, tempVec);
+            this.subVec3(max, min, tempVec3c);
 
-            return Math.abs(this.lenVec3(tempVec));
+            return Math.abs(this.lenVec3(tempVec3c));
         },
 
         /**
@@ -2904,6 +2903,44 @@
             }
 
             var t = XEO.math.dotVec3(edge2, qvec) / det;
+            isect[0] = origin[0] + t * dir[0];
+            isect[1] = origin[1] + t * dir[1];
+            isect[2] = origin[2] + t * dir[2];
+
+            return isect;
+        },
+
+        /**
+         * Finds the intersection of a 3D ray with a plane defined by 3 points.
+         *
+         * @method rayPlaneIntersect
+         * @static
+         * @param {Array of Number} origin Ray origin.
+         * @param {Array of Number} dir Ray direction.
+         * @param {Array of Number} a First point on plane.
+         * @param {Array of Number} b Second point on plane.
+         * @param {Array of Number} c Third point on plane.
+         * @param {Array of Number} [isect] Intersection point.
+         * @returns {Array of Number} The intersection point.
+         */
+        rayPlaneIntersect: function (origin, dir, a, b, c, isect) {
+
+            var math = XEO.math;
+
+            isect = isect || math.vec3();
+
+            dir = math.normalizeVec3(dir, tempVec3);
+
+            var edge1 = math.subVec3(b, a, tempVec3b);
+            var edge2 = math.subVec3(c, a, tempVec3c);
+
+            var n = math.cross3Vec3(edge1, edge2, tempVec3d);
+            math.normalizeVec3(n, n);
+
+            var d = -math.dotVec3(a, n);
+
+            var t = -(math.dotVec3(origin, n) + d) / math.dotVec3(dir, n);
+
             isect[0] = origin[0] + t * dir[0];
             isect[1] = origin[1] + t * dir[1];
             isect[2] = origin[2] + t * dir[2];
@@ -4747,7 +4784,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                 // Ambient light source #0
                                 new XEO.AmbientLight(this, {
                                     id: "default.light0",
-                                    color: [0.7, 0.7, 0.7],
+                                    color: [0.8, 0.8, 0.9],
                                     intensity: 0.5
                                 }),
 
@@ -4755,18 +4792,18 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                 new XEO.DirLight(this, {
                                     id: "default.light1",
                                     dir: [-0.5, -0.5, -1.0],
-                                    color: [1.0, 1.0, 1.0],
+                                    color: [1.0, 1.0, 0.9],
                                     intensity: 0.5,
-                                    space: "view"
-                                }),
-
+                                    space: "world"
+                                })  ,
+                                //
                                 // Directional light source #2
                                 new XEO.DirLight(this, {
                                     id: "default.light2",
-                                    dir: [1.0, -0.9, -0.7],
+                                    dir: [1.0, -0.9, 0.7],
                                     color: [1.0, 1.0, 1.0],
-                                    intensity: 0.2,
-                                    space: "view"
+                                    intensity: 0.5,
+                                    space: "world"
                                 })
                             ]
                         });
@@ -4986,7 +5023,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          *
          * Ignores {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are attached
          * to either a {{#crossLink "Stage"}}Stage{{/crossLink}} with {{#crossLink "Stage/pickable:property"}}pickable{{/crossLink}}
-         * set *false* or a {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/picking:property"}}picking{{/crossLink}} set *false*.
+         * set *false* or a {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/pickable:property"}}pickable{{/crossLink}} set *false*.
          *
          * On success, will fire a {{#crossLink "Scene/picked:event"}}{{/crossLink}} event on this Scene, along with
          * a separate {{#crossLink "Object/picked:event"}}{{/crossLink}} event on the target {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
@@ -5155,8 +5192,24 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             getLocalRay(object, canvasPos, origin, dir);
 
-                            if (math.rayTriangleIntersect(origin, dir, a, b, c, position)
-                                || math.rayTriangleIntersect(origin, dir, c, b, a, position)) {
+                            var intersecting = math.rayTriangleIntersect(origin, dir, a, b, c, position)
+                                || math.rayTriangleIntersect(origin, dir, c, b, a, position);
+
+                            if (!intersecting) {
+
+                                // Ray intersection failed, probably because the triangle was too squashed.
+                                // Fake the intersection as the average of the vertex positions.
+
+                                position[0] = (a[0] + b[0] + c[0]) / 3;
+                                position[1] = (a[1] + b[1] + c[1]) / 3;
+                                position[2] = (a[2] + b[2] + c[2]) / 3;
+
+                               // math.rayTriangleIntersect(origin, dir, a, b, c, position)
+                            }
+
+                        ///    console.log(intersecting);
+
+                        //    if (intersecting) {
 
                                 // Ray intersects the triangle
 
@@ -5234,7 +5287,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                             math.mulVec2Scalar(uvb, barycentric[1], tempVec3g), tempVec3h),
                                         math.mulVec2Scalar(uvc, barycentric[2], tempVec3i), tempVec3j);
                                 }
-                            }
+                         //   }
                         }
                     }
 
@@ -5655,12 +5708,34 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 set: function (value) {
 
+                    // Unsubscribe from old projection's events
+
+                    var oldProject = this._children.project;
+
+                    if (oldProject) {
+                        oldProject.off(this._onProjectMatrix);
+                    }
+                    
                     /**
                      * Fired whenever this Camera's {{#crossLink "Camera/project:property"}}{{/crossLink}} property changes.
                      * @event project
                      * @param value The property's new value
                      */
                     this._setChild("project", value);
+
+                    var newProject = this._children.project;
+
+                    if (newProject) {
+
+                        // Subscribe to new projection's events
+
+                        var self = this;
+                        
+                        this._onProjectMatrix = newProject.on("matrix",
+                            function () {
+                                self.fire("projectMatrix");
+                            });
+                    }
                 },
 
                 get: function () {
@@ -5684,6 +5759,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 set: function (value) {
 
+                    // Unsubscribe from old view transform's events
+
+                    var oldView = this._children.project;
+
+                    if (oldView) {
+                        oldView.off(this._onViewMatrix);
+                    }
+
                     /**
                      * Fired whenever this Camera's {{#crossLink "Camera/view:property"}}{{/crossLink}} property changes.
                      *
@@ -5691,6 +5774,20 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @param value The property's new value
                      */
                     this._setChild("view", value);
+
+                    var newView = this._children.view;
+
+                    if (newView) {
+
+                        // Subscribe to new projection's events
+
+                        var self = this;
+
+                        this._onViewMatrix = newView.on("matrix",
+                            function () {
+                                self.fire("viewMatrix");
+                            });
+                    }
                 },
 
                 get: function () {
@@ -12206,6 +12303,7 @@ visibility.destroy();
                 lineWidth: 1.0,
                 pointSize: 1.0,
 
+                ambientMap: null,
                 normalMap: null,
                 diffuseMap: null,
                 specularMap: null,
@@ -12236,6 +12334,7 @@ visibility.destroy();
             this.lineWidth = cfg.lineWidth;
             this.pointSize = cfg.pointSize;
 
+            this.ambientMap = cfg.ambientMap;
             this.diffuseMap = cfg.diffuseMap;
             this.specularMap = cfg.specularMap;
             this.emissiveMap = cfg.emissiveMap;
@@ -12569,7 +12668,7 @@ visibility.destroy();
                 set: function (texture) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/normal:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} property changes.
 
                      @event normalMap
                      @param value Number The property's new value
@@ -12582,6 +12681,35 @@ visibility.destroy();
                 }
             },
 
+            /**
+             An ambient {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+
+             This property overrides {{#crossLink "PhongMaterial/ambientMap:property"}}{{/crossLink}} when not null or undefined.
+
+             Fires a {{#crossLink "PhongMaterial/ambientMap:event"}}{{/crossLink}} event on change.
+
+             @property ambientMap
+             @default null
+             @type {Texture}
+             */
+            ambientMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/ambientMap:property"}}{{/crossLink}} property changes.
+
+                     @event ambientMap
+                     @param value Number The property's new value
+                     */
+                    this._setComponent("ambientMap", texture);
+                },
+
+                get: function () {
+                    return this._children["ambientMap"];
+                }
+            },
+            
             /**
              A diffuse {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
@@ -12598,7 +12726,7 @@ visibility.destroy();
                 set: function (texture) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} property changes.
 
                      @event diffuseMap
                      @param value Number The property's new value
@@ -12929,6 +13057,13 @@ visibility.destroy();
                 }
             }
 
+            if (state.ambientMap) {
+                hash.push("/a");
+                if (state.ambientMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+            
             if (state.diffuseMap) {
                 hash.push("/d");
                 if (state.diffuseMap.matrix) {
@@ -13032,6 +13167,10 @@ visibility.destroy();
                 json.normalMap = components.normalMap.id;
             }
 
+            if (components.ambientMap) {
+                json.ambientMap = components.ambientMap.id;
+            }
+            
             if (components.diffuseMap) {
                 json.diffuseMap = components.diffuseMap.id;
             }
@@ -13336,6 +13475,8 @@ visibility.destroy();
                     }
 
                     if (state.texture && state.texture.renderBuffer) {
+
+                        // Detach from "virtual texture" provided by render target
                         state.texture = null;
                     }
 
@@ -14339,11 +14480,9 @@ visibility.destroy();
 
                     var oldCamera = this._children.camera;
 
-                    if (oldCamera && (!value || (value.id !== undefined ? value.id : value) !== oldCamera.id)) {
-                        oldCamera.off(this._onCameraDestroyed);
-                        oldCamera.off(this._onCameraView);
-                        oldCamera.view.off(this._onCameraViewMatrix);
-                        oldCamera.project.off(this._onCameraProjMatrix);
+                    if (oldCamera) {
+                        oldCamera.off(this._onCameraViewMatrix);
+                        oldCamera.off(this._onCameraProjMatrix);
                     }
 
                     /**
@@ -14362,22 +14501,12 @@ visibility.destroy();
 
                         var self = this;
 
-                        this._onCameraView = newCamera.on("view",
+                        this._onCameraViewMatrix = newCamera.on("viewMatrix",
                             function () {
                                 self._setViewBoundaryDirty();
                             });
 
-                        this._onCameraDestroyed = newCamera.on("destroyed",
-                            function () {
-                                self._setViewBoundaryDirty();
-                            });
-
-                        this._onCameraViewMatrix = newCamera.view.on("matrix",
-                            function () {
-                                self._setViewBoundaryDirty();
-                            });
-
-                        this._onCameraProjMatrix = newCamera.project.on("matrix",
+                        this._onCameraProjMatrix = newCamera.on("projMatrix",
                             function () {
                                 self._setCanvasBoundaryDirty();
                             });
@@ -16468,7 +16597,7 @@ visibility.destroy();
 
  // Create a Modes with default properties
  var modes = new XEO.Modes(scene, {
-    picking: true,              // Enable picking
+    pickable: true,              // Enable picking
     clipping true,              // Enable effect of XEO.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces
@@ -16511,14 +16640,14 @@ visibility.destroy();
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Modes.
- @param [cfg.picking=true] {Boolean}  Whether to enable picking.
+ @param [cfg.pickable=true] {Boolean}  Whether to enable picking.
  @param [cfg.clipping=true] {Boolean} Whether to enable clipping by {{#crossLink "Clips"}}{{/crossLink}}.
  @param [cfg.transparent=false] {Boolean} Whether to enable the transparency effect created by {{#crossLink "Material"}}Material{{/crossLink}}s when they have
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
  transparency pass with blending enabled etc), while
  the {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} will indicate the **degree** of their transparency
  (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
- @param [cfg.backfaces=true] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
  @extends Component
  */
@@ -16533,14 +16662,14 @@ visibility.destroy();
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Modes({
-                picking: true,
+                pickable: true,
                 clipping: true,
                 transparent: false,
                 backfaces: false,
                 frontface: true // Boolean for speed; true == "ccw", false == "cw"
             });
 
-            this.picking = cfg.picking;
+            this.pickable = cfg.pickable;
             this.clipping = cfg.clipping;
             this.transparent = cfg.transparent;
             this.backfaces = cfg.backfaces;
@@ -16554,31 +16683,31 @@ visibility.destroy();
 
              Picking is performed via calls to {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}.
 
-             Fires a {{#crossLink "Modes/picking:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "Modes/pickable:event"}}{{/crossLink}} event on change.
 
-             @property picking
+             @property pickable
              @default true
              @type Boolean
              */
-            picking: {
+            pickable: {
 
                 set: function (value) {
 
-                    this._state.picking = value !== false;
+                    this._state.pickable = value !== false;
 
                     this._renderer.drawListDirty = true;
 
                     /**
-                     * Fired whenever this Modes' {{#crossLink "Modes/picking:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Modes' {{#crossLink "Modes/pickable:property"}}{{/crossLink}} property changes.
                      *
-                     * @event picking
+                     * @event pickable
                      * @param value The property's new value
                      */
-                    this.fire("picking", this._state.picking);
+                    this.fire("pickable", this._state.pickable);
                 },
 
                 get: function () {
-                    return this._state.picking;
+                    return this._state.pickable;
                 }
             },
 
@@ -16661,14 +16790,16 @@ visibility.destroy();
              Fires a {{#crossLink "Modes/backfaces:event"}}{{/crossLink}} event on change.
 
              @property backfaces
-             @default true
+             @default false
              @type Boolean
              */
             backfaces: {
 
                 set: function (value) {
 
-                    this._state.backfaces = value !== false;
+                    value = !!value;
+
+                    this._state.backfaces = value;
 
                     this._renderer.imageDirty = true;
 
@@ -16727,7 +16858,7 @@ visibility.destroy();
 
         _getJSON: function () {
             return {
-                picking: this._state.picking,
+                pickable: this._state.pickable,
                 clipping: this._state.clipping,
                 transparent: this._state.transparent,
                 backfaces: this._state.backfaces,
@@ -17622,7 +17753,7 @@ visibility.destroy();
         this.objects = {};
 
         // Ambient color
-        this._ambientColor = [0, 0, 0, 1.0];
+        this._ambient = null;
 
         // The object list, containing all elements of #objects, kept in GL state-sorted order
         this._objectList = [];
@@ -17988,7 +18119,7 @@ visibility.destroy();
         var programId = object.program.id;
         var stateId = state ? state.id : -1;
         var chunkClass = this._chunkFactory.chunkTypes[chunkType];
-        var id = (chunkClass && chunkClass.prototype.programGlobal)  ? stateId :  ((programId +1) * 10000000) + stateId;
+        var id = (chunkClass && chunkClass.prototype.programGlobal) ? stateId : ((programId + 1) * 10000000) + stateId;
 
         var oldChunk = object.chunks[order];
 
@@ -18016,15 +18147,15 @@ visibility.destroy();
 
         var lights = state.lights;
         var light;
+        var intensity;
 
         for (var i = 0, len = lights.length; i < len; i++) {
 
             light = lights[i];
 
             if (light.type === "ambient") {
-                this._ambientColor[0] = light.color[0];
-                this._ambientColor[1] = light.color[1];
-                this._ambientColor[2] = light.color[2];
+
+                this._ambient = light;
             }
         }
     };
@@ -18228,7 +18359,7 @@ visibility.destroy();
 
                     targetListList.push(list);
 
-                    id = ((object.program.id +1)* 10000000) + target.id; // FIXME: Assuming less than 1M states
+                    id = ((object.program.id + 1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
 
                     targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object, object.program, target);
 
@@ -18251,7 +18382,7 @@ visibility.destroy();
 
                     targetListList.push(list);
 
-                    id = ((object.program.id+1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
+                    id = ((object.program.id + 1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
 
                     targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object, object.program, target);
 
@@ -18296,7 +18427,7 @@ visibility.destroy();
 
             // Unbinds any render target bound previously
 
-            id = ((object.program.id+1) * 10000000) + object.id; // FIXME: Assuming less than 1M states
+            id = ((object.program.id + 1) * 10000000) + object.id; // FIXME: Assuming less than 1M states
 
             this._appendRenderTargetChunk(this._chunkFactory.getChunk(id, "renderTarget", object, object.program, {}));
         }
@@ -18331,7 +18462,7 @@ visibility.destroy();
     XEO.renderer.Renderer.prototype._appendObjectToDrawChunkLists = function (object, pickable) {
 
         var chunks = object.chunks;
-        var picking = pickable && object.modes.picking;
+        var pickable = pickable && object.modes.pickable;
         var chunk;
 
         for (var i = 0, len = chunks.length; i < len; i++) {
@@ -18363,7 +18494,7 @@ visibility.destroy();
 
                     // Object-picking pass
 
-                    if (picking) {
+                    if (pickable) {
 
                         // Don't pick unpickable objects
 
@@ -18481,7 +18612,7 @@ visibility.destroy();
             clear: true
         });
 
-     //   gl.finish();
+        //   gl.finish();
 
         // Convert picked pixel color to object index
 
@@ -18515,7 +18646,7 @@ visibility.destroy();
                     clear: true
                 });
 
-                 gl.finish();
+                gl.finish();
 
                 // Convert picked pixel color to primitive index
 
@@ -18545,6 +18676,16 @@ visibility.destroy();
 
         var gl = this._canvas.gl;
 
+        var ambient = this._ambient;
+        var ambientColor;
+        if (ambient) {
+            var color = ambient.color;
+            var intensity = ambient.intensity;
+            ambientColor = [color[0] * intensity, color[1] * intensity, color[2] * intensity, 1.0];
+        } else {
+            ambientColor = [0, 0, 0];
+        }
+
         var frameCtx = this._frameCtx;
 
         frameCtx.renderTarget = null;
@@ -18558,8 +18699,8 @@ visibility.destroy();
         frameCtx.pickIndex = 0; // Indexes this._pickObjects
         frameCtx.textureUnit = 0;
         frameCtx.transparent = false; // True while rendering transparency bin
-        frameCtx.ambientColor = this._ambientColor;
 
+        frameCtx.ambientColor = ambientColor;
         frameCtx.drawElements = 0;
         frameCtx.useProgram = 0;
         frameCtx.bindTexture = 0;
@@ -18584,7 +18725,7 @@ visibility.destroy();
             // Canvas is opaque - set clear color to the current ambient
             // color, which can be provided by an ambient light source
 
-            gl.clearColor(this._ambientColor[0], this._ambientColor[1], this._ambientColor[2], 1.0);
+            gl.clearColor(ambientColor[0], ambientColor[1], ambientColor[2], 1.0);
         }
 
         if (params.clear) {
@@ -18651,7 +18792,8 @@ visibility.destroy();
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
-    };
+    }
+    ;
 
     /**
      * Destroys this Renderer.
@@ -18659,7 +18801,8 @@ visibility.destroy();
     XEO.renderer.Renderer.prototype.destroy = function () {
         this._programFactory.destroy();
     };
-})();
+})
+();
 ;/**
  * Renderer states
  */
@@ -18728,7 +18871,7 @@ visibility.destroy();
      @submodule renderer
      @constructor
      @param cfg {*} Configs
-     @param cfg.picking {Boolean} Flag which controls pickability of the associated render objects.
+     @param cfg.pickable {Boolean} Flag which controls pickability of the associated render objects.
      @param cfg.clipping {Boolean} Flag which controls whether associated render objects are clippable.
      @param cfg.transparent {Boolean} Flag which controls transparency of the associated render objects.
      @param cfg.frontFace {Boolean} Flag which determines winding order of backfaces on the associated render objects - true == "ccw", false == "cw".
@@ -19482,7 +19625,8 @@ visibility.destroy();
                 return false;
             }
             var material = states.material;
-            return material.diffuseMap ||
+            return material.ambientMap ||
+                material.diffuseMap ||
                 material.specularMap ||
                 material.emissiveMap ||
                 material.opacityMap ||
@@ -20045,7 +20189,7 @@ visibility.destroy();
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   ambient = texture2D(xeo_uAmbientMap, textureCoord).rgb;");
                 }
 
@@ -20056,7 +20200,7 @@ visibility.destroy();
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
                 }
 
@@ -20067,7 +20211,7 @@ visibility.destroy();
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
                 }
 
@@ -20078,7 +20222,7 @@ visibility.destroy();
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
                 }
 
@@ -20089,7 +20233,7 @@ visibility.destroy();
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
                 }
 
@@ -20100,7 +20244,7 @@ visibility.destroy();
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
                 }
             }
@@ -20140,8 +20284,8 @@ visibility.destroy();
 
                         add("   diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
 
-                        add("   specularLight += specular * xeo_uLightIntensity" + i +
-                            " * specular * pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
+                        add("   specularLight += xeo_uLightIntensity" + i +
+                            " *  pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
                             "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess) * attenuation;");
                     }
 
@@ -20151,14 +20295,14 @@ visibility.destroy();
 
                         add("   diffuseLight += dotN * xeo_uLightColor" + i + ";");
 
-                        add("   specularLight += specular * xeo_uLightIntensity" + i +
+                        add("   specularLight += xeo_uLightIntensity" + i +
                             " * pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
                             "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess);");
                     }
                 }
 
                 add();
-                add("   gl_FragColor = vec4( (specularLight * specular) + (diffuse * (diffuseLight + ambient * xeo_uLightAmbientIntensity)) + emissive, opacity);");
+                add("   gl_FragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
 
             } else {
 
@@ -21884,7 +22028,7 @@ visibility.destroy();
         unique: true,
 
         build: function () {
-            this.uPickColorObject = this.program.pickObject.getUniform("xeo_uPickColor");
+            this._uPickColorObject = this.program.pickObject.getUniform("xeo_uPickColor");
         },
 
         draw: function (frameCtx) {
@@ -21903,7 +22047,7 @@ visibility.destroy();
             var state = this.state;
             var gl = this.program.gl;
 
-            if (this.uPickColorObject) {
+            if (this._uPickColorObject) {
 
                 frameCtx.pickObjects[frameCtx.pickIndex++] = this.object;
 
@@ -21911,7 +22055,7 @@ visibility.destroy();
                 var g = frameCtx.pickIndex >> 8 & 0xFF;
                 var r = frameCtx.pickIndex & 0xFF;
 
-                this.uPickColorObject.setValue([r / 255, g / 255, b / 255, 0]);
+                this._uPickColorObject.setValue([r / 255, g / 255, b / 255, 0]);
 
                 //frameCtx.pickIndex++
             }
@@ -22497,6 +22641,11 @@ visibility.destroy();
 
             // Textures
 
+            if (state.ambientMap) {
+                this._uAmbientMap = "xeo_uAmbientMap";
+                this._uAmbientMapMatrix = draw.getUniform("xeo_uAmbientMapMatrix");
+            }
+
             if (state.diffuseMap) {
                 this._uDiffuseMap = "xeo_uDiffuseMap";
                 this._uDiffuseMapMatrix = draw.getUniform("xeo_uDiffuseMapMatrix");
@@ -22616,6 +22765,18 @@ visibility.destroy();
                 frameCtx.textureUnit = 0;
             }
 
+            // Ambient map
+
+            if (state.ambientMap && state.ambientMap.texture) {
+
+                draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
+
+                if (this._uAmbientMapMatrix) {
+                    this._uAmbientMapMatrix.setValue(state.ambientMap.matrix);
+                }
+            }
+            
             // Diffuse map
 
             if (state.diffuseMap && state.diffuseMap.texture) {
@@ -25175,6 +25336,12 @@ scene.on("tick", function(e) {
 
     "use strict";
 
+    // Caches to avoid garbage collection
+
+    var tempVec3 = XEO.math.vec3();
+    var tempVec3b = XEO.math.vec3();
+    var tempVec3c = XEO.math.vec3();
+
     XEO.CameraFlight = XEO.Component.extend({
 
         /**
@@ -25196,21 +25363,11 @@ scene.on("tick", function(e) {
             this._eye2 = XEO.math.vec3();
             this._up2 = XEO.math.vec3();
 
-            this._eyeLookVec = XEO.math.vec3();
-            this._vec = XEO.math.vec3();
-
-            this._dist = 0;
-
             this._flying = false;
 
             this._ok = null;
 
             this._onTick = null;
-
-            this._tempVec = XEO.math.vec3();
-
-            this._eyeVec = XEO.math.vec3();
-            this._lookVec = XEO.math.vec3();
 
             this._stopFOV = 55;
 
@@ -25259,34 +25416,41 @@ scene.on("tick", function(e) {
                 return;
             }
 
-            this._flying = false;
-            this._flyToLook = false;
-            this._flyToBoundary = false;
+            this._flying = false
 
             this._ok = ok;
 
             var lookat = camera.view;
 
-            this._eye1 = lookat.eye;
-            this._look1 = lookat.look;
-            this._up1 = lookat.up;
+            this._eye1[0] = lookat.eye[0];
+            this._eye1[1] = lookat.eye[1];
+            this._eye1[2] = lookat.eye[2];
+
+            this._look1[0] = lookat.look[0];
+            this._look1[1] = lookat.look[1];
+            this._look1[2] = lookat.look[2];
+
+            this._up1[0] = lookat.up[0];
+            this._up1[1] = lookat.up[1];
+            this._up1[2] = lookat.up[2];
 
             var aabb;
             var eye;
             var look;
             var up;
 
-            if (worldBoundary = params.worldBoundary) { // Get the worldBoundary once for efficiency
+            if (worldBoundary = params.worldBoundary) {
 
                 // Argument is a Component subtype with a worldBoundary
 
                 aabb = worldBoundary.aabb;
 
-            } else if (aabb = params.aabb) { // Get the AABB once for efficiency
+            } else if (aabb = params.aabb) {
 
                 // Argument is a Boundary3D
 
-            } else if (params.xmin != undefined &&
+            } else if (
+                params.xmin != undefined &&
                 params.ymin != undefined &&
                 params.zmin != undefined &&
                 params.xmax != undefined &&
@@ -25340,7 +25504,6 @@ scene.on("tick", function(e) {
             }
 
             var offset = params.offset;
-            var backoff = params.backoff;
 
             if (aabb) {
 
@@ -25358,7 +25521,17 @@ scene.on("tick", function(e) {
                     this._look2[2] += offset[2];
                 }
 
-                this._flyToBoundary = true;
+                var vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, tempVec3));
+                var diag = XEO.math.getAABBDiag(aabb);
+                var sca = Math.abs((diag) / Math.tan(this._stopFOV / 2));
+
+                this._eye2[0] = this._look2[0] + (vec[0] * sca);
+                this._eye2[1] = this._look2[1] + (vec[1] * sca);
+                this._eye2[2] = this._look2[2] + (vec[2] * sca);
+
+                this._up2[0] = this._up1[0];
+                this._up2[1] = this._up1[1];
+                this._up2[2] = this._up1[2];
 
             } else if (eye || look || up) {
 
@@ -25377,8 +25550,6 @@ scene.on("tick", function(e) {
                 this._up2[0] = up[0];
                 this._up2[1] = up[1];
                 this._up2[2] = up[2];
-
-                this._flyToLook = true;
             }
 
             this.fire("started", params, true);
@@ -25388,12 +25559,12 @@ scene.on("tick", function(e) {
             this._time1 = (new Date()).getTime();
             this._time2 = this._time1 + this._duration;
 
+            this._flying = true; // False as soon as we stop
+
             this._tick = this.scene.on("tick",
                 function (params) {
                     self._update(params);
                 });
-
-            this._flying = true;
         },
 
         _update: function (params) {
@@ -25406,57 +25577,22 @@ scene.on("tick", function(e) {
 
             var t = (time - this._time1) / (this._time2 - this._time1);
 
+            var stopping = (t >= 1);
+
             if (t > 1) {
-                this.stop();
-                return;
+                t = 1;
             }
 
             t = this.easing ? this._ease(t, 0, 1, 1) : t;
 
             var view = this._children.camera.view;
 
-            if (this._flyToLook) {
+            view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
+            view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
+            view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, tempVec3c);
 
-                view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, []);
-                view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
-                view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, []);
-
-                return;
-            }
-
-            if (this._flyToBoundary) {
-
-                var eye = view.eye;
-                var look = view.look;
-                var up = view.up;
-
-                var newLook = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, []);
-
-                var x = newLook[0] - look[0];
-                var y = newLook[1] - look[1];
-                var z = newLook[2] - look[2];
-
-                /*
-                 var backoff = backoff || 0.5;
-                 backoff = backoff < 0 ? 0 : (backoff > 1 ? 1 : backoff);
-                 backoff = 1 - backoff;
-
-                 var eyeLookVec = XEO.math.subVec3(eye, look, []);
-                 var normEyeLookVec = XEO.math.normalizeVec3(eyeLookVec, []);
-
-                 var dist = params.dist || 2.5;
-                 var lenVec = Math.abs(XEO.math.lenVec3(this._vec));
-                 var diag = XEO.math.getAABBDiag(aabb);
-                 var len = Math.abs((diag / (1.0 + (backoff * 0.8))) / Math.tan(this._stopFOV / 2));  /// Tweak this to set final camera distance on arrival
-                 var sca = (len / lenVec) * dist;
-
-                 this._eye2 = XEO.math.addVec3(this._look2, XEO.math.mulVec3Scalar(this._vec, sca, []), []);
-
-                 */
-
-                view.eye = [eye[0] + x, eye[1] + y, eye[2] + z];
-                view.look = newLook;
-                //     view.up = [up[0] + x, up[1] + y, up[2] + z];
+            if (stopping) {
+                this.stop();
             }
         },
 
@@ -25477,20 +25613,18 @@ scene.on("tick", function(e) {
             this.scene.off(this._tick);
 
             this._flying = false;
-            this._flyToLook = false;
-            this._flyToBoundary = false;
 
             this._time1 = null;
             this._time2 = null;
 
-            this.fire("stopped", true, true);
-
             var ok = this._ok;
 
             if (ok) {
-                this._ok = false;
+                this._ok = null;
                 ok();
             }
+
+            this.fire("stopped", true, true);
         },
 
         _props: {
@@ -27296,20 +27430,36 @@ scene.on("tick", function(e) {
 
             this.primitive = cfg.primitive || "lines";
 
-            this.positions = [
-                1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
-                -1.0, -1.0, 1.0, -1.0, 1.0, 1.0,
-                1.0, 1.0, -1.0, 1.0, -1.0, -1.0,
-                -1.0, -1.0, -1.0, -1.0, 1.0, -1.0
-            ];
-
             this.indices = [
                 0, 1, 1, 2, 2, 3, 3, 0, 4,
                 5, 5, 6, 6, 7, 7, 4, 0, 4,
                 1, 5, 2, 6, 3, 7
             ];
 
-            this.boundary = cfg.boundary;
+            if (cfg.boundary) {
+                this.boundary = cfg.boundary;
+
+            } else if (cfg.obb) {
+                this.obb = cfg.obb;
+
+            } else if (cfg.aabb) {
+                this.aabb = cfg.aabb;
+
+            } else if (cfg.positions) {
+                this.positions = cfg.positions;
+
+            } else {
+                this.positions = [
+                    1.0, 1.0, 1.0,
+                    1.0, -1.0, 1.0,
+                    -1.0, -1.0, 1.0,
+                    -1.0, 1.0, 1.0,
+                    1.0, 1.0, -1.0,
+                    1.0, -1.0, -1.0,
+                    -1.0, -1.0, -1.0,
+                    -1.0, 1.0, -1.0
+                ];
+            }
         },
 
         _props: {
@@ -27354,7 +27504,7 @@ scene.on("tick", function(e) {
 
                         this._onBoundaryUpdated = boundary.on("updated",
                             function () {
-                                self._setPositions(boundary.obb);
+                                self._setPositionsFromOBB(boundary.obb);
                             });
 
                         this._onBoundaryDestroyed = boundary.on("destroyed",
@@ -27362,17 +27512,63 @@ scene.on("tick", function(e) {
                                 self.boundary = null;
                             });
 
-                        //     this._setPositions(boundary.obb);
+                        //     this._setPositionsFromOBB(boundary.obb);
                     }
                 },
 
                 get: function () {
                     return this._children.boundary;
                 }
+            },
+
+            /**
+             * The {{#crossLink "Boundary3D"}}{{/crossLink}} we are showing.
+             *
+             * Fires a {{#crossLink "BoundaryGeometry/boundary:event"}}{{/crossLink}} event on change.
+             *
+             * @property Boundary3D
+             * @type Boundary3D
+             */
+            obb: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (this._children.boundary) {
+                        this.boundary = null;
+                    }
+
+                    this._setPositionsFromOBB(value);
+                }
+            },
+
+            /**
+             * Assign to an Axis-aligned bounding-box
+             *
+             * @property aabb
+             * @type Boundary3D
+             */
+            aabb: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (this._children.boundary) {
+                        this.boundary = null;
+                    }
+
+                    this._setPositionsFromAABB(value);
+                }
             }
         },
 
-        _setPositions: function (obb) {
+        _setPositionsFromOBB: function (obb) {
             this.positions = [
                 obb[2][0], obb[2][1], obb[4][2],
                 obb[2][0], obb[4][1], obb[4][2],
@@ -27385,15 +27581,31 @@ scene.on("tick", function(e) {
             ];
         },
 
+        _setPositionsFromAABB: function (aabb) {
+            this.positions = [
+                aabb.xmax, aabb.ymax, aabb.zmax,
+                aabb.xmax, aabb.ymin, aabb.zmax,
+                aabb.xmin, aabb.ymin, aabb.zmax,
+                aabb.xmin, aabb.ymax, aabb.zmax,
+                aabb.xmax, aabb.ymax, aabb.zmin,
+                aabb.xmax, aabb.ymin, aabb.zmin,
+                aabb.xmin, aabb.ymin, aabb.zmin,
+                aabb.xmin, aabb.ymax, aabb.zmin
+            ];
+        },
+
         _getJSON: function () {
 
-            var attr = {};
+            var json = {};
 
             if (this._children.boundary) {
-                attr.boundary = this._children.boundary.id;
+                json.boundary = this._children.boundary.id;
+
+            } else if (json.positions) {
+                json.positions = this.positions;
             }
 
-            return attr;
+            return json;
         },
 
         _destroy: function () {
@@ -32612,6 +32824,19 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             var scene = this.scene;
 
+            // Shows a bounding box around each GameObject we fly to
+            this._boundaryObject = new XEO.GameObject(scene, {
+                geometry: new XEO.BoundaryGeometry(scene),
+                material: new XEO.PhongMaterial(scene, {
+                    diffuse: [0.5, 1.0, 0.5],
+                    emissive: [0.5, 1.0, 0.5],
+                    lineWidth: 2
+                }),
+                visibility: new XEO.Visibility(scene, {
+                    visible: false
+                })
+            });
+
             /**
              * The {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} within this CameraControl.
              *
@@ -32697,8 +32922,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * @type MousePickObject
              */
             this.mousePickObject = new XEO.MousePickObject(scene, {
-                pickPrimitive: true,
-                camera: cfg.camera
+                rayPick: true
             });
 
             this.mousePickObject.on("pick",
@@ -32709,16 +32933,59 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     var view = self.cameraFly.camera.view;
 
-                    var diff = XEO.math.subVec3(view.eye, view.look, []);
+                    var pos;
 
-                    self.cameraFly.flyTo({
-                        look: e.worldPos,
-                        eye: [
-                            e.worldPos[0] + diff[0],
-                            e.worldPos[1] + diff[1],
-                            e.worldPos[2] + diff[2]
-                        ]
-                    });
+                    if (e.worldPos) {
+                        pos = e.worldPos
+
+                    } else if (e.object) {
+                        pos = e.object.worldBoundary.center
+                    }
+
+                    if (pos) {
+
+                        var diff = XEO.math.subVec3(view.eye, view.look, []);
+
+                        var input = self.scene.input;
+
+                        if (input.keyDown[input.KEY_SHIFT] && e.object) {
+
+                           // var aabb = e.object.worldBoundary.aabb;
+
+                            self._boundaryObject.geometry.obb = e.object.worldBoundary.obb;
+                            self._boundaryObject.visibility.visible = true;
+
+                            var center = e.object.worldBoundary.center;
+
+                            self.cameraFly.flyTo({
+                                    aabb: e.object.worldBoundary.aabb,
+                                    offset: [
+                                        pos[0] - center[0],
+                                        pos[1] - center[1],
+                                        pos[2] - center[2]
+                                    ]
+                                },
+                                function () {
+                                    self._boundaryObject.visibility.visible = false;
+                                });
+
+                        } else {
+
+                            self.cameraFly.flyTo({
+                                    look: pos,
+                                    eye: [
+                                        pos[0] + diff[0],
+                                        pos[1] + diff[1],
+                                        pos[2] + diff[2]
+                                    ]
+                                },
+                                function () {
+                                    self._boundaryObject.visibility.visible = false;
+                                });
+                            {
+                            }
+                        }
+                    }
                 });
 
             this.mousePickObject.on("nopick",
@@ -32734,7 +33001,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * @type CameraFlight
              */
             this.cameraFly = new XEO.CameraFlight(scene, {
-                camera: cfg.camera
+                camera: cfg.camera,
+                duration: 0.5
             });
 
             // Set component properties
@@ -32775,12 +33043,15 @@ XEO.PathGeometry = XEO.Geometry.extend({
                      * @param value The property's new value
                      */
                     this.fire('firstPerson', this._firstPerson);
-                },
+                }
+
+                ,
 
                 get: function () {
                     return this._firstPerson;
                 }
-            },
+            }
+            ,
 
             /**
              * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraControl.
@@ -32817,12 +33088,15 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this.keyboardZoom.camera = camera;
                     this.mouseZoom.camera = camera;
                     this.cameraFly.camera = camera;
-                },
+                }
+
+                ,
 
                 get: function () {
                     return this._children.camera;
                 }
-            },
+            }
+            ,
 
             /**
              * Flag which indicates whether this CameraControl is active or not.
@@ -32860,13 +33134,16 @@ XEO.PathGeometry = XEO.Geometry.extend({
                      * @param value The property's new value
                      */
                     this.fire('active', this._active = value);
-                },
+                }
+
+                ,
 
                 get: function () {
                     return this._active;
                 }
             }
-        },
+        }
+        ,
 
         _getJSON: function () {
 
@@ -32880,11 +33157,14 @@ XEO.PathGeometry = XEO.Geometry.extend({
             }
 
             return json;
-        },
+        }
+        ,
 
         _destroy: function () {
 
             this.active = false;
+
+            this._boundaryObject.destroy();
 
             this.keyboardAxis.destroy();
             this.keyboardOrbit.destroy();
@@ -33054,7 +33334,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
                                 var aabb = boundary.aabb;
                                 var center = boundary.center;
                                 var diag = XEO.math.getAABBDiag(aabb);
-                                var dist = 200;
+
+                                this._stopFOV = 55;
+                                var dist = Math.abs((diag) / Math.tan(this._stopFOV / 2));
 
                                 switch (keyCode) {
 
@@ -33068,10 +33350,21 @@ XEO.PathGeometry = XEO.Geometry.extend({
                                             up: [0, 1, 0]
                                         });
 
-
                                         break;
 
                                     case input.KEY_NUM_2:
+
+                                        // Back view
+
+                                        self._cameraFly.flyTo({
+                                            look: center,
+                                            eye: [center[0], center[1], center[2] + dist],
+                                            up: [0, 1, 0]
+                                        });
+
+                                        break;
+
+                                    case input.KEY_NUM_3:
 
                                         // Left view
 
@@ -33084,25 +33377,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                                         break;
 
-                                    case input.KEY_NUM_3:
+                                    case input.KEY_NUM_4:
 
                                         // Front view
 
                                         self._cameraFly.flyTo({
                                             look: center,
                                             eye: [center[0], center[1], center[2] - dist],
-                                            up: [0, 1, 0]
-                                        });
-
-                                        break;
-
-                                    case input.KEY_NUM_4:
-
-                                        // Back view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [center[0], center[1], center[2] + dist],
                                             up: [0, 1, 0]
                                         });
 
@@ -34524,7 +34805,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  ## Overview
 
-TODO
+ TODO
 
  ## Example
 
@@ -34554,7 +34835,7 @@ TODO
     // We want the 3D World-space coordinates
     // of each location we pick
 
-    pickPrimitive: true
+    rayPick: true
  });
 
  // Handle picked GameObjects
@@ -34578,7 +34859,7 @@ TODO
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickObject.
- @param [pickPrimitive=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
+ @param [rayPick=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
  {{#crossLink "GameObject"}}{{/crossLink}}.
  @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickObject is active.
  @extends Component
@@ -34600,7 +34881,7 @@ TODO
 
         _init: function (cfg) {
 
-            this.pickPrimitive = cfg.pickPrimitive;
+            this.rayPick = cfg.rayPick;
 
             this.active = cfg.active !== false;
         },
@@ -34629,40 +34910,62 @@ TODO
 
                         var self = this;
 
-                        this._onMouseUp = input.on("dblclick",
+                        var tolerance = 2; // Pixels
+                        var down = false;
+                        var downX;
+                        var downY;
+
+                        this._onMouseDown = input.on("mousedown",
                             function (canvasPos) {
-
-                                var hit = self.scene.pick(canvasPos, {
-                                    pickPrimitive: self._pickPrimitive
-                                });
-
-                                if (hit) {
-
-                                    /**
-                                     * Fired whenever a {{#crossLink "GameObject"}}GameObject{{/crossLink}} is picked.
-                                     * @event picked
-                                     * @param {String} objectId The ID of the picked {{#crossLink "GameObject"}}GameObject{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
-                                     * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                     * @param {Array of Number} worldPos When {{#crossLink "MousePickObject/pickPrimitive"}}{{/crossLink}} is true,
-                                     * provides the World-space coordinate that was ray-picked on the surface of the
-                                     * {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
-                                     */
-                                    self.fire("pick", hit);
-
-                                    console.log(JSON.stringify(hit));
-                                } else {
-
-                                    /**
-                                     * Fired whenever an attempt to pick {{#crossLink "GameObject"}}GameObject{{/crossLink}} picks empty space.
-                                     * @event nopick
-                                     * @param {Array of Number} canvasPos The Canvas-space coordinate at which the pick was attempted.
-                                     */
-                                    self.fire("nopick", {
-                                        canvasPos: canvasPos
-                                    });
-                                }
+                                down = true;
+                                downX = canvasPos[0];
+                                downY = canvasPos[1];
                             });
 
+                        this._onMouseUp = input.on("mouseup",
+                            function (canvasPos) {
+
+                                if (!down) {
+                                    return;
+                                }
+
+                                if (downX >= (canvasPos[0] - tolerance) &&
+                                    downX <= (canvasPos[0] + tolerance) &&
+                                    downY >= (canvasPos[1] - tolerance) &&
+                                    downY <= (canvasPos[1] + tolerance)) {
+
+                                    var hit = self.scene.pick(canvasPos, {
+                                        rayPick: self._rayPick
+                                    });
+
+                                    if (hit) {
+
+                                        /**
+                                         * Fired whenever a {{#crossLink "GameObject"}}GameObject{{/crossLink}} is picked.
+                                         * @event picked
+                                         * @param {String} objectId The ID of the picked {{#crossLink "GameObject"}}GameObject{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+                                         * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
+                                         * @param {Array of Number} worldPos When {{#crossLink "MousePickObject/rayPick"}}{{/crossLink}} is true,
+                                         * provides the World-space coordinate that was ray-picked on the surface of the
+                                         * {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
+                                         */
+                                        self.fire("pick", hit);
+
+                                    } else {
+
+                                        /**
+                                         * Fired whenever an attempt to pick {{#crossLink "GameObject"}}GameObject{{/crossLink}} picks empty space.
+                                         * @event nopick
+                                         * @param {Array of Number} canvasPos The Canvas-space coordinate at which the pick was attempted.
+                                         */
+                                        self.fire("nopick", {
+                                            canvasPos: canvasPos
+                                        });
+                                    }
+                                }
+
+                                down = false;
+                            });
                     } else {
 
                         input.off(this._onMouseDown);
@@ -34675,7 +34978,8 @@ TODO
                      * @param value The property's new value
                      */
                     this.fire('active', this._active = value);
-                },
+                }
+                ,
 
                 get: function () {
                     return this._active;
@@ -34689,33 +34993,33 @@ TODO
              * When true, this MousePickObject will try to return the primitive index in a
              * {{#crossLink "MousePickObject/picked:event"}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink "MousePickObject/pickPrimitive:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "MousePickObject/rayPick:event"}}{{/crossLink}} event on change.
              *
-             * @property pickPrimitive
+             * @property rayPick
              * @type Boolean
              */
-            pickPrimitive: {
+            rayPick: {
 
                 set: function (value) {
 
                     value = !!value;
 
-                    if (this._pickPrimitive === value) {
+                    if (this._rayPick === value) {
                         return;
                     }
 
                     this._dirty = false;
 
                     /**
-                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/pickPrimitive:property"}}{{/crossLink}} property changes.
-                     * @event pickPrimitive
+                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/rayPick:property"}}{{/crossLink}} property changes.
+                     * @event rayPick
                      * @param value The property's new value
                      */
-                    this.fire('pickPrimitive', this._pickPrimitive = value);
+                    this.fire('rayPick', this._rayPick = value);
                 },
 
                 get: function () {
-                    return this._pickPrimitive;
+                    return this._rayPick;
                 }
             }
         },
@@ -34723,13 +35027,9 @@ TODO
         _getJSON: function () {
 
             var json = {
-                pickPrimitive: this._pickPrimitive,
+                rayPick: this._rayPick,
                 active: this._active
             };
-
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
-            }
 
             return json;
         },
