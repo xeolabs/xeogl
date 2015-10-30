@@ -193,7 +193,7 @@
                         lineWidth: lineWidth
                     }),
                     modes: new XEO.Modes({  // This GameObject should not be pickable
-                        picking: false,
+                        pickable: false,
                         transparent: opacity < 1.0
                     }),
                     visibility: new XEO.Visibility({  // This GameObject should not be pickable
@@ -232,7 +232,7 @@
                         radius: 0.1
                     }),
                     modes: new XEO.Modes({  // This GameObject should not be pickable
-                        picking: false,
+                        pickable: false,
                         transparent: true
                     }),
                     material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
@@ -341,7 +341,7 @@
                         radius: radius
                     }),
                     modes: new XEO.Modes({  // This GameObject should not be pickable
-                        picking: false,
+                        pickable: false,
                         transparent: opacity < 1.0,
                         backfaces: false
                     }),
@@ -391,7 +391,7 @@
                         text: text
                     }),
                     modes: new XEO.Modes({  // This GameObject should not be pickable
-                        picking: false,
+                        pickable: false,
                         transparent: true
                     }),
                     material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
