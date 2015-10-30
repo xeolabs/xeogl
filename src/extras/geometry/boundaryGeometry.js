@@ -35,20 +35,36 @@
 
             this.primitive = cfg.primitive || "lines";
 
-            this.positions = [
-                1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
-                -1.0, -1.0, 1.0, -1.0, 1.0, 1.0,
-                1.0, 1.0, -1.0, 1.0, -1.0, -1.0,
-                -1.0, -1.0, -1.0, -1.0, 1.0, -1.0
-            ];
-
             this.indices = [
                 0, 1, 1, 2, 2, 3, 3, 0, 4,
                 5, 5, 6, 6, 7, 7, 4, 0, 4,
                 1, 5, 2, 6, 3, 7
             ];
 
-            this.boundary = cfg.boundary;
+            if (cfg.boundary) {
+                this.boundary = cfg.boundary;
+
+            } else if (cfg.obb) {
+                this.obb = cfg.obb;
+
+            } else if (cfg.aabb) {
+                this.aabb = cfg.aabb;
+
+            } else if (cfg.positions) {
+                this.positions = cfg.positions;
+
+            } else {
+                this.positions = [
+                    1.0, 1.0, 1.0,
+                    1.0, -1.0, 1.0,
+                    -1.0, -1.0, 1.0,
+                    -1.0, 1.0, 1.0,
+                    1.0, 1.0, -1.0,
+                    1.0, -1.0, -1.0,
+                    -1.0, -1.0, -1.0,
+                    -1.0, 1.0, -1.0
+                ];
+            }
         },
 
         _props: {
@@ -93,7 +109,7 @@
 
                         this._onBoundaryUpdated = boundary.on("updated",
                             function () {
-                                self._setPositions(boundary.obb);
+                                self._setPositionsFromOBB(boundary.obb);
                             });
 
                         this._onBoundaryDestroyed = boundary.on("destroyed",
@@ -101,17 +117,63 @@
                                 self.boundary = null;
                             });
 
-                        //     this._setPositions(boundary.obb);
+                        //     this._setPositionsFromOBB(boundary.obb);
                     }
                 },
 
                 get: function () {
                     return this._children.boundary;
                 }
+            },
+
+            /**
+             * The {{#crossLink "Boundary3D"}}{{/crossLink}} we are showing.
+             *
+             * Fires a {{#crossLink "BoundaryGeometry/boundary:event"}}{{/crossLink}} event on change.
+             *
+             * @property Boundary3D
+             * @type Boundary3D
+             */
+            obb: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (this._children.boundary) {
+                        this.boundary = null;
+                    }
+
+                    this._setPositionsFromOBB(value);
+                }
+            },
+
+            /**
+             * Assign to an Axis-aligned bounding-box
+             *
+             * @property aabb
+             * @type Boundary3D
+             */
+            aabb: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (this._children.boundary) {
+                        this.boundary = null;
+                    }
+
+                    this._setPositionsFromAABB(value);
+                }
             }
         },
 
-        _setPositions: function (obb) {
+        _setPositionsFromOBB: function (obb) {
             this.positions = [
                 obb[2][0], obb[2][1], obb[4][2],
                 obb[2][0], obb[4][1], obb[4][2],
@@ -124,15 +186,31 @@
             ];
         },
 
+        _setPositionsFromAABB: function (aabb) {
+            this.positions = [
+                aabb.xmax, aabb.ymax, aabb.zmax,
+                aabb.xmax, aabb.ymin, aabb.zmax,
+                aabb.xmin, aabb.ymin, aabb.zmax,
+                aabb.xmin, aabb.ymax, aabb.zmax,
+                aabb.xmax, aabb.ymax, aabb.zmin,
+                aabb.xmax, aabb.ymin, aabb.zmin,
+                aabb.xmin, aabb.ymin, aabb.zmin,
+                aabb.xmin, aabb.ymax, aabb.zmin
+            ];
+        },
+
         _getJSON: function () {
 
-            var attr = {};
+            var json = {};
 
             if (this._children.boundary) {
-                attr.boundary = this._children.boundary.id;
+                json.boundary = this._children.boundary.id;
+
+            } else if (json.positions) {
+                json.positions = this.positions;
             }
 
-            return attr;
+            return json;
         },
 
         _destroy: function () {
