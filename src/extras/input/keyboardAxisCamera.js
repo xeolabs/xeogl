@@ -153,7 +153,9 @@
                                 var aabb = boundary.aabb;
                                 var center = boundary.center;
                                 var diag = XEO.math.getAABBDiag(aabb);
-                                var dist = 200;
+
+                                this._stopFOV = 55;
+                                var dist = Math.abs((diag) / Math.tan(this._stopFOV / 2));
 
                                 switch (keyCode) {
 
@@ -167,10 +169,21 @@
                                             up: [0, 1, 0]
                                         });
 
-
                                         break;
 
                                     case input.KEY_NUM_2:
+
+                                        // Back view
+
+                                        self._cameraFly.flyTo({
+                                            look: center,
+                                            eye: [center[0], center[1], center[2] + dist],
+                                            up: [0, 1, 0]
+                                        });
+
+                                        break;
+
+                                    case input.KEY_NUM_3:
 
                                         // Left view
 
@@ -183,25 +196,13 @@
 
                                         break;
 
-                                    case input.KEY_NUM_3:
+                                    case input.KEY_NUM_4:
 
                                         // Front view
 
                                         self._cameraFly.flyTo({
                                             look: center,
                                             eye: [center[0], center[1], center[2] - dist],
-                                            up: [0, 1, 0]
-                                        });
-
-                                        break;
-
-                                    case input.KEY_NUM_4:
-
-                                        // Back view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [center[0], center[1], center[2] + dist],
                                             up: [0, 1, 0]
                                         });
 

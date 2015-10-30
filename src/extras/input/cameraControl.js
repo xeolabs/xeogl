@@ -97,6 +97,19 @@
 
             var scene = this.scene;
 
+            // Shows a bounding box around each GameObject we fly to
+            this._boundaryObject = new XEO.GameObject(scene, {
+                geometry: new XEO.BoundaryGeometry(scene),
+                material: new XEO.PhongMaterial(scene, {
+                    diffuse: [0.5, 1.0, 0.5],
+                    emissive: [0.5, 1.0, 0.5],
+                    lineWidth: 2
+                }),
+                visibility: new XEO.Visibility(scene, {
+                    visible: false
+                })
+            });
+
             /**
              * The {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} within this CameraControl.
              *
@@ -182,8 +195,7 @@
              * @type MousePickObject
              */
             this.mousePickObject = new XEO.MousePickObject(scene, {
-                pickPrimitive: true,
-                camera: cfg.camera
+                rayPick: true
             });
 
             this.mousePickObject.on("pick",
@@ -194,16 +206,59 @@
 
                     var view = self.cameraFly.camera.view;
 
-                    var diff = XEO.math.subVec3(view.eye, view.look, []);
+                    var pos;
 
-                    self.cameraFly.flyTo({
-                        look: e.worldPos,
-                        eye: [
-                            e.worldPos[0] + diff[0],
-                            e.worldPos[1] + diff[1],
-                            e.worldPos[2] + diff[2]
-                        ]
-                    });
+                    if (e.worldPos) {
+                        pos = e.worldPos
+
+                    } else if (e.object) {
+                        pos = e.object.worldBoundary.center
+                    }
+
+                    if (pos) {
+
+                        var diff = XEO.math.subVec3(view.eye, view.look, []);
+
+                        var input = self.scene.input;
+
+                        if (input.keyDown[input.KEY_SHIFT] && e.object) {
+
+                           // var aabb = e.object.worldBoundary.aabb;
+
+                            self._boundaryObject.geometry.obb = e.object.worldBoundary.obb;
+                            self._boundaryObject.visibility.visible = true;
+
+                            var center = e.object.worldBoundary.center;
+
+                            self.cameraFly.flyTo({
+                                    aabb: e.object.worldBoundary.aabb,
+                                    offset: [
+                                        pos[0] - center[0],
+                                        pos[1] - center[1],
+                                        pos[2] - center[2]
+                                    ]
+                                },
+                                function () {
+                                    self._boundaryObject.visibility.visible = false;
+                                });
+
+                        } else {
+
+                            self.cameraFly.flyTo({
+                                    look: pos,
+                                    eye: [
+                                        pos[0] + diff[0],
+                                        pos[1] + diff[1],
+                                        pos[2] + diff[2]
+                                    ]
+                                },
+                                function () {
+                                    self._boundaryObject.visibility.visible = false;
+                                });
+                            {
+                            }
+                        }
+                    }
                 });
 
             this.mousePickObject.on("nopick",
@@ -219,7 +274,8 @@
              * @type CameraFlight
              */
             this.cameraFly = new XEO.CameraFlight(scene, {
-                camera: cfg.camera
+                camera: cfg.camera,
+                duration: 0.5
             });
 
             // Set component properties
@@ -260,12 +316,15 @@
                      * @param value The property's new value
                      */
                     this.fire('firstPerson', this._firstPerson);
-                },
+                }
+
+                ,
 
                 get: function () {
                     return this._firstPerson;
                 }
-            },
+            }
+            ,
 
             /**
              * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraControl.
@@ -302,12 +361,15 @@
                     this.keyboardZoom.camera = camera;
                     this.mouseZoom.camera = camera;
                     this.cameraFly.camera = camera;
-                },
+                }
+
+                ,
 
                 get: function () {
                     return this._children.camera;
                 }
-            },
+            }
+            ,
 
             /**
              * Flag which indicates whether this CameraControl is active or not.
@@ -345,13 +407,16 @@
                      * @param value The property's new value
                      */
                     this.fire('active', this._active = value);
-                },
+                }
+
+                ,
 
                 get: function () {
                     return this._active;
                 }
             }
-        },
+        }
+        ,
 
         _getJSON: function () {
 
@@ -365,11 +430,14 @@
             }
 
             return json;
-        },
+        }
+        ,
 
         _destroy: function () {
 
             this.active = false;
+
+            this._boundaryObject.destroy();
 
             this.keyboardAxis.destroy();
             this.keyboardOrbit.destroy();
