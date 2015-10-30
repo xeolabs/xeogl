@@ -122,12 +122,34 @@
 
                 set: function (value) {
 
+                    // Unsubscribe from old projection's events
+
+                    var oldProject = this._children.project;
+
+                    if (oldProject) {
+                        oldProject.off(this._onProjectMatrix);
+                    }
+                    
                     /**
                      * Fired whenever this Camera's {{#crossLink "Camera/project:property"}}{{/crossLink}} property changes.
                      * @event project
                      * @param value The property's new value
                      */
                     this._setChild("project", value);
+
+                    var newProject = this._children.project;
+
+                    if (newProject) {
+
+                        // Subscribe to new projection's events
+
+                        var self = this;
+                        
+                        this._onProjectMatrix = newProject.on("matrix",
+                            function () {
+                                self.fire("projectMatrix");
+                            });
+                    }
                 },
 
                 get: function () {
@@ -151,6 +173,14 @@
 
                 set: function (value) {
 
+                    // Unsubscribe from old view transform's events
+
+                    var oldView = this._children.project;
+
+                    if (oldView) {
+                        oldView.off(this._onViewMatrix);
+                    }
+
                     /**
                      * Fired whenever this Camera's {{#crossLink "Camera/view:property"}}{{/crossLink}} property changes.
                      *
@@ -158,6 +188,20 @@
                      * @param value The property's new value
                      */
                     this._setChild("view", value);
+
+                    var newView = this._children.view;
+
+                    if (newView) {
+
+                        // Subscribe to new projection's events
+
+                        var self = this;
+
+                        this._onViewMatrix = newView.on("matrix",
+                            function () {
+                                self.fire("viewMatrix");
+                            });
+                    }
                 },
 
                 get: function () {

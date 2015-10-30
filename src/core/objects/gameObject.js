@@ -250,11 +250,9 @@
 
                     var oldCamera = this._children.camera;
 
-                    if (oldCamera && (!value || (value.id !== undefined ? value.id : value) !== oldCamera.id)) {
-                        oldCamera.off(this._onCameraDestroyed);
-                        oldCamera.off(this._onCameraView);
-                        oldCamera.view.off(this._onCameraViewMatrix);
-                        oldCamera.project.off(this._onCameraProjMatrix);
+                    if (oldCamera) {
+                        oldCamera.off(this._onCameraViewMatrix);
+                        oldCamera.off(this._onCameraProjMatrix);
                     }
 
                     /**
@@ -273,22 +271,12 @@
 
                         var self = this;
 
-                        this._onCameraView = newCamera.on("view",
+                        this._onCameraViewMatrix = newCamera.on("viewMatrix",
                             function () {
                                 self._setViewBoundaryDirty();
                             });
 
-                        this._onCameraDestroyed = newCamera.on("destroyed",
-                            function () {
-                                self._setViewBoundaryDirty();
-                            });
-
-                        this._onCameraViewMatrix = newCamera.view.on("matrix",
-                            function () {
-                                self._setViewBoundaryDirty();
-                            });
-
-                        this._onCameraProjMatrix = newCamera.project.on("matrix",
+                        this._onCameraProjMatrix = newCamera.on("projMatrix",
                             function () {
                                 self._setCanvasBoundaryDirty();
                             });
