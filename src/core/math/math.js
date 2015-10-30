@@ -805,13 +805,31 @@
          * @method identityMat4
          * @static
          */
-        identityMat4: function () {
-            return new Float32Array([
-                1.0, 0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0
-            ]);
+        identityMat4: function (mat) {
+
+            mat = mat || new Float32Array(16);
+
+            mat[0] = 1.0;
+            mat[1] = 0.0;
+            mat[2] = 0.0;
+            mat[3] = 0.0;
+
+            mat[4] = 0.0;
+            mat[5] = 1.0;
+            mat[6] = 0.0;
+            mat[7] = 0.0;
+
+            mat[8] = 0.0;
+            mat[9] = 0.0;
+            mat[10] = 1.0;
+            mat[11] = 0.0;
+
+            mat[12] = 0.0;
+            mat[13] = 0.0;
+            mat[14] = 0.0;
+            mat[15] = 1.0;
+
+            return mat;
         },
 
         /**
@@ -1713,8 +1731,8 @@
          */
         getAABBDiag: function (boundary) {
 
-            var min = this.vec3();
-            var max = this.vec3();
+            var min = tempVec3;
+            var max = tempVec3b;
 
             min[0] = boundary.xmin;
             min[1] = boundary.ymin;
@@ -1724,10 +1742,9 @@
             max[1] = boundary.ymax;
             max[2] = boundary.zmax;
 
-            var tempVec = this.vec3();
-            this.subVec3(max, min, tempVec);
+            this.subVec3(max, min, tempVec3c);
 
-            return Math.abs(this.lenVec3(tempVec));
+            return Math.abs(this.lenVec3(tempVec3c));
         },
 
         /**
@@ -2428,6 +2445,44 @@
         },
 
         /**
+         * Finds the intersection of a 3D ray with a plane defined by 3 points.
+         *
+         * @method rayPlaneIntersect
+         * @static
+         * @param {Array of Number} origin Ray origin.
+         * @param {Array of Number} dir Ray direction.
+         * @param {Array of Number} a First point on plane.
+         * @param {Array of Number} b Second point on plane.
+         * @param {Array of Number} c Third point on plane.
+         * @param {Array of Number} [isect] Intersection point.
+         * @returns {Array of Number} The intersection point.
+         */
+        rayPlaneIntersect: function (origin, dir, a, b, c, isect) {
+
+            var math = XEO.math;
+
+            isect = isect || math.vec3();
+
+            dir = math.normalizeVec3(dir, tempVec3);
+
+            var edge1 = math.subVec3(b, a, tempVec3b);
+            var edge2 = math.subVec3(c, a, tempVec3c);
+
+            var n = math.cross3Vec3(edge1, edge2, tempVec3d);
+            math.normalizeVec3(n, n);
+
+            var d = -math.dotVec3(a, n);
+
+            var t = -(math.dotVec3(origin, n) + d) / math.dotVec3(dir, n);
+
+            isect[0] = origin[0] + t * dir[0];
+            isect[1] = origin[1] + t * dir[1];
+            isect[2] = origin[2] + t * dir[2];
+
+            return isect;
+        },
+
+        /**
          * Gets barycentric coordinates from cartesian coordinates within a triangle.
          *
          * @method cartesianToBaryCentric
@@ -2501,6 +2556,161 @@
             cartesian[2] = a[2] * u + b[2] * v + c[2] * w;
 
             return cartesian;
+        },
+
+        identityQuaternion: function (dest) {
+            dest = dest || XEO.math.vec4();
+            dest[0] = 0.0;
+            dest[1] = 0.0;
+            dest[2] = 0.0;
+            dest[3] = 1.0;
+            return dest;
+        },
+
+        vec3PairToQuaternion: function (u, v, dest) {
+
+            dest = dest || XEO.math.vec4();
+
+            var math = XEO.math;
+
+            var norm_u_norm_v = Math.sqrt(math.dotVec3(u, u) * math.dotVec3(v, v));
+            var real_part = norm_u_norm_v + math.dotVec3(u, v);
+
+            var w;
+
+            if (real_part < 0.00000001 * norm_u_norm_v) {
+
+                // If u and v are exactly opposite, rotate 180 degrees
+                // around an arbitrary orthogonal axis. Axis normalisation
+                // can happen later, when we normalise the quaternion.
+
+                real_part = 0.0;
+
+                if (Math.abs(u[0]) > Math.abs(u[2])) {
+
+                    w[0] = -u[1];
+                    w[1] = u[0];
+                    w[2] = 0;
+
+                } else {
+                    w[0] = 0;
+                    w[1] = -u[2];
+                    w[2] = u[1]
+                }
+
+            } else {
+
+                // Otherwise, build quaternion the standard way.
+                w = math.cross3Vec3(u, v);
+            }
+
+            dest[0] = w[0];
+            dest[1] = w[1];
+            dest[2] = w[2];
+            dest[3] = real_part;
+
+            return math.normalizeQuaternion(dest);
+        },
+
+        angleAxisToQuaternion: function (x, y, z, degrees, dest) {
+            dest = dest || XEO.math.vec4();
+            var angleRad = (degrees / 180.0) * Math.PI;
+            var halfAngle = angleRad / 2.0;
+            var fsin = Math.sin(halfAngle);
+            dest[0] = fsin * x;
+            dest[1] = fsin * y;
+            dest[2] = fsin * z;
+            dest[4] = Math.cos(halfAngle);
+            return dest;
+        },
+
+        mulQuaternions: function (p, q, dest) {
+            dest = dest || XEO.math.vec4();
+            var p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3];
+            var q0 = q[0], q1 = q[1], q2 = q[2], q3 = q[3];
+            dest[0] = p3 * q0 + p0 * q3 + p1 * q2 - p2 * q1;
+            dest[1] = p3 * q1 + p1 * q3 + p2 * q0 - p0 * q2;
+            dest[2] = p3 * q2 + p2 * q3 + p0 * q1 - p1 * q0;
+            dest[3] = p3 * q3 - p0 * q0 - p1 * q1 - p2 * q2;
+            return dest;
+        },
+
+        quaternionToMat4: function (q, dest) {
+
+            dest = XEO.math.identityMat4(dest);
+
+            var q0 = q[0];
+            var q1 = q[1];
+            var q2 = q[2];
+            var q3 = q[3];
+
+            var tx = 2.0 * q0;
+            var ty = 2.0 * q1;
+            var tz = 2.0 * q2;
+
+            var twx = tx * q3;
+            var twy = ty * q3;
+            var twz = tz * q3;
+
+            var txx = tx * q0;
+            var txy = ty * q0;
+            var txz = tz * q0;
+
+            var tyy = ty * q1;
+            var tyz = tz * q1;
+            var tzz = tz * q2;
+
+            dest[0] = 1.0 - (tyy + tzz);
+            dest[1] = txy - twz;
+            dest[2] = txz + twy;
+
+            dest[4] = txy + twz;
+            dest[5] = 1.0 - (txx + tzz);
+            dest[6] = tyz - twx;
+
+            dest[8] = txz - twy;
+            dest[9] = tyz + twx;
+            dest[10] = 1.0 - (txx + tyy);
+
+            return dest;
+        },
+
+        normalizeQuaternion: function (q, dest) {
+            dest = dest || q;
+            var len = XEO.math.lenVec4([q[0], q[1], q[2], q[3]]);
+            dest[0] = q[0] / len;
+            dest[1] = q[1] / len;
+            dest[2] = q[2] / len;
+            dest[3] = q[3] / len;
+            return dest;
+        },
+
+        conjugateQuaternion: function (q, dest) {
+            dest = dest || q;
+            dest[0] = -q[0];
+            dest[1] = -q[1];
+            dest[2] = -q[2];
+            dest[3] = q[3];
+            return dest;
+        },
+
+        quaternionToAngleAxis: function (q, angleAxis) {
+            angleAxis = angleAxis || XEO.math.vec4();
+            q = XEO.math.normalizeQuaternion(q, tempVec4);
+            var q3 = q[3];
+            var angle = 2 * Math.acos(q3);
+            var s = Math.sqrt(1 - q3 * q3);
+            if (s < 0.001) { // test to avoid divide by zero, s is always positive due to sqrt
+                angleAxis[0] = q[0];
+                angleAxis[1] = q[1];
+                angleAxis[2] = q[2];
+            } else {
+                angleAxis[0] = q[0] / s;
+                angleAxis[0] = q[1] / s;
+                angleAxis[0] = q[2] / s;
+            }
+            angleAxis[3] = angle * 57.295779579;
+            return angleAxis;
         }
     };
 
