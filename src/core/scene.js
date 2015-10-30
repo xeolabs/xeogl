@@ -1241,6 +1241,8 @@
                 origin[2] = local1[2];
 
                 math.subVec3(local2, local1, dir);
+
+                math.normalizeVec3(dir);
             }
 
             return function (canvasPos, options) {
@@ -1306,22 +1308,7 @@
 
                             getLocalRay(object, canvasPos, origin, dir);
 
-                            var intersecting = math.rayTriangleIntersect(origin, dir, a, b, c, position)
-                                || math.rayTriangleIntersect(origin, dir, c, b, a, position);
-
-                            if (!intersecting) {
-
-                                // Ray intersection failed, probably because the triangle was too squashed.
-                                // Fake the intersection as the average of the vertex positions.
-
-                                position[0] = (a[0] + b[0] + c[0]) / 3;
-                                position[1] = (a[1] + b[1] + c[1]) / 3;
-                                position[2] = (a[2] + b[2] + c[2]) / 3;
-
-                                // math.rayTriangleIntersect(origin, dir, a, b, c, position)
-                            }
-
-                            // Ray intersects the triangle
+                            math.rayPlaneIntersect(origin, dir, a, b, c, position);
 
                             // Get Local-space cartesian coordinates of the ray-triangle intersection
 
