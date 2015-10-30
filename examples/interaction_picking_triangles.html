@@ -99,30 +99,26 @@
                 // pickable GameObjects we have
 
                 var hit = scene.pick(coords, {
-                    pickPrimitive: true
+                    rayPick: true
                 });
 
                 if (hit) {
 
                     // Picked a GameObject
 
-                    if (hit.primitiveIndex !== -1) {
+                    if (hit.primitive === "triangle") {
 
                         // Picked a triangle on the GameObject's Geometry
 
                         // Show the triangle we picked
 
-                        var indices = hit.object.geometry.indices;
+                        var indices = hit.indices;
+
                         var positions = hit.object.geometry.positions;
 
-                        // The primitiveIndex indicates the position of
-                        // the triangle within the indices array
-
-                        var i = hit.primitiveIndex;
-
-                        var ia = indices[i];
-                        var ib = indices[i + 1];
-                        var ic = indices[i + 2];
+                        var ia = indices[0];
+                        var ib = indices[1];
+                        var ic = indices[2];
 
                         var a = [
                             positions[(ia * 3) + 0],
@@ -177,6 +173,16 @@
                                 .text("C")
                                 .pos(c)
                                 .label();
+
+                        if (hit.worldPos) {
+                            XEO.debug
+                                    .id("worldPos")
+                                    .fillColor([0.3, 1.0, 0.3])
+                                    .color([0, 0, 0])
+                                    .text("P")
+                                    .pos(hit.worldPos)
+                                    .label();
+                        }
                     }
                 }
             });
