@@ -253,6 +253,8 @@
                     }
 
                     if (state.texture && state.texture.renderBuffer) {
+
+                        // Detach from "virtual texture" provided by render target
                         state.texture = null;
                     }
 

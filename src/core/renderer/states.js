@@ -66,7 +66,7 @@
      @submodule renderer
      @constructor
      @param cfg {*} Configs
-     @param cfg.picking {Boolean} Flag which controls pickability of the associated render objects.
+     @param cfg.pickable {Boolean} Flag which controls pickability of the associated render objects.
      @param cfg.clipping {Boolean} Flag which controls whether associated render objects are clippable.
      @param cfg.transparent {Boolean} Flag which controls transparency of the associated render objects.
      @param cfg.frontFace {Boolean} Flag which determines winding order of backfaces on the associated render objects - true == "ccw", false == "cw".

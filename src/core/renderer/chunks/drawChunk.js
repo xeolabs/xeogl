@@ -14,7 +14,7 @@
         unique: true,
 
         build: function () {
-            this.uPickColorObject = this.program.pickObject.getUniform("xeo_uPickColor");
+            this._uPickColorObject = this.program.pickObject.getUniform("xeo_uPickColor");
         },
 
         draw: function (frameCtx) {
@@ -33,7 +33,7 @@
             var state = this.state;
             var gl = this.program.gl;
 
-            if (this.uPickColorObject) {
+            if (this._uPickColorObject) {
 
                 frameCtx.pickObjects[frameCtx.pickIndex++] = this.object;
 
@@ -41,7 +41,7 @@
                 var g = frameCtx.pickIndex >> 8 & 0xFF;
                 var r = frameCtx.pickIndex & 0xFF;
 
-                this.uPickColorObject.setValue([r / 255, g / 255, b / 255, 0]);
+                this._uPickColorObject.setValue([r / 255, g / 255, b / 255, 0]);
 
                 //frameCtx.pickIndex++
             }

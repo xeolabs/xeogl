@@ -24,6 +24,11 @@
 
             // Textures
 
+            if (state.ambientMap) {
+                this._uAmbientMap = "xeo_uAmbientMap";
+                this._uAmbientMapMatrix = draw.getUniform("xeo_uAmbientMapMatrix");
+            }
+
             if (state.diffuseMap) {
                 this._uDiffuseMap = "xeo_uDiffuseMap";
                 this._uDiffuseMapMatrix = draw.getUniform("xeo_uDiffuseMapMatrix");
@@ -143,6 +148,18 @@
                 frameCtx.textureUnit = 0;
             }
 
+            // Ambient map
+
+            if (state.ambientMap && state.ambientMap.texture) {
+
+                draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, frameCtx.textureUnit++);
+                frameCtx.bindTexture++;
+
+                if (this._uAmbientMapMatrix) {
+                    this._uAmbientMapMatrix.setValue(state.ambientMap.matrix);
+                }
+            }
+            
             // Diffuse map
 
             if (state.diffuseMap && state.diffuseMap.texture) {

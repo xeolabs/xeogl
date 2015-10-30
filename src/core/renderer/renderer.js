@@ -99,7 +99,7 @@
         this.objects = {};
 
         // Ambient color
-        this._ambientColor = [0, 0, 0, 1.0];
+        this._ambient = null;
 
         // The object list, containing all elements of #objects, kept in GL state-sorted order
         this._objectList = [];
@@ -465,7 +465,7 @@
         var programId = object.program.id;
         var stateId = state ? state.id : -1;
         var chunkClass = this._chunkFactory.chunkTypes[chunkType];
-        var id = (chunkClass && chunkClass.prototype.programGlobal)  ? stateId :  ((programId +1) * 10000000) + stateId;
+        var id = (chunkClass && chunkClass.prototype.programGlobal) ? stateId : ((programId + 1) * 10000000) + stateId;
 
         var oldChunk = object.chunks[order];
 
@@ -493,15 +493,15 @@
 
         var lights = state.lights;
         var light;
+        var intensity;
 
         for (var i = 0, len = lights.length; i < len; i++) {
 
             light = lights[i];
 
             if (light.type === "ambient") {
-                this._ambientColor[0] = light.color[0];
-                this._ambientColor[1] = light.color[1];
-                this._ambientColor[2] = light.color[2];
+
+                this._ambient = light;
             }
         }
     };
@@ -705,7 +705,7 @@
 
                     targetListList.push(list);
 
-                    id = ((object.program.id +1)* 10000000) + target.id; // FIXME: Assuming less than 1M states
+                    id = ((object.program.id + 1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
 
                     targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object, object.program, target);
 
@@ -728,7 +728,7 @@
 
                     targetListList.push(list);
 
-                    id = ((object.program.id+1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
+                    id = ((object.program.id + 1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
 
                     targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object, object.program, target);
 
@@ -773,7 +773,7 @@
 
             // Unbinds any render target bound previously
 
-            id = ((object.program.id+1) * 10000000) + object.id; // FIXME: Assuming less than 1M states
+            id = ((object.program.id + 1) * 10000000) + object.id; // FIXME: Assuming less than 1M states
 
             this._appendRenderTargetChunk(this._chunkFactory.getChunk(id, "renderTarget", object, object.program, {}));
         }
@@ -808,7 +808,7 @@
     XEO.renderer.Renderer.prototype._appendObjectToDrawChunkLists = function (object, pickable) {
 
         var chunks = object.chunks;
-        var picking = pickable && object.modes.picking;
+        var pickable = pickable && object.modes.pickable;
         var chunk;
 
         for (var i = 0, len = chunks.length; i < len; i++) {
@@ -840,7 +840,7 @@
 
                     // Object-picking pass
 
-                    if (picking) {
+                    if (pickable) {
 
                         // Don't pick unpickable objects
 
@@ -958,7 +958,7 @@
             clear: true
         });
 
-     //   gl.finish();
+        //   gl.finish();
 
         // Convert picked pixel color to object index
 
@@ -992,7 +992,7 @@
                     clear: true
                 });
 
-                 gl.finish();
+                gl.finish();
 
                 // Convert picked pixel color to primitive index
 
@@ -1022,6 +1022,16 @@
 
         var gl = this._canvas.gl;
 
+        var ambient = this._ambient;
+        var ambientColor;
+        if (ambient) {
+            var color = ambient.color;
+            var intensity = ambient.intensity;
+            ambientColor = [color[0] * intensity, color[1] * intensity, color[2] * intensity, 1.0];
+        } else {
+            ambientColor = [0, 0, 0];
+        }
+
         var frameCtx = this._frameCtx;
 
         frameCtx.renderTarget = null;
@@ -1035,8 +1045,8 @@
         frameCtx.pickIndex = 0; // Indexes this._pickObjects
         frameCtx.textureUnit = 0;
         frameCtx.transparent = false; // True while rendering transparency bin
-        frameCtx.ambientColor = this._ambientColor;
 
+        frameCtx.ambientColor = ambientColor;
         frameCtx.drawElements = 0;
         frameCtx.useProgram = 0;
         frameCtx.bindTexture = 0;
@@ -1061,7 +1071,7 @@
             // Canvas is opaque - set clear color to the current ambient
             // color, which can be provided by an ambient light source
 
-            gl.clearColor(this._ambientColor[0], this._ambientColor[1], this._ambientColor[2], 1.0);
+            gl.clearColor(ambientColor[0], ambientColor[1], ambientColor[2], 1.0);
         }
 
         if (params.clear) {
@@ -1128,7 +1138,8 @@
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
-    };
+    }
+    ;
 
     /**
      * Destroys this Renderer.
@@ -1136,4 +1147,5 @@
     XEO.renderer.Renderer.prototype.destroy = function () {
         this._programFactory.destroy();
     };
-})();
+})
+();

@@ -28,7 +28,7 @@
 
  // Create a Modes with default properties
  var modes = new XEO.Modes(scene, {
-    picking: true,              // Enable picking
+    pickable: true,              // Enable picking
     clipping true,              // Enable effect of XEO.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces
@@ -71,14 +71,14 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Modes.
- @param [cfg.picking=true] {Boolean}  Whether to enable picking.
+ @param [cfg.pickable=true] {Boolean}  Whether to enable picking.
  @param [cfg.clipping=true] {Boolean} Whether to enable clipping by {{#crossLink "Clips"}}{{/crossLink}}.
  @param [cfg.transparent=false] {Boolean} Whether to enable the transparency effect created by {{#crossLink "Material"}}Material{{/crossLink}}s when they have
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
  transparency pass with blending enabled etc), while
  the {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} will indicate the **degree** of their transparency
  (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
- @param [cfg.backfaces=true] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
  @extends Component
  */
@@ -93,14 +93,14 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Modes({
-                picking: true,
+                pickable: true,
                 clipping: true,
                 transparent: false,
                 backfaces: false,
                 frontface: true // Boolean for speed; true == "ccw", false == "cw"
             });
 
-            this.picking = cfg.picking;
+            this.pickable = cfg.pickable;
             this.clipping = cfg.clipping;
             this.transparent = cfg.transparent;
             this.backfaces = cfg.backfaces;
@@ -114,31 +114,31 @@
 
              Picking is performed via calls to {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}.
 
-             Fires a {{#crossLink "Modes/picking:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "Modes/pickable:event"}}{{/crossLink}} event on change.
 
-             @property picking
+             @property pickable
              @default true
              @type Boolean
              */
-            picking: {
+            pickable: {
 
                 set: function (value) {
 
-                    this._state.picking = value !== false;
+                    this._state.pickable = value !== false;
 
                     this._renderer.drawListDirty = true;
 
                     /**
-                     * Fired whenever this Modes' {{#crossLink "Modes/picking:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Modes' {{#crossLink "Modes/pickable:property"}}{{/crossLink}} property changes.
                      *
-                     * @event picking
+                     * @event pickable
                      * @param value The property's new value
                      */
-                    this.fire("picking", this._state.picking);
+                    this.fire("pickable", this._state.pickable);
                 },
 
                 get: function () {
-                    return this._state.picking;
+                    return this._state.pickable;
                 }
             },
 
@@ -221,14 +221,16 @@
              Fires a {{#crossLink "Modes/backfaces:event"}}{{/crossLink}} event on change.
 
              @property backfaces
-             @default true
+             @default false
              @type Boolean
              */
             backfaces: {
 
                 set: function (value) {
 
-                    this._state.backfaces = value !== false;
+                    value = !!value;
+
+                    this._state.backfaces = value;
 
                     this._renderer.imageDirty = true;
 
@@ -287,7 +289,7 @@
 
         _getJSON: function () {
             return {
-                picking: this._state.picking,
+                pickable: this._state.pickable,
                 clipping: this._state.clipping,
                 transparent: this._state.transparent,
                 backfaces: this._state.backfaces,

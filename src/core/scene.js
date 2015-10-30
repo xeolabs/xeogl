@@ -898,7 +898,7 @@
                                 // Ambient light source #0
                                 new XEO.AmbientLight(this, {
                                     id: "default.light0",
-                                    color: [0.7, 0.7, 0.7],
+                                    color: [0.8, 0.8, 0.9],
                                     intensity: 0.5
                                 }),
 
@@ -906,18 +906,18 @@
                                 new XEO.DirLight(this, {
                                     id: "default.light1",
                                     dir: [-0.5, -0.5, -1.0],
-                                    color: [1.0, 1.0, 1.0],
+                                    color: [1.0, 1.0, 0.9],
                                     intensity: 0.5,
-                                    space: "view"
+                                    space: "world"
                                 }),
-
+                                //
                                 // Directional light source #2
                                 new XEO.DirLight(this, {
                                     id: "default.light2",
-                                    dir: [1.0, -0.9, -0.7],
+                                    dir: [1.0, -0.9, 0.7],
                                     color: [1.0, 1.0, 1.0],
-                                    intensity: 0.2,
-                                    space: "view"
+                                    intensity: 0.5,
+                                    space: "world"
                                 })
                             ]
                         });
@@ -1137,7 +1137,7 @@
          *
          * Ignores {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are attached
          * to either a {{#crossLink "Stage"}}Stage{{/crossLink}} with {{#crossLink "Stage/pickable:property"}}pickable{{/crossLink}}
-         * set *false* or a {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/picking:property"}}picking{{/crossLink}} set *false*.
+         * set *false* or a {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/pickable:property"}}pickable{{/crossLink}} set *false*.
          *
          * On success, will fire a {{#crossLink "Scene/picked:event"}}{{/crossLink}} event on this Scene, along with
          * a separate {{#crossLink "Object/picked:event"}}{{/crossLink}} event on the target {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
@@ -1306,85 +1306,96 @@
 
                             getLocalRay(object, canvasPos, origin, dir);
 
-                            if (math.rayTriangleIntersect(origin, dir, a, b, c, position)
-                                || math.rayTriangleIntersect(origin, dir, c, b, a, position)) {
+                            var intersecting = math.rayTriangleIntersect(origin, dir, a, b, c, position)
+                                || math.rayTriangleIntersect(origin, dir, c, b, a, position);
 
-                                // Ray intersects the triangle
+                            if (!intersecting) {
 
-                                // Get Local-space cartesian coordinates of the ray-triangle intersection
+                                // Ray intersection failed, probably because the triangle was too squashed.
+                                // Fake the intersection as the average of the vertex positions.
 
-                                hit.position = position;
+                                position[0] = (a[0] + b[0] + c[0]) / 3;
+                                position[1] = (a[1] + b[1] + c[1]) / 3;
+                                position[2] = (a[2] + b[2] + c[2]) / 3;
 
-                                // Get interpolated World-space coordinates
+                                // math.rayTriangleIntersect(origin, dir, a, b, c, position)
+                            }
 
-                                // Need to transform homogeneous coords
+                            // Ray intersects the triangle
 
-                                tempVec4[0] = position[0];
-                                tempVec4[1] = position[1];
-                                tempVec4[2] = position[2];
-                                tempVec4[3] = 1;
+                            // Get Local-space cartesian coordinates of the ray-triangle intersection
 
-                                // Get World-space cartesian coordinates of the ray-triangle intersection
+                            hit.position = position;
 
-                                math.transformVec4(object.transform.matrix, tempVec4, tempVec4b);
+                            // Get interpolated World-space coordinates
 
-                                worldPos[0] = tempVec4b[0];
-                                worldPos[1] = tempVec4b[1];
-                                worldPos[2] = tempVec4b[2];
+                            // Need to transform homogeneous coords
 
-                                hit.worldPos = worldPos;
+                            tempVec4[0] = position[0];
+                            tempVec4[1] = position[1];
+                            tempVec4[2] = position[2];
+                            tempVec4[3] = 1;
 
-                                // Get barycentric coordinates of the ray-triangle intersection
+                            // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                                math.cartesianToBarycentric(position, a, b, c, barycentric);
+                            math.transformVec4(object.transform.matrix, tempVec4, tempVec4b);
 
-                                hit.barycentric = barycentric;
+                            worldPos[0] = tempVec4b[0];
+                            worldPos[1] = tempVec4b[1];
+                            worldPos[2] = tempVec4b[2];
 
-                                // Get interpolated normal vector
+                            hit.worldPos = worldPos;
 
-                                var normals = geometry.normals;
+                            // Get barycentric coordinates of the ray-triangle intersection
 
-                                if (normals) {
+                            math.cartesianToBarycentric(position, a, b, c, barycentric);
 
-                                    na[0] = normals[(ia * 3)];
-                                    na[1] = normals[(ia * 3) + 1];
-                                    na[2] = normals[(ia * 3) + 2];
+                            hit.barycentric = barycentric;
 
-                                    nb[0] = normals[(ib * 3)];
-                                    nb[1] = normals[(ib * 3) + 1];
-                                    nb[2] = normals[(ib * 3) + 2];
+                            // Get interpolated normal vector
 
-                                    nc[0] = normals[(ic * 3)];
-                                    nc[1] = normals[(ic * 3) + 1];
-                                    nc[2] = normals[(ic * 3) + 2];
+                            var normals = geometry.normals;
 
-                                    hit.normal = math.addVec3(math.addVec3(
-                                            math.mulVec3Scalar(na, barycentric[0], tempVec3),
-                                            math.mulVec3Scalar(nb, barycentric[1], tempVec3b), tempVec3c),
-                                        math.mulVec3Scalar(nc, barycentric[2], tempVec3d), tempVec3e);
-                                }
+                            if (normals) {
 
-                                // Get interpolated UV coordinates
+                                na[0] = normals[(ia * 3)];
+                                na[1] = normals[(ia * 3) + 1];
+                                na[2] = normals[(ia * 3) + 2];
 
-                                var uvs = geometry.uv;
+                                nb[0] = normals[(ib * 3)];
+                                nb[1] = normals[(ib * 3) + 1];
+                                nb[2] = normals[(ib * 3) + 2];
 
-                                if (uvs) {
+                                nc[0] = normals[(ic * 3)];
+                                nc[1] = normals[(ic * 3) + 1];
+                                nc[2] = normals[(ic * 3) + 2];
 
-                                    uva[0] = uvs[(ia * 2)];
-                                    uva[1] = uvs[(ia * 2) + 1];
+                                hit.normal = math.addVec3(math.addVec3(
+                                        math.mulVec3Scalar(na, barycentric[0], tempVec3),
+                                        math.mulVec3Scalar(nb, barycentric[1], tempVec3b), tempVec3c),
+                                    math.mulVec3Scalar(nc, barycentric[2], tempVec3d), tempVec3e);
+                            }
 
-                                    uvb[0] = uvs[(ib * 2)];
-                                    uvb[1] = uvs[(ib * 2) + 1];
+                            // Get interpolated UV coordinates
 
-                                    uvc[0] = uvs[(ic * 2)];
-                                    uvc[1] = uvs[(ic * 2) + 1];
+                            var uvs = geometry.uv;
 
-                                    hit.uv = math.addVec3(
-                                        math.addVec3(
-                                            math.mulVec2Scalar(uva, barycentric[0], tempVec3f),
-                                            math.mulVec2Scalar(uvb, barycentric[1], tempVec3g), tempVec3h),
-                                        math.mulVec2Scalar(uvc, barycentric[2], tempVec3i), tempVec3j);
-                                }
+                            if (uvs) {
+
+                                uva[0] = uvs[(ia * 2)];
+                                uva[1] = uvs[(ia * 2) + 1];
+
+                                uvb[0] = uvs[(ib * 2)];
+                                uvb[1] = uvs[(ib * 2) + 1];
+
+                                uvc[0] = uvs[(ic * 2)];
+                                uvc[1] = uvs[(ic * 2) + 1];
+
+                                hit.uv = math.addVec3(
+                                    math.addVec3(
+                                        math.mulVec2Scalar(uva, barycentric[0], tempVec3f),
+                                        math.mulVec2Scalar(uvb, barycentric[1], tempVec3g), tempVec3h),
+                                    math.mulVec2Scalar(uvc, barycentric[2], tempVec3i), tempVec3j);
                             }
                         }
                     }

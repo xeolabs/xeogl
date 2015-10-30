@@ -57,7 +57,8 @@
                 return false;
             }
             var material = states.material;
-            return material.diffuseMap ||
+            return material.ambientMap ||
+                material.diffuseMap ||
                 material.specularMap ||
                 material.emissiveMap ||
                 material.opacityMap ||
@@ -620,7 +621,7 @@
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   ambient = texture2D(xeo_uAmbientMap, textureCoord).rgb;");
                 }
 
@@ -631,7 +632,7 @@
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
                 }
 
@@ -642,7 +643,7 @@
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
                 }
 
@@ -653,7 +654,7 @@
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
                 }
 
@@ -664,7 +665,7 @@
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
                 }
 
@@ -675,7 +676,7 @@
                     } else {
                         add("   textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -texturePos.y;");
+                    add("   textureCoord.y = -textureCoord.y;");
                     add("   reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
                 }
             }
@@ -715,8 +716,8 @@
 
                         add("   diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
 
-                        add("   specularLight += specular * xeo_uLightIntensity" + i +
-                            " * specular * pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
+                        add("   specularLight += xeo_uLightIntensity" + i +
+                            " *  pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
                             "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess) * attenuation;");
                     }
 
@@ -726,14 +727,14 @@
 
                         add("   diffuseLight += dotN * xeo_uLightColor" + i + ";");
 
-                        add("   specularLight += specular * xeo_uLightIntensity" + i +
+                        add("   specularLight += xeo_uLightIntensity" + i +
                             " * pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
                             "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess);");
                     }
                 }
 
                 add();
-                add("   gl_FragColor = vec4( (specularLight * specular) + (diffuse * (diffuseLight + ambient * xeo_uLightAmbientIntensity)) + emissive, opacity);");
+                add("   gl_FragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
 
             } else {
 

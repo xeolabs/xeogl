@@ -161,6 +161,7 @@
                 lineWidth: 1.0,
                 pointSize: 1.0,
 
+                ambientMap: null,
                 normalMap: null,
                 diffuseMap: null,
                 specularMap: null,
@@ -191,6 +192,7 @@
             this.lineWidth = cfg.lineWidth;
             this.pointSize = cfg.pointSize;
 
+            this.ambientMap = cfg.ambientMap;
             this.diffuseMap = cfg.diffuseMap;
             this.specularMap = cfg.specularMap;
             this.emissiveMap = cfg.emissiveMap;
@@ -524,7 +526,7 @@
                 set: function (texture) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/normal:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} property changes.
 
                      @event normalMap
                      @param value Number The property's new value
@@ -537,6 +539,35 @@
                 }
             },
 
+            /**
+             An ambient {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+
+             This property overrides {{#crossLink "PhongMaterial/ambientMap:property"}}{{/crossLink}} when not null or undefined.
+
+             Fires a {{#crossLink "PhongMaterial/ambientMap:event"}}{{/crossLink}} event on change.
+
+             @property ambientMap
+             @default null
+             @type {Texture}
+             */
+            ambientMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/ambientMap:property"}}{{/crossLink}} property changes.
+
+                     @event ambientMap
+                     @param value Number The property's new value
+                     */
+                    this._setComponent("ambientMap", texture);
+                },
+
+                get: function () {
+                    return this._children["ambientMap"];
+                }
+            },
+            
             /**
              A diffuse {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
@@ -553,7 +584,7 @@
                 set: function (texture) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} property changes.
 
                      @event diffuseMap
                      @param value Number The property's new value
@@ -884,6 +915,13 @@
                 }
             }
 
+            if (state.ambientMap) {
+                hash.push("/a");
+                if (state.ambientMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+            
             if (state.diffuseMap) {
                 hash.push("/d");
                 if (state.diffuseMap.matrix) {
@@ -987,6 +1025,10 @@
                 json.normalMap = components.normalMap.id;
             }
 
+            if (components.ambientMap) {
+                json.ambientMap = components.ambientMap.id;
+            }
+            
             if (components.diffuseMap) {
                 json.diffuseMap = components.diffuseMap.id;
             }
