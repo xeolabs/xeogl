@@ -9,7 +9,7 @@
         // As we apply a list of state chunks in a {@link XEO.renderer.Renderer},
         // we track the ID of each chunk in order to avoid redundantly re-applying
         // the same chunk. We don't want that for draw chunks however, because
-        // they contain GL drawElements calls, which we need to do for each object.
+        // they contain drawElements calls, which we need to do for each object.
 
         unique: true,
 
@@ -18,16 +18,15 @@
         },
 
         draw: function (frameCtx) {
-
             var state = this.state;
             var gl = this.program.gl;
-            
+
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
                 frameCtx.drawElements++;
             }
         },
-        
+
         pickObject: function (frameCtx) {
 
             var state = this.state;
@@ -53,7 +52,7 @@
         },
 
         pickPrimitive: function () {
-            
+
             var state = this.state;
             var gl= this.program.gl;
 

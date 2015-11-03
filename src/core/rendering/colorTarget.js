@@ -179,6 +179,8 @@
                             size: this._size
                         });
 
+                        this._renderer.imageDirty = true;
+
                     } else {
 
                         if (state.renderBuf) {

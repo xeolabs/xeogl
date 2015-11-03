@@ -502,15 +502,15 @@
 
             var usage = gl.STATIC_DRAW;
 
-            var memoryStats = this.scene.stats.memory;
+            var cacheStats = this.scene.stats.memory;
 
             if (this._positionsDirty) {
                 if (this._state.positions) {
-                    memoryStats.positions -= this._state.positions.numItems;
+                    cacheStats.positions -= this._state.positions.numItems;
                     this._state.positions.destroy();
                 }
                 this._state.positions = this._positionsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._positionsData), this._positionsData.length, 3, usage) : null;
-                memoryStats.positions += this._state.positions.numItems;
+                cacheStats.positions += this._state.positions.numItems;
                 this._positionsDirty = false;
 
                 // Need to rebuild pick mesh now
@@ -520,19 +520,19 @@
             if (this._colorsDirty) {
 
                 if (this._state.colors) {
-                    memoryStats.colors -= this._state.colors.numItems;
+                    cacheStats.colors -= this._state.colors.numItems;
                     this._state.colors.destroy();
                 }
                 this._state.colors = this._colorsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._colorsData), this._colorsData.length, 4, usage) : null;
                 if (this._state.colors) {
-                    memoryStats.colors += this._state.colors.numItems;
+                    cacheStats.colors += this._state.colors.numItems;
                 }
                 this._colorsDirty = false;
             }
 
             if (this._normalsDirty) {
                 if (this._state.normals) {
-                    memoryStats.normals -= this._state.normals.numItems;
+                    cacheStats.normals -= this._state.normals.numItems;
                     this._state.normals.destroy();
                 }
 
@@ -544,7 +544,7 @@
 
                 this._state.normals = this._normalsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._normalsData), this._normalsData.length, 3, usage) : null;
                 if (this._state.normals) {
-                    memoryStats.normals += this._state.normals.numItems;
+                    cacheStats.normals += this._state.normals.numItems;
                 }
                 this._normalsDirty = false;
 
@@ -556,12 +556,12 @@
 
             if (this._uvDirty) {
                 if (this._state.uv) {
-                    memoryStats.uvs -= this._state.uv.numItems;
+                    cacheStats.uvs -= this._state.uv.numItems;
                     this._state.uv.destroy();
                 }
                 this._state.uv = this._uvData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._uvData), this._uvData.length, 2, usage) : null;
                 if (this._state.uv) {
-                    memoryStats.uvs += this._state.uv.numItems;
+                    cacheStats.uvs += this._state.uv.numItems;
                 }
                 this._uvDirty = false;
 
@@ -573,12 +573,12 @@
 
             if (this._indicesDirty) {
                 if (this._state.indices) {
-                    memoryStats.indices -= this._state.indices.numItems;
+                    cacheStats.indices -= this._state.indices.numItems;
                     this._state.indices.destroy();
                 }
                 this._state.indices = this._indicesData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this._indicesData), this._indicesData.length, 1, usage) : null;
                 if (this._state.indices) {
-                    memoryStats.indices += this._state.indices.numItems;
+                    cacheStats.indices += this._state.indices.numItems;
                 }
                 this._indicesDirty = false;
 
@@ -617,17 +617,7 @@
                 return;
             }
 
-            if (this._pickPositions) {
-                this._pickPositions.destroy();
-            }
-
-            if (this._pickColors) {
-                this._pickColors.destroy();
-            }
-
-            if (this._pickIndices) {
-                this._pickIndices.destroy();
-            }
+            this._destroyPickVBOs();
 
             if (this._positionsData && this._indicesData) {
 
@@ -644,9 +634,41 @@
                 this._pickPositions = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickPositions), pickPositions.length, 3, usage);
                 this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickColors), pickColors.length, 4, usage);
                 this._pickIndices = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pickIndices), pickIndices.length, 1, usage);
+
+                var cacheStats = this.scene.stats._cache;
+
+                cacheStats.pickPositions += this._pickPositions.numItems;
+                cacheStats.pickColors += this._pickColors.numItems;
+                cacheStats.pickIndices += this._pickIndices.numItems;
             }
 
             this._pickVBOsDirty = false;
+        },
+
+
+        _destroyPickVBOs: function() {
+
+            var cacheStats = this.scene.stats._cache;
+
+            if (this._pickPositions) {
+                this._pickPositions.destroy();
+                cacheStats.pickPositions -= this._pickPositions.numItems;
+                this._pickPositions = null;
+            }
+
+            if (this._pickColors) {
+                this._pickColors.destroy();
+                cacheStats.pickColors -= this._pickColors.numItems;
+                this._pickColors = null;
+            }
+
+            if (this._pickIndices) {
+                this._pickIndices.destroy();
+                cacheStats_cache.pickIndices -= this._pickIndices.numItems;
+                this._pickIndices = null;
+            }
+
+            this._pickVBOsDirty = true;
         },
 
 

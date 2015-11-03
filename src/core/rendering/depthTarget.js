@@ -146,6 +146,9 @@
                             gl: canvas.gl
                         });
 
+                        this._renderer.imageDirty = true;
+
+
                     } else {
                         if (state.renderBuf) {
                             state.renderBuf.destroy();

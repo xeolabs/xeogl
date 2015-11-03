@@ -89,6 +89,10 @@
         // Factory which creates and recycles XEO.renderer.Chunk instances
         this._chunkFactory = new XEO.renderer.ChunkFactory();
 
+        // State chunks that are dynamically inserted by the renderer
+        this._extraChunks = [];
+        this._numExtraChunks = 0;
+
         /**
          * Indicates if the canvas is transparent
          * @type {boolean}
@@ -109,6 +113,9 @@
         // within #_objectList: a "pick" list to render a pick buffer for colour-indexed GPU picking, along with an
         // "draw" list for normal image rendering.  The chunks in these lists are held in the state-sorted order of
         // their objects in #_objectList, with runs of duplicate states removed.
+
+        this._drawObjectList = [];
+        this._drawObjectListLen = 0;
 
         this._drawChunkList = [];      // State chunk list to render all objects
         this._drawChunkListLen = 0;
@@ -401,33 +408,37 @@
 
             object.program = this._programFactory.get(hash, this);
 
-            this.stats.memory.programs = this._programFactory.numActivePrograms;
-
             object.hash = hash;
         }
 
-        var program = object.program;
+        var programState = object.program;
 
-        if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
+        if (programState) {
 
-            if (this.objects[objectId]) {
+            var program = programState.program;
 
-                // Don't keep faulty objects in the renderer
-                this.removeObject(objectId);
-            }
+            if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
 
-            return {
-                error: true,
-                errorLog: object.program.errorLog
+                if (this.objects[objectId]) {
+
+                    // Don't keep faulty objects in the renderer
+                    this.removeObject(objectId);
+                }
+
+                return {
+                    error: true,
+                    errorLog: program.errorLog
+                }
             }
         }
+
 
         // Build sequence of draw chunks on the object
 
         // The order of some of these is important because some chunks will set
         // state on this._framectx to be consumed by other chunks downstream.
 
-        this._setChunk(object, 0, "program"); // Must be first
+        this._setChunk(object, 0, "program", object.program); // Must be first
         this._setChunk(object, 1, "modelTransform", this.modelTransform);
         this._setChunk(object, 2, "viewTransform", this.viewTransform);
         this._setChunk(object, 3, "projTransform", this.projTransform);
@@ -440,7 +451,7 @@
         this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
         this._setChunk(object, 11, "clips", this.clips);
         this._setChunk(object, 12, "geometry", this.geometry);
-        this._setChunk(object, 13, "draw", this.geometry); // Must be last
+        this._setChunk(object, 13, "draw", this.geometry, true); // Must be last
 
         if (!this.objects[objectId]) {
 
@@ -460,30 +471,41 @@
 
     /** Adds a render state chunk to a render graph object.
      */
-    XEO.renderer.Renderer.prototype._setChunk = function (object, order, chunkType, state) {
+    XEO.renderer.Renderer.prototype._setChunk = function (object, order, type, state, neg) {
 
-        var programId = object.program.id;
-        var stateId = state ? state.id : -1;
-        var chunkClass = this._chunkFactory.chunkTypes[chunkType];
-        var id = (chunkClass && chunkClass.prototype.programGlobal) ? stateId : ((programId + 1) * 10000000) + stateId;
+        var id;
+
+        var chunkType = this._chunkFactory.types[type];
+
+        if (type === "program") {
+            id = (object.program.id + 1) * 100000000;
+
+        } else  if (chunkType.constructor.prototype.programGlobal) {
+            id = state.id;
+
+        } else {
+            id = ((object.program.id + 1) * 100000000) + ((state.id + 1));
+        }
+
+        if (neg) {
+            id *= 100000;
+        }
 
         var oldChunk = object.chunks[order];
 
         if (oldChunk) {
-
-            oldChunk.init(id, object, object.program, state);
-            return;
+            this._chunkFactory.putChunk(oldChunk);
         }
 
         // Attach new chunk
 
-        object.chunks[order] = this._chunkFactory.getChunk(id, chunkType, object, object.program, state);
+        object.chunks[order] = this._chunkFactory.getChunk(id, type, object.program.program, state);
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
         // feed it to gl.clearColor before each display list render
 
-        if (chunkType === "lights") {
+        if (type === "lights") {
             this._setAmbient(state);
         }
     };
@@ -605,11 +627,12 @@
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    ((object.stage.priority + 1) * 100000000000)
-                    + ((object.modes.transparent ? 2 : 1) * 100000000)
-                    + ((object.layer.priority + 1) * 10000000)
-                    + ((object.program.id + 1) * 1000)
-                    + object.material.id;
+                    ((object.stage.priority + 1) * 10000000000000000)
+                    + ((object.modes.transparent ? 2 : 1) * 100000000000000)
+                    + ((object.layer.priority + 1) * 10000000000000)
+                    + ((object.program.id + 1) * 100000000)
+                    + ((object.material.id + 1) * 10000)
+                    + object.geometry.id;
             }
         }
     };
@@ -644,6 +667,8 @@
      */
     XEO.renderer.Renderer.prototype._buildDrawList = function () {
 
+        this._clearExtraChunks();
+
         this._lastDrawChunkId = this._lastDrawChunkId || [];
         this._lastPickObjectChunkId = this._lastPickObjectChunkId || [];
 
@@ -672,6 +697,7 @@
         var list;
         var id;
 
+        //this._drawObjectListLen = 0;
 
         this._objectDrawList = this._objectDrawList || [];
         this._objectDrawListLen = 0;
@@ -705,9 +731,11 @@
 
                     targetListList.push(list);
 
-                    id = ((object.program.id + 1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
+                    id = -this._numExtraChunks;
 
-                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object, object.program, target);
+                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object.program.program, target);
+
+                    this._extraChunks[this._numExtraChunks++] = targetChunk;
 
                     targetList.push(targetChunk);
                 }
@@ -728,9 +756,11 @@
 
                     targetListList.push(list);
 
-                    id = ((object.program.id + 1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
+                    id = -this._numExtraChunks;
 
-                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object, object.program, target);
+                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object.program.program, target);
+
+                    this._extraChunks[this._numExtraChunks++] = targetChunk;
 
                     targetList.push(targetChunk);
                 }
@@ -773,9 +803,11 @@
 
             // Unbinds any render target bound previously
 
-            id = ((object.program.id + 1) * 10000000) + object.id; // FIXME: Assuming less than 1M states
+            id = -this._numExtraChunks;
 
-            this._appendRenderTargetChunk(this._chunkFactory.getChunk(id, "renderTarget", object, object.program, {}));
+            this._appendRenderTargetChunk(this._chunkFactory.getChunk(id, "renderTarget", object.program.program, {}));
+
+            this._extraChunks[this._numExtraChunks++] = targetChunk;
         }
 
         // Append chunks for objects not in render targets
@@ -794,6 +826,12 @@
         this.drawListDirty = false;
     };
 
+    XEO.renderer.Renderer.prototype._clearExtraChunks = function () {
+        for (var i = 0, len = this._numExtraChunks; i < len; i++) {
+            this._chunkFactory.putChunk(this._extraChunks[i]);
+        }
+        this._numExtraChunks = 0;
+    };
 
     XEO.renderer.Renderer.prototype._appendRenderTargetChunk = function (chunk) {
         this._drawChunkList[this._drawChunkListLen++] = chunk;
@@ -958,7 +996,7 @@
             clear: true
         });
 
-        //   gl.finish();
+        //     gl.finish();
 
         // Convert picked pixel color to object index
 
@@ -966,7 +1004,7 @@
         var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
         pickedObjectIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
 
-        var object = this._frameCtx.pickObjects[pickedObjectIndex];
+        var object = this._objectDrawList[pickedObjectIndex];
 
         if (object) {
 
@@ -1045,7 +1083,6 @@
         frameCtx.pickIndex = 0; // Indexes this._pickObjects
         frameCtx.textureUnit = 0;
         frameCtx.transparent = false; // True while rendering transparency bin
-
         frameCtx.ambientColor = ambientColor;
         frameCtx.drawElements = 0;
         frameCtx.useProgram = 0;
@@ -1126,7 +1163,7 @@
             this.stats.frame.bindArray = frameCtx.bindArray;
         }
 
-        // gl.flush();
+         gl.flush();
 
         if (frameCtx.renderBuf) {
             frameCtx.renderBuf.unbind();
@@ -1138,8 +1175,9 @@
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
-    }
-    ;
+
+        this.stats.frame.drawChunks = this._drawChunkListLen;
+    };
 
     /**
      * Destroys this Renderer.
@@ -1147,5 +1185,4 @@
     XEO.renderer.Renderer.prototype.destroy = function () {
         this._programFactory.destroy();
     };
-})
-();
+})();

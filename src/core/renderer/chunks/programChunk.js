@@ -11,7 +11,6 @@
 
         draw: function (frameCtx) {
             this.program.draw.bind();
-            frameCtx.textureUnit = 0;
             frameCtx.useProgram++;
         },
 

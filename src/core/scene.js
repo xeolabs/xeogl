@@ -269,7 +269,16 @@
                     setUniformCacheHits: 0,
                     bindTexture: 0,
                     bindArray: 0,
-                    drawElements: 0
+                    drawElements: 0,
+                    drawChunks: 0
+                },
+
+                // Internal caches
+                _cache: {
+                    tangents: 0,
+                    pickPositions: 0,
+                    pickColors: 0,
+                    pickIndices: 0
                 }
             };
 
@@ -1335,7 +1344,7 @@
 
                             // Get barycentric coordinates of the ray-triangle intersection
 
-                            math.cartesianToBarycentric(position, a, b, c, barycentric);
+                            math.cartesianToBarycentric2(position, a, b, c, barycentric);
 
                             hit.barycentric = barycentric;
 

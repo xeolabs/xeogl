@@ -3,7 +3,7 @@
     "use strict";
 
     /**
-     * @class Manages {@link XEO.renderer.Program} instances.
+     * @class Manages {@link XEO.renderer.ProgramState} instances.
      * @param stats Collects runtime statistics
      * @param cfg Configs
      */
@@ -13,11 +13,7 @@
 
         this._canvas = cfg.canvas;
 
-        this._programs = {};
-
-        this._nextProgramId = 0;
-
-        this.numActivePrograms = 0;
+        this._programStates = {};
     };
 
 
@@ -27,9 +23,9 @@
      */
     XEO.renderer.ProgramFactory.prototype.get = function (hash, states) {
 
-        var program = this._programs[hash];
+        var programState = this._programStates[hash];
 
-        if (!program) {
+        if (!programState) {
 
             // No program exists for the states
 
@@ -37,22 +33,28 @@
 
             var source = XEO.renderer.ProgramSourceFactory.getSource(hash, states);
 
-            program = new XEO.renderer.Program(this.stats, this._nextProgramId++, hash, source, this._canvas.gl);
+            var program = new XEO.renderer.Program(this.stats, hash, source, this._canvas.gl);
 
-            this._programs[hash] = program;
+            programState = new XEO.renderer.ProgramState({
+                program: program
+            });
 
-            this.numActivePrograms++;
+            this._programStates[hash] = programState;
+
+            this.stats.memory.programs++;
         }
 
-        program.useCount++;
+        programState.useCount++;
 
-        return program;
+        return programState;
     };
 
     /**
      * Release a program back to the pool.
      */
-    XEO.renderer.ProgramFactory.prototype.put = function (program) {
+    XEO.renderer.ProgramFactory.prototype.put = function (programState) {
+
+        var program = programState.program;
 
         if (--program.useCount <= 0) {
 
@@ -62,9 +64,9 @@
 
             XEO.renderer.ProgramSourceFactory.putSource(program.hash);
 
-            this._programs[program.hash] = null;
+            delete this._programStates[program.hash];
 
-            this.numActivePrograms--;
+            this.stats.memory.programs--;
         }
     };
 
@@ -75,10 +77,10 @@
 
         var gl = this._canvas.gl;
 
-        for (var id in this._programs) {
-            if (this._programs.hasOwnProperty(id)) {
+        for (var id in this._programStates) {
+            if (this._programStates.hasOwnProperty(id)) {
 
-                this._programs[id].build(gl);
+                this._programStates[id].build(gl);
             }
         }
     };

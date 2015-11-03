@@ -6,22 +6,13 @@
      * @class Manages creation, reuse and destruction of {@link XEO.renderer.Chunk}s.
      */
     XEO.renderer.ChunkFactory = function () {
-
-        this._chunks = {};
-
-        //this._chunkIDs = new XEO.utils.Map();
-
-        this.chunkTypes = XEO.renderer.ChunkFactory.chunkTypes;
+        this.types = XEO.renderer.ChunkFactory.types;
     };
 
     /**
      * Sub-classes of {@link XEO.renderer.Chunk} provided by this factory
      */
-    XEO.renderer.ChunkFactory.chunkTypes = {};   // Supported chunk classes, installed by #createChunkType
-
-    // Free pool of unused XEO.renderer.Chunk instances
-
-    XEO.renderer.ChunkFactory._freeChunks = {};  // Free chunk pool for each type
+    XEO.renderer.ChunkFactory.types = {};   // Supported chunk classes, installed by #createChunkType
 
     /**
      * Creates a chunk type.
@@ -50,11 +41,11 @@
 
         XEO._apply(params, chunkClass.prototype);   // Augment subclass
 
-        XEO.renderer.ChunkFactory.chunkTypes[params.type] = chunkClass;
-
-        XEO.renderer.ChunkFactory._freeChunks[params.type] = { // Set up free chunk pool for this type
-            chunks: [],
-            chunksLen: 0
+        XEO.renderer.ChunkFactory.types[params.type] = {
+            constructor: chunkClass,
+            chunks: {},
+            freeChunks: [],
+            freeChunksLen: 0
         };
 
         return chunkClass;
@@ -63,44 +54,43 @@
     /**
      * Gets a chunk from this factory.
      */
-    XEO.renderer.ChunkFactory.prototype.getChunk = function (id, type, object, program, state) {
+    XEO.renderer.ChunkFactory.prototype.getChunk = function (id, type, program, state) {
 
-        var chunk;// = this._chunks[id];
+        var chunkType = this.types[type];
 
-        //if (chunk) {
-        //    chunk.useCount++;
-        //    return chunk;
-        //}
-        var chunkClass = XEO.renderer.ChunkFactory.chunkTypes[type]; // Check type supported
-
-        if (!chunkClass) {
+        if (!chunkType) {
             throw "chunk type not supported: '" + type + "'";
+        }
+
+        var chunk = chunkType.chunks[id];
+
+        if (chunk) {
+            chunk.useCount++;
+            return chunk;
         }
 
         // Try to recycle a free chunk
 
-        var freeChunks = XEO.renderer.ChunkFactory._freeChunks[type];
-
-        if (freeChunks.chunksLen > 0) {
-            chunk = freeChunks.chunks[--freeChunks.chunksLen];
+        if (chunkType.freeChunksLen > 0) {
+            chunk = chunkType.freeChunks[--chunkType.freeChunksLen];
         }
 
         if (chunk) {
 
             // Reinitialise the free chunk
 
-            chunk.init(id, object, program, state);
+            chunk.init(id, program, state);
 
         } else {
 
             // No free chunk, create a new one
 
-            chunk = new chunkClass(id, object, program, state);
+            chunk = new chunkType.constructor(id, program, state);
         }
 
         chunk.useCount = 1;
 
-        //this._chunks[id] = chunk;
+        chunkType.chunks[id] = chunk;
 
         return chunk;
     };
@@ -120,11 +110,11 @@
 
         if (--chunk.useCount <= 0) {
 
-            delete this._chunks[chunk.id];
+            var chunkType = this.types[chunk.type];
 
-            var freeChunks = XEO.renderer.ChunkFactory._freeChunks[chunk.type];
+            delete chunkType.chunks[chunk.id];
 
-            freeChunks.chunks[freeChunks.chunksLen++] = chunk;
+            chunkType.freeChunks[chunkType.freeChunksLen++] = chunk;
         }
     };
 
@@ -133,16 +123,29 @@
      */
     XEO.renderer.ChunkFactory.prototype.webglRestored = function () {
 
+        var types = this.types;
+        var chunkType;
+        var chunks;
         var chunk;
 
-        for (var id in this._chunks) {
+        for (var type in types) {
 
-            if (this._chunks.hasOwnProperty(id)) {
+            if (types.hasOwnProperty(type)) {
 
-                chunk = this._chunks[id];
+                chunkType = types[type];
 
-                if (chunk.build) {
-                    chunk.build();
+                chunks = chunkType.chunks;
+
+                for (var id in chunks) {
+
+                    if (chunks.hasOwnProperty(id)) {
+
+                        chunk = chunks[id];
+
+                        if (chunk.build) {
+                            chunk.build();
+                        }
+                    }
                 }
             }
         }

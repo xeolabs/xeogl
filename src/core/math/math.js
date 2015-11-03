@@ -2513,6 +2513,42 @@
             return bary;
         },
 
+        cartesianToBarycentric2: function (cartesian, a, b, c, dest) {
+            var math = XEO.math;
+
+            var v0 = math.subVec3(c, a, tempVec3);
+            var v1 = math.subVec3(b, a, tempVec3b);
+            var v2 = math.subVec3(cartesian, a, tempVec3c);
+
+            var dot00 = math.dotVec3(v0, v0);
+            var dot01 = math.dotVec3(v0, v1);
+            var dot02 = math.dotVec3(v0, v2);
+            var dot11 = math.dotVec3(v1, v1);
+            var dot12 = math.dotVec3(v1, v2);
+
+            var denom = ( dot00 * dot11 - dot01 * dot01 );
+
+            // Colinear or singular triangle
+
+            if (denom === 0) {
+
+                // Arbitrary location outside of triangle
+
+                return null;
+            }
+
+            var invDenom = 1 / denom;
+
+            var u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
+            var v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
+
+            dest[0] = 1 - u - v;
+            dest[1] = v;
+            dest[2] = u;
+
+            return dest;
+        },
+
         /**
          * Returns true if the given barycentric coordinates are within their triangle.
          *
@@ -2543,7 +2579,7 @@
          * @returns {Array of Number} The cartesian coordinates, or null if the triangle was invalid.
          * @returns {*}
          */
-        barycentricToCartesian: function (bary, a, b, c, cartesian) {
+        barycentricToCartesian2: function (bary, a, b, c, cartesian) {
 
             cartesian = cartesian || XEO.math.vec3();
 
@@ -2557,6 +2593,8 @@
 
             return cartesian;
         },
+
+
 
         identityQuaternion: function (dest) {
             dest = dest || XEO.math.vec4();

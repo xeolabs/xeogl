@@ -8,20 +8,13 @@
      * @class Vertex and fragment shaders for pick and draw
      *
      * @param {*} stats Collects runtime statistics
-     * @param {Number} id ID unique among all programs in the owner {@link XEO.renderer.ProgramFactory}
      * @param {String} hash Hash code which uniquely identifies the capabilities of the program, computed from hashes on the {@link Scene_Core}s that the {@link XEO.renderer.ProgramSource} composed to render
      * @param {XEO.renderer.ProgramSource} source Sourcecode from which the the program is compiled in {@link #build}
      * @param {WebGLRenderingContext} gl WebGL context
      */
-    XEO.renderer.Program = function (stats, id, hash, source, gl) {
+    XEO.renderer.Program = function (stats, hash, source, gl) {
 
         this.stats = stats;
-
-        /**
-         * ID for this program, unique among all programs in the display
-         * @type Number
-         */
-        this.id = id;
 
         /**
          * Hash code for this program's capabilities, same as the hash on {@link #source}

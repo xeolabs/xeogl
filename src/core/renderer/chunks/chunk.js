@@ -14,15 +14,12 @@
      * Initialises the chunk.
      *
      * @param {Number} id Chunk ID
-     * @param {XEO.renderer.Object} object renderer object to which this chunk belongs
      * @param {XEO.renderer.Program} program Program to render this chunk
      * @param {XEO.renderer.State} state The state rendered by this chunk
      */
-    XEO.renderer.Chunk.prototype.init = function (id, object, program, state) {
+    XEO.renderer.Chunk.prototype.init = function (id, program, state) {
 
         this.id = id;
-
-        this.object = object;
 
         this.program = program;
 

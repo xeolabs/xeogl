@@ -22,7 +22,7 @@
 
             if (frameCtx.renderBuf) {
                 gl.flush();
-               frameCtx.renderBuf.unbind();
+                frameCtx.renderBuf.unbind();
                 frameCtx.renderBuf = null;
             }
 
@@ -44,9 +44,7 @@
             }
 
             gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-
             gl.clearColor(frameCtx.ambientColor[0], frameCtx.ambientColor[1], frameCtx.ambientColor[2], 1.0);
-
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
             frameCtx.renderBuf = renderBuf;
