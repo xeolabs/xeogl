@@ -14,7 +14,7 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
 
     <script src="js/debug/debug.js"></script>
 
@@ -41,9 +41,9 @@
 
     // Quick custom component that draws onto a given XEO.Texture
 
-    XEO.Paper = XEO.Component.extend({
+    XEO.TextureCanvas = XEO.Component.extend({
 
-        type: "XEO.Paper",
+        type: "XEO.TextureCanvas",
 
         _init: function (cfg) {
 
@@ -61,8 +61,21 @@
             this._image = new Image();
 
             this._down = false;
-
             this._texture = cfg.texture;
+
+            var self = this;
+            this._needBlit = false;
+
+            this._tick = this.scene.on("tick",
+                    function () {
+                       if (self._needBlit) {
+                           if (self._texture) {
+                               self._image.src = self._canvas.toDataURL();
+                               self._texture.image = self._image;
+                               self._needBlit = false;
+                           }
+                       }
+                    });
 
             this.clear();
         },
@@ -84,7 +97,7 @@
             this._ctx.lineTo(x, y);
             this._ctx.stroke();
 
-            this._blit();
+            this._needBlit = true;
         },
 
         penUp: function () {
@@ -97,22 +110,17 @@
             this._ctx.fillStyle = "black";
             this._ctx.fill();
 
-            this._blit();
-        },
-
-        _blit: function () {
-            if (this._texture) {
-                this._image.src = this._canvas.toDataURL();
-                this._texture.image = this._image;
-            }
+            this._needBlit = true;
         },
 
         _destroy: function () {
             this._canvas.destroy();
+            this.scene.off(this._tick);
         }
     });
 
-    // Heightmap
+
+    // Heightmap GameObject
 
     var heightmap = new XEO.GameObject({
         geometry: new XEO.HeightmapGeometry({
@@ -121,8 +129,8 @@
             xSize: 10,
             ySize: 10,
             zSize: 3,
-            xSegments: 60,
-            ySegments: 60
+            xSegments: 80,
+            ySegments: 80
         }),
         transform: new XEO.Translate({
             xyz: [0, 0, 0]
@@ -132,6 +140,7 @@
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
             emissiveMap: new XEO.Texture({
+                // Will get an image from our TextureCanvas component
             }),
             lineWidth: 3,
             pointSize: 5
@@ -140,7 +149,7 @@
 
     // Hook our drawing component up to the GameObject's emissive texture
 
-    var paper = new XEO.Paper({
+    var textureCanvas = new XEO.TextureCanvas({
         texture: heightmap.material.emissiveMap
     });
 
@@ -158,26 +167,26 @@
 
     // ------------ Interaction ------------------------------------------
 
-    // Allow camera interaction
 
     new XEO.CameraControl();
 
     var input = scene.input;
-    var down = false;
+
+    var spaceDown = false;
 
     input.on("keydown",
             function (e) {
                 if (e == input.KEY_SPACE) {
-                    paper.penDown();
-                    down = true;
+                    textureCanvas.penDown();
+                    spaceDown = true;
                 }
             });
 
     input.on("keyup",
             function (e) {
                 if (e == input.KEY_SPACE) {
-                    paper.penUp();
-                    down = false;
+                    textureCanvas.penUp();
+                    spaceDown = false;
                 }
             });
 
@@ -186,8 +195,20 @@
     // the triangle, along with the interpolated normal vector and UV coordinates
     // at the picked position.
 
+    var coords;
+
     input.on("mousemove",
-            function (coords) {
+            function (_coords) {
+                coords = _coords;
+            });
+
+
+    scene.on("tick",
+            function () {
+
+                if (!coords) {
+                    return;
+                }
 
                 XEO.debug.hide("stylus");
 
@@ -209,23 +230,22 @@
 
                         // UV coordinates picked
 
-                        if (down) {
-                            paper.penDown();
+                        if (spaceDown) {
+                            textureCanvas.penDown();
                         }
 
-                        paper.penMove(hit.uv);
+                        textureCanvas.penMove(hit.uv);
                     }
 
                 } else {
 
                     // No Triangle picked
 
-                    if (!down) {
-                        paper.penUp();
+                    if (!spaceDown) {
+                        textureCanvas.penUp();
                     }
                 }
             });
-
 
 </script>
 </body>
