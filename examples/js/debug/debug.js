@@ -70,6 +70,7 @@
         var diffuse;
         var pos;
         var posi;
+        var dir;
         var text;
         var radius;
 
@@ -112,6 +113,11 @@
             return this;
         };
 
+        this.dir = function (value) {
+            dir = [value[0], value[1], value[2]];
+            return this;
+        };
+
         this.text = function (value) {
             text = value;
             return this;
@@ -148,6 +154,7 @@
             id = undefined;
             pos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             posi = 0;
+            dir = [0,1,0];
             text = "";
             radius = 1.0;
         };
@@ -199,6 +206,10 @@
                     visibility: new XEO.Visibility({  // This GameObject should not be pickable
                         visible: true
                     })
+                    //,
+                    //transform: new XEO.Matrix({
+                    //    matrix: matrix
+                    //})
                 });
             } else {
                 object.geometry.positions = positions;
@@ -208,6 +219,7 @@
                 object.modes.transparency = opacity < 1.0;
                 object.material.lineWidth = lineWidth;
                 object.visibility.visible = true;
+     //           object.transform.matrix = matrix;
             }
 
             this._reset();
@@ -363,6 +375,58 @@
                 object.material.emissive = color;
                 object.material.opacity = opacity;
                 object.modes.transparency = opacity < 1.0;
+                object.visibility.visible = true;
+            }
+
+            this._reset();
+
+            return this;
+        };
+
+
+        this.stylus = function () {
+
+            var _id = id || "__debugStylus";
+
+            var object = getScene().objects[_id];
+
+            if (!object) {
+
+                new XEO.GameObject({
+                    id: _id,
+                    geometry: new XEO.CylinderGeometry({
+                        radiusTop: 0.0,
+                        radiusBottom: 0.2,
+                        height: 1.0,
+                        radialSegments: 20,
+                        heightSegments: 1,
+                        openEnded: false
+                    }),
+                    transform: new XEO.Translate({
+                        xyz: [0, -.5, 0],
+                        parent: new XEO.Transform({
+                            parent: new XEO.Translate({
+                                xyz: pos[0]
+                            })
+                        })
+                    }),
+                    material: new XEO.PhongMaterial({
+                        diffuse: [1, .2, .2],
+                        specular: [1, 1, 1],
+                        shininess: 90
+                    }),
+                    modes: new XEO.Modes({
+                        pickable: false
+                    }),
+                    visibility: new XEO.Visibility({  // This GameObject should not be pickable
+                        visible: true
+                    })
+                });
+
+            } else {
+                object.transform.parent.parent.xyz = pos[0];
+                object.transform.parent.matrix = XEO.math.quaternionToMat4(
+                    XEO.math.vec3PairToQuaternion(dir, [0, -1, 0]));
                 object.visibility.visible = true;
             }
 
