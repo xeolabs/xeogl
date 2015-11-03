@@ -114,8 +114,8 @@
         // "draw" list for normal image rendering.  The chunks in these lists are held in the state-sorted order of
         // their objects in #_objectList, with runs of duplicate states removed.
 
-        this._drawObjectList = [];
-        this._drawObjectListLen = 0;
+        this._objectPickList = [];
+        this._objectPickListLen = 0;
 
         this._drawChunkList = [];      // State chunk list to render all objects
         this._drawChunkListLen = 0;
@@ -480,7 +480,7 @@
         if (type === "program") {
             id = (object.program.id + 1) * 100000000;
 
-        } else  if (chunkType.constructor.prototype.programGlobal) {
+        } else if (chunkType.constructor.prototype.programGlobal) {
             id = state.id;
 
         } else {
@@ -697,10 +697,9 @@
         var list;
         var id;
 
-        //this._drawObjectListLen = 0;
-
         this._objectDrawList = this._objectDrawList || [];
         this._objectDrawListLen = 0;
+        this._objectPickListLen = 0;
 
         for (var i = 0, len = this._objectListLen; i < len; i++) {
 
@@ -893,6 +892,10 @@
                 }
             }
         }
+
+        if (pickable) {
+            this._objectPickList[this._objectPickListLen++] = object;
+        }
     };
 
     /**
@@ -1004,7 +1007,7 @@
         var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
         pickedObjectIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
 
-        var object = this._objectDrawList[pickedObjectIndex];
+        var object = this._objectPickList[pickedObjectIndex];
 
         if (object) {
 
@@ -1163,7 +1166,7 @@
             this.stats.frame.bindArray = frameCtx.bindArray;
         }
 
-         gl.flush();
+        gl.flush();
 
         if (frameCtx.renderBuf) {
             frameCtx.renderBuf.unbind();
