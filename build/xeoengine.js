@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-10-30
+ * Built on 2015-11-03
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -2997,6 +2997,42 @@
             return bary;
         },
 
+        cartesianToBarycentric2: function (cartesian, a, b, c, dest) {
+            var math = XEO.math;
+
+            var v0 = math.subVec3(c, a, tempVec3);
+            var v1 = math.subVec3(b, a, tempVec3b);
+            var v2 = math.subVec3(cartesian, a, tempVec3c);
+
+            var dot00 = math.dotVec3(v0, v0);
+            var dot01 = math.dotVec3(v0, v1);
+            var dot02 = math.dotVec3(v0, v2);
+            var dot11 = math.dotVec3(v1, v1);
+            var dot12 = math.dotVec3(v1, v2);
+
+            var denom = ( dot00 * dot11 - dot01 * dot01 );
+
+            // Colinear or singular triangle
+
+            if (denom === 0) {
+
+                // Arbitrary location outside of triangle
+
+                return null;
+            }
+
+            var invDenom = 1 / denom;
+
+            var u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
+            var v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
+
+            dest[0] = 1 - u - v;
+            dest[1] = v;
+            dest[2] = u;
+
+            return dest;
+        },
+
         /**
          * Returns true if the given barycentric coordinates are within their triangle.
          *
@@ -3027,7 +3063,7 @@
          * @returns {Array of Number} The cartesian coordinates, or null if the triangle was invalid.
          * @returns {*}
          */
-        barycentricToCartesian: function (bary, a, b, c, cartesian) {
+        barycentricToCartesian2: function (bary, a, b, c, cartesian) {
 
             cartesian = cartesian || XEO.math.vec3();
 
@@ -3041,6 +3077,8 @@
 
             return cartesian;
         },
+
+
 
         identityQuaternion: function (dest) {
             dest = dest || XEO.math.vec4();
@@ -4318,7 +4356,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     uvs: 0,
                     indices: 0,
                     textures: 0,
-                    programs: 0
+                    programs: 0,
+
+                    _pickPositions: 0,
+                    _pickColors: 0,
+                    _pickIndices: 0
                 },
                 frame: {
                     frameCount: 0,
@@ -5367,26 +5409,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             getLocalRay(object, canvasPos, origin, dir);
 
-                            //var intersecting = math.rayTriangleIntersect(origin, dir, a, b, c, position)
-                            //    || math.rayTriangleIntersect(origin, dir, c, b, a, position);
-
                             math.rayPlaneIntersect(origin, dir, a, b, c, position);
-
-                            //if (!intersecting) {
-                            //
-                            //    math.rayPlaneIntersect(origin, dir, a, b, c, position);
-                            //    //
-                            //    //// Ray intersection failed, probably because the triangle was too squashed.
-                            //    //// Fake the intersection as the average of the vertex positions.
-                            //    //
-                            //    //position[0] = (a[0] + b[0] + c[0]) / 3;
-                            //    //position[1] = (a[1] + b[1] + c[1]) / 3;
-                            //    //position[2] = (a[2] + b[2] + c[2]) / 3;
-                            //    //
-                            //    //// math.rayTriangleIntersect(origin, dir, a, b, c, position)
-                            //}
-
-                            // Ray intersects the triangle
 
                             // Get Local-space cartesian coordinates of the ray-triangle intersection
 
@@ -5413,7 +5436,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             // Get barycentric coordinates of the ray-triangle intersection
 
-                            math.cartesianToBarycentric(position, a, b, c, barycentric);
+                            math.cartesianToBarycentric2(position, a, b, c, barycentric);
 
                             hit.barycentric = barycentric;
 
@@ -9312,17 +9335,7 @@ visibility.destroy();
                 return;
             }
 
-            if (this._pickPositions) {
-                this._pickPositions.destroy();
-            }
-
-            if (this._pickColors) {
-                this._pickColors.destroy();
-            }
-
-            if (this._pickIndices) {
-                this._pickIndices.destroy();
-            }
+            this._destroyPickVBOs();
 
             if (this._positionsData && this._indicesData) {
 
@@ -9339,9 +9352,41 @@ visibility.destroy();
                 this._pickPositions = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickPositions), pickPositions.length, 3, usage);
                 this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickColors), pickColors.length, 4, usage);
                 this._pickIndices = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pickIndices), pickIndices.length, 1, usage);
+
+                var memoryStats = this.scene.stats.memory;
+
+                memoryStats._pickPositions += this._pickPositions.numItems;
+                memoryStats._pickColors += this._pickColors.numItems;
+                memoryStats._pickIndices += this._pickIndices.numItems;
             }
 
             this._pickVBOsDirty = false;
+        },
+
+
+        _destroyPickVBOs: function() {
+
+            var memoryStats = this.scene.stats.memory;
+
+            if (this._pickPositions) {
+                this._pickPositions.destroy();
+                memoryStats._pickPositions -= this._pickPositions.numItems;
+                this._pickPositions = null;
+            }
+
+            if (this._pickColors) {
+                this._pickColors.destroy();
+                memoryStats._pickColors -= this._pickColors.numItems;
+                this._pickColors = null;
+            }
+
+            if (this._pickIndices) {
+                this._pickIndices.destroy();
+                memoryStats._pickIndices -= this._pickIndices.numItems;
+                this._pickIndices = null;
+            }
+
+            this._pickVBOsDirty = true;
         },
 
 
@@ -16499,6 +16544,8 @@ visibility.destroy();
                             size: this._size
                         });
 
+                        this._renderer.imageDirty = true;
+
                     } else {
 
                         if (state.renderBuf) {
@@ -16697,6 +16744,9 @@ visibility.destroy();
                             canvas: canvas.canvas,
                             gl: canvas.gl
                         });
+
+                        this._renderer.imageDirty = true;
+
 
                     } else {
                         if (state.renderBuf) {
@@ -17917,6 +17967,9 @@ visibility.destroy();
         // Factory which creates and recycles XEO.renderer.Chunk instances
         this._chunkFactory = new XEO.renderer.ChunkFactory();
 
+        this._extraChunks = [];
+        this._numExtraChunks = 0;
+
         /**
          * Indicates if the canvas is transparent
          * @type {boolean}
@@ -17937,6 +17990,9 @@ visibility.destroy();
         // within #_objectList: a "pick" list to render a pick buffer for colour-indexed GPU picking, along with an
         // "draw" list for normal image rendering.  The chunks in these lists are held in the state-sorted order of
         // their objects in #_objectList, with runs of duplicate states removed.
+
+        this._drawObjectList = [];
+        this._drawObjectListLen = 0;
 
         this._drawChunkList = [];      // State chunk list to render all objects
         this._drawChunkListLen = 0;
@@ -18229,33 +18285,37 @@ visibility.destroy();
 
             object.program = this._programFactory.get(hash, this);
 
-            this.stats.memory.programs = this._programFactory.numActivePrograms;
-
             object.hash = hash;
         }
 
-        var program = object.program;
+        var programState = object.program;
 
-        if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
+        if (programState) {
 
-            if (this.objects[objectId]) {
+            var program = programState.program;
 
-                // Don't keep faulty objects in the renderer
-                this.removeObject(objectId);
-            }
+            if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
 
-            return {
-                error: true,
-                errorLog: object.program.errorLog
+                if (this.objects[objectId]) {
+
+                    // Don't keep faulty objects in the renderer
+                    this.removeObject(objectId);
+                }
+
+                return {
+                    error: true,
+                    errorLog: program.errorLog
+                }
             }
         }
+
 
         // Build sequence of draw chunks on the object
 
         // The order of some of these is important because some chunks will set
         // state on this._framectx to be consumed by other chunks downstream.
 
-        this._setChunk(object, 0, "program"); // Must be first
+        this._setChunk(object, 0, "program", object.program); // Must be first
         this._setChunk(object, 1, "modelTransform", this.modelTransform);
         this._setChunk(object, 2, "viewTransform", this.viewTransform);
         this._setChunk(object, 3, "projTransform", this.projTransform);
@@ -18268,7 +18328,7 @@ visibility.destroy();
         this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
         this._setChunk(object, 11, "clips", this.clips);
         this._setChunk(object, 12, "geometry", this.geometry);
-        this._setChunk(object, 13, "draw", this.geometry); // Must be last
+        this._setChunk(object, 13, "draw", this.geometry, true); // Must be last
 
         if (!this.objects[objectId]) {
 
@@ -18288,30 +18348,41 @@ visibility.destroy();
 
     /** Adds a render state chunk to a render graph object.
      */
-    XEO.renderer.Renderer.prototype._setChunk = function (object, order, chunkType, state) {
+    XEO.renderer.Renderer.prototype._setChunk = function (object, order, type, state, neg) {
 
-        var programId = object.program.id;
-        var stateId = state ? state.id : -1;
-        var chunkClass = this._chunkFactory.chunkTypes[chunkType];
-        var id = (chunkClass && chunkClass.prototype.programGlobal) ? stateId : ((programId + 1) * 10000000) + stateId;
+        var id;
+
+        var chunkType = this._chunkFactory.types[type];
+
+        if (type === "program") {
+            id = (object.program.id + 1) * 100000000;
+
+        } else  if (chunkType.constructor.prototype.programGlobal) {
+            id = state.id;
+
+        } else {
+            id = ((object.program.id + 1) * 100000000) + ((state.id + 1));
+        }
+
+        if (neg) {
+            id *= 100000;
+        }
 
         var oldChunk = object.chunks[order];
 
         if (oldChunk) {
-
-            oldChunk.init(id, object, object.program, state);
-            return;
+            this._chunkFactory.putChunk(oldChunk);
         }
 
         // Attach new chunk
 
-        object.chunks[order] = this._chunkFactory.getChunk(id, chunkType, object, object.program, state);
+        object.chunks[order] = this._chunkFactory.getChunk(id, type, object.program.program, state);
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
         // feed it to gl.clearColor before each display list render
 
-        if (chunkType === "lights") {
+        if (type === "lights") {
             this._setAmbient(state);
         }
     };
@@ -18433,11 +18504,12 @@ visibility.destroy();
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    ((object.stage.priority + 1) * 100000000000)
-                    + ((object.modes.transparent ? 2 : 1) * 100000000)
-                    + ((object.layer.priority + 1) * 10000000)
-                    + ((object.program.id + 1) * 1000)
-                    + object.material.id;
+                    ((object.stage.priority + 1) * 10000000000000000)
+                    + ((object.modes.transparent ? 2 : 1) * 100000000000000)
+                    + ((object.layer.priority + 1) * 10000000000000)
+                    + ((object.program.id + 1) * 100000000)
+                    + ((object.material.id + 1) * 10000)
+                    + object.geometry.id;
             }
         }
     };
@@ -18472,6 +18544,8 @@ visibility.destroy();
      */
     XEO.renderer.Renderer.prototype._buildDrawList = function () {
 
+        this._clearExtraChunks();
+
         this._lastDrawChunkId = this._lastDrawChunkId || [];
         this._lastPickObjectChunkId = this._lastPickObjectChunkId || [];
 
@@ -18500,6 +18574,7 @@ visibility.destroy();
         var list;
         var id;
 
+        //this._drawObjectListLen = 0;
 
         this._objectDrawList = this._objectDrawList || [];
         this._objectDrawListLen = 0;
@@ -18533,9 +18608,11 @@ visibility.destroy();
 
                     targetListList.push(list);
 
-                    id = ((object.program.id + 1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
+                    id = -this._numExtraChunks;
 
-                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object, object.program, target);
+                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object.program.program, target);
+
+                    this._extraChunks[this._numExtraChunks++] = targetChunk;
 
                     targetList.push(targetChunk);
                 }
@@ -18556,9 +18633,11 @@ visibility.destroy();
 
                     targetListList.push(list);
 
-                    id = ((object.program.id + 1) * 10000000) + target.id; // FIXME: Assuming less than 1M states
+                    id = -this._numExtraChunks;
 
-                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object, object.program, target);
+                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object.program.program, target);
+
+                    this._extraChunks[this._numExtraChunks++] = targetChunk;
 
                     targetList.push(targetChunk);
                 }
@@ -18601,9 +18680,11 @@ visibility.destroy();
 
             // Unbinds any render target bound previously
 
-            id = ((object.program.id + 1) * 10000000) + object.id; // FIXME: Assuming less than 1M states
+            id = -this._numExtraChunks;
 
-            this._appendRenderTargetChunk(this._chunkFactory.getChunk(id, "renderTarget", object, object.program, {}));
+            this._appendRenderTargetChunk(this._chunkFactory.getChunk(id, "renderTarget", object.program.program, {}));
+
+            this._extraChunks[this._numExtraChunks++] = targetChunk;
         }
 
         // Append chunks for objects not in render targets
@@ -18622,6 +18703,12 @@ visibility.destroy();
         this.drawListDirty = false;
     };
 
+    XEO.renderer.Renderer.prototype._clearExtraChunks = function () {
+        for (var i = 0, len = this._numExtraChunks; i < len; i++) {
+            this._chunkFactory.putChunk(this._extraChunks[i]);
+        }
+        this._numExtraChunks = 0;
+    };
 
     XEO.renderer.Renderer.prototype._appendRenderTargetChunk = function (chunk) {
         this._drawChunkList[this._drawChunkListLen++] = chunk;
@@ -18786,7 +18873,7 @@ visibility.destroy();
             clear: true
         });
 
-        //   gl.finish();
+        //     gl.finish();
 
         // Convert picked pixel color to object index
 
@@ -18794,7 +18881,7 @@ visibility.destroy();
         var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
         pickedObjectIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
 
-        var object = this._frameCtx.pickObjects[pickedObjectIndex];
+        var object = this._objectDrawList[pickedObjectIndex];
 
         if (object) {
 
@@ -18873,7 +18960,6 @@ visibility.destroy();
         frameCtx.pickIndex = 0; // Indexes this._pickObjects
         frameCtx.textureUnit = 0;
         frameCtx.transparent = false; // True while rendering transparency bin
-
         frameCtx.ambientColor = ambientColor;
         frameCtx.drawElements = 0;
         frameCtx.useProgram = 0;
@@ -18954,7 +19040,7 @@ visibility.destroy();
             this.stats.frame.bindArray = frameCtx.bindArray;
         }
 
-        // gl.flush();
+         gl.flush();
 
         if (frameCtx.renderBuf) {
             frameCtx.renderBuf.unbind();
@@ -18966,8 +19052,9 @@ visibility.destroy();
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
-    }
-    ;
+
+        this.stats.frame.drawChunks = this._drawChunkListLen;
+    };
 
     /**
      * Destroys this Renderer.
@@ -18975,8 +19062,7 @@ visibility.destroy();
     XEO.renderer.Renderer.prototype.destroy = function () {
         this._programFactory.destroy();
     };
-})
-();
+})();
 ;/**
  * Renderer states
  */
@@ -18986,7 +19072,6 @@ visibility.destroy();
 
     XEO.renderer = XEO.renderer || {};
 
-    var states = new XEO.utils.Map({});
 
     /**
 
@@ -19002,7 +19087,7 @@ visibility.destroy();
 
         __init: function (cfg) {
 
-            this.id = states.addItem({});
+            this.id = this._ids.addItem({});
 
             this.hash = cfg.hash || "" + this.id;
 
@@ -19014,7 +19099,7 @@ visibility.destroy();
         },
 
         destroy: function () {
-            states.removeItem(this.id);
+            this._ids.removeItem(this.id);
         }
     });
 
@@ -19034,7 +19119,9 @@ visibility.destroy();
      @param cfg.visible {Boolean} Flag which controls visibility of the associated render objects.
      @extends renderer.State
      */
-    XEO.renderer.Visibility = XEO.renderer.State.extend({});
+    XEO.renderer.Visibility = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19051,7 +19138,9 @@ visibility.destroy();
      @param cfg.frontFace {Boolean} Flag which determines winding order of backfaces on the associated render objects - true == "ccw", false == "cw".
      @extends renderer.State
      */
-    XEO.renderer.Modes = XEO.renderer.State.extend({});
+    XEO.renderer.Modes = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19065,7 +19154,9 @@ visibility.destroy();
      @param cfg.priority {Number} Layer render priority.
      @extends renderer.State
      */
-    XEO.renderer.Layer = XEO.renderer.State.extend({});
+    XEO.renderer.Layer = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19079,7 +19170,9 @@ visibility.destroy();
      @param cfg.priority {Number} Stage render priority.
      @extends renderer.State
      */
-    XEO.renderer.Stage = XEO.renderer.State.extend({});
+    XEO.renderer.Stage = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19094,7 +19187,9 @@ visibility.destroy();
      @param cfg.depthBuf {String} Depth function
      @extends renderer.State
      */
-    XEO.renderer.DepthBuf = XEO.renderer.State.extend({});
+    XEO.renderer.DepthBuf = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19109,7 +19204,9 @@ visibility.destroy();
      @param cfg.colorMask {Array of String} The color mask
      @extends renderer.State
      */
-    XEO.renderer.ColorBuf = XEO.renderer.State.extend({});
+    XEO.renderer.ColorBuf = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19123,7 +19220,9 @@ visibility.destroy();
      @param cfg.colorMask {Array of Object} The light sources
      @extends renderer.State
      */
-    XEO.renderer.Lights = XEO.renderer.State.extend({});
+    XEO.renderer.Lights = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19136,7 +19235,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.PhongMaterial = XEO.renderer.State.extend({});
+    XEO.renderer.PhongMaterial = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19149,7 +19250,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Reflect = XEO.renderer.State.extend({});
+    XEO.renderer.Reflect = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19162,7 +19265,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ModelTransform = XEO.renderer.State.extend({});
+    XEO.renderer.ModelTransform = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19175,7 +19280,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ViewTransform = XEO.renderer.State.extend({});
+    XEO.renderer.ViewTransform = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19188,7 +19295,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ProjTransform = XEO.renderer.State.extend({});
+    XEO.renderer.ProjTransform = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19201,7 +19310,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Billboard = XEO.renderer.State.extend({});
+    XEO.renderer.Billboard = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
 
     /**
@@ -19215,7 +19326,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.RenderTarget = XEO.renderer.State.extend({});
+    XEO.renderer.RenderTarget = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     XEO.renderer.RenderTarget.DEPTH = 0;
     XEO.renderer.RenderTarget.COLOR = 1;
@@ -19231,7 +19344,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Clips = XEO.renderer.State.extend({});
+    XEO.renderer.Clips = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19244,7 +19359,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.MorphTargets = XEO.renderer.State.extend({});
+    XEO.renderer.MorphTargets = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19257,7 +19374,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Shader = XEO.renderer.State.extend({});
+    XEO.renderer.Shader = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19270,7 +19389,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ShaderParams = XEO.renderer.State.extend({});
+    XEO.renderer.ShaderParams = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
     /**
 
@@ -19283,7 +19404,9 @@ visibility.destroy();
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Texture = XEO.renderer.State.extend({});
+    XEO.renderer.Texture = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 
 
     /**
@@ -19298,6 +19421,22 @@ visibility.destroy();
      @extends renderer.State
      */
     XEO.renderer.Geometry = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Program state.
+
+     @class renderer.ProgramState
+     @module XEO
+     @submodule renderer
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.ProgramState = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
     });
 
 })();
@@ -19401,20 +19540,13 @@ visibility.destroy();
      * @class Vertex and fragment shaders for pick and draw
      *
      * @param {*} stats Collects runtime statistics
-     * @param {Number} id ID unique among all programs in the owner {@link XEO.renderer.ProgramFactory}
      * @param {String} hash Hash code which uniquely identifies the capabilities of the program, computed from hashes on the {@link Scene_Core}s that the {@link XEO.renderer.ProgramSource} composed to render
      * @param {XEO.renderer.ProgramSource} source Sourcecode from which the the program is compiled in {@link #build}
      * @param {WebGLRenderingContext} gl WebGL context
      */
-    XEO.renderer.Program = function (stats, id, hash, source, gl) {
+    XEO.renderer.Program = function (stats, hash, source, gl) {
 
         this.stats = stats;
-
-        /**
-         * ID for this program, unique among all programs in the display
-         * @type Number
-         */
-        this.id = id;
 
         /**
          * Hash code for this program's capabilities, same as the hash on {@link #source}
@@ -19585,7 +19717,7 @@ visibility.destroy();
     "use strict";
 
     /**
-     * @class Manages {@link XEO.renderer.Program} instances.
+     * @class Manages {@link XEO.renderer.ProgramState} instances.
      * @param stats Collects runtime statistics
      * @param cfg Configs
      */
@@ -19595,11 +19727,7 @@ visibility.destroy();
 
         this._canvas = cfg.canvas;
 
-        this._programs = {};
-
-        this._nextProgramId = 0;
-
-        this.numActivePrograms = 0;
+        this._programStates = {};
     };
 
 
@@ -19609,9 +19737,9 @@ visibility.destroy();
      */
     XEO.renderer.ProgramFactory.prototype.get = function (hash, states) {
 
-        var program = this._programs[hash];
+        var programState = this._programStates[hash];
 
-        if (!program) {
+        if (!programState) {
 
             // No program exists for the states
 
@@ -19619,22 +19747,28 @@ visibility.destroy();
 
             var source = XEO.renderer.ProgramSourceFactory.getSource(hash, states);
 
-            program = new XEO.renderer.Program(this.stats, this._nextProgramId++, hash, source, this._canvas.gl);
+            var program = new XEO.renderer.Program(this.stats, hash, source, this._canvas.gl);
 
-            this._programs[hash] = program;
+            programState = new XEO.renderer.ProgramState({
+                program: program
+            });
 
-            this.numActivePrograms++;
+            this._programStates[hash] = programState;
+
+            this.stats.memory.programs++;
         }
 
-        program.useCount++;
+        programState.useCount++;
 
-        return program;
+        return programState;
     };
 
     /**
      * Release a program back to the pool.
      */
-    XEO.renderer.ProgramFactory.prototype.put = function (program) {
+    XEO.renderer.ProgramFactory.prototype.put = function (programState) {
+
+        var program = programState.program;
 
         if (--program.useCount <= 0) {
 
@@ -19644,9 +19778,9 @@ visibility.destroy();
 
             XEO.renderer.ProgramSourceFactory.putSource(program.hash);
 
-            this._programs[program.hash] = null;
+            delete this._programStates[program.hash];
 
-            this.numActivePrograms--;
+            this.stats.memory.programs--;
         }
     };
 
@@ -19657,10 +19791,10 @@ visibility.destroy();
 
         var gl = this._canvas.gl;
 
-        for (var id in this._programs) {
-            if (this._programs.hasOwnProperty(id)) {
+        for (var id in this._programStates) {
+            if (this._programStates.hasOwnProperty(id)) {
 
-                this._programs[id].build(gl);
+                this._programStates[id].build(gl);
             }
         }
     };
@@ -21154,18 +21288,8 @@ visibility.destroy();
         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
 
-        try {
-
-            // Do it the way the spec requires
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
-
-        } catch (exception) {
-
-            // Workaround for what appears to be a Minefield bug.
-            var textureStorage = new WebGLUnsignedByteArray(width * height * 3);
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, textureStorage);
-        }
 
         this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.buffer.renderbuf);
         this.gl.renderbufferStorage(this.gl.RENDERBUFFER, this.gl.DEPTH_COMPONENT16, width, height);
@@ -21181,6 +21305,7 @@ visibility.destroy();
         if (!this.gl.isFramebuffer(this.buffer.framebuf)) {
             throw "Invalid framebuffer";
         }
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
 
         var status = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
 
@@ -21791,15 +21916,12 @@ visibility.destroy();
      * Initialises the chunk.
      *
      * @param {Number} id Chunk ID
-     * @param {XEO.renderer.Object} object renderer object to which this chunk belongs
      * @param {XEO.renderer.Program} program Program to render this chunk
      * @param {XEO.renderer.State} state The state rendered by this chunk
      */
-    XEO.renderer.Chunk.prototype.init = function (id, object, program, state) {
+    XEO.renderer.Chunk.prototype.init = function (id, program, state) {
 
         this.id = id;
-
-        this.object = object;
 
         this.program = program;
 
@@ -21821,22 +21943,13 @@ visibility.destroy();
      * @class Manages creation, reuse and destruction of {@link XEO.renderer.Chunk}s.
      */
     XEO.renderer.ChunkFactory = function () {
-
-        this._chunks = {};
-
-        //this._chunkIDs = new XEO.utils.Map();
-
-        this.chunkTypes = XEO.renderer.ChunkFactory.chunkTypes;
+        this.types = XEO.renderer.ChunkFactory.types;
     };
 
     /**
      * Sub-classes of {@link XEO.renderer.Chunk} provided by this factory
      */
-    XEO.renderer.ChunkFactory.chunkTypes = {};   // Supported chunk classes, installed by #createChunkType
-
-    // Free pool of unused XEO.renderer.Chunk instances
-
-    XEO.renderer.ChunkFactory._freeChunks = {};  // Free chunk pool for each type
+    XEO.renderer.ChunkFactory.types = {};   // Supported chunk classes, installed by #createChunkType
 
     /**
      * Creates a chunk type.
@@ -21865,11 +21978,11 @@ visibility.destroy();
 
         XEO._apply(params, chunkClass.prototype);   // Augment subclass
 
-        XEO.renderer.ChunkFactory.chunkTypes[params.type] = chunkClass;
-
-        XEO.renderer.ChunkFactory._freeChunks[params.type] = { // Set up free chunk pool for this type
-            chunks: [],
-            chunksLen: 0
+        XEO.renderer.ChunkFactory.types[params.type] = {
+            constructor: chunkClass,
+            chunks: {},
+            freeChunks: [],
+            freeChunksLen: 0
         };
 
         return chunkClass;
@@ -21878,44 +21991,43 @@ visibility.destroy();
     /**
      * Gets a chunk from this factory.
      */
-    XEO.renderer.ChunkFactory.prototype.getChunk = function (id, type, object, program, state) {
+    XEO.renderer.ChunkFactory.prototype.getChunk = function (id, type, program, state) {
 
-        var chunk;// = this._chunks[id];
+        var chunkType = this.types[type];
 
-        //if (chunk) {
-        //    chunk.useCount++;
-        //    return chunk;
-        //}
-        var chunkClass = XEO.renderer.ChunkFactory.chunkTypes[type]; // Check type supported
-
-        if (!chunkClass) {
+        if (!chunkType) {
             throw "chunk type not supported: '" + type + "'";
+        }
+
+        var chunk = chunkType.chunks[id];
+
+        if (chunk) {
+            chunk.useCount++;
+            return chunk;
         }
 
         // Try to recycle a free chunk
 
-        var freeChunks = XEO.renderer.ChunkFactory._freeChunks[type];
-
-        if (freeChunks.chunksLen > 0) {
-            chunk = freeChunks.chunks[--freeChunks.chunksLen];
+        if (chunkType.freeChunksLen > 0) {
+            chunk = chunkType.freeChunks[--chunkType.freeChunksLen];
         }
 
         if (chunk) {
 
             // Reinitialise the free chunk
 
-            chunk.init(id, object, program, state);
+            chunk.init(id, program, state);
 
         } else {
 
             // No free chunk, create a new one
 
-            chunk = new chunkClass(id, object, program, state);
+            chunk = new chunkType.constructor(id, program, state);
         }
 
         chunk.useCount = 1;
 
-        //this._chunks[id] = chunk;
+        chunkType.chunks[id] = chunk;
 
         return chunk;
     };
@@ -21935,11 +22047,11 @@ visibility.destroy();
 
         if (--chunk.useCount <= 0) {
 
-            delete this._chunks[chunk.id];
+            var chunkType = this.types[chunk.type];
 
-            var freeChunks = XEO.renderer.ChunkFactory._freeChunks[chunk.type];
+            delete chunkType.chunks[chunk.id];
 
-            freeChunks.chunks[freeChunks.chunksLen++] = chunk;
+            chunkType.freeChunks[chunkType.freeChunksLen++] = chunk;
         }
     };
 
@@ -21948,16 +22060,29 @@ visibility.destroy();
      */
     XEO.renderer.ChunkFactory.prototype.webglRestored = function () {
 
+        var types = this.types;
+        var chunkType;
+        var chunks;
         var chunk;
 
-        for (var id in this._chunks) {
+        for (var type in types) {
 
-            if (this._chunks.hasOwnProperty(id)) {
+            if (types.hasOwnProperty(type)) {
 
-                chunk = this._chunks[id];
+                chunkType = types[type];
 
-                if (chunk.build) {
-                    chunk.build();
+                chunks = chunkType.chunks;
+
+                for (var id in chunks) {
+
+                    if (chunks.hasOwnProperty(id)) {
+
+                        chunk = chunks[id];
+
+                        if (chunk.build) {
+                            chunk.build();
+                        }
+                    }
                 }
             }
         }
@@ -22197,7 +22322,7 @@ visibility.destroy();
         // As we apply a list of state chunks in a {@link XEO.renderer.Renderer},
         // we track the ID of each chunk in order to avoid redundantly re-applying
         // the same chunk. We don't want that for draw chunks however, because
-        // they contain GL drawElements calls, which we need to do for each object.
+        // they contain drawElements calls, which we need to do for each object.
 
         unique: true,
 
@@ -22206,16 +22331,15 @@ visibility.destroy();
         },
 
         draw: function (frameCtx) {
-
             var state = this.state;
             var gl = this.program.gl;
-            
+
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
                 frameCtx.drawElements++;
             }
         },
-        
+
         pickObject: function (frameCtx) {
 
             var state = this.state;
@@ -22241,7 +22365,7 @@ visibility.destroy();
         },
 
         pickPrimitive: function () {
-            
+
             var state = this.state;
             var gl= this.program.gl;
 
@@ -22686,7 +22810,7 @@ visibility.destroy();
 
         draw: function (frameCtx) {
 
-            frameCtx.textureUnit = 0;
+       //     frameCtx.textureUnit = 0;
             
             var draw = this.program.draw;
             var state = this.state;
@@ -22782,9 +22906,9 @@ visibility.destroy();
             }
             
 
-            if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
-                frameCtx.textureUnit = 0;
-            }
+            //if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
+            //    frameCtx.textureUnit = 0;
+            //}
         }
     });
 
@@ -22935,27 +23059,28 @@ visibility.destroy();
             // Textures
 
 
-            if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
-                frameCtx.textureUnit = 0;
-            }
+            //if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
+            //    frameCtx.textureUnit = 0;
+            //}
+           // frameCtx.textureUnit = 0;
 
             // Ambient map
 
             if (state.ambientMap && state.ambientMap.texture) {
 
-                draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uAmbientMapMatrix) {
                     this._uAmbientMapMatrix.setValue(state.ambientMap.matrix);
                 }
             }
-            
+
             // Diffuse map
 
             if (state.diffuseMap && state.diffuseMap.texture) {
 
-                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uDiffuseMapMatrix) {
@@ -22967,7 +23092,7 @@ visibility.destroy();
 
             if (state.specularMap && state.specularMap.texture) {
 
-                draw.bindTexture(this._uSpecularMap, state.specularMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uSpecularMap, state.specularMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uSpecularMapMatrix) {
@@ -22979,7 +23104,7 @@ visibility.destroy();
 
             if (state.emissiveMap && state.emissiveMap.texture) {
 
-                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uEmissiveMapMatrix) {
@@ -22991,7 +23116,7 @@ visibility.destroy();
 
             if (state.opacityMap && state.opacityMap.texture) {
 
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uOpacityMapMatrix) {
@@ -23003,7 +23128,7 @@ visibility.destroy();
 
             if (state.reflectivityMap && state.reflectivityMap.texture) {
 
-                draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
 
                 if (this._uReflectivityMapMatrix) {
                     this._uReflectivityMapMatrix.setValue(state.reflectivityMap.matrix);
@@ -23014,7 +23139,7 @@ visibility.destroy();
 
             if (state.bumpMap && state.bumpMap.texture) {
 
-                draw.bindTexture(this._uBumpMap, state.normalMap.texture, frameCtx.textureUnit++);
+                draw.bindTexture(this._uBumpMap, state.normalMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uBumpMapMatrix) {
@@ -23022,7 +23147,7 @@ visibility.destroy();
                 }
             }
 
-            frameCtx.textureUnit++;
+        //    frameCtx.textureUnit++;
 
 
             // Fresnel effects
@@ -23138,7 +23263,6 @@ visibility.destroy();
 
         draw: function (frameCtx) {
             this.program.draw.bind();
-            frameCtx.textureUnit = 0;
             frameCtx.useProgram++;
         },
 
@@ -23211,7 +23335,7 @@ visibility.destroy();
 
             if (frameCtx.renderBuf) {
                 gl.flush();
-               frameCtx.renderBuf.unbind();
+                frameCtx.renderBuf.unbind();
                 frameCtx.renderBuf = null;
             }
 
@@ -23233,9 +23357,7 @@ visibility.destroy();
             }
 
             gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-
             gl.clearColor(frameCtx.ambientColor[0], frameCtx.ambientColor[1], frameCtx.ambientColor[2], 1.0);
-
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
             frameCtx.renderBuf = renderBuf;
