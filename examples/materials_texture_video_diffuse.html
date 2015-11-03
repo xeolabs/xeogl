@@ -26,13 +26,13 @@
 
 <script>
 
-    var geometry = new XEO.Grid({
+    var geometry = new XEO.PlaneGeometry({
         xSize: 5,
         ySize: 5
     });
 
     var diffuseMap = new XEO.Texture({
-        src: "textures/testDiffuseMap.png",
+        src: "textures/diffuse/testDiffuseMap.png",
         minFilter: "linearMipmapLinear",
         magFiler: "linear",
         wrapS: "repeat",
@@ -61,7 +61,7 @@
     video.setAttribute("loop", "loop");
     video.autoplay = true;
     document.getElementsByTagName("body")[0].appendChild(video);
-    video.src = "movies/bunny.ogg";
+    video.src = "textures/diffuse/bunny.ogg";
 
     var self = this;
 

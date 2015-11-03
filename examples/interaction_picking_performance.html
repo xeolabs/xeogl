@@ -90,37 +90,10 @@
         });
     }
 
-    var pencil = new XEO.GameObject({
-        geometry: new XEO.CylinderGeometry({
-            radiusTop: 0.0,
-            radiusBottom: 0.15,
-            height: 0.7,
-            radialSegments: 20,
-            heightSegments: 1,
-            openEnded: false
-        }),
-        transform: new XEO.Translate({
-            xyz: [0, -.35, 0],
-            parent: new XEO.Transform({
-                parent: new XEO.Translate({
-                    xyz: [0, 2, 0]
-                })
-            })
-        }),
-        material: new XEO.PhongMaterial({
-            diffuse: [1, .2, .2],
-            specular: [1, 1, 1],
-            shininess: 90
-        }),
-        modes: new XEO.Modes({
-            pickable: false
-        })
-    });
-
     var scene = XEO.scene;
 
 
-    scene.camera.view.zoom(2);
+    scene.camera.view.zoom(0.5);
     scene.camera.view.rotateEyeY(45);
     scene.camera.view.rotateEyeX(45);
 
@@ -139,8 +112,9 @@
 
                 // Hide visual indicators
 
-
                 showUVPos(null);
+
+                XEO.debug.hide("stylus");
 
                 // Pick a primitive on some GameObject
 
@@ -152,21 +126,13 @@
 
                     // GameObject picked
 
-                    if (hit.worldPos) {
+                    if (hit.worldPos && hit.normal) {
 
-                        // World position picked
-
-                        // World position picked
-
-                        pencil.transform.parent.parent.xyz = hit.worldPos;
-                    }
-
-                    if (hit.normal) {
-
-                        // Normal vector picked
-
-                        pencil.transform.parent.matrix = XEO.math.quaternionToMat4(
-                                XEO.math.vec3PairToQuaternion(hit.normal, [0, -1, 0]));
+                        XEO.debug
+                                .id("stylus")
+                                .pos(hit.worldPos)
+                                .dir(hit.normal)
+                                .stylus();
                     }
 
                     if (hit.uv) {
@@ -182,7 +148,6 @@
                 }
 
             });
-
 
 </script>
 </body>

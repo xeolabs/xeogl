@@ -30,14 +30,14 @@
             ray picking demo
         </li>
         <li>
-            move your mouse over the object!
+            move your mouse over the objects!
         </li>
     </ul>
     <br><br>
     <img id="diffuseTexture" src="textures/diffuse/uvGrid2.jpg" width="400px" height="400px">
 
     <div id="uvPos"
-         style="position:absolute; width: 20px; height: 20px; border-radius: 10px; opacity: 0.7; border: 2px solid white; background: lightgreen;"></div>
+         style="position:absolute; width: 20px; height: 20px; border-radius: 10px; opacity: 0.7; border: 2px solid white; background: red;"></div>
 
 </div>
 
@@ -122,6 +122,20 @@
         material: material
     });
 
+    // Sphere 2
+
+    new XEO.GameObject({
+        geometry: new XEO.SphereGeometry({
+            radius: 3.0
+        }),
+        transform: new XEO.Translate({
+            xyz: [10, -10, 0]
+        }),
+        material: material
+    });
+
+    // Cylinder
+
     new XEO.GameObject({
         geometry: new XEO.CylinderGeometry({
             radiusTop: 1.0,
@@ -145,7 +159,7 @@
 
     view.zoom(15);
     view.rotateEyeX(-30);
-    view.rotateEyeY(-10);
+    view.rotateEyeY(50);
 
 
     // ------------ Interaction ------------------------------------------
@@ -165,8 +179,7 @@
 
                 // Hide visual indicators
 
-                XEO.debug.hide("worldPos");
-                XEO.debug.hide("normal");
+                XEO.debug.hide("stylus");
 
                 showUVPos(null);
 
@@ -180,29 +193,12 @@
 
                     // GameObject picked
 
-                    if (hit.worldPos) {
-
-                        // World position picked
-
+                    if (hit.worldPos && hit.normal) {
                         XEO.debug
-                                .id("worldPos")
-                                .color([0.3, 1.0, 0.3])
+                                .id("stylus")
                                 .pos(hit.worldPos)
-                                .radius(0.3)
-                                .sphere();
-                    }
-
-                    if (hit.normal) {
-
-                        // Normal vector picked
-
-                        XEO.debug
-                                .id("normal")
-                                .lineWidth(6)
-                                .color([1.0, 0.4, 0.4])
-                                .pos(hit.worldPos)
-                                .pos(XEO.math.addVec3(hit.worldPos, XEO.math.mulVec3Scalar(hit.normal, 2, []), []))
-                                .line();
+                                .dir(hit.normal)
+                                .stylus();
                     }
 
                     if (hit.uv) {

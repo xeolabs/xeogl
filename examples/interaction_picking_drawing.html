@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+
+    <script src="js/debug/debug.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>
+            drawing on the surface of an object
+        </li>
+        <li>
+            hold down SPACE and move your mouse over the object to draw on it
+        </li>
+    </ul>
+    <br><br>
+
+</div>
+
+<script>
+
+    // Quick custom component that draws onto a given XEO.Texture
+
+    XEO.Paper = XEO.Component.extend({
+
+        type: "XEO.Paper",
+
+        _init: function (cfg) {
+
+            var canvas = this._canvas = document.createElement('canvas');
+            canvas.width = 1000;
+            canvas.height = 1000;
+
+            var ctx = this._ctx = canvas.getContext("2d");
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "black";
+            ctx.fill();
+
+            this._image = new Image();
+
+            this._down = false;
+
+            this._texture = cfg.texture;
+
+            this.clear();
+        },
+
+        penDown: function () {
+            this._down = true;
+        },
+
+        penMove: function (uv) {
+
+            var x = Math.floor(uv[0] * this._canvas.width);
+            var y = Math.floor(uv[1] * this._canvas.height);
+
+            if (!this._down) {
+                this._ctx.moveTo(x, y);
+                return;
+            }
+
+            this._ctx.lineTo(x, y);
+            this._ctx.stroke();
+
+            this._blit();
+        },
+
+        penUp: function () {
+            this._down = false;
+        },
+
+        clear: function () {
+
+            this._ctx.rect(0, 0, this._canvas.width, this._canvas.height);
+            this._ctx.fillStyle = "black";
+            this._ctx.fill();
+
+            this._blit();
+        },
+
+        _blit: function () {
+            if (this._texture) {
+                this._image.src = this._canvas.toDataURL();
+                this._texture.image = this._image;
+            }
+        },
+
+        _destroy: function () {
+            this._canvas.destroy();
+        }
+    });
+
+    // Heightmap
+
+    var heightmap = new XEO.GameObject({
+        geometry: new XEO.HeightmapGeometry({
+            primitive: "triangles",
+            src: "textures/height/everest.png",
+            xSize: 10,
+            ySize: 10,
+            zSize: 3,
+            xSegments: 60,
+            ySegments: 60
+        }),
+        transform: new XEO.Translate({
+            xyz: [0, 0, 0]
+        }),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            emissiveMap: new XEO.Texture({
+            }),
+            lineWidth: 3,
+            pointSize: 5
+        })
+    });
+
+    // Hook our drawing component up to the GameObject's emissive texture
+
+    var paper = new XEO.Paper({
+        texture: heightmap.material.emissiveMap
+    });
+
+
+    // Set initial camera position
+
+    var scene = XEO.scene;
+
+    var view = scene.camera.view;
+
+    view.zoom(4);
+    view.rotateEyeX(-30);
+    view.rotateEyeY(-10);
+
+
+    // ------------ Interaction ------------------------------------------
+
+    // Allow camera interaction
+
+    new XEO.CameraControl();
+
+    var input = scene.input;
+    var down = false;
+
+    input.on("keydown",
+            function (e) {
+                if (e == input.KEY_SPACE) {
+                    paper.penDown();
+                    down = true;
+                }
+            });
+
+    input.on("keyup",
+            function (e) {
+                if (e == input.KEY_SPACE) {
+                    paper.penUp();
+                    down = false;
+                }
+            });
+
+    // Whenever mouse moves, attempt to pick a triangle on a GameObject,
+    // then show the cartesian coordinates at the picked position within
+    // the triangle, along with the interpolated normal vector and UV coordinates
+    // at the picked position.
+
+    input.on("mousemove",
+            function (coords) {
+
+                XEO.debug.hide("stylus");
+
+                // Pick a primitive on some GameObject
+
+                var hit = scene.pick(coords, {
+                    rayPick: true
+                });
+
+                if (hit && hit.worldPos && hit.normal) {
+
+                    XEO.debug
+                            .id("stylus")
+                            .pos(hit.worldPos)
+                            .dir(hit.normal)
+                            .stylus();
+
+                    if (hit.uv) {
+
+                        // UV coordinates picked
+
+                        if (down) {
+                            paper.penDown();
+                        }
+
+                        paper.penMove(hit.uv);
+                    }
+
+                } else {
+
+                    // No Triangle picked
+
+                    if (!down) {
+                        paper.penUp();
+                    }
+                }
+            });
+
+
+</script>
+</body>
+</html>
