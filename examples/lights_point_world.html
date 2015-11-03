@@ -15,22 +15,45 @@
     </style>
 
     <script src="../build/xeoengine.min.js"></script>
+
+    <script src="js/debug/debug.js"></script>
+
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
-<div id="infoDark">
+<div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a> - <a href="../docs/classes/PointLight.html"
                                                       target="_other">PointLight in World-space</a>
 </div>
 
 <script>
 
-    var pointLight = new XEO.PointLight({
-        pos: [5.0, 5.0, 5.0],
+    var pointLight1 = new XEO.PointLight({
+        pos: [3.0, 3.0, 3.0],
         color: [0.7, 0.7, 0.8],
-        intensity: 1.0,
-        constantAttenuation: 0.2,
+        intensity: 0.4,
+        constantAttenuation: 0.3,
+        linearAttenuation: 0.0,
+        quadraticAttenuation: 0.0,
+        space: "world"
+    });
+
+    var pointLight2 = new XEO.PointLight({
+        pos: [-3.0, -3.0, 3.0],
+        color: [1.0, 0.3, 0.3],
+        intensity: 0.4,
+        constantAttenuation: 0.3,
+        linearAttenuation: 0.0,
+        quadraticAttenuation: 0.0,
+        space: "world"
+    });
+
+    var pointLight3 = new XEO.PointLight({
+        pos: [3.0, -3.0, -3.0],
+        color: [0.3, 1.0, 0.3],
+        intensity: 0.4,
+        constantAttenuation: 0.3,
         linearAttenuation: 0.0,
         quadraticAttenuation: 0.0,
         space: "world"
@@ -38,19 +61,43 @@
 
     var lights = new XEO.Lights({
         lights: [
-            pointLight
+            pointLight1,
+            pointLight2,
+            pointLight3
         ]
     });
 
     var object = new XEO.GameObject({
-        lights: lights
+        lights: lights,
+        geometry: new XEO.TorusGeometry({
+            radius: 1.5,
+            tube:.4
+        })
     });
 
-    object.scene.on("tick",
-            function () {
-                object.scene.view.rotateEyeY(0.6);
-                object.scene.view.rotateEyeX(0.3);
-            });
+    XEO.debug
+            .id("light1")
+            .radius(0.3)
+            .color([0.7, 0.7, 0.8])
+            .pos(pointLight1.pos)
+            .sphere();
+
+    XEO.debug
+            .id("light2")
+            .radius(0.3)
+            .color([1.0, 0.3, 0.3])
+            .pos(pointLight2.pos)
+            .sphere();
+
+    XEO.debug
+            .id("light3")
+            .radius(0.3)
+            .color([0.3, 1.0, 0.3])
+            .pos(pointLight3.pos)
+            .sphere();
+
+    new XEO.CameraControl();
+
 </script>
 </body>
 </html>

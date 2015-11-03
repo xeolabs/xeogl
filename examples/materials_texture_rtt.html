@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <br><br>
+    render-to-texture using <a href="../docs/classes/ColorTarget.html" target="_other">ColorTarget</a>
+    and <a href="../docs/classes/Texture.html" target="_other">Texture</a> components
+</div>
+
+<script>
+
+
+    var object1 = new XEO.GameObject({
+
+        stage: new XEO.Stage({
+            priority: 0
+        }),
+        
+        geometry: new XEO.TorusGeometry(),
+
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/UVCheckerMap08-1024.png",
+                wrapS: "repeat",
+                wrapT: "repeat",
+                scale: [0.1, 0.5]
+            })
+        }),
+
+       colorTarget: new XEO.ColorTarget({
+            active: true,
+            size: [800, 800]
+        })
+    });
+
+
+    var object2 = new XEO.GameObject({
+
+        stage: new XEO.Stage({
+            priority: 1
+        }),
+
+        sgeometry: new XEO.PlaneGeometry({
+            xSize: 10,
+            ySize: 10
+        }),
+
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                target: object1.colorTarget
+            })
+        }),
+
+        modes: new XEO.Modes({
+            backfaces: true
+        })
+    });
+
+
+    object1.scene.on("tick",
+            function () {
+
+                object1.camera.view.rotateEyeY(0.2);
+                object1.camera.view.rotateEyeX(0.3);
+            });
+</script>
+</body>
+</html>

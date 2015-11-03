@@ -19,7 +19,7 @@
 
 <body>
 
-<div id="infoDark">
+<div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
     scene statistics
@@ -29,11 +29,24 @@
 
 <script>
 
-    var geometry = new XEO.SphereGeometry({
-        radius: 2.0
-    });
+    var geometries = [
+        new XEO.SphereGeometry({
+            radius: 0.7
+        }),
+        new XEO.SphereGeometry({
+            radius: 1.4
+        }),
+        new XEO.SphereGeometry({
+            radius: 2.1
+        }),
+        new XEO.SphereGeometry({
+            radius: 2.8
+        })
+    ];
 
-    var num = 100;
+    var gi = 0;
+
+
     var sqrtNum = 10;
     var diffuse = [0, 0, 0];
     var specular = [0, 0, 0];
@@ -47,11 +60,9 @@
 
                 new XEO.GameObject({
 
-                    geometry: geometry,
+                    geometry: geometries[gi < 3 ? gi++ : gi = 0],
 
                     material: new XEO.PhongMaterial({
-                        shininess: x,
-                        reflectivity: z,
                         diffuse: [x, z, y]
                     }),
 

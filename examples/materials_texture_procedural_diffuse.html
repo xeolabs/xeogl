@@ -14,12 +14,12 @@
         }
     </style>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeoengine.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
-<div id="infoDark">
+<div id="infoLight">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a>
     <br><br>
     render-to-texture using <a href="../docs/classes/ColorTarget.html" target="_other">ColorTarget</a>
@@ -30,12 +30,24 @@
 
     var waterObject = new XEO.GameObject({
 
+        stage: new XEO.Stage({
+            priority: 0
+        }),
+
+
+        colorTarget: new XEO.ColorTarget({
+            size: [400,400]
+        }),
+
         camera: new XEO.Camera({
             view: new XEO.Lookat(),
             project: new XEO.Ortho()
         }),
 
-        geometry: new XEO.PlaneGeometry(),
+        geometry: new XEO.PlaneGeometry({
+            xSize: 2.0,
+            ySize: 2.0
+        }),
 
         shader: new XEO.Shader({
             vertex: [
@@ -72,12 +84,20 @@
             params: {
                 time: 0.0
             }
+        }),
+
+        modes: new XEO.Modes({
+            backfaces: true
         })
     });
 
     // We'll apply the color target as a texture on this plane
 
     var planeObject = new XEO.GameObject({
+
+        stage: new XEO.Stage({
+            priority: 1
+        }),
 
         geometry: new XEO.PlaneGeometry({
             xSize: 10,
@@ -99,12 +119,12 @@
             function () {
 
                 // Orbit the water's camera
-//                waterObject.camera.view.rotateEyeY(0.2);
+//                waterObject.camera.view.rotateEyeY(1.2);
 //                waterObject.camera.view.rotateEyeX(0.3);
 
-                waterObject.shader.setParams({ time: t });
+                waterObject.shader.setParams({time: t});
 
-                t+= 0.1;
+                t += 0.1;
 
                 // Orbit the plane's camera
                 planeObject.camera.view.rotateEyeY(0.2);
