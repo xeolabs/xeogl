@@ -74,7 +74,7 @@
             if (!this._heightmapDirty) {
                 this._heightmapDirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildHeightmap();
                         self._heightmapDirty = false;

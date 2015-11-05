@@ -325,8 +325,7 @@
              */
             this.objects = {};
 
-            // Contains XEO.GameObjects that need to be recompiled back into
-            // this._renderer
+            // Contains XEO.GameObjects that need to be recompiled back into this._renderer
             this._dirtyObjects = {};
 
             /**
@@ -427,6 +426,9 @@
         },
 
         _initDefaults: function () {
+
+            // Create this Scene's default components, which every
+            // GameObject created in this Scene will inherit by default
 
             this.view;
             this.project;
@@ -908,7 +910,7 @@
                                 new XEO.AmbientLight(this, {
                                     id: "default.light0",
                                     color: [0.8, 0.8, 0.9],
-                                    intensity: 0.5
+                                    intensity: 0.6
                                 }),
 
                                 // Directional light source #1
@@ -1161,10 +1163,10 @@
          * ````
          * @method pick
          *
-         * @param {*} [options] Pick options.
-         * @param {Array of Number} [options.canvasPos] Canvas-space coordinates.
-         * @param {Boolean} [options.rayPick=false] Whether to ray-pick.
-         * @returns {*} Hit record when a {{#crossLink "GameObject"}}{{/crossLink}} is picked.
+         * @param {*} params Picking parameters.
+         * @param {Array of Number} [params.canvasPos] Canvas-space coordinates.
+         * @param {Boolean} [params.rayPick=false] Whether to ray-pick.
+         * @returns {*} Hit record, returned when a {{#crossLink "GameObject"}}{{/crossLink}} is picked, else null.
          */
         pick: (function () {
 
@@ -1195,7 +1197,6 @@
 
             var tempVec4 = XEO.math.vec4();
             var tempVec4b = XEO.math.vec4();
-            var tempVec4c = XEO.math.vec4();
 
             var tempVec3 = XEO.math.vec3();
             var tempVec3b = XEO.math.vec3();
@@ -1254,16 +1255,15 @@
                 math.normalizeVec3(dir);
             }
 
-            return function (canvasPos, options) {
+            return function (params) {
 
                 var math = XEO.math;
 
-                options = options || {};
+                params = params || {};
 
-                var hit = this._renderer.pick({
-                    canvasPos: canvasPos,
-                    rayPick: options.rayPick
-                });
+                params.canvasPos = params.canvasPos || math.vec3();
+
+                var hit = this._renderer.pick(params);
 
                 if (hit) {
 
@@ -1315,7 +1315,7 @@
                             // from the eye position through the mouse position
                             // on the perspective projection plane
 
-                            getLocalRay(object, canvasPos, origin, dir);
+                            getLocalRay(object, params.canvasPos, origin, dir);
 
                             math.rayPlaneIntersect(origin, dir, a, b, c, position);
 
@@ -1399,6 +1399,7 @@
                     return hit;
                 }
             };
+
         })(),
 
         /**

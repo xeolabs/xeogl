@@ -132,7 +132,8 @@
                                     downY >= (canvasPos[1] - tolerance) &&
                                     downY <= (canvasPos[1] + tolerance)) {
 
-                                    var hit = self.scene.pick(canvasPos, {
+                                    var hit = self.scene.pick({
+                                        canvasPos : canvasPos,
                                         rayPick: self._rayPick
                                     });
 

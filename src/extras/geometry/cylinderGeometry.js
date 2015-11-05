@@ -52,7 +52,7 @@
             if (!this.__dirty) {
                 this.__dirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildCylinder();
                         self.__dirty = false;
@@ -218,9 +218,9 @@
                 for (i = 0; i < radialSegments; i++) {
                     center = startIndex;
                     first = startIndex + 1 + i;
-                    indices.push(first);
-                    indices.push(first + 1);
                     indices.push(center);
+                    indices.push(first + 1);
+                    indices.push(first);
                 }
             }
 

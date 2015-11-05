@@ -53,7 +53,7 @@
             if (!this._planeDirty) {
                 this._planeDirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildPlane();
                         self._planeDirty = false;
@@ -243,14 +243,14 @@
              * Fires a {{#crossLink "PlaneGeometry/ySize:event"}}{{/crossLink}} event on change.
              *
              * @property ySize
-             * @default 0.25
+             * @default 1.0
              * @type Number
              */
             ySize: {
 
                 set: function (value) {
 
-                    value = value || 0.25;
+                    value = value || 1.0;
 
                     if (this._ySize === value) {
                         return;

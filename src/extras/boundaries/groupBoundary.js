@@ -1,13 +1,11 @@
 /**
- A **GroupBoundary** configures the WebGL color buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **GroupBoundary** TODO.
 
  ## Overview
 
  <ul>
 
- <li>A GroupBoundary configures **the way** that pixels are written to the WebGL color buffer.</li>
- <li>GroupBoundary is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
- colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
+ <li>TODO</li>
 
  </ul>
 
@@ -15,30 +13,35 @@
 
  ## Example
 
- In this example we're configuring the WebGL color buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
-
- This example scene contains:
-
- <ul>
- <li>a GroupBoundary that enables blending and sets the color mask,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
+ TODO
 
  ````javascript
- var scene = new XEO.Scene();
+ var groupBoundary = new XEO.GroupBoundary({
 
- var GroupBoundary = new XEO.GroupBoundary(scene, {
-    blendEnabled: true,
-    colorMask: [true, true, true, true]
+    group: new XEO.Group({
+
+        components: [
+            new XEO.GameObject({
+                ..,,
+            }),
+            new XEO.GameObject({
+                ..,,
+            }),
+            new XEO.GameObject({
+                //..
+            })
+        ]
+    })
 });
 
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
- var gameObject = new XEO.GameObject(scene, {
-    GroupBoundary: GroupBoundary,
-    geometry: geometry
-});
+ var showBoundary = new XEO.GameObject({
+        geometry: new XEO.BoundaryGeometry({
+            boundary: groupBoundary.worldBoundary
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1,0,0]
+        })
+    });
  ````
 
  @class GroupBoundary
@@ -110,10 +113,9 @@
                     if (group) {
 
                         this._onAdded = group.on("added",
-                            function () {
+                            function (c) {
                                 if (c.worldBoundary) {
                                     bind(c);
-                                    self._setGroupDirty();
                                 }
                             });
 
@@ -121,13 +123,19 @@
                             function (c) {
                                 if (c.worldBoundary) {
                                     unbind(c);
-                                    self._setGroupDirty();
+                                }
+                            });
+
+                        this._onRemoved = group.on("updated",
+                            function () {
+                                if (!self._AABBDirty) {
+                                    self._setAABBDirty();
                                 }
                             });
 
                         group.iterate(bind);
 
-                        this._setGroupDirty();
+                        this._setAABBDirty();
                     }
 
                     function bind(c) {
@@ -137,7 +145,7 @@
                         }
                         self._onUpdated[c.id] = worldBoundary.on("updated",
                             function () {
-                                self._setGroupDirty();
+                                self._setAABBDirty();
                             });
                     }
 
@@ -150,7 +158,7 @@
                         delete self._onUpdated[c.id];
                     }
 
-                    this._setGroupDirty();
+                    this._setAABBDirty();
                 },
 
                 get: function () {
@@ -180,16 +188,20 @@
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
                             getDirty: function () {
-                                return self._worldBoundaryDirty;
+                                if (self._worldBoundaryDirty) {
+                                    self._worldBoundaryDirty = false;
+                                    return true;
+                                }
+                                return false;
                             },
 
                             getAABB: function () {
 
-                                if (self._groupDirty) {
+                                if (self._AABBDirty) {
 
                                     self._buildAABB();
 
-                                    self._groupDirty = false;
+                                    self._AABBDirty = false;
                                 }
 
                                 return self._aabb;
@@ -206,134 +218,24 @@
 
                     return this._worldBoundary;
                 }
-            },
-
-            /**
-             * View-space 3D boundary.
-             *
-             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance
-             * next time you reference it.
-             *
-             * @property viewBoundary
-             * @type Boundary3D
-             * @final
-             */
-            viewBoundary: {
-
-                get: function () {
-
-                    if (!this._viewBoundary) {
-
-                        var self = this;
-
-                        this._viewBoundary = new XEO.Boundary3D(this.scene, {
-
-                            getDirty: function () {
-                                return self._viewBoundaryDirty;
-                            },
-
-                            getOBB: function () {
-
-                                // Calls our worldBoundary property,
-                                // lazy-inits the boundary and its obb
-
-                                return self.worldBoundary.obb;
-                            },
-
-                            getMatrix: function () {
-
-                                // TODO:
-                                return self.scene.camera.view.matrix;
-                            }
-                        });
-
-                        this._viewBoundary.on("destroyed",
-                            function () {
-                                self._viewBoundary = null;
-                            });
-
-                        this._setViewBoundaryDirty();
-                    }
-
-                    return this._viewBoundary;
-                }
             }
         },
 
-        /**
-         * Canvas-space 2D boundary.
-         *
-         * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-         * this property will be assigned to a fresh {{#crossLink "Boundary2D"}}{{/crossLink}} instance
-         * next time you reference it.
-         *
-         * @property canvasBoundary
-         * @type Boundary2D
-         * @final
-         */
-        canvasBoundary: {
-
-            get: function () {
-
-                if (!this._canvasBoundary) {
-
-                    var self = this;
-
-                    // TODO: bind to transform and camera updates here, for lazy-binding efficiency goodness?
-
-                    this._canvasBoundary = new XEO.Boundary2D(this.scene, {
-
-                        getDirty: function () {
-                            return self._canvasBoundaryDirty;
-                        },
-
-                        getOBB: function () {
-                            return self.viewBoundary.obb; // Lazy-inits!
-                        },
-
-                        getMatrix: function () {
-                            return self.scene.camera.project.matrix;
-                        }
-                    });
-
-                    this._canvasBoundary.on("destroyed",
-                        function () {
-                            self._canvasBoundary = null;
-                        });
-
-                    this._setCanvasBoundaryDirty();
-                }
-
-                return this._canvasBoundary;
+        _setAABBDirty: function () {
+            if (this._AABBDirty) {
+                return;
             }
-        },
-
-        _setGroupDirty: function () {
-            this._groupDirty = true;
+            this._AABBDirty = true;
             this._setWorldBoundaryDirty();
         },
 
         _setWorldBoundaryDirty: function () {
+            if (this._worldBoundaryDirty) {
+                return;
+            }
             this._worldBoundaryDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
-            }
-            this._setViewBoundaryDirty();
-        },
-
-        _setViewBoundaryDirty: function () {
-            this._viewBoundaryDirty = true;
-            if (this._viewBoundary) {
-                this._viewBoundary.fire("updated", true);
-            }
-            this._setCanvasBoundaryDirty();
-        },
-
-        _setCanvasBoundaryDirty: function () {
-            this._canvasBoundaryDirty = true;
-            if (this._canvasBoundary) {
-                this._canvasBoundary.fire("updated", true);
             }
         },
 
@@ -357,38 +259,45 @@
             var worldBoundary;
             var aabb;
 
-            for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId)) {
+            var group = this.group;
 
-                    component = this.components[componentId];
+            if (group) {
 
-                    worldBoundary = component.worldBoundary;
-                    if (worldBoundary) {
+                var components = group.components;
 
-                        aabb = worldBoundary.aabb;
+                for (var componentId in components) {
+                    if (components.hasOwnProperty(componentId)) {
 
-                        if (aabb.xmin < xmin) {
-                            xmin = aabb.xmin;
-                        }
+                        component = components[componentId];
 
-                        if (aabb.ymin < ymin) {
-                            ymin = aabb.ymin;
-                        }
+                        worldBoundary = component.worldBoundary;
+                        if (worldBoundary) {
 
-                        if (aabb.zmin < zmin) {
-                            zmin = aabb.zmin;
-                        }
+                            aabb = worldBoundary.aabb;
 
-                        if (aabb.xmax > xmax) {
-                            xmax = aabb.xmax;
-                        }
+                            if (aabb.xmin < xmin) {
+                                xmin = aabb.xmin;
+                            }
 
-                        if (aabb.ymax > ymax) {
-                            ymax = aabb.ymax;
-                        }
+                            if (aabb.ymin < ymin) {
+                                ymin = aabb.ymin;
+                            }
 
-                        if (aabb.zmax > zmax) {
-                            zmax = aabb.zmax;
+                            if (aabb.zmin < zmin) {
+                                zmin = aabb.zmin;
+                            }
+
+                            if (aabb.xmax > xmax) {
+                                xmax = aabb.xmax;
+                            }
+
+                            if (aabb.ymax > ymax) {
+                                ymax = aabb.ymax;
+                            }
+
+                            if (aabb.zmax > zmax) {
+                                zmax = aabb.zmax;
+                            }
                         }
                     }
                 }
@@ -403,11 +312,20 @@
         },
 
         _getJSON: function () {
-            return {};
+            var json = {};
+            if (this.group) {
+                json.group = this.group
+            }
+            return json;
         },
 
         _destroy: function () {
-            this.group = null;
+
+            this.group = null; // Unsubscribes from worldBoundary updates on Group members
+
+            if (this._worldBoundary) {
+                this._worldBoundary.destroy();
+            }
         }
     });
 

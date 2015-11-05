@@ -213,7 +213,7 @@
 
                 var self = this;
 
-                this.scene.once("tick2",
+                this.scene.once("tick",
                     function () {
 
                         self._buildTexture();

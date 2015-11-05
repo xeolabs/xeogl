@@ -44,7 +44,7 @@
             if (!this.__dirty) {
                 this.__dirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildText();
                         self.__dirty = false;

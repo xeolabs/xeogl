@@ -71,6 +71,8 @@
                     scene.fire("tick", tickEvent, true);
                     scene.fire("tick2", tickEvent, true);
                     scene.fire("tick3", tickEvent, true);
+                    scene.fire("tick4", tickEvent, true);
+                    scene.fire("tick5", tickEvent, true);
 
                     // Compile also means "render".
                     // It only actually "compiles" anything if it needs recompilation.

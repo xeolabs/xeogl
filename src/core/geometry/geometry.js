@@ -455,8 +455,12 @@
                 this._dirty = true;
                 var self = this;
 
-                this.scene.once("tick3",
+                this.scene.once("tick",
                     function () {
+
+                        // Build VBOs for renderer; no other components in the scene
+                        // will be waiting them, so OK to schedule that for next tick.
+
                         self._build();
                     });
             }
@@ -1014,7 +1018,11 @@
                             // can manage caching for the boundary
 
                             getDirty: function () {
-                                return self._boundaryDirty;
+                                if (self._boundaryDirty) {
+                                    self._boundaryDirty = false;
+                                    return true;
+                                }
+                                return false;
                             },
 
                             getPositions: function () {
@@ -1122,6 +1130,10 @@
         },
 
         _setBoundaryDirty: function () {
+
+            if (this._boundaryDirty) {
+                return;
+            }
 
             this._boundaryDirty = true;
 

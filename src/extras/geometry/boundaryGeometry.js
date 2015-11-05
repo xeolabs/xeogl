@@ -106,18 +106,29 @@
                     if (boundary) {
 
                         var self = this;
+                        var geometryDirty = false;
+
+                        // Whenever the new boundary fires a change event,
+                        // schedule a geometry rebuild for the next 'tick'.
 
                         this._onBoundaryUpdated = boundary.on("updated",
                             function () {
-                                self._setPositionsFromOBB(boundary.obb);
+                                if (geometryDirty) {
+                                    return;
+                                }
+                                self.scene.once("tick4",
+                                    function () {
+                                        self._setPositionsFromOBB(boundary.obb);
+                                        geometryDirty = false;
+                                    });
                             });
 
                         this._onBoundaryDestroyed = boundary.on("destroyed",
                             function () {
-                                self.boundary = null;
+                                self.boundary = null; // Unsubscribes from old boundary's events
                             });
 
-                        //     this._setPositionsFromOBB(boundary.obb);
+                        this._setPositionsFromOBB(boundary.obb);
                     }
                 },
 

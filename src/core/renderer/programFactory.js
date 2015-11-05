@@ -36,7 +36,8 @@
             var program = new XEO.renderer.Program(this.stats, hash, source, this._canvas.gl);
 
             programState = new XEO.renderer.ProgramState({
-                program: program
+                program: program,
+                useCount: 1
             });
 
             this._programStates[hash] = programState;

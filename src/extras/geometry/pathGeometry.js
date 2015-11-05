@@ -23,7 +23,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
         if (!this.__dirty) {
             this.__dirty = true;
             var self = this;
-            this.scene.once("tick2",
+            this.scene.once("tick4",
                 function () {
                     self.__build();
                     self.__dirty = false;

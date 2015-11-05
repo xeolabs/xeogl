@@ -159,11 +159,11 @@
             components = XEO._isArray(components) ? components : [components];
 
             for (var i = 0, len = components.length; i < len; i++) {
-                this._addComponent(components[i]);
+                this._add(components[i]);
             }
         },
 
-        _addComponent: function (c) {
+        _add: function (c) {
 
             var componentId;
             var component;
@@ -193,7 +193,7 @@
 
                     for (componentId in types) {
                         if (types.hasOwnProperty(componentId)) {
-                            this._addComponent(types[componentId]);
+                            this._add(types[componentId]);
                         }
                     }
 
@@ -246,10 +246,29 @@
 
             this._destroyedSubs[component.id] = component.on("destroyed",
                 function(component) {
-                    self._removeComponent(component);
+                    self._remove(component);
                 });
 
             this.fire("added", component);
+
+            this._scheduleUpdate();
+
+            //this.schedule("updated",
+            //    function() {
+            //        self.fire("updated");
+            //    })
+        },
+
+        _scheduleUpdate: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                var self = this;
+                this.scene.once("tick2",
+                    function () {
+                        self.fire("updated");
+                        self._dirty = false;
+                    });
+            }
         },
 
         /**
@@ -262,7 +281,7 @@
         clear: function () {
 
             this.iterate(function (component) {
-                this._removeComponent(component);
+                this._remove(component);
             });
         },
 
@@ -295,11 +314,11 @@
             components = XEO._isArray(components) ? components : [components];
 
             for (var i = 0, len = components.length; i < len; i++) {
-                this._removeComponent(components[i]);
+                this._remove(components[i]);
             }
         },
 
-        _removeComponent: function (component) {
+        _remove: function (component) {
 
             var componentId = component.id;
 
