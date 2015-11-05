@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-11-03
+ * Built on 2015-11-05
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -85,6 +85,8 @@
                     scene.fire("tick", tickEvent, true);
                     scene.fire("tick2", tickEvent, true);
                     scene.fire("tick3", tickEvent, true);
+                    scene.fire("tick4", tickEvent, true);
+                    scene.fire("tick5", tickEvent, true);
 
                     // Compile also means "render".
                     // It only actually "compiles" anything if it needs recompilation.
@@ -4422,8 +4424,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              */
             this.objects = {};
 
-            // Contains XEO.GameObjects that need to be recompiled back into
-            // this._renderer
+            // Contains XEO.GameObjects that need to be recompiled back into this._renderer
             this._dirtyObjects = {};
 
             /**
@@ -4524,6 +4525,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         },
 
         _initDefaults: function () {
+
+            // Create this Scene's default components, which every
+            // GameObject created in this Scene will inherit by default
 
             this.view;
             this.project;
@@ -5005,7 +5009,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                 new XEO.AmbientLight(this, {
                                     id: "default.light0",
                                     color: [0.8, 0.8, 0.9],
-                                    intensity: 0.5
+                                    intensity: 0.6
                                 }),
 
                                 // Directional light source #1
@@ -5258,10 +5262,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * ````
          * @method pick
          *
-         * @param {*} [options] Pick options.
-         * @param {Array of Number} [options.canvasPos] Canvas-space coordinates.
-         * @param {Boolean} [options.rayPick=false] Whether to ray-pick.
-         * @returns {*} Hit record when a {{#crossLink "GameObject"}}{{/crossLink}} is picked.
+         * @param {*} params Picking parameters.
+         * @param {Array of Number} [params.canvasPos] Canvas-space coordinates.
+         * @param {Boolean} [params.rayPick=false] Whether to ray-pick.
+         * @returns {*} Hit record, returned when a {{#crossLink "GameObject"}}{{/crossLink}} is picked, else null.
          */
         pick: (function () {
 
@@ -5292,7 +5296,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             var tempVec4 = XEO.math.vec4();
             var tempVec4b = XEO.math.vec4();
-            var tempVec4c = XEO.math.vec4();
 
             var tempVec3 = XEO.math.vec3();
             var tempVec3b = XEO.math.vec3();
@@ -5351,16 +5354,15 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 math.normalizeVec3(dir);
             }
 
-            return function (canvasPos, options) {
+            return function (params) {
 
                 var math = XEO.math;
 
-                options = options || {};
+                params = params || {};
 
-                var hit = this._renderer.pick({
-                    canvasPos: canvasPos,
-                    rayPick: options.rayPick
-                });
+                params.canvasPos = params.canvasPos || math.vec3();
+
+                var hit = this._renderer.pick(params);
 
                 if (hit) {
 
@@ -5412,7 +5414,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                             // from the eye position through the mouse position
                             // on the perspective projection plane
 
-                            getLocalRay(object, canvasPos, origin, dir);
+                            getLocalRay(object, params.canvasPos, origin, dir);
 
                             math.rayPlaneIntersect(origin, dir, a, b, c, position);
 
@@ -5496,6 +5498,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     return hit;
                 }
             };
+
         })(),
 
         /**
@@ -9178,8 +9181,12 @@ visibility.destroy();
                 this._dirty = true;
                 var self = this;
 
-                this.scene.once("tick3",
+                this.scene.once("tick",
                     function () {
+
+                        // Build VBOs for renderer; no other components in the scene
+                        // will be waiting them, so OK to schedule that for next tick.
+
                         self._build();
                     });
             }
@@ -9737,7 +9744,11 @@ visibility.destroy();
                             // can manage caching for the boundary
 
                             getDirty: function () {
-                                return self._boundaryDirty;
+                                if (self._boundaryDirty) {
+                                    self._boundaryDirty = false;
+                                    return true;
+                                }
+                                return false;
                             },
 
                             getPositions: function () {
@@ -9845,6 +9856,10 @@ visibility.destroy();
         },
 
         _setBoundaryDirty: function () {
+
+            if (this._boundaryDirty) {
+                return;
+            }
 
             this._boundaryDirty = true;
 
@@ -13659,7 +13674,7 @@ visibility.destroy();
 
                 var self = this;
 
-                this.scene.once("tick2",
+                this.scene.once("tick",
                     function () {
 
                         self._buildTexture();
@@ -15319,7 +15334,7 @@ visibility.destroy();
                                     return;
                                 }
                                 self._XXX = true;
-                                self.scene.once("tick2", function () {
+                                self.scene.once("tick3", function () {
                                     newTransform._buildLeafMatrix();
 
                                     self._setWorldBoundaryDirty();
@@ -15423,16 +15438,21 @@ visibility.destroy();
                             },
 
                             getDirty: function () {
-                                return self._worldBoundaryDirty;
+                                if (self._worldBoundaryDirty) {
+                                    self._worldBoundaryDirty = false;
+                                    return true;
+                                }
+                                return false;
                             },
 
-                            //getOBB: function () {
-                            //    return self.localBoundary.obb;
+                            // Faster and less precise than getPositions:
+                            getOBB: function () {
+                               return self._children.geometry.boundary.obb;
+                            },
+
+                            //getPositions: function () {
+                            //    return self._children.geometry.positions;
                             //},
-
-                            getPositions: function () {
-                                return self._children.geometry.positions;
-                            },
 
                             getMatrix: function () {
                                 return self._children.transform.leafMatrix;
@@ -15483,7 +15503,11 @@ visibility.destroy();
                             },
 
                             getDirty: function () {
-                                return self._viewBoundaryDirty;
+                                if (self._viewBoundaryDirty) {
+                                    self._viewBoundaryDirty = false;
+                                    return true;
+                                }
+                                return false;
                             },
 
                             getOBB: function () {
@@ -15540,7 +15564,11 @@ visibility.destroy();
                             },
 
                             getDirty: function () {
-                                return self._canvasBoundaryDirty;
+                                if (self._canvasBoundaryDirty) {
+                                    self._canvasBoundaryDirty = false;
+                                    return true;
+                                }
+                                return false;
                             },
 
                             getOBB: function () {
@@ -15625,6 +15653,9 @@ visibility.destroy();
         },
 
         _setWorldBoundaryDirty: function () {
+            if (this._worldBoundaryDirty) {
+                return;
+            }
             this._worldBoundaryDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
@@ -15633,6 +15664,9 @@ visibility.destroy();
         },
 
         _setViewBoundaryDirty: function () {
+            if (this._viewBoundaryDirty) {
+                return;
+            }
             this._viewBoundaryDirty = true;
             if (this._viewBoundary) {
                 this._viewBoundary.fire("updated", true);
@@ -15641,6 +15675,9 @@ visibility.destroy();
         },
 
         _setCanvasBoundaryDirty: function () {
+            if (this._canvasBoundaryDirty) {
+                return;
+            }
             this._canvasBoundaryDirty = true;
             if (this._canvasBoundary) {
                 this._canvasBoundary.fire("updated", true);
@@ -19759,7 +19796,8 @@ visibility.destroy();
             var program = new XEO.renderer.Program(this.stats, hash, source, this._canvas.gl);
 
             programState = new XEO.renderer.ProgramState({
-                program: program
+                program: program,
+                useCount: 1
             });
 
             this._programStates[hash] = programState;
@@ -27694,6 +27732,339 @@ scene.on("tick", function(e) {
 })();
 
 ;/**
+ A **GroupBoundary** TODO.
+
+ ## Overview
+
+ <ul>
+
+ <li>TODO</li>
+
+ </ul>
+
+ <img src="../../../assets/images/GroupBoundary.png"></img>
+
+ ## Example
+
+ TODO
+
+ ````javascript
+ var groupBoundary = new XEO.GroupBoundary({
+
+    group: new XEO.Group({
+
+        components: [
+            new XEO.GameObject({
+                ..,,
+            }),
+            new XEO.GameObject({
+                ..,,
+            }),
+            new XEO.GameObject({
+                //..
+            })
+        ]
+    })
+});
+
+ var showBoundary = new XEO.GameObject({
+        geometry: new XEO.BoundaryGeometry({
+            boundary: groupBoundary.worldBoundary
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1,0,0]
+        })
+    });
+ ````
+
+ @class GroupBoundary
+ @module XEO
+ @submodule boundaries
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this GroupBoundary within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} GroupBoundary configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GroupBoundary.
+ @param [cfg.blendEnabled=false] {Boolean} Indicates if blending is enabled.
+ @param [cfg.colorMask=[true, true, true, true]] {Array of Boolean} The color mask,
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.GroupBoundary = XEO.Component.extend({
+
+        type: "XEO.GroupBoundary",
+
+        _init: function (cfg) {
+
+            this._onUpdated = {};
+
+            this.group = cfg.group;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GameObject.
+             *
+             * Defaults to an empty internally-managed {{#crossLink "Group"}}{{/crossLink}}.
+             *
+             * Fires a {{#crossLink "GroupBoundary/group:event"}}{{/crossLink}} event on change.
+             *
+             * @property group
+             * @type Group
+             */
+            group: {
+
+                set: function (value) {
+
+                    // Unsubscribe from old Group's events
+
+                    var oldGroup = this._children.group;
+
+                    if (oldGroup && (!value || value.id !== oldGroup.id)) {
+
+                        oldGroup.off(this._onAdded);
+                        oldGroup.off(this._onRemoved);
+
+                        oldGroup.iterate(unbind);
+                    }
+
+                    /**
+                     * Fired whenever this GroupBoundary's  {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event group
+                     * @param value The property's new value
+                     */
+                    var group = this._setChild("group", value);
+
+                    var self = this;
+
+                    if (group) {
+
+                        this._onAdded = group.on("added",
+                            function (c) {
+                                if (c.worldBoundary) {
+                                    bind(c);
+                                }
+                            });
+
+                        this._onRemoved = group.on("removed",
+                            function (c) {
+                                if (c.worldBoundary) {
+                                    unbind(c);
+                                }
+                            });
+
+                        this._onRemoved = group.on("updated",
+                            function () {
+                                if (!self._AABBDirty) {
+                                    self._setAABBDirty();
+                                }
+                            });
+
+                        group.iterate(bind);
+
+                        this._setAABBDirty();
+                    }
+
+                    function bind(c) {
+                        var worldBoundary = c.worldBoundary;
+                        if (!worldBoundary) {
+                            return;
+                        }
+                        self._onUpdated[c.id] = worldBoundary.on("updated",
+                            function () {
+                                self._setAABBDirty();
+                            });
+                    }
+
+                    function unbind(c) {
+                        var worldBoundary = c.worldBoundary;
+                        if (!worldBoundary) {
+                            return;
+                        }
+                        worldBoundary.off(self._onUpdated[c.id]);
+                        delete self._onUpdated[c.id];
+                    }
+
+                    this._setAABBDirty();
+                },
+
+                get: function () {
+                    return this._children.group;
+                }
+            },
+
+            /**
+             * World-space 3D boundary.
+             *
+             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
+             * time you reference it.
+             *
+             * @property worldBoundary
+             * @type Boundary3D
+             * @final
+             */
+            worldBoundary: {
+
+                get: function () {
+
+                    if (!this._worldBoundary) {
+
+                        var self = this;
+
+                        this._worldBoundary = new XEO.Boundary3D(this.scene, {
+
+                            getDirty: function () {
+                                if (self._worldBoundaryDirty) {
+                                    self._worldBoundaryDirty = false;
+                                    return true;
+                                }
+                                return false;
+                            },
+
+                            getAABB: function () {
+
+                                if (self._AABBDirty) {
+
+                                    self._buildAABB();
+
+                                    self._AABBDirty = false;
+                                }
+
+                                return self._aabb;
+                            }
+                        });
+
+                        this._worldBoundary.on("destroyed",
+                            function () {
+                                self._worldBoundary = null;
+                            });
+
+                        this._setWorldBoundaryDirty();
+                    }
+
+                    return this._worldBoundary;
+                }
+            }
+        },
+
+        _setAABBDirty: function () {
+            if (this._AABBDirty) {
+                return;
+            }
+            this._AABBDirty = true;
+            this._setWorldBoundaryDirty();
+        },
+
+        _setWorldBoundaryDirty: function () {
+            if (this._worldBoundaryDirty) {
+                return;
+            }
+            this._worldBoundaryDirty = true;
+            if (this._worldBoundary) {
+                this._worldBoundary.fire("updated", true);
+            }
+        },
+
+        _buildAABB: function () {
+
+            if (!this._aabb) {
+                this._aabb = {
+                    xmin: 0, ymin: 0, zmin: 0,
+                    xmax: 0, ymax: 0, zmax: 0
+                };
+            }
+
+            var xmin = 100000;
+            var ymin = 100000;
+            var zmin = 100000;
+            var xmax = -100000;
+            var ymax = -100000;
+            var zmax = -100000;
+
+            var component;
+            var worldBoundary;
+            var aabb;
+
+            var group = this.group;
+
+            if (group) {
+
+                var components = group.components;
+
+                for (var componentId in components) {
+                    if (components.hasOwnProperty(componentId)) {
+
+                        component = components[componentId];
+
+                        worldBoundary = component.worldBoundary;
+                        if (worldBoundary) {
+
+                            aabb = worldBoundary.aabb;
+
+                            if (aabb.xmin < xmin) {
+                                xmin = aabb.xmin;
+                            }
+
+                            if (aabb.ymin < ymin) {
+                                ymin = aabb.ymin;
+                            }
+
+                            if (aabb.zmin < zmin) {
+                                zmin = aabb.zmin;
+                            }
+
+                            if (aabb.xmax > xmax) {
+                                xmax = aabb.xmax;
+                            }
+
+                            if (aabb.ymax > ymax) {
+                                ymax = aabb.ymax;
+                            }
+
+                            if (aabb.zmax > zmax) {
+                                zmax = aabb.zmax;
+                            }
+                        }
+                    }
+                }
+            }
+
+            this._aabb.xmin = xmin;
+            this._aabb.ymin = ymin;
+            this._aabb.zmin = zmin;
+            this._aabb.xmax = xmax;
+            this._aabb.ymax = ymax;
+            this._aabb.zmax = zmax;
+        },
+
+        _getJSON: function () {
+            var json = {};
+            if (this.group) {
+                json.group = this.group
+            }
+            return json;
+        },
+
+        _destroy: function () {
+
+            this.group = null; // Unsubscribes from worldBoundary updates on Group members
+
+            if (this._worldBoundary) {
+                this._worldBoundary.destroy();
+            }
+        }
+    });
+
+})
+();
+;/**
  A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the object-aligned bounding box (OBB)
  of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
@@ -27801,18 +28172,29 @@ scene.on("tick", function(e) {
                     if (boundary) {
 
                         var self = this;
+                        var geometryDirty = false;
+
+                        // Whenever the new boundary fires a change event,
+                        // schedule a geometry rebuild for the next 'tick'.
 
                         this._onBoundaryUpdated = boundary.on("updated",
                             function () {
-                                self._setPositionsFromOBB(boundary.obb);
+                                if (geometryDirty) {
+                                    return;
+                                }
+                                self.scene.once("tick4",
+                                    function () {
+                                        self._setPositionsFromOBB(boundary.obb);
+                                        geometryDirty = false;
+                                    });
                             });
 
                         this._onBoundaryDestroyed = boundary.on("destroyed",
                             function () {
-                                self.boundary = null;
+                                self.boundary = null; // Unsubscribes from old boundary's events
                             });
 
-                        //     this._setPositionsFromOBB(boundary.obb);
+                        this._setPositionsFromOBB(boundary.obb);
                     }
                 },
 
@@ -27971,7 +28353,7 @@ scene.on("tick", function(e) {
             if (!this.__dirty) {
                 this.__dirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildTorus();
                         self.__dirty = false;
@@ -28388,7 +28770,7 @@ scene.on("tick", function(e) {
             if (!this.__dirty) {
                 this.__dirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildSphere();
                         self.__dirty = false;
@@ -28696,7 +29078,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
         if (!this.__dirty) {
             this.__dirty = true;
             var self = this;
-            this.scene.once("tick2",
+            this.scene.once("tick4",
                 function () {
                     self.__build();
                     self.__dirty = false;
@@ -28892,7 +29274,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             if (!this.__dirty) {
                 this.__dirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildCylinder();
                         self.__dirty = false;
@@ -29432,7 +29814,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             if (!this._planeDirty) {
                 this._planeDirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildPlane();
                         self._planeDirty = false;
@@ -29830,7 +30212,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             if (!this._heightmapDirty) {
                 this._heightmapDirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildHeightmap();
                         self._heightmapDirty = false;
@@ -30489,7 +30871,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             if (!this.__dirty) {
                 this.__dirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildLathe();
                         self.__dirty = false;
@@ -30839,7 +31221,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             if (!this.__dirty) {
                 this.__dirty = true;
                 var self = this;
-                this.scene.once("tick2",
+                this.scene.once("tick4",
                     function () {
                         self._buildText();
                         self.__dirty = false;
@@ -32815,11 +33197,11 @@ XEO.PathGeometry = XEO.Geometry.extend({
             components = XEO._isArray(components) ? components : [components];
 
             for (var i = 0, len = components.length; i < len; i++) {
-                this._addComponent(components[i]);
+                this._add(components[i]);
             }
         },
 
-        _addComponent: function (c) {
+        _add: function (c) {
 
             var componentId;
             var component;
@@ -32849,7 +33231,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     for (componentId in types) {
                         if (types.hasOwnProperty(componentId)) {
-                            this._addComponent(types[componentId]);
+                            this._add(types[componentId]);
                         }
                     }
 
@@ -32902,10 +33284,29 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             this._destroyedSubs[component.id] = component.on("destroyed",
                 function(component) {
-                    self._removeComponent(component);
+                    self._remove(component);
                 });
 
             this.fire("added", component);
+
+            this._scheduleUpdate();
+
+            //this.schedule("updated",
+            //    function() {
+            //        self.fire("updated");
+            //    })
+        },
+
+        _scheduleUpdate: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                var self = this;
+                this.scene.once("tick2",
+                    function () {
+                        self.fire("updated");
+                        self._dirty = false;
+                    });
+            }
         },
 
         /**
@@ -32918,7 +33319,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
         clear: function () {
 
             this.iterate(function (component) {
-                this._removeComponent(component);
+                this._remove(component);
             });
         },
 
@@ -32951,11 +33352,11 @@ XEO.PathGeometry = XEO.Geometry.extend({
             components = XEO._isArray(components) ? components : [components];
 
             for (var i = 0, len = components.length; i < len; i++) {
-                this._removeComponent(components[i]);
+                this._remove(components[i]);
             }
         },
 
-        _removeComponent: function (component) {
+        _remove: function (component) {
 
             var componentId = component.id;
 
@@ -35234,7 +35635,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
                                     downY >= (canvasPos[1] - tolerance) &&
                                     downY <= (canvasPos[1] + tolerance)) {
 
-                                    var hit = self.scene.pick(canvasPos, {
+                                    var hit = self.scene.pick({
+                                        canvasPos : canvasPos,
                                         rayPick: self._rayPick
                                     });
 
