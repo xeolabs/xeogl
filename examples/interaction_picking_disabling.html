@@ -14,7 +14,7 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -118,8 +118,8 @@
 
                 log("Clicked: (" + coords[0] + ", " + coords[1] + ")");
 
-                var hit = scene.pick(coords, {
-                    triangle: true
+                var hit = scene.pick({
+                    canvasPos: coords
                 });
 
                 if (hit) {

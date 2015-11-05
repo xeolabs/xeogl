@@ -118,7 +118,8 @@
 
                 // Pick a primitive on some GameObject
 
-                var hit = scene.pick(coords, {
+                var hit = scene.pick({
+                    canvasPos: coords,
                     rayPick: true
                 });
 

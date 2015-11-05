@@ -16,6 +16,9 @@
 
     <script src="../build/xeoengine.min.js"></script>
 
+    <script src="lib/loaders/k3d.js"></script>
+    <script src="lib/loaders/objGeometry.js"></script>
+
     <script src="js/debug/debug.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
@@ -122,17 +125,40 @@
         material: material
     });
 
-    // Sphere 2
-
     new XEO.GameObject({
-        geometry: new XEO.SphereGeometry({
-            radius: 3.0
+
+        geometry: new XEO.OBJGeometry({
+            src: "models/obj/raptor.obj"
         }),
-        transform: new XEO.Translate({
-            xyz: [10, -10, 0]
+
+        material: new XEO.PhongMaterial({
+
+            diffuseMap: new XEO.Texture({
+                src: "models/obj/raptor.jpg"
+            })
         }),
-        material: material
+
+        transform: new XEO.Rotate({
+            xyz: [1,0,0],
+            angle: 0,
+
+            parent: new XEO.Translate({
+                xyz: [10,3,10]
+            })
+        })
     });
+//
+//    // Sphere 2
+//
+//    new XEO.GameObject({
+//        geometry: new XEO.SphereGeometry({
+//            radius: 3.0
+//        }),
+//        transform: new XEO.Translate({
+//            xyz: [10, -10, 0]
+//        }),
+//        material: material
+//    });
 
     // Cylinder
 
@@ -185,7 +211,8 @@
 
                 // Pick a primitive on some GameObject
 
-                var hit = scene.pick(coords, {
+                var hit = scene.pick({
+                    canvasPos: coords,
                     rayPick: true
                 });
 

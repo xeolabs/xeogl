@@ -59,11 +59,12 @@
             ctx.fill();
 
             this._image = new Image();
-
-            this._down = false;
             this._texture = cfg.texture;
 
+            this._down = false;
+
             var self = this;
+
             this._needBlit = false;
 
             this._tick = this.scene.on("tick",
@@ -214,7 +215,8 @@
 
                 // Pick a primitive on some GameObject
 
-                var hit = scene.pick(coords, {
+                var hit = scene.pick({
+                    canvasPos: coords,
                     rayPick: true
                 });
 

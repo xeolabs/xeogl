@@ -113,7 +113,9 @@
 
                 log("Clicked: (" + coords[0] + ", " + coords[1] + ")");
 
-                var hit = scene.pick(coords);
+                var hit = scene.pick({
+                    canvasPos: coords
+                });
 
                 if (hit) {
                     log("Picked GameObject '" + hit.object.id + "'");
