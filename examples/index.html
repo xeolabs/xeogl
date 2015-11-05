@@ -219,7 +219,10 @@
             "#getting boundaries of GameObjects",
             "boundaries_GameObject_worldBoundary",
             "boundaries_GameObject_viewBoundary",
-            "boundaries_GameObject_canvasBoundary"
+            "boundaries_GameObject_canvasBoundary",
+
+            "#utilities",
+            "boundaries_GroupBoundary"
         ],
 
         "Camera": [
@@ -292,7 +295,10 @@
 
         "Groups": [
             "#operations on groups of components",
-            "groups_group"
+            "groups_Group_iterate",
+
+            "#boundaries",
+            "boundaries_GroupBoundary"
         ],
 
         "Interaction": [
@@ -484,7 +490,7 @@
             var lines = source.split('\n');
             var start = 0, end = lines.length;
             for (var i = 0; i < lines.length; i++) {
-                if (lines[i].trim().substring(0,7) === ('<script')) {
+                if (lines[i].trim().substring(0, 7) === ('<script')) {
                     start = i;
                 }
                 if (lines[i].trim() == '<\/script>') {

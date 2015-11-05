@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>a <a href="../docs/classes/GroupBoundary.html" target="_other">GroupBoundary</a> containing
+            1000 animated <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a></li>
+
+    </ul>
+</div>
+
+<script>
+
+    // Geometry shared by our GameObjects
+
+    var sphereGeometry = new XEO.SphereGeometry({
+        radius: 5
+    });
+
+    // The GroupBoundary
+
+    var groupBoundary = new XEO.GroupBoundary({
+        group: new XEO.Group()
+    });
+
+    // GameObject which will show the boundary of the GroupBoundary
+    // as a wireframe box
+
+    var groupBoundaryIndicator = new XEO.GameObject({
+        geometry: new XEO.BoundaryGeometry({
+            boundary: groupBoundary.worldBoundary
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
+            lineWidth: 2
+        })
+    });
+
+    // Create 1000 moving GameObjects within the GroupBoundary
+
+    for (var i = 0; i < 2000; i++) {
+
+        var r = (Math.random() + 0.1 ) * 50;
+        var halfr = r / 2;
+
+        (function () {
+
+            // Create a randomly-positioned sphere GameObject
+
+            var object = new XEO.GameObject({
+                geometry: sphereGeometry,
+                material: new XEO.PhongMaterial({
+                    diffuse: [
+                        Math.random(),
+                        Math.random(),
+                        Math.random()
+                    ]
+                }),
+                transform: new XEO.Translate({
+                    xyz: [
+                        Math.random() * r - halfr,
+                        Math.random() * r - halfr,
+                        Math.random() * r - halfr
+                    ]
+                })
+            });
+
+
+            // Add the GameObject to the GroupBoundary
+
+            groupBoundary.group.add(object);
+
+
+            // Animate the position of the GameObject back and forth
+            // along a random trajectory vector
+
+            var count = 0;
+
+            var trajectory = [
+                Math.random() * 2.0 - 1.0,
+                Math.random() * 1.0 - 1.0,
+                Math.random() * 1.0 - 1.0
+            ];
+
+            object.scene.on("tick",
+                    function () {
+
+                        var dir = ((count++ % 300) > 150) ? 1.0 : -1.0;
+
+                        var xyz = object.transform.xyz;
+
+                        object.transform.xyz = [
+                            xyz[0] + trajectory[0] * dir,
+                            xyz[1] + trajectory[1] * dir,
+                            xyz[2] + trajectory[2] * dir
+                        ];
+                    });
+        })();
+    }
+
+    var scene = XEO.scene;
+
+    // Move the camera back a bit
+
+    scene.camera.view.zoom(320);
+
+    // Orbit the camera
+
+    scene.on("tick",
+            function () {
+                var view = scene.camera.view;
+                view.rotateEyeY(0.2);
+            });
+
+    // Permit user camera control
+
+    var cameraControl = new XEO.CameraControl();
+    cameraControl.mouseZoom.sensitivity = 5;
+
+</script>
+</body>
+</html>
