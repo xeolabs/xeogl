@@ -211,7 +211,7 @@
                     return;
                 }
 
-                XEO.debug.hide("stylus");
+                XEO.debug.hide("cone");
 
                 // Pick a primitive on some GameObject
 
@@ -223,10 +223,11 @@
                 if (hit && hit.worldPos && hit.normal) {
 
                     XEO.debug
-                            .id("stylus")
+                            .id("cone")
                             .pos(hit.worldPos)
-                            .dir(hit.normal)
-                            .stylus();
+                            .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
+                            .radius(0.3)
+                            .cone();
 
                     if (hit.uv) {
 

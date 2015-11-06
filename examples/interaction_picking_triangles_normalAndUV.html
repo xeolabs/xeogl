@@ -55,14 +55,13 @@
         var height = textureImg.height;
         return function (uv) {
             if (!uv) {
-                uvPosDiv.style.left =-100 + "px";
+                uvPosDiv.style.left = -100 + "px";
                 return;
             }
             uvPosDiv.style.left = Math.floor(left + uv[0] * width) + "px";
             uvPosDiv.style.top = Math.floor(top + height - (uv[1] * height)) + "px"; // Correct for our texture Y-flipping
         }
     })();
-
 
 
     // ----------- Scene definition -----------------------------------------
@@ -139,26 +138,26 @@
         }),
 
         transform: new XEO.Rotate({
-            xyz: [1,0,0],
+            xyz: [1, 0, 0],
             angle: 0,
 
             parent: new XEO.Translate({
-                xyz: [10,3,10]
+                xyz: [10, 3, 10]
             })
         })
     });
-//
-//    // Sphere 2
-//
-//    new XEO.GameObject({
-//        geometry: new XEO.SphereGeometry({
-//            radius: 3.0
-//        }),
-//        transform: new XEO.Translate({
-//            xyz: [10, -10, 0]
-//        }),
-//        material: material
-//    });
+    //
+    //    // Sphere 2
+    //
+    //    new XEO.GameObject({
+    //        geometry: new XEO.SphereGeometry({
+    //            radius: 3.0
+    //        }),
+    //        transform: new XEO.Translate({
+    //            xyz: [10, -10, 0]
+    //        }),
+    //        material: material
+    //    });
 
     // Cylinder
 
@@ -205,7 +204,7 @@
 
                 // Hide visual indicators
 
-                XEO.debug.hide("stylus");
+                XEO.debug.hide("cone");
 
                 showUVPos(null);
 
@@ -222,10 +221,11 @@
 
                     if (hit.worldPos && hit.normal) {
                         XEO.debug
-                                .id("stylus")
+                                .id("cone")
                                 .pos(hit.worldPos)
-                                .dir(hit.normal)
-                                .stylus();
+                                .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
+                                .radius(0.3)
+                                .cone();
                     }
 
                     if (hit.uv) {
