@@ -17,6 +17,12 @@
         var normalMapping; // True when rendering state contains tangents
         var reflection; // True when rendering state contains reflections
 
+        var diffuseFresnel;
+        var specularFresnel;
+        var opacityFresnel;
+        var reflectivityFresnel;
+        var emissiveFresnel;
+
         /**
          * Get source code for a program to render the given states.
          * Attempts to reuse cached source code for the given hash.
@@ -36,6 +42,12 @@
             shading = hasShading();
             normalMapping = hasNormalMap();
             reflection = hasReflection();
+
+            diffuseFresnel = states.material.diffuseFresnel;
+            specularFresnel = states.material.specularFresnel;
+            opacityFresnel = states.material.opacityFresnel;
+            reflectivityFresnel = states.material.reflectivityFresnel;
+            emissiveFresnel = states.material.emissiveFresnel;
 
             source = new XEO.renderer.ProgramSource(
                 hash,
@@ -565,9 +577,63 @@
                     }
                     add("varying vec4 xeo_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
                 }
+
+                if (diffuseFresnel) {
+                    add("uniform float xeo_uDiffuseFresnelCenterBias;");
+                    add("uniform float xeo_uDiffuseFresnelEdgeBias;");
+                    add("uniform float xeo_uDiffuseFresnelPower;");
+                    add("uniform vec3 xeo_uDiffuseFresnelCenterColor;");
+                    add("uniform vec3 xeo_uDiffuseFresnelEdgeColor;");
+                }
+
+                if (specularFresnel) {
+                    add("uniform float xeo_uSpecularFresnelCenterBias;");
+                    add("uniform float xeo_uSpecularFresnelEdgeBias;");
+                    add("uniform float xeo_uSpecularFresnelPower;");
+                    add("uniform vec3 xeo_uSpecularFresnelCenterColor;");
+                    add("uniform vec3 xeo_uSpecularFresnelEdgeColor;");
+                }
+
+                if (opacityFresnel) {
+                    add("uniform float xeo_uOpacityFresnelCenterBias;");
+                    add("uniform float xeo_uOpacityFresnelEdgeBias;");
+                    add("uniform float xeo_uOpacityFresnelPower;");
+                    add("uniform vec3 xeo_uOpacityFresnelCenterColor;");
+                    add("uniform vec3 xeo_uOpacityFresnelEdgeColor;");
+                }
+
+                if (reflectivityFresnel) {
+                    add("uniform float xeo_uReflectivityFresnelCenterBias;");
+                    add("uniform float xeo_uReflectivityFresnelEdgeBias;");
+                    add("uniform float xeo_uReflectivityFresnelPower;");
+                    add("uniform vec3 xeo_uReflectivityFresnelCenterColor;");
+                    add("uniform vec3 xeo_uReflectivityFresnelEdgeColor;");
+                }
+
+                if (emissiveFresnel) {
+                    add("uniform float xeo_uEmissiveFresnelCenterBias;");
+                    add("uniform float xeo_uEmissiveFresnelEdgeBias;");
+                    add("uniform float xeo_uEmissiveFresnelPower;");
+                    add("uniform vec3 xeo_uEmissiveFresnelCenterColor;");
+                    add("uniform vec3 xeo_uEmissiveFresnelEdgeColor;");
+                }
             }
 
             add();
+
+            if (diffuseFresnel || specularFresnel || opacityFresnel || emissiveFresnel || reflectivityFresnel) {
+                
+                comment("Fresnel function");
+                
+                add("float fresnel(vec3 viewDirection, vec3 worldNormal, float edgeBias, float centerBias, float power) {");
+                add("    float fr = abs(dot(normalize(viewDirection), normalize(worldNormal)));");
+                add("    float finalFr = clamp((fr - edgeBias) / (centerBias - edgeBias), 0.0, 1.0);");
+                add("    return pow(finalFr, power);");
+                add("}");
+            }
+
+            add();
+
             add("void main(void) {");
             add();
 
@@ -592,14 +658,14 @@
             if (shading) {
 
                 if (normalMapping) {
-                    add("   vec3 viewNormalVec = vec3(0.0, 1.0, 0.0);");
+                    add("   vec3 viewNormal = vec3(0.0, 1.0, 0.0);");
 
                 } else {
 
                     // Normalize the interpolated normals in the per-fragment-fragment-shader,
                     // because if we linear interpolated two nonparallel normalized vectors,
                     // the resulting vector won’t be of length 1
-                    add("   vec3 viewNormalVec = normalize(xeo_vViewNormal);");
+                    add("   vec3 viewNormal = normalize(xeo_vViewNormal);");
                 }
             }
 
@@ -683,6 +749,8 @@
 
             if (shading) {
 
+                // Lambertian shading
+
                 add();
                 add("   vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
                 add("   vec3  specularLight = vec3(0.0, 0.0, 0.0);");
@@ -707,7 +775,7 @@
 
                     if (light.type === "point") {
                         add();
-                        add("   dotN = max(dot(viewNormalVec, viewLightVec), 0.0);");
+                        add("   dotN = max(dot(viewNormal, viewLightVec), 0.0);");
                         add("   lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
                         add("   attenuation = 1.0 - (" +
                             "  xeo_uLightAttenuation" + i + "[0] + " +
@@ -717,23 +785,55 @@
                         add("   diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
 
                         add("   specularLight += xeo_uLightIntensity" + i +
-                            " *  pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
+                            " *  pow(max(dot(reflect(-viewLightVec, -viewNormal), " +
                             "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess) * attenuation;");
                     }
 
                     if (light.type === "dir") {
                         add();
-                        add("   dotN = max(dot(viewNormalVec, viewLightVec), 0.0);");
+                        add("   dotN = max(dot(viewNormal, viewLightVec), 0.0);");
 
                         add("   diffuseLight += dotN * xeo_uLightColor" + i + ";");
 
                         add("   specularLight += xeo_uLightIntensity" + i +
-                            " * pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
+                            " * pow(max(dot(reflect(-viewLightVec, -viewNormal), " +
                             "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess);");
                     }
                 }
 
                 add();
+
+                comment("Fresnel effects");
+                
+                if (diffuseFresnel || specularFresnel || opacityFresnel || emissiveFresnel) {
+
+                    if (diffuseFresnel) {
+                        add("float diffuseFresnel = fresnel(xeo_vViewEyeVec, viewNormal, xeo_uDiffuseFresnelEdgeBias, xeo_uDiffuseFresnelCenterBias, xeo_uDiffuseFresnelPower);");
+                        add("diffuse *= mix(xeo_uDiffuseFresnelEdgeColor, xeo_uDiffuseFresnelCenterColor, diffuseFresnel);");
+                        add();
+                    }
+
+                    if (specularFresnel) {
+                        add("float specularFresnel = fresnel(xeo_vViewEyeVec, viewNormal, xeo_uSpecularFresnelEdgeBias, xeo_uSpecularFresnelCenterBias, xeo_uSpecularFresnelPower);");
+                        add("specular *= mix(xeo_uSpecularFresnelEdgeColor, xeo_uSpecularFresnelCenterColor, specularFresnel);");
+                        add();
+                    }
+
+                    if (opacityFresnel) {
+                        add("float opacityFresnel = fresnel(xeo_vViewEyeVec, viewNormal, xeo_uOpacityFresnelEdgeBias, xeo_uOpacityFresnelCenterBias, xeo_uOpacityFresnelPower);");
+                        add("opacity *= mix(xeo_uOpacityFresnelEdgeColor.r, xeo_uOpacityFresnelCenterColor.r, opacityFresnel);");
+                        add();
+                    }
+
+                    if (emissiveFresnel) {
+                        add("float emissiveFresnel = fresnel(xeo_vViewEyeVec, viewNormal, xeo_uEmissiveFresnelEdgeBias, xeo_uEmissiveFresnelCenterBias, xeo_uEmissiveFresnelPower);");
+                        add("emissive *= mix(xeo_uEmissiveFresnelEdgeColor, xeo_uEmissiveFresnelCenterColor, emissiveFresnel);");
+                        add();
+                    }
+                }
+
+                // Blinn-Phong
+
                 add("   gl_FragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
 
             } else {
@@ -757,6 +857,13 @@
         // Append to program source
         function add(txt) {
             src.push(txt || "");
+        }
+
+        // Append to program source
+        function comment(txt) {
+            //if (txt) {
+            //    src.push("# " + txt);
+            //}
         }
 
         // Finish building program source

@@ -346,6 +346,22 @@
 
     /**
 
+     Fresnel state.
+
+     @class renderer.Fresnel
+     @module XEO
+     @submodule renderer
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Fresnel = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+    
+    
+    /**
+
      Geometry state.
 
      @class renderer.Geometry
