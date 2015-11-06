@@ -978,7 +978,7 @@
 
                             // Faster and less precise than getPositions:
                             getOBB: function () {
-                               return self._children.geometry.boundary.obb;
+                                return self._children.geometry.boundary.obb;
                             },
 
                             //getPositions: function () {
@@ -1184,9 +1184,6 @@
         },
 
         _setWorldBoundaryDirty: function () {
-            if (this._worldBoundaryDirty) {
-                return;
-            }
             this._worldBoundaryDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
@@ -1195,9 +1192,6 @@
         },
 
         _setViewBoundaryDirty: function () {
-            if (this._viewBoundaryDirty) {
-                return;
-            }
             this._viewBoundaryDirty = true;
             if (this._viewBoundary) {
                 this._viewBoundary.fire("updated", true);
@@ -1206,9 +1200,6 @@
         },
 
         _setCanvasBoundaryDirty: function () {
-            if (this._canvasBoundaryDirty) {
-                return;
-            }
             this._canvasBoundaryDirty = true;
             if (this._canvasBoundary) {
                 this._canvasBoundary.fire("updated", true);

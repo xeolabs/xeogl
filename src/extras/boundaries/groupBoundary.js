@@ -222,17 +222,11 @@
         },
 
         _setAABBDirty: function () {
-            if (this._AABBDirty) {
-                return;
-            }
             this._AABBDirty = true;
             this._setWorldBoundaryDirty();
         },
 
         _setWorldBoundaryDirty: function () {
-            if (this._worldBoundaryDirty) {
-                return;
-            }
             this._worldBoundaryDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
