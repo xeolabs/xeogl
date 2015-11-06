@@ -36,6 +36,7 @@
     "src/core/materials/material.js",
     "src/core/materials/phongMaterial.js",
     "src/core/materials/texture.js",
+    "src/core/materials/fresnel.js",
     "src/core/materials/reflect.js",
     "src/core/objects/_module.js",
     "src/core/objects/gameObject.js",
