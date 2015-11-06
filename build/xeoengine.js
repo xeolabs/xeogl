@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-11-05
+ * Built on 2015-11-06
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -14423,6 +14423,296 @@ visibility.destroy();
     });
 
 })();
+;/**
+ A **Fresnel** specifies a Fresnel effect.
+
+ ## Overview
+
+ <ul>
+ <li>Fresnels are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Fresnels create within xeoEngine's shaders.</li>
+ </ul>
+
+ <img src="../../../assets/images/Fresnel.png"></img>
+
+ ## Example
+
+ The example below has:
+ <ul>
+ <li>two Fresnels,</li>
+ <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Fresnel"}}{{/crossLink}}s to diffuse and specular shading,</li>
+ <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
+
+ ```` javascript
+ var scene = new XEO.Scene();
+
+ var fresnel1 = new XEO.Fresnel(scene, {
+    edgeColor: [1.0, 1.0, 1.0],
+    centerColor: [0.0, 0.0, 0.0],
+    power: 4,
+    bias: 0.6
+});
+
+ var fresnel2 = new XEO.Fresnel(scene, {
+    edgeColor: [1.0, 1.0, 1.0],
+    centerColor: [0.0, 0.0, 0.0],
+    power: 4,
+    bias: 0.2
+});
+
+ var material = new XEO.PhongMaterial(scene, {
+    ambient: [0.3, 0.3, 0.3],
+    shininess: 30,
+    diffuseFresnel: fresnel1,
+    specularFresnel: fresnel3
+});
+
+ var light1 = new XEO.PointLight(scene, {
+    pos: [0, 100, 100],
+    diffuse: [0.5, 0.7, 0.5],
+    specular: [1.0, 1.0, 1.0]
+});
+
+ var light2 = new XEO.AmbientLight(scene, {
+    color: [0.5, 0.7, 0.5]
+});
+
+ var lights = new XEO.Lights(scene, {
+    lights: [
+        light1,
+        light2
+    ]
+});
+
+ // Geometry without parameters will default to a 2x2x2 box.
+ var geometry = new XEO.Geometry(scene);
+
+ var object = new XEO.GameObject(scene, {
+    lights: lights,
+    material: material,
+    geometry: geometry
+});
+ ````
+
+ @class Fresnel
+ @module XEO
+ @submodule materials
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Geometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Fresnel.
+ @param [cfg.edgeColor=[ 0.0, 0.0, 0.0 ]] {Array of Number} Color used on edges.
+ @param [cfg.centerColor=[ 1.0, 1.0, 1.0 ]] {Array of Number} Color used on center.
+ @param [cfg.edgeBias=0] {Number} Bias at the edge.
+ @param [cfg.centerBias=1] {Number} Bias at the center.
+ @param [cfg.power=0] {Number} The power.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Fresnel = XEO.Component.extend({
+
+        type: "XEO.Fresnel",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.Fresnel({
+                edgeColor: [0, 0, 0],
+                centerColor: [1, 1, 1],
+                edgeBias: 0,
+                centerBias: 1,
+                power: 1
+            });
+
+            this.edgeColor = cfg.edgeColor;
+            this.centerColor = cfg.centerColor;
+            this.edgeBias = cfg.edgeBias;
+            this.centerBias = cfg.centerBias;
+            this.power = cfg.power;
+        },
+
+        _props: {
+
+            /**
+             This Fresnel's edge color.
+
+             Fires an {{#crossLink "Fresnel/edgeColor:event"}}{{/crossLink}} event on change.
+
+             @property edgeColor
+             @default [0.0, 0.0, 0.0]
+             @type Array(Number)
+             */
+            edgeColor: {
+
+                set: function (value) {
+
+                    this._state.edgeColor = value || [0.0, 0.0, 0.0];
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Fresnel's {{#crossLink "leftColorLight/edgeColor:property"}}{{/crossLink}} property changes.
+
+                     @event edgeColor
+                     @param value The property's new value
+                     */
+                    this.fire("edgeColor", this._state.edgeColor);
+                },
+
+                get: function () {
+                    return this._state.edgeColor;
+                }
+            },
+
+            /**
+             This Fresnel's center color.
+
+             Fires an {{#crossLink "Fresnel/centerColor:event"}}{{/crossLink}} event on change.
+
+             @property centerColor
+             @default [1.0, 1.0, 1.0]
+             @type Array(Number)
+             */
+            centerColor: {
+
+                set: function (value) {
+
+                    this._state.centerColor = value || [1.0, 1.0, 1.0];
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Fresnel's {{#crossLink "rightColorLight/centerColor:property"}}{{/crossLink}} property changes.
+
+                     @event centerColor
+                     @param value The property's new value
+                     */
+                    this.fire("centerColor", this._state.centerColor);
+                },
+
+                get: function () {
+                    return this._state.centerColor;
+                }
+            },
+
+            /**
+             * Indicates this Fresnel's edge bias.
+             *
+             * Fires a {{#crossLink "Fresnel/edgeBias:event"}}{{/crossLink}} event on change.
+             *
+             * @property edgeBias
+             * @default 0
+             * @type Number
+             */
+            edgeBias: {
+
+                set: function (value) {
+
+                    this._state.edgeBias = value || 0;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Fresnel's {{#crossLink "Fresnel/edgeBias:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event edgeBias
+                     * @param value The property's new value
+                     */
+                    this.fire("edgeBias", this._state.edgeBias);
+                },
+
+                get: function () {
+                    return this._state.edgeBias;
+                }
+            },
+
+            /**
+             * Indicates this Fresnel's center bias.
+             *
+             * Fires a {{#crossLink "Fresnel/centerBias:event"}}{{/crossLink}} event on change.
+             *
+             * @property centerBias
+             * @default 1
+             * @type Number
+             */
+            centerBias: {
+
+                set: function (value) {
+
+                    this._state.centerBias = (value !== undefined && value !== null) ? value : 1;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Fresnel's {{#crossLink "Fresnel/centerBias:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event centerBias
+                     * @param value The property's new value
+                     */
+                    this.fire("centerBias", this._state.centerBias);
+                },
+
+                get: function () {
+                    return this._state.centerBias;
+                }
+            },
+
+            /**
+             * Indicates this Fresnel's power.
+             *
+             * Fires a {{#crossLink "Fresnel/power:event"}}{{/crossLink}} event on change.
+             *
+             * @property power
+             * @default 1
+             * @type Number
+             */
+            power: {
+
+                set: function (value) {
+
+                    this._state.power = (value !== undefined && value !== null) ? value : 1;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Fresnel's {{#crossLink "Fresnel/power:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event power
+                     * @param value The property's new value
+                     */
+                    this.fire("power", this._state.power);
+                },
+
+                get: function () {
+                    return this._state.power;
+                }
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                edgeColor: this._state.edgeColor,
+                centerColor: this._state.centerColor,
+                edgeBias: this._state.edgeBias,
+                centerBias: this._state.centerBias,
+                power: this._state.power
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
 ;(function () {
 
     "use strict";
@@ -15447,7 +15737,7 @@ visibility.destroy();
 
                             // Faster and less precise than getPositions:
                             getOBB: function () {
-                               return self._children.geometry.boundary.obb;
+                                return self._children.geometry.boundary.obb;
                             },
 
                             //getPositions: function () {
@@ -15653,9 +15943,6 @@ visibility.destroy();
         },
 
         _setWorldBoundaryDirty: function () {
-            if (this._worldBoundaryDirty) {
-                return;
-            }
             this._worldBoundaryDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
@@ -15664,9 +15951,6 @@ visibility.destroy();
         },
 
         _setViewBoundaryDirty: function () {
-            if (this._viewBoundaryDirty) {
-                return;
-            }
             this._viewBoundaryDirty = true;
             if (this._viewBoundary) {
                 this._viewBoundary.fire("updated", true);
@@ -15675,9 +15959,6 @@ visibility.destroy();
         },
 
         _setCanvasBoundaryDirty: function () {
-            if (this._canvasBoundaryDirty) {
-                return;
-            }
             this._canvasBoundaryDirty = true;
             if (this._canvasBoundary) {
                 this._canvasBoundary.fire("updated", true);
@@ -19457,6 +19738,22 @@ visibility.destroy();
 
     /**
 
+     Fresnel state.
+
+     @class renderer.Fresnel
+     @module XEO
+     @submodule renderer
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Fresnel = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+    
+    
+    /**
+
      Geometry state.
 
      @class renderer.Geometry
@@ -19940,6 +20237,12 @@ visibility.destroy();
         var normalMapping; // True when rendering state contains tangents
         var reflection; // True when rendering state contains reflections
 
+        var diffuseFresnel;
+        var specularFresnel;
+        var opacityFresnel;
+        var reflectivityFresnel;
+        var emissiveFresnel;
+
         /**
          * Get source code for a program to render the given states.
          * Attempts to reuse cached source code for the given hash.
@@ -19959,6 +20262,12 @@ visibility.destroy();
             shading = hasShading();
             normalMapping = hasNormalMap();
             reflection = hasReflection();
+
+            diffuseFresnel = states.material.diffuseFresnel;
+            specularFresnel = states.material.specularFresnel;
+            opacityFresnel = states.material.opacityFresnel;
+            reflectivityFresnel = states.material.reflectivityFresnel;
+            emissiveFresnel = states.material.emissiveFresnel;
 
             source = new XEO.renderer.ProgramSource(
                 hash,
@@ -20488,9 +20797,63 @@ visibility.destroy();
                     }
                     add("varying vec4 xeo_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
                 }
+
+                if (diffuseFresnel) {
+                    add("uniform float xeo_uDiffuseFresnelCenterBias;");
+                    add("uniform float xeo_uDiffuseFresnelEdgeBias;");
+                    add("uniform float xeo_uDiffuseFresnelPower;");
+                    add("uniform vec3 xeo_uDiffuseFresnelCenterColor;");
+                    add("uniform vec3 xeo_uDiffuseFresnelEdgeColor;");
+                }
+
+                if (specularFresnel) {
+                    add("uniform float xeo_uSpecularFresnelCenterBias;");
+                    add("uniform float xeo_uSpecularFresnelEdgeBias;");
+                    add("uniform float xeo_uSpecularFresnelPower;");
+                    add("uniform vec3 xeo_uSpecularFresnelCenterColor;");
+                    add("uniform vec3 xeo_uSpecularFresnelEdgeColor;");
+                }
+
+                if (opacityFresnel) {
+                    add("uniform float xeo_uOpacityFresnelCenterBias;");
+                    add("uniform float xeo_uOpacityFresnelEdgeBias;");
+                    add("uniform float xeo_uOpacityFresnelPower;");
+                    add("uniform vec3 xeo_uOpacityFresnelCenterColor;");
+                    add("uniform vec3 xeo_uOpacityFresnelEdgeColor;");
+                }
+
+                if (reflectivityFresnel) {
+                    add("uniform float xeo_uReflectivityFresnelCenterBias;");
+                    add("uniform float xeo_uReflectivityFresnelEdgeBias;");
+                    add("uniform float xeo_uReflectivityFresnelPower;");
+                    add("uniform vec3 xeo_uReflectivityFresnelCenterColor;");
+                    add("uniform vec3 xeo_uReflectivityFresnelEdgeColor;");
+                }
+
+                if (emissiveFresnel) {
+                    add("uniform float xeo_uEmissiveFresnelCenterBias;");
+                    add("uniform float xeo_uEmissiveFresnelEdgeBias;");
+                    add("uniform float xeo_uEmissiveFresnelPower;");
+                    add("uniform vec3 xeo_uEmissiveFresnelCenterColor;");
+                    add("uniform vec3 xeo_uEmissiveFresnelEdgeColor;");
+                }
             }
 
             add();
+
+            if (diffuseFresnel || specularFresnel || opacityFresnel || emissiveFresnel || reflectivityFresnel) {
+                
+                comment("Fresnel function");
+                
+                add("float fresnel(vec3 viewDirection, vec3 worldNormal, float edgeBias, float centerBias, float power) {");
+                add("    float fr = abs(dot(normalize(viewDirection), normalize(worldNormal)));");
+                add("    float finalFr = clamp((fr - edgeBias) / (centerBias - edgeBias), 0.0, 1.0);");
+                add("    return pow(finalFr, power);");
+                add("}");
+            }
+
+            add();
+
             add("void main(void) {");
             add();
 
@@ -20515,14 +20878,14 @@ visibility.destroy();
             if (shading) {
 
                 if (normalMapping) {
-                    add("   vec3 viewNormalVec = vec3(0.0, 1.0, 0.0);");
+                    add("   vec3 viewNormal = vec3(0.0, 1.0, 0.0);");
 
                 } else {
 
                     // Normalize the interpolated normals in the per-fragment-fragment-shader,
                     // because if we linear interpolated two nonparallel normalized vectors,
                     // the resulting vector won’t be of length 1
-                    add("   vec3 viewNormalVec = normalize(xeo_vViewNormal);");
+                    add("   vec3 viewNormal = normalize(xeo_vViewNormal);");
                 }
             }
 
@@ -20606,6 +20969,8 @@ visibility.destroy();
 
             if (shading) {
 
+                // Lambertian shading
+
                 add();
                 add("   vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
                 add("   vec3  specularLight = vec3(0.0, 0.0, 0.0);");
@@ -20630,7 +20995,7 @@ visibility.destroy();
 
                     if (light.type === "point") {
                         add();
-                        add("   dotN = max(dot(viewNormalVec, viewLightVec), 0.0);");
+                        add("   dotN = max(dot(viewNormal, viewLightVec), 0.0);");
                         add("   lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
                         add("   attenuation = 1.0 - (" +
                             "  xeo_uLightAttenuation" + i + "[0] + " +
@@ -20640,23 +21005,55 @@ visibility.destroy();
                         add("   diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
 
                         add("   specularLight += xeo_uLightIntensity" + i +
-                            " *  pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
+                            " *  pow(max(dot(reflect(-viewLightVec, -viewNormal), " +
                             "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess) * attenuation;");
                     }
 
                     if (light.type === "dir") {
                         add();
-                        add("   dotN = max(dot(viewNormalVec, viewLightVec), 0.0);");
+                        add("   dotN = max(dot(viewNormal, viewLightVec), 0.0);");
 
                         add("   diffuseLight += dotN * xeo_uLightColor" + i + ";");
 
                         add("   specularLight += xeo_uLightIntensity" + i +
-                            " * pow(max(dot(reflect(-viewLightVec, -viewNormalVec), " +
+                            " * pow(max(dot(reflect(-viewLightVec, -viewNormal), " +
                             "normalize(-xeo_vViewPosition.xyz)), 0.0), shininess);");
                     }
                 }
 
                 add();
+
+                comment("Fresnel effects");
+                
+                if (diffuseFresnel || specularFresnel || opacityFresnel || emissiveFresnel) {
+
+                    if (diffuseFresnel) {
+                        add("float diffuseFresnel = fresnel(xeo_vViewEyeVec, viewNormal, xeo_uDiffuseFresnelEdgeBias, xeo_uDiffuseFresnelCenterBias, xeo_uDiffuseFresnelPower);");
+                        add("diffuse *= mix(xeo_uDiffuseFresnelEdgeColor, xeo_uDiffuseFresnelCenterColor, diffuseFresnel);");
+                        add();
+                    }
+
+                    if (specularFresnel) {
+                        add("float specularFresnel = fresnel(xeo_vViewEyeVec, viewNormal, xeo_uSpecularFresnelEdgeBias, xeo_uSpecularFresnelCenterBias, xeo_uSpecularFresnelPower);");
+                        add("specular *= mix(xeo_uSpecularFresnelEdgeColor, xeo_uSpecularFresnelCenterColor, specularFresnel);");
+                        add();
+                    }
+
+                    if (opacityFresnel) {
+                        add("float opacityFresnel = fresnel(xeo_vViewEyeVec, viewNormal, xeo_uOpacityFresnelEdgeBias, xeo_uOpacityFresnelCenterBias, xeo_uOpacityFresnelPower);");
+                        add("opacity *= mix(xeo_uOpacityFresnelEdgeColor.r, xeo_uOpacityFresnelCenterColor.r, opacityFresnel);");
+                        add();
+                    }
+
+                    if (emissiveFresnel) {
+                        add("float emissiveFresnel = fresnel(xeo_vViewEyeVec, viewNormal, xeo_uEmissiveFresnelEdgeBias, xeo_uEmissiveFresnelCenterBias, xeo_uEmissiveFresnelPower);");
+                        add("emissive *= mix(xeo_uEmissiveFresnelEdgeColor, xeo_uEmissiveFresnelCenterColor, emissiveFresnel);");
+                        add();
+                    }
+                }
+
+                // Blinn-Phong
+
                 add("   gl_FragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
 
             } else {
@@ -20680,6 +21077,13 @@ visibility.destroy();
         // Append to program source
         function add(txt) {
             src.push(txt || "");
+        }
+
+        // Append to program source
+        function comment(txt) {
+            //if (txt) {
+            //    src.push("# " + txt);
+            //}
         }
 
         // Finish building program source
@@ -23024,38 +23428,43 @@ visibility.destroy();
             // Fresnel effects
 
             if (state.diffuseFresnel) {
-                this._uDiffuseFresnelBias = draw.getUniform("xeo_uDiffuseFresnelBias");
+                this._uDiffuseFresnelEdgeBias = draw.getUniform("xeo_uDiffuseFresnelEdgeBias");
+                this._uDiffuseFresnelCenterBias = draw.getUniform("xeo_uDiffuseFresnelCenterBias");
+                this._uDiffuseFresnelEdgeColor = draw.getUniform("xeo_uDiffuseFresnelEdgeColor");
+                this._uDiffuseFresnelCenterColor = draw.getUniform("xeo_uDiffuseFresnelCenterColor");
                 this._uDiffuseFresnelPower = draw.getUniform("xeo_uDiffuseFresnelPower");
-                this._uDiffuseFresnelLeftColor = draw.getUniform("xeo_uDiffuseFresnelLeftColor");
-                this._uDiffuseFresnelRightColor = draw.getUniform("xeo_uDiffuseFresnelRightColor");
             }
 
             if (state.specularFresnel) {
-                this._uSpecularFresnelBias = draw.getUniform("xeo_uSpecularFresnelBias");
+                this._uSpecularFresnelEdgeBias = draw.getUniform("xeo_uSpecularFresnelEdgeBias");
+                this._uSpecularFresnelCenterBias = draw.getUniform("xeo_uSpecularFresnelCenterBias");
+                this._uSpecularFresnelEdgeColor = draw.getUniform("xeo_uSpecularFresnelEdgeColor");
+                this._uSpecularFresnelCenterColor = draw.getUniform("xeo_uSpecularFresnelCenterColor");
                 this._uSpecularFresnelPower = draw.getUniform("xeo_uSpecularFresnelPower");
-                this._uSpecularFresnelLeftColor = draw.getUniform("xeo_uSpecularFresnelLeftColor");
-                this._uSpecularFresnelRightColor = draw.getUniform("xeo_uSpecularFresnelRightColor");
             }
 
             if (state.opacityFresnel) {
-                this._uOpacityFresnelBias = draw.getUniform("xeo_uOpacityFresnelBias");
+                this._uOpacityFresnelEdgeBias = draw.getUniform("xeo_uOpacityFresnelEdgeBias");
+                this._uOpacityFresnelCenterBias = draw.getUniform("xeo_uOpacityFresnelCenterBias");
+                this._uOpacityFresnelEdgeColor = draw.getUniform("xeo_uOpacityFresnelEdgeColor");
+                this._uOpacityFresnelCenterColor = draw.getUniform("xeo_uOpacityFresnelCenterColor");
                 this._uOpacityFresnelPower = draw.getUniform("xeo_uOpacityFresnelPower");
-                this._uOpacityFresnelLeftColor = draw.getUniform("xeo_uOpacityFresnelLeftColor");
-                this._uOpacityFresnelRightColor = draw.getUniform("xeo_uOpacityFresnelRightColor");
             }
 
             if (state.reflectivityFresnel) {
-                this._uReflectivityFresnelBias = draw.getUniform("xeo_uReflectivityFresnelBias");
+                this._uReflectivityFresnelEdgeBias = draw.getUniform("xeo_uReflectivityFresnelEdgeBias");
+                this._uReflectivityFresnelCenterBias = draw.getUniform("xeo_uReflectivityFresnelCenterBias");
+                this._uReflectivityFresnelEdgeColor = draw.getUniform("xeo_uReflectivityFresnelEdgeColor");
+                this._uReflectivityFresnelCenterColor = draw.getUniform("xeo_uReflectivityFresnelCenterColor");
                 this._uReflectivityFresnelPower = draw.getUniform("xeo_uReflectivityFresnelPower");
-                this._uReflectivityFresnelLeftColor = draw.getUniform("xeo_uReflectivityFresnelLeftColor");
-                this._uReflectivityFresnelRightColor = draw.getUniform("xeo_uReflectivityFresnelRightColor");
             }
 
             if (state.emissiveFresnel) {
-                this._uEmissiveFresnelBias = draw.getUniform("xeo_uEmissiveFresnelBias");
+                this._uEmissiveFresnelEdgeBias = draw.getUniform("xeo_uEmissiveFresnelEdgeBias");
+                this._uEmissiveFresnelCenterBias = draw.getUniform("xeo_uEmissiveFresnelCenterBias");
+                this._uEmissiveFresnelEdgeColor = draw.getUniform("xeo_uEmissiveFresnelEdgeColor");
+                this._uEmissiveFresnelCenterColor = draw.getUniform("xeo_uEmissiveFresnelCenterColor");
                 this._uEmissiveFresnelPower = draw.getUniform("xeo_uEmissiveFresnelPower");
-                this._uEmissiveFresnelLeftColor = draw.getUniform("xeo_uEmissiveFresnelLeftColor");
-                this._uEmissiveFresnelRightColor = draw.getUniform("xeo_uEmissiveFresnelRightColor");
             }
         },
 
@@ -23064,30 +23473,6 @@ visibility.destroy();
             var draw = this.program.draw;
             var state = this.state;
             var gl = this.program.gl;
-
-            // Diffuse color
-
-            if (this._uDiffuse) {
-                this._uDiffuse.setValue(state.diffuse);
-            }
-
-            // Specular color
-
-            if (this._uSpecular) {
-                this._uSpecular.setValue(state.specular);
-            }
-
-            // Emissive color
-
-            if (this._uEmissive) {
-                this._uEmissive.setValue(state.emissive);
-            }
-
-            // Opacity
-
-            if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
-            }
 
 
             if (this._uShininess) {
@@ -23102,9 +23487,6 @@ visibility.destroy();
             if (this._uPointSize) {
                 this._uPointSize.setValue(state.pointSize);
             }
-
-            // Textures
-
 
             // Ambient map
 
@@ -23128,6 +23510,9 @@ visibility.destroy();
                 if (this._uDiffuseMapMatrix) {
                     this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
                 }
+
+            } else if (this._uDiffuse) {
+                this._uDiffuse.setValue(state.diffuse);
             }
 
             // Specular map
@@ -23140,6 +23525,9 @@ visibility.destroy();
                 if (this._uSpecularMapMatrix) {
                     this._uSpecularMapMatrix.setValue(state.specularMap.matrix);
                 }
+
+            } else if (this._uSpecular) {
+                this._uSpecular.setValue(state.specular);
             }
 
             // Emissive map
@@ -23152,6 +23540,9 @@ visibility.destroy();
                 if (this._uEmissiveMapMatrix) {
                     this._uEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
                 }
+
+            } else if (this._uEmissive) {
+                this._uEmissive.setValue(state.emissive);
             }
 
             // Opacity map
@@ -23164,6 +23555,9 @@ visibility.destroy();
                 if (this._uOpacityMapMatrix) {
                     this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
                 }
+
+            } else if (this._uOpacity) {
+                this._uOpacity.setValue(state.opacity);
             }
 
             // Reflectivity map
@@ -23189,103 +23583,120 @@ visibility.destroy();
                 }
             }
 
-        //    frameCtx.textureUnit++;
-
-
             // Fresnel effects
 
             if (state.diffuseFresnel) {
 
-                if (this._uDiffuseFresnelBias) {
-                    this._uDiffuseFresnelBias.setValue(state.diffuseFresnel.bias);
+                if (this._uDiffuseFresnelEdgeBias) {
+                    this._uDiffuseFresnelEdgeBias.setValue(state.diffuseFresnel.edgeBias);
+                }
+
+                if (this._uDiffuseFresnelCenterBias) {
+                    this._uDiffuseFresnelCenterBias.setValue(state.diffuseFresnel.centerBias);
+                }
+
+                if (this._uDiffuseFresnelEdgeColor) {
+                    this._uDiffuseFresnelEdgeColor.setValue(state.diffuseFresnel.edgeColor);
+                }
+
+                if (this._uDiffuseFresnelCenterColor) {
+                    this._uDiffuseFresnelCenterColor.setValue(state.diffuseFresnel.centerColor);
                 }
 
                 if (this._uDiffuseFresnelPower) {
                     this._uDiffuseFresnelPower.setValue(state.diffuseFresnel.power);
                 }
-
-                if (this._uDiffuseFresnelLeftColor) {
-                    this._uDiffuseFresnelLeftColor.setValue(state.diffuseFresnel.leftColor);
-                }
-
-                if (this._uDiffuseFresnelRightColor) {
-                    this._uDiffuseFresnelRightColor.setValue(state.diffuseFresnel.rightColor);
-                }
             }
 
             if (state.specularFresnel) {
 
-                if (this._uSpecularFresnelBias) {
-                    this._uSpecularFresnelBias.setValue(state.specularFresnel.bias);
+                if (this._uSpecularFresnelEdgeBias) {
+                    this._uSpecularFresnelEdgeBias.setValue(state.specularFresnel.edgeBias);
+                }
+
+                if (this._uSpecularFresnelCenterBias) {
+                    this._uSpecularFresnelCenterBias.setValue(state.specularFresnel.centerBias);
+                }
+
+                if (this._uSpecularFresnelEdgeColor) {
+                    this._uSpecularFresnelEdgeColor.setValue(state.specularFresnel.edgeColor);
+                }
+
+                if (this._uSpecularFresnelCenterColor) {
+                    this._uSpecularFresnelCenterColor.setValue(state.specularFresnel.centerColor);
                 }
 
                 if (this._uSpecularFresnelPower) {
                     this._uSpecularFresnelPower.setValue(state.specularFresnel.power);
                 }
-
-                if (this._uSpecularFresnelLeftColor) {
-                    this._uSpecularFresnelLeftColor.setValue(state.specularFresnel.leftColor);
-                }
-
-                if (this._uSpecularFresnelRightColor) {
-                    this._uSpecularFresnelRightColor.setValue(state.specularFresnel.rightColor);
-                }
             }
 
             if (state.opacityFresnel) {
 
-                if (this._uOpacityFresnelBias) {
-                    this._uOpacityFresnelBias.setValue(state.opacityFresnel.bias);
+                if (this._uOpacityFresnelEdgeBias) {
+                    this._uOpacityFresnelEdgeBias.setValue(state.opacityFresnel.edgeBias);
+                }
+
+                if (this._uOpacityFresnelCenterBias) {
+                    this._uOpacityFresnelCenterBias.setValue(state.opacityFresnel.centerBias);
+                }
+
+                if (this._uOpacityFresnelEdgeColor) {
+                    this._uOpacityFresnelEdgeColor.setValue(state.opacityFresnel.edgeColor);
+                }
+
+                if (this._uOpacityFresnelCenterColor) {
+                    this._uOpacityFresnelCenterColor.setValue(state.opacityFresnel.centerColor);
                 }
 
                 if (this._uOpacityFresnelPower) {
                     this._uOpacityFresnelPower.setValue(state.opacityFresnel.power);
                 }
-
-                if (this._uOpacityFresnelLeftColor) {
-                    this._uOpacityFresnelLeftColor.setValue(state.opacityFresnel.leftColor);
-                }
-
-                if (this._uOpacityFresnelRightColor) {
-                    this._uOpacityFresnelRightColor.setValue(state.opacityFresnel.rightColor);
-                }
             }
 
             if (state.reflectivityFresnel) {
 
-                if (this._uReflectivityFresnelBias) {
-                    this._uReflectivityFresnelBias.setValue(state.reflectivityFresnel.bias);
+                if (this._uReflectivityFresnelEdgeBias) {
+                    this._uReflectivityFresnelEdgeBias.setValue(state.reflectivityFresnel.edgeBias);
+                }
+
+                if (this._uReflectivityFresnelCenterBias) {
+                    this._uReflectivityFresnelCenterBias.setValue(state.reflectivityFresnel.centerBias);
+                }
+
+                if (this._uReflectivityFresnelEdgeColor) {
+                    this._uReflectivityFresnelEdgeColor.setValue(state.reflectivityFresnel.edgeColor);
+                }
+
+                if (this._uReflectivityFresnelCenterColor) {
+                    this._uReflectivityFresnelCenterColor.setValue(state.reflectivityFresnel.centerColor);
                 }
 
                 if (this._uReflectivityFresnelPower) {
                     this._uReflectivityFresnelPower.setValue(state.reflectivityFresnel.power);
                 }
-
-                if (this._uReflectivityFresnelLeftColor) {
-                    this._uReflectivityFresnelLeftColor.setValue(state.reflectivityFresnel.leftColor);
-                }
-
-                if (this._uReflectivityFresnelRightColor) {
-                    this._uReflectivityFresnelRightColor.setValue(state.reflectivityFresnel.rightColor);
-                }
             }
 
             if (state.emissiveFresnel) {
 
-                if (this._uEmissiveFresnelBias) {
-                    this._uEmissiveFresnelBias.setValue(state.emissiveFresnel.bias);
+                if (this._uEmissiveFresnelEdgeBias) {
+                    this._uEmissiveFresnelEdgeBias.setValue(state.emissiveFresnel.edgeBias);
+                }
+
+                if (this._uEmissiveFresnelCenterBias) {
+                    this._uEmissiveFresnelCenterBias.setValue(state.emissiveFresnel.centerBias);
+                }
+
+                if (this._uEmissiveFresnelEdgeColor) {
+                    this._uEmissiveFresnelEdgeColor.setValue(state.emissiveFresnel.edgeColor);
+                }
+
+                if (this._uEmissiveFresnelCenterColor) {
+                    this._uEmissiveFresnelCenterColor.setValue(state.emissiveFresnel.centerColor);
                 }
 
                 if (this._uEmissiveFresnelPower) {
                     this._uEmissiveFresnelPower.setValue(state.emissiveFresnel.power);
-                }
-
-                if (this._uEmissiveFresnelLeftColor) {
-                    this._uEmissiveFresnelLeftColor.setValue(state.emissiveFresnel.leftColor);
-                }
-
-                if (this._uEmissiveFresnelRightColor) {
-                    this._uEmissiveFresnelRightColor.setValue(state.emissiveFresnel.rightColor);
                 }
             }
         }
@@ -27955,17 +28366,11 @@ scene.on("tick", function(e) {
         },
 
         _setAABBDirty: function () {
-            if (this._AABBDirty) {
-                return;
-            }
             this._AABBDirty = true;
             this._setWorldBoundaryDirty();
         },
 
         _setWorldBoundaryDirty: function () {
-            if (this._worldBoundaryDirty) {
-                return;
-            }
             this._worldBoundaryDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
@@ -28182,6 +28587,7 @@ scene.on("tick", function(e) {
                                 if (geometryDirty) {
                                     return;
                                 }
+                                geometryDirty = true;
                                 self.scene.once("tick4",
                                     function () {
                                         self._setPositionsFromOBB(boundary.obb);
