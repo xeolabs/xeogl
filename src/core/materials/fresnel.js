@@ -26,15 +26,15 @@
  var scene = new XEO.Scene();
 
  var fresnel1 = new XEO.Fresnel(scene, {
-    leftColor: [1.0, 1.0, 1.0],
-    rightColor: [0.0, 0.0, 0.0],
+    edgeColor: [1.0, 1.0, 1.0],
+    centerColor: [0.0, 0.0, 0.0],
     power: 4,
     bias: 0.6
 });
 
  var fresnel2 = new XEO.Fresnel(scene, {
-    leftColor: [1.0, 1.0, 1.0],
-    rightColor: [0.0, 0.0, 0.0],
+    edgeColor: [1.0, 1.0, 1.0],
+    centerColor: [0.0, 0.0, 0.0],
     power: 4,
     bias: 0.2
 });
@@ -82,10 +82,11 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Fresnel.
- @param [cfg.leftColor=[ 0.0, 0.0, 0.0 ]] {Array of Number} Color used on edges.
- @param [cfg.rightColor=[ 0.0, 0.0, 0.0 ]] {Array of Number} Color used on center.
+ @param [cfg.edgeColor=[ 0.0, 0.0, 0.0 ]] {Array of Number} Color used on edges.
+ @param [cfg.centerColor=[ 1.0, 1.0, 1.0 ]] {Array of Number} Color used on center.
+ @param [cfg.edgeBias=0] {Number} Bias at the edge.
+ @param [cfg.centerBias=1] {Number} Bias at the center.
  @param [cfg.power=0] {Number} The power.
- @param [cfg.bias=0] {Number} The bias.
  @extends Component
  */
 (function () {
@@ -99,16 +100,18 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Fresnel({
-                leftColor: [1,1,1],
-                rightColor: [0,0,0],
-                power: 1,
-                bias: 0
+                edgeColor: [0, 0, 0],
+                centerColor: [1, 1, 1],
+                edgeBias: 0,
+                centerBias: 1,
+                power: 1
             });
 
-            this.leftColor = cfg.leftColor;
-            this.rightColor = cfg.rightColor;
+            this.edgeColor = cfg.edgeColor;
+            this.centerColor = cfg.centerColor;
+            this.edgeBias = cfg.edgeBias;
+            this.centerBias = cfg.centerBias;
             this.power = cfg.power;
-            this.bias = cfg.bias;
         },
 
         _props: {
@@ -116,62 +119,124 @@
             /**
              This Fresnel's edge color.
 
-             Fires an {{#crossLink "Fresnel/leftColor:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "Fresnel/edgeColor:event"}}{{/crossLink}} event on change.
 
-             @property leftColor
+             @property edgeColor
              @default [0.0, 0.0, 0.0]
              @type Array(Number)
              */
-            leftColor: {
+            edgeColor: {
 
                 set: function (value) {
 
-                    this._state.leftColor = value || [ 0.0, 0.0, 0.0 ];
+                    this._state.edgeColor = value || [0.0, 0.0, 0.0];
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Fresnel's {{#crossLink "leftColorLight/leftColor:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Fresnel's {{#crossLink "leftColorLight/edgeColor:property"}}{{/crossLink}} property changes.
 
-                     @event leftColor
+                     @event edgeColor
                      @param value The property's new value
                      */
-                    this.fire("leftColor", this._state.leftColor);
+                    this.fire("edgeColor", this._state.edgeColor);
                 },
 
                 get: function () {
-                    return this._state.leftColor;
+                    return this._state.edgeColor;
                 }
             },
 
             /**
              This Fresnel's center color.
 
-             Fires an {{#crossLink "Fresnel/rightColor:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "Fresnel/centerColor:event"}}{{/crossLink}} event on change.
 
-             @property rightColor
-             @default [0.0, 0.0, 0.0]
+             @property centerColor
+             @default [1.0, 1.0, 1.0]
              @type Array(Number)
              */
-            rightColor: {
+            centerColor: {
 
                 set: function (value) {
 
-                    this._state.rightColor = value || [ 0.0, 0.0, 0.0 ];
+                    this._state.centerColor = value || [1.0, 1.0, 1.0];
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Fresnel's {{#crossLink "rightColorLight/rightColor:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Fresnel's {{#crossLink "rightColorLight/centerColor:property"}}{{/crossLink}} property changes.
 
-                     @event rightColor
+                     @event centerColor
                      @param value The property's new value
                      */
-                    this.fire("rightColor", this._state.rightColor);
+                    this.fire("centerColor", this._state.centerColor);
                 },
 
                 get: function () {
-                    return this._state.rightColor;
+                    return this._state.centerColor;
+                }
+            },
+
+            /**
+             * Indicates this Fresnel's edge bias.
+             *
+             * Fires a {{#crossLink "Fresnel/edgeBias:event"}}{{/crossLink}} event on change.
+             *
+             * @property edgeBias
+             * @default 0
+             * @type Number
+             */
+            edgeBias: {
+
+                set: function (value) {
+
+                    this._state.edgeBias = value || 0;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Fresnel's {{#crossLink "Fresnel/edgeBias:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event edgeBias
+                     * @param value The property's new value
+                     */
+                    this.fire("edgeBias", this._state.edgeBias);
+                },
+
+                get: function () {
+                    return this._state.edgeBias;
+                }
+            },
+
+            /**
+             * Indicates this Fresnel's center bias.
+             *
+             * Fires a {{#crossLink "Fresnel/centerBias:event"}}{{/crossLink}} event on change.
+             *
+             * @property centerBias
+             * @default 1
+             * @type Number
+             */
+            centerBias: {
+
+                set: function (value) {
+
+                    this._state.centerBias = (value !== undefined && value !== null) ? value : 1;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Fresnel's {{#crossLink "Fresnel/centerBias:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event centerBias
+                     * @param value The property's new value
+                     */
+                    this.fire("centerBias", this._state.centerBias);
+                },
+
+                get: function () {
+                    return this._state.centerBias;
                 }
             },
 
@@ -188,12 +253,12 @@
 
                 set: function (value) {
 
-                    this._state.power = value || 0;
+                    this._state.power = (value !== undefined && value !== null) ? value : 1;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this Fresnel's  {{#crossLink "Fresnel/power:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Fresnel's {{#crossLink "Fresnel/power:property"}}{{/crossLink}} property changes.
                      *
                      * @event power
                      * @param value The property's new value
@@ -204,46 +269,16 @@
                 get: function () {
                     return this._state.power;
                 }
-            },
-
-            /**
-             * Indicates this Fresnel's bias.
-             *
-             * Fires a {{#crossLink "Fresnel/bias:event"}}{{/crossLink}} event on change.
-             *
-             * @property bias
-             * @default 0
-             * @type Number
-             */
-            bias: {
-
-                set: function (value) {
-
-                    this._state.bias = value || 0;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this Fresnel's  {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event bias
-                     * @param value The property's new value
-                     */
-                    this.fire("bias", this._state.bias);
-                },
-
-                get: function () {
-                    return this._state.bias;
-                }
             }
         },
 
         _getJSON: function () {
             return {
-                leftColor: this._state.leftColor,
-                rightColor: this._state.rightColor,
-                power: this._state.power,
-                bias: this._state.bias
+                edgeColor: this._state.edgeColor,
+                centerColor: this._state.centerColor,
+                edgeBias: this._state.edgeBias,
+                centerBias: this._state.centerBias,
+                power: this._state.power
             };
         },
 

@@ -28,7 +28,7 @@
 
  // Create a Modes with default properties
  var modes = new XEO.Modes(scene, {
-    pickable: true,              // Enable picking
+    pickable: true,             // Enable picking
     clipping true,              // Enable effect of XEO.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces

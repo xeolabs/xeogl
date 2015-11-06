@@ -1,22 +1,19 @@
 /**
- A ripply water shader.
+ A ripply water {{#crossLink "Shader"}}Shader{{/crossLink}}.
 
  @class Shader.Water
  @module XEO
  @extends Shader
  */
-XEO.Shader.Water = XEO.Geometry.extend({
+XEO.WaterShader = XEO.Shader.extend({
 
-    type: "XEO.Shader.Water",
+    type: "XEO.WaterShader",
 
-    // Constructor
 
     _init: function (cfg) {
 
-        // Call XEO.Component's init method
         this._super(XEO._apply({
 
-            // Vertex shading stage
             vertex: [
                 "attribute vec3 xeo_aPosition;",
                 "attribute vec2 xeo_aUV;",
@@ -27,7 +24,6 @@ XEO.Shader.Water = XEO.Geometry.extend({
                 "}"
             ],
 
-            // Fragment shading stage
             fragment: [
                 "precision mediump float;",
 
@@ -69,8 +65,6 @@ XEO.Shader.Water = XEO.Geometry.extend({
                 });
             });
     },
-
-    // Destructor
 
     _destroy: function () {
         this._super();

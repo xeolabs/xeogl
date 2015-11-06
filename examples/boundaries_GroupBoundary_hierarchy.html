@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>a <a href="../docs/classes/GroupBoundary.html" target="_other">GroupBoundary</a> containing
+            1000 animated <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a></li>
+
+    </ul>
+</div>
+
+<script>
+
+    // Geometry shared by our GameObjects
+
+    var sphereGeometry = new XEO.SphereGeometry({
+        radius: 5
+    });
+
+    // A hierarchy of GroupBoundary's
+
+    var childGroupBoundary1 = new XEO.GroupBoundary({
+        group: new XEO.Group()
+    });
+
+    var childGroupBoundary2 = new XEO.GroupBoundary({
+        group: new XEO.Group()
+    });
+
+    var rootGroupBoundary = new XEO.GroupBoundary({
+        group: new XEO.Group({
+            components: [
+                childGroupBoundary1,
+                childGroupBoundary2
+            ]
+        })
+    });
+
+    // Show the boundary of each GroupBoundary as a wireframe box
+
+    new XEO.GameObject({
+        geometry: new XEO.BoundaryGeometry({
+            boundary: rootGroupBoundary.worldBoundary
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
+            lineWidth: 2
+        })
+    });
+
+    new XEO.GameObject({
+        geometry: new XEO.BoundaryGeometry({
+            boundary: childGroupBoundary1.worldBoundary
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
+            lineWidth: 2
+        })
+    });
+
+    new XEO.GameObject({
+        geometry: new XEO.BoundaryGeometry({
+            boundary: childGroupBoundary2.worldBoundary
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
+            lineWidth: 2
+        })
+    });
+
+    // Create 1000 moving GameObjects within one child GroupBoundary
+
+    for (var i = 0; i < 200; i++) {
+
+        var r = (Math.random() + 0.1 ) * 50;
+        var halfr = r / 2;
+
+        (function () {
+
+            // Create a randomly-positioned sphere GameObject
+
+            var object = new XEO.GameObject({
+                geometry: sphereGeometry,
+                material: new XEO.PhongMaterial({
+                    diffuse: [
+                        Math.random(),
+                        Math.random(),
+                        Math.random()
+                    ]
+                }),
+                transform: new XEO.Translate({
+                    xyz: [
+                        Math.random() * r - halfr,
+                        Math.random() * r - halfr,
+                        Math.random() * r - halfr
+                    ]
+                })
+            });
+
+
+            // Add the GameObject to the GroupBoundary
+
+            childGroupBoundary1.group.add(object);
+
+
+            // Animate the position of the GameObject back and forth
+            // along a random trajectory vector
+
+            var count = 0;
+
+            var trajectory = [
+                Math.random() * 2.0 - 1.0,
+                Math.random() * 1.0 - 1.0,
+                Math.random() * 1.0 - 1.0
+            ];
+
+            object.scene.on("tick",
+                    function () {
+
+                        var dir = ((count++ % 300) > 150) ? 1.0 : -1.0;
+
+                        var xyz = object.transform.xyz;
+
+                        object.transform.xyz = [
+                            xyz[0] + trajectory[0] * dir,
+                            xyz[1] + trajectory[1] * dir,
+                            xyz[2] + trajectory[2] * dir
+                        ];
+                    });
+        })();
+    }
+
+    // Create a torus within the other child GroupBoundary
+
+    var torus = new XEO.GameObject({
+        geometry: new XEO.TorusGeometry({
+            radius: 20,
+            tube: 5
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [
+                0.4, 0.4, 1.0
+            ]
+        }),
+        transform: new XEO.Translate({
+            xyz: [
+                60, -60, -40
+            ]
+        })
+    });
+
+    childGroupBoundary2.group.add(torus);
+
+    var sphere = new XEO.GameObject({
+        geometry: new XEO.SphereGeometry({
+            radius: 15
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [
+                1.0, 1.0, 0.3
+            ]
+        }),
+        transform: new XEO.Translate({
+            xyz: [
+                -60, -60, 40
+            ]
+        })
+    });
+
+    childGroupBoundary2.group.add(sphere);
+
+    torus.scene.on("tick",
+            function () {
+                //      torus.geometry.radius += 0.3;
+            });
+
+    var scene = XEO.scene;
+
+    // Move the camera back a bit
+
+    scene.camera.view.zoom(320);
+
+    // Orbit the camera
+
+    scene.on("tick",
+            function () {
+                var view = scene.camera.view;
+                view.rotateEyeY(0.2);
+            });
+
+    // Permit user camera control
+
+    var cameraControl = new XEO.CameraControl();
+    cameraControl.mouseZoom.sensitivity = 5;
+
+</script>
+</body>
+</html>
