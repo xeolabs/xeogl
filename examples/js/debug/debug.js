@@ -71,6 +71,7 @@
         var pos;
         var posi;
         var dir;
+        var height;
         var text;
         var radius;
 
@@ -118,6 +119,11 @@
             return this;
         };
 
+        this.height = function (value) {
+            height = value;
+            return this;
+        };
+
         this.text = function (value) {
             text = value;
             return this;
@@ -154,7 +160,8 @@
             id = undefined;
             pos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             posi = 0;
-            dir = [0,1,0];
+            dir = [0, 1, 0];
+            height = 1;
             text = "";
             radius = 1.0;
         };
@@ -219,7 +226,7 @@
                 object.modes.transparency = opacity < 1.0;
                 object.material.lineWidth = lineWidth;
                 object.visibility.visible = true;
-     //           object.transform.matrix = matrix;
+                //           object.transform.matrix = matrix;
             }
 
             this._reset();
@@ -267,7 +274,7 @@
                 style.background = fillColor ? cssColor(fillColor) : "black";
                 style.opacity = opacity;
                 style.border = lineWidth + "px solid " + cssColor(color);
-                style["z-index"] = "1000";
+                style["z-index"] = "10001";
                 style.width = "auto";
                 style.height = "auto";
                 style["border-radius"] = "5px";
@@ -384,7 +391,7 @@
         };
 
 
-        this.stylus = function () {
+        this.cone = function () {
 
             var _id = id || "__debugStylus";
 
@@ -395,15 +402,15 @@
                 new XEO.GameObject({
                     id: _id,
                     geometry: new XEO.CylinderGeometry({
-                        radiusTop: 0.0,
-                        radiusBottom: 0.2,
+                        radiusTop: radius,
+                        radiusBottom: 0.0,
                         height: 1.0,
                         radialSegments: 20,
                         heightSegments: 1,
                         openEnded: false
                     }),
                     transform: new XEO.Translate({
-                        xyz: [0, -.5, 0],
+                        xyz: [0, height / 2.0, 0],
                         parent: new XEO.Transform({
                             parent: new XEO.Translate({
                                 xyz: pos[0]
@@ -424,6 +431,9 @@
                 });
 
             } else {
+                object.geometry.radius = radius;
+                object.geometry.height = height;
+                object.transform.xyz = [0, height / 2.0, 0];
                 object.transform.parent.parent.xyz = pos[0];
                 object.transform.parent.matrix = XEO.math.quaternionToMat4(
                     XEO.math.vec3PairToQuaternion(dir, [0, -1, 0]));
