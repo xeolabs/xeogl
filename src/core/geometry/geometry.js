@@ -668,7 +668,7 @@
 
             if (this._pickIndices) {
                 this._pickIndices.destroy();
-                cacheStats_cache.pickIndices -= this._pickIndices.numItems;
+                cacheStats.pickIndices -= this._pickIndices.numItems;
                 this._pickIndices = null;
             }
 
