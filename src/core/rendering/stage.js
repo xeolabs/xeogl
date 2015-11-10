@@ -134,6 +134,8 @@
                         return;
                     }
 
+                    value = Math.round(value);
+
                     this._state.priority = value;
 
                     this._renderer.stateOrderDirty = true;

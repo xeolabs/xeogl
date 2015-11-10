@@ -195,6 +195,9 @@
 
                     value = value || 0;
 
+                    value = Math.round(value);
+
+
                     if (value === this._state.priority) {
                         return;
                     }

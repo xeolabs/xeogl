@@ -189,7 +189,6 @@
  @param [cfg] {*} DepthBuf configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Component.
- @extends Object
  */
 (function () {
 
@@ -289,8 +288,8 @@
 
             // Pub/sub
             this._handleMap = new XEO.utils.Map(); // Subscription handle pool
-            this._eventSubs = {}; // A [handle -> callback] map for each location name
-            this._handleLocs = {}; // Maps handles to loc names
+            this._handleEvents = {}; // Subscription handles mapped to event names
+            this._eventSubs = {}; // Event names mapped to subscribers
 
             this.props = {}; // Maps locations to publications
 
@@ -394,10 +393,10 @@
             }
             var handle = this._handleMap.addItem(); // Create unique handle
             subs[handle] = {
-                scope: scope || this,
-                callback: callback
+                callback: callback,
+                scope: scope || this
             };
-            this._handleLocs[handle] = event;
+            this._handleEvents[handle] = event;
             var value = this.props[event];
             if (value) { // A publication exists, notify callback immediately
                 callback.call(scope || this, value);
@@ -416,9 +415,9 @@
             if (handle === undefined || handle === null) {
                 return;
             }
-            var event = this._handleLocs[handle];
+            var event = this._handleEvents[handle];
             if (event) {
-                delete this._handleLocs[handle];
+                delete this._handleEvents[handle];
                 var locSubs = this._eventSubs[event];
                 if (locSubs) {
                     delete locSubs[handle];

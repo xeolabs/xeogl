@@ -1,5 +1,5 @@
 /**
- A **GameObject** is an entity within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ A **GameObject** is an GameObject within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
  ## Overview
 
