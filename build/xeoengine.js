@@ -9393,7 +9393,7 @@ visibility.destroy();
 
             if (this._pickIndices) {
                 this._pickIndices.destroy();
-                cacheStats_cache.pickIndices -= this._pickIndices.numItems;
+                cacheStats.pickIndices -= this._pickIndices.numItems;
                 this._pickIndices = null;
             }
 
@@ -16099,7 +16099,7 @@ visibility.destroy();
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var GameObject = new XEO.GameObject(scene, {
+ var gameObject = new XEO.GameObject(scene, {
     colorBuf: colorBuf,
     geometry: geometry
 });
@@ -16258,7 +16258,7 @@ visibility.destroy();
 
  // Create a Object that renders the Geometry to the depth buffer,
  // as configured by our DepthBuf
- var GameObject = new XEO.GameObject(scene, {
+ var gameObject = new XEO.GameObject(scene, {
     depthBuf: depthBuf,
     geometry: geometry
 });
@@ -33478,7 +33478,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var GameObject = new XEO.GameObject(scene, {
+ var gameObject = new XEO.GameObject(scene, {
     id: "myObject",
     material: material,
     geometry: geometry
@@ -33491,7 +33491,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
     components: [
         "myMaterial",
         geometry,
-        GameObject
+        gameObject
     ]
  });
 
@@ -33518,7 +33518,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  // by instance, ID or type:
 
  group1.remove("myMaterial"); // Remove one component by ID
- group1.remove([geometry, GameObject]); // Remove two components by instance
+ group1.remove([geometry, gameObject]); // Remove two components by instance
 
  group2.remove("XEO.Geometry"); // Remove all Geometries
  ````
