@@ -4,7 +4,7 @@
  * A WebGL-based 3D scene graph from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-11-06
+ * Built on 2015-11-10
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -3512,7 +3512,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg] {*} DepthBuf configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Component.
- @extends Object
  */
 (function () {
 
@@ -3612,8 +3611,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             // Pub/sub
             this._handleMap = new XEO.utils.Map(); // Subscription handle pool
-            this._eventSubs = {}; // A [handle -> callback] map for each location name
-            this._handleLocs = {}; // Maps handles to loc names
+            this._handleEvents = {}; // Subscription handles mapped to event names
+            this._eventSubs = {}; // Event names mapped to subscribers
 
             this.props = {}; // Maps locations to publications
 
@@ -3717,10 +3716,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
             var handle = this._handleMap.addItem(); // Create unique handle
             subs[handle] = {
-                scope: scope || this,
-                callback: callback
+                callback: callback,
+                scope: scope || this
             };
-            this._handleLocs[handle] = event;
+            this._handleEvents[handle] = event;
             var value = this.props[event];
             if (value) { // A publication exists, notify callback immediately
                 callback.call(scope || this, value);
@@ -3739,9 +3738,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             if (handle === undefined || handle === null) {
                 return;
             }
-            var event = this._handleLocs[handle];
+            var event = this._handleEvents[handle];
             if (event) {
-                delete this._handleLocs[handle];
+                delete this._handleEvents[handle];
                 var locSubs = this._eventSubs[event];
                 if (locSubs) {
                     delete locSubs[handle];
@@ -14758,7 +14757,7 @@ visibility.destroy();
  * @module XEO
  * @submodule objects
  */;/**
- A **GameObject** is an entity within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ A **GameObject** is an GameObject within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
  ## Overview
 
@@ -16100,7 +16099,7 @@ visibility.destroy();
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var gameObject = new XEO.GameObject(scene, {
+ var GameObject = new XEO.GameObject(scene, {
     colorBuf: colorBuf,
     geometry: geometry
 });
@@ -16259,7 +16258,7 @@ visibility.destroy();
 
  // Create a Object that renders the Geometry to the depth buffer,
  // as configured by our DepthBuf
- var gameObject = new XEO.GameObject(scene, {
+ var GameObject = new XEO.GameObject(scene, {
     depthBuf: depthBuf,
     geometry: geometry
 });
@@ -16646,6 +16645,9 @@ visibility.destroy();
                     // TODO: Only accept rendering priority in range [0...MAX_PRIORITY]
 
                     value = value || 0;
+
+                    value = Math.round(value);
+
 
                     if (value === this._state.priority) {
                         return;
@@ -18125,6 +18127,8 @@ visibility.destroy();
                     if (value === this._state.priority) {
                         return;
                     }
+
+                    value = Math.round(value);
 
                     this._state.priority = value;
 
@@ -33474,7 +33478,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var gameObject = new XEO.GameObject(scene, {
+ var GameObject = new XEO.GameObject(scene, {
     id: "myObject",
     material: material,
     geometry: geometry
@@ -33487,7 +33491,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
     components: [
         "myMaterial",
         geometry,
-        gameObject
+        GameObject
     ]
  });
 
@@ -33514,7 +33518,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  // by instance, ID or type:
 
  group1.remove("myMaterial"); // Remove one component by ID
- group1.remove([geometry, gameObject]); // Remove two components by instance
+ group1.remove([geometry, GameObject]); // Remove two components by instance
 
  group2.remove("XEO.Geometry"); // Remove all Geometries
  ````
