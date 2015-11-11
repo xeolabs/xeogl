@@ -28,6 +28,24 @@
 
 <script>
 
+    var lights = new XEO.Lights({
+        lights: [
+
+            new XEO.AmbientLight({
+                color: [0.8, 0.8, 1.0],
+                intensity: 0.3
+            }),
+
+            new XEO.DirLight({
+                dir: [0.5, 0.5, -0.5],
+                color: [1.0, 1.0, 0.9],
+                intensity: 0.9,
+                space: "view"
+            })
+
+        ]
+    });
+
     var geometry = new XEO.TorusGeometry({
         radius: 1.0,
         tube: 0.4,
@@ -49,7 +67,7 @@
     });
 
     var material = new XEO.PhongMaterial({
-        ambient: [0.3, 0.3, 0.3],
+        ambient: [0.2, 0.2, 0.3],
         shininess: 30,
         specularMap: texture,
         diffuse: [0.1, 0.1, 0.4]
@@ -57,7 +75,9 @@
 
     var object = new XEO.GameObject({
         geometry: geometry,
-        material: material
+        material: material,
+        lights: lights
+
     });
 
     object.camera.view.zoom(-5);
