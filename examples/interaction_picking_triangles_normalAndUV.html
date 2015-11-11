@@ -124,28 +124,6 @@
         material: material
     });
 
-    new XEO.GameObject({
-
-        geometry: new XEO.OBJGeometry({
-            src: "models/obj/raptor.obj"
-        }),
-
-        material: new XEO.PhongMaterial({
-
-            diffuseMap: new XEO.Texture({
-                src: "models/obj/raptor.jpg"
-            })
-        }),
-
-        transform: new XEO.Rotate({
-            xyz: [1, 0, 0],
-            angle: 0,
-
-            parent: new XEO.Translate({
-                xyz: [10, 3, 10]
-            })
-        })
-    });
     //
     //    // Sphere 2
     //
