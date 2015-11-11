@@ -26,16 +26,24 @@
 
 <script>
 
-    var dirLight = new XEO.DirLight({
-        dir: [0,0,-1],
+    var dirLight1 = new XEO.DirLight({
+        dir: [1,0,-1],
         color: [0.7, 0.7, 0.8],
+        intensity: 1.0,
+        space: "world"
+    });
+
+    var dirLight2 = new XEO.DirLight({
+        dir: [-1,0,-1],
+        color: [1.0, 0.6, 0.6],
         intensity: 1.0,
         space: "world"
     });
 
     var lights = new XEO.Lights({
         lights: [
-            dirLight
+            dirLight1,
+                dirLight2
         ]
     });
 

@@ -22,13 +22,15 @@
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a> - emissive <a href="../docs/classes/Texture.html"
                                                                                target="_other">Texture</a>
+    <br><br>
+    <img src="textures/emissive/emissiveMap.jpg" width="300px" height="300px">
 </div>
 
 <script>
 
     var geometry = new XEO.TorusGeometry({
         radius: 1.0,
-        tube: 0.3,
+        tube: 0.4,
         segmentsR: 32,
         segmentsT: 24,
         arc: Math.PI * 2.0
@@ -59,7 +61,7 @@
         material: material
     });
 
-    object.scene.camera.view.zoom(-7);
+    object.scene.camera.view.zoom(-5);
 
     object.scene.on("tick",
             function () {

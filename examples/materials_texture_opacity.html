@@ -20,16 +20,18 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - specular <a href="../docs/classes/Texture.html"
-                                                                               target="_other">Texture</a>
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - opacity <a href="../docs/classes/Texture.html"
+                                                                              target="_other">Texture</a>
     <br><br>
     <img src="textures/diffuse/crossGridColorMap.jpg" width="300px" height="300px">
 </div>
 
 <script>
 
-    var geometry = new XEO.TorusGeometry({
-        radius: 1.0,
+    // Sphere
+
+    var geometry = new XEO.SphereGeometry({
+        radius: 2.0,
         tube: 0.4,
         segmentsR: 32,
         segmentsT: 24,
@@ -51,14 +53,46 @@
     var material = new XEO.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         shininess: 30,
-        specularMap: texture,
+        opacityMap: texture,
         diffuse: [0.1, 0.1, 0.4]
+    });
+
+    var modes = new XEO.Modes({
+        transparent: true
     });
 
     var object = new XEO.GameObject({
         geometry: geometry,
-        material: material
+        material: material,
+        modes: modes
     });
+
+    // Torus
+
+    new XEO.GameObject({
+
+        geometry: new XEO.TorusGeometry({}),
+
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg",
+                minFilter: "linearMipmapLinear",
+                magFiler: "linear",
+                wrapS: "repeat",
+                wrapT: "repeat",
+                flipY: true,
+                translate: [0, 0, 0],
+                scale: [1, 1, 1],
+                rotate: 0
+            })
+        }),
+
+        transform: new XEO.Translate({
+            xyz: [0, 0, 0]
+        })
+    });
+
+    // Animation
 
     object.camera.view.zoom(-5);
 

@@ -99,9 +99,7 @@
             priority: 1
         }),
 
-        geometry: new XEO.PlaneGeometry({
-            xSize: 10,
-            ySize: 10
+        geometry: new XEO.Geometry({
         }),
 
         material: new XEO.PhongMaterial({
@@ -110,6 +108,8 @@
             })
         })
     });
+
+    planeObject.camera.view.zoom(-4);
 
     // Game loop
 
