@@ -30,22 +30,12 @@
 
     var geometry = new XEO.SphereGeometry({
         radius: 1.0,
-        tube: 0.4,
-        segmentsR: 32,
-        segmentsT: 24,
-        arc: Math.PI * 2.0
+        widthSegments: 32,
+        heightSegments: 24
     });
 
     var diffuseMap = new XEO.Texture({
-        src: "textures/diffuse/uvGrid2.jpg",
-        minFilter: "linearMipmapLinear",
-        magFiler: "linear",
-        wrapS: "repeat",
-        wrapT: "repeat",
-        flipY: true,
-        translate: [0, 0, 0],
-        scale: [1, 1, 1],
-        rotate: 0
+        src: "textures/diffuse/uvGrid2.jpg"
     });
 
     var emissiveFresnel = new XEO.Fresnel({
