@@ -33,7 +33,7 @@
         // Box by default
     });
 
-    var diffuseMap = new XEO.Texture({
+    var texture = new XEO.Texture({
         src: "textures/diffuse/uvGrid2.jpg",
 
         // Optional initial transforms
@@ -46,7 +46,7 @@
         ambient: [0.3, 0.3, 0.3],
         diffuse: [0.3, 0.5, 0.5],
         shininess: 30,
-        diffuseMap: diffuseMap
+        diffuseMap: texture
     });
 
     var object = new XEO.GameObject({
@@ -54,7 +54,11 @@
         material: material
     });
 
+    // Position camera
+
     object.camera.view.zoom(-5);
+
+    // Scene loop
 
     var i = 0;
     var scale = 1;
@@ -65,14 +69,18 @@
     object.scene.on("tick",
             function () {
 
+                // Orbit camera
+
                 var view = object.scene.camera.view;
 
                 view.rotateEyeY(0.2);
                 view.rotateEyeX(0.1);
 
-                diffuseMap.rotate += 0.2;
-                diffuseMap.scale = [scale, scale];
-                diffuseMap.translate = [x, y];
+                // Animate texture rotation, scale and translation
+
+                texture.rotate += 0.2;
+                texture.scale = [scale, scale];
+                texture.translate = [x, y];
 
                 scale = scale + (dir * 0.04);
 
