@@ -19,7 +19,7 @@
 
     <script src="lib/dat.gui.min.js"></script>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
 
 <body>
 
@@ -34,8 +34,8 @@
 
     var sphere = new XEO.SphereGeometry({
         radius: 1.5,
-        heightSegments: 30,
-        widthSegments: 30
+        heightSegments: 60,
+        widthSegments: 60
     });
 
     var object = new XEO.GameObject({
@@ -44,7 +44,8 @@
             ambient: [0.3, 0.3, 0.3],
             shininess: 30,
             diffuseMap: new XEO.Texture({
-                src: "textures/diffuse/UVCheckerMap16.jpg"
+//                src: "textures/diffuse/moon.jpg"
+                src: "textures/diffuse/uvGrid2.jpg"
             }),
             pointSize: 5
         })
