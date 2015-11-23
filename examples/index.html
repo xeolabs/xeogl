@@ -314,7 +314,7 @@
             "interaction_KeyboardOrbitCamera",
             "interaction_KeyboardPanCamera",
             "interaction_KeyboardZoomCamera",
-            "interaction_MouseOrbitCamera",
+            "interaction_MouseRotateCamera",
             "interaction_MousePanCamera",
             "interaction_MouseZoomCamera",
 
@@ -359,7 +359,10 @@
             "materials_fresnel_diffuse",
             "materials_fresnel_specular",
             "materials_fresnel_opacity",
-            "materials_fresnel_emissive"
+            "materials_fresnel_emissive",
+
+            "#Z-sorting transparent objects",
+            "materials_techniques_transparencySort"
         ],
 
         "Profiling": [
@@ -372,9 +375,9 @@
             "scene_events_tick"
         ],
 
-        "Transforms": [
-            "transforms_scale",
-            "transforms_hierarchy"
+        "Techniques": [
+            "#Z-sorting transparent objects",
+            "techniques_transparencySort"
         ]
     };
 

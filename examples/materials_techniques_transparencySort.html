@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>specular <a href="../docs/classes/Fresnel.html"
+                                                                                    target="_other">Fresnel</a>
+</div>
+
+<script>
+
+
+    var geometry = new XEO.SphereGeometry({
+        radius: 20.0
+    });
+
+    var material = new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        }),
+        opacityFresnel: new XEO.Fresnel({
+            edgeBias: 0.2,
+            centerBias: 0.7,
+            edgeColor: [1.0, 0.0, 0.0],
+            centerColor: [0.3, 1.0, 1.0],
+            power: 1.0
+        })
+    });
+
+    var modes = new XEO.Modes({
+        transparent: true
+    });
+
+    var r = 350;
+    var halfr = r / 2;
+
+    for (var i = 0; i < 100; i++) {
+
+        var object = new XEO.GameObject({
+
+            geometry: geometry,
+            material: material,
+            modes: modes,
+
+            transform: new XEO.Translate({
+                xyz: [
+                    Math.random() * r - halfr,
+                    Math.random() * r - halfr,
+                    Math.random() * r - halfr
+                ]
+            }),
+
+            // A XEO.Layer sets the GameObject's rendering order,
+            // typically for transparency sorting.
+
+            // We'll dynamically update the Layer's priority
+            // to a value that's in proportion to the Z position
+            // of the center of the GameObject's View-space bounding box.
+
+            layer: new XEO.Layer({
+                priority: 0
+            })
+        });
+
+        (function () {
+
+            var _object = object;
+
+            object.viewBoundary.on("updated",
+                    function () {
+                        _object.layer.priority = 1000 + _object.viewBoundary.center[2];
+                    });
+        })();
+    }
+
+    var scene = modes.scene;
+
+    scene.camera.view.zoom(r / 2);
+
+    new XEO.CameraControl();
+
+    scene.on("tick",
+            function () {
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.2);
+                view.rotateEyeX(0.1);
+            });
+
+</script>
+</body>
+</html>
