@@ -2,7 +2,7 @@
     "name": "xeoengine",
     "version": "0.0.1",
     "homepage": "http://xeoengine.org/",
-    "description": "A WebGL-based 3D Engine from XeoLabs",
+    "description": "A WebGL-based 3D visualization engine from xeoLabs",
     "main": "build/xeoengine.js",
     "keywords": [
         "XEO",

@@ -49,7 +49,7 @@ module.exports = function (grunt) {
                 version: '<%= pkg.version %>',
                 url: '<%= pkg.homepage %>',
                 options: {
-                    paths: ['src/core', 'src/extras'],
+                    paths: ['src'],
                     outdir: './docs/',
                     "exclude" : "renderer, utils, webgl"
                 },

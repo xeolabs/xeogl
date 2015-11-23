@@ -2,7 +2,7 @@
   "name": "xeoengine",
   "title": "xeoEngine",
   "version": "0.1.0",
-  "description": "A WebGL-based 3D scene graph from xeoLabs",
+  "description": "A WebGL-based 3D visualization engine from xeoLabs",
   "homepage": "http://xeoengine.org/",
   "author": {
     "name": "Lindsay Kay",
