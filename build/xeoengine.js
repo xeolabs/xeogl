@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-11-20
+ * Built on 2015-11-23
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -2120,7 +2120,7 @@
          */
         this.material = null;
     };
-})();;(function () {
+})();;                (function () {
 
     "use strict";
 
@@ -6352,6 +6352,32 @@
         },
 
         /**
+         * Returns a new, uninitialized 3D axis-aligned bounding box.
+         * @method AABB3
+         * @static
+         * @returns {*} The bounding box.
+         */
+        AABB3: function () {
+            return {
+                min: new Float32Array(3),
+                max: new Float32Array(3)
+            }
+        },
+
+        /**
+         * Returns a new, uninitialized 2D axis-aligned bounding box.
+         * @method AABB2
+         * @static
+         * @returns {*} The bounding box.
+         */
+        AABB2: function () {
+            return {
+                min: new Float32Array(2),
+                max: new Float32Array(2)
+            }
+        },
+
+        /**
          * Returns a new UUID.
          * @method createUUID
          * @static
@@ -7971,20 +7997,7 @@
          * @static
          */
         getAABBDiag: function (boundary) {
-
-            var min = tempVec3;
-            var max = tempVec3b;
-
-            min[0] = boundary.xmin;
-            min[1] = boundary.ymin;
-            min[2] = boundary.zmin;
-
-            max[0] = boundary.xmax;
-            max[1] = boundary.ymax;
-            max[2] = boundary.zmax;
-
-            this.subVec3(max, min, tempVec3c);
-
+            this.subVec3(boundary.max, boundary.min, tempVec3c);
             return Math.abs(this.lenVec3(tempVec3c));
         },
 
@@ -7996,9 +8009,9 @@
         getAABBCenter: function (boundary, dest) {
             var r = dest || this.vec3();
 
-            r[0] = (boundary.xmax + boundary.xmin ) * 0.5;
-            r[1] = (boundary.ymax + boundary.ymin ) * 0.5;
-            r[2] = (boundary.zmax + boundary.zmin ) * 0.5;
+            r[0] = (boundary.max[0] + boundary.min[0] ) * 0.5;
+            r[1] = (boundary.max[1] + boundary.min[1] ) * 0.5;
+            r[2] = (boundary.max[2] + boundary.min[2] ) * 0.5;
 
             return r;
         },
@@ -8011,8 +8024,8 @@
         getAABB2Center: function (boundary, dest) {
             var r = dest || this.vec2();
 
-            r[0] = (boundary.xmax + boundary.xmin ) / 2;
-            r[1] = (boundary.ymax + boundary.ymin ) / 2;
+            r[0] = (boundary.max[0] + boundary.min[0] ) / 2;
+            r[1] = (boundary.max[1] + boundary.min[1] ) / 2;
 
             return r;
         },
@@ -8035,72 +8048,72 @@
                 obb[0] = [];
             }
 
-            obb[0][0] = aabb.xmin;
-            obb[0][1] = aabb.ymin;
-            obb[0][2] = aabb.zmin;
+            obb[0][0] = aabb.min[0];
+            obb[0][1] = aabb.min[1];
+            obb[0][2] = aabb.min[2];
             obb[0][3] = 1;
 
             if (!obb[1]) {
                 obb[1] = [];
             }
 
-            obb[1][0] = aabb.xmax;
-            obb[1][1] = aabb.ymin;
-            obb[1][2] = aabb.zmin;
+            obb[1][0] = aabb.max[0];
+            obb[1][1] = aabb.min[1];
+            obb[1][2] = aabb.min[2];
             obb[1][3] = 1;
 
             if (!obb[2]) {
                 obb[2] = [];
             }
 
-            obb[2][0] = aabb.xmax;
-            obb[2][1] = aabb.ymax;
-            obb[2][2] = aabb.zmin;
+            obb[2][0] = aabb.max[0];
+            obb[2][1] = aabb.max[1];
+            obb[2][2] = aabb.min[2];
             obb[2][3] = 1;
 
             if (!obb[3]) {
                 obb[3] = [];
             }
 
-            obb[3][0] = aabb.xmin;
-            obb[3][1] = aabb.ymax;
-            obb[3][2] = aabb.zmin;
+            obb[3][0] = aabb.min[0];
+            obb[3][1] = aabb.max[1];
+            obb[3][2] = aabb.min[2];
             obb[3][3] = 1;
 
             if (!obb[4]) {
                 obb[4] = [];
             }
 
-            obb[4][0] = aabb.xmin;
-            obb[4][1] = aabb.ymin;
-            obb[4][2] = aabb.zmax;
+            obb[4][0] = aabb.min[0];
+            obb[4][1] = aabb.min[1];
+            obb[4][2] = aabb.max[2];
             obb[4][3] = 1;
 
             if (!obb[5]) {
                 obb[5] = [];
             }
 
-            obb[5][0] = aabb.xmax;
-            obb[5][1] = aabb.ymin;
-            obb[5][2] = aabb.zmax;
+            obb[5][0] = aabb.max[0];
+            obb[5][1] = aabb.min[1];
+            obb[5][2] = aabb.max[2];
             obb[5][3] = 1;
 
             if (!obb[6]) {
                 obb[6] = [];
             }
 
-            obb[6][0] = aabb.xmax;
-            obb[6][1] = aabb.ymax;
-            obb[6][2] = aabb.zmax;
+            obb[6][0] = aabb.max[0];
+            obb[6][1] = aabb.max[1];
+            obb[6][2] = aabb.max[2];
             obb[6][3] = 1;
 
             if (!obb[7]) {
                 obb[7] = [];
             }
 
-            obb[7][0] = aabb.xmin;
-            obb[7][1] = aabb.ymax;
-            obb[7][2] = aabb.zmax;
+            obb[7][0] = aabb.min[0];
+            obb[7][1] = aabb.max[1];
+            obb[7][2] = aabb.max[2];
             obb[7][3] = 1;
 
             return obb;
@@ -8117,14 +8130,7 @@
          */
         positions3ToAABB3: function (positions, aabb) {
 
-            aabb = aabb || {
-                    xmin: 0,
-                    ymin: 0,
-                    zmin: 0,
-                    xmax: 0,
-                    ymax: 0,
-                    zmax: 0
-                };
+            aabb = aabb ||  XEO.math.AABB3();
 
             var xmin = 100000;
             var ymin = 100000;
@@ -8166,12 +8172,12 @@
                 }
             }
 
-            aabb.xmin = xmin;
-            aabb.ymin = ymin;
-            aabb.zmin = zmin;
-            aabb.xmax = xmax;
-            aabb.ymax = ymax;
-            aabb.zmax = zmax;
+            aabb.min[0] = xmin;
+            aabb.min[1] = ymin;
+            aabb.min[2] = zmin;
+            aabb.max[0] = xmax;
+            aabb.max[1] = ymax;
+            aabb.max[2] = zmax;
 
             return aabb;
         },
@@ -8187,14 +8193,7 @@
          */
         points3ToAABB3: function (points, aabb) {
 
-            aabb = aabb || {
-                    xmin: 0,
-                    ymin: 0,
-                    zmin: 0,
-                    xmax: 0,
-                    ymax: 0,
-                    zmax: 0
-                };
+            aabb = aabb ||  XEO.math.AABB3();
 
             var xmin = 100000;
             var ymin = 100000;
@@ -8236,12 +8235,12 @@
                 }
             }
 
-            aabb.xmin = xmin;
-            aabb.ymin = ymin;
-            aabb.zmin = zmin;
-            aabb.xmax = xmax;
-            aabb.ymax = ymax;
-            aabb.zmax = zmax;
+            aabb.min[0] = xmin;
+            aabb.min[1] = ymin;
+            aabb.min[2] = zmin;
+            aabb.max[0] = xmax;
+            aabb.max[1] = ymax;
+            aabb.max[2] = zmax;
 
             return aabb;
         },
@@ -8257,28 +8256,28 @@
          */
         expandAABB3: function (aabb1, aabb2) {
 
-            if (aabb1.xmin < aabb2.xmin) {
-                aabb2.xmin = aabb1.xmin;
+            if (aabb1.min[0] < aabb2.min[0]) {
+                aabb2.min[0] = aabb1.min[0];
             }
 
-            if (aabb1.ymin < aabb2.ymin) {
-                aabb2.ymin = aabb1.ymin;
+            if (aabb1.min[1] < aabb2.min[1]) {
+                aabb2.min[1] = aabb1.min[1];
             }
 
-            if (aabb1.zmin < aabb2.zmin) {
-                aabb2.zmin = aabb1.zmin;
+            if (aabb1.min[2] < aabb2.min[2]) {
+                aabb2.min[2] = aabb1.min[2];
             }
 
-            if (aabb1.xmax > aabb2.xmax) {
-                aabb2.xmax = aabb1.xmax;
+            if (aabb1.max[0] > aabb2.max[0]) {
+                aabb2.max[0] = aabb1.max[0];
             }
 
-            if (aabb1.ymax > aabb2.ymax) {
-                aabb2.ymax = aabb1.ymax;
+            if (aabb1.max[1] > aabb2.max[1]) {
+                aabb2.max[1] = aabb1.max[1];
             }
 
-            if (aabb1.zmax > aabb2.zmax) {
-                aabb2.zmax = aabb1.zmax;
+            if (aabb1.max[2] > aabb2.max[2]) {
+                aabb2.max[2] = aabb1.max[2];
             }
 
             return aabb2;
@@ -8295,9 +8294,7 @@
          */
         points3ToAABB2: function (points, aabb) {
 
-            aabb = aabb || {
-                    xmin: 0, xmax: 0, ymin: 0, ymax: 0
-                };
+            aabb = aabb ||  XEO.math.AABB2();
 
             var xmin = 10000000;
             var ymin = 10000000;
@@ -8335,10 +8332,10 @@
                 }
             }
 
-            aabb.xmin = xmin;
-            aabb.ymin = ymin;
-            aabb.xmax = xmax;
-            aabb.ymax = ymax;
+            aabb.min[0] = xmin;
+            aabb.min[1] = ymin;
+            aabb.max[0] = xmax;
+            aabb.max[1] = ymax;
 
             return aabb;
         },
@@ -8351,15 +8348,15 @@
             var midx = canvasWidth * 0.5;
             var midy = canvasHeight * 0.5;
 
-            var xmin = aabb.xmin;
-            var ymin = -aabb.ymin;
-            var xmax = aabb.xmax;
-            var ymax = -aabb.ymax;
+            var xmin = aabb.min[0];
+            var ymin = -aabb.min[1];
+            var xmax = aabb.max[0];
+            var ymax = -aabb.max[1];
 
-            aabb2.xmin = Math.floor((xmin * midx) + midx);
-            aabb2.ymin = canvasHeight - Math.floor((ymin * -midy) + midy);
-            aabb2.xmax = Math.floor((xmax * midx) + midx);
-            aabb2.ymax = canvasHeight - Math.floor((ymax * -midy) + midy);
+            aabb2.min[0] = Math.floor((xmin * midx) + midx);
+            aabb2.min[1] = canvasHeight - Math.floor((ymin * -midy) + midy);
+            aabb2.max[0] = Math.floor((xmax * midx) + midx);
+            aabb2.max[1] = canvasHeight - Math.floor((ymax * -midy) + midy);
 
             return aabb;
         },
@@ -8833,7 +8830,6 @@
 
             return cartesian;
         },
-
 
 
         identityQuaternion: function (dest) {
@@ -11007,7 +11003,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     if (!this._worldBoundary) {
 
                         var self = this;
-                        var aabb = {};
+                        var aabb = XEO.math.AABB3();
 
                         // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
 
@@ -11022,12 +11018,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             getAABB: function () {
 
-                                aabb.xmin = 100000;
-                                aabb.ymin = 100000;
-                                aabb.zmin = 100000;
-                                aabb.xmax = -100000;
-                                aabb.ymax = -100000;
-                                aabb.zmax = -100000;
+                                aabb.min[0] = 100000;
+                                aabb.min[1] = 100000;
+                                aabb.min[2] = 100000;
+                                aabb.max[0] = -100000;
+                                aabb.max[1] = -100000;
+                                aabb.max[2] = -100000;
 
                                 var objects = self.objects;
                                 var object;
@@ -11823,13 +11819,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 // Argument is a Boundary3D
 
-            } else if (
-                params.xmin != undefined &&
-                params.ymin != undefined &&
-                params.zmin != undefined &&
-                params.xmax != undefined &&
-                params.ymax != undefined &&
-                params.zmax != undefined) {
+            } else if (params.min != undefined && params.max != undefined) {
 
                 // Argument is an AABB
 
@@ -11881,7 +11871,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             if (aabb) {
 
-                if (aabb.xmax <= aabb.xmin || aabb.ymax <= aabb.ymin || aabb.zmax <= aabb.zmin) {
+                if (aabb.max[0] <= aabb.min[0] || aabb.max[1] <= aabb.min[1] || aabb.max[2] <= aabb.min[2]) {
 
                     // Don't fly to an empty boundary
                     return;
@@ -20842,7 +20832,7 @@ visibility.destroy();
 
 })();
 ;/**
- A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the object-aligned bounding box (OBB)
+ A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the object-aligned wireframe bounding box (OBB)
  of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  ## Example
@@ -21043,14 +21033,14 @@ visibility.destroy();
 
         _setPositionsFromAABB: function (aabb) {
             this.positions = [
-                aabb.xmax, aabb.ymax, aabb.zmax,
-                aabb.xmax, aabb.ymin, aabb.zmax,
-                aabb.xmin, aabb.ymin, aabb.zmax,
-                aabb.xmin, aabb.ymax, aabb.zmax,
-                aabb.xmax, aabb.ymax, aabb.zmin,
-                aabb.xmax, aabb.ymin, aabb.zmin,
-                aabb.xmin, aabb.ymin, aabb.zmin,
-                aabb.xmin, aabb.ymax, aabb.zmin
+                aabb.max[0], aabb.max[1], aabb.max[2],
+                aabb.max[0], aabb.min[1], aabb.max[2],
+                aabb.min[0], aabb.min[1], aabb.max[2],
+                aabb.min[0], aabb.max[1], aabb.max[2],
+                aabb.max[0], aabb.max[1], aabb.min[2],
+                aabb.max[0], aabb.min[1], aabb.min[2],
+                aabb.min[0], aabb.min[1], aabb.min[2],
+                aabb.min[0], aabb.max[1], aabb.min[2]
             ];
         },
 
@@ -32486,10 +32476,10 @@ myTask2.setFailed();
 
                                     var aabb = self.aabb;
 
-                                    div.style.left = aabb.xmin + "px";
-                                    div.style.top = aabb.ymin + "px";
-                                    div.style.width = (aabb.xmax - aabb.xmin) + "px";
-                                    div.style.height = (aabb.ymax - aabb.ymin) + "px";
+                                    div.style.left = aabb.min[0] + "px";
+                                    div.style.top = aabb.min[1] + "px";
+                                    div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
+                                    div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
                                 });
 
                             this._div = div;
@@ -32533,13 +32523,8 @@ myTask2.setFailed();
                 // Lazy-allocate
 
                 this._obb = [];
-
-                this._aabb = {
-                    xmin: 0, ymin: 0,
-                    xmax: 0, ymax: 0
-                };
-
-                this._center = [0, 0];
+                this._aabb = XEO.math.AABB2();
+                this._center = XEO.math.vec2();
             }
 
             var obb = this._getOBB();
@@ -32775,14 +32760,11 @@ myTask2.setFailed();
             }
 
             if (!this._aabb) {
-                this._aabb = {
-                    xmin: 0, ymin: 0, zmin: 0,
-                    xmax: 0, ymax: 0, zmax: 0
-                };
+                this._aabb = XEO.math.AABB3();
             }
 
             if (!this._center) {
-                this._center = [0, 0, 0];
+                this._center = XEO.math.vec3();
             }
 
             var aabb = this._getAABB ? this._getAABB() : null;
@@ -32793,12 +32775,12 @@ myTask2.setFailed();
 
                 // Derive OBB and center
 
-                this._aabb.xmin = aabb.xmin;
-                this._aabb.ymin = aabb.ymin;
-                this._aabb.zmin = aabb.zmin;
-                this._aabb.xmax = aabb.xmax;
-                this._aabb.ymax = aabb.ymax;
-                this._aabb.zmax = aabb.zmax;
+                this._aabb.min[0] = aabb.min[0];
+                this._aabb.min[1] = aabb.min[1];
+                this._aabb.min[2] = aabb.min[2];
+                this._aabb.max[0] = aabb.max[0];
+                this._aabb.max[1] = aabb.max[1];
+                this._aabb.max[2] = aabb.max[2];
 
                 math.AABB3ToOBB3(this._aabb, this._obb);
                 math.getAABBCenter(this._aabb, this._center);
@@ -32827,7 +32809,7 @@ myTask2.setFailed();
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
-                   this._obb =  math.transformPoints3(matrix, this._obb);
+                    this._obb = math.transformPoints3(matrix, this._obb);
                     math.points3ToAABB3(this._obb, this._aabb);
                     math.getAABBCenter(this._aabb, this._center);
 
@@ -33117,10 +33099,7 @@ myTask2.setFailed();
         _buildAABB: function () {
 
             if (!this._aabb) {
-                this._aabb = {
-                    xmin: 0, ymin: 0, zmin: 0,
-                    xmax: 0, ymax: 0, zmax: 0
-                };
+                this._aabb = XEO.math.AABB3();
             }
 
             var xmin = 100000;
@@ -33133,6 +33112,8 @@ myTask2.setFailed();
             var component;
             var worldBoundary;
             var aabb;
+            var min;
+            var max;
 
             var group = this.group;
 
@@ -33149,41 +33130,43 @@ myTask2.setFailed();
                         if (worldBoundary) {
 
                             aabb = worldBoundary.aabb;
+                            min = aabb.min;
+                            max = aabb.max;
 
-                            if (aabb.xmin < xmin) {
-                                xmin = aabb.xmin;
+                            if (min[0] < xmin) {
+                                xmin = min[0];
                             }
 
-                            if (aabb.ymin < ymin) {
-                                ymin = aabb.ymin;
+                            if (min[1] < ymin) {
+                                ymin = min[1];
                             }
 
-                            if (aabb.zmin < zmin) {
-                                zmin = aabb.zmin;
+                            if (min[2] < zmin) {
+                                zmin = min[2];
                             }
 
-                            if (aabb.xmax > xmax) {
-                                xmax = aabb.xmax;
+                            if (max[0] > xmax) {
+                                xmax = max[0];
                             }
 
-                            if (aabb.ymax > ymax) {
-                                ymax = aabb.ymax;
+                            if (max[1] > ymax) {
+                                ymax = max[1];
                             }
 
-                            if (aabb.zmax > zmax) {
-                                zmax = aabb.zmax;
+                            if (max[2] > zmax) {
+                                zmax = max[2];
                             }
                         }
                     }
                 }
             }
 
-            this._aabb.xmin = xmin;
-            this._aabb.ymin = ymin;
-            this._aabb.zmin = zmin;
-            this._aabb.xmax = xmax;
-            this._aabb.ymax = ymax;
-            this._aabb.zmax = zmax;
+            this._aabb.min[0] = xmin;
+            this._aabb.min[1] = ymin;
+            this._aabb.min[2] = zmin;
+            this._aabb.max[0] = xmax;
+            this._aabb.max[1] = ymax;
+            this._aabb.max[2] = zmax;
         },
 
         _getJSON: function () {

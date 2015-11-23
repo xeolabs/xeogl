@@ -1905,7 +1905,7 @@
 
      var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-     var gameObject = new XEO.GameObject(scene, {
+     var GameObject = new XEO.GameObject(scene, {
         depthBuf: depthBuf,
         geometry: geometry
      });
@@ -2237,7 +2237,7 @@
 
      var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-     var gameObject = new XEO.GameObject(scene, {
+     var GameObject = new XEO.GameObject(scene, {
         depthBuf: depthBuf,
         geometry: geometry
      });
@@ -6999,7 +6999,7 @@
 
 
     /**
-     A **GameObject** is an entity within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
+     A **GameObject** is an GameObject within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
      <ul>
      <li>See the {{#crossLink "Scene"}}Scene{{/crossLink}} class for more information on GameObjects.</li>
