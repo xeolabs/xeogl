@@ -2,11 +2,12 @@ YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [
         "AmbientLight",
-        "AxisHelper",
+        "Audio",
         "Billboard",
         "Boundary2D",
         "Boundary3D",
         "BoundaryGeometry",
+        "BoxGeometry",
         "Camera",
         "CameraControl",
         "CameraFlight",
@@ -28,27 +29,25 @@ YUI.add("yuidoc-meta", function(Y) {
         "Frustum",
         "GameObject",
         "Geometry",
-        "Geometry.Quad",
         "Group",
         "GroupBoundary",
-        "Heightmap",
         "Input",
         "KeyboardAxisCamera",
-        "KeyboardOrbitCamera",
         "KeyboardPanCamera",
+        "KeyboardRotateCamera",
         "KeyboardZoomCamera",
         "LatheGeometry",
         "Layer",
         "Lights",
+        "Listener",
         "Lookat",
         "Material",
         "Modes",
         "MorphTargets",
-        "MouseOrbitCamera",
         "MousePanCamera",
         "MousePickObject",
+        "MouseRotateCamera",
         "MouseZoomCamera",
-        "MyComponent",
         "Ortho",
         "PBRMaterial",
         "Path",
@@ -64,22 +63,16 @@ YUI.add("yuidoc-meta", function(Y) {
         "Scale",
         "Scene",
         "Shader",
-        "Shader.Water",
         "ShaderParams",
-        "SkyBox",
-        "Sound",
         "SphereGeometry",
         "SplineCurve",
-        "SplineCurveHelper",
         "Stage",
-        "Stats",
         "Task",
         "Tasks",
         "Texture",
         "TorusGeometry",
         "Transform",
         "Translate",
-        "VectorTextGeometry",
         "Visibility",
         "XEO",
         "XEO.math.math"
@@ -87,15 +80,17 @@ YUI.add("yuidoc-meta", function(Y) {
     "modules": [
         "XEO",
         "animation",
+        "audio",
+        "boundaries",
         "camera",
         "canvas",
         "clipping",
-        "configuration",
+        "configs",
+        "controls",
         "culling",
         "curves",
         "geometry",
-        "groups",
-        "helpers",
+        "grouping",
         "input",
         "lighting",
         "materials",
@@ -103,7 +98,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "objects",
         "rendering",
         "reporting",
-        "spatial",
+        "shaders",
         "transforms"
     ],
     "allModules": [
@@ -111,6 +106,16 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "animation",
             "name": "animation",
             "description": "Components for animating state within Scenes."
+        },
+        {
+            "displayName": "audio",
+            "name": "audio",
+            "description": "TODO\n## Overview\nTODO\n## Example\nTODO"
+        },
+        {
+            "displayName": "boundaries",
+            "name": "boundaries",
+            "description": "Components to support spatial queries (eg. collisions etc)."
         },
         {
             "displayName": "camera",
@@ -128,9 +133,14 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Components for cross-section views of GameObjects."
         },
         {
-            "displayName": "configuration",
-            "name": "configuration",
+            "displayName": "configs",
+            "name": "configs",
             "description": "Components for managing Scene configuration."
+        },
+        {
+            "displayName": "controls",
+            "name": "controls",
+            "description": "Components for controlling things with user input."
         },
         {
             "displayName": "culling",
@@ -148,14 +158,9 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "A path geometry."
         },
         {
-            "displayName": "groups",
-            "name": "groups",
+            "displayName": "grouping",
+            "name": "grouping",
             "description": "Components for managing groups of components."
-        },
-        {
-            "displayName": "helpers",
-            "name": "helpers",
-            "description": "Components to help visualise other components."
         },
         {
             "displayName": "input",
@@ -180,7 +185,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "objects",
             "name": "objects",
-            "description": "Shows the shape and control points of {{#crossLink \"SplineCurve\"}}{{/crossLink}}"
+            "description": "Game object components."
         },
         {
             "displayName": "rendering",
@@ -193,9 +198,9 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Components for reporting Scene statistics."
         },
         {
-            "displayName": "spatial",
-            "name": "spatial",
-            "description": "Components to support spatial queries (eg. collisions etc)."
+            "displayName": "shaders",
+            "name": "shaders",
+            "description": "Components for defining custom GLSL shaders."
         },
         {
             "displayName": "transforms",
