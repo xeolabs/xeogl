@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>multiple <a
+        href="../docs/classes/Scene.html"
+        target="_other">Scenes</a> in a page
+</div>
+
+<canvas id="myCanvas1" width="500px" height="500px"></canvas>
+<canvas id="myCanvas2" width="500px" height="500px"></canvas>
+<canvas id="myCanvas3" width="500px" height="500px"></canvas>
+
+<script>
+
+    //-----------------------------
+    // Scene 1
+    //-----------------------------
+
+    var scene1 = new XEO.Scene({
+        canvas: "myCanvas1"
+    });
+
+    new XEO.GameObject(scene1, {
+        geometry: new XEO.SphereGeometry(scene1),
+        material: new XEO.PhongMaterial(scene1, {
+            diffuseMap: new XEO.Texture(scene1, {
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
+    });
+
+    scene1.camera.view.eye = [0, 0, -5];
+
+    scene1.on("tick",
+            function () {
+                this.camera.view.rotateEyeY(0.5);
+                this.camera.view.rotateEyeX(0.3);
+            });
+
+    //-----------------------------
+    // Scene 2
+    //-----------------------------
+
+    var scene2 = new XEO.Scene({
+        canvas: "myCanvas2"
+    });
+
+    new XEO.GameObject(scene2, {
+        geometry: new XEO.BoxGeometry(scene2),
+        material: new XEO.PhongMaterial(scene2, {
+            diffuseMap: new XEO.Texture(scene2, {
+                src: "textures/diffuse/uvgrid.jpg"
+            })
+        })
+    });
+
+    scene2.camera.view.eye = [0, 0, -5];
+
+    scene2.on("tick",
+            function () {
+                this.camera.view.rotateEyeY(0.5);
+                this.camera.view.rotateEyeX(-0.3);
+            });
+
+    //-----------------------------
+    // Scene 3
+    //-----------------------------
+
+    var scene3 = new XEO.Scene({
+        canvas: "myCanvas3"
+    });
+
+    new XEO.GameObject(scene3, {
+        geometry: new XEO.TorusGeometry(scene3),
+        material: new XEO.PhongMaterial(scene3, {
+            diffuseMap: new XEO.Texture(scene3, {
+                src: "textures/diffuse/UVCheckerMap11-1024.png"
+            })
+        })
+    });
+
+    scene3.camera.view.eye = [0, 0, -5];
+
+    scene3.on("tick",
+            function () {
+                this.camera.view.rotateEyeY(-0.5);
+                this.camera.view.rotateEyeX(0.3);
+            });
+
+
+</script>
+</body>
+</html>
