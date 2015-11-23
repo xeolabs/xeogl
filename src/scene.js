@@ -292,10 +292,16 @@
                     objects: 0
                 },
                 memory: {
+
+                    // Note that these counts will include any positions, colors,
+                    // normals and indices that xeoEngine internally creates on-demand
+                    // to support color-index triangle picking.
+
                     meshes: 0,
                     positions: 0,
                     colors: 0,
                     normals: 0,
+                    tangents: 0,
                     uvs: 0,
                     indices: 0,
                     textures: 0,
@@ -311,14 +317,6 @@
                     bindArray: 0,
                     drawElements: 0,
                     drawChunks: 0
-                },
-
-                // Internal caches
-                _cache: {
-                    tangents: 0,
-                    pickPositions: 0,
-                    pickColors: 0,
-                    pickIndices: 0
                 }
             };
 

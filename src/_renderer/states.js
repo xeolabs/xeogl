@@ -24,7 +24,7 @@
 
             this.id = this._ids.addItem({});
 
-            this.hash = cfg.hash || "" + this.id;
+            this.hash = cfg.hash || "" + this.id; // Not used by all sub-classes
 
             for (var key in cfg) {
                 if (cfg.hasOwnProperty(key)) {
