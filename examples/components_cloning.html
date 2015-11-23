@@ -84,16 +84,16 @@
 
     object.camera.view.zoom(20);
 
-//    // Orbit the eye position about the look position.
-//
-//    object.scene.on("tick",
-//            function () {
-//
-//                var view = object.camera.view;
-//
-//                view.rotateEyeY(0.5);
-//                view.rotateEyeX(0.3);
-//            });
+    // Orbit the eye position about the look position.
+
+    object.scene.on("tick",
+            function () {
+
+                var view = object.camera.view;
+
+                view.rotateEyeY(0.5);
+                view.rotateEyeX(0.3);
+            });
 
 new XEO.CameraControl();
 

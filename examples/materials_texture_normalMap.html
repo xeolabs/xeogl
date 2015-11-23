@@ -20,7 +20,7 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a> - normal map <a href="../docs/classes/Texture.html"
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>normal map <a href="../docs/classes/Texture.html"
                                                                                target="_other">Texture</a>
     <br><br>
     <img src="textures/normal/chesterfieldNormalMap.png" width="300px" height="300px">
@@ -29,8 +29,8 @@
 <script>
 
     var geometry = new XEO.TorusGeometry({
-        radius: 1.0,
-        tube: 0.3,
+        radius: 3.0,
+        tube: 1.0,
         segmentsR: 32,
         segmentsT: 24,
         arc: Math.PI * 2.0
@@ -42,7 +42,6 @@
         magFiler: "linear",
         wrapS: "repeat",
         wrapT: "repeat",
-        flipY: true,
         translate: [0, 0, 0],
         scale: [1, 1, 1],
         rotate: 0
@@ -51,7 +50,10 @@
     var material = new XEO.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         shininess: 30,
-        normalMap: texture
+        normalMap: texture,
+        modes: new XEO.Modes({
+            backfaces: true
+        })
     });
 
     var object = new XEO.GameObject({

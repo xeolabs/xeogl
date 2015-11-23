@@ -14,7 +14,9 @@
         }
     </style>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeoengine.min.js"></script>
+
+    <script src="js/geometry/heightmapGeometry.js"></script>
 
     <script src="js/debug/debug.js"></script>
 
@@ -88,7 +90,7 @@
         penMove: function (uv) {
 
             var x = Math.floor(uv[0] * this._canvas.width);
-            var y = Math.floor(uv[1] * this._canvas.height);
+            var y = Math.floor((1-uv[1]) * this._canvas.height);
 
             if (!this._down) {
                 this._ctx.moveTo(x, y);
@@ -124,6 +126,8 @@
     // Heightmap GameObject
 
     var heightmap = new XEO.GameObject({
+
+        // XEO.HeightMap is defined in ./js/geometry/heightmapGeometry.js
         geometry: new XEO.HeightmapGeometry({
             primitive: "triangles",
             src: "textures/height/everest.png",

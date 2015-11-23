@@ -21,7 +21,7 @@
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
-    <a href="../docs/classes/Geometry.html" target="_other">Geometry</a> vertex colors
+    <a href="../docs/classes/Geometry.html" target="_other">Geometry</a> with triangles and per-vertex colors
 </div>
 
 <script>
@@ -122,40 +122,40 @@
         uv: [
 
             // v0-v1-v2-v3 front
-            5, 5,
-            0, 5,
+            1, 1,
+            0, 1,
             0, 0,
-            5, 0,
+            1, 0,
 
-            // v0-v3-v4-v5 right
-            0, 5,
+            // v0-v3-v4-v1 right
+            0, 1,
             0, 0,
-            5, 0,
-            5, 5,
+            1, 0,
+            1, 1,
 
-            // v0-v5-v6-v1 top
-            5, 0,
-            5, 5,
-            0, 5,
+            // v0-v1-v6-v1 top
+            1, 0,
+            1, 1,
+            0, 1,
             0, 0,
 
             // v1-v6-v7-v2 left
-            5, 5,
-            0, 5,
+            1, 1,
+            0, 1,
             0, 0,
-            5, 0,
+            1, 0,
 
             // v7-v4-v3-v2 bottom
             0, 0,
-            5, 0,
-            5, 5,
-            0, 5,
+            1, 0,
+            1, 1,
+            0, 1,
 
-            // v4-v7-v6-v5 back
+            // v4-v7-v6-v1 back
             0, 0,
-            5, 0,
-            5, 5,
-            0, 5
+            1, 0,
+            1, 1,
+            0, 1
         ],
 
         // Color for each vertex

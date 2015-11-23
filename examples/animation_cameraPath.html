@@ -14,7 +14,7 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -30,25 +30,38 @@
 
 <script>
 
-    new XEO.CameraControl();
+    new XEO.CameraControl({
+        firstPerson: true
+    });
 
-    // Create a prototype GameObject with all defaults.
+    var geometry = new XEO.BoxGeometry({
+        radius: 3.0
+    });
 
-    var o = new XEO.GameObject();
+    var material = new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/rust.jpg"
+        })
+    });
 
-    // Make a bunch of clones of the GameObject,
-    // each with their own randomized Translate.
+    var width = 100;
+    var halfWidth = width / 2;
 
-    for (var i = 0; i < 30; i++) {
+    for (var i = 0; i < 200; i++) {
+        new XEO.GameObject({
+            geometry: geometry,
+            material: material,
 
-        o.clone({
+            transform: new XEO.Scale({
 
-            transform: new XEO.Translate({
-                xyz: [
-                    Math.random() * 50 - 25,
-                    Math.random() * 50 - 25,
-                    Math.random() * 50 - 25
-                ]
+                xyz: [0.3 + Math.random() * 5, 0.3 + Math.random() * 5, 0.3 + Math.random() * 5],
+
+                parent: new XEO.Translate({
+                    xyz: [
+                        Math.random() * width - halfWidth,
+                        Math.random() * width - halfWidth,
+                        Math.random() * width - halfWidth]
+                })
             })
         });
     }
@@ -61,12 +74,12 @@
         var p = [
             [127.51, 4.616, 159.15],
             [158.64, 4.622, 156.67],
-            [128.77, 4.683, 210.50],
-            [158.16, 4.668, 212.53],
+            [128.77, -4.683, 110.50],
+            [158.16, 4.668, 112.53],
             [113.74, 5.006, 184.95],
-            [169.95, 5.466, 184.93],
-            [116.38, 4.880, 200.23],
-            [170.78, 4.938, 200.06],
+            [169.95, -5.466, 184.93],
+            [116.38, 4.880, 100.23],
+            [170.78, 4.938, 100.06],
             [115.76, 4.886, 170.11]
         ];
 
@@ -85,9 +98,9 @@
         z /= p.length;
 
         for (var i = 0, len = p.length; i < len; i++) {
-             p[i][0] -= x;
-             p[i][1] -=y;
-             p[i][2]-=z;
+            p[i][0] -= x;
+            p[i][1] -= y;
+            p[i][2] -= z;
         }
         return p;
     }
@@ -98,7 +111,6 @@
         ]
     });
 
-
     var pathGeometry = new XEO.PathGeometry({
         path: path,
         divisions: 200
@@ -108,8 +120,11 @@
         geometry: pathGeometry
     });
 
+    var scene = object.scene;
 
-    var tick = path.scene.on("tick",
+    scene.camera.project.fovy = 65;
+
+    var tick = scene.on("tick",
             function (e) {
 
                 path.t = (e.time - e.startTime) * 0.00001;
@@ -119,11 +134,24 @@
                 var point = path.point;
                 var tangent = path.tangent;
 
-                path.scene.camera.view.eye = point;
-                    path.scene.camera.view.look = [point[0] + tangent[0], point[1] + tangent[1], point[2] + tangent[2]];
+                var matrix = XEO.math.quaternionToMat4(XEO.math.vec3PairToQuaternion(tangent, [0, 0, -1]));
+
+                var eye = scene.camera.view.eye;
+                var look = XEO.math.transformPoint3(matrix, [0, 0, -5], []);
+                var up = XEO.math.transformPoint3(matrix, [0, 1, 0], []);
+
+                scene.camera.view.eye = point;
+                scene.camera.view.look = [eye[0] + look[0], eye[1] + look[1], eye[2] + look[2]];
+                scene.camera.view.up = up;
+
+                //var pan = XEO.math.subVec3(point, eye, []);
+
+                //scene.camera.view.look = XEO.math.addVec3(look, pan, []);
+
+                //   scene.camera.view.look = [point[0] + tangent[0], point[1] + tangent[1], point[2] + tangent[2]];
 
                 if (path.t >= 1.0) {
-                    path.scene.off(tick);
+                    scene.off(tick);
                 }
             });
 

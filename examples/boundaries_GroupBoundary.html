@@ -14,7 +14,7 @@
         }
     </style>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeoengine.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -31,21 +31,13 @@
 
 <script>
 
-    // Geometry shared by our GameObjects
-
-    var sphereGeometry = new XEO.SphereGeometry({
-        radius: 5
-    });
-
     // The GroupBoundary
-
     var groupBoundary = new XEO.GroupBoundary({
         group: new XEO.Group()
     });
 
-    // GameObject which will show the boundary of the GroupBoundary
+    // GameObject which shows the boundary of the GroupBoundary
     // as a wireframe box
-
     var groupBoundaryIndicator = new XEO.GameObject({
         geometry: new XEO.BoundaryGeometry({
             boundary: groupBoundary.worldBoundary
@@ -58,6 +50,11 @@
     });
 
     // Create 1000 moving GameObjects within the GroupBoundary
+
+    // Geometry shared by our GameObjects
+    var sphereGeometry = new XEO.SphereGeometry({
+        radius: 5
+    });
 
     for (var i = 0; i < 2000; i++) {
 
@@ -86,12 +83,6 @@
                 })
             });
 
-
-            // Add the GameObject to the GroupBoundary
-
-            groupBoundary.group.add(object);
-
-
             // Animate the position of the GameObject back and forth
             // along a random trajectory vector
 
@@ -116,12 +107,18 @@
                             xyz[2] + trajectory[2] * dir
                         ];
                     });
+
+            // Add the GameObject to the GroupBoundary
+
+            groupBoundary.group.add(object);
+
         })();
     }
 
-    var scene = XEO.scene;
 
     // Move the camera back a bit
+
+    var scene = XEO.scene;
 
     scene.camera.view.zoom(320);
 

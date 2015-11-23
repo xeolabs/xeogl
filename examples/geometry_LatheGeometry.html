@@ -24,10 +24,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
-    <a href="../docs/classes/PlaneGeometry.html" target="_other">PlaneGeometry</a>
-    <br><br><br>
-    <img src="textures/diffuse/uvGrid2.jpg" width="300px" height="300px">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <br><br><a href="../docs/classes/LatheGeometry.html"
+               target="_other">LatheGeometry</a>
 </div>
 <div id="dat-gui-container">
 </div>
@@ -36,59 +35,60 @@
 
     //------------------ Scene definition --------------------
 
-    var plane = new XEO.PlaneGeometry({
+    var lathe = new XEO.LatheGeometry({
         primitive: "triangles",
-        xSize: 2,
-        ySize: 2,
-        xSegments: 10,
-        ySegments: 10,
-        lod: 1.0 // Default
+        points: [
+            [ 0, 0,  8],
+            [-2, 0,  5],
+            [-1, 0,  5.1],
+            [-1, 0, -2],
+            [ 0, 0, -2]
+        ],
+        segments: 10,
+        phiStart: 0,
+        phiLength:90,
+        lod: 1.0, // Default
+        autoNormals: true // Default
     });
 
-    var material = new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
-            src: "textures/diffuse/uvGrid2.jpg"
-        })
+    var diffuseMap = new XEO.Texture({
+        src: "textures/diffuse/uvGrid2.jpg"
     });
 
     var object = new XEO.GameObject({
-        geometry: plane,
-        material: material,
-
-        // Show backfaces
-        modes: new XEO.Modes({
-            backfaces: true
+        geometry: lathe,
+        material: new XEO.PhongMaterial({
+            diffuseMap: diffuseMap,
+            pointSize: 5
         })
     });
+
+    object.worldBoundary.visible = true;
 
     // Position camera
 
     var view = object.scene.camera.view;
 
-    view.zoom(-7);
+    view.zoom(5);
+//    view.rotateEyeX(-60);
+//    view.rotateEyeY(-20);
 
+    // Let user move camera
 
-    object.scene.on("tick",
-            function () {
-
-                var view = object.scene.camera.view;
-
-                view.rotateEyeY(0.6);
-                view.rotateEyeX(0.3);
-            });
+    new XEO.CameraControl();
 
     //------------------ GUI ---------------------------------
 
     var Menu = function () {
 
-        this.message = "XEO.PlaneGeometry";
+        this.message = "XEO.LatheGeometry";
 
-        this["primitive"] = plane.primitive;
-        this["xSize"] = plane.xSize;
-        this["ySize"] = plane.ySize;
-        this["xSegments"] = plane.xSegments;
-        this["ySegments"] = plane.ySegments;
-        this["lod"] = plane.lod;
+        this["primitive"] = lathe.primitive;
+        this["phiStart"] = lathe.phiStart;
+        this["phiLength"] = lathe.phiLength;
+        this["segments"] = lathe.segments;
+        this["autoNormals"] = lathe.autoNormals;
+        this["lod"] = lathe.lod;
 
         var self = this;
 
@@ -96,14 +96,16 @@
         // the scene graph, forcing frames to continually re-render.
         // Your GPU's not going to like it, but it's just for a quick and dirty demo.
 
+        var textured = true;
+
         var update = function () {
 
-            plane.primitive = self["primitive"];
-            plane.xSize = self["xSize"];
-            plane.ySize = self["ySize"];
-            plane.xSegments = self["xSegments"];
-            plane.ySegments = self["ySegments"];
-            plane.lod = self["lod"];
+            lathe.primitive = self["primitive"];
+            lathe.phiStart = self["phiStart"];
+            lathe.phiLength = self["phiLength"];
+            lathe.segments = self["segments"];
+            lathe.lod = self["lod"];
+            lathe.autoNormals = self["autoNormals"];
 
             requestAnimationFrame(update);
         };
@@ -117,13 +119,13 @@
 
     var menu = new Menu();
 
-    var folder = gui.addFolder('plane');
+    var folder = gui.addFolder('lathe');
     folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
-    folder.add(menu, 'xSize', 0.1, 10.0);
-    folder.add(menu, 'ySize', 0.1, 10.0);
-    folder.add(menu, 'xSegments', 1, 50);
-    folder.add(menu, 'ySegments', 1, 50);
+    folder.add(menu, 'phiStart', 0.1, 360.0);
+    folder.add(menu, 'phiLength', 0.1, 360.0);
+    folder.add(menu, 'segments', 1, 70);
     folder.add(menu, 'lod', 0.1, 1.0);
+    folder.add(menu, 'autoNormals');
 
     folder.open();
 

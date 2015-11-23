@@ -99,7 +99,7 @@
 
     // Allow camera interaction
 
-    new XEO.CameraControl();
+    var cameraControl = new XEO.CameraControl();
 
 
     // Whenever mouse moves, attempt to pick a triangle on a GameObject,
@@ -107,49 +107,67 @@
     // the triangle, along with the interpolated normal vector and UV coordinates
     // at the picked position.
 
-    scene.input.on("mousemove",
-            function (coords) {
+    var lastCoords;
 
-                // Hide visual indicators
+    scene.input.on("mousemove", function (coords) {
+        pick(coords);
+        lastCoords = coords;
+    });
 
+    cameraControl.cameraFlight.on("started",
+            function () {
                 showUVPos(null);
-
                 XEO.debug.hide("cone");
-
-                // Pick a primitive on some GameObject
-
-                var hit = scene.pick({
-                    canvasPos: coords,
-                    rayPick: true
-                });
-
-                if (hit) {
-
-                    // GameObject picked
-
-                    if (hit.worldPos && hit.normal) {
-
-                        XEO.debug
-                                .id("cone")
-                                .pos(hit.worldPos)
-                                .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
-                                .radius(0.3)
-                                .cone();
-                    }
-
-                    if (hit.uv) {
-
-                        // UV coordinates picked
-
-                        showUVPos(hit.uv);
-                    }
-
-                } else {
-
-                    // No Triangle picked
-                }
-
             });
+
+    cameraControl.cameraFlight.on("stopped",
+            function () {
+                if (lastCoords) {
+                    pick(lastCoords);
+                }
+            });
+
+    function pick(coords) {
+
+        // Hide visual indicators
+
+        showUVPos(null);
+
+        XEO.debug.hide("cone");
+
+        // Pick a primitive on some GameObject
+
+        var hit = scene.pick({
+            canvasPos: coords,
+            rayPick: true
+        });
+
+        if (hit) {
+
+            // GameObject picked
+
+            if (hit.worldPos && hit.normal) {
+
+                XEO.debug
+                        .id("cone")
+                        .pos(hit.worldPos)
+                        .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
+                        .radius(0.3)
+                        .cone();
+            }
+
+            if (hit.uv) {
+
+                // UV coordinates picked
+
+                showUVPos(hit.uv);
+            }
+
+        } else {
+
+            // No Triangle picked
+        }
+    }
 
 </script>
 </body>

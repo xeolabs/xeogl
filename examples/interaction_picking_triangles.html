@@ -15,7 +15,9 @@
     </style>
 
     <script src="../build/xeoengine.min.js"></script>
+    <script src="js/geometry/heightmapGeometry.js"></script>
     <script src="js/debug/debug.js"></script>
+
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -46,6 +48,7 @@
 
     var terrainObject = new XEO.GameObject({
 
+        // XEO.HeightMap is defined in ./js/geometry/heightmapGeometry.js
         geometry: new XEO.HeightmapGeometry({
             primitive: "triangles",
             src: "textures/height/mountain.png",

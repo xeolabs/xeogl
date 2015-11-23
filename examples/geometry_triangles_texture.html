@@ -21,7 +21,9 @@
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
-    defining a simple <a href="../docs/classes/Geometry.html" target="_other">Geometry</a> with triangles
+    <a href="../docs/classes/Geometry.html" target="_other">Geometry</a> with triangles and a diffuse <a href="../docs/classes/Texture.html" target="_other">Texture</a>
+    <br><br><br>
+    <img src="textures/diffuse/uvGrid2.jpg" width="300px" height="300px">
 </div>
 
 <script>
@@ -118,6 +120,92 @@
             0, 0, -1
         ],
 
+        // UV coords
+        uv: [
+
+            // v0-v1-v2-v3 front
+            1, 1,
+            0, 1,
+            0, 0,
+            1, 0,
+
+            // v0-v3-v4-v1 right
+            0, 1,
+            0, 0,
+            1, 0,
+            1, 1,
+
+            // v0-v1-v6-v1 top
+            1, 0,
+            1, 1,
+            0, 1,
+            0, 0,
+
+            // v1-v6-v7-v2 left
+            1, 1,
+            0, 1,
+            0, 0,
+            1, 0,
+
+            // v7-v4-v3-v2 bottom
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1,
+
+            // v4-v7-v6-v1 back
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1
+        ],
+
+        // Color for each vertex
+        colors: [
+
+            /* v0-v1-v2-v3 front
+             */
+            1.0, 0.0, 0.0, 1.5,
+            0.0, 1.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+
+            /* v0-v3-v4-v5 right
+             */
+            1.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+
+            /* v0-v5-v6-v1 top
+             */
+            1.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+
+            /* v1-v6-v7-v2 left
+             */
+            1.0, 0.0, 0.0, 1.0,
+            1.0, 1.0, 0.0, 1.0,
+            0.0, 0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+
+            /* v7-v4-v3-v2 bottom
+             */
+            0.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+
+            /* v4-v7-v6-v5 back
+             */
+            1.0, 0.0, 1.0, 1.0,
+            0.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 0.0, 1.0,
+            1.0, 1.0, 1.0, 1.0
+        ],
+
         // Indices - these organise the
         // positions and uv texture coordinates
         // into geometric primitives in accordance
@@ -155,7 +243,9 @@
     });
 
     var material = new XEO.PhongMaterial({
-        diffuse: [0.6, 0.6, 1.0]
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
     });
 
     var object = new XEO.GameObject({

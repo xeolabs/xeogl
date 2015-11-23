@@ -127,9 +127,7 @@
     });
 
     var lights = new XEO.Lights({
-        lights: [new XEO.AmbientLight({
-            color: [0.2, 0.2, 0.6]
-        })]
+        lights: []
     });
 
     var billboard = new XEO.Billboard({
@@ -165,7 +163,7 @@
         });
 
         // Dynamically set the rendering order of each
-        // GameObject in proportion to its Z-depth in View space 
+        // GameObject in proportion to its Z-depth in View space
 
         (function () {
 

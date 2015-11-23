@@ -16,9 +16,10 @@
 
     <script src="../build/xeoengine.min.js"></script>
 
-    <script src="lib/loaders/k3d.js"></script>
-    <script src="lib/loaders/objGeometry.js"></script>
+    <script src="js/geometry/heightmapGeometry.js"></script>
 
+    <script src="js/loaders/k3d.js"></script>
+    <script src="js/loaders/objGeometry.js"></script>
     <script src="js/debug/debug.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
@@ -78,9 +79,11 @@
     // A GameObject that we can pick - a heightmap with a diffuse map
 
 
-    // Heightmap
+
 
     new XEO.GameObject({
+
+        // XEO.HeightMap is defined in ./js/geometry/heightmapGeometry.js
         geometry: new XEO.HeightmapGeometry({
             primitive: "triangles",
             src: "textures/height/everest.png",

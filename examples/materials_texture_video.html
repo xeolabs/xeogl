@@ -20,27 +20,20 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>diffuse video <a href="../docs/classes/Texture.html"
-                                                                              target="_other">Texture</a>
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>diffuse video <a
+        href="../docs/classes/Texture.html"
+        target="_other">Texture</a>
 </div>
 
 <script>
 
     var geometry = new XEO.PlaneGeometry({
-        xSize: 5,
-        ySize: 5
+        xSize: 3,
+        ySize: 3
     });
 
     var diffuseMap = new XEO.Texture({
-        src: "textures/diffuse/testDiffuseMap.png",
-        minFilter: "linearMipmapLinear",
-        magFiler: "linear",
-        wrapS: "repeat",
-        wrapT: "repeat",
-        flipY: true,
-        translate: [0, 0, 0],
-        scale: [1, 1, 1],
-        rotate: 0
+        src: "textures/diffuse/testDiffuseMap.png"
     });
 
     var material = new XEO.PhongMaterial({
@@ -49,7 +42,12 @@
 
     var object = new XEO.GameObject({
         geometry: geometry,
-        material: material
+        material: material,
+
+        // Show backfaces
+        modes: new XEO.Modes({
+            backfaces: true
+        })
     });
 
     object.camera.view.zoom(-5);

@@ -14,10 +14,10 @@
         }
     </style>
 
+
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="js/libs/dat.gui.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="css/dat-gui-swec.css">
 
     <script src="../build/xeoengine.min.js"></script>
 
@@ -25,7 +25,7 @@
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
-    <a href="../docs/classes/TorusGeometry.html" target="_other">TorusGeometry</a>
+    <a href="../docs/classes/BoxGeometry.html" target="_other">BoxGeometry</a>
     <br><br><br>
     <img src="textures/diffuse/uvGrid2.jpg" width="300px" height="300px">
 </div>
@@ -34,28 +34,25 @@
 
 <script>
 
-    var torus = new XEO.TorusGeometry({
-        radius: 1.0,
-        tube: 0.3,
-        segmentsR: 32,
-        segmentsT: 24,
-        arc: Math.PI * 2.0
+    var box = new XEO.BoxGeometry({
+        xSize: 1,
+        ySize: 1,
+        zSize: 1
     });
 
     var object = new XEO.GameObject({
-        geometry: torus,
+        geometry: box,
         material: new XEO.PhongMaterial({
-            ambient: [0.9, 0.3, 0.9],
+            ambient: [0.3, 0.3, 0.3],
             shininess: 30,
             diffuseMap: new XEO.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
-            lineWidth:2,
             pointSize: 5
         })
     });
 
-    object.scene.camera.view.eye = [0, 0, -4];
+    object.scene.camera.view.zoom(-5);
 
     object.scene.on("tick",
             function () {
@@ -70,15 +67,12 @@
 
     var Menu = function () {
 
-        this.message = "XEO.TorusGeometry";
+        this.message = "XEO.BoxGeometry";
 
-        this["primitive"] = torus.primitive;
-        this["radius"] = torus.radius;
-        this["tube"] = torus.tube;
-        this["segmentsR"] = torus.segmentsR;
-        this["segmentsT"] = torus.segmentsT;
-        this["arc"] = torus.arc;
-        this["lod"] = torus.lod;
+        this["primitive"] = box.primitive;
+        this["xSize"] = box.xSize;
+        this["ySize"] = box.ySize;
+        this["zSize"] = box.zSize;
 
         var self = this;
 
@@ -88,13 +82,10 @@
 
         var update = function () {
 
-            torus.primitive = self["primitive"];
-            torus.radius = self["radius"];
-            torus.tube = self["tube"];
-            torus.segmentsT = self["segmentsR"];
-            torus.segmentsR = self["segmentsT"];
-            torus.arc = self["arc"];
-            torus.lod = self["lod"];
+            box.primitive = self["primitive"];
+            box.xSize = self["xSize"];
+            box.ySize = self["ySize"];
+            box.zSize = self["zSize"];
 
             requestAnimationFrame(update);
         };
@@ -102,22 +93,21 @@
         update();
     };
 
-    var gui = new dat.GUI({autoPlace: false});
+    var gui = new dat.GUI();
 
     document.getElementById('dat-gui-container').appendChild(gui.domElement);
 
     var menu = new Menu();
 
-    var folder = gui.addFolder('XEO.TorusGeometry');
+    var folder = gui.addFolder('XEO.BoxGeometry');
+
     folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
-    folder.add(menu, 'radius', 0.1, 5.0);
-    folder.add(menu, 'tube', 0.1, 1.0);
-    folder.add(menu, 'segmentsR', 4, 30.0);
-    folder.add(menu, 'segmentsT', 4, 30.0);
-    folder.add(menu, 'arc', 0.1, Math.PI * 2.0);
-    folder.add(menu, 'lod', 0.1, 1.0);
+    folder.add(menu, 'xSize', 0.1, 5.0);
+    folder.add(menu, 'ySize', 0.1, 5.0);
+    folder.add(menu, 'zSize', 0.1, 5.0);
 
     folder.open();
+
 
 </script>
 </body>
