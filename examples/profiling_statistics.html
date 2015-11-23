@@ -5,25 +5,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-    </style>
-
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
-<div id="infoLight">
+<div id="infoLight" style="left: 0; text-align: left; background: black; opacity: 0.7; color: white;">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    scene statistics
-    <pre id="infoTxt" style="text-align: left; background: black; opacity: 0.7; color: white;">
+    getting a <a href="../docs/classes/Scene.html"
+       target="_other">Scene's</a> runtime statistics
+    <pre id="infoTxt" style="left: 0; text-align: left; background: black; opacity: 0.7; color: white; font-size: 14pt;">
     </pre>
 </div>
 
@@ -45,8 +37,6 @@
     ];
 
     var gi = 0;
-
-
     var sqrtNum = 10;
     var diffuse = [0, 0, 0];
     var specular = [0, 0, 0];
