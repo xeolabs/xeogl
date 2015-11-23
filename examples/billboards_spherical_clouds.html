@@ -113,7 +113,7 @@
         positions: [20, 20, 0, -20, 20, 0, -20, -20, 0, 20, -20, 0],
         normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
         uv: [1, 1, 0, 1, 0, 0, 1, 0],
-        indices: [0, 1, 2, 0, 2, 3]
+        indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
     });
 
     var material = new XEO.PhongMaterial({
@@ -171,7 +171,7 @@
 
             object.viewBoundary.on("updated",
                     function () {
-                        _object.layer.priority = 5000 + _object.viewBoundary.center[2];
+                        _object.layer.priority = 1000.0 + _object.viewBoundary.center[2];
                     });
         })();
     }
