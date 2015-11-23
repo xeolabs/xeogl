@@ -320,6 +320,8 @@
                 }
             });
 
+            this._hashDirty = true;
+
             // Typed arrays
 
             this._positionsData = null;
@@ -506,15 +508,15 @@
 
             var usage = gl.STATIC_DRAW;
 
-            var cacheStats = this.scene.stats.memory;
+            var memoryStats = this.scene.stats.memory;
 
             if (this._positionsDirty) {
                 if (this._state.positions) {
-                    cacheStats.positions -= this._state.positions.numItems;
+                    memoryStats.positions -= this._state.positions.numItems;
                     this._state.positions.destroy();
                 }
                 this._state.positions = this._positionsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._positionsData), this._positionsData.length, 3, usage) : null;
-                cacheStats.positions += this._state.positions.numItems;
+                memoryStats.positions += this._state.positions.numItems;
                 this._positionsDirty = false;
 
                 // Need to rebuild pick mesh now
@@ -524,19 +526,19 @@
             if (this._colorsDirty) {
 
                 if (this._state.colors) {
-                    cacheStats.colors -= this._state.colors.numItems;
+                    memoryStats.colors -= this._state.colors.numItems;
                     this._state.colors.destroy();
                 }
                 this._state.colors = this._colorsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._colorsData), this._colorsData.length, 4, usage) : null;
                 if (this._state.colors) {
-                    cacheStats.colors += this._state.colors.numItems;
+                    memoryStats.colors += this._state.colors.numItems;
                 }
                 this._colorsDirty = false;
             }
 
             if (this._normalsDirty) {
                 if (this._state.normals) {
-                    cacheStats.normals -= this._state.normals.numItems;
+                    memoryStats.normals -= this._state.normals.numItems;
                     this._state.normals.destroy();
                 }
 
@@ -548,7 +550,7 @@
 
                 this._state.normals = this._normalsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._normalsData), this._normalsData.length, 3, usage) : null;
                 if (this._state.normals) {
-                    cacheStats.normals += this._state.normals.numItems;
+                    memoryStats.normals += this._state.normals.numItems;
                 }
                 this._normalsDirty = false;
 
@@ -560,12 +562,12 @@
 
             if (this._uvDirty) {
                 if (this._state.uv) {
-                    cacheStats.uvs -= this._state.uv.numItems;
+                    memoryStats.uvs -= this._state.uv.numItems;
                     this._state.uv.destroy();
                 }
                 this._state.uv = this._uvData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._uvData), this._uvData.length, 2, usage) : null;
                 if (this._state.uv) {
-                    cacheStats.uvs += this._state.uv.numItems;
+                    memoryStats.uvs += this._state.uv.numItems;
                 }
                 this._uvDirty = false;
 
@@ -577,12 +579,12 @@
 
             if (this._indicesDirty) {
                 if (this._state.indices) {
-                    cacheStats.indices -= this._state.indices.numItems;
+                    memoryStats.indices -= this._state.indices.numItems;
                     this._state.indices.destroy();
                 }
                 this._state.indices = this._indicesData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this._indicesData), this._indicesData.length, 1, usage) : null;
                 if (this._state.indices) {
-                    cacheStats.indices += this._state.indices.numItems;
+                    memoryStats.indices += this._state.indices.numItems;
                 }
                 this._indicesDirty = false;
 
@@ -601,7 +603,10 @@
                 return;
             }
 
+            var memoryStats = this.scene.stats.memory;
+
             if (this._tangents) {
+                memoryStats.tangents -= this._tangents.numItems;
                 this._tangents.destroy();
             }
 
@@ -610,6 +615,10 @@
             var usage = gl.STATIC_DRAW;
 
             this._tangents = this._tangentsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._tangentsData), this._tangentsData.length, 4, usage) : null;
+
+            if (this._tangents) {
+                memoryStats.tangents += this._tangents.numItems;
+            }
 
             this._tangentsDirty = false;
         },
@@ -639,11 +648,11 @@
                 this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickColors), pickColors.length, 4, usage);
                 this._pickIndices = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pickIndices), pickIndices.length, 1, usage);
 
-                var cacheStats = this.scene.stats._cache;
+                var memoryStats = this.scene.stats.memory;
 
-                cacheStats.pickPositions += this._pickPositions.numItems;
-                cacheStats.pickColors += this._pickColors.numItems;
-                cacheStats.pickIndices += this._pickIndices.numItems;
+                memoryStats.positions += this._pickPositions.numItems;
+                memoryStats.colors += this._pickColors.numItems;
+                memoryStats.indices += this._pickIndices.numItems;
             }
 
             this._pickVBOsDirty = false;
@@ -652,23 +661,23 @@
 
         _destroyPickVBOs: function() {
 
-            var cacheStats = this.scene.stats._cache;
+            var memoryStats = this.scene.stats.memory;
 
             if (this._pickPositions) {
                 this._pickPositions.destroy();
-                cacheStats.pickPositions -= this._pickPositions.numItems;
+                memoryStats.positions -= this._pickPositions.numItems;
                 this._pickPositions = null;
             }
 
             if (this._pickColors) {
                 this._pickColors.destroy();
-                cacheStats.pickColors -= this._pickColors.numItems;
+                memoryStats.colors -= this._pickColors.numItems;
                 this._pickColors = null;
             }
 
             if (this._pickIndices) {
                 this._pickIndices.destroy();
-                cacheStats.pickIndices -= this._pickIndices.numItems;
+                memoryStats.indices -= this._pickIndices.numItems;
                 this._pickIndices = null;
             }
 
@@ -759,6 +768,8 @@
 
                     this._scheduleBuild();
 
+                    this._hashDirty = true;
+
                     this.fire("dirty", true);
 
                     /**
@@ -802,6 +813,7 @@
                     this._setBoundaryDirty();
 
                     if (dirty) {
+                        this._hashDirty = true;
                         this.fire("dirty", true);
                     }
 
@@ -854,6 +866,7 @@
                     this._scheduleBuild();
 
                     if (dirty) {
+                        this._hashDirty = true;
                         this.fire("dirty", true);
                     }
 
@@ -894,6 +907,7 @@
                     this._scheduleBuild();
 
                     if (dirty) {
+                        this._hashDirty = true;
                         this.fire("dirty", true);
                     }
 
@@ -934,6 +948,7 @@
                     this._scheduleBuild();
 
                     if (dirty) {
+                        this._hashDirty = true;
                         this.fire("dirty", true);
                     }
 
@@ -974,6 +989,7 @@
                     this._scheduleBuild();
 
                     if (dirty) {
+                        this._hashDirty = true;
                         this.fire("dirty", true);
                     }
 
@@ -1148,7 +1164,41 @@
                 this._build();
             }
 
+            if (this._hashDirty) {
+                this._makeHash();
+                this._hashDirty = false;
+            }
+
             this._renderer.geometry = this._state;
+        },
+
+        _makeHash: function () {
+
+            var state = this._state;
+
+            var hash = ["/g"];
+
+            if (state.positions) {
+                hash.push("0");
+            }
+
+            if (state.colors) {
+                hash.push("1");
+            }
+
+            if (state.normals) {
+                hash.push("2");
+            }
+
+            if (state.uv) {
+                hash.push("3");
+            }
+
+            // TODO: Tangents
+
+            hash.push(";");
+
+            state.hash = hash.join("");
         },
 
         _getJSON: function () {
