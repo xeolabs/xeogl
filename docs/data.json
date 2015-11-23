@@ -3534,7 +3534,7 @@
             "namespace": "",
             "file": "src/geometry/boundaryGeometry.js",
             "line": 1,
-            "description": "A **BoundaryGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that shows the object-aligned bounding box (OBB)\nof a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
+            "description": "A **BoundaryGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that shows the object-aligned wireframe bounding box (OBB)\nof a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
             "submodule": "geometry",
             "is_constructor": 1,
             "params": [
@@ -7488,7 +7488,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 396,
+            "line": 390,
             "description": "Fired whenever this CameraFlight's {{#crossLink \"CameraFlight/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -15529,6 +15529,38 @@
         {
             "file": "src/math/math.js",
             "line": 113,
+            "description": "Returns a new, uninitialized 3D axis-aligned bounding box.",
+            "itemtype": "method",
+            "name": "AABB3",
+            "static": 1,
+            "return": {
+                "description": "The bounding box.",
+                "type": "*"
+            },
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 126,
+            "description": "Returns a new, uninitialized 2D axis-aligned bounding box.",
+            "itemtype": "method",
+            "name": "AABB2",
+            "static": 1,
+            "return": {
+                "description": "The bounding box.",
+                "type": "*"
+            },
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 139,
             "description": "Returns a new UUID.",
             "itemtype": "method",
             "name": "createUUID",
@@ -15543,7 +15575,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 141,
+            "line": 167,
             "description": "Floating-point modulus",
             "itemtype": "method",
             "name": "fmod",
@@ -15571,7 +15603,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 160,
+            "line": 186,
             "description": "Negates a four-element vector.",
             "itemtype": "method",
             "name": "negateVec4",
@@ -15600,7 +15632,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 179,
+            "line": 205,
             "description": "Adds one four-element vector to another.",
             "itemtype": "method",
             "name": "addVec4",
@@ -15634,7 +15666,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 199,
+            "line": 225,
             "description": "Adds a scalar value to each element of a four-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -15668,7 +15700,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 219,
+            "line": 245,
             "description": "Adds one three-element vector to another.",
             "itemtype": "method",
             "name": "addVec3",
@@ -15702,7 +15734,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 238,
+            "line": 264,
             "description": "Adds a scalar value to each element of a three-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -15736,7 +15768,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 257,
+            "line": 283,
             "description": "Subtracts one four-element vector from another.",
             "itemtype": "method",
             "name": "subVec4",
@@ -15770,7 +15802,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 277,
+            "line": 303,
             "description": "Subtracts one three-element vector from another.",
             "itemtype": "method",
             "name": "subVec3",
@@ -15804,7 +15836,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 296,
+            "line": 322,
             "description": "Subtracts one two-element vector from another.",
             "itemtype": "method",
             "name": "subVec2",
@@ -15838,7 +15870,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 314,
+            "line": 340,
             "description": "Subtracts a scalar value from each element of a four-element vector.",
             "itemtype": "method",
             "name": "subVec4Scalar",
@@ -15872,7 +15904,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 334,
+            "line": 360,
             "description": "Sets each element of a 4-element vector to a scalar value minus the value of that element.",
             "itemtype": "method",
             "name": "subScalarVec4",
@@ -15906,7 +15938,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 354,
+            "line": 380,
             "description": "Multiplies one three-element vector by another.",
             "itemtype": "method",
             "name": "mulVec3",
@@ -15940,7 +15972,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 374,
+            "line": 400,
             "description": "Multiplies each element of a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec34calar",
@@ -15974,7 +16006,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 394,
+            "line": 420,
             "description": "Multiplies each element of a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec3Scalar",
@@ -16008,7 +16040,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 413,
+            "line": 439,
             "description": "Multiplies each element of a two-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec2Scalar",
@@ -16042,7 +16074,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 431,
+            "line": 457,
             "description": "Divides one three-element vector by another.",
             "itemtype": "method",
             "name": "divVec3",
@@ -16076,7 +16108,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 450,
+            "line": 476,
             "description": "Divides one four-element vector by another.",
             "itemtype": "method",
             "name": "divVec4",
@@ -16110,7 +16142,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 470,
+            "line": 496,
             "description": "Divides a scalar by a three-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec3",
@@ -16139,7 +16171,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 489,
+            "line": 515,
             "description": "Divides a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec3Scalar",
@@ -16168,7 +16200,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 508,
+            "line": 534,
             "description": "Divides a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec4Scalar",
@@ -16197,7 +16229,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 529,
+            "line": 555,
             "description": "Divides a scalar by a four-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec4",
@@ -16226,7 +16258,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 549,
+            "line": 575,
             "description": "Returns the dot product of two four-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -16253,7 +16285,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 561,
+            "line": 587,
             "description": "Returns the cross product of two four-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec4",
@@ -16280,7 +16312,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 579,
+            "line": 605,
             "description": "Returns the cross product of two three-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec3",
@@ -16307,7 +16339,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 604,
+            "line": 630,
             "description": "Returns the length of a four-element vector.",
             "itemtype": "method",
             "name": "lenVec4",
@@ -16329,7 +16361,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 615,
+            "line": 641,
             "description": "Returns the dot product of two three-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -16356,7 +16388,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 627,
+            "line": 653,
             "description": "Returns the dot product of two two-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -16383,7 +16415,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 649,
+            "line": 675,
             "description": "Returns the length of a three-element vector.",
             "itemtype": "method",
             "name": "lenVec3",
@@ -16405,7 +16437,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 660,
+            "line": 686,
             "description": "Returns the length of a two-element vector.",
             "itemtype": "method",
             "name": "lenVec2",
@@ -16427,7 +16459,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 671,
+            "line": 697,
             "itemtype": "method",
             "name": "rcpVec3",
             "static": 1,
@@ -16451,7 +16483,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 683,
+            "line": 709,
             "description": "Normalizes a four-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -16476,7 +16508,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 697,
+            "line": 723,
             "description": "Normalizes a three-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -16488,7 +16520,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 707,
+            "line": 733,
             "description": "Normalizes a two-element vector",
             "itemtype": "method",
             "name": "normalizeVec2",
@@ -16500,7 +16532,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 717,
+            "line": 743,
             "description": "Duplicates a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "dupMat4",
@@ -16512,7 +16544,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 726,
+            "line": 752,
             "description": "Extracts a 3x3 matrix from a 4x4 matrix.",
             "itemtype": "method",
             "name": "mat4To3",
@@ -16524,7 +16556,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 739,
+            "line": 765,
             "description": "Returns a 4x4 matrix with each element set to the given scalar value.",
             "itemtype": "method",
             "name": "m4s",
@@ -16536,7 +16568,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 753,
+            "line": 779,
             "description": "Returns a 4x4 matrix with each element set to zero.",
             "itemtype": "method",
             "name": "setMat4ToZeroes",
@@ -16548,7 +16580,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 762,
+            "line": 788,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -16560,7 +16592,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 771,
+            "line": 797,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -16572,7 +16604,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 785,
+            "line": 811,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given vector.",
             "itemtype": "method",
             "name": "diagonalMat4c",
@@ -16584,7 +16616,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 794,
+            "line": 820,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given scalar.",
             "itemtype": "method",
             "name": "diagonalMat4s",
@@ -16596,7 +16628,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 803,
+            "line": 829,
             "description": "Returns a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "identityMat4",
@@ -16608,7 +16640,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 835,
+            "line": 861,
             "description": "Tests if the given 4x4 matrix is the identity matrix.",
             "itemtype": "method",
             "name": "isIdentityMat4",
@@ -16620,7 +16652,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 850,
+            "line": 876,
             "description": "Negates the given 4x4 matrix.",
             "itemtype": "method",
             "name": "negateMat4",
@@ -16632,7 +16664,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 878,
+            "line": 904,
             "description": "Adds the given 4x4 matrices together.",
             "itemtype": "method",
             "name": "addMat4",
@@ -16644,7 +16676,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 906,
+            "line": 932,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addMat4Scalar",
@@ -16656,7 +16688,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 934,
+            "line": 960,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addScalarMat4",
@@ -16668,7 +16700,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 943,
+            "line": 969,
             "description": "Subtracts the second 4x4 matrix from the first.",
             "itemtype": "method",
             "name": "subMat4",
@@ -16680,7 +16712,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 971,
+            "line": 997,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subMat4Scalar",
@@ -16692,7 +16724,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 999,
+            "line": 1025,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subScalarMat4",
@@ -16704,7 +16736,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1027,
+            "line": 1053,
             "description": "Multiplies the two given 4x4 matrix by each other.",
             "itemtype": "method",
             "name": "mulMat4",
@@ -16716,7 +16748,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1068,
+            "line": 1094,
             "description": "Multiplies each element of the given 4x4 matrix by the given scalar.",
             "itemtype": "method",
             "name": "mulMat4Scalar",
@@ -16728,7 +16760,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1096,
+            "line": 1122,
             "description": "Multiplies the given 4x4 matrix by the given four-element vector.",
             "itemtype": "method",
             "name": "mulMat4v4",
@@ -16740,7 +16772,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1111,
+            "line": 1137,
             "description": "Transposes the given 4x4 matrix.",
             "itemtype": "method",
             "name": "transposeMat4",
@@ -16752,7 +16784,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1157,
+            "line": 1183,
             "description": "Returns the determinant of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "determinantMat4",
@@ -16764,7 +16796,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1176,
+            "line": 1202,
             "description": "Returns the inverse of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "inverseMat4",
@@ -16776,7 +16808,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1226,
+            "line": 1252,
             "description": "Returns the trace of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "traceMat4",
@@ -16788,7 +16820,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1235,
+            "line": 1261,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4",
@@ -16800,7 +16832,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1248,
+            "line": 1274,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4c",
@@ -16812,7 +16844,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1257,
+            "line": 1283,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4s",
@@ -16824,7 +16856,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1266,
+            "line": 1292,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4v",
@@ -16836,7 +16868,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1318,
+            "line": 1344,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4c",
@@ -16848,7 +16880,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1327,
+            "line": 1353,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4v",
@@ -16860,7 +16892,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1340,
+            "line": 1366,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4c",
@@ -16872,7 +16904,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1349,
+            "line": 1375,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4s",
@@ -16884,7 +16916,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1358,
+            "line": 1384,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4v",
@@ -16917,7 +16949,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1453,
+            "line": 1479,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4c",
@@ -16929,7 +16961,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1462,
+            "line": 1488,
             "description": "Returns a 4x4 orthographic projection matrix.",
             "itemtype": "method",
             "name": "orthoMat4c",
@@ -16941,7 +16973,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1498,
+            "line": 1524,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -16953,7 +16985,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1542,
+            "line": 1568,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -16965,7 +16997,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1573,
+            "line": 1599,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "perspectiveMatrix4v",
@@ -16977,7 +17009,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1594,
+            "line": 1620,
             "description": "Transforms a three-element position by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -16989,7 +17021,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1633,
+            "line": 1659,
             "description": "Transforms an array of three-element positions by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoints3",
@@ -17001,7 +17033,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1674,
+            "line": 1700,
             "description": "Transforms a three-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec3",
@@ -17013,7 +17045,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1688,
+            "line": 1714,
             "description": "Transforms a four-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec4",
@@ -17025,7 +17057,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1703,
+            "line": 1729,
             "description": "Transforms a four-element vector by a 4x4 projection matrix.",
             "itemtype": "method",
             "name": "projectVec4",
@@ -17037,7 +17069,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1713,
+            "line": 1739,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -17049,7 +17081,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1727,
+            "line": 1753,
             "description": "Gets the diagonal size of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBDiag",
@@ -17061,7 +17093,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1750,
+            "line": 1763,
             "description": "Gets the center of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBCenter",
@@ -17073,7 +17105,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1765,
+            "line": 1778,
             "description": "Gets the center of a 2D boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABB2Center",
@@ -17085,7 +17117,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1779,
+            "line": 1792,
             "description": "Converts an axis-aligned boundary into an oriented boundary consisting of\nan array of eight 3D positions, one for each corner of the boundary.",
             "itemtype": "method",
             "name": "AABB3ToOBB3",
@@ -17114,7 +17146,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1868,
+            "line": 1881,
             "description": "Finds the minimum axis-aligned boundary enclosing the 3D points given in a flattened,  1-dimensional array.",
             "itemtype": "method",
             "name": "positions3ToAABB3",
@@ -17143,7 +17175,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1938,
+            "line": 1944,
             "description": "Finds the minimum axis-aligned boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB3",
@@ -17172,7 +17204,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2008,
+            "line": 2007,
             "description": "Expands the second axis-aligned boundary to enclose the first, if needed.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -17200,7 +17232,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2046,
+            "line": 2045,
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB2",
@@ -17229,7 +17261,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2126,
+            "line": 2123,
             "description": "Builds normal vectors from positions and indices.",
             "itemtype": "method",
             "name": "buildTangents",
@@ -17257,7 +17289,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2191,
+            "line": 2188,
             "description": "Builds vertex tangent vectors from positions, UVs and indices",
             "itemtype": "method",
             "name": "buildTangents",
@@ -17290,7 +17322,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2267,
+            "line": 2264,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -17312,7 +17344,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2295,
+            "line": 2292,
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "itemtype": "method",
             "name": "getPickPrimitives",
@@ -17352,7 +17384,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2398,
+            "line": 2395,
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "itemtype": "method",
             "name": "rayTriangleIntersect",
@@ -17401,7 +17433,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2446,
+            "line": 2443,
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "itemtype": "method",
             "name": "rayPlaneIntersect",
@@ -17450,7 +17482,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2484,
+            "line": 2481,
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.",
             "itemtype": "method",
             "name": "cartesianToBaryCentric",
@@ -17494,7 +17526,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2551,
+            "line": 2548,
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "itemtype": "method",
             "name": "barycentricInsideTriangle",
@@ -17517,7 +17549,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2568,
+            "line": 2565,
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "itemtype": "method",
             "name": "barycentricToCartesian",
@@ -20479,75 +20511,83 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:141"
+            "line": " src/math/math.js:113"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1779"
+            "line": " src/math/math.js:126"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1868"
+            "line": " src/math/math.js:167"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1938"
+            "line": " src/math/math.js:1792"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2008"
+            "line": " src/math/math.js:1881"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2046"
+            "line": " src/math/math.js:1944"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2126"
+            "line": " src/math/math.js:2007"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2191"
+            "line": " src/math/math.js:2045"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2267"
+            "line": " src/math/math.js:2123"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2295"
+            "line": " src/math/math.js:2188"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2398"
+            "line": " src/math/math.js:2264"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2446"
+            "line": " src/math/math.js:2292"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2484"
+            "line": " src/math/math.js:2395"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2484"
+            "line": " src/math/math.js:2443"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2551"
+            "line": " src/math/math.js:2481"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2551"
+            "line": " src/math/math.js:2481"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2568"
+            "line": " src/math/math.js:2548"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2568"
+            "line": " src/math/math.js:2548"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:2565"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:2565"
         },
         {
             "message": "replacing incorrect tag: returns with return",

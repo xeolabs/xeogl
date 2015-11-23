@@ -386,13 +386,7 @@
 
                 // Argument is a Boundary3D
 
-            } else if (
-                params.xmin != undefined &amp;&amp;
-                params.ymin != undefined &amp;&amp;
-                params.zmin != undefined &amp;&amp;
-                params.xmax != undefined &amp;&amp;
-                params.ymax != undefined &amp;&amp;
-                params.zmax != undefined) {
+            } else if (params.min != undefined &amp;&amp; params.max != undefined) {
 
                 // Argument is an AABB
 
@@ -444,7 +438,7 @@
 
             if (aabb) {
 
-                if (aabb.xmax &lt;= aabb.xmin || aabb.ymax &lt;= aabb.ymin || aabb.zmax &lt;= aabb.zmin) {
+                if (aabb.max[0] &lt;= aabb.min[0] || aabb.max[1] &lt;= aabb.min[1] || aabb.max[2] &lt;= aabb.min[2]) {
 
                     // Don&#x27;t fly to an empty boundary
                     return;

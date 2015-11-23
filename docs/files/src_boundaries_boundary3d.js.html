@@ -387,14 +387,11 @@
             }
 
             if (!this._aabb) {
-                this._aabb = {
-                    xmin: 0, ymin: 0, zmin: 0,
-                    xmax: 0, ymax: 0, zmax: 0
-                };
+                this._aabb = XEO.math.AABB3();
             }
 
             if (!this._center) {
-                this._center = [0, 0, 0];
+                this._center = XEO.math.vec3();
             }
 
             var aabb = this._getAABB ? this._getAABB() : null;
@@ -405,12 +402,12 @@
 
                 // Derive OBB and center
 
-                this._aabb.xmin = aabb.xmin;
-                this._aabb.ymin = aabb.ymin;
-                this._aabb.zmin = aabb.zmin;
-                this._aabb.xmax = aabb.xmax;
-                this._aabb.ymax = aabb.ymax;
-                this._aabb.zmax = aabb.zmax;
+                this._aabb.min[0] = aabb.min[0];
+                this._aabb.min[1] = aabb.min[1];
+                this._aabb.min[2] = aabb.min[2];
+                this._aabb.max[0] = aabb.max[0];
+                this._aabb.max[1] = aabb.max[1];
+                this._aabb.max[2] = aabb.max[2];
 
                 math.AABB3ToOBB3(this._aabb, this._obb);
                 math.getAABBCenter(this._aabb, this._center);
@@ -439,7 +436,7 @@
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
-                   this._obb =  math.transformPoints3(matrix, this._obb);
+                    this._obb = math.transformPoints3(matrix, this._obb);
                     math.points3ToAABB3(this._obb, this._aabb);
                     math.getAABBCenter(this._aabb, this._center);
 

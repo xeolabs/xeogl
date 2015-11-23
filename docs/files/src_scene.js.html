@@ -1323,7 +1323,7 @@
                     if (!this._worldBoundary) {
 
                         var self = this;
-                        var aabb = {};
+                        var aabb = XEO.math.AABB3();
 
                         // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
 
@@ -1338,12 +1338,12 @@
 
                             getAABB: function () {
 
-                                aabb.xmin = 100000;
-                                aabb.ymin = 100000;
-                                aabb.zmin = 100000;
-                                aabb.xmax = -100000;
-                                aabb.ymax = -100000;
-                                aabb.zmax = -100000;
+                                aabb.min[0] = 100000;
+                                aabb.min[1] = 100000;
+                                aabb.min[2] = 100000;
+                                aabb.max[0] = -100000;
+                                aabb.max[1] = -100000;
+                                aabb.max[2] = -100000;
 
                                 var objects = self.objects;
                                 var object;
