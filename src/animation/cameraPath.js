@@ -24,7 +24,7 @@
  });
 
  XEO.scene.on("tick",
-    function(e) {
+ function(e) {
 
         var t = (e.time - e.startTime) * 0.01;
 
@@ -63,12 +63,42 @@
 
         _init: function (cfg) {
 
+            this.freeRotate = cfg.freeRotate;
             this.camera = cfg.camera;
             this.path = cfg.path;
         },
 
         _props: {
 
+            /**
+             * Flag which indicates whether the viewing direction is free to move around.
+             *
+             * Fires a {{#crossLink "MouseRotateCamera/freeRotate:event"}}{{/crossLink}} event on change.
+             *
+             * @property freeRotate
+             * @default false
+             * @type Boolean
+             */
+            freeRotate: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    this._freeRotate = value;
+
+                    /**
+                     * Fired whenever this MouseRotateCamera's {{#crossLink "MouseRotateCamera/freeRotate:property"}}{{/crossLink}} property changes.
+                     * @event freeRotate
+                     * @param value The property's new value
+                     */
+                    this.fire('freeRotate', this._freeRotate);
+                },
+
+                get: function () {
+                    return this._freeRotate;
+                }
+            },
 
             /**
              * The Camera for this CameraPath.
@@ -133,13 +163,10 @@
 
                         // Subscribe to new Path's events
 
-                        var self = this;
-
                         this._onPathT = newPath.on("t",
-                            function () {
-                                // Called immediately
-                                self._update();
-                            });
+                            function () { // Called immediately
+                                this._update();
+                            }, this);
                     }
                 },
 
@@ -164,12 +191,16 @@
             var view = camera.view;
 
             view.eye = point;
-            view.look = [point[0] + tangent[0], point[1] + tangent[1], point[2] + tangent[2]];
+
+            if (!this._freeRotate) {
+                view.look = [point[0] + tangent[0], point[1] + tangent[1], point[2] + tangent[2]];
+            }
         },
 
         _getJSON: function () {
 
             var json = {
+                freeRotate: this._freeRotate
             };
 
             if (this._children.camera) {
