@@ -56,10 +56,10 @@
 
                     var aabb = canvasBoundary.aabb;
 
-                    div.style.left = aabb.xmin + "px";
-                    div.style.top = aabb.ymin + "px";
-                    div.style.width = (aabb.xmax - aabb.xmin) + "px";
-                    div.style.height = (aabb.ymax - aabb.ymin) + "px";
+                    div.style.left = aabb.min[0] + "px";
+                    div.style.top = aabb.min[1] + "px";
+                    div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
+                    div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
 
                     log("object.canvasBoundary.aabb", canvasBoundary.aabb);
                 });

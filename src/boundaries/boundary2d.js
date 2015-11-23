@@ -205,10 +205,10 @@
 
                                     var aabb = self.aabb;
 
-                                    div.style.left = aabb.xmin + "px";
-                                    div.style.top = aabb.ymin + "px";
-                                    div.style.width = (aabb.xmax - aabb.xmin) + "px";
-                                    div.style.height = (aabb.ymax - aabb.ymin) + "px";
+                                    div.style.left = aabb.min[0] + "px";
+                                    div.style.top = aabb.min[1] + "px";
+                                    div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
+                                    div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
                                 });
 
                             this._div = div;
@@ -252,13 +252,8 @@
                 // Lazy-allocate
 
                 this._obb = [];
-
-                this._aabb = {
-                    xmin: 0, ymin: 0,
-                    xmax: 0, ymax: 0
-                };
-
-                this._center = [0, 0];
+                this._aabb = XEO.math.AABB2();
+                this._center = XEO.math.vec2();
             }
 
             var obb = this._getOBB();

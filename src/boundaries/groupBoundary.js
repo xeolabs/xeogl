@@ -226,10 +226,7 @@
         _buildAABB: function () {
 
             if (!this._aabb) {
-                this._aabb = {
-                    xmin: 0, ymin: 0, zmin: 0,
-                    xmax: 0, ymax: 0, zmax: 0
-                };
+                this._aabb = XEO.math.AABB3();
             }
 
             var xmin = 100000;
@@ -242,6 +239,8 @@
             var component;
             var worldBoundary;
             var aabb;
+            var min;
+            var max;
 
             var group = this.group;
 
@@ -258,41 +257,43 @@
                         if (worldBoundary) {
 
                             aabb = worldBoundary.aabb;
+                            min = aabb.min;
+                            max = aabb.max;
 
-                            if (aabb.xmin < xmin) {
-                                xmin = aabb.xmin;
+                            if (min[0] < xmin) {
+                                xmin = min[0];
                             }
 
-                            if (aabb.ymin < ymin) {
-                                ymin = aabb.ymin;
+                            if (min[1] < ymin) {
+                                ymin = min[1];
                             }
 
-                            if (aabb.zmin < zmin) {
-                                zmin = aabb.zmin;
+                            if (min[2] < zmin) {
+                                zmin = min[2];
                             }
 
-                            if (aabb.xmax > xmax) {
-                                xmax = aabb.xmax;
+                            if (max[0] > xmax) {
+                                xmax = max[0];
                             }
 
-                            if (aabb.ymax > ymax) {
-                                ymax = aabb.ymax;
+                            if (max[1] > ymax) {
+                                ymax = max[1];
                             }
 
-                            if (aabb.zmax > zmax) {
-                                zmax = aabb.zmax;
+                            if (max[2] > zmax) {
+                                zmax = max[2];
                             }
                         }
                     }
                 }
             }
 
-            this._aabb.xmin = xmin;
-            this._aabb.ymin = ymin;
-            this._aabb.zmin = zmin;
-            this._aabb.xmax = xmax;
-            this._aabb.ymax = ymax;
-            this._aabb.zmax = zmax;
+            this._aabb.min[0] = xmin;
+            this._aabb.min[1] = ymin;
+            this._aabb.min[2] = zmin;
+            this._aabb.max[0] = xmax;
+            this._aabb.max[1] = ymax;
+            this._aabb.max[2] = zmax;
         },
 
         _getJSON: function () {

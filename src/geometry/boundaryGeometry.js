@@ -1,5 +1,5 @@
 /**
- A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the object-aligned bounding box (OBB)
+ A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the object-aligned wireframe bounding box (OBB)
  of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  ## Example
@@ -200,14 +200,14 @@
 
         _setPositionsFromAABB: function (aabb) {
             this.positions = [
-                aabb.xmax, aabb.ymax, aabb.zmax,
-                aabb.xmax, aabb.ymin, aabb.zmax,
-                aabb.xmin, aabb.ymin, aabb.zmax,
-                aabb.xmin, aabb.ymax, aabb.zmax,
-                aabb.xmax, aabb.ymax, aabb.zmin,
-                aabb.xmax, aabb.ymin, aabb.zmin,
-                aabb.xmin, aabb.ymin, aabb.zmin,
-                aabb.xmin, aabb.ymax, aabb.zmin
+                aabb.max[0], aabb.max[1], aabb.max[2],
+                aabb.max[0], aabb.min[1], aabb.max[2],
+                aabb.min[0], aabb.min[1], aabb.max[2],
+                aabb.min[0], aabb.max[1], aabb.max[2],
+                aabb.max[0], aabb.max[1], aabb.min[2],
+                aabb.max[0], aabb.min[1], aabb.min[2],
+                aabb.min[0], aabb.min[1], aabb.min[2],
+                aabb.min[0], aabb.max[1], aabb.min[2]
             ];
         },
 

@@ -75,19 +75,6 @@
 
     new XEO.CameraControl();
 
-    // Show boundary
-
-    var boundaryObject = new XEO.GameObject({
-        geometry: new XEO.BoundaryGeometry({
-            boundary: object.worldBoundary
-        }),
-        material: new XEO.PhongMaterial({
-            diffuse: [0.5, 1.0, 0.5],
-            emissive: [0.5, 1.0, 0.5],
-            lineWidth: 2
-        })
-    });
-
     //------------------ GUI ---------------------------------
 
     var Menu = function () {
