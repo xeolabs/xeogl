@@ -659,7 +659,7 @@
         },
 
 
-        _destroyPickVBOs: function() {
+        _destroyPickVBOs: function () {
 
             var memoryStats = this.scene.stats.memory;
 
@@ -1177,6 +1177,8 @@
             var state = this._state;
 
             var hash = ["/g"];
+
+            hash.push("/" + state.primitive + ";");
 
             if (state.positions) {
                 hash.push("0");

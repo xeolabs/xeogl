@@ -460,16 +460,19 @@
             add();
 
             if (normals) {
+
                 add("varying vec4 xeo_vViewPosition;");
+
+                add();
+
+                add("uniform vec3 xeo_uDiffuse;");
+                add("uniform vec3 xeo_uSpecular;");
+                add("uniform float xeo_uShininess;");
+                add("uniform float xeo_uReflectivity;");
             }
 
-            add();
-            add("uniform vec3 xeo_uDiffuse;");
-            add("uniform vec3 xeo_uSpecular;");
             add("uniform vec3 xeo_uEmissive;");
             add("uniform float xeo_uOpacity;");
-            add("uniform float xeo_uShininess;");
-            add("uniform float xeo_uReflectivity;");
             add();
 
             if (states.geometry.colors) {
@@ -486,27 +489,6 @@
                     add("varying vec2 xeo_vUV;");
                 }
 
-                if (states.material.ambientMap) {
-                    add("uniform sampler2D xeo_uAmbientMap;");
-                    if (states.material.ambientMap.matrix) {
-                        add("uniform mat4 xeo_uAmbientMapMatrix;");
-                    }
-                }
-
-                if (states.material.diffuseMap) {
-                    add("uniform sampler2D xeo_uDiffuseMap;");
-                    if (states.material.diffuseMap.matrix) {
-                        add("uniform mat4 xeo_uDiffuseMapMatrix;");
-                    }
-                }
-
-                if (states.material.specularMap) {
-                    add("uniform sampler2D xeo_uSpecularMap;");
-                    if (states.material.specularMap.matrix) {
-                        add("uniform mat4 xeo_uSpecularMapMatrix;");
-                    }
-                }
-
                 if (states.material.emissiveMap) {
                     add("uniform sampler2D xeo_uEmissiveMap;");
                     if (states.material.emissiveMap.matrix) {
@@ -521,18 +503,42 @@
                     }
                 }
 
-                if (states.material.reflectivityMap) {
-                    add("uniform sampler2D xeo_uTextureReflectivity;");
-                    if (states.material.reflectivityMap.matrix) {
-                        add("uniform mat4 xeo_uTextureReflectivityMatrix;");
+                if (normals) {
+
+                    if (states.material.ambientMap) {
+                        add("uniform sampler2D xeo_uAmbientMap;");
+                        if (states.material.ambientMap.matrix) {
+                            add("uniform mat4 xeo_uAmbientMapMatrix;");
+                        }
                     }
-                }
 
-                if (normalMapping) {
+                    if (states.material.diffuseMap) {
+                        add("uniform sampler2D xeo_uDiffuseMap;");
+                        if (states.material.diffuseMap.matrix) {
+                            add("uniform mat4 xeo_uDiffuseMapMatrix;");
+                        }
+                    }
 
-                    add("uniform sampler2D xeo_uNormalMap;");
-                    if (states.material.normalMap.matrix) {
-                        add("uniform mat4 xeo_uNormalMapMatrix;");
+                    if (states.material.specularMap) {
+                        add("uniform sampler2D xeo_uSpecularMap;");
+                        if (states.material.specularMap.matrix) {
+                            add("uniform mat4 xeo_uSpecularMapMatrix;");
+                        }
+                    }
+
+                    if (states.material.reflectivityMap) {
+                        add("uniform sampler2D xeo_uTextureReflectivity;");
+                        if (states.material.reflectivityMap.matrix) {
+                            add("uniform mat4 xeo_uTextureReflectivityMatrix;");
+                        }
+                    }
+
+                    if (normalMapping) {
+
+                        add("uniform sampler2D xeo_uNormalMap;");
+                        if (states.material.normalMap.matrix) {
+                            add("uniform mat4 xeo_uNormalMapMatrix;");
+                        }
                     }
                 }
             }
@@ -708,8 +714,6 @@
 
                 if (normals) {
 
-                    // Other map types do need normals
-
                     if (material.ambientMap) {
                         add();
                         if (material.ambientMap.matrix) {
@@ -753,19 +757,19 @@
                         add("   textureCoord.y = -textureCoord.y;");
                         add("   reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
                     }
+                }
 
-                    if (normalMapping) {
+                if (normalMapping) {
 
-                        if (material.normalMap) {
-                            add();
-                            if (material.normalMap.matrix) {
-                                add("   textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;");
-                            } else {
-                                add("   textureCoord = texturePos.xy;");
-                            }
-                            add("   textureCoord.y = -textureCoord.y;");
-                            add("   viewNormal = normalize(texture2D(xeo_uNormalMap, vec2(textureCoord.x, -textureCoord.y)).xyz * 2.0 - 1.0);");
+                    if (material.normalMap) {
+                        add();
+                        if (material.normalMap.matrix) {
+                            add("   textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;");
+                        } else {
+                            add("   textureCoord = texturePos.xy;");
                         }
+                        add("   textureCoord.y = -textureCoord.y;");
+                        add("   viewNormal = normalize(texture2D(xeo_uNormalMap, vec2(textureCoord.x, -textureCoord.y)).xyz * 2.0 - 1.0);");
                     }
                 }
             }
