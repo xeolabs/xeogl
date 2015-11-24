@@ -21,7 +21,7 @@
 
 
     var geometry = new XEO.SphereGeometry({
-        radius: 20.0
+        radius: 0.8
     });
 
     var material = new XEO.PhongMaterial({
@@ -41,10 +41,10 @@
         transparent: true
     });
 
-    var r = 300;
+    var r = 15;
     var halfr = r / 2;
 
-    for (var i = 0; i < 150; i++) {
+    for (var i = 0; i < 250; i++) {
 
         var object = new XEO.GameObject({
 
@@ -72,20 +72,16 @@
             })
         });
 
-        (function () {
+        object.viewBoundary.on("updated", updateLayer, object); // Event, callback, scope
+    }
 
-            var _object = object;
-
-            object.viewBoundary.on("updated",
-                    function () {
-                        _object.layer.priority = 1000 + _object.viewBoundary.center[2];
-                    });
-        })();
+    function updateLayer() {
+        this.layer.priority = 1000 * this.viewBoundary.center[2];
     }
 
     var scene = modes.scene;
 
-    scene.camera.view.zoom(r / 2);
+    scene.camera.view.zoom(r / 4);
 
     new XEO.CameraControl();
 
