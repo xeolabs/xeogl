@@ -23,8 +23,8 @@
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
     <ul>
-        <li>a <a href="../docs/classes/GroupBoundary.html" target="_other">GroupBoundary</a> containing
-            1000 animated <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a></li>
+        <li>a <a href="../docs/classes/GroupBoundary.html" target="_other">GroupBoundary</a> hierarchy
+            containing 200 animated <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a></li>
 
     </ul>
 </div>
@@ -36,6 +36,13 @@
     var sphereGeometry = new XEO.SphereGeometry({
         radius: 5
     });
+
+    var material = new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+    });
+
 
     // A hierarchy of GroupBoundary's
 
@@ -73,22 +80,14 @@
         geometry: new XEO.BoundaryGeometry({
             boundary: childGroupBoundary1.worldBoundary
         }),
-        material: new XEO.PhongMaterial({
-            diffuse: [0.5, 1.0, 0.5],
-            emissive: [0.5, 1.0, 0.5],
-            lineWidth: 2
-        })
+        material: material
     });
 
     new XEO.GameObject({
         geometry: new XEO.BoundaryGeometry({
             boundary: childGroupBoundary2.worldBoundary
         }),
-        material: new XEO.PhongMaterial({
-            diffuse: [0.5, 1.0, 0.5],
-            emissive: [0.5, 1.0, 0.5],
-            lineWidth: 2
-        })
+        material: material
     });
 
     // Create 1000 moving GameObjects within one child GroupBoundary
@@ -104,13 +103,7 @@
 
             var object = new XEO.GameObject({
                 geometry: sphereGeometry,
-                material: new XEO.PhongMaterial({
-                    diffuse: [
-                        Math.random(),
-                        Math.random(),
-                        Math.random()
-                    ]
-                }),
+                material: material,
                 transform: new XEO.Translate({
                     xyz: [
                         Math.random() * r - halfr,
