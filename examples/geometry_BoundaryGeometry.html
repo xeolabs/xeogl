@@ -34,8 +34,8 @@
     var torus = new XEO.TorusGeometry({
         radius: 1.0,
         tube: 0.3,
-        segmentsR: 32,
-        segmentsT: 24,
+        radialSegments: 32,
+        tubeSegments: 24,
         arc: Math.PI * 2.0
     });
 
@@ -83,8 +83,8 @@
         this["primitive"] = torus.primitive;
         this["radius"] = torus.radius;
         this["tube"] = torus.tube;
-        this["segmentsR"] = torus.segmentsR;
-        this["segmentsT"] = torus.segmentsT;
+        this["radialSegments"] = torus.radialSegments;
+        this["tubeSegments"] = torus.tubeSegments;
         this["arc"] = torus.arc;
         this["lod"] = torus.lod;
 
@@ -99,8 +99,8 @@
             torus.primitive = self["primitive"];
             torus.radius = self["radius"];
             torus.tube = self["tube"];
-            torus.segmentsT = self["segmentsR"];
-            torus.segmentsR = self["segmentsT"];
+            torus.tubeSegments = self["radialSegments"];
+            torus.radialSegments = self["tubeSegments"];
             torus.arc = self["arc"];
             torus.lod = self["lod"];
 
@@ -120,8 +120,8 @@
     folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
     folder.add(menu, 'radius', 0.1, 5.0);
     folder.add(menu, 'tube', 0.1, 1.0);
-    folder.add(menu, 'segmentsR', 4, 30.0);
-    folder.add(menu, 'segmentsT', 4, 30.0);
+    folder.add(menu, 'radialSegments', 4, 30.0);
+    folder.add(menu, 'tubeSegments', 4, 30.0);
     folder.add(menu, 'arc', 0.1, Math.PI * 2.0);
     folder.add(menu, 'lod', 0.1, 1.0);
 

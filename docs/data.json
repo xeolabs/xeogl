@@ -11209,7 +11209,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 681,
+            "line": 690,
             "description": "The Geometry's usage type.\n\nValid types are: 'static', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.\n\nFires a {{#crossLink \"Geometry/usage:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "usage",
@@ -11221,7 +11221,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 712,
+            "line": 721,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/usage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "usage",
@@ -11238,7 +11238,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 726,
+            "line": 735,
             "description": "The Geometry's primitive type.\n\nValid types are: 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.\n\nFires a {{#crossLink \"Geometry/primitive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "primitive",
@@ -11250,7 +11250,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 764,
+            "line": 775,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/primitive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "primitive",
@@ -11267,7 +11267,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 778,
+            "line": 789,
             "description": "The Geometry's positions array.\n\nThis property is a one-dimensional array - use  {{#crossLink \"XEO.math/flatten:method\"}}{{/crossLink}} to\nconvert two-dimensional arrays for assignment to this property.\n\nFires a {{#crossLink \"Geometry/positions:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "positions",
@@ -11279,7 +11279,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 808,
+            "line": 820,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "positions",
@@ -11295,7 +11295,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 815,
+            "line": 827,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/boundary:property\"}}{{/crossLink}} property changes.\n\nNote that this event does not carry the value of the property. In order to avoid needlessly\ncalculating unused values for this property, it will be lazy-calculated next time it's referenced\non this Geometry.",
             "itemtype": "event",
             "name": "positions",
@@ -11311,7 +11311,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 835,
+            "line": 847,
             "description": "The Geometry's normal vectors array.\n\nFires a {{#crossLink \"Geometry/normals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normals",
@@ -11323,7 +11323,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 860,
+            "line": 873,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/ normals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normals",
@@ -11339,7 +11339,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 875,
+            "line": 888,
             "description": "The Geometry's UV coordinate array.\n\nFires a {{#crossLink \"Geometry/uv:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "uv",
@@ -11351,7 +11351,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 900,
+            "line": 914,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "uv",
@@ -11367,7 +11367,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 915,
+            "line": 929,
             "description": "The Geometry's vertex colors array.\n\nFires a {{#crossLink \"Geometry/colors:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colors",
@@ -11379,7 +11379,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 940,
+            "line": 955,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colors",
@@ -11395,7 +11395,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 955,
+            "line": 970,
             "description": "The Geometry's indices array.\n\nFires a {{#crossLink \"Geometry/indices:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "indices",
@@ -11407,7 +11407,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 980,
+            "line": 996,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "indices",
@@ -11423,7 +11423,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 995,
+            "line": 1011,
             "description": "Local-space 3D boundary.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.",
             "itemtype": "property",
             "name": "boundary",
@@ -11435,7 +11435,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1045,
+            "line": 1061,
             "description": "Set true to make this Geometry automatically generate {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} from\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}.\n\nThis Geomatry will auto-generate its {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} on the\nnext {{#crossLink \"Scene\"}}{{/crossLink}} {{#crossLink \"Scene/tick:event\"}}{{/crossLink}} event.\n\nFires a {{#crossLink \"Geometry/autoNormals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoNormals",
@@ -11447,7 +11447,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1072,
+            "line": 1088,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/autoNormals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoNormals",
@@ -19853,7 +19853,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 327,
+            "line": 325,
             "description": "The epoch time (in milliseconds since 1970) when this Scene was instantiated.",
             "itemtype": "property",
             "name": "timeCreated",
@@ -19863,7 +19863,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 335,
+            "line": 333,
             "description": "The {{#crossLink \"Component\"}}Component{{/crossLink}}s within\nthis Scene, mapped to their IDs.\n\nWill also contain the {{#crossLink \"GameObject\"}}{{/crossLink}}s\ncontained in {{#crossLink \"GameObject/components:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "components",
@@ -19873,7 +19873,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 347,
+            "line": 345,
             "description": "For each {{#crossLink \"Component\"}}Component{{/crossLink}} type, a map of\nIDs to instances.",
             "itemtype": "property",
             "name": "types",
@@ -19883,7 +19883,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 356,
+            "line": 354,
             "description": "The {{#crossLink \"GameObject\"}}{{/crossLink}}s within\nthis Scene, mapped to their IDs.\n\nThe {{#crossLink \"GameObject\"}}{{/crossLink}}s in this map\nwill also be contained in {{#crossLink \"GameObject/components:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "objects",
@@ -19893,7 +19893,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 371,
+            "line": 369,
             "description": "Configurations for this Scene. Set whatever properties on here\nthat will be useful to the components within the Scene.",
             "final": 1,
             "itemtype": "property",
@@ -19904,7 +19904,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 380,
+            "line": 378,
             "description": "Manages the HTML5 canvas for this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -19915,7 +19915,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 410,
+            "line": 408,
             "description": "Publishes input events that occur on this Scene's canvas.",
             "final": 1,
             "itemtype": "property",
@@ -19926,7 +19926,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 421,
+            "line": 419,
             "description": "Tracks any asynchronous tasks that occur within this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -19937,7 +19937,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 564,
+            "line": 562,
             "description": "Fired whenever a component within this Scene has been destroyed.",
             "itemtype": "event",
             "name": "componentDestroyed",

@@ -1,5 +1,5 @@
 /**
- A **TorusGeometry** defines toroid geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Example
 
@@ -18,11 +18,11 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TorusGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
- @param [cfg.radius=1] {Number}
- @param [cfg.tube=0.3] {Number}
- @param [cfg.segmentsR=32] {Number}
- @param [cfg.segmentsT=24] {Number}
- @param [cfg.arc=Math.PI / 2.0] {Number}
+ @param [cfg.radius=1] {Number} The overall radius of the TorusGeometry.
+ @param [cfg.tube=0.3] {Number} The tube radius of the TorusGeometry.
+ @param [cfg.radialSegments=32] {Number} The number of radial segments that make up the TorusGeometry.
+ @param [cfg.tubeSegments=24] {Number} The number of tubular segments that make up the TorusGeometry.
+ @param [cfg.arc=Math.PI / 2.0] {Number} The length of the TorusGeometry's arc in degrees, where 360 is closed torus.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -41,8 +41,8 @@
             this.lod = cfg.lod;
             this.radius = cfg.radius;
             this.tube = cfg.tube;
-            this.segmentsR = cfg.segmentsR;
-            this.segmentsT = cfg.segmentsT;
+            this.radialSegments = cfg.radialSegments;
+            this.tubeSegments = cfg.tubeSegments;
             this.arc = cfg.arc;
         },
 
@@ -62,16 +62,16 @@
 
             var radius = this._radius;
             var tube = this._tube;
-            var segmentsR = Math.floor(this._segmentsR * this._lod);
-            var segmentsT = Math.floor(this._segmentsT * this._lod);
+            var radialSegments = Math.floor(this._radialSegments * this._lod);
+            var tubeSegments = Math.floor(this._tubeSegments * this._lod);
             var arc = this._arc;
 
-            if (segmentsR < 4) {
-                segmentsR = 4;
+            if (radialSegments < 4) {
+                radialSegments = 4;
             }
 
-            if (segmentsT < 4) {
-                segmentsT = 4;
+            if (tubeSegments < 4) {
+                tubeSegments = 4;
             }
 
             var positions = [];
@@ -92,11 +92,11 @@
             var i;
             var j;
 
-            for (j = 0; j <= segmentsR; j++) {
-                for (i = 0; i <= segmentsT; i++) {
+            for (j = 0; j <= radialSegments; j++) {
+                for (i = 0; i <= tubeSegments; i++) {
 
-                    u = i / segmentsT * arc;
-                    v = j / segmentsR * Math.PI * 2;
+                    u = i / tubeSegments * arc;
+                    v = j / radialSegments * Math.PI * 2;
 
                     centerX = radius * Math.cos(u);
                     centerY = radius * Math.sin(u);
@@ -109,8 +109,8 @@
                     positions.push(y);
                     positions.push(z);
 
-                    uvs.push(1 - (i / segmentsT));
-                    uvs.push(1 - (j / segmentsR));
+                    uvs.push(1 - (i / tubeSegments));
+                    uvs.push(1 - (j / radialSegments));
 
                     vec = XEO.math.normalizeVec3(XEO.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
 
@@ -125,13 +125,13 @@
             var c;
             var d;
 
-            for (j = 1; j <= segmentsR; j++) {
-                for (i = 1; i <= segmentsT; i++) {
+            for (j = 1; j <= radialSegments; j++) {
+                for (i = 1; i <= tubeSegments; i++) {
 
-                    a = ( segmentsT + 1 ) * j + i - 1;
-                    b = ( segmentsT + 1 ) * ( j - 1 ) + i - 1;
-                    c = ( segmentsT + 1 ) * ( j - 1 ) + i;
-                    d = ( segmentsT + 1 ) * j + i;
+                    a = ( tubeSegments + 1 ) * j + i - 1;
+                    b = ( tubeSegments + 1 ) * ( j - 1 ) + i - 1;
+                    c = ( tubeSegments + 1 ) * ( j - 1 ) + i;
+                    d = ( tubeSegments + 1 ) * j + i;
 
                     indices.push(a);
                     indices.push(b);
@@ -194,7 +194,7 @@
             },
 
             /**
-             * The TorusGeometry's radius.
+             * The overall radius of the TorusGeometry.
              *
              * Fires a {{#crossLink "TorusGeometry/radius:event"}}{{/crossLink}} event on change.
              *
@@ -237,7 +237,7 @@
 
 
             /**
-             * The TorusGeometry's tube.
+             * The tube radius of the TorusGeometry.
              *
              * Fires a {{#crossLink "TorusGeometry/tube:event"}}{{/crossLink}} event on change.
              *
@@ -279,26 +279,26 @@
             },
 
             /**
-             * The TorusGeometry's segmentsR.
+             * The number of radial segments that make up the TorusGeometry.
              *
-             * Fires a {{#crossLink "TorusGeometry/segmentsR:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/radialSegments:event"}}{{/crossLink}} event on change.
              *
-             * @property segmentsR
+             * @property radialSegments
              * @default 32
              * @type Number
              */
-            segmentsR: {
+            radialSegments: {
 
                 set: function (value) {
 
                     value = value || 32;
 
-                    if (this._segmentsR === value) {
+                    if (this._radialSegments === value) {
                         return;
                     }
 
                     if (value < 0) {
-                        this.warn("negative segmentsR not allowed - will invert");
+                        this.warn("negative radialSegments not allowed - will invert");
                         value = value * -1;
                     }
 
@@ -322,49 +322,49 @@
 
 
             /**
-             * The TorusGeometry's segmentsT.
+             * The number of tubular segments that make up the TorusGeometry.
              *
-             * Fires a {{#crossLink "TorusGeometry/segmentsT:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "TorusGeometry/tubeSegments:event"}}{{/crossLink}} event on change.
              *
-             * @property segmentsT
+             * @property tubeSegments
              * @default 24
              * @type Number
              */
-            segmentsT: {
+            tubeSegments: {
 
                 set: function (value) {
 
                     value = value || 24;
 
-                    if (this._segmentsT === value) {
+                    if (this._tubeSegments === value) {
                         return;
                     }
 
                     if (value < 0) {
-                        this.warn("negative segmentsT not allowed - will invert");
+                        this.warn("negative tubeSegments not allowed - will invert");
                         value = value * -1;
                     }
 
-                    this._segmentsT = value;
+                    this._tubeSegments = value;
 
                     /**
-                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/segmentsT:property"}}{{/crossLink}} property changes.
-                     * @event segmentsT
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tubeSegments:property"}}{{/crossLink}} property changes.
+                     * @event tubeSegments
                      * @type Number
                      * @param value The property's new value
                      */
-                    this.fire("segmentsT", this._segmentsT);
+                    this.fire("tubeSegments", this._tubeSegments);
 
                     this._torusDirty();
                 },
 
                 get: function () {
-                    return this._segmentsT;
+                    return this._tubeSegments;
                 }
             },
 
             /**
-             * The TorusGeometry's arc.
+             * The length of the TorusGeometry's arc in degrees, where 360 is closed torus.
              *
              * Fires a {{#crossLink "TorusGeometry/arc:event"}}{{/crossLink}} event on change.
              *
@@ -412,7 +412,7 @@
                 radius: this._radius,
                 tube: this._tube,
                 segmentsR: this._segmentsR,
-                segmentsT: this._segmentsT,
+                tubeSegments: this._tubeSegments,
                 arc: this._arc
             };
         }

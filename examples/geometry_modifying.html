@@ -59,8 +59,8 @@
 
     var radius = 3;
     var tube = 0.7;
-    var segmentsR = 6;
-    var segmentsT = 4;
+    var radialSegments = 6;
+    var tubeSegments = 4;
     var arc = Math.PI * 2.0;
 
     // The geometry arrays
@@ -88,10 +88,10 @@
 
                 // Increment some torus construction parameters
 
-                segmentsR += d;
-                segmentsT += d;
+                radialSegments += d;
+                tubeSegments += d;
 
-                if (segmentsR > 40 || segmentsR < 6) {
+                if (radialSegments > 40 || radialSegments < 6) {
                     d = -d;
                 }
             },
@@ -120,11 +120,11 @@
         var i;
         var j;
 
-        for (j = 0; j <= segmentsR; j++) {
-            for (i = 0; i <= segmentsT; i++) {
+        for (j = 0; j <= radialSegments; j++) {
+            for (i = 0; i <= tubeSegments; i++) {
 
-                u = i / segmentsT * arc;
-                v = j / segmentsR * Math.PI * 2;
+                u = i / tubeSegments * arc;
+                v = j / radialSegments * Math.PI * 2;
 
                 centerX = radius * Math.cos(u);
                 centerY = radius * Math.sin(u);
@@ -137,8 +137,8 @@
                 positions.push(y);
                 positions.push(z);
 
-                uv.push(i / segmentsT);
-                uv.push(1 - j / segmentsR);
+                uv.push(i / tubeSegments);
+                uv.push(1 - j / radialSegments);
 
                 vec = XEO.math.normalizeVec3(XEO.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
 
@@ -153,13 +153,13 @@
         var c;
         var d;
 
-        for (j = 1; j <= segmentsR; j++) {
-            for (i = 1; i <= segmentsT; i++) {
+        for (j = 1; j <= radialSegments; j++) {
+            for (i = 1; i <= tubeSegments; i++) {
 
-                a = ( segmentsT + 1 ) * j + i - 1;
-                b = ( segmentsT + 1 ) * ( j - 1 ) + i - 1;
-                c = ( segmentsT + 1 ) * ( j - 1 ) + i;
-                d = ( segmentsT + 1 ) * j + i;
+                a = ( tubeSegments + 1 ) * j + i - 1;
+                b = ( tubeSegments + 1 ) * ( j - 1 ) + i - 1;
+                c = ( tubeSegments + 1 ) * ( j - 1 ) + i;
+                d = ( tubeSegments + 1 ) * j + i;
 
                 indices.push(a);
                 indices.push(b);
