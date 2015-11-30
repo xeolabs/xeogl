@@ -14,7 +14,7 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -126,8 +126,8 @@
 
             var trajectory = [
                 Math.random() * 2.0 - 1.0,
-                Math.random() * 1.0 - 1.0,
-                Math.random() * 1.0 - 1.0
+                -Math.random(),
+                -Math.random()
             ];
 
             object.scene.on("tick",
