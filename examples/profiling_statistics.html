@@ -14,8 +14,9 @@
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
     getting a <a href="../docs/classes/Scene.html"
-       target="_other">Scene's</a> runtime statistics
-    <pre id="infoTxt" style="left: 0; text-align: left; background: black; opacity: 0.7; color: white; font-size: 14pt;">
+                 target="_other">Scene's</a> runtime statistics
+    <pre id="infoTxt"
+         style="left: 0; text-align: left; background: black; opacity: 0.7; color: white; font-size: 14pt;">
     </pre>
 </div>
 
@@ -52,21 +53,22 @@
 
                     geometry: geometries[gi < 3 ? gi++ : gi = 0],
 
-                    material: new XEO.PhongMaterial({
-                        diffuse: [x, z, y]
-                    }),
+                        material: new XEO.PhongMaterial({
+                            diffuse: [x, z, y]
+                        }),
 
                     transform: new XEO.Translate({
-                        xyz: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
-                    })
-                });
+                                xyz: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
+                            })
+                    });
             }
         }
     }
 
+
     var scene = XEO.scene;
 
-    scene.camera.view.zoom(60);
+    scene.camera.view.zoom(100);
 
     // Spin camera
     // Log statistics
@@ -81,9 +83,9 @@
                 view.rotateEyeY(0.5);
                 view.rotateEyeX(0.3);
 
-                // Get stats from scene and log them
+                // Get stats from xeoEngine and log them
 
-                var stats = scene.stats;
+                var stats = XEO.stats;
 
                 logJSON(stats);
             });

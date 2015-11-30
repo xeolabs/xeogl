@@ -105,7 +105,7 @@
                         });
 
                     /**
-                     Fired whenever this PointLight's  {{#crossLink "PointLight/src:property"}}{{/crossLink}} property changes.
+                     Fired whenever this OBJGeometry's  {{#crossLink "OBJGeometry/src:property"}}{{/crossLink}} property changes.
                      @event src
                      @param value The property's new value
                      */

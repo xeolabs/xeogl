@@ -39,10 +39,7 @@
 
         material: new XEO.PhongMaterial({
             diffuseMap: new XEO.Texture({
-                src: "textures/diffuse/UVCheckerMap08-1024.png",
-                wrapS: "repeat",
-                wrapT: "repeat",
-                scale: [0.1, 0.5]
+                src: "textures/diffuse/UVCheckerMap08-1024.png"
             })
         }),
 
@@ -59,7 +56,7 @@
             priority: 1
         }),
 
-        sgeometry: new XEO.PlaneGeometry({
+        geometry: new XEO.PlaneGeometry({
             xSize: 10,
             ySize: 10
         }),
@@ -79,8 +76,8 @@
     object1.scene.on("tick",
             function () {
 
-                object1.camera.view.rotateEyeY(0.2);
-                object1.camera.view.rotateEyeX(0.3);
+                object1.camera.view.rotateEyeY(0.4);
+                object1.camera.view.rotateEyeX(0.6);
             });
 </script>
 </body>

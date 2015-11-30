@@ -14,7 +14,7 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -22,10 +22,13 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
+    a <a href="../docs/classes/GroupBoundary.html" target="_other">GroupBoundary</a> containing
+    1000 animated <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a>
+    <br>
+    <br>
+    controls:
     <ul>
-        <li>a <a href="../docs/classes/GroupBoundary.html" target="_other">GroupBoundary</a> containing
-            1000 animated <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a></li>
-
+        <li>mouse drag, arrow keys - orbit</li><li>Z,X  - pan forwards and backwards</li><li>A,D  - pan left and right</li><li>W,S  - pan up and down</li><li>1,2,3,4,5,6 - select axis-aligned view</li><li>click on object to fly to it</li><li>shift-click object to fly to its boundary</li><li>mouse wheel or '+' and '-' keys to zoom in and out</li>
     </ul>
 </div>
 
@@ -56,7 +59,13 @@
         radius: 5
     });
 
-    for (var i = 0; i < 2000; i++) {
+    var material = new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+    });
+
+    for (var i = 0; i < 1000; i++) {
 
         var r = (Math.random() + 0.1 ) * 50;
         var halfr = r / 2;
@@ -67,13 +76,7 @@
 
             var object = new XEO.GameObject({
                 geometry: sphereGeometry,
-                material: new XEO.PhongMaterial({
-                    diffuse: [
-                        Math.random(),
-                        Math.random(),
-                        Math.random()
-                    ]
-                }),
+                material: material,
                 transform: new XEO.Translate({
                     xyz: [
                         Math.random() * r - halfr,

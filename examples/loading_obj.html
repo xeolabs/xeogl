@@ -15,7 +15,7 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>loading .OBJ geometry using an <a href="js/loaders/objGeometry.js" target="_other">XEO.ObjGeometry</a>
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>loading .OBJ geometry using an <a href="js/loaders/objGeometry.js" target="_other">XEO.OBJGeometry</a>
 </div>
 
 <script>
@@ -44,23 +44,16 @@
         })
     });
 
-  //  object.canvasBoundary.shown = true;
-    object.worldBoundary.visible = true;
-
-
     var control = new XEO.CameraControl();
 
     var animation = new XEO.CameraFlight();
 
-    object.geometry.on("loaded", function () {
-
-        var look = object.worldBoundary.center;
-
-        animation.flyTo({
-            eye: [look[0] - 100, look[1] + 100, look[2] - 120],
-            look: look
-        });
-    });
+    object.geometry.on("loaded",
+            function () {
+                animation.flyTo({
+                    aabb: object.worldBoundary.aabb
+                });
+            });
 
 </script>
 </body>
