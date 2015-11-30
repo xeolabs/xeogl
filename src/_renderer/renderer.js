@@ -802,7 +802,7 @@
 
             // Unbinds any render target bound previously
 
-            id = -this._numExtraChunks;
+            id = this._numExtraChunks * -1000.0;
 
             this._appendRenderTargetChunk(this._chunkFactory.getChunk(id, "renderTarget", object.program.program, {}));
 
