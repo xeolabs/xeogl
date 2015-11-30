@@ -12295,7 +12295,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         // Subscribe to new Path's events
 
-                        this._onPathT = newPath.on("t", this._update(), this);
+                        this._onPathT = newPath.on("t", this._update, this);
                     }
                 },
 
@@ -15368,8 +15368,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                            // var aabb = e.object.worldBoundary.aabb;
 
-                            //self._boundaryObject.geometry.obb = e.object.worldBoundary.obb;
-                            //self._boundaryObject.visibility.visible = true;
+                            self._boundaryObject.geometry.obb = e.object.worldBoundary.obb;
+                            self._boundaryObject.visibility.visible = true;
 
                             var center = e.object.worldBoundary.center;
 
@@ -15382,7 +15382,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     ]
                                 },
                                 function () {
-                              //      self._boundaryObject.visibility.visible = false;
+                                    self._boundaryObject.visibility.visible = false;
                                 });
 
                         } else {
