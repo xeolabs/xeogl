@@ -266,9 +266,19 @@
                             aspect: newHeight / newWidth
                         });
 
-                        var canvasStats = self.scene.stats.canvas;
-                        canvasStats.width = newWidth;
-                        canvasStats.height = newHeight;
+                        // TODO: count pixels
+
+                        var countPixels = 0;
+                        var scene;
+
+                        for (var sceneId in XEO.scenes) {
+                            if (XEO.scenes.hasOwnProperty(sceneId)) {
+                                scene = XEO.scenes[sceneId];
+                                countPixels += scene.canvas.canvas.clientWidth * scene.canvas.canvas.clientHeight;
+                            }
+                        }
+
+                        XEO.stats.memory.pixels = countPixels;
 
                         lastWidth = newWidth;
                         lastHeight = newHeight;
