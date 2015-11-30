@@ -69,7 +69,13 @@
 
             this.autoNormals = cfg.autoNormals !== false;
         },
-        
+
+        /**
+         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
+         * to generate geometry data arrays.
+         *
+         * @protected
+         */
         _update: function () {
 
             if (this._srcDirty) {

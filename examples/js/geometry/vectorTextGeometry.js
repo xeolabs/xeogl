@@ -40,6 +40,12 @@
             this.ySize = cfg.ySize;
         },
 
+        /**
+         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
+         * to generate geometry data arrays.
+         *
+         * @protected
+         */
         _update: function () {
 
             if (!letters) {
@@ -157,6 +163,8 @@
 
                     this._text = value;
 
+                    this._needUpdate();
+
                     /**
                      * Fired whenever this VectorTextGeometry's {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property changes.
                      * @event text
@@ -164,8 +172,6 @@
                      * @param value The property's new value
                      */
                     this.fire("text", this._text);
-
-                    this._needUpdate();
                 },
 
                 get: function () {
