@@ -40,19 +40,7 @@
             this.ySize = cfg.ySize;
         },
 
-        _textDirty: function () {
-            if (!this.__dirty) {
-                this.__dirty = true;
-                var self = this;
-                this.scene.once("tick4",
-                    function () {
-                        self._buildText();
-                        self.__dirty = false;
-                    });
-            }
-        },
-
-        _buildText: function () {
+        _update: function () {
 
             if (!letters) {
                 letters = buildStrokeData();
@@ -177,7 +165,7 @@
                      */
                     this.fire("text", this._text);
 
-                    this._textDirty();
+                    this._needUpdate();
                 },
 
                 get: function () {
@@ -211,7 +199,7 @@
 
                     this._xSize = value;
 
-                    this._textDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this VectorText's {{#crossLink "VectorText/xSize:property"}}{{/crossLink}} property changes.
@@ -253,7 +241,7 @@
 
                     this._ySize = value;
 
-                    this._textDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this VectorText's {{#crossLink "VectorText/ySize:property"}}{{/crossLink}} property changes.

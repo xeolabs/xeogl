@@ -85,7 +85,7 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.ProjTransform({
-                matrix: XEO.math.mat4()
+                matrix: XEO.math.identityMat4(XEO.math.mat4())
             });
 
             // Ortho view volume
@@ -110,11 +110,7 @@
         _scheduleBuild: function () {
             if (!this._dirty) {
                 this._dirty = true;
-                var self = this;
-                this.scene.once("tick2",
-                    function () {
-                        self._build();
-                    });
+                XEO.addTask(this._build, this);
             }
         },
 

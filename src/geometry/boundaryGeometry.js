@@ -117,8 +117,7 @@
                                     return;
                                 }
                                 geometryDirty = true;
-                                self.scene.once("tick4",
-                                    function () {
+                                XEO.addTask(function () {
                                         self._setPositionsFromOBB(boundary.obb);
                                         geometryDirty = false;
                                     });

@@ -340,17 +340,6 @@
         },
 
         /**
-         * Schedules rebuild on the next Scene tick
-         * @private
-         */
-        _nextTick: function (callback) {
-            if (!this.__needBuild) {
-                this.__needBuild = true;
-                this.scene.once("tick2", callback);
-            }
-        },
-
-        /**
          * Fires an event on this component.
          *
          * Notifies existing subscribers to the event, retains the event to give to

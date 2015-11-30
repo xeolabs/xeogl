@@ -45,19 +45,13 @@
             this.autoNormals = cfg.autoNormals !== false;
         },
 
-        _latheDirty: function () {
-            if (!this.__dirty) {
-                this.__dirty = true;
-                var self = this;
-                this.scene.once("tick4",
-                    function () {
-                        self._buildLathe();
-                        self.__dirty = false;
-                    });
-            }
-        },
-
-        _buildLathe: function () {
+        /**
+         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
+         * to generate geometry data arrays.
+         *
+         * @protected
+         */
+        _update: function () {
 
             var positions = [];
             var uvs = [];
@@ -157,7 +151,7 @@
 
                     this._points = value || [];
 
-                    this._latheDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's
@@ -199,7 +193,7 @@
 
                     this._lod = value;
 
-                    this._latheDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -241,7 +235,7 @@
 
                     this._phiStart = value;
 
-                    this._latheDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/phiStart:property"}}{{/crossLink}} property changes.
@@ -283,7 +277,7 @@
 
                     this._phiLength = value;
 
-                    this._latheDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/phiLength:property"}}{{/crossLink}} property changes.
@@ -325,7 +319,7 @@
 
                     this._segments = value;
 
-                    this._latheDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/segments:property"}}{{/crossLink}} property changes.

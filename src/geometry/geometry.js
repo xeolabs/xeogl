@@ -285,7 +285,7 @@
                 tangents: null,
                 indices: null,
 
-                // Getters for VBOs that are only created on-demand
+                // Getters for VBOs that are only created on demand
 
                 // Tangents for normal mapping
 
@@ -320,6 +320,10 @@
                 }
             });
 
+            // Indicates if a call to _update is needed
+            this._updateDirty = false;
+
+            this._vbosDirty = null;
             this._hashDirty = true;
 
             // Typed arrays
@@ -340,7 +344,7 @@
 
             // Flags for work pending
 
-            this._dirty = false;
+            this._vbosDirty = false;
             this._positionsDirty = true;
             this._colorsDirty = true;
             this._normalsDirty = true;
@@ -351,7 +355,7 @@
 
             // Local-space Boundary3D
 
-            this._boundary = null;
+            this._localBoundary = null;
             this._boundaryDirty = true;
 
 
@@ -359,50 +363,7 @@
 
             if (defaultGeometry) {
 
-                // Call property setters
-
                 this.primitive = cfg.primitive;
-
-                this.positions = [
-                    -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, // Front face
-                    -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, // Back face
-                    -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, // Top face
-                    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, // Bottom face
-                    1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, // Right face
-                    -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0 // Left face
-                ];
-
-                this.normals = [
-                    0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-                    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-                    0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
-                    -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
-                    0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
-                    0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
-                ];
-
-                this.uv = [
-                    1, 1, 0, 1, 0, 0, 1, 0,
-                    0, 1, 0, 0, 1, 0, 1, 1,
-                    1, 0, 1, 1, 0, 1, 0, 0,
-                    1, 1, 0, 1, 0, 0, 1, 0,
-                    0, 0, 1, 0, 1, 1, 0, 1,
-                    0, 0, 1, 0, 1, 1, 0, 1
-                ];
-
-                // Tangents are lazy-computed from normals and UVs
-                // for Normal mapping once we know we have texture
-
-                this.tangents = null;
-
-                this.indices = [
-                    0, 1, 2, 0, 2, 3,    // front
-                    4, 5, 6, 4, 6, 7,    // back
-                    8, 9, 10, 8, 10, 11,   // top
-                    12, 13, 14, 12, 14, 15,   // bottom
-                    16, 17, 18, 16, 18, 19,   // right
-                    20, 21, 22, 20, 22, 23    // left
-                ];
 
             } else {
 
@@ -439,36 +400,75 @@
 
             this.usage = cfg.usage;
 
-            var self = this;
+            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._scheduleVBOUpdate, this);
 
-            this._webglContextRestored = this.scene.canvas.on(
-                "webglContextRestored",
-                function () {
-                    self._scheduleBuild();
-                });
-
-            this.scene.stats.memory.meshes++;
+            XEO.stats.memory.meshes++;
         },
 
-        _scheduleBuild: function () {
-
-            if (!this._dirty) {
-
-                this._dirty = true;
-                var self = this;
-
-                this.scene.once("tick",
-                    function () {
-
-                        // Build VBOs for renderer; no other components in the scene
-                        // will be waiting them, so OK to schedule that for next tick.
-
-                        self._build();
-                    });
+        /**
+         * Protected method, called by sub-classes to queue a call to _update(), to rebuild geometry data arrays.
+         *
+         * @protected
+         */
+        _needUpdate: function () {
+            if (!this._updateDirty) {
+                this._updateDirty = true;
+                XEO.addTask(this._doUpdate, this);
             }
         },
 
-        _build: function () {
+        _doUpdate: function () {
+
+            if (this._updateDirty) {
+
+                this._vbosDirty = true; // Prevents needless scheduling within _update()
+
+                if (this._update) {
+                    this._update();
+                }
+
+                this._updateDirty = false;
+            }
+
+            if (this._vbosDirty) {
+                this._doVBOUpdate();
+            }
+        },
+
+        /**
+         * Protected virtual template method, implemented by sub-classes to generate geometry data arrays.
+         *
+         * @protected
+         */
+        _update: null,
+
+        _scheduleVBOUpdate: function () {
+
+            if (!this._vbosDirty) {
+
+                this._vbosDirty = true;
+
+                // Build VBOs for renderer; no other components in the scene
+                // will be waiting them, so OK to schedule that for next tick.
+                XEO.addTask(this._doVBOUpdate, this);
+            }
+        },
+
+        _doVBOUpdate: function () {
+
+            if (this._updateDirty) {
+
+                if (this._update) {
+                    this._vbosDirty = true; // Prevents needless scheduling within _update()
+                    this._update();
+                }
+
+                this._vbosDirty = true;
+                this._updateDirty = false;
+
+            } else if (!this._vbosDirty) {
+                return;
+            }
 
             var gl = this.scene.canvas.gl;
 
@@ -508,7 +508,7 @@
 
             var usage = gl.STATIC_DRAW;
 
-            var memoryStats = this.scene.stats.memory;
+            var memoryStats = XEO.stats.memory;
 
             if (this._positionsDirty) {
                 if (this._state.positions) {
@@ -516,7 +516,9 @@
                     this._state.positions.destroy();
                 }
                 this._state.positions = this._positionsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._positionsData), this._positionsData.length, 3, usage) : null;
-                memoryStats.positions += this._state.positions.numItems;
+                if (this._state.positions) {
+                    memoryStats.positions += this._state.positions.numItems;
+                }
                 this._positionsDirty = false;
 
                 // Need to rebuild pick mesh now
@@ -594,7 +596,55 @@
                 this._pickVBOsDirty = true;
             }
 
-            this._dirty = false;
+            this._vbosDirty = false;
+        },
+
+        _buildDefault: function () {
+
+            this._state.primitiveName = "triangles";
+
+            this._positionsData = [
+                -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, // Front face
+                -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, // Back face
+                -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, // Top face
+                -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, // Bottom face
+                1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, // Right face
+                -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0 // Left face
+            ];
+
+            this._normalsData = [
+                0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+                1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+                0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+                -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
+                0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
+                0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+            ];
+
+            this._uvData = [
+                1, 1, 0, 1, 0, 0, 1, 0,
+                0, 1, 0, 0, 1, 0, 1, 1,
+                1, 0, 1, 1, 0, 1, 0, 0,
+                1, 1, 0, 1, 0, 0, 1, 0,
+                0, 0, 1, 0, 1, 1, 0, 1,
+                0, 0, 1, 0, 1, 1, 0, 1
+            ];
+
+            // Tangents are lazy-computed from normals and UVs
+            // for Normal mapping once we know we have texture
+
+            this.tangents = null;
+
+            this._indicesData = [
+                0, 1, 2, 0, 2, 3,    // front
+                4, 5, 6, 4, 6, 7,    // back
+                8, 9, 10, 8, 10, 11,   // top
+                12, 13, 14, 12, 14, 15,   // bottom
+                16, 17, 18, 16, 18, 19,   // right
+                20, 21, 22, 20, 22, 23    // left
+            ];
+
+            this._setBoundaryDirty();
         },
 
         _buildTangents: function () {
@@ -603,7 +653,11 @@
                 return;
             }
 
-            var memoryStats = this.scene.stats.memory;
+            if (this._updateDirty || this._vbosDirty) {
+                this._doUpdate();
+            }
+
+            var memoryStats = XEO.stats.memory;
 
             if (this._tangents) {
                 memoryStats.tangents -= this._tangents.numItems;
@@ -623,11 +677,14 @@
             this._tangentsDirty = false;
         },
 
-
         _buildPickVBOs: function () {
 
             if (!this._pickVBOsDirty) {
                 return;
+            }
+
+            if (this._updateDirty || this._vbosDirty) {
+                this._doUpdate();
             }
 
             this._destroyPickVBOs();
@@ -648,7 +705,7 @@
                 this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickColors), pickColors.length, 4, usage);
                 this._pickIndices = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pickIndices), pickIndices.length, 1, usage);
 
-                var memoryStats = this.scene.stats.memory;
+                var memoryStats = XEO.stats.memory;
 
                 memoryStats.positions += this._pickPositions.numItems;
                 memoryStats.colors += this._pickColors.numItems;
@@ -658,10 +715,9 @@
             this._pickVBOsDirty = false;
         },
 
-
         _destroyPickVBOs: function () {
 
-            var memoryStats = this.scene.stats.memory;
+            var memoryStats = XEO.stats.memory;
 
             if (this._pickPositions) {
                 this._pickPositions.destroy();
@@ -714,7 +770,7 @@
 
                     this._state.usageName = value;
 
-                    this._scheduleBuild();
+                    this._scheduleVBOUpdate();
 
                     this.fire("dirty", true);
 
@@ -766,7 +822,7 @@
 
                     this._state.primitiveName = value;
 
-                    this._scheduleBuild();
+                    this._scheduleVBOUpdate();
 
                     this._hashDirty = true;
 
@@ -808,7 +864,7 @@
                     this._positionsData = value;
                     this._positionsDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleVBOUpdate();
 
                     this._setBoundaryDirty();
 
@@ -825,7 +881,7 @@
                     this.fire("positions", this._positionsData);
 
                     /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/boundary:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Geometry's {{#crossLink "Geometry/localBoundary:property"}}{{/crossLink}} property changes.
                      *
                      * Note that this event does not carry the value of the property. In order to avoid needlessly
                      * calculating unused values for this property, it will be lazy-calculated next time it's referenced
@@ -834,12 +890,17 @@
                      * @event positions
                      * @param value The property's new value
                      */
-                    this.fire("boundary", true);
+                    this.fire("localBoundary", true);
 
                     this._renderer.imageDirty = true;
                 },
 
                 get: function () {
+
+                    if (this._updateDirty) {
+                        this._doUpdate();
+                    }
+
                     return this._positionsData;
                 }
             },
@@ -863,7 +924,7 @@
                     this._normalsData = value;
                     this._normalsDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleVBOUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -881,6 +942,11 @@
                 },
 
                 get: function () {
+
+                    if (this._updateDirty) {
+                        this._doUpdate();
+                    }
+
                     return this._normalsData;
                 }
             },
@@ -904,7 +970,7 @@
                     this._uvData = value;
                     this._uvDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleVBOUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -922,6 +988,11 @@
                 },
 
                 get: function () {
+
+                    if (this._updateDirty) {
+                        this._doUpdate();
+                    }
+
                     return this._uvData;
                 }
             },
@@ -945,7 +1016,7 @@
                     this._colorsData = value;
                     this._colorsDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleVBOUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -963,6 +1034,11 @@
                 },
 
                 get: function () {
+
+                    if (this._updateDirty) {
+                        this._doUpdate();
+                    }
+
                     return this._colorsData;
                 }
             },
@@ -986,7 +1062,7 @@
                     this._indicesData = value;
                     this._indicesDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleVBOUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -1004,31 +1080,39 @@
                 },
 
                 get: function () {
+
+                    if (this._updateDirty) {
+                        this._doUpdate();
+                    }
+
                     return this._indicesData;
                 }
             },
 
             /**
-             * Local-space 3D boundary.
+             * Local-space 3D boundary enclosing the {{#crossLink "Geometry/positions:property"}}{{/crossLink}} of this Geometry.
              *
              * The a {{#crossLink "Boundary3D"}}{{/crossLink}} is lazy-instantiated the first time that this
              * property is referenced. If {{#crossLink "Component/destroy:method"}}{{/crossLink}} is then called on it,
              * then this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
              * time it's referenced.
              *
-             * @property boundary
+             * The {{#crossLink "Boundary3D"}}{{/crossLink}} will fire an {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}}
+             * event whenever this Geometry's {{#crossLink "Geometry/positions:property"}}{{/crossLink}} are updated.
+             *
+             * @property localBoundary
              * @type Boundary3D
              * @final
              */
-            boundary: {
+            localBoundary: {
 
                 get: function () {
 
-                    if (!this._boundary) {
+                    if (!this._localBoundary) {
 
                         var self = this;
 
-                        this._boundary = new XEO.Boundary3D(this.scene, {
+                        this._localBoundary = new XEO.Boundary3D(this.scene, {
 
                             // Inject callbacks through which this Geometry
                             // can manage caching for the boundary
@@ -1042,19 +1126,24 @@
                             },
 
                             getPositions: function () {
+
+                                if (this._updateDirty) {
+                                    this._doUpdate();
+                                }
+
                                 return self._positionsData;
                             }
                         });
 
-                        this._boundary.on("destroyed",
+                        this._localBoundary.on("destroyed",
                             function () {
-                                self._boundary = null;
+                                self._localBoundary = null;
                             });
 
                         this._setBoundaryDirty();
                     }
 
-                    return this._boundary;
+                    return this._localBoundary;
                 }
             },
 
@@ -1085,6 +1174,8 @@
 
                     this._normalsDirty = true;
 
+                    this._scheduleVBOUpdate();
+
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} property changes.
                      * @event autoNormals
@@ -1092,8 +1183,6 @@
                      * @param value The property's new value
                      */
                     this.fire("autoNormals", this._autoNormals);
-
-                    this._scheduleBuild();
                 },
 
                 get: function () {
@@ -1135,7 +1224,7 @@
             //         */
             //        this.fire("autoTangents", this._primitive);
             //
-            //        this._scheduleBuild();
+            //        this._scheduleVBOUpdate();
             //    },
             //
             //    get: function () {
@@ -1153,15 +1242,15 @@
 
             this._boundaryDirty = true;
 
-            if (this._boundary) {
-                this._boundary.fire("updated", true);
+            if (this._localBoundary) {
+                this._localBoundary.fire("updated", true);
             }
         },
 
         _compile: function () {
 
-            if (this._dirty) {
-                this._build();
+            if (this._updateDirty || this._vbosDirty) {
+                this._doUpdate();
             }
 
             if (this._hashDirty) {
@@ -1204,6 +1293,10 @@
         },
 
         _getJSON: function () {
+
+            if (this._updateDirty) {
+                this._update();
+            }
 
             return {
                 primitive: this._state.primitiveName,
@@ -1261,8 +1354,8 @@
 
             // Destroy boundary
 
-            if (this._boundary) {
-                this._boundary.destroy();
+            if (this._localBoundary) {
+                this._localBoundary.destroy();
             }
 
             // Destroy state
@@ -1271,7 +1364,7 @@
 
             // Decrement geometry statistic
 
-            this.scene.stats.memory.meshes--;
+            XEO.stats.memory.meshes--;
         }
     });
 })();

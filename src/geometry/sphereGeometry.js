@@ -42,19 +42,13 @@
             this.widthSegments = cfg.widthSegments;
         },
 
-        _sphereDirty: function () {
-            if (!this.__dirty) {
-                this.__dirty = true;
-                var self = this;
-                this.scene.once("tick4",
-                    function () {
-                        self._buildSphere();
-                        self.__dirty = false;
-                    });
-            }
-        },
-
-        _buildSphere: function () {
+        /**
+         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
+         * to generate geometry data arrays.
+         *
+         * @protected
+         */
+        _update: function () {
 
             var radius = this._radius;
             var heightSegments = Math.floor(this._lod * this._heightSegments);
@@ -174,6 +168,8 @@
 
                     this._lod = value;
 
+                    this._needUpdate();
+
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
@@ -181,8 +177,6 @@
                      * @param value The property's new value
                      */
                     this.fire("lod", this._lod);
-
-                    this._sphereDirty();
                 },
 
                 get: function () {
@@ -216,6 +210,8 @@
 
                     this._radius = value;
 
+                    this._needUpdate();
+
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}} property changes.
                      * @event radius
@@ -223,8 +219,6 @@
                      * @param value The property's new value
                      */
                     this.fire("radius", this._radius);
-
-                    this._sphereDirty();
                 },
 
                 get: function () {
@@ -259,6 +253,8 @@
 
                     this._heightSegments = value;
 
+                    this._needUpdate();
+
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} property changes.
                      * @event heightSegments
@@ -266,8 +262,6 @@
                      * @param value The property's new value
                      */
                     this.fire("heightSegments", this._heightSegments);
-
-                    this._sphereDirty();
                 },
 
                 get: function () {
@@ -301,6 +295,8 @@
 
                     this._widthSegments = value;
 
+                    this._needUpdate();
+
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} property changes.
                      * @event widthSegments
@@ -308,8 +304,6 @@
                      * @param value The property's new value
                      */
                     this.fire("widthSegments", this._widthSegments);
-
-                    this._sphereDirty();
                 },
 
                 get: function () {

@@ -49,108 +49,102 @@
             this.autoNormals = cfg.autoNormals !== false;
         },
 
-        _setPlaneDirty: function () {
-            if (!this._planeDirty) {
-                this._planeDirty = true;
-                var self = this;
-                this.scene.once("tick4",
-                    function () {
-                        self._buildPlane();
-                        self._planeDirty = false;
-                    });
+        /**
+         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
+         * to generate geometry data arrays.
+         *
+         * @protected
+         */
+        _update: function () {
+
+            // Geometry needs rebuild
+
+            var width = this._xSize;
+            var height = this._ySize;
+
+            var xSegments = Math.floor(this._lod * this._xSegments);
+            var ySegments = Math.floor(this._lod * this._ySegments);
+
+            if (ySegments < 4) {
+                ySegments = 4;
             }
+
+            if (ySegments < 4) {
+                ySegments = 4;
+            }
+
+            var halfWidth = width / 2;
+            var halfHeight = height / 2;
+
+            var planeX = Math.floor(xSegments) || 1;
+            var planeY = Math.floor(ySegments) || 1;
+
+            var planeX1 = planeX + 1;
+            var planeY1 = planeY + 1;
+
+            var segmentWidth = width / planeX;
+            var segmentHeight = height / planeY;
+
+            var positions = new Float32Array(planeX1 * planeY1 * 3);
+            var normals = new Float32Array(planeX1 * planeY1 * 3);
+            var uvs = new Float32Array(planeX1 * planeY1 * 2);
+
+            var offset = 0;
+            var offset2 = 0;
+
+            for (var iy = 0; iy < planeY1; iy++) {
+
+                var y = iy * segmentHeight - halfHeight;
+
+                for (var ix = 0; ix < planeX1; ix++) {
+
+                    var x = ix * segmentWidth - halfWidth;
+
+                    positions[offset] = x;
+                    positions[offset + 1] = -y;
+
+                    normals[offset + 2] = -1;
+
+                    uvs[offset2] = (planeX - ix) / planeX;
+                    uvs[offset2 + 1] = ( (planeY - iy) / planeY );
+
+                    offset += 3;
+                    offset2 += 2;
+                }
+            }
+
+            offset = 0;
+
+            var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(planeX * planeY * 6);
+
+            for (var iy = 0; iy < planeY; iy++) {
+
+                for (var ix = 0; ix < planeX; ix++) {
+
+                    var a = ix + planeX1 * iy;
+                    var b = ix + planeX1 * ( iy + 1 );
+                    var c = ( ix + 1 ) + planeX1 * ( iy + 1 );
+                    var d = ( ix + 1 ) + planeX1 * iy;
+
+                    indices[offset] = d;
+                    indices[offset + 1] = b;
+                    indices[offset + 2] = a;
+
+                    indices[offset + 3] = d;
+                    indices[offset + 4] = c;
+                    indices[offset + 5] = b;
+
+                    offset += 6;
+                }
+            }
+
+            this.positions = positions;
+            this.normals = normals;
+            this.uv = uvs;
+            this.indices = indices;
         },
 
-        _buildPlane: function () {
 
-                // Geometry needs rebuild
-
-                var width = this._xSize;
-                var height = this._ySize;
-
-                var xSegments = Math.floor(this._lod * this._xSegments);
-                var ySegments = Math.floor(this._lod * this._ySegments);
-
-                if (ySegments < 4) {
-                    ySegments = 4;
-                }
-
-                if (ySegments < 4) {
-                    ySegments = 4;
-                }
-
-                var halfWidth = width / 2;
-                var halfHeight = height / 2;
-
-                var planeX = Math.floor( xSegments ) || 1;
-                var planeY = Math.floor( ySegments ) || 1;
-
-                var planeX1 = planeX + 1;
-                var planeY1 = planeY + 1;
-
-                var segmentWidth = width / planeX;
-                var segmentHeight = height / planeY;
-
-                var positions = new Float32Array( planeX1 * planeY1 * 3 );
-                var normals = new Float32Array( planeX1 * planeY1 * 3 );
-                var uvs = new Float32Array( planeX1 * planeY1 * 2 );
-
-                var offset = 0;
-                var offset2 = 0;
-
-                for ( var iy = 0; iy < planeY1; iy ++ ) {
-
-                    var y = iy * segmentHeight - halfHeight;
-
-                    for ( var ix = 0; ix < planeX1; ix ++ ) {
-
-                        var x = ix * segmentWidth - halfWidth;
-
-                        positions[ offset ] = x;
-                        positions[ offset + 1 ] = - y;
-
-                        normals[offset + 2] = -1;
-
-                        uvs[offset2] = (planeX -ix) / planeX;
-                        uvs[offset2 + 1] =  ( (planeY-iy) / planeY );
-
-                        offset += 3;
-                        offset2 += 2;
-                    }
-                }
-
-                offset = 0;
-
-                var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )( planeX * planeY * 6 );
-
-                for ( var iy = 0; iy < planeY; iy ++ ) {
-
-                    for ( var ix = 0; ix < planeX; ix ++ ) {
-
-                        var a = ix + planeX1 * iy;
-                        var b = ix + planeX1 * ( iy + 1 );
-                        var c = ( ix + 1 ) + planeX1 * ( iy + 1 );
-                        var d = ( ix + 1 ) + planeX1 * iy;
-
-                        indices[offset] = d;
-                        indices[offset + 1] = b;
-                        indices[offset + 2] = a;
-
-                        indices[offset + 3] = d;
-                        indices[offset + 4] = c;
-                        indices[offset + 5] = b;
-
-                        offset += 6;
-                    }
-                }
-
-                this.positions = positions;
-                this.normals = normals;
-                this.uv = uvs;
-                this.indices = indices;
-        },
-
-      
         _props: {
 
             /**
@@ -179,7 +173,7 @@
 
                     this._lod = value;
 
-                    this._setPlaneDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -194,7 +188,7 @@
                     return this._lod;
                 }
             },
-            
+
             /**
              * The PlaneGeometry's dimension on the X-axis.
              *
@@ -221,7 +215,7 @@
 
                     this._xSize = value;
 
-                    this._setPlaneDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}} property changes.
@@ -263,7 +257,7 @@
 
                     this._ySize = value;
 
-                    this._setPlaneDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySize:property"}}{{/crossLink}} property changes.
@@ -278,7 +272,7 @@
                     return this._ySize;
                 }
             },
-            
+
             /**
              * The PlaneGeometry's number of segments on the X-axis.
              *
@@ -305,7 +299,7 @@
 
                     this._xSegments = value;
 
-                    this._setPlaneDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} property changes.
@@ -347,7 +341,7 @@
 
                     this._ySegments = value;
 
-                    this._setPlaneDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySegments:property"}}{{/crossLink}} property changes.

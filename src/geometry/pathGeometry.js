@@ -19,16 +19,46 @@ XEO.PathGeometry = XEO.Geometry.extend({
         this.divisions = cfg.divisions;
     },
 
-    __scheduleBuild: function () {
-        if (!this.__dirty) {
-            this.__dirty = true;
-            var self = this;
-            this.scene.once("tick4",
-                function () {
-                    self.__build();
-                    self.__dirty = false;
-                });
+    /**
+     * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
+     * to generate geometry data arrays.
+     *
+     * @protected
+     */
+    _update: function () {
+
+        var path = this._children.path;
+
+        if (!path) {
+            return;
         }
+
+        var points = path.getPoints(this._divisions);
+
+        var positions = [];
+        var point;
+
+        for (var i = 0, len = points.length; i < len; i++) {
+
+            point = points[i];
+
+            positions.push(point[0]);
+            positions.push(point[1]);
+            positions.push(point[2]);
+        }
+
+        var indices = [];
+
+        for (var i = 0, len = points.length - 1; i < len; i++) {
+            indices.push(i);
+            indices.push(i + 1);
+        }
+
+        this.primitive = "lines";
+        this.positions = positions;
+        this.indices = indices;
+        this.normals = null;
+        this.uv = null;
     },
 
     _props: {
@@ -70,7 +100,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._onPathCurves = newPath.on("curves",
                         function () {
-                            self.__scheduleBuild();
+                            self._needUpdate();
                         });
                 }
             },
@@ -97,51 +127,15 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                 this._divisions = value;
 
-                this.fire("divisions", this._divisions);
+                this._needUpdate();
 
-                this.__scheduleBuild();
+                this.fire("divisions", this._divisions);
             },
 
             get: function () {
                 return this._divisions;
             }
         }
-    },
-
-    __build: function () {
-
-        var path = this._children.path;
-
-        if (!path) {
-            return;
-        }
-
-        var points = path.getPoints(this._divisions);
-
-        var positions = [];
-        var point;
-
-        for (var i = 0, len = points.length; i < len; i++) {
-
-            point = points[i];
-
-            positions.push(point[0]);
-            positions.push(point[1]);
-            positions.push(point[2]);
-        }
-
-        var indices = [];
-
-        for (var i = 0, len = points.length - 1; i < len; i++) {
-            indices.push(i);
-            indices.push(i + 1);
-        }
-
-        this.primitive = "lines";
-        this.positions = positions;
-        this.indices = indices;
-        this.normals = null;
-        this.uv = null;
     },
 
     _getJSON: function () {

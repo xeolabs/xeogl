@@ -171,8 +171,6 @@
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}.
  @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/transform:property"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
- @param [cfg.decal] {String|Texture} ID or instance of a {{#crossLink "Scene/Decal"}}{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/decal:property"}}decal{{/crossLink}} (which is an identity matrix which performs no decalation).
  @extends Component
  */
 
@@ -213,7 +211,6 @@
             this.stage = cfg.stage;
             this.transform = cfg.transform;
             this.billboard = cfg.billboard;
-            this.decal = cfg.decal;
 
             // Cached boundary for each coordinate space
             // The GameObject's Geometry component caches the Local-space boundary
@@ -810,7 +807,7 @@
             },
 
             /**
-             * The Local-to-World-space transform attached to this GameObject.
+             * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this GameObject.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/transform:property"}}transform{{/crossLink}}
@@ -864,15 +861,15 @@
 
                         this._onTransformUpdated = newTransform.on("updated",
                             function () {
-                                if (self._XXX) {
+                                if (self._transformDirty) {
                                     return;
                                 }
-                                self._XXX = true;
-                                self.scene.once("tick3", function () {
+                                self._transformDirty = true;
+                                XEO.addTask(function () {
                                     newTransform._buildLeafMatrix();
 
                                     self._setWorldBoundaryDirty();
-                                    self._XXX = false;
+                                    self._transformDirty = false;
                                 });
                             });
 
@@ -889,7 +886,10 @@
             },
 
             /**
-             * The Billboard attached to this GameObject.
+             * The {{#crossLink "Billboard"}}{{/crossLink}} attached to this GameObject.
+             *
+             * When {{#crossLink "Billboard/property:active"}}{{/crossLink}}, the {{#crossLink "Billboard"}}{{/crossLink}}
+             * will keep this GameObject oriented towards the viewpoint.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/billboard:property"}}billboard{{/crossLink}}
@@ -920,41 +920,15 @@
             },
 
             /**
-             * The Decal attached to this GameObject.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/decal:property"}}decal{{/crossLink}}
-             * (an identity matrix) when set to a null or undefined value.
-             *
-             * Fires a {{#crossLink "GameObject/decal:event"}}{{/crossLink}} event on change.
-             *
-             * @property decal
-             * @type Texture
-             */
-            decal: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this GameObject's {{#crossLink "GameObject/decal:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event decal
-                     * @param value The property's new value
-                     */
-                    this._setChild("decal", value);
-                },
-
-                get: function () {
-                    return this._children.decal;
-                }
-            },
-
-            /**
-             * Local-space 3D boundary.
+             * Local-space 3D boundary of this GameObject.
              *
              * This is a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
              * the {{#crossLink "Geometry"}}{{/crossLink}} that is attached to this GameObject.
+             *
+             * The {{#crossLink "Boundary3D"}}{{/crossLink}} will fire an {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}}
+             * event whenever this GameObject's {{#crossLink "GameObject/geometry:property"}}{{/crossLink}} is linked to
+             * a new {{#crossLink "Geometry"}}{{/crossLink}}, or whenever the {{#crossLink "Geometry"}}{{/crossLink}}'s
+             * {{#crossLink "Geometry/positions:property"}}{{/crossLink}} are updated.
              *
              * The a {{#crossLink "Boundary3D"}}{{/crossLink}} is lazy-instantiated the first time that this
              * property is referenced. If {{#crossLink "Component/destroy:method"}}{{/crossLink}} is then called on it,
@@ -968,21 +942,35 @@
             localBoundary: {
 
                 get: function () {
-                    return this._children.geometry.boundary;
+                    return this._children.geometry.localBoundary;
                 }
             },
 
             /**
-             * World-space 3D boundary.
+             * World-space 3D boundary of this GameObject.
              *
              * This is a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses the {{#crossLink "Geometry"}}{{/crossLink}}
              * that is attached to this GameObject after transformation by this GameObject's modelling
-             * {{#crossLink "Transform"}}{{/crossLink}}.
+             * {{#crossLink "GameObject/transform:property"}}{{/crossLink}}.
+             *
+             * The {{#crossLink "Boundary3D"}}{{/crossLink}} will fire an {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}}
+             * event whenever this GameObject's {{#crossLink "GameObject/geometry:property"}}{{/crossLink}} is linked to
+             * a new {{#crossLink "Geometry"}}{{/crossLink}}, or whenever the {{#crossLink "Geometry"}}{{/crossLink}}'s
+             * {{#crossLink "Geometry/positions:property"}}{{/crossLink}} are updated.
              *
              * The a {{#crossLink "Boundary3D"}}{{/crossLink}} is lazy-instantiated the first time that this
              * property is referenced. If {{#crossLink "Component/destroy:method"}}{{/crossLink}} is then called on it,
              * then this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
              * time it's referenced.
+             *
+             * <h4>Example</h4>
+             *
+             * [here](http://xeoengine.org/examples/#boundaries_GameObject_worldBoundary)
+             *
+             * <h4>Performance</h4>
+             *
+             * To minimize performance overhead, only reference this property if you need it, and destroy
+             * the {{#crossLink "Boundary3D"}}{{/crossLink}} as soon as you don't need it anymore.
              *
              * @property worldBoundary
              * @type Boundary3D
@@ -999,7 +987,7 @@
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
                             meta: {
-                                desc: "GameObject " + self.id + " World Boundary"
+                                desc: "GameObject " + self.id + " World-space boundary" // For debugging
                             },
 
                             getDirty: function () {
@@ -1014,7 +1002,8 @@
                             getOBB: function () {
                                 var geometry = self._children.geometry;
                                 if (geometry) {
-                                    return geometry.boundary.obb;
+                                    var boundary = geometry.localBoundary;
+                                    return boundary.obb;
                                 }
                             },
 
@@ -1040,17 +1029,27 @@
             },
 
             /**
-             * View-space 3D boundary.
+             * View-space 3D boundary of this GameObject.
              *
              * This is a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses the {{#crossLink "Geometry"}}{{/crossLink}}
              * that is attached to this GameObject after transformation by this GameObject's modelling
-             * {{#crossLink "Transform"}}{{/crossLink}} and {{#crossLink "Camera"}}{{/crossLink}}
+             * {{#crossLink "GameObject/transform:property"}}{{/crossLink}} and {{#crossLink "Camera"}}{{/crossLink}}
              * {{#crossLink "Camera/view:property"}}view transform{{/crossLink}}.
+             *
+             * The {{#crossLink "Boundary3D"}}{{/crossLink}} will fire an {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}}
+             * event whenever there are any changes to the {{#crossLink "Geometry"}}{{/crossLink}},
+             * {{#crossLink "GameObject/transform:property"}}{{/crossLink}} or {{#crossLink "Camera"}}{{/crossLink}} that
+             * would affect its extents.
              *
              * The a {{#crossLink "Boundary3D"}}{{/crossLink}} is lazy-instantiated the first time that this
              * property is referenced. If {{#crossLink "Component/destroy:method"}}{{/crossLink}} is then called on it,
              * then this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
              * time it's referenced.
+             *
+             * <h4>Performance</h4>
+             *
+             * To minimize performance overhead, only reference this property if you need it, and destroy
+             * the {{#crossLink "Boundary3D"}}{{/crossLink}} as soon as you don't need it anymore.
              *
              * @property viewBoundary
              * @type Boundary3D
@@ -1067,7 +1066,7 @@
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
                             meta: {
-                                desc: "GameObject " + self.id + " View Boundary"
+                                desc: "GameObject " + self.id + " View-space boundary" // For debugging
                             },
 
                             getDirty: function () {
@@ -1103,15 +1102,25 @@
              * Canvas-space 2D boundary.
              *
              * This is a {{#crossLink "Boundary2D"}}{{/crossLink}} that encloses this GameObject's
-             * {{#crossLink "Geometry"}}{{/crossLink}} after transformation by this GameObject's modelling
-             * {{#crossLink "Transform"}}{{/crossLink}} and {{#crossLink "Camera"}}{{/crossLink}}
+             * {{#crossLink "GameObject/geometry:property"}}{{/crossLink}} after transformation by this GameObject's modelling
+             * {{#crossLink "GameObject/transform:property"}}{{/crossLink}} and {{#crossLink "Camera"}}{{/crossLink}}
              * {{#crossLink "Camera/view:property"}}view{{/crossLink}} and
              * {{#crossLink "Camera/project:property"}}projection{{/crossLink}} transforms.
+             *
+             * The {{#crossLink "Boundary2D"}}{{/crossLink}} will fire an {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}}
+             * event whenever there are any changes to the {{#crossLink "Geometry"}}{{/crossLink}},
+             * {{#crossLink "GameObject/transform:property"}}{{/crossLink}} or {{#crossLink "Camera"}}{{/crossLink}} that
+             * would affect its extents.
              *
              * The a {{#crossLink "Boundary2D"}}{{/crossLink}} is lazy-instantiated the first time that this
              * property is referenced. If {{#crossLink "Component/destroy:method"}}{{/crossLink}} is then called on it,
              * then this property will be assigned to a fresh {{#crossLink "Boundary2D"}}{{/crossLink}} instance next
              * time it's referenced.
+             *
+             * <h4>Performance</h4>
+             *
+             * To minimize performance overhead, only reference this property if you need it, and destroy
+             * the {{#crossLink "Boundary2D"}}{{/crossLink}} as soon as you don't need it anymore.
              *
              * @property canvasBoundary
              * @type Boundary2D
@@ -1128,7 +1137,7 @@
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
 
                             meta: {
-                                desc: "GameObject " + self.id + " Canvas Boundary"
+                                desc: "GameObject " + self.id + " Canvas-space boundary" // For debugging
                             },
 
                             getDirty: function () {
@@ -1241,6 +1250,13 @@
             if (this._canvasBoundary) {
                 this._canvasBoundary.fire("updated", true);
             }
+        },
+
+        // Returns true if there is enough on this GameObject to render something.
+        _valid: function () {
+            var geometry = this._children.geometry;
+            return geometry && geometry.positions && geometry.indices;
+
         },
 
         _compile: function () {

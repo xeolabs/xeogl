@@ -198,25 +198,14 @@
                 this.target = cfg.target; // Render target
             }
 
-            this.scene.stats.memory.textures++;
+            XEO.stats.memory.textures++;
         },
 
         // Schedules a call to #_buildTexture for the next "tick"
         _textureDirty: function () {
-
             if (!this._dirty) {
-
                 this._dirty = true;
-
-                var self = this;
-
-                this.scene.once("tick",
-                    function () {
-
-                        self._buildTexture();
-
-                        self._dirty = false;
-                    });
+                XEO.addTask(this._buildTexture, this);
             }
         },
 
@@ -235,6 +224,8 @@
                     this._srcDirty = false;
 
                     // _imageDirty is set when the image has loaded
+
+                    this._dirty = false;
 
                     return;
                 }
@@ -337,6 +328,8 @@
             }
 
             this._renderer.imageDirty = true;
+
+            this._dirty = false;
         },
 
 
@@ -928,7 +921,7 @@
                 this._state.texture.destroy();
             }
 
-            this.scene.stats.memory.textures--;
+            XEO.stats.memory.textures--;
         }
     });
 

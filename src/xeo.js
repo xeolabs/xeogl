@@ -21,8 +21,63 @@
          */
         this.version = null;
 
+        /**
+         * Tracks statistics within xeoEngine, such as numbers of
+         * scenes, textures, geometries etc.
+         * @final
+         * @property stats
+         * @type {*}
+         * @final
+         */
+        this.stats = {
+            build: {
+                version: XEO.version
+            },
+            client: {
+                browser: (navigator && navigator.userAgent) ? navigator.userAgent : "n/a"
+            },
+
+            // TODO: replace 'canvas' with 'pixels'
+            //canvas: {
+            //    width: 0,
+            //    height: 0
+            //},
+            components: {
+                scenes: 0,
+                objects: 0
+            },
+            memory: {
+
+                // Note that these counts will include any positions, colors,
+                // normals and indices that xeoEngine internally creates on-demand
+                // to support color-index triangle picking.
+
+                meshes: 0,
+                positions: 0,
+                colors: 0,
+                normals: 0,
+                tangents: 0,
+                uvs: 0,
+                indices: 0,
+                textures: 0,
+                programs: 0
+            },
+            frame: {
+                frameCount: 0,
+                fps: 0,
+                useProgram: 0,
+                setUniform: 0,
+                setUniformCacheHits: 0,
+                bindTexture: 0,
+                bindArray: 0,
+                drawElements: 0,
+                drawChunks: 0
+            }
+        };
+
         // Ensures unique scene IDs
-        // Lazy-instantiated because class won't be defined yet
+        // Lazy-instantiated because its class is on the
+        // namespace of this object, and so won't be defined yet
         this._sceneIDMap = null;
 
         // Default singleton Scene, lazy-initialized in getter
@@ -36,57 +91,119 @@
          */
         this.scenes = {};
 
+        // Task queue, which is pumped on each frame;
+        // tasks are pushed to it with calls to XEO.schedule
+
+        this._taskQueue = [];
+
+        //-----------------------------------------------------------------------
+        // Game loop
+        //
+        // https://developer.mozilla.org/en-US/docs/Games/Anatomy
+        //
+        // http://gameprogrammingpatterns.com/game-loop.html
+        //-----------------------------------------------------------------------
+
         var self = this;
 
-        // Called on each animation frame
-        // fires a "tick" event on each scene, recompiles scenes as needed
+        (function () {
 
-        var tickEvent = {
-            sceneId: null,
-            time: null,
-            startTime: null,
-            prevTime: null,
-            deltaTime: null
-        };
+            var tickEvent = {
+                sceneId: null,
+                time: null,
+                startTime: null,
+                prevTime: null,
+                deltaTime: null
+            };
 
-        var frame = function () {
+            // Hoisted vars
 
-            var time = (new Date()).getTime();
-
-            tickEvent.time = time;
-
+            var taskBudget = 8; // How long we're allowed to spend on tasks in each frame
+            var frameTime;
+            var lastFrameTime = 0;
+            var elapsedFrameTime;
+            var newFPS;
+            var fpsSamples = [];
+            var numFPSSamples = 30;
+            var totalFPS = 0;
+            var updateTime;
+            var lastUpdateTime = 0;
+            var id;
             var scene;
 
-            for (var id in self.scenes) {
-                if (self.scenes.hasOwnProperty(id)) {
+            var frame = function () {
 
-                    scene = self.scenes[id];
+                frameTime = Date.now();
 
-                    // Fire the tick event on the scene
+                // Moving average of FPS
 
-                    tickEvent.sceneId = id;
-                    tickEvent.startTime = scene.startTime;
-                    tickEvent.deltaTime = tickEvent.prevTime != null ? time - tickEvent.prevTime : 0;
+                if (lastFrameTime > 0) {
+                    elapsedFrameTime = frameTime - lastFrameTime;
+                    newFPS = 1000 / elapsedFrameTime;
+                    totalFPS += newFPS;
+                    fpsSamples.push(newFPS);
+                    if (fpsSamples.length >= numFPSSamples) {
+                        totalFPS -= fpsSamples.shift();
+                    }
+                    self.stats.frame.fps = Math.round(totalFPS / fpsSamples.length);
 
-                    scene.fire("tick", tickEvent, true);
-                    scene.fire("tick2", tickEvent, true);
-                    scene.fire("tick3", tickEvent, true);
-                    scene.fire("tick4", tickEvent, true);
-                    scene.fire("tick5", tickEvent, true);
+                }
 
-                    // Compile also means "render".
-                    // It only actually "compiles" anything if it needs recompilation.
+                update();
 
-                    scene._compile();
+                render();
+
+                lastFrameTime = frameTime;
+
+                window.requestAnimationFrame(frame);
+            };
+
+
+            function update() {
+
+                updateTime = Date.now();
+
+                lastUpdateTime = updateTime;
+
+                // Process as many enqueued tasks as we can
+                // within the per-frame task budget
+
+                self._runSchedule(updateTime + taskBudget);
+
+                tickEvent.time = updateTime;
+
+                // Fire a "tick" event at the scene, which will in turn cause
+                // all sorts of scene components to schedule more tasks
+
+                for (id in self.scenes) {
+                    if (self.scenes.hasOwnProperty(id)) {
+
+                        scene = self.scenes[id];
+
+                        // Fire the tick event at the scene
+
+                        tickEvent.sceneId = id;
+                        tickEvent.startTime = scene.startTime;
+                        tickEvent.deltaTime = tickEvent.prevTime != null ? tickEvent.time - tickEvent.prevTime : 0;
+
+                        scene.fire("tick", tickEvent, true);
+                    }
+                }
+
+                tickEvent.prevTime = updateTime;
+            }
+
+            function render() {
+                for (id in self.scenes) {
+                    if (self.scenes.hasOwnProperty(id)) {
+                        self.scenes[id]._compile(); // Render, maybe rebuild draw list first
+                    }
                 }
             }
 
-            tickEvent.prevTime = time;
-
             window.requestAnimationFrame(frame);
-        };
 
-        window.requestAnimationFrame(frame);
+        })();
     };
 
     XEO.prototype = {
@@ -159,6 +276,45 @@
 
                     delete self.scenes[scene.id];
                 });
+        },
+
+        /**
+         * Schedule a task for xeoEngine to run at the next opportunity.
+         *
+         * Internally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue
+         * for a certain period of time, popping tasks and running them. After each frame interval, tasks that did not
+         * get a chance to run during the task are left in the queue to be run next time.
+         *
+         *
+         *
+         * @method schedule
+         * @param {Function} callback Callback that runs the task.
+         * @param {Object} [scope] Scope for the callback.
+         */
+        addTask: function (callback, scope) {
+            this._taskQueue.push(callback);
+            this._taskQueue.push(scope);
+        },
+
+        // Pops and propcesses tasks in the queue, until the
+        // given number of milliseconds has elapsed.
+        _runSchedule: function (until) {
+
+            var time = (new Date()).getTime();
+            var taskQueue = this._taskQueue;
+            var callback;
+            var scope;
+
+            while (taskQueue.length > 0 && time < until) {
+                callback = taskQueue.shift();
+                scope = taskQueue.shift();
+                if (scope) {
+                    callback.call(scope);
+                } else {
+                    callback();
+                }
+                time = (new Date()).getTime();
+            }
         },
 
         /**
@@ -299,4 +455,5 @@
 
     window.XEO = window.XEO = new XEO();
 
-})();
+})
+();

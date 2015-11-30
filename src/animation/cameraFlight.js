@@ -176,7 +176,7 @@
                 return;
             }
 
-            this._flying = false
+            this._flying = false;
 
             this._ok = ok;
 

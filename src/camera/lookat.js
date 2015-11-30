@@ -76,9 +76,12 @@
 
         _init: function (cfg) {
 
+            var mat = XEO.math.identityMat4(XEO.math.mat4());
+            var invMat = XEO.math.inverseMat4(mat, XEO.math.mat4());
+
             this._state = new XEO.renderer.ViewTransform({
-                matrix: XEO.math.mat4(),
-                normalMatrix: XEO.math.mat4(),
+                matrix: mat,
+                normalMatrix: invMat,
                 eye: [0, 0, -10.0],
                 look: [0, 0, 0],
                 up: [0, 1, 0]
@@ -93,17 +96,9 @@
 
         // Schedules a call to #_buildLookat on the next "tick"
         _lookatDirty: function () {
-
             if (!this._dirty) {
-
                 this._dirty = true;
-
-                var self = this;
-
-                this.scene.once("tick2",
-                    function () {
-                        self._buildLookat();
-                    });
+                XEO.addTask(this._buildLookat, this);
             }
         },
 

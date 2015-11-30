@@ -46,19 +46,13 @@
             this.arc = cfg.arc;
         },
 
-        _torusDirty: function () {
-            if (!this.__dirty) {
-                this.__dirty = true;
-                var self = this;
-                this.scene.once("tick4",
-                    function () {
-                        self._buildTorus();
-                        self.__dirty = false;
-                    });
-            }
-        },
-
-        _buildTorus: function () {
+        /**
+         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
+         * to generate geometry data arrays.
+         *
+         * @protected
+         */
+        _update: function () {
 
             var radius = this._radius;
             var tube = this._tube;
@@ -177,6 +171,8 @@
 
                     this._lod = value;
 
+                    this._needUpdate();
+
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
@@ -184,8 +180,6 @@
                      * @param value The property's new value
                      */
                     this.fire("lod", this._lod);
-
-                    this._torusDirty();
                 },
 
                 get: function () {
@@ -219,6 +213,8 @@
 
                     this._radius = value;
 
+                    this._needUpdate();
+
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radius:property"}}{{/crossLink}} property changes.
                      * @event radius
@@ -226,8 +222,6 @@
                      * @param value The property's new value
                      */
                     this.fire("radius", this._radius);
-
-                    this._torusDirty();
                 },
 
                 get: function () {
@@ -262,6 +256,8 @@
 
                     this._tube = value;
 
+                    this._needUpdate();
+
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tube:property"}}{{/crossLink}} property changes.
                      * @event tube
@@ -269,8 +265,6 @@
                      * @param value The property's new value
                      */
                     this.fire("tube", this._tube);
-
-                    this._torusDirty();
                 },
 
                 get: function () {
@@ -302,21 +296,21 @@
                         value = value * -1;
                     }
 
-                    this._segmentsR = value;
+                    this._radialSegments = value;
+
+                    this._needUpdate();
 
                     /**
-                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/segmentsR:property"}}{{/crossLink}} property changes.
-                     * @event segmentsR
+                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radialSegments:property"}}{{/crossLink}} property changes.
+                     * @event radialSegments
                      * @type Number
                      * @param value The property's new value
                      */
-                    this.fire("segmentsR", this._segmentsR);
-
-                    this._torusDirty();
+                    this.fire("radialSegments", this._radialSegments);
                 },
 
                 get: function () {
-                    return this._segmentsR;
+                    return this._radialSegments;
                 }
             },
 
@@ -347,6 +341,8 @@
 
                     this._tubeSegments = value;
 
+                    this._needUpdate();
+
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tubeSegments:property"}}{{/crossLink}} property changes.
                      * @event tubeSegments
@@ -354,8 +350,6 @@
                      * @param value The property's new value
                      */
                     this.fire("tubeSegments", this._tubeSegments);
-
-                    this._torusDirty();
                 },
 
                 get: function () {
@@ -389,6 +383,8 @@
 
                     this._arc = value;
 
+                    this._needUpdate();
+
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} property changes.
                      * @event arc
@@ -396,8 +392,6 @@
                      * @param value The property's new value
                      */
                     this.fire("arc", this._arc);
-
-                    this._torusDirty();
                 },
 
                 get: function () {
@@ -411,7 +405,7 @@
                 // Don't save lod
                 radius: this._radius,
                 tube: this._tube,
-                segmentsR: this._segmentsR,
+                radialSegments: this._radialSegments,
                 tubeSegments: this._tubeSegments,
                 arc: this._arc
             };

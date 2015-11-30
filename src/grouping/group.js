@@ -55,14 +55,14 @@
  var group2 = new XEO.Group(scene);
 
  group2.add([  // Add two components
-        geometry,
-        "XEO.GameObject",
-    ]);
+ geometry,
+ "XEO.GameObject",
+ ]);
 
  // We can iterate over the components in a Group like so:
 
  group1.iterate(
-    function(component) {
+ function(component) {
         //..
     });
 
@@ -264,7 +264,7 @@
             var self = this;
 
             this._destroyedSubs[component.id] = component.on("destroyed",
-                function(component) {
+                function (component) {
                     self._remove(component);
                 });
 
@@ -283,22 +283,21 @@
         _scheduleUpdate: function () {
             if (!this._dirty) {
                 this._dirty = true;
-                var self = this;
-                this.scene.once("tick2",
-                    function () {
-
-                        /**
-                         * Fired on the next {{#crossLink "Scene/tick2:event"}}{{/crossLink}} whenever
-                         * {{#crossLink "Component"}}Components{{/crossLink}} were added or removed since the
-                         * last {{#crossLink "Scene/tick2:event"}}{{/crossLink}} event, to provide a batched change event
-                         * for subscribers who don't want to react to every individual addition or removal on this Group.
-                         *
-                         * @event updated
-                         */
-                        self.fire("updated");
-                        self._dirty = false;
-                    });
+                XEO.addTask(this._notifyUpdated, this);
             }
+        },
+
+        _notifyUpdated: function () {
+
+            /* Fired on the next {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} whenever
+             * {{#crossLink "Component"}}Components{{/crossLink}} were added or removed since the
+             * last {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} event, to provide a batched change event
+             * for subscribers who don't want to react to every individual addition or removal on this Group.
+             *
+             * @event updated
+             */
+            this.fire("updated");
+            this._dirty = false;
         },
 
         /**

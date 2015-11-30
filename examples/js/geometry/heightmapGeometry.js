@@ -69,20 +69,8 @@
 
             this.autoNormals = cfg.autoNormals !== false;
         },
-
-        _setHeightmapDirty: function () {
-            if (!this._heightmapDirty) {
-                this._heightmapDirty = true;
-                var self = this;
-                this.scene.once("tick4",
-                    function () {
-                        self._buildHeightmap();
-                        self._heightmapDirty = false;
-                    });
-            }
-        },
-
-        _buildHeightmap: function () {
+        
+        _update: function () {
 
             if (this._srcDirty) {
 
@@ -203,7 +191,7 @@
 
                         normals[offset + 2] = -1;
 
-                        uvs[offset2] = (gridX -ix) / gridX;
+                        uvs[offset2] = (gridX - ix) / gridX;
                         uvs[offset2 + 1] = 1 - ( iy / gridY );
 
                         offset += 3;
@@ -280,7 +268,7 @@
                     self._imageDirty = true;
                     self._geometryDirty = true;
 
-                    self._setHeightmapDirty();
+                    self._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's  {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property changes.
@@ -340,7 +328,7 @@
 
                     this._geometryDirty = true;
 
-                    this._setHeightmapDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/lod:property"}}{{/crossLink}} property changes.
@@ -381,7 +369,7 @@
                     this._imageDirty = true;
                     this._geometryDirty = true;
 
-                    this._setHeightmapDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's  {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property changes.
@@ -421,7 +409,7 @@
                     this._imageDirty = true;
                     this._geometryDirty = true;
 
-                    this._setHeightmapDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/src:property"}}{{/crossLink}} property changes.
@@ -465,7 +453,7 @@
 
                     this._geometryDirty = true;
 
-                    this._setHeightmapDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSize:property"}}{{/crossLink}} property changes.
@@ -509,7 +497,7 @@
 
                     this._geometryDirty = true;
 
-                    this._setHeightmapDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySize:property"}}{{/crossLink}} property changes.
@@ -553,7 +541,7 @@
 
                     this._geometryDirty = true;
 
-                    this._setHeightmapDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/zSize:property"}}{{/crossLink}} property changes.
@@ -597,7 +585,7 @@
 
                     this._geometryDirty = true;
 
-                    this._setHeightmapDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSegments:property"}}{{/crossLink}} property changes.
@@ -641,7 +629,7 @@
 
                     this._geometryDirty = true;
 
-                    this._setHeightmapDirty();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySegments:property"}}{{/crossLink}} property changes.

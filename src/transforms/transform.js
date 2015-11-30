@@ -158,9 +158,12 @@
             this._onParentUpdated = null;
             this._onParentDestroyed = null;
 
+            var mat = XEO.math.identityMat4(XEO.math.mat4());
+            var invMat = XEO.math.inverseMat4(mat, XEO.math.mat4());
+
             this._state = new XEO.renderer.ModelTransform({
-                matrix: null,
-                normalMatrix: null
+                matrix: mat,
+                normalMatrix: invMat
             });
 
             this.parent = cfg.parent;

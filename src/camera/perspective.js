@@ -78,7 +78,7 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.ProjTransform({
-                matrix: XEO.math.mat4()
+                matrix: XEO.math.identityMat4(XEO.math.mat4())
             });
 
             this._dirty = false;
@@ -90,10 +90,7 @@
             var canvas = this.scene.canvas;
 
             // Recompute aspect from change in canvas size
-            this._canvasResized = canvas.on("size",
-                function () {
-                    self._scheduleBuild();
-                });
+            this._canvasResized = canvas.on("size", this._scheduleBuild, this);
 
             this.fovy = cfg.fovy;
             this.near = cfg.near;
@@ -101,17 +98,9 @@
         },
 
         _scheduleBuild: function () {
-
             if (!this._dirty) {
-
                 this._dirty = true;
-
-                var self = this;
-
-                this.scene.once("tick2",
-                    function () {
-                        self._build();
-                    });
+                XEO.addTask(this._build, this);
             }
         },
 
