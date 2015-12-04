@@ -12,7 +12,8 @@ It's currently at **alpha** status, so stuff will change.
 ## Resources 
 
  - [Examples](http://xeoengine.org/examples) 
- - [Documentation](http://xeoengine.org/docs/index.html)
+ - [API Documentation](http://xeoengine.org/docs/index.html)
+ - [Wiki](https://github.com/xeolabs/xeoengine/wiki)
  
 ## Building
  
