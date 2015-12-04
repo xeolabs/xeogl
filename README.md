@@ -4,6 +4,8 @@ xeo [zee-oh] - "Innovative ideas that have yet to be discovered" - [*Urban Dicti
 
 [http://xeoengine.org](http://xeoengine.org)
 
+## About
+
 **xeoEngine** is a WebGL-based 3D engine from [@xeolabs](http://xeolabs.com) that aims to provide tons of power and flexibility within a 
 comprehensive [object-component-based](http://gameprogrammingpatterns.com/component.html) API.
 
