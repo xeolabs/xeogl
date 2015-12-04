@@ -1,5 +1,7 @@
 # xeoEngine
 
+xeo [zee-oh] - "Innovative ideas that have yet to be discovered" - [*Urban Dictionary*](http://www.urbandictionary.com/define.php?term=Xeo)
+
 [http://xeoengine.org](http://xeoengine.org)
 
 **xeoEngine** is a WebGL-based 3D engine from [@xeolabs](http://xeolabs.com) that aims to provide tons of power and flexibility within a 
