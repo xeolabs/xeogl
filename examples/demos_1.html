@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<script>
+
+    // Override xeoEngine's default lights with some View-space directional lights,
+    // including one that shines from behind our torus GameObject
+
+    var lights = new XEO.Lights({
+        lights: [
+
+            new XEO.AmbientLight({
+                color: [0.8, 0.8, 0.9],
+                intensity: 0.6
+            }),
+
+            new XEO.DirLight({
+                dir: [0.0, 0.0, 1.0],
+                color: [1.0, 1.0, 0.9],
+                intensity: 1.0,
+                space: "view"
+            }),
+
+            new XEO.DirLight({
+                dir: [0.1, 0.1, -0.7],
+                color: [0.5, 0.5, 0.5],
+                intensity: 0.3,
+                space: "view"
+            })
+        ]
+    });
+
+    var geometry = new XEO.TorusGeometry({
+        radius: 1.0,
+        tube: 0.4,
+        radialSegments: 32,
+        tubeSegments: 24,
+        arc: Math.PI * 2.0
+    });
+
+    var diffuseMap = new XEO.Texture({
+        src: "textures/diffuse/uvGrid2.jpg"
+    });
+
+    var specularFresnel = new XEO.Fresnel({
+        edgeBias: 0.0,
+        centerBias: 1.0,
+        power: 1.0,
+        edgeColor: [1.0, 1.0, 1.0],
+        centerColor: [0.0, 0.0, 0.0]
+    });
+
+    var material = new XEO.PhongMaterial({
+        ambient: [0.3, 0.3, 0.3],
+        diffuse: [0.3, 0.5, 0.5],
+        shininess: 3,
+        diffuseMap: diffuseMap,
+        specularFresnel: specularFresnel
+    });
+
+    var object = new XEO.GameObject({
+        geometry: geometry,
+        material: material,
+        lights: lights
+    });
+
+    object.camera.view.zoom(-5);
+
+    object.scene.on("tick",
+            function () {
+
+                var view = object.scene.camera.view;
+
+                view.rotateEyeY(0.4);
+                view.rotateEyeX(0.15);
+            });
+
+</script>
+</body>
+</html>
