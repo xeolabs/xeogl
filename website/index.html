@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<!--[if IE 9]>
+<html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <title>xeoEngine - A WebGL-based 3D engine from @xeoLabs</title>
+    <meta name="author" content="xeolabs.com">
+    <meta property="og:url" content="http://www.xeoengine.org"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="xeoEngine - WebGL-based 3D visualization engine"/>
+    <meta property="og:description"
+          content="A highly-optimized 3D visualization framework with an API that's fun to use"/>
+    <meta property="og:image" content="http://www.xeoengine.org/assets/images/torus.png"/>
+
+    <!-- Mobile Meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+    <!-- Web Fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700,300&amp;subset=latin,latin-ext'
+          rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Raleway:700,400,300' rel='stylesheet' type='text/css'>
+
+    <!--<link href='https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed|Roboto+Mono|Roboto+Slab' rel='stylesheet' type='text/css'>-->
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome CSS -->
+    <!--<link href="assets/fonts/font-awesome/css/font-awesome.css" rel="stylesheet">-->
+
+    <!-- Plugins -->
+    <link href="assets/css/animations.css" rel="stylesheet">
+
+    <!-- Worthy core CSS file -->
+    <link href="assets/css/style.css" rel="stylesheet">
+
+    <!-- Custom css -->
+    <link href="assets/css/custom.css" rel="stylesheet">
+
+    <!-- Prettify -->
+    <link href="assets/css/prettify.css" rel="stylesheet"/>
+
+
+    <script src="assets/js/prettify.js"></script>
+
+</head>
+
+<body class="no-trans">
+<div id="fb-root"></div>
+<script>(function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.5&appId=132893453432205";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!-- scrollToTop -->
+<!-- ================ -->
+<div class="scrollToTop"><i class="icon-up-open-big"></i></div>
+
+<!-- header start -->
+<!-- ================ -->
+<header class="header fixed clearfix navbar navbar-fixed-top">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+
+                <!-- header-left start -->
+                <!-- ================ -->
+                <div class="header-left clearfix">
+
+                    <!--&lt;!&ndash; logo &ndash;&gt;-->
+                    <!--<div class="logo smooth-scroll">-->
+                        <!--<a href="#banner"><img id="logo" src="assets/images/mesh_logo.png" alt="xeoEngine"></a>-->
+                    <!--</div>-->
+
+                    <!-- name-and-slogan -->
+                    <div class="site-name-and-slogan smooth-scroll">
+                        <div class="site-name"><a href="#banner">xeoEngine</a></div>
+                        <div class="site-slogan">A WebGL-based 3D engine by <a target="_blank"
+                                                                               href="http://xeolabs.com">xeoLabs</a>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- header-left end -->
+
+            </div>
+            <div class="col-md-8">
+
+                <!-- header-right start -->
+                <!-- ================ -->
+                <div class="header-right clearfix">
+
+                    <!-- main-navigation start -->
+                    <!-- ================ -->
+                    <div class="main-navigation animated">
+
+                        <!-- navbar start -->
+                        <!-- ================ -->
+                        <nav class="navbar navbar-default" role="navigation">
+                            <div class="container-fluid">
+
+                                <!-- Toggle get grouped for better mobile display -->
+                                <div class="navbar-header">
+                                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                                            data-target="#navbar-collapse-1">
+                                        <span class="sr-only">Toggle navigation</span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                    </button>
+                                </div>
+
+                                <!-- Collect the nav links, forms, and other content for toggling -->
+                                <div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
+                                    <ul class="nav navbar-nav navbar-right">
+                                        <li class="active"><a href="#banner">Home</a></li>
+                                        <li><a href="#concept">Concept</a></li>
+                                        <li><a href="#features">Features</a></li>
+                                        <li><a href="http://xeoengine.org/examples">Examples</a></li>
+                                        <li><a href="http://xeoengine.org/docs">Docs</a></li>
+                                        <li><a href="https://github.com/xeolabs/xeoengine">Github</a></li>
+                                        <li>
+                                            <a href="https://github.com/xeolabs/xeoengine/archive/master.zip">Download</a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </nav>
+                        <!-- navbar end -->
+
+                    </div>
+                    <!-- main-navigation end -->
+
+                </div>
+                <!-- header-right end -->
+
+            </div>
+        </div>
+    </div>
+</header>
+<!-- header end -->
+
+<!-- banner start -->
+<!-- ================ -->
+<div id="banner" class="banner">
+
+    <iframe id="demoLink" style="width:100%; height:100%; pointer-events:all;"
+            src="../examples/demos_1.html"></iframe>
+
+    <div class="banner-caption" style="pointer-events: none;">
+        <div class="container" style="pointer-events: none;">
+            <div class="row" style="pointer-events: none;">
+                <div class="col-md-8 object-non-visible" data-animation-effect="fadeIn" style="pointer-events: none;">
+                    <h1>An open source engine for Web-based 3D visualization</h1>
+
+                    <p class="lead">Created by <a target="_blank"
+                                                  href="http://twitter.com/xeolabs">@xeoLabs</a></p>
+
+                    <script>!function (d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                        if (!d.getElementById(id)) {
+                            js = d.createElement(s);
+                            js.id = id;
+                            js.src = p + '://platform.twitter.com/widgets.js';
+                            fjs.parentNode.insertBefore(js, fjs);
+                        }
+                    }(document, 'script', 'twitter-wjs');</script>
+
+                    <iframe src="https://ghbtns.com/github-btn.html?user=xeolabs&repo=xeoengine&type=star&count=true"
+                            frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
+                    <iframe src="https://ghbtns.com/github-btn.html?user=xeolabs&repo=xeoengine&type=fork&count=true"
+                            frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
+                    <a class="twitter-follow-button"
+                       href="https://twitter.com/xeolabs"
+                            >
+                        Follow @xeolabs</a>
+                    <a href="https://twitter.com/share" style="padding-right:20px" class="twitter-share-button" {count}
+                       data-via="xeolabs" data-hashtags="webgl,xeoengine">Tweet</a>
+
+                    <br><br><br><br>
+
+                    <p class="lead"><a href="https://github.com/xeolabs/xeoengine/archive/master.zip"
+                                       class="btn btn-default btn-lg">Download xeoEngine</a></p>
+
+                    <p class="lead">or <a href="https://github.com/xeolabs/xeoengine">clone the repository</a></p>
+                    <br><br><br>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- banner end -->
+
+
+<!-- section start -->
+<!-- ================ -->
+<div class="section concept clearfix object-non-visible" data-animation-effect="fadeIn">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 id="concept" class="title"><span>xeoEngine</span> Concept</h1>
+
+                <div class="space"></div>
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <h4>API Walkthrough</h4>
+
+                        <p>In this walkthrough we'll create the
+                            spinning torus scene shown in the screenshot below.</p>
+
+                        <p>To show how xeoEngine scenes are dynamically editable, we'll
+                            create the scene incrementally: first we'll create the basic torus object, then
+                            set it spinning, and then add texture. </p>
+
+                        <p>Finally, to show how data-driven xeoEngine is, we'll clone the scene, which
+                            involves serializing and deserializing it as JSON.</p>
+                        <br>
+                        <a href="http://xeoengine.org/examples/#materials_fresnel_specular"><img
+                                src="assets/images/torus.png"></a>
+
+                        <div class="space"></div>
+
+                        <h4>Creating the 3D Scene</h4>
+
+                        <p>First, include <a
+                                href="https://cdn.rawgit.com/xeolabs/xeoengine/master/build/xeoengine.min.js">xeoengine.min.js</a>
+                            in your
+                            HTML
+                            page:</p>
+                        <pre>&lt;script src="https://cdn.rawgit.com/xeolabs/xeoengine/master/build/xeoengine.min.js"&gt;&lt;/script&gt;</pre>
+
+                        <br>
+
+                        <p>Using the JavaScript API, create the 3D scene as a component-object graph, as shown in the
+                            diagram below. Note how a
+                            <a href="./docs/classes/Scene.html">scene</a> is
+                            basically a container of <a href="./docs/classes/Component.html">components</a> that are
+                            tied
+                            together into
+                            enties by <a href="./docs/classes/GameObject.html">game objects</a>.</p>
+
+<pre class="prettyprint lang-javascript">
+var scene = new XEO.Scene();
+
+var material = new XEO.PhongMaterial(scene, {
+    diffuse: [ 0.6, 0.6, 0.7 ]
+});
+
+var geometry = new XEO.TorusGeometry(scene);
+
+var object = new XEO.GameObject(scene, {
+    material: material,
+    geometry: geometry
+});
+</pre>
+
+                        <br>
+
+                        <div style="text-align:center">
+                            <img src="http://www.gliffy.com/go/publish/image/7304207/L.png">
+                        </div>
+                        <div class="space"></div>
+                        <h4>Defaults</h4>
+
+                        <p>xeoEngine provides defaults for pretty much everything, which means that we only need to
+                            create things wherever we need to override those defaults. For our game object,
+                            we provided our own <a
+                                    href="./docs/classes/PhongMaterial.html">material</a> and <a
+                                    href="./docs/classes/Geometry.html">geometry</a> components, leaving the game object
+                            to
+                            fall back on the scene's default flyweight instances for all the other components it needs
+                            (<a href="./docs/classes/Camera.html">camera</a>, <a
+                                    href="./docs/classes/Lights.html">lights</a> etc).</p>
+
+                        <div class="space"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Animating</h4>
+
+                        <p>Animate scenes by updating component properties. Almost everything in xeoEngine
+                            fires change events that you can subscribe to, which is quite handy for scripting.</p>
+
+<pre class="prettyprint lang-javascript">material.on("diffuse",
+     function(value) {
+            console.log("Material diffuse is now: " + value);
+     });
+
+// This is going to fire our change listener above
+material.diffuse = [0.9, 0.9, 0.6];</pre>
+                        <br>
+
+                        <p>Likewise, you can update properties on any of the scene's default flyweight components, such
+                            as the
+                            default
+                            camera, which we'll orbit a little bit on each frame:</p>
+                        <pre class="prettyprint lang-javascript">scene.on("tick", function () {
+    var view = scene.camera.view;
+    view.rotateEyeY(0.6);
+    view.rotateEyeX(0.3);
+});</pre>
+
+                        <br>
+
+                        <h4>Editing</h4>
+
+                        <p>You can edit <span class="emphasis">everything</span> in your scene dynamically, at runtime.
+                            Create and
+                            destroy components, link or unlink
+                            them to each other, update their properties, and so on. Let's add a diffuse <a
+                                    href="./docs/classes/Texture.html">texture</a> map to our material, which will
+                            immediately
+                            appear on
+                            our torus:</p>
+
+<pre class="prettyprint lang-javascript">material.diffuseMap = new XEO.Texture(scene, {
+    src: "textures/uvGrid2.jpg"
+});</pre>
+
+                        <br>
+
+                        <h4>Saving and Loading</h4>
+
+                        <p>You can save or load a JSON snapshot of your scene at any time. This snippet will dump the
+                            whole state of
+                            our scene to JSON, then load that JSON again to create a second, identical scene:</p>
+
+ <pre class="prettyprint lang-javascript">var json = scene.json;
+
+var scene2 = new XEO.Scene({ json: json });</pre>
+                        <br>
+
+                        <h4>Learn More</h4>
+
+                        <ul>
+                            <li><a
+                                    href="http://xeoengine.org/docs" target="_other">API documentation</a></li>
+                            <li><a
+                                    href="https://github.com/xeolabs/xeoengine/wiki" target="_other">Wiki</a></li>
+                            <li><a
+                                    href="http://xeoengine.org/examples/#materials_fresnel_specular" target="_other">Examples</a>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- section end -->
+
+
+<!-- section start -->
+<!-- ================ -->
+<div class="section features">
+    <div id="featureList" class="container object-non-visible" data-animation-effect="fadeIn">
+        <h1 id="features" class="title"><span>xeoEngine</span> Features</h1>
+
+        <div class="space"></div>
+
+        <!-- features get appended here by JS at the end of this page -->
+
+    </div>
+</div>
+<!-- section end -->
+
+<!--&lt;!&ndash; section start &ndash;&gt;-->
+<!--&lt;!&ndash; ================ &ndash;&gt;-->
+<!--<div class="section examples ">-->
+<!--<div class="container">-->
+<!--<h1 class=" title" id="examples"><span>xeoEngine</span> Examples</h1>-->
+
+<!--<div class="separator"></div>-->
+<!--<p class="lead ">A selection from the xeoEngine <a href="http://xeoengine.org/examples">examples-->
+<!--index</a></p>-->
+<!--<br>-->
+
+<!--<div class="row object-non-visible" data-animation-effect="fadeIn">-->
+<!--<div class="col-md-12">-->
+
+<!--&lt;!&ndash; isotope filters start &ndash;&gt;-->
+<!--<div class="filters ">-->
+<!--<ul class="nav nav-pills">-->
+<!--<li class="active"><a href="#" data-filter="*">All</a></li>-->
+<!--<li><a href="#" data-filter=".performance">Performance</a></li>-->
+<!--<li><a href="#" data-filter=".interaction">Interaction</a></li>-->
+<!--<li><a href="#" data-filter=".api">Effects</a></li>-->
+<!--<li><a href="#" data-filter=".api">API</a></li>-->
+<!--</ul>-->
+<!--</div>-->
+<!--&lt;!&ndash; isotope filters end &ndash;&gt;-->
+
+<!--&lt;!&ndash; examples items start &ndash;&gt;-->
+<!--<div class="isotope-container row grid-space-20">-->
+<!--<div class="col-sm-6 col-md-3 isotope-item performance">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/performance.png" alt="">-->
+<!--<a class="overlay" target="_other"-->
+<!--href="http://xeoengine.org/examples/#profiling_statistics">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Performance</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block">Performance-->
+<!--profiling</a>-->
+<!--</div>-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item interaction">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/raypicking.png" alt="">-->
+<!--<a class="overlay"-->
+<!--href="http://xeoengine.org/examples/#interaction_picking_performance">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Interaction</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block"-->
+<!--href="http://xeoengine.org/examples/#interaction_picking_performance">Fast 3D picking</a>-->
+<!--</div>-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item effects">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-3.jpg" alt="">-->
+<!--<a class="overlay" href="" target="_other">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Effects</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block">Transparency</a>-->
+<!--</div>-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item effects">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-3.jpg" alt="">-->
+<!--<a class="overlay" href="" target="_other">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Effects</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block">Multiple scenes</a>-->
+<!--</div>-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item api">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-4.jpg" alt="">-->
+<!--<a class="overlay" data-toggle="modal" data-target="#project-4">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Site Building</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block" data-toggle="modal" data-target="#project-4">Project-->
+<!--Title</a>-->
+<!--</div>-->
+
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item interaction">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-5.jpg" alt="">-->
+<!--<a class="overlay" data-toggle="modal" data-target="#project-5">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>App Development</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block" data-toggle="modal" data-target="#project-5">Project-->
+<!--Title</a>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="project-5" tabindex="-1" role="dialog"-->
+<!--aria-labelledby="project-5-label" aria-hidden="true">-->
+<!--<div class="modal-dialog modal-lg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<button type="button" class="close" data-dismiss="modal"><span-->
+<!--aria-hidden="true">&times;</span><span class="sr-only">Close</span>-->
+<!--</button>-->
+<!--<h4 class="modal-title" id="project-5-label">Project Title</h4>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<h3>Project Description</h3>-->
+
+<!--<div class="row">-->
+<!--<div class="col-md-6">-->
+<!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque sed,-->
+<!--quidem quis praesentium, ut unde. Quae sed, incidunt laudantium-->
+<!--nesciunt, optio corporis quod earum pariatur omnis illo saepe-->
+<!--numquam suscipit, nemo placeat dignissimos eius mollitia et quas-->
+<!--officia doloremque ipsum labore rem deserunt vero! Magnam totam-->
+<!--delectus accusantium voluptas et, tempora quos atque, fugiat,-->
+<!--obcaecati voluptatibus commodi illo voluptates dolore nemo quo-->
+<!--soluta quis.</p>-->
+
+<!--<p>Molestiae sed enim laboriosam atque delectus voluptates rerum nostrum-->
+<!--sapiente obcaecati molestias quasi optio exercitationem, voluptate-->
+<!--quis consequatur libero incidunt, in, quod. Lorem ipsum dolor sit-->
+<!--amet, consectetur adipisicing elit. Eos nobis officiis, autem earum-->
+<!--tenetur quidem. Quae non dicta earum. Ipsum autem eaque cum dolor-->
+<!--placeat corporis quisquam dolorum at nesciunt.</p>-->
+<!--</div>-->
+<!--<div class="col-md-6">-->
+<!--<img src="assets/images/portfolio-5.jpg" alt="">-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="modal-footer">-->
+<!--<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">-->
+<!--Close-->
+<!--</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal end &ndash;&gt;-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item performance">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-6.jpg" alt="">-->
+<!--<a class="overlay" data-toggle="modal" data-target="#project-6">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Web Design</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block" data-toggle="modal" data-target="#project-6">Project-->
+<!--Title</a>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="project-6" tabindex="-1" role="dialog"-->
+<!--aria-labelledby="project-6-label" aria-hidden="true">-->
+<!--<div class="modal-dialog modal-lg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<button type="button" class="close" data-dismiss="modal"><span-->
+<!--aria-hidden="true">&times;</span><span class="sr-only">Close</span>-->
+<!--</button>-->
+<!--<h4 class="modal-title" id="project-6-label">Project Title</h4>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<h3>Project Description</h3>-->
+
+<!--<div class="row">-->
+<!--<div class="col-md-6">-->
+<!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque sed,-->
+<!--quidem quis praesentium, ut unde. Quae sed, incidunt laudantium-->
+<!--nesciunt, optio corporis quod earum pariatur omnis illo saepe-->
+<!--numquam suscipit, nemo placeat dignissimos eius mollitia et quas-->
+<!--officia doloremque ipsum labore rem deserunt vero! Magnam totam-->
+<!--delectus accusantium voluptas et, tempora quos atque, fugiat,-->
+<!--obcaecati voluptatibus commodi illo voluptates dolore nemo quo-->
+<!--soluta quis.</p>-->
+
+<!--<p>Molestiae sed enim laboriosam atque delectus voluptates rerum nostrum-->
+<!--sapiente obcaecati molestias quasi optio exercitationem, voluptate-->
+<!--quis consequatur libero incidunt, in, quod. Lorem ipsum dolor sit-->
+<!--amet, consectetur adipisicing elit. Eos nobis officiis, autem earum-->
+<!--tenetur quidem. Quae non dicta earum. Ipsum autem eaque cum dolor-->
+<!--placeat corporis quisquam dolorum at nesciunt.</p>-->
+<!--</div>-->
+<!--<div class="col-md-6">-->
+<!--<img src="assets/images/portfolio-6.jpg" alt="">-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="modal-footer">-->
+<!--<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">-->
+<!--Close-->
+<!--</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal end &ndash;&gt;-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item api">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-7.jpg" alt="">-->
+<!--<a class="overlay" data-toggle="modal" data-target="#project-7">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Site Building</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block" data-toggle="modal" data-target="#project-7">Project-->
+<!--Title</a>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="project-7" tabindex="-1" role="dialog"-->
+<!--aria-labelledby="project-7-label" aria-hidden="true">-->
+<!--<div class="modal-dialog modal-lg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<button type="button" class="close" data-dismiss="modal"><span-->
+<!--aria-hidden="true">&times;</span><span class="sr-only">Close</span>-->
+<!--</button>-->
+<!--<h4 class="modal-title" id="project-7-label">Project Title</h4>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<h3>Project Description</h3>-->
+
+<!--<div class="row">-->
+<!--<div class="col-md-6">-->
+<!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque sed,-->
+<!--quidem quis praesentium, ut unde. Quae sed, incidunt laudantium-->
+<!--nesciunt, optio corporis quod earum pariatur omnis illo saepe-->
+<!--numquam suscipit, nemo placeat dignissimos eius mollitia et quas-->
+<!--officia doloremque ipsum labore rem deserunt vero! Magnam totam-->
+<!--delectus accusantium voluptas et, tempora quos atque, fugiat,-->
+<!--obcaecati voluptatibus commodi illo voluptates dolore nemo quo-->
+<!--soluta quis.</p>-->
+
+<!--<p>Molestiae sed enim laboriosam atque delectus voluptates rerum nostrum-->
+<!--sapiente obcaecati molestias quasi optio exercitationem, voluptate-->
+<!--quis consequatur libero incidunt, in, quod. Lorem ipsum dolor sit-->
+<!--amet, consectetur adipisicing elit. Eos nobis officiis, autem earum-->
+<!--tenetur quidem. Quae non dicta earum. Ipsum autem eaque cum dolor-->
+<!--placeat corporis quisquam dolorum at nesciunt.</p>-->
+<!--</div>-->
+<!--<div class="col-md-6">-->
+<!--<img src="assets/images/portfolio-7.jpg" alt="">-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="modal-footer">-->
+<!--<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">-->
+<!--Close-->
+<!--</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal end &ndash;&gt;-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item performance">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-8.jpg" alt="">-->
+<!--<a class="overlay" data-toggle="modal" data-target="#project-8">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Web Design</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block" data-toggle="modal" data-target="#project-8">Project-->
+<!--Title</a>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="project-8" tabindex="-1" role="dialog"-->
+<!--aria-labelledby="project-8-label" aria-hidden="true">-->
+<!--<div class="modal-dialog modal-lg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<button type="button" class="close" data-dismiss="modal"><span-->
+<!--aria-hidden="true">&times;</span><span class="sr-only">Close</span>-->
+<!--</button>-->
+<!--<h4 class="modal-title" id="project-8-label">Project Title</h4>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<h3>Project Description</h3>-->
+
+<!--<div class="row">-->
+<!--<div class="col-md-6">-->
+<!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque sed,-->
+<!--quidem quis praesentium, ut unde. Quae sed, incidunt laudantium-->
+<!--nesciunt, optio corporis quod earum pariatur omnis illo saepe-->
+<!--numquam suscipit, nemo placeat dignissimos eius mollitia et quas-->
+<!--officia doloremque ipsum labore rem deserunt vero! Magnam totam-->
+<!--delectus accusantium voluptas et, tempora quos atque, fugiat,-->
+<!--obcaecati voluptatibus commodi illo voluptates dolore nemo quo-->
+<!--soluta quis.</p>-->
+
+<!--<p>Molestiae sed enim laboriosam atque delectus voluptates rerum nostrum-->
+<!--sapiente obcaecati molestias quasi optio exercitationem, voluptate-->
+<!--quis consequatur libero incidunt, in, quod. Lorem ipsum dolor sit-->
+<!--amet, consectetur adipisicing elit. Eos nobis officiis, autem earum-->
+<!--tenetur quidem. Quae non dicta earum. Ipsum autem eaque cum dolor-->
+<!--placeat corporis quisquam dolorum at nesciunt.</p>-->
+<!--</div>-->
+<!--<div class="col-md-6">-->
+<!--<img src="assets/images/portfolio-8.jpg" alt="">-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="modal-footer">-->
+<!--<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">-->
+<!--Close-->
+<!--</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal end &ndash;&gt;-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item performance">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-9.jpg" alt="">-->
+<!--<a class="overlay" data-toggle="modal" data-target="#project-9">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Web Design</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block" data-toggle="modal" data-target="#project-9">Project-->
+<!--Title</a>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="project-9" tabindex="-1" role="dialog"-->
+<!--aria-labelledby="project-9-label" aria-hidden="true">-->
+<!--<div class="modal-dialog modal-lg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<button type="button" class="close" data-dismiss="modal"><span-->
+<!--aria-hidden="true">&times;</span><span class="sr-only">Close</span>-->
+<!--</button>-->
+<!--<h4 class="modal-title" id="project-9-label">Project Title</h4>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<h3>Project Description</h3>-->
+
+<!--<div class="row">-->
+<!--<div class="col-md-6">-->
+<!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque sed,-->
+<!--quidem quis praesentium, ut unde. Quae sed, incidunt laudantium-->
+<!--nesciunt, optio corporis quod earum pariatur omnis illo saepe-->
+<!--numquam suscipit, nemo placeat dignissimos eius mollitia et quas-->
+<!--officia doloremque ipsum labore rem deserunt vero! Magnam totam-->
+<!--delectus accusantium voluptas et, tempora quos atque, fugiat,-->
+<!--obcaecati voluptatibus commodi illo voluptates dolore nemo quo-->
+<!--soluta quis.</p>-->
+
+<!--<p>Molestiae sed enim laboriosam atque delectus voluptates rerum nostrum-->
+<!--sapiente obcaecati molestias quasi optio exercitationem, voluptate-->
+<!--quis consequatur libero incidunt, in, quod. Lorem ipsum dolor sit-->
+<!--amet, consectetur adipisicing elit. Eos nobis officiis, autem earum-->
+<!--tenetur quidem. Quae non dicta earum. Ipsum autem eaque cum dolor-->
+<!--placeat corporis quisquam dolorum at nesciunt.</p>-->
+<!--</div>-->
+<!--<div class="col-md-6">-->
+<!--<img src="assets/images/portfolio-9.jpg" alt="">-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="modal-footer">-->
+<!--<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">-->
+<!--Close-->
+<!--</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal end &ndash;&gt;-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item api">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-10.jpg" alt="">-->
+<!--<a class="overlay" data-toggle="modal" data-target="#project-10">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Site Building</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block" data-toggle="modal" data-target="#project-10">Project-->
+<!--Title</a>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="project-10" tabindex="-1" role="dialog"-->
+<!--aria-labelledby="project-10-label" aria-hidden="true">-->
+<!--<div class="modal-dialog modal-lg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<button type="button" class="close" data-dismiss="modal"><span-->
+<!--aria-hidden="true">&times;</span><span class="sr-only">Close</span>-->
+<!--</button>-->
+<!--<h4 class="modal-title" id="project-10-label">Project Title</h4>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<h3>Project Description</h3>-->
+
+<!--<div class="row">-->
+<!--<div class="col-md-6">-->
+<!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque sed,-->
+<!--quidem quis praesentium, ut unde. Quae sed, incidunt laudantium-->
+<!--nesciunt, optio corporis quod earum pariatur omnis illo saepe-->
+<!--numquam suscipit, nemo placeat dignissimos eius mollitia et quas-->
+<!--officia doloremque ipsum labore rem deserunt vero! Magnam totam-->
+<!--delectus accusantium voluptas et, tempora quos atque, fugiat,-->
+<!--obcaecati voluptatibus commodi illo voluptates dolore nemo quo-->
+<!--soluta quis.</p>-->
+
+<!--<p>Molestiae sed enim laboriosam atque delectus voluptates rerum nostrum-->
+<!--sapiente obcaecati molestias quasi optio exercitationem, voluptate-->
+<!--quis consequatur libero incidunt, in, quod. Lorem ipsum dolor sit-->
+<!--amet, consectetur adipisicing elit. Eos nobis officiis, autem earum-->
+<!--tenetur quidem. Quae non dicta earum. Ipsum autem eaque cum dolor-->
+<!--placeat corporis quisquam dolorum at nesciunt.</p>-->
+<!--</div>-->
+<!--<div class="col-md-6">-->
+<!--<img src="assets/images/portfolio-10.jpg" alt="">-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="modal-footer">-->
+<!--<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">-->
+<!--Close-->
+<!--</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal end &ndash;&gt;-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item performance">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-11.jpg" alt="">-->
+<!--<a class="overlay" data-toggle="modal" data-target="#project-11">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>Web Design</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block" data-toggle="modal" data-target="#project-11">Project-->
+<!--Title</a>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="project-11" tabindex="-1" role="dialog"-->
+<!--aria-labelledby="project-11-label" aria-hidden="true">-->
+<!--<div class="modal-dialog modal-lg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<button type="button" class="close" data-dismiss="modal"><span-->
+<!--aria-hidden="true">&times;</span><span class="sr-only">Close</span>-->
+<!--</button>-->
+<!--<h4 class="modal-title" id="project-11-label">Project Title</h4>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<h3>Project Description</h3>-->
+
+<!--<div class="row">-->
+<!--<div class="col-md-6">-->
+<!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque sed,-->
+<!--quidem quis praesentium, ut unde. Quae sed, incidunt laudantium-->
+<!--nesciunt, optio corporis quod earum pariatur omnis illo saepe-->
+<!--numquam suscipit, nemo placeat dignissimos eius mollitia et quas-->
+<!--officia doloremque ipsum labore rem deserunt vero! Magnam totam-->
+<!--delectus accusantium voluptas et, tempora quos atque, fugiat,-->
+<!--obcaecati voluptatibus commodi illo voluptates dolore nemo quo-->
+<!--soluta quis.</p>-->
+
+<!--<p>Molestiae sed enim laboriosam atque delectus voluptates rerum nostrum-->
+<!--sapiente obcaecati molestias quasi optio exercitationem, voluptate-->
+<!--quis consequatur libero incidunt, in, quod. Lorem ipsum dolor sit-->
+<!--amet, consectetur adipisicing elit. Eos nobis officiis, autem earum-->
+<!--tenetur quidem. Quae non dicta earum. Ipsum autem eaque cum dolor-->
+<!--placeat corporis quisquam dolorum at nesciunt.</p>-->
+<!--</div>-->
+<!--<div class="col-md-6">-->
+<!--<img src="assets/images/portfolio-11.jpg" alt="">-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="modal-footer">-->
+<!--<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">-->
+<!--Close-->
+<!--</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal end &ndash;&gt;-->
+<!--</div>-->
+
+<!--<div class="col-sm-6 col-md-3 isotope-item interaction">-->
+<!--<div class="image-box">-->
+<!--<div class="overlay-container">-->
+<!--<img src="assets/images/portfolio-12.jpg" alt="">-->
+<!--<a class="overlay" data-toggle="modal" data-target="#project-12">-->
+<!--<i class="fa fa-search-plus"></i>-->
+<!--<span>App Development</span>-->
+<!--</a>-->
+<!--</div>-->
+<!--<a class="btn btn-default btn-block" data-toggle="modal" data-target="#project-12">Project-->
+<!--Title</a>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="project-12" tabindex="-1" role="dialog"-->
+<!--aria-labelledby="project-12-label" aria-hidden="true">-->
+<!--<div class="modal-dialog modal-lg">-->
+<!--<div class="modal-content">-->
+<!--<div class="modal-header">-->
+<!--<button type="button" class="close" data-dismiss="modal"><span-->
+<!--aria-hidden="true">&times;</span><span class="sr-only">Close</span>-->
+<!--</button>-->
+<!--<h4 class="modal-title" id="project-12-label">Project Title</h4>-->
+<!--</div>-->
+<!--<div class="modal-body">-->
+<!--<h3>Project Description</h3>-->
+
+<!--<div class="row">-->
+<!--<div class="col-md-6">-->
+<!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque sed,-->
+<!--quidem quis praesentium, ut unde. Quae sed, incidunt laudantium-->
+<!--nesciunt, optio corporis quod earum pariatur omnis illo saepe-->
+<!--numquam suscipit, nemo placeat dignissimos eius mollitia et quas-->
+<!--officia doloremque ipsum labore rem deserunt vero! Magnam totam-->
+<!--delectus accusantium voluptas et, tempora quos atque, fugiat,-->
+<!--obcaecati voluptatibus commodi illo voluptates dolore nemo quo-->
+<!--soluta quis.</p>-->
+
+<!--<p>Molestiae sed enim laboriosam atque delectus voluptates rerum nostrum-->
+<!--sapiente obcaecati molestias quasi optio exercitationem, voluptate-->
+<!--quis consequatur libero incidunt, in, quod. Lorem ipsum dolor sit-->
+<!--amet, consectetur adipisicing elit. Eos nobis officiis, autem earum-->
+<!--tenetur quidem. Quae non dicta earum. Ipsum autem eaque cum dolor-->
+<!--placeat corporis quisquam dolorum at nesciunt.</p>-->
+<!--</div>-->
+<!--<div class="col-md-6">-->
+<!--<img src="assets/images/portfolio-12.jpg" alt="">-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="modal-footer">-->
+<!--<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">-->
+<!--Close-->
+<!--</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash; Modal end &ndash;&gt;-->
+<!--</div>-->
+
+<!--</div>-->
+<!--&lt;!&ndash; examples items end &ndash;&gt;-->
+
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash; section end &ndash;&gt;-->
+
+
+<!-- footer start -->
+<!-- ================ -->
+<footer id="footer">
+
+    <!-- .footer start -->
+    <!-- ================ -->
+    <div class="footer section">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">
+
+                    <p class="lead"><a href="https://github.com/xeolabs/xeoengine/archive/master.zip"
+                                       class="btn btn-default btn-lg">Download xeoEngine</a></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .footer end -->
+
+    <!-- .subfooter start -->
+    <!-- ================ -->
+    <div class="subfooter">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="text-center">Copyright © 2015 xeoEngine by <a target="_blank" href="http://xeolabs.com">xeoLabs</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .subfooter end -->
+
+</footer>
+<!-- footer end -->
+
+<!-- JavaScript files placed at the end of the document so the pages load faster
+================================================== -->
+<!-- Jquery and Bootstap core js files -->
+<script type="text/javascript" src="assets/plugins/jquery.min.js"></script>
+<script type="text/javascript" src="assets/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- Modernizr javascript -->
+<script type="text/javascript" src="assets/plugins/modernizr.js"></script>
+
+<!-- Isotope javascript -->
+<script type="text/javascript" src="assets/plugins/isotope/isotope.pkgd.min.js"></script>
+
+<!-- Backstretch javascript -->
+<script type="text/javascript" src="assets/plugins/jquery.backstretch.min.js"></script>
+
+<!-- Appear javascript -->
+<script type="text/javascript" src="assets/plugins/jquery.appear.js"></script>
+
+<!-- Initialization of Plugins -->
+<script type="text/javascript" src="assets/js/template.js"></script>
+
+<!-- Custom Scripts -->
+<script type="text/javascript" src="assets/js/custom.js"></script>
+
+</body>
+</html>
