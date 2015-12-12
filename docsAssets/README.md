@@ -1,0 +1,1 @@
+Assets, such as images, that are linked to from API documentation pages in ../docs

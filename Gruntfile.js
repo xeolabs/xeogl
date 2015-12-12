@@ -51,7 +51,7 @@ module.exports = function (grunt) {
                 options: {
                     paths: ['src'],
                     outdir: './docs/',
-                    "exclude" : "renderer, utils, webgl"
+                    "exclude": "renderer, utils, webgl"
                 },
                 logo: '../assets/images/logo.png'
             }
@@ -66,6 +66,20 @@ module.exports = function (grunt) {
             unminified: {
                 src: 'build/<%= PROJECT_NAME %>.js',
                 dest: '<%= build_dir %>/<%= PROJECT_NAME %>-<%= ENGINE_VERSION %>.js'
+            },
+            website: {
+                files: [
+                    {
+                        cwd: 'website/assets',
+                        src: ['**/*'],
+                        dest: 'assets/',
+                        expand: true
+                    },
+                    {
+                        src: ['website/index.html'],
+                        dest: 'index.html'
+                    }
+                ]
             }
         }
     });
@@ -86,4 +100,6 @@ module.exports = function (grunt) {
     grunt.registerTask("build", ["snapshot", "yuidoc", "copy"]);
 
     grunt.registerTask("default", "snapshot");
+
+    grunt.registerTask("website", "copy:website");
 };
