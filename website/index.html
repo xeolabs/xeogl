@@ -78,7 +78,7 @@
 
                     <!--&lt;!&ndash; logo &ndash;&gt;-->
                     <!--<div class="logo smooth-scroll">-->
-                        <!--<a href="#banner"><img id="logo" src="assets/images/mesh_logo.png" alt="xeoEngine"></a>-->
+                    <!--<a href="#banner"><img id="logo" src="assets/images/mesh_logo.png" alt="xeoEngine"></a>-->
                     <!--</div>-->
 
                     <!-- name-and-slogan -->
@@ -157,10 +157,10 @@
     <iframe id="demoLink" style="width:100%; height:100%; pointer-events:all;"
             src="../examples/demos_1.html"></iframe>
 
-    <div class="banner-caption" style="pointer-events: none;">
-        <div class="container" style="pointer-events: none;">
-            <div class="row" style="pointer-events: none;">
-                <div class="col-md-8 object-non-visible" data-animation-effect="fadeIn" style="pointer-events: none;">
+    <div class="banner-caption">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 object-non-visible" data-animation-effect="fadeIn">
                     <h1>An open source engine for Web-based 3D visualization</h1>
 
                     <p class="lead">Created by <a target="_blank"
@@ -246,10 +246,11 @@
                         <p>Using the JavaScript API, create the 3D scene as a component-object graph, as shown in the
                             diagram below. Note how a
                             <a href="./docs/classes/Scene.html" target="_docs">scene</a> is
-                            basically a container of <a href="./docs/classes/Component.html target="_docs"">components</a> that are
+                            basically a container of <a href="./docs/classes/Component.html target="
+                                                        _docs"">components</a> that are
                             tied
                             together into
-                            enties by <a href="./docs/classes/GameObject.html target="_docs"">game objects</a>.</p>
+                            enties by <a href="./docs/classes/GameObject.html target=" _docs"">game objects</a>.</p>
 
 <pre class="prettyprint lang-javascript">
 var scene = new XEO.Scene();
@@ -278,7 +279,8 @@ var object = new XEO.GameObject(scene, {
                             create things wherever we need to override those defaults. For our game object,
                             we provided our own <a
                                     href="./docs/classes/PhongMaterial.html" target="_docs">material</a> and <a
-                                    href="./docs/classes/Geometry.html" target="_docs">geometry</a> components, leaving the game object
+                                    href="./docs/classes/Geometry.html" target="_docs">geometry</a> components, leaving
+                            the game object
                             to
                             fall back on the scene's default flyweight instances for all the other components it needs
                             (<a href="./docs/classes/Camera.html" target="_docs">camera</a>, <a
@@ -319,7 +321,8 @@ material.diffuse = [0.9, 0.9, 0.6];</pre>
                             Create and
                             destroy components, link or unlink
                             them to each other, update their properties, and so on. Let's add a diffuse <a
-                                    href="./docs/classes/Texture.html" target="_docs">texture</a> map to our material, which will
+                                    href="./docs/classes/Texture.html" target="_docs">texture</a> map to our material,
+                            which will
                             immediately
                             appear on
                             our torus:</p>
