@@ -3,7 +3,7 @@
     "use strict";
 
     /**
-     An **Nintendo3DSGeometry** is a Geometry that's loaded from a
+     A **Nintendo3DSGeometry** is a Geometry that's loaded from a
      <a href="https://en.wikipedia.org/wiki/Nintendo_3DS" target = "_other">Nintendo 3DS</a> file.
 
      @class Nintendo3DSGeometry
@@ -70,79 +70,10 @@
                             self.primitive = "triangles";
                             self.positions = mesh.vertices;
                             self.uv = mesh.uvt;
-                            //if (mesh.normals) {
-                            //    self.normals = mesh.normals;
-                            //} else {
-                               // self.autoNormals = true;
-                            //}
-                            self.normals = undefined;
+                            self.normals = null;
                             self.autoNormals = false;
                             self.indices = mesh.indices;
                             self.tangents = null;
-
-                            //self.positions = [
-                            //    -2, -2, 2,
-                            //    2, -2, 2,
-                            //    2, 2, 2,
-                            //    -2, 2, 2, // Front face
-                            //
-                            //    -2, -2, -2,
-                            //    -2, 2, -2,
-                            //    2, 2, -2,
-                            //    2, -2, -2, // Back face
-                            //
-                            //    -2, 2, -2,
-                            //    -2, 2, 2,
-                            //    2, 2, 2,
-                            //    2, 2, -2, // Top face
-                            //
-                            //    -2, -2, -2,
-                            //    2, -2, -2,
-                            //    2, -2, 2,
-                            //    -2, -2, 2, // Bottom face
-                            //
-                            //    2, -2, -2,
-                            //    2, 2, -2,
-                            //    2, 2, 2,
-                            //    2, -2, 2, // Right face
-                            //
-                            //    -2, -2, -2,
-                            //    -2, -2, 2,
-                            //    -2, 2, 2,
-                            //    -2, 2, -2 // Left face
-                            //];
-                            //
-                            //self.normals = [
-                            //    0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-                            //    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-                            //    0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
-                            //    -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
-                            //    0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
-                            //    0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
-                            //];
-                            //
-                            //self.uv = [
-                            //    1, 1, 0, 1, 0, 0, 1, 0,
-                            //    0, 1, 0, 0, 1, 0, 1, 1,
-                            //    1, 0, 1, 1, 0, 1, 0, 0,
-                            //    1, 1, 0, 1, 0, 0, 1, 0,
-                            //    0, 0, 1, 0, 1, 1, 0, 1,
-                            //    0, 0, 1, 0, 1, 1, 0, 1
-                            //];
-                            //
-                            //// Tangents are lazy-computed from normals and UVs
-                            //// for Normal mapping once we know we have texture
-                            //
-                            //self.tangents = null;
-                            //
-                            //self.indices = [
-                            //    0, 1, 2, 0, 2, 3,    // front
-                            //    4, 5, 6, 4, 6, 7,    // back
-                            //    8, 9, 10, 8, 10, 11,   // top
-                            //    12, 13, 14, 12, 14, 15,   // bottom
-                            //    16, 17, 18, 16, 18, 19,   // right
-                            //    20, 21, 22, 20, 22, 23    // left
-                            //];
 
                             self.fire("loaded", true);
                         },

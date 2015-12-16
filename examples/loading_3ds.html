@@ -11,8 +11,6 @@
 
     <script src="js/loaders/k3d.js"></script>
     <script src="js/loaders/nintendo3DSGeometry.js"></script>
-    <script src="js/debug/debug.js"></script>
-
 
 <body>
 
@@ -23,30 +21,7 @@
 
 <script>
 
-    var dirLight1 = new XEO.DirLight({
-        dir: [1,0,-1],
-        color: [0.7, 0.7, 0.8],
-        intensity: 1.0,
-        space: "world"
-    });
-
-    var dirLight2 = new XEO.DirLight({
-        dir: [-1,0,-1],
-        color: [1.0, 0.6, 0.6],
-        intensity: 1.0,
-        space: "world"
-    });
-
-    var lights = new XEO.Lights({
-        lights: [
-            dirLight1,
-            dirLight2
-        ]
-    });
-
     var object = new XEO.GameObject({
-
-      //  lights: lights,
 
         geometry: new XEO.Nintendo3DSGeometry({
             src: "models/3ds/lexus.3ds"
@@ -72,13 +47,11 @@
 
     var cameraControl = new XEO.CameraControl();
 
-    var animation = new XEO.CameraFlight();
+    var cameraFlight = new XEO.CameraFlight();
 
     object.geometry.on("loaded",
             function () {
-                animation.flyTo({
-                    aabb: object.worldBoundary.aabb
-                });
+                cameraFlight.flyTo(object);
             });
 
 </script>
