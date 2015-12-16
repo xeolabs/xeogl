@@ -326,88 +326,17 @@
                                     return;
                                 }
 
-                                var boundary = self.scene.worldBoundary;
-                                var aabb = boundary.aabb;
-                                var center = boundary.center;
-                                var diag = XEO.math.getAABBDiag(aabb);
-
-                                this._stopFOV = 55;
-                                var dist = Math.abs((diag) / Math.tan(this._stopFOV / 2));
-
-                                switch (keyCode) {
-
-                                    case input.KEY_NUM_1:
-
-                                        // Right view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [center[0] - dist, center[1], center[2]],
-                                            up: [0, 1, 0]
-                                        });
-
-                                        break;
-
-                                    case input.KEY_NUM_2:
-
-                                        // Back view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [center[0], center[1], center[2] + dist],
-                                            up: [0, 1, 0]
-                                        });
-
-                                        break;
-
-                                    case input.KEY_NUM_3:
-
-                                        // Left view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [center[0] + dist, center[1], center[2]],
-                                            up: [0, 1, 0]
-                                        });
+                                if (keyCode === input.KEY_NUM_1
+                                    || keyCode === input.KEY_NUM_2
+                                    || keyCode === input.KEY_NUM_3
+                                    || keyCode === input.KEY_NUM_4
+                                    || keyCode === input.KEY_NUM_5
+                                    || keyCode === input.KEY_NUM_6) {
 
 
-                                        break;
-
-                                    case input.KEY_NUM_4:
-
-                                        // Front view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [center[0], center[1], center[2] - dist],
-                                            up: [0, 1, 0]
-                                        });
-
-                                        break;
-
-                                    case input.KEY_NUM_5:
-
-                                        // Top view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [center[0], center[1] - dist, center[2]],
-                                            up: [0, 0, -1]
-                                        });
-
-                                        break;
-
-                                    case input.KEY_NUM_6:
-
-                                        // Bottom view
-
-                                        self._cameraFly.flyTo({
-                                            look: center,
-                                            eye: [center[0], center[1] + dist, center[2]],
-                                            up: [0, 0, 1]
-                                        });
-
-                                        break;
+                                    XEO.scheduleTask(function () {
+                                        self._fly(keyCode);
+                                    });
                                 }
                             });
 
@@ -427,6 +356,94 @@
                 get: function () {
                     return this._active;
                 }
+            }
+        },
+
+        _fly: function (keyCode) {
+
+            var input = this.scene.input;
+            var boundary = this.scene.worldBoundary;
+            var aabb = boundary.aabb;
+            var center = boundary.center;
+            var diag = XEO.math.getAABBDiag(aabb);
+
+            this._stopFOV = 55;
+            var dist = Math.abs((diag) / Math.tan(this._stopFOV / 2));
+
+            switch (keyCode) {
+
+                case input.KEY_NUM_1:
+
+                    // Right view
+
+                    this._cameraFly.flyTo({
+                        look: center,
+                        eye: [center[0] - dist, center[1], center[2]],
+                        up: [0, 1, 0]
+                    });
+
+                    break;
+
+                case input.KEY_NUM_2:
+
+                    // Back view
+
+                    this._cameraFly.flyTo({
+                        look: center,
+                        eye: [center[0], center[1], center[2] + dist],
+                        up: [0, 1, 0]
+                    });
+
+                    break;
+
+                case input.KEY_NUM_3:
+
+                    // Left view
+
+                    this._cameraFly.flyTo({
+                        look: center,
+                        eye: [center[0] + dist, center[1], center[2]],
+                        up: [0, 1, 0]
+                    });
+
+
+                    break;
+
+                case input.KEY_NUM_4:
+
+                    // Front view
+
+                    this._cameraFly.flyTo({
+                        look: center,
+                        eye: [center[0], center[1], center[2] - dist],
+                        up: [0, 1, 0]
+                    });
+
+                    break;
+
+                case input.KEY_NUM_5:
+
+                    // Top view
+
+                    this._cameraFly.flyTo({
+                        look: center,
+                        eye: [center[0], center[1] - dist, center[2]],
+                        up: [0, 0, -1]
+                    });
+
+                    break;
+
+                case input.KEY_NUM_6:
+
+                    // Bottom view
+
+                    this._cameraFly.flyTo({
+                        look: center,
+                        eye: [center[0], center[1] + dist, center[2]],
+                        up: [0, 0, 1]
+                    });
+
+                    break;
             }
         },
 

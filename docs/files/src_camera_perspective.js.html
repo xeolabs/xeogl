@@ -255,51 +255,30 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.ProjTransform({
-                matrix: XEO.math.mat4()
+                matrix: XEO.math.identityMat4(XEO.math.mat4())
             });
 
             this._dirty = false;
             this._fovy = 60.0;
             this._near = 0.1;
             this._far = 10000.0;
-
-            var self = this;
+            
             var canvas = this.scene.canvas;
 
             // Recompute aspect from change in canvas size
-            this._canvasResized = canvas.on(&quot;size&quot;,
-                function () {
-                    self._scheduleBuild();
-                });
+            this._canvasResized = canvas.on(&quot;size&quot;, this._scheduleUpdate, this);
 
             this.fovy = cfg.fovy;
             this.near = cfg.near;
             this.far = cfg.far;
         },
 
-        _scheduleBuild: function () {
-
-            if (!this._dirty) {
-
-                this._dirty = true;
-
-                var self = this;
-
-                this.scene.once(&quot;tick2&quot;,
-                    function () {
-                        self._build();
-                    });
-            }
-        },
-
-        _build: function () {
+        _update: function () {
 
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
             XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
-
-            this._dirty = false;
 
             /**
              * Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/matrix:property&quot;}}{{/crossLink}} property changes.
@@ -329,7 +308,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/fovy:property&quot;}}{{/crossLink}} property changes.
@@ -362,7 +341,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Perspective&#x27;s   {{#crossLink &quot;Perspective/near:property&quot;}}{{/crossLink}} property changes.
@@ -394,7 +373,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Perspective&#x27;s  {{#crossLink &quot;Perspective/far:property&quot;}}{{/crossLink}} property changes.
@@ -422,21 +401,16 @@
 
                 get: function () {
 
-                    if (this._dirty) {
-                        this._build();
+                    if (this._updateScheduled) {
+                        this._update();
                     }
-
+                    
                     return this._state.matrix;
                 }
             }
         },
 
         _compile: function () {
-
-            if (this._dirty) {
-                this._build();
-            }
-
             this._renderer.projTransform = this._state;
         },
 

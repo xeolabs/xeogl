@@ -214,6 +214,10 @@
                                 <a href="#method_clear">clear</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_schedule">schedule</a>
+
+                            </li>
                     </ul>
                 </div>
 
@@ -227,6 +231,10 @@
                             </li>
                             <li class="index-item property">
                                 <a href="#property_scenes">scenes</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stats">stats</a>
 
                             </li>
                             <li class="index-item property">
@@ -264,7 +272,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_xeo.js.html#l121"><code>src&#x2F;xeo.js:121</code></a>
+        <a href="../files/src_xeo.js.html#l238"><code>src&#x2F;xeo.js:238</code></a>
         </p>
 
 
@@ -313,7 +321,7 @@ This is called within the XEO.Scene constructor.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_xeo.js.html#l164"><code>src&#x2F;xeo.js:164</code></a>
+        <a href="../files/src_xeo.js.html#l318"><code>src&#x2F;xeo.js:318</code></a>
         </p>
 
 
@@ -326,6 +334,78 @@ clears the default <a href="../classes/Scene.html" class="crosslink">Scene</a>.<
 
     </div>
 
+
+
+
+</div>
+<div id="method_schedule" class="method item">
+    <h3 class="name"><code>schedule</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[scope]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_xeo.js.html#l281"><code>src&#x2F;xeo.js:281</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Schedule a task for xeoEngine to run at the next frame.</p>
+<p>Internally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue
+for a certain period of time, popping tasks and running them. After each frame interval, tasks that did not
+get a chance to run during the task are left in the queue to be run next time.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+
+
+                    <div class="param-description">
+                        <p>Callback that runs the task.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[scope]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Scope for the callback.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
 
 
 
@@ -347,7 +427,7 @@ clears the default <a href="../classes/Scene.html" class="crosslink">Scene</a>.<
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_xeo.js.html#l96"><code>src&#x2F;xeo.js:96</code></a>
+                            <a href="../files/src_xeo.js.html#l213"><code>src&#x2F;xeo.js:213</code></a>
                             </p>
                     
                     
@@ -377,7 +457,7 @@ clears the default <a href="../classes/Scene.html" class="crosslink">Scene</a>.<
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_xeo.js.html#l31"><code>src&#x2F;xeo.js:31</code></a>
+                            <a href="../files/src_xeo.js.html#l86"><code>src&#x2F;xeo.js:86</code></a>
                             </p>
                     
                     
@@ -385,6 +465,33 @@ clears the default <a href="../classes/Scene.html" class="crosslink">Scene</a>.<
                     
                         <div class="description">
                             <p>Existing  <a href="../classes/Scene.html" class="crosslink">Scene</a>s , mapped to their IDs</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_stats" class="property item">
+                        <h3 class="name"><code>stats</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_xeo.js.html#l24"><code>src&#x2F;xeo.js:24</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Tracks statistics within xeoEngine, such as numbers of
+                    scenes, textures, geometries etc.</p>
                     
                         </div>
                     

@@ -262,11 +262,10 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.ProjTransform({
-                matrix: XEO.math.mat4()
+                matrix: XEO.math.identityMat4(XEO.math.mat4())
             });
 
             // Ortho view volume
-            this._dirty = false;
             this._left = -1.0;
             this._right = 1.0;
             this._top = 1.0;
@@ -281,33 +280,6 @@
             this.bottom = cfg.bottom;
             this.near = cfg.near;
             this.far = cfg.far;
-        },
-
-        // Schedules a call to #_build on the next &quot;tick&quot;
-        _scheduleBuild: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                var self = this;
-                this.scene.once(&quot;tick2&quot;,
-                    function () {
-                        self._build();
-                    });
-            }
-        },
-
-        // Rebuilds the rendering state from this component
-        _build: function () {
-
-            XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
-
-            this._dirty = false;
-
-            /**
-             * Fired whenever this Frustum&#x27;s  {{#crossLink &quot;Lookat/matrix:property&quot;}}{{/crossLink}} property is regenerated.
-             * @event matrix
-             * @param value The property&#x27;s new value
-             */
-            this.fire(&quot;matrix&quot;, this._state.matrix);
         },
 
         _props: {
@@ -327,9 +299,7 @@
 
                     this._left = (value !== undefined &amp;&amp; value !== null) ? value : -1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho&#x27;s  {{#crossLink &quot;Ortho/left:property&quot;}}{{/crossLink}} property changes.
@@ -360,9 +330,7 @@
 
                     this._right = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho&#x27;s  {{#crossLink &quot;Ortho/right:property&quot;}}{{/crossLink}} property changes.
@@ -393,9 +361,7 @@
 
                     this._top = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho&#x27;s  {{#crossLink &quot;Ortho/top:property&quot;}}{{/crossLink}} property changes.
@@ -426,9 +392,7 @@
 
                     this._bottom = (value !== undefined &amp;&amp; value !== null) ? value : -1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho&#x27;s  {{#crossLink &quot;Ortho/bottom:property&quot;}}{{/crossLink}} property changes.
@@ -459,9 +423,7 @@
 
                     this._near = (value !== undefined &amp;&amp; value !== null) ? value :  0.1;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho&#x27;s  {{#crossLink &quot;Ortho/near:property&quot;}}{{/crossLink}} property changes.
@@ -492,9 +454,7 @@
 
                     this._far = (value !== undefined &amp;&amp; value !== null) ? value :  10000.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho&#x27;s {{#crossLink &quot;Ortho/far:property&quot;}}{{/crossLink}} property changes.
@@ -522,8 +482,16 @@
 
                 get: function () {
 
-                    if (this._dirty) {
+                    if (this._buildScheduled) {
+
+                        // Matrix update is scheduled for next frame.
+                        // Lazy-build the matrix now, while leaving the update
+                        // scheduled. The update task will fire a &quot;matrix&quot; event,
+                        // without needlessly rebuilding the matrix again.
+
                         this._build();
+
+                        this._buildScheduled = false;
                     }
 
                     return this._state.matrix;
@@ -531,12 +499,26 @@
             }
         },
 
+        _build: function () {
+
+            XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
+
+            this._renderer.imageDirty = true;
+        },
+
+        _update: function () {
+
+            this._renderer.imageDirty = true;
+
+            /**
+             * Fired whenever this Frustum&#x27;s  {{#crossLink &quot;Lookat/matrix:property&quot;}}{{/crossLink}} property is regenerated.
+             * @event matrix
+             * @param value The property&#x27;s new value
+             */
+            this.fire(&quot;matrix&quot;, this._state.matrix);
+        },
+
         _compile: function () {
-
-            if (this._dirty) {
-                this._build();
-            }
-
             this._renderer.projTransform = this._state;
         },
 

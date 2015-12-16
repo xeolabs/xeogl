@@ -389,7 +389,8 @@
      */
 
     /**
-     * Signals the first rendering phase
+     * Fired on each game loop iteration.
+     *
      * @event tick
      * @param {String} sceneID The ID of this Scene.
      * @param {Number} startTime The time in seconds since 1970 that this Scene was instantiated.
@@ -397,47 +398,6 @@
      * @param {Number} prevTime The time of the previous &quot;tick&quot; event from this Scene.
      * @param {Number} deltaTime The time in seconds since the previous &quot;tick&quot; event from this Scene.
      */
-
-    /**
-     * Signals the second rendering phase
-     * @event tick2
-     * @param {String} sceneID The ID of this Scene.
-     * @param {Number} startTime The time in seconds since 1970 that this Scene was instantiated.
-     * @param {Number} time The time in seconds since 1970 of this &quot;tick2&quot; event.
-     * @param {Number} prevTime The time of the previous &quot;tick2&quot; event from this Scene.
-     * @param {Number} deltaTime The time in seconds since the previous &quot;tick2&quot; event from this Scene.
-     */
-
-    /**
-     * Signals the third rendering phase
-     * @event tick3
-     * @param {String} sceneID The ID of this Scene.
-     * @param {Number} startTime The time in seconds since 1970 that this Scene was instantiated.
-     * @param {Number} time The time in seconds since 1970 of this &quot;tick3&quot; event.
-     * @param {Number} prevTime The time of the previous &quot;tick3&quot; event from this Scene.
-     * @param {Number} deltaTime The time in seconds since the previous &quot;tick3&quot; event from this Scene.
-     */
-
-    /**
-     * Signals the fourth rendering phase
-     * @event tick4
-     * @param {String} sceneID The ID of this Scene.
-     * @param {Number} startTime The time in seconds since 1970 that this Scene was instantiated.
-     * @param {Number} time The time in seconds since 1970 of this &quot;tick4&quot; event.
-     * @param {Number} prevTime The time of the previous &quot;tick4&quot; event from this Scene.
-     * @param {Number} deltaTime The time in seconds since the previous &quot;tick4&quot; event from this Scene.
-     */
-
-    /**
-     * Signals the fifth rendering phase
-     * @event tick5
-     * @param {String} sceneID The ID of this Scene.
-     * @param {Number} startTime The time in seconds since 1970 that this Scene was instantiated.
-     * @param {Number} time The time in seconds since 1970 of this &quot;tick5&quot; event.
-     * @param {Number} prevTime The time of the previous &quot;tick5&quot; event from this Scene.
-     * @param {Number} deltaTime The time in seconds since the previous &quot;tick5&quot; event from this Scene.
-     */
-
     XEO.Scene = XEO.Component.extend({
 
         type: &quot;XEO.Scene&quot;,
@@ -445,57 +405,6 @@
         _init: function (cfg) {
 
             var self = this;
-
-            /**
-             * Tracks statistics within this Scene, such as numbers of
-             * textures, geometries etc.
-             * @final
-             * @property stats
-             * @type {*}
-             * @final
-             */
-            this.stats = {
-                build: {
-                    version: XEO.version
-                },
-                client: {
-                    browser: (navigator &amp;&amp; navigator.userAgent) ? navigator.userAgent : &quot;n/a&quot;
-                },
-                canvas: {
-                    width: 0,
-                    height: 0
-                },
-                scene: {
-                    objects: 0
-                },
-                memory: {
-
-                    // Note that these counts will include any positions, colors,
-                    // normals and indices that xeoEngine internally creates on-demand
-                    // to support color-index triangle picking.
-
-                    meshes: 0,
-                    positions: 0,
-                    colors: 0,
-                    normals: 0,
-                    tangents: 0,
-                    uvs: 0,
-                    indices: 0,
-                    textures: 0,
-                    programs: 0
-                },
-                frame: {
-                    frameCount: 0,
-                    renderTime: 0,
-                    useProgram: 0,
-                    setUniform: 0,
-                    setUniformCacheHits: 0,
-                    bindTexture: 0,
-                    bindArray: 0,
-                    drawElements: 0,
-                    drawChunks: 0
-                }
-            };
 
             this._componentIDMap = new XEO.utils.Map();
 
@@ -566,6 +475,7 @@
             // Redraw as canvas resized
             this.canvas.on(&quot;size&quot;,
                 function () {
+                    self._renderer.imageDirty = true;
                     self._renderer.render({
                         force: true,
                         clear: true
@@ -577,7 +487,7 @@
                     alert(&quot;xeoEngine failed to find WebGL!&quot;);
                 });
 
-            this._renderer = new XEO.renderer.Renderer(this.stats, {
+            this._renderer = new XEO.renderer.Renderer(XEO.stats, {
                 canvas: this.canvas,
                 transparent: cfg.transparent
             });
@@ -701,73 +611,28 @@
 
             types[c.id] = c;
 
-            var self = this;
 
-            c.on(&quot;destroyed&quot;,
-                function () {
-
-                    self._componentIDMap.removeItem(c.id);
-
-                    delete self.components[c.id];
-
-                    var types = self.types[c.type];
-
-                    if (types) {
-
-                        delete types[c.id];
-
-                        if (XEO._isEmptyObject(types)) {
-                            delete self.types[c.type];
-                        }
-                    }
-
-                    if (c.type === &quot;XEO.GameObject&quot;) {
-
-                        // Component is a XEO.GameObject
-
-                        // Update scene statistics,
-                        // Unschedule any pending recompilation of
-                        // the GameObject into the renderer
-
-                        self.stats.scene.objects--;
-
-                        delete self.objects[c.id];
-
-                        delete self._dirtyObjects[c.id];
-                    }
-
-                    /**
-                     * Fired whenever a component within this Scene has been destroyed.
-                     * @event componentDestroyed
-                     * @param {Component} value The component that was destroyed
-                     */
-                    self.fire(&quot;componentDestroyed&quot;, c, true);
-
-                    //self.log(&quot;Destroyed &quot; + c.type + &quot; &quot; + XEO._inQuotes(c.id));
-                });
+            c.on(&quot;destroyed&quot;, this._componentDestroyed, this);
 
             if (c.type === &quot;XEO.GameObject&quot;) {
 
                 // Component is a XEO.GameObject
 
-                c.on(&quot;dirty&quot;,
-                    function () {
-
-                        // Whenever the GameObject signals dirty,
-                        // schedule its recompilation into the renderer
-
-                        if (!self._dirtyObjects[c.id]) {
-                            self._dirtyObjects[c.id] = c;
-                        }
-                    });
+                c.on(&quot;dirty&quot;, this._objectDirty, this);
 
                 this.objects[c.id] = c;
 
-                //1c.worldBoundary.on(&quot;updated&quot;, this._setWorldBoundaryDirty, this);
+                if (this._worldBoundary) {
+
+                    // If we currently have a World-space Scene boundary, then invalidate
+                    // it whenever GameObject&#x27;s World-space boundary updates
+
+                    c.worldBoundary.on(&quot;updated&quot;, this._setWorldBoundaryDirty, this);
+                }
 
                 // Update scene statistics
 
-                this.stats.scene.objects++;
+                XEO.stats.components.objects++;
             }
 
             /**
@@ -778,6 +643,60 @@
             this.fire(&quot;componentCreated&quot;, c, true);
 
             //self.log(&quot;Created &quot; + c.type + &quot; &quot; + XEO._inQuotes(c.id));
+        },
+
+        // Callbacks as members to reduce GC churn
+
+        _componentDestroyed: function (c) {
+
+            this._componentIDMap.removeItem(c.id);
+
+            delete this.components[c.id];
+
+            var types = this.types[c.type];
+
+            if (types) {
+
+                delete types[c.id];
+
+                if (XEO._isEmptyObject(types)) {
+                    delete this.types[c.type];
+                }
+            }
+
+            if (c.type === &quot;XEO.GameObject&quot;) {
+
+                // Component is a XEO.GameObject
+
+                // Update scene statistics,
+                // Unschedule any pending recompilation of
+                // the GameObject into the renderer
+
+                XEO.stats.components.objects--;
+
+                delete this.objects[c.id];
+
+                delete this._dirtyObjects[c.id];
+            }
+
+            /**
+             * Fired whenever a component within this Scene has been destroyed.
+             * @event componentDestroyed
+             * @param {Component} value The component that was destroyed
+             */
+            this.fire(&quot;componentDestroyed&quot;, c, true);
+
+            //this.log(&quot;Destroyed &quot; + c.type + &quot; &quot; + XEO._inQuotes(c.id));
+        },
+
+        _objectDirty: function (object) {
+
+            // Whenever the GameObject signals dirty,
+            // schedule its recompilation into the renderer
+
+            if (!this._dirtyObjects[object.id]) {
+                this._dirtyObjects[object.id] = object;
+            }
         },
 
         _props: {
@@ -1306,11 +1225,18 @@
             },
 
             /**
-             * World-space 3D boundary.
+             * The World-space 3D boundary of this Scene.
              *
-             * If you call {{#crossLink &quot;Component/destroy:method&quot;}}{{/crossLink}} on this boundary, then
-             * this property will be assigned to a fresh {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} instance next
-             * time you reference it.
+             * The {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} will be lazy-initialized the first time
+             * you reference this property, and will persist on this Scene until you
+             * call {{#crossLink &quot;Component/destroy:method&quot;}}{{/crossLink}} on the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}
+             * again. The property will then be set to a fresh {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} instance
+             * next time you reference it.
+             *
+             * &lt;h4&gt;Performance&lt;/h4&gt;
+             *
+             * To minimize performance overhead, only reference this property if you need it, and destroy
+             * the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} as soon as you don&#x27;t need it anymore.
              *
              * @property worldBoundary
              * @type Boundary3D
@@ -1325,25 +1251,15 @@
                         var self = this;
                         var aabb = XEO.math.AABB3();
 
-                        // TODO: bind to transform updates here, for lazy-binding efficiency goodness?
-
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
                             getDirty: function () {
-
-                                return true; // This boundary always rebuilds when queried, no caching.
-
-                                //return self._worldBoundaryDirty;
+                                return self._worldBoundaryDirty;
                             },
 
                             getAABB: function () {
 
-                                aabb.min[0] = 100000;
-                                aabb.min[1] = 100000;
-                                aabb.min[2] = 100000;
-                                aabb.max[0] = -100000;
-                                aabb.max[1] = -100000;
-                                aabb.max[2] = -100000;
+                                XEO.math.collapseAABB3(aabb);
 
                                 var objects = self.objects;
                                 var object;
@@ -1353,7 +1269,7 @@
 
                                         object = objects[objectId];
 
-                                        XEO.math.expandAABB3(object.worldBoundary.aabb, aabb);
+                                        XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
                                     }
                                 }
 
@@ -1363,6 +1279,10 @@
 
                         this._worldBoundary.on(&quot;destroyed&quot;,
                             function () {
+
+                                // Now #._setWorldBoundaryDirty won&#x27;t fire &quot;update&quot;
+                                // events on the #._worldBoundary every time its called
+
                                 self._worldBoundary = null;
                             });
 
@@ -1433,6 +1353,8 @@
             var tempMat4 = XEO.math.mat4();
             var tempMat4b = XEO.math.mat4();
 
+            var tempVec2 = XEO.math.vec2();
+
             var tempVec4 = XEO.math.vec4();
             var tempVec4b = XEO.math.vec4();
 
@@ -1499,7 +1421,7 @@
 
                 params = params || {};
 
-                params.canvasPos = params.canvasPos || math.vec3();
+                params.canvasPos = params.canvasPos || tempVec2;
 
                 var hit = this._renderer.pick(params);
 
@@ -1730,14 +1652,28 @@
 
             var countCompiledObjects = 0;
 
+            var time1 = Date.now();
+            var object;
+
             for (var id in this._dirtyObjects) {
                 if (this._dirtyObjects.hasOwnProperty(id)) {
 
-                    this._dirtyObjects[id]._compile();
+                    object = this._dirtyObjects[id];
 
-                    delete this._dirtyObjects[id];
+                    if (object._valid()) {
 
-                    countCompiledObjects++;
+                        object._compile();
+
+                        delete this._dirtyObjects[id];
+
+                        countCompiledObjects++;
+                    }
+                    //if (Date.now() - time1 &gt; 30) {
+                    //
+                    //    // Throttle the time we spend (re)compiling GameObjects each frame
+                    //
+                    //    break;
+                    //}
                 }
             }
 
@@ -1751,8 +1687,7 @@
             this._renderer.render({
                 clear: true // Clear buffers
             });
-        }
-        ,
+        },
 
         _getJSON: function () {
 

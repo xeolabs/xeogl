@@ -232,14 +232,14 @@
  var group2 = new XEO.Group(scene);
 
  group2.add([  // Add two components
-        geometry,
-        &quot;XEO.GameObject&quot;,
-    ]);
+ geometry,
+ &quot;XEO.GameObject&quot;,
+ ]);
 
  // We can iterate over the components in a Group like so:
 
  group1.iterate(
-    function(component) {
+ function(component) {
         //..
     });
 
@@ -441,7 +441,7 @@
             var self = this;
 
             this._destroyedSubs[component.id] = component.on(&quot;destroyed&quot;,
-                function(component) {
+                function (component) {
                     self._remove(component);
                 });
 
@@ -460,22 +460,21 @@
         _scheduleUpdate: function () {
             if (!this._dirty) {
                 this._dirty = true;
-                var self = this;
-                this.scene.once(&quot;tick2&quot;,
-                    function () {
-
-                        /**
-                         * Fired on the next {{#crossLink &quot;Scene/tick2:event&quot;}}{{/crossLink}} whenever
-                         * {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} were added or removed since the
-                         * last {{#crossLink &quot;Scene/tick2:event&quot;}}{{/crossLink}} event, to provide a batched change event
-                         * for subscribers who don&#x27;t want to react to every individual addition or removal on this Group.
-                         *
-                         * @event updated
-                         */
-                        self.fire(&quot;updated&quot;);
-                        self._dirty = false;
-                    });
+                XEO.scheduleTask(this._notifyUpdated, this);
             }
+        },
+
+        _notifyUpdated: function () {
+
+            /* Fired on the next {{#crossLink &quot;Scene/tick.animate:event&quot;}}{{/crossLink}} whenever
+             * {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} were added or removed since the
+             * last {{#crossLink &quot;Scene/tick.animate:event&quot;}}{{/crossLink}} event, to provide a batched change event
+             * for subscribers who don&#x27;t want to react to every individual addition or removal on this Group.
+             *
+             * @event updated
+             */
+            this.fire(&quot;updated&quot;);
+            this._dirty = false;
         },
 
         /**

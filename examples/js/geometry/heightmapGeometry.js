@@ -274,7 +274,7 @@
                     self._imageDirty = true;
                     self._geometryDirty = true;
 
-                    self._needUpdate();
+                    self._scheduleUpdate();
 
                     /**
                      * Fired whenever this Heightmap's  {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property changes.
@@ -334,7 +334,7 @@
 
                     this._geometryDirty = true;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/lod:property"}}{{/crossLink}} property changes.
@@ -375,7 +375,7 @@
                     this._imageDirty = true;
                     this._geometryDirty = true;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Heightmap's  {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property changes.
@@ -415,7 +415,7 @@
                     this._imageDirty = true;
                     this._geometryDirty = true;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/src:property"}}{{/crossLink}} property changes.
@@ -459,7 +459,7 @@
 
                     this._geometryDirty = true;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSize:property"}}{{/crossLink}} property changes.
@@ -503,7 +503,7 @@
 
                     this._geometryDirty = true;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySize:property"}}{{/crossLink}} property changes.
@@ -547,7 +547,7 @@
 
                     this._geometryDirty = true;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/zSize:property"}}{{/crossLink}} property changes.
@@ -591,7 +591,7 @@
 
                     this._geometryDirty = true;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSegments:property"}}{{/crossLink}} property changes.
@@ -635,7 +635,7 @@
 
                     this._geometryDirty = true;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySegments:property"}}{{/crossLink}} property changes.

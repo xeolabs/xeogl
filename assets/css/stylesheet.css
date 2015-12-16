@@ -50,7 +50,7 @@ Theme Styles
 body {
     box-sizing: border-box;
     color: #373737;
-    background: #212121;
+    /*background: #212121;*/
     font-size: 16px;
     font-family: 'Myriad Pro', Calibri, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -278,7 +278,7 @@ Full-Width Styles
 
 .inner {
     position: relative;
-    max-width: 640px;
+    max-width: 800px;
     padding: 20px 10px;
     margin: 0 auto;
 }
@@ -380,17 +380,18 @@ Full-Width Styles
 }
 
 #main_content_wrap {
-    background: #f2f2f2;
+    /*background: #f2f2f2;*/
     border-top: 1px solid #111;
     border-bottom: 1px solid #111;
 }
 
 #main_content {
     padding-top: 40px;
+
 }
 
 #footer_wrap {
-    background: #212121;
+    /*background: #212121;*/
 }
 
 /*******************************************************************************
@@ -408,7 +409,7 @@ Small Device Styles
 
     .inner {
         min-width: 320px;
-        max-width: 480px;
+        max-width: 800px;
     }
 
     #project_title {
@@ -451,3 +452,47 @@ Small Device Styles
 .emphasis {
     font-style: italic;
 }
+
+h3.feature-category {
+    font-family: 'Helvetica';
+    /*margin-top: 1.0em !important;*/
+    /*margin-bottom: 1.0em !important;*/
+    /*font-size: 14px;*/
+    /*font-weight: bold;*/
+    /*color: #8F3434;*/
+
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: bold;
+    /*color: #8F3434;*/
+    padding: 0;
+    margin: 0;
+    padding-left: 0px;
+    padding-right: 40px;
+    padding-top: 14px;
+    padding-bottom: 4px;
+}
+
+.feature-subcategory {
+    font-family: 'Helvetica';
+    margin-top: 0.2em !important;
+    margin-bottom: 0.2em !important;
+    font-size: 14px;
+    font-weight: normal;
+    padding-left: 22px;
+    background: url("../images/bullet-point.png") no-repeat 8px 2px !important;
+}
+
+
+.feature-category-description {
+    color: #71705a;
+    text-decoration: none;
+    font-size: 14px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: normal;
+}
+
+

@@ -163,7 +163,7 @@
 
                     this._text = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this VectorTextGeometry's {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property changes.
@@ -205,7 +205,7 @@
 
                     this._xSize = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this VectorText's {{#crossLink "VectorText/xSize:property"}}{{/crossLink}} property changes.
@@ -247,7 +247,7 @@
 
                     this._ySize = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this VectorText's {{#crossLink "VectorText/ySize:property"}}{{/crossLink}} property changes.

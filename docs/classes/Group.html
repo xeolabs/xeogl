@@ -239,14 +239,14 @@ var group1 = new XEO.Group(scene, { // Initialize with three components
 var group2 = new XEO.Group(scene);
 
 group2.add([  // Add two components
-       geometry,
-       "XEO.GameObject",
-   ]);
+geometry,
+"XEO.GameObject",
+]);
 
 // We can iterate over the components in a Group like so:
 
 group1.iterate(
-   function(component) {
+function(component) {
        //..
    });
 
@@ -510,10 +510,6 @@ group2.remove("XEO.Geometry"); // Remove all Geometries
                                 <a href="#event_removed">removed</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_updated">updated</a>
-
-                            </li>
                     </ul>
                 </div>
         </div>
@@ -594,7 +590,7 @@ group2.remove("XEO.Geometry"); // Remove all Geometries
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_grouping_group.js.html#l304"><code>src&#x2F;grouping&#x2F;group.js:304</code></a>
+        <a href="../files/src_grouping_group.js.html#l303"><code>src&#x2F;grouping&#x2F;group.js:303</code></a>
         </p>
 
 
@@ -603,7 +599,7 @@ group2.remove("XEO.Geometry"); // Remove all Geometries
 
     <div class="description">
         <p>Removes all <a href="../classes/Component.html" class="crosslink">Components</a> from this Group.</p>
-<p>Fires an <a href="../classes/Group.html#event_updated" class="crosslink">updated</a> event.</p>
+<p>Fires an Group/updated:event event.</p>
 
     </div>
 
@@ -626,7 +622,7 @@ group2.remove("XEO.Geometry"); // Remove all Geometries
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l740"><code>src&#x2F;component.js:740</code></a>
+        <a href="../files/src_component.js.html#l814"><code>src&#x2F;component.js:814</code></a>
         </p>
 
 
@@ -660,7 +656,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_grouping_group.js.html#l318"><code>src&#x2F;grouping&#x2F;group.js:318</code></a>
+        <a href="../files/src_grouping_group.js.html#l317"><code>src&#x2F;grouping&#x2F;group.js:317</code></a>
         </p>
 
 
@@ -697,7 +693,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l504"><code>src&#x2F;component.js:504</code></a>
+        <a href="../files/src_component.js.html#l505"><code>src&#x2F;component.js:505</code></a>
         </p>
 
 
@@ -760,7 +756,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l353"><code>src&#x2F;component.js:353</code></a>
+        <a href="../files/src_component.js.html#l346"><code>src&#x2F;component.js:346</code></a>
         </p>
 
 
@@ -842,7 +838,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_grouping_group.js.html#l390"><code>src&#x2F;grouping&#x2F;group.js:390</code></a>
+        <a href="../files/src_grouping_group.js.html#l389"><code>src&#x2F;grouping&#x2F;group.js:389</code></a>
         </p>
 
 
@@ -908,7 +904,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l459"><code>src&#x2F;component.js:459</code></a>
+        <a href="../files/src_component.js.html#l460"><code>src&#x2F;component.js:460</code></a>
         </p>
 
 
@@ -965,7 +961,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l416"><code>src&#x2F;component.js:416</code></a>
+        <a href="../files/src_component.js.html#l417"><code>src&#x2F;component.js:417</code></a>
         </p>
 
 
@@ -1029,7 +1025,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l386"><code>src&#x2F;component.js:386</code></a>
+        <a href="../files/src_component.js.html#l387"><code>src&#x2F;component.js:387</code></a>
         </p>
 
 
@@ -1122,7 +1118,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l438"><code>src&#x2F;component.js:438</code></a>
+        <a href="../files/src_component.js.html#l439"><code>src&#x2F;component.js:439</code></a>
         </p>
 
 
@@ -1201,7 +1197,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_grouping_group.js.html#l330"><code>src&#x2F;grouping&#x2F;group.js:330</code></a>
+        <a href="../files/src_grouping_group.js.html#l329"><code>src&#x2F;grouping&#x2F;group.js:329</code></a>
         </p>
 
 
@@ -1258,7 +1254,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l484"><code>src&#x2F;component.js:484</code></a>
+        <a href="../files/src_component.js.html#l485"><code>src&#x2F;component.js:485</code></a>
         </p>
 
 
@@ -1318,7 +1314,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The Components within this Group, mapped to their IDs.</p>
-                    <p>Fires an <a href="../classes/Group.html#event_updated" class="crosslink">updated</a> event on change.</p>
+                    <p>Fires an Group/updated:event event on change.</p>
                     
                         </div>
                     
@@ -1413,7 +1409,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l681"><code>src&#x2F;component.js:681</code></a>
+                            <a href="../files/src_component.js.html#l755"><code>src&#x2F;component.js:755</code></a>
                             </p>
                     
                     
@@ -1518,7 +1514,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l708"><code>src&#x2F;component.js:708</code></a>
+                            <a href="../files/src_component.js.html#l782"><code>src&#x2F;component.js:782</code></a>
                             </p>
                     
                     
@@ -1656,7 +1652,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l772"><code>src&#x2F;component.js:772</code></a>
+                            <a href="../files/src_component.js.html#l846"><code>src&#x2F;component.js:846</code></a>
                             </p>
                     
                     
@@ -1681,7 +1677,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_grouping_group.js.html#l378"><code>src&#x2F;grouping&#x2F;group.js:378</code></a>
+                            <a href="../files/src_grouping_group.js.html#l377"><code>src&#x2F;grouping&#x2F;group.js:377</code></a>
                             </p>
                     
                     
@@ -1709,34 +1705,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     </li>
                                 </ul>
                             </div>
-                    
-                    
-                    </div>
-                    <div id="event_updated" class="events item">
-                        <h3 class="name"><code>updated</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_grouping_group.js.html#l290"><code>src&#x2F;grouping&#x2F;group.js:290</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired on the next <a href="../classes/Scene.html#event_tick2" class="crosslink">tick2</a> whenever
-                    <a href="../classes/Component.html" class="crosslink">Components</a> were added or removed since the
-                    last <a href="../classes/Scene.html#event_tick2" class="crosslink">tick2</a> event, to provide a batched change event
-                    for subscribers who don&#39;t want to react to every individual addition or removal on this Group.</p>
-                    
-                        </div>
-                    
                     
                     
                     </div>

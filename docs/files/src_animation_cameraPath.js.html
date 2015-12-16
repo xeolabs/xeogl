@@ -340,10 +340,7 @@
 
                         // Subscribe to new Path&#x27;s events
 
-                        this._onPathT = newPath.on(&quot;t&quot;,
-                            function () { // Called immediately
-                                this._update();
-                            }, this);
+                        this._onPathT = newPath.on(&quot;t&quot;, this._update, this);
                     }
                 },
 

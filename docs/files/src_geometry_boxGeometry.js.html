@@ -217,19 +217,13 @@
             this.zSize = cfg.zSize;
         },
 
-        _boxDirty: function () {
-            if (!this.__dirty) {
-                this.__dirty = true;
-                var self = this;
-                this.scene.once(&quot;tick4&quot;,
-                    function () {
-                        self._buildBox();
-                        self.__dirty = false;
-                    });
-            }
-        },
-
-        _buildBox: function () {
+        /**
+         * Implement protected virtual template method {{#crossLink &quot;Geometry/method:_update&quot;}}{{/crossLink}},
+         * to generate geometry data arrays.
+         *
+         * @protected
+         */
+        _update: function () {
 
             var xmin = -this._xSize;
             var ymin = -this._ySize;
@@ -331,6 +325,8 @@
 
                     this._xSize = value;
 
+                    this._scheduleUpdate();
+
                     /**
                      * Fired whenever this BoxGeometry&#x27;s {{#crossLink &quot;BoxGeometry/xSize:property&quot;}}{{/crossLink}} property changes.
                      * @event xSize
@@ -338,8 +334,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;xSize&quot;, this._xSize);
-
-                    this._boxDirty();
                 },
 
                 get: function () {
@@ -373,6 +367,8 @@
 
                     this._ySize = value;
 
+                    this._scheduleUpdate();
+
                     /**
                      * Fired whenever this BoxGeometry&#x27;s {{#crossLink &quot;BoxGeometry/ySize:property&quot;}}{{/crossLink}} property changes.
                      * @event ySize
@@ -380,8 +376,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;ySize&quot;, this._ySize);
-
-                    this._boxDirty();
                 },
 
                 get: function () {
@@ -415,6 +409,8 @@
 
                     this._zSize = value;
 
+                    this._scheduleUpdate();
+
                     /**
                      * Fired whenever this BoxGeometry&#x27;s {{#crossLink &quot;BoxGeometry/zSize:property&quot;}}{{/crossLink}} property changes.
                      * @event zSize
@@ -422,8 +418,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;zSize&quot;, this._zSize);
-
-                    this._boxDirty();
                 },
 
                 get: function () {

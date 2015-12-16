@@ -297,8 +297,7 @@
 
  var angle = 0;
 
- scene.on(&quot;tick&quot;,
-    function () {
+ scene.on(&quot;tick&quot;, function () {
 
         angle += 0.5;
 
@@ -335,9 +334,12 @@
             this._onParentUpdated = null;
             this._onParentDestroyed = null;
 
+            var mat = XEO.math.identityMat4(XEO.math.mat4());
+            var invMat = XEO.math.inverseMat4(mat, XEO.math.mat4());
+
             this._state = new XEO.renderer.ModelTransform({
-                matrix: null,
-                normalMatrix: null
+                matrix: mat,
+                normalMatrix: invMat
             });
 
             this.parent = cfg.parent;
@@ -374,29 +376,12 @@
                      */
                     this.fire(&quot;parent&quot;, this._parent);
 
-                    var self = this;
-
-                    var updated = function () {
-
-                        self._leafMatrixDirty = true;
-
-                        /**
-                         * Fired whenever this Transform&#x27;s {{#crossLink &quot;Transform/leafMatrix:property&quot;}}{{/crossLink}} property changes.
-                         *
-                         * This event does not carry the updated property value. Instead, subscribers will need to read
-                         * that property again to get its updated value (which may be lazy-computed then).
-                         *
-                         * @event updated
-                         */
-                        self.fire(&quot;updated&quot;, true);
-                    };
-
                     if (this._parent) {
-                        this._onParentUpdated = this._parent.on(&quot;updated&quot;, updated);
-                        this._onParentDestroyed = this._parent.on(&quot;destroyed&quot;, updated);
+                        this._onParentUpdated = this._parent.on(&quot;updated&quot;, this._parentUpdated, this);
+                        this._onParentDestroyed = this._parent.on(&quot;destroyed&quot;, this._parentUpdated, this);
                     }
 
-                    updated();
+                    this._parentUpdated();
                 },
 
                 get: function () {
@@ -469,8 +454,19 @@
             }
         },
 
-        _compile: function () {
-            this._renderer.modelTransform = this._state;
+        _parentUpdated: function () {
+
+            this._leafMatrixDirty = true;
+
+            /**
+             * Fired whenever this Transform&#x27;s {{#crossLink &quot;Transform/leafMatrix:property&quot;}}{{/crossLink}} property changes.
+             *
+             * This event does not carry the updated property value. Instead, subscribers will need to read
+             * that property again to get its updated value (which may be lazy-computed then).
+             *
+             * @event updated
+             */
+            this.fire(&quot;updated&quot;, true);
         },
 
         // This is called if necessary when reading &quot;leafMatrix&quot;, to update that property.
@@ -487,6 +483,9 @@
 
             if (!this._parent) {
 
+                // No parent Transform;
+                // copy matrix property into the render state&#x27;s matrix
+
                 var m1 = this._matrix;
                 var m2 = this._state.matrix;
 
@@ -496,21 +495,31 @@
 
             } else {
 
+                // Multiply parent&#x27;s leaf matrix by this matrix,
+                // store result in the render state&#x27;s matrix
+
                 XEO.math.mulMat4(this._parent.leafMatrix, this._matrix, this._state.matrix);
             }
+
+            // Create normal matrix from inverse
+            // of the state&#x27;s matrix
+
+            // TODO: only compute normal matrix on leaf!
 
             if (!this._state.normalMatrix) {
                 this._state.normalMatrix = XEO.math.identityMat4();
             }
 
-            // TODO: only compute normal matrix on leaf!
-
             XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix);
             XEO.math.transposeMat4(this._state.normalMatrix);
 
-            this._renderer.imageDirty = true;
+            this._renderer.imageDirty = true; //  TODO : Where should this go?
 
             this._leafMatrixDirty = false;
+        },
+
+        _compile: function () {
+            this._renderer.modelTransform = this._state;
         },
 
         _getJSON: function () {

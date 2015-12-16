@@ -33,8 +33,7 @@ XEO.SplineCurveHelper = XEO.Component.extend({
         if (!this.__dirty) {
             this.__dirty = true;
             var self = this;
-            this.scene.once("tick2",
-                function () {
+            XEO.scheduleTask(function () {
                     self.__build();
                     self.__dirty = false;
                 });

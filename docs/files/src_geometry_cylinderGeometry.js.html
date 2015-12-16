@@ -225,19 +225,13 @@
             this.openEnded = cfg.openEnded;
         },
 
-        _cylinderDirty: function () {
-            if (!this.__dirty) {
-                this.__dirty = true;
-                var self = this;
-                this.scene.once(&quot;tick4&quot;,
-                    function () {
-                        self._buildCylinder();
-                        self.__dirty = false;
-                    });
-            }
-        },
-
-        _buildCylinder: function () {
+        /**
+         * Implement protected virtual template method {{#crossLink &quot;Geometry/method:_update&quot;}}{{/crossLink}},
+         * to generate geometry data arrays.
+         *
+         * @protected
+         */
+        _update: function () {
 
             var radiusTop = this._radiusTop;
             var radiusBottom = this._radiusBottom;
@@ -435,6 +429,8 @@
 
                     this._lod = value;
 
+                    this._scheduleUpdate();
+
                     /**
                      * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/lod:property&quot;}}{{/crossLink}} property changes.
                      * @event lod
@@ -442,8 +438,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;lod&quot;, this._lod);
-
-                    this._cylinderDirty();
                 },
 
                 get: function () {
@@ -477,6 +471,8 @@
 
                     this._radiusTop = value;
 
+                    this._scheduleUpdate();
+
                     /**
                      * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/radiusTop:property&quot;}}{{/crossLink}} property changes.
                      * @event radiusTop
@@ -484,8 +480,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;radiusTop&quot;, this._radiusTop);
-
-                    this._cylinderDirty();
                 },
 
                 get: function () {
@@ -519,6 +513,8 @@
 
                     this._radiusBottom = value;
 
+                    this._scheduleUpdate();
+
                     /**
                      * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/radiusBottom:property&quot;}}{{/crossLink}} property changes.
                      * @event radiusBottom
@@ -526,8 +522,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;radiusBottom&quot;, this._radiusBottom);
-
-                    this._cylinderDirty();
                 },
 
                 get: function () {
@@ -561,6 +555,8 @@
 
                     this._height = value;
 
+                    this._scheduleUpdate();
+
                     /**
                      * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/height:property&quot;}}{{/crossLink}} property changes.
                      * @event height
@@ -568,8 +564,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;height&quot;, this._height);
-
-                    this._cylinderDirty();
                 },
 
                 get: function () {
@@ -603,6 +597,8 @@
 
                     this._radialSegments = value;
 
+                    this._scheduleUpdate();
+
                     /**
                      * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/radialSegments:property&quot;}}{{/crossLink}} property changes.
                      * @event radialSegments
@@ -610,8 +606,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;radialSegments&quot;, this._radialSegments);
-
-                    this._cylinderDirty();
                 },
 
                 get: function () {
@@ -645,6 +639,8 @@
 
                     this._heightSegments = value;
 
+                    this._scheduleUpdate();
+
                     /**
                      * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/heightSegments:property&quot;}}{{/crossLink}} property changes.
                      * @event heightSegments
@@ -652,8 +648,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;heightSegments&quot;, this._heightSegments);
-
-                    this._cylinderDirty();
                 },
 
                 get: function () {
@@ -682,6 +676,8 @@
 
                     this._openEnded = value;
 
+                    this._scheduleUpdate();
+
                     /**
                      * Fired whenever this Cylinder&#x27;s {{#crossLink &quot;Cylinder/openEnded:property&quot;}}{{/crossLink}} property changes.
                      * @event openEnded
@@ -689,8 +685,6 @@
                      * @param value The property&#x27;s new value
                      */
                     this.fire(&quot;openEnded&quot;, this._openEnded);
-
-                    this._cylinderDirty();
                 },
 
                 get: function () {

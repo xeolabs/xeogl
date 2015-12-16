@@ -11,6 +11,8 @@
     <link href="assets/css/prettify.css" rel="stylesheet"/>
     <script src="assets/js/prettify.js"></script>
 
+    <script src="assets/js/jquery-1.8.3.min.js"></script>
+
     <title>xeoEngine</title>
 </head>
 
@@ -43,8 +45,14 @@
 </div>
 
 <!-- MAIN CONTENT -->
-<div id="main_content_wrap" class="outer">
-    <section id="main_content" class="inner">
+<div style="width:800px;  margin: 0 auto; background: white;">
+    <div style="float: left; width: 200px; padding-right: 50px; background: white;">
+        <h3>Features</h3>
+
+        <div id="featureList"></div>
+    </div>
+
+    <div style="float: left; width: 550px;  background: white;">
         <h3>About</h3>
 
         <ul>
@@ -54,25 +62,15 @@
                     href="examples/">here</a></li>
         </ul>
 
-        <h3>Features</h3>
 
-        <ul>
-            <li>Extensible, component-based scene definition</li>
-
-            <li>Runtime-editable scene</li>
-
-            <li>Save and load scene state as JSON</li>
-
-            <li>Defaults for everything</li>
-
-        </ul>
 
         <h3>Usage</h3>
 
         <p>To start with, include <a href="."
-                                     onclick="javascript:alert('Not released yet!')">xeoengine.min.js</a> in your HTML
+                                     onclick="javascript:alert('Not released yet!')">xeoengine.min.js</a> in your
+            HTML
             page:</p>
-        <pre>&lt;script src="http://xeoengine.org/build/xeoengine.min.js"&gt;&lt;/script&gt;</pre>
+        <pre>&lt;script src="http://xeoengine.org/build/xeoengine.js"&gt;&lt;/script&gt;</pre>
 
         <br>
         <h5>Creating a 3D scene</h5>
@@ -110,8 +108,10 @@ var object = new XEO.GameObject(scene, {
             for
             our game object. The game object will fall back on the scene's
             default flyweight components
-            (eg. <a href="./docs/classes/Camera.html">camera</a>, <a href="./docs/classes/Lights.html">lights</a> etc)
-            for everything else. As you can see, this keeps the code compact, while flattening the learning curve and
+            (eg. <a href="./docs/classes/Camera.html">camera</a>, <a href="./docs/classes/Lights.html">lights</a>
+            etc)
+            for everything else. As you can see, this keeps the code compact, while flattening the learning curve
+            and
             making harder to accidentally make scenes that don't render anything.</p>
 
         <h5>Animating</h5>
@@ -122,14 +122,15 @@ var object = new XEO.GameObject(scene, {
 
 <pre class="prettyprint lang-javascript">material.on("diffuse",
      function(value) {
-            console.log("Value of material diffuse is now: " + value);
+            console.log("Material diffuse is now: " + value);
      });
 
 // This is going to fire our change listener above
 material.diffuse = [0.9, 0.9, 0.6];</pre>
         <br>
 
-        <p>Likewise, you can update properties on any of the scene's default flyweight components, such as the default
+        <p>Likewise, you can update properties on any of the scene's default flyweight components, such as the
+            default
             camera:</p>
         <pre class="prettyprint lang-javascript">scene.camera.view.eye = [3.0, 2.0, -10.0];</pre>
 
@@ -140,7 +141,8 @@ material.diffuse = [0.9, 0.9, 0.6];</pre>
         <p>You can edit <span class="emphasis">everything</span> in your scene dynamically, at runtime. Create and
             destroy components, link or unlink
             them to each other, update their properties, and so on. Let's add a diffuse <a
-                    href="./docs/classes/Texture.html">texture</a> map to our material, which will immediately appear on
+                    href="./docs/classes/Texture.html">texture</a> map to our material, which will immediately
+            appear on
             our box:</p>
 
 <pre class="prettyprint lang-javascript">var texture = new XEO.Texture(scene, {
@@ -163,8 +165,9 @@ var scene2 = new XEO.Scene({ json: json });</pre>
 
         <p>Find more examples in the <a href="./docs/">API docs</a>.</p>
 
-    </section>
+    </div>
 </div>
+
 
 <!-- FOOTER  -->
 <div id="footer_wrap" class="outer">
@@ -177,7 +180,82 @@ var scene2 = new XEO.Scene({ json: json });</pre>
 
 <script>
 
+    addFeatures();
     addPrettify();
+
+    function addFeatures() {
+        $.ajax({
+            type: 'GET',
+            url: 'examples/features.json',
+            dataType: 'json',
+            success: function (features) {
+
+                var featureList = $('#featureList');
+
+                var category;
+                var categoryElem;
+                var subCategoryElem;
+                var featureElem;
+                var subSection;
+                var subCategory;
+                var feature;
+
+                var li;
+
+                for (var categoryName in features) {
+                    if (features.hasOwnProperty(categoryName)) {
+
+                        category = features[categoryName];
+
+                        categoryElem = $('<h3/>')
+                                .addClass('feature-category')
+                                .text(category.title)
+                                .appendTo(featureList);
+
+                        if (category.description) {
+                            $('<h3/>')
+                                    .addClass('feature-category-description')
+                                    .text(category.description)
+                                    .appendTo(featureList);
+                        }
+
+                        for (var i = 0, len = category.nodes.length; i < len; i++) {
+                            subCategory = category.nodes[i];
+                            subCategoryElem = $('<div/>')
+                                    .addClass('feature-subcategory')
+                                    .appendTo(featureList);
+
+                            var nodes = subCategory.nodes;
+                            if (nodes) {
+                                for (var j = 0, lenj = subCategory.nodes.length; j < lenj; j++) {
+                                    feature = subCategory.nodes[j];
+                                    if (feature.status == "alpha") {
+                                        // Don't list alpha-status features
+                                        continue;
+                                    }
+                                    featureElem = $('<a/>')
+                                            .addClass('feature-feature')
+                                            .attr('href', 'examples/index.html#' + feature.page)
+                                            .text(feature.title)
+                                            .appendTo(subCategoryElem);
+
+                                    if (j < lenj - 2) {
+                                        $('<span/>')
+                                                .text(", ")
+                                                .appendTo(featureElem);
+                                    } else if (j < lenj - 1) {
+                                        $('<span/>')
+                                                .text(", ")
+                                                .appendTo(featureElem);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     function addPrettify() {
         var els = document.querySelectorAll('pre');
