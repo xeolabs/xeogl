@@ -20,8 +20,8 @@
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
  @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
- @param [cfg.xSegments=4] {Number} Number of segments on the X-axis.
- @param [cfg.ySegments=4] {Number} Number of segments on the Y-axis.
+ @param [cfg.xSegments=1] {Number} Number of segments on the X-axis.
+ @param [cfg.ySegments=1] {Number} Number of segments on the Y-axis.
 
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
@@ -65,12 +65,12 @@
             var xSegments = Math.floor(this._lod * this._xSegments);
             var ySegments = Math.floor(this._lod * this._ySegments);
 
-            if (ySegments < 4) {
-                ySegments = 4;
+            if (ySegments < 1) {
+                ySegments = 1;
             }
 
-            if (ySegments < 4) {
-                ySegments = 4;
+            if (ySegments < 1) {
+                ySegments = 1;
             }
 
             var halfWidth = width / 2;
@@ -279,14 +279,14 @@
              * Fires a {{#crossLink "PlaneGeometry/xSegments:event"}}{{/crossLink}} event on change.
              *
              * @property xSegments
-             * @default 4
+             * @default 1
              * @type Number
              */
             xSegments: {
 
                 set: function (value) {
 
-                    value = value || 4;
+                    value = value || 1;
 
                     if (this._xSegments === value) {
                         return;
@@ -321,14 +321,14 @@
              * Fires a {{#crossLink "PlaneGeometry/ySegments:event"}}{{/crossLink}} event on change.
              *
              * @property ySegments
-             * @default 4
+             * @default 1
              * @type Number
              */
             ySegments: {
 
                 set: function (value) {
 
-                    value = value || 4;
+                    value = value || 1;
 
                     if (this._ySegments === value) {
                         return;
