@@ -55,7 +55,6 @@ module.exports = function (grunt) {
                 },
                 logo: '../assets/images/logo.png'
             }
-
         },
 
         copy: {
@@ -66,6 +65,10 @@ module.exports = function (grunt) {
             unminified: {
                 src: 'build/<%= PROJECT_NAME %>.js',
                 dest: '<%= build_dir %>/<%= PROJECT_NAME %>-<%= ENGINE_VERSION %>.js'
+            },
+            website: {
+                src: 'website',
+                dest: '.'
             }
         }
     });
@@ -80,10 +83,11 @@ module.exports = function (grunt) {
     // Run this when testing examples locally against your changes before committing them
     grunt.registerTask("snapshot", ["concat", "yuidoc", "uglify"]);
 
-
     // Build a package within ./build
     // Assigns the package the current version number that's defined in package.json
     grunt.registerTask("build", ["snapshot", "yuidoc", "copy"]);
+
+    grunt.registerTask("website", ["website"]);
 
     grunt.registerTask("default", "snapshot");
 };
