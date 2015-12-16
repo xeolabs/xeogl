@@ -128,6 +128,8 @@
                         this._xyz = value;
                     }
 
+                    this._buildMatrix();
+
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/xyz:property"}}{{/crossLink}} property changes.
 
@@ -135,8 +137,6 @@
                      @param value {Array of Number} The property's new value
                      */
                     this.fire("xyz", this._xyz);
-
-                    this._update();
                 },
 
                 get: function () {
@@ -159,6 +159,8 @@
 
                     this._angle = value || 0;
 
+                    this._buildMatrix();
+
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/angle:property"}}{{/crossLink}} property changes.
 
@@ -166,8 +168,6 @@
                      @param value {Array of Number} The property's new value
                      */
                     this.fire("angle", this._angle);
-
-                    this._update();
                 },
 
                 get: function () {
@@ -176,7 +176,7 @@
             }
         },
 
-        _update: function () {
+        _buildMatrix: function () {
 
             if (this._xyz !== null && this._angle !== null) {
 

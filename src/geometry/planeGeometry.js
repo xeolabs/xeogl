@@ -173,7 +173,7 @@
 
                     this._lod = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -215,7 +215,7 @@
 
                     this._xSize = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}} property changes.
@@ -257,7 +257,7 @@
 
                     this._ySize = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySize:property"}}{{/crossLink}} property changes.
@@ -299,7 +299,7 @@
 
                     this._xSegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} property changes.
@@ -341,7 +341,7 @@
 
                     this._ySegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySegments:property"}}{{/crossLink}} property changes.

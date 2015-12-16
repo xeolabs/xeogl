@@ -171,7 +171,7 @@
 
                     this._lod = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -213,7 +213,7 @@
 
                     this._radius = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radius:property"}}{{/crossLink}} property changes.
@@ -256,7 +256,7 @@
 
                     this._tube = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tube:property"}}{{/crossLink}} property changes.
@@ -298,7 +298,7 @@
 
                     this._radialSegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radialSegments:property"}}{{/crossLink}} property changes.
@@ -341,7 +341,7 @@
 
                     this._tubeSegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tubeSegments:property"}}{{/crossLink}} property changes.
@@ -383,7 +383,7 @@
 
                     this._arc = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} property changes.

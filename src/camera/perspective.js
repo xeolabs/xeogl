@@ -85,33 +85,23 @@
             this._fovy = 60.0;
             this._near = 0.1;
             this._far = 10000.0;
-
-            var self = this;
+            
             var canvas = this.scene.canvas;
 
             // Recompute aspect from change in canvas size
-            this._canvasResized = canvas.on("size", this._scheduleBuild, this);
+            this._canvasResized = canvas.on("size", this._scheduleUpdate, this);
 
             this.fovy = cfg.fovy;
             this.near = cfg.near;
             this.far = cfg.far;
         },
 
-        _scheduleBuild: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                XEO.addTask(this._build, this);
-            }
-        },
-
-        _build: function () {
+        _update: function () {
 
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
             XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
-
-            this._dirty = false;
 
             /**
              * Fired whenever this Perspective's {{#crossLink "Perspective/matrix:property"}}{{/crossLink}} property changes.
@@ -141,7 +131,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Perspective's {{#crossLink "Perspective/fovy:property"}}{{/crossLink}} property changes.
@@ -174,7 +164,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Perspective's   {{#crossLink "Perspective/near:property"}}{{/crossLink}} property changes.
@@ -206,7 +196,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Perspective's  {{#crossLink "Perspective/far:property"}}{{/crossLink}} property changes.
@@ -234,21 +224,16 @@
 
                 get: function () {
 
-                    if (this._dirty) {
-                        this._build();
+                    if (this._updateScheduled) {
+                        this._update();
                     }
-
+                    
                     return this._state.matrix;
                 }
             }
         },
 
         _compile: function () {
-
-            if (this._dirty) {
-                this._build();
-            }
-
             this._renderer.projTransform = this._state;
         },
 

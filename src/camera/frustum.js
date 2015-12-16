@@ -89,8 +89,6 @@
                 matrix: XEO.math.identityMat4()
             });
 
-            this._dirty = false;
-
             this._left = -1.0;
             this._right = 1.0;
             this._bottom = -1.0;
@@ -106,38 +104,6 @@
             this.top = cfg.top;
             this.near = cfg.near;
             this.far = cfg.far;
-        },
-
-        // Schedules state rebuild on the next "tick"
-
-        _scheduleBuild: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                XEO.addTask(this._build, this);
-            }
-        },
-
-        // Rebuilds state
-
-        _build: function () {
-
-            XEO.math.frustumMat4(
-                this._left,
-                this._right,
-                this._bottom,
-                this._top,
-                this._near,
-                this._far,
-                this._state.matrix);
-
-            this._dirty = false;
-
-            /**
-             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
         },
 
         _props: {
@@ -157,9 +123,7 @@
 
                     this._left = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/left:property"}}{{/crossLink}} property changes.
@@ -190,9 +154,7 @@
 
                     this._right = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/right:property"}}{{/crossLink}} property changes.
@@ -223,9 +185,7 @@
 
                     this._top = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/top:property"}}{{/crossLink}} property changes.
@@ -256,9 +216,7 @@
 
                     this._bottom = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/bottom:property"}}{{/crossLink}} property changes.
@@ -289,9 +247,7 @@
 
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} property changes.
@@ -322,9 +278,7 @@
 
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's  {{#crossLink "Frustum/far:property"}}{{/crossLink}} property changes.
@@ -352,13 +306,45 @@
 
                 get: function () {
 
-                    if (this._dirty) {
+                    if (this._buildScheduled) {
+
+                        // Matrix update is scheduled for next frame.
+                        // Lazy-build the matrix now, while leaving the update
+                        // scheduled. The update task will fire a "matrix" event,
+                        // without needlessly rebuilding the matrix again.
+
                         this._build();
+
+                        this._buildScheduled = false;
                     }
 
                     return this._state.matrix;
                 }
             }
+        },
+
+        _build: function () {
+
+            XEO.math.frustumMat4(
+                this._left,
+                this._right,
+                this._bottom,
+                this._top,
+                this._near,
+                this._far,
+                this._state.matrix);
+        },
+
+        _update: function () {
+
+            this._renderer.imageDirty = true;
+
+            /**
+             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
+             * @event matrix
+             * @param value The property's new value
+             */
+            this.fire("matrix", this._state.matrix);
         },
 
         _compile: function () {

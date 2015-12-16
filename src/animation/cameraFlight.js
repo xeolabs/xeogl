@@ -125,7 +125,8 @@
 
             this._flying = false;
 
-            this._ok = null;
+            this._callback = null;
+            this._callbackScope = null;
 
             this._onTick = null;
 
@@ -159,9 +160,10 @@
          * @param [params.eye] {Array of Number} Position to fly the eye position to.
          * @param [params.look] {Array of Number} Position to fly the look position to.
          * @param [params.up] {Array of Number} Position to fly the up vector to.
-         * @param [ok] {Function} Callback fired on arrival
+         * @param [callback] {Function} Callback fired on arrival
+         * @param [scope] {Object} Optional scope for callback
          */
-        flyTo: function (params, ok) {
+        flyTo: function (params, callback, scope) {
 
             if (this._flying) {
                 this.stop();
@@ -170,15 +172,16 @@
             var camera = this._children.camera;
 
             if (!camera) {
-                if (ok) {
-                    ok();
+                if (callback) {
+                    scope ? callback.call(scope) : callback();
                 }
                 return;
             }
 
             this._flying = false;
 
-            this._ok = ok;
+            this._callback = callback;
+            this._callbackScope = scope;
 
             var lookat = camera.view;
 
@@ -237,8 +240,8 @@
 
                     if (!component) {
                         this.error("Component not found: " + XEO._inQuotes(componentId));
-                        if (ok) {
-                            ok();
+                        if (callback) {
+                            scope ? callback.call(scope) : callback();
                         }
                         return;
                     }
@@ -248,8 +251,8 @@
 
                 if (!worldBoundary) {
                     this.error("Can't fly to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
-                    if (ok) {
-                        ok();
+                    if (callback) {
+                        scope ? callback.call(scope) : callback();
                     }
                     return;
                 }
@@ -308,26 +311,21 @@
 
             this.fire("started", params, true);
 
-            var self = this;
-
-            this._time1 = (new Date()).getTime();
+            this._time1 = Date.now();
             this._time2 = this._time1 + this._duration;
 
             this._flying = true; // False as soon as we stop
 
-            this._tick = this.scene.on("tick",
-                function (params) {
-                    self._update(params);
-                });
+            XEO.scheduleTask(this._update, this);
         },
 
-        _update: function (params) {
+        _update: function () {
 
             if (!this._flying) {
                 return;
             }
 
-            var time = params.time;
+            var time = Date.now();
 
             var t = (time - this._time1) / (this._time2 - this._time1);
 
@@ -347,7 +345,10 @@
 
             if (stopping) {
                 this.stop();
+                return;
             }
+
+            XEO.scheduleTask(this._update, this); // Keep flying
         },
 
         // Quadratic easing out - decelerating to zero velocity
@@ -364,18 +365,18 @@
                 return;
             }
 
-            this.scene.off(this._tick);
+            //this.scene.off(this._tick);
 
             this._flying = false;
 
             this._time1 = null;
             this._time2 = null;
 
-            var ok = this._ok;
+            var callback = this._callback;
 
-            if (ok) {
-                this._ok = null;
-                ok();
+            if (callback) {
+                this._callback = null;
+                this._callbackScope ? callback.call(this._callbackScope) : callback();
             }
 
             this.fire("stopped", true, true);

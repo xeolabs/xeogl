@@ -120,8 +120,7 @@
 
  var angle = 0;
 
- scene.on("tick",
-    function () {
+ scene.on("tick", function () {
 
         angle += 0.5;
 
@@ -200,29 +199,12 @@
                      */
                     this.fire("parent", this._parent);
 
-                    var self = this;
-
-                    var updated = function () {
-
-                        self._leafMatrixDirty = true;
-
-                        /**
-                         * Fired whenever this Transform's {{#crossLink "Transform/leafMatrix:property"}}{{/crossLink}} property changes.
-                         *
-                         * This event does not carry the updated property value. Instead, subscribers will need to read
-                         * that property again to get its updated value (which may be lazy-computed then).
-                         *
-                         * @event updated
-                         */
-                        self.fire("updated", true);
-                    };
-
                     if (this._parent) {
-                        this._onParentUpdated = this._parent.on("updated", updated);
-                        this._onParentDestroyed = this._parent.on("destroyed", updated);
+                        this._onParentUpdated = this._parent.on("updated", this._parentUpdated, this);
+                        this._onParentDestroyed = this._parent.on("destroyed", this._parentUpdated, this);
                     }
 
-                    updated();
+                    this._parentUpdated();
                 },
 
                 get: function () {
@@ -295,8 +277,19 @@
             }
         },
 
-        _compile: function () {
-            this._renderer.modelTransform = this._state;
+        _parentUpdated: function () {
+
+            this._leafMatrixDirty = true;
+
+            /**
+             * Fired whenever this Transform's {{#crossLink "Transform/leafMatrix:property"}}{{/crossLink}} property changes.
+             *
+             * This event does not carry the updated property value. Instead, subscribers will need to read
+             * that property again to get its updated value (which may be lazy-computed then).
+             *
+             * @event updated
+             */
+            this.fire("updated", true);
         },
 
         // This is called if necessary when reading "leafMatrix", to update that property.
@@ -313,6 +306,9 @@
 
             if (!this._parent) {
 
+                // No parent Transform;
+                // copy matrix property into the render state's matrix
+
                 var m1 = this._matrix;
                 var m2 = this._state.matrix;
 
@@ -322,21 +318,31 @@
 
             } else {
 
+                // Multiply parent's leaf matrix by this matrix,
+                // store result in the render state's matrix
+
                 XEO.math.mulMat4(this._parent.leafMatrix, this._matrix, this._state.matrix);
             }
+
+            // Create normal matrix from inverse
+            // of the state's matrix
+
+            // TODO: only compute normal matrix on leaf!
 
             if (!this._state.normalMatrix) {
                 this._state.normalMatrix = XEO.math.identityMat4();
             }
 
-            // TODO: only compute normal matrix on leaf!
-
             XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix);
             XEO.math.transposeMat4(this._state.normalMatrix);
 
-            this._renderer.imageDirty = true;
+            this._renderer.imageDirty = true; //  TODO : Where should this go?
 
             this._leafMatrixDirty = false;
+        },
+
+        _compile: function () {
+            this._renderer.modelTransform = this._state;
         },
 
         _getJSON: function () {

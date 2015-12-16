@@ -141,7 +141,7 @@
                 get: function () {
 
                     if (this._getDirty()) {
-                        this._build();
+                        this._buildBoundary();
                     }
 
                     return this._aabb;
@@ -160,7 +160,7 @@
                 get: function () {
 
                     if (this._getDirty()) {
-                        this._build();
+                        this._buildBoundary();
                     }
 
                     return this._center;
@@ -239,7 +239,7 @@
 
         // Lazy (re)builds the obb, aabb and center.
 
-        _build: function () {
+        _buildBoundary: function () {
 
             var math = XEO.math;
 

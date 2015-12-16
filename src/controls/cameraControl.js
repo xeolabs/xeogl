@@ -199,68 +199,7 @@
                 rayPick: true
             });
 
-            this.mousePickObject.on("pick",
-                function (e) {
-
-                    // Fly camera to each picked object
-                    // Don't change distance between look and eye
-
-                    var view = self.cameraFlight.camera.view;
-
-                    var pos;
-
-                    if (e.worldPos) {
-                        pos = e.worldPos
-
-                    } else if (e.object) {
-                        pos = e.object.worldBoundary.center
-                    }
-
-                    if (pos) {
-
-                        var diff = XEO.math.subVec3(view.eye, view.look, []);
-
-                        var input = self.scene.input;
-
-                        if (input.keyDown[input.KEY_SHIFT] && e.object) {
-
-                           // var aabb = e.object.worldBoundary.aabb;
-
-                            self._boundaryObject.geometry.obb = e.object.worldBoundary.obb;
-                            self._boundaryObject.visibility.visible = true;
-
-                            var center = e.object.worldBoundary.center;
-
-                            self.cameraFlight.flyTo({
-                                    aabb: e.object.worldBoundary.aabb,
-                                    offset: [
-                                        pos[0] - center[0],
-                                        pos[1] - center[1],
-                                        pos[2] - center[2]
-                                    ]
-                                },
-                                function () {
-                                    self._boundaryObject.visibility.visible = false;
-                                });
-
-                        } else {
-
-                            self.cameraFlight.flyTo({
-                                    look: pos,
-                                    eye: [
-                                        pos[0] + diff[0],
-                                        pos[1] + diff[1],
-                                        pos[2] + diff[2]
-                                    ]
-                                },
-                                function () {
-                                    self._boundaryObject.visibility.visible = false;
-                                });
-                            {
-                            }
-                        }
-                    }
-                });
+            this.mousePickObject.on("pick", this._objectPicked, this);
 
             this.mousePickObject.on("nopick",
                 function (e) {
@@ -284,6 +223,66 @@
             this.firstPerson = cfg.firstPerson;
             this.camera = cfg.camera;
             this.active = cfg.active !== false;
+        },
+
+        _objectPicked: function (e) {
+
+            // Fly camera to each picked object
+            // Don't change distance between look and eye
+
+            var view = this.cameraFlight.camera.view;
+
+            var pos;
+
+            if (e.worldPos) {
+                pos = e.worldPos
+
+            } else if (e.object) {
+                pos = e.object.worldBoundary.center
+            }
+
+            if (pos) {
+
+                var diff = XEO.math.subVec3(view.eye, view.look, []);
+
+                var input = this.scene.input;
+
+                if (input.keyDown[input.KEY_SHIFT] && e.object) {
+
+                    // var aabb = e.object.worldBoundary.aabb;
+
+                    this._boundaryObject.geometry.obb = e.object.worldBoundary.obb;
+                    this._boundaryObject.visibility.visible = true;
+
+                    var center = e.object.worldBoundary.center;
+
+                    this.cameraFlight.flyTo({
+                            aabb: e.object.worldBoundary.aabb,
+                            offset: [
+                                pos[0] - center[0],
+                                pos[1] - center[1],
+                                pos[2] - center[2]
+                            ]
+                        },
+                        this._hideObjectBoundary, this);
+
+                } else {
+
+                    this.cameraFlight.flyTo({
+                            look: pos,
+                            eye: [
+                                pos[0] + diff[0],
+                                pos[1] + diff[1],
+                                pos[2] + diff[2]
+                            ]
+                        },
+                        this._hideObjectBoundary, this);
+                }
+            }
+        },
+
+        _hideObjectBoundary: function () {
+            this._boundaryObject.visibility.visible = false;
         },
 
         _props: {

@@ -283,7 +283,7 @@
         _scheduleUpdate: function () {
             if (!this._dirty) {
                 this._dirty = true;
-                XEO.addTask(this._notifyUpdated, this);
+                XEO.scheduleTask(this._notifyUpdated, this);
             }
         },
 

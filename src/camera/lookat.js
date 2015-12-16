@@ -87,43 +87,11 @@
                 up: [0, 1, 0]
             });
 
-            this._dirty = true;
+            this._buildScheduled = false;
 
             this.eye = cfg.eye;
             this.look = cfg.look;
             this.up = cfg.up;
-        },
-
-        // Schedules a call to #_buildLookat on the next "tick"
-        _lookatDirty: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                XEO.addTask(this._buildLookat, this);
-            }
-        },
-
-        // Rebuilds rendering state
-        _buildLookat: function () {
-
-            this._state.matrix = new Float32Array(XEO.math.lookAtMat4c(
-                this._state.eye[0], this._state.eye[1], this._state.eye[2],
-                this._state.look[0], this._state.look[1], this._state.look[2],
-                this._state.up[0], this._state.up[1], this._state.up[2],
-                this._state.matrix));
-
-            this._state.normalMatrix = new Float32Array(XEO.math.transposeMat4(new Float32Array(XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
-
-            this._dirty = false;
-
-            this._renderer.imageDirty = true;
-
-            /**
-             * Fired whenever this Lookat's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is updated.
-             *
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
         },
 
         /**
@@ -302,7 +270,7 @@
                     eye[1] = value[1];
                     eye[2] = value[2];
 
-                    this._lookatDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} property changes.
@@ -339,7 +307,7 @@
                     look[1] = value[1];
                     look[2] = value[2];
 
-                    this._lookatDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/look:property"}}{{/crossLink}} property changes.
@@ -374,7 +342,7 @@
                     up[1] = value[1];
                     up[2] = value[2];
 
-                    this._lookatDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/up:property"}}{{/crossLink}} property changes.
@@ -402,8 +370,16 @@
 
                 get: function () {
 
-                    if (this._dirty) {
-                        this._buildLookat();
+                    if (this._buildScheduled) {
+
+                        // Matrix update is scheduled for next frame.
+                        // Lazy-build the matrix now, while leaving the update
+                        // scheduled. The update task will fire a "matrix" event,
+                        // without needlessly rebuilding the matrix again.
+
+                        this._build();
+
+                        this._buildScheduled = false;
                     }
 
                     return this._state.matrix;
@@ -411,12 +387,31 @@
             }
         },
 
+        _build: function () {
+
+            this._state.matrix = new Float32Array(XEO.math.lookAtMat4c(
+                this._state.eye[0], this._state.eye[1], this._state.eye[2],
+                this._state.look[0], this._state.look[1], this._state.look[2],
+                this._state.up[0], this._state.up[1], this._state.up[2],
+                this._state.matrix));
+
+            this._state.normalMatrix = new Float32Array(XEO.math.transposeMat4(new Float32Array(XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
+        },
+
+        _update: function () {
+
+            this._renderer.imageDirty = true;
+
+            /**
+             * Fired whenever this Lookat's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is updated.
+             *
+             * @event matrix
+             * @param value The property's new value
+             */
+            this.fire("matrix", this._state.matrix);
+        },
+
         _compile: function () {
-
-            if (this._dirty) {
-                this._buildLookat();
-            }
-
             this._renderer.viewTransform = this._state;
         },
 

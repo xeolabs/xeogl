@@ -140,7 +140,6 @@
 
             // Dirty flags, processed in _buildTexture()
 
-            this._dirty = false;
             this._matrixDirty = false;
             this._srcDirty = false;
             this._imageDirty = false;
@@ -151,27 +150,7 @@
 
             // Handle WebGL context restore
 
-            this._webglContextRestored = this.scene.canvas.on(
-                "webglContextRestored",
-                function () {
-
-                    self._state.texture = null;
-
-                    self._matrixDirty = true;
-                    self._propsDirty = true;
-
-                    if (self._image) {
-                        self._imageDirty = true;
-
-                    } else if (self._src) {
-                        self._srcDirty = true;
-
-                    } else if (self._target) {
-                        self._targetDirty = true;
-                    }
-
-                    self._textureDirty();
-                });
+            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._webglContextRestored, this);
 
             // Transform
 
@@ -201,15 +180,27 @@
             XEO.stats.memory.textures++;
         },
 
-        // Schedules a call to #_buildTexture for the next "tick"
-        _textureDirty: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                XEO.addTask(this._buildTexture, this);
+        _webglContextRestored: function () {
+
+            this._state.texture = null;
+
+            this._matrixDirty = true;
+            this._propsDirty = true;
+
+            if (this._image) {
+                this._imageDirty = true;
+
+            } else if (this._src) {
+                this._srcDirty = true;
+
+            } else if (this._target) {
+                this._targetDirty = true;
             }
+
+            this._scheduleUpdate();
         },
 
-        _buildTexture: function () {
+        _update: function () {
 
             var gl = this.scene.canvas.gl;
 
@@ -224,8 +215,6 @@
                     this._srcDirty = false;
 
                     // _imageDirty is set when the image has loaded
-
-                    this._dirty = false;
 
                     return;
                 }
@@ -328,8 +317,6 @@
             }
 
             this._renderer.imageDirty = true;
-
-            this._dirty = false;
         },
 
 
@@ -358,6 +345,8 @@
                     self._srcDirty = false;
                     self._targetDirty = false;
 
+                    self._scheduleUpdate();
+
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
                      * @event image
@@ -372,8 +361,6 @@
                      * @param value {HTML Image} The value of the {{#crossLink "Texture/src:property"}}{{/crossLink}} property
                      */
                     self.fire("loaded", self._src);
-
-                    self._textureDirty();
                 }
 
 //                task.setCompleted();
@@ -424,7 +411,7 @@
                     this._srcDirty = false;
                     this._targetDirty = false;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
@@ -465,7 +452,7 @@
                     this._srcDirty = true;
                     this._targetDirty = false;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}} property changes.
@@ -515,7 +502,7 @@
                     this._srcDirty = false;
                     this._targetDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/target:property"}}{{/crossLink}} property changes.
@@ -549,8 +536,7 @@
                     this._translate = value;
                     this._matrixDirty = true;
 
-                    this._textureDirty();
-
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/translate:property"}}{{/crossLink}} property changes.
@@ -583,7 +569,7 @@
                     this._scale = value;
                     this._matrixDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/scale:property"}}{{/crossLink}} property changes.
@@ -620,7 +606,7 @@
                     this._rotate = value;
                     this._matrixDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/rotate:property"}}{{/crossLink}} property changes.
@@ -697,7 +683,7 @@
                     this._state.minFilter = value;
                     this._propsDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/minFilter:property"}}{{/crossLink}} property changes.
@@ -747,7 +733,7 @@
                     this._state.magFilter = value;
                     this._propsDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property changes.
@@ -799,7 +785,7 @@
                     this._state.wrapS = value;
                     this._propsDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/wrapS:property"}}{{/crossLink}} property changes.
@@ -851,7 +837,7 @@
                     this._state.wrapT = value;
                     this._propsDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/wrapT:property"}}{{/crossLink}} property changes.

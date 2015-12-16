@@ -100,7 +100,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._onPathCurves = newPath.on("curves",
                         function () {
-                            self._needUpdate();
+                            self._scheduleUpdate();
                         });
                 }
             },
@@ -127,7 +127,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                 this._divisions = value;
 
-                this._needUpdate();
+                this._scheduleUpdate();
 
                 this.fire("divisions", this._divisions);
             },

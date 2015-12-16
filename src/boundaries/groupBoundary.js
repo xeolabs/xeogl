@@ -80,7 +80,7 @@
         _props: {
 
             /**
-             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GroupBoundary.
              *
              * Fires a {{#crossLink "GroupBoundary/group:event"}}{{/crossLink}} event on change.
              *
@@ -100,7 +100,7 @@
                         oldGroup.off(this._onAdded);
                         oldGroup.off(this._onRemoved);
 
-                        oldGroup.iterate(unbind);
+                        oldGroup.iterate(this._unbind, this);
                     }
 
                     /**
@@ -111,55 +111,14 @@
                      */
                     var group = this._setChild("group", value);
 
-                    var self = this;
-
                     if (group) {
 
-                        this._onAdded = group.on("added",
-                            function (c) {
-                                if (c.worldBoundary) {
-                                    bind(c);
-                                }
-                                if (!self._aabbDirty) {
-                                    self._setAABBDirty();
-                                }
-                            });
+                        this._onAdded = group.on("added", this._added, this);
+                        this._onRemoved = group.on("removed", this._removed, this);
 
-                        this._onRemoved = group.on("removed",
-                            function (c) {
-                                if (c.worldBoundary) {
-                                    unbind(c);
-                                }
-                                if (!self._aabbDirty) {
-                                    self._setAABBDirty();
-                                }
-                            });
-
-                        group.iterate(bind);
+                        group.iterate(this._bind, this);
 
                         this._setAABBDirty();
-                    }
-
-                    function bind(c) {
-                        var worldBoundary = c.worldBoundary;
-                        if (!worldBoundary) {
-                            return;
-                        }
-                        self._onUpdated[c.id] = worldBoundary.on("updated",
-                            function () {
-                                if (!self._aabbDirty) {
-                                    self._setAABBDirty();
-                                }
-                            });
-                    }
-
-                    function unbind(c) {
-                        var worldBoundary = c.worldBoundary;
-                        if (!worldBoundary) {
-                            return;
-                        }
-                        worldBoundary.off(self._onUpdated[c.id]);
-                        delete self._onUpdated[c.id];
                     }
 
                     this._setAABBDirty();
@@ -214,6 +173,47 @@
                     return this._worldBoundary;
                 }
             }
+        },
+
+        _added: function (c) {
+            if (c.worldBoundary) {
+                this._bind(c);
+            }
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+        },
+
+        _removed: function (c) {
+            if (c.worldBoundary) {
+                this._unbind(c);
+            }
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+        },
+
+        _bind: function (c) {
+            var worldBoundary = c.worldBoundary;
+            if (!worldBoundary) {
+                return;
+            }
+            this._onUpdated[c.id] = worldBoundary.on("updated", this._updated, this);
+        },
+
+        _updated: function () {
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+        },
+
+        _unbind: function (c) {
+            var worldBoundary = c.worldBoundary;
+            if (!worldBoundary) {
+                return;
+            }
+            worldBoundary.off(this._onUpdated[c.id]);
+            delete this._onUpdated[c.id];
         },
 
         _setAABBDirty: function () {

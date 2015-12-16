@@ -157,7 +157,7 @@
                                     || keyCode === input.KEY_NUM_6) {
 
 
-                                    XEO.addTask(function () {
+                                    XEO.scheduleTask(function () {
                                         self._fly(keyCode);
                                     });
                                 }

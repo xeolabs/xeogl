@@ -269,17 +269,8 @@
 
                         // Subscribe to new Camera's events
 
-                        var self = this;
-
-                        this._onCameraViewMatrix = newCamera.on("viewMatrix",
-                            function () {
-                                self._setViewBoundaryDirty();
-                            });
-
-                        this._onCameraProjMatrix = newCamera.on("projMatrix",
-                            function () {
-                                self._setCanvasBoundaryDirty();
-                            });
+                        this._onCameraViewMatrix = newCamera.on("viewMatrix", this._setViewBoundaryDirty, this);
+                        this._onCameraProjMatrix = newCamera.on("projMatrix", this._setCanvasBoundaryDirty, this);
                     }
                 },
 
@@ -549,17 +540,8 @@
                         // World-space boundary is dirty when new Geometry's
                         // positions are updated or Geometry is destroyed.
 
-                        var self = this;
-
-                        this._onGeometryPositions = newGeometry.on("positions",
-                            function () {
-                                self._setWorldBoundaryDirty();
-                            });
-
-                        this._onGeometryDestroyed = newGeometry.on("destroyed",
-                            function () {
-                                self._setWorldBoundaryDirty();
-                            });
+                        this._onGeometryPositions = newGeometry.on("positions", this._setWorldBoundaryDirty, this);
+                        this._onGeometryDestroyed = newGeometry.on("destroyed", this._setWorldBoundaryDirty, this);
                     }
                 },
 
@@ -865,7 +847,10 @@
                                     return;
                                 }
                                 self._transformDirty = true;
-                                XEO.addTask(function () {
+                                XEO.scheduleTask(function () {
+                                    if (!self._transformDirty) {
+                                        return;
+                                    }
                                     newTransform._buildLeafMatrix();
 
                                     self._setWorldBoundaryDirty();
@@ -873,10 +858,7 @@
                                 });
                             });
 
-                        this._onTransformDestroyed = newTransform.on("destroyed",
-                            function () {
-                                self._setWorldBoundaryDirty();
-                            });
+                        this._onTransformDestroyed = newTransform.on("destroyed",this._setWorldBoundaryDirty,this);
                     }
                 },
 
@@ -984,6 +966,8 @@
 
                         var self = this;
 
+                       // this._setWorldBoundaryDirty();
+
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
                             meta: {
@@ -1012,7 +996,16 @@
                             //},
 
                             getMatrix: function () {
-                                return self._children.transform.leafMatrix;
+
+                                var transform = self._children.transform;
+
+                                if (self._transformDirty) {
+                                    transform._buildLeafMatrix();
+                                    self._setWorldBoundaryDirty();
+                                    self._transformDirty = false;
+                                }
+
+                                return transform.leafMatrix;
                             }
                         });
 
@@ -1020,8 +1013,6 @@
                             function () {
                                 self._worldBoundary = null;
                             });
-
-                        this._setWorldBoundaryDirty();
                     }
 
                     return this._worldBoundary;
@@ -1063,6 +1054,8 @@
 
                         var self = this;
 
+                   //     this._setViewBoundaryDirty();
+
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
                             meta: {
@@ -1090,8 +1083,6 @@
                             function () {
                                 self._viewBoundary = null;
                             });
-
-                        this._setViewBoundaryDirty();
                     }
 
                     return this._viewBoundary;
@@ -1134,6 +1125,8 @@
 
                         var self = this;
 
+                     //   this._setCanvasBoundaryDirty();
+
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
 
                             meta: {
@@ -1161,8 +1154,6 @@
                             function () {
                                 self._canvasBoundary = null;
                             });
-
-                        this._setCanvasBoundaryDirty();
                     }
 
                     return this._canvasBoundary;
@@ -1228,6 +1219,8 @@
                 }
             }
         },
+
+        // Callbacks as members, to avoid GC churn
 
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;

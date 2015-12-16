@@ -320,10 +320,9 @@
                 }
             });
 
-            // Indicates if a call to _update is needed
-            this._updateDirty = false;
+            this._updateScheduled = false;
+            this._vboUpdateScheduled = false;
 
-            this._vbosDirty = null;
             this._hashDirty = true;
 
             // Typed arrays
@@ -344,7 +343,7 @@
 
             // Flags for work pending
 
-            this._vbosDirty = false;
+            this._vboUpdateScheduled = false;
             this._positionsDirty = true;
             this._colorsDirty = true;
             this._normalsDirty = true;
@@ -410,27 +409,27 @@
          *
          * @protected
          */
-        _needUpdate: function () {
-            if (!this._updateDirty) {
-                this._updateDirty = true;
-                XEO.addTask(this._doUpdate, this);
+        _scheduleUpdate: function () {
+            if (!this._updateScheduled) {
+                this._updateScheduled = true;
+                XEO.scheduleTask(this._doUpdate, this);
             }
         },
 
         _doUpdate: function () {
 
-            if (this._updateDirty) {
+            if (this._updateScheduled) {
 
-                this._vbosDirty = true; // Prevents needless scheduling within _update()
+                this._vboUpdateScheduled = true; // Prevents needless scheduling within _update()
 
                 if (this._update) {
                     this._update();
                 }
 
-                this._updateDirty = false;
+                this._updateScheduled = false;
             }
 
-            if (this._vbosDirty) {
+            if (this._vboUpdateScheduled) {
                 this._doVBOUpdate();
             }
         },
@@ -444,29 +443,29 @@
 
         _scheduleVBOUpdate: function () {
 
-            if (!this._vbosDirty) {
+            if (!this._vboUpdateScheduled) {
 
-                this._vbosDirty = true;
+                this._vboUpdateScheduled = true;
 
                 // Build VBOs for renderer; no other components in the scene
                 // will be waiting them, so OK to schedule that for next tick.
-                XEO.addTask(this._doVBOUpdate, this);
+                XEO.scheduleTask(this._doVBOUpdate, this);
             }
         },
 
         _doVBOUpdate: function () {
 
-            if (this._updateDirty) {
+            if (this._updateScheduled) {
 
                 if (this._update) {
-                    this._vbosDirty = true; // Prevents needless scheduling within _update()
+                    this._vboUpdateScheduled = true; // Prevents needless scheduling within _update()
                     this._update();
                 }
 
-                this._vbosDirty = true;
-                this._updateDirty = false;
+                this._updateScheduled = false;
+                this._vboUpdateScheduled = true;
 
-            } else if (!this._vbosDirty) {
+            } else if (!this._vboUpdateScheduled) {
                 return;
             }
 
@@ -596,53 +595,7 @@
                 this._pickVBOsDirty = true;
             }
 
-            this._vbosDirty = false;
-        },
-
-        _buildDefault: function () {
-
-            this._state.primitiveName = "triangles";
-
-            this._positionsData = [
-                -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, // Front face
-                -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, // Back face
-                -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, // Top face
-                -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, // Bottom face
-                1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, // Right face
-                -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0 // Left face
-            ];
-
-            this._normalsData = [
-                0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-                1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-                0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
-                -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
-                0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
-                0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
-            ];
-
-            this._uvData = [
-                1, 1, 0, 1, 0, 0, 1, 0,
-                0, 1, 0, 0, 1, 0, 1, 1,
-                1, 0, 1, 1, 0, 1, 0, 0,
-                1, 1, 0, 1, 0, 0, 1, 0,
-                0, 0, 1, 0, 1, 1, 0, 1,
-                0, 0, 1, 0, 1, 1, 0, 1
-            ];
-
-            // Tangents are lazy-computed from normals and UVs
-            // for Normal mapping once we know we have texture
-
-            this.tangents = null;
-
-            this._indicesData = [
-                0, 1, 2, 0, 2, 3,    // front
-                4, 5, 6, 4, 6, 7,    // back
-                8, 9, 10, 8, 10, 11,   // top
-                12, 13, 14, 12, 14, 15,   // bottom
-                16, 17, 18, 16, 18, 19,   // right
-                20, 21, 22, 20, 22, 23    // left
-            ];
+            this._vboUpdateScheduled = false;
 
             this._setBoundaryDirty();
         },
@@ -653,7 +606,7 @@
                 return;
             }
 
-            if (this._updateDirty || this._vbosDirty) {
+            if (this._updateScheduled || this._vboUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -683,7 +636,7 @@
                 return;
             }
 
-            if (this._updateDirty || this._vbosDirty) {
+            if (this._updateScheduled || this._vboUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -866,8 +819,6 @@
 
                     this._scheduleVBOUpdate();
 
-                    this._setBoundaryDirty();
-
                     if (dirty) {
                         this._hashDirty = true;
                         this.fire("dirty", true);
@@ -897,7 +848,7 @@
 
                 get: function () {
 
-                    if (this._updateDirty) {
+                    if (this._updateScheduled) {
                         this._doUpdate();
                     }
 
@@ -943,7 +894,7 @@
 
                 get: function () {
 
-                    if (this._updateDirty) {
+                    if (this._updateScheduled) {
                         this._doUpdate();
                     }
 
@@ -989,7 +940,7 @@
 
                 get: function () {
 
-                    if (this._updateDirty) {
+                    if (this._updateScheduled) {
                         this._doUpdate();
                     }
 
@@ -1035,7 +986,7 @@
 
                 get: function () {
 
-                    if (this._updateDirty) {
+                    if (this._updateScheduled) {
                         this._doUpdate();
                     }
 
@@ -1081,7 +1032,7 @@
 
                 get: function () {
 
-                    if (this._updateDirty) {
+                    if (this._updateScheduled) {
                         this._doUpdate();
                     }
 
@@ -1112,6 +1063,8 @@
 
                         var self = this;
 
+                        //this._setBoundaryDirty();
+
                         this._localBoundary = new XEO.Boundary3D(this.scene, {
 
                             // Inject callbacks through which this Geometry
@@ -1127,8 +1080,8 @@
 
                             getPositions: function () {
 
-                                if (this._updateDirty) {
-                                    this._doUpdate();
+                                if (self._updateScheduled) {
+                                    self._doUpdate();
                                 }
 
                                 return self._positionsData;
@@ -1139,8 +1092,6 @@
                             function () {
                                 self._localBoundary = null;
                             });
-
-                        this._setBoundaryDirty();
                     }
 
                     return this._localBoundary;
@@ -1249,7 +1200,7 @@
 
         _compile: function () {
 
-            if (this._updateDirty || this._vbosDirty) {
+            if (this._updateScheduled || this._vboUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -1294,7 +1245,7 @@
 
         _getJSON: function () {
 
-            if (this._updateDirty) {
+            if (this._updateScheduled) {
                 this._update();
             }
 

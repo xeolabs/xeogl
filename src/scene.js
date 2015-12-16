@@ -434,69 +434,18 @@
 
             types[c.id] = c;
 
-            var self = this;
 
-            c.on("destroyed",
-                function () {
-
-                    self._componentIDMap.removeItem(c.id);
-
-                    delete self.components[c.id];
-
-                    var types = self.types[c.type];
-
-                    if (types) {
-
-                        delete types[c.id];
-
-                        if (XEO._isEmptyObject(types)) {
-                            delete self.types[c.type];
-                        }
-                    }
-
-                    if (c.type === "XEO.GameObject") {
-
-                        // Component is a XEO.GameObject
-
-                        // Update scene statistics,
-                        // Unschedule any pending recompilation of
-                        // the GameObject into the renderer
-
-                        XEO.stats.components.objects--;
-
-                        delete self.objects[c.id];
-
-                        delete self._dirtyObjects[c.id];
-                    }
-
-                    /**
-                     * Fired whenever a component within this Scene has been destroyed.
-                     * @event componentDestroyed
-                     * @param {Component} value The component that was destroyed
-                     */
-                    self.fire("componentDestroyed", c, true);
-
-                    //self.log("Destroyed " + c.type + " " + XEO._inQuotes(c.id));
-                });
+            c.on("destroyed", this._componentDestroyed, this);
 
             if (c.type === "XEO.GameObject") {
 
                 // Component is a XEO.GameObject
 
-                c.on("dirty",
-                    function () {
-
-                        // Whenever the GameObject signals dirty,
-                        // schedule its recompilation into the renderer
-
-                        if (!self._dirtyObjects[c.id]) {
-                            self._dirtyObjects[c.id] = c;
-                        }
-                    });
+                c.on("dirty", this._objectDirty, this);
 
                 this.objects[c.id] = c;
 
-                if (self._worldBoundary) {
+                if (this._worldBoundary) {
 
                     // If we currently have a World-space Scene boundary, then invalidate
                     // it whenever GameObject's World-space boundary updates
@@ -517,6 +466,60 @@
             this.fire("componentCreated", c, true);
 
             //self.log("Created " + c.type + " " + XEO._inQuotes(c.id));
+        },
+
+        // Callbacks as members to reduce GC churn
+
+        _componentDestroyed: function (c) {
+
+            this._componentIDMap.removeItem(c.id);
+
+            delete this.components[c.id];
+
+            var types = this.types[c.type];
+
+            if (types) {
+
+                delete types[c.id];
+
+                if (XEO._isEmptyObject(types)) {
+                    delete this.types[c.type];
+                }
+            }
+
+            if (c.type === "XEO.GameObject") {
+
+                // Component is a XEO.GameObject
+
+                // Update scene statistics,
+                // Unschedule any pending recompilation of
+                // the GameObject into the renderer
+
+                XEO.stats.components.objects--;
+
+                delete this.objects[c.id];
+
+                delete this._dirtyObjects[c.id];
+            }
+
+            /**
+             * Fired whenever a component within this Scene has been destroyed.
+             * @event componentDestroyed
+             * @param {Component} value The component that was destroyed
+             */
+            this.fire("componentDestroyed", c, true);
+
+            //this.log("Destroyed " + c.type + " " + XEO._inQuotes(c.id));
+        },
+
+        _objectDirty: function (object) {
+
+            // Whenever the GameObject signals dirty,
+            // schedule its recompilation into the renderer
+
+            if (!this._dirtyObjects[object.id]) {
+                this._dirtyObjects[object.id] = object;
+            }
         },
 
         _props: {
@@ -1079,12 +1082,7 @@
 
                             getAABB: function () {
 
-                                aabb.min[0] = 100000;
-                                aabb.min[1] = 100000;
-                                aabb.min[2] = 100000;
-                                aabb.max[0] = -100000;
-                                aabb.max[1] = -100000;
-                                aabb.max[2] = -100000;
+                                XEO.math.collapseAABB3(aabb);
 
                                 var objects = self.objects;
                                 var object;
@@ -1094,7 +1092,7 @@
 
                                         object = objects[objectId];
 
-                                        XEO.math.expandAABB3(object.worldBoundary.aabb, aabb);
+                                        XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
                                     }
                                 }
 
@@ -1178,6 +1176,8 @@
             var tempMat4 = XEO.math.mat4();
             var tempMat4b = XEO.math.mat4();
 
+            var tempVec2 = XEO.math.vec2();
+
             var tempVec4 = XEO.math.vec4();
             var tempVec4b = XEO.math.vec4();
 
@@ -1244,7 +1244,7 @@
 
                 params = params || {};
 
-                params.canvasPos = params.canvasPos || math.vec3();
+                params.canvasPos = params.canvasPos || tempVec2;
 
                 var hit = this._renderer.pick(params);
 

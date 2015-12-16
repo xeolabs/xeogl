@@ -117,7 +117,7 @@
                                     return;
                                 }
                                 geometryDirty = true;
-                                XEO.addTask(function () {
+                                XEO.scheduleTask(function () {
                                         self._setPositionsFromOBB(boundary.obb);
                                         geometryDirty = false;
                                     });

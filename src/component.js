@@ -302,6 +302,8 @@
 
             this._events = {}; // Maps locations to publications
 
+            this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
+
             if (this.scene && this.type !== "XEO.Scene") { // HACK: Don't add scene to itself
 
                 // Register this component on its scene
@@ -309,6 +311,8 @@
 
                 this.scene._addComponent(this);
             }
+
+            this._updateScheduled = false;
 
             // Initialize this component using the configs
 
@@ -366,7 +370,15 @@
 
                         sub = subs[handle];
 
-                        sub.callback.call(sub.scope, value);
+                        this._eventCallDepth++;
+
+                        if (this._eventCallDepth < 300) {
+                            sub.callback.call(sub.scope, value);
+                        } else {
+                            this.error("fire: potential stack overflow from recursive event '" + event + "' - dropping this event");
+                        }
+
+                        this._eventCallDepth--;
                     }
                 }
             }
@@ -618,50 +630,123 @@
 
                 this._children[name] = child;
 
-                var self = this;
-
                 // Bind destruct listener to new child to remove it
                 // from this component when destroyed
 
                 this._childDestroySubs[name] = child.on("destroyed",
                     function () {
+                        this._childDestroyed(name, child);
+                    }, this);
 
-                        // Child destroyed
-                        delete self._children[name];
-
-                        // Try to fall back on default child
-                        var defaultComponent = self.scene[name];
-
-                        if (!defaultComponent || child.id === defaultComponent.id) {
-
-                            // Old child was the default,
-                            // so publish null child and bail
-
-                            self.fire(name, null);
-
-                            return;
-                        }
-
-                        // Set default child
-                        self._setChild(name, defaultComponent);
-                    });
-
-                this._childDirtySubs[name] = child.on("dirty",
-                    function () {
-                        self.fire("dirty", true);
-                    });
+                this._childDirtySubs[name] = child.on("dirty", this._childDirty, this);
 
             } else {
                 delete this._children[name];
             }
 
-            this.fire("dirty", true);
+            this.fire("dirty", this);
 
             this.fire(name, child);
 
             return child;
         },
 
+        // Callbacks as members to reduce memory churn
+
+        /**
+         * @private
+         */
+        _childDestroyed: function (name, child) {
+
+            // Child destroyed
+            delete this._children[name];
+
+            // Try to fall back on default child
+            var defaultComponent = this.scene[name];
+
+            if (!defaultComponent || child.id === defaultComponent.id) {
+
+                // Old child was the default,
+                // so publish null child and bail
+
+                this.fire(name, null);
+
+                return;
+            }
+
+            // Set default child
+            this._setChild(name, defaultComponent);
+        },
+
+        /**
+         * @private
+         */
+        _childDirty: function () {
+            this.fire("dirty", this);
+        },
+
+        /**
+         * Protected method, called by sub-classes to queue a call to _update().
+         * @protected
+         */
+        _scheduleUpdate: function () {
+
+            if (!this._updateScheduled) {
+
+                this._updateScheduled = true;
+                this._buildScheduled = true;
+
+                XEO.scheduleTask(this._doUpdate, this);
+            }
+        },
+
+        /**
+         * @private
+         */
+        _doUpdate: function () {
+
+            if (this._updateScheduled) {
+
+                if (this._buildScheduled) {
+
+                    if (this._build) {
+                        this._build();
+                    }
+
+                    this._buildScheduled = false;
+                }
+
+                if (this._update) {
+                    this._update();
+                }
+
+                this._updateScheduled = false;
+            }
+        },
+
+        /**
+         * Optional virtual template method, normally implemented
+         * by sub-classes to generate some data before _update gets
+         * callled
+         *
+         * @protected
+         */
+        _build: null,
+
+        /**
+         * Protected virtual template method, optionally implemented
+         * by sub-classes to perform a scheduled task.
+         *
+         * @protected
+         */
+        _update: null,
+
+        /**
+         * Protected template method, implemented by sub-classes to compile
+         * their state into their Scene's XEO.renderer.Renderer.
+         *
+         * @protected
+         */
         _compile: function () {
         },
 
@@ -766,8 +851,14 @@
             this.fire("destroyed", this.destroyed = true);
         },
 
+        /**
+         * Protected template method, implemented by sub-classes
+         * to clean up just before the component is destroyed.
+         *
+         * @protected
+         */
         _destroy: function () {
         }
     });
 
-})()
+})();

@@ -168,7 +168,7 @@
                 // Process as many enqueued tasks as we can
                 // within the per-frame task budget
 
-                self._runSchedule(updateTime + taskBudget);
+                self._runScheduledTasks(updateTime + taskBudget);
 
                 tickEvent.time = updateTime;
 
@@ -279,26 +279,24 @@
         },
 
         /**
-         * Schedule a task for xeoEngine to run at the next opportunity.
+         * Schedule a task for xeoEngine to run at the next frame.
          *
          * Internally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue
          * for a certain period of time, popping tasks and running them. After each frame interval, tasks that did not
          * get a chance to run during the task are left in the queue to be run next time.
          *
-         *
-         *
          * @method schedule
          * @param {Function} callback Callback that runs the task.
          * @param {Object} [scope] Scope for the callback.
          */
-        addTask: function (callback, scope) {
+        scheduleTask: function (callback, scope) {
             this._taskQueue.push(callback);
             this._taskQueue.push(scope);
         },
 
         // Pops and propcesses tasks in the queue, until the
         // given number of milliseconds has elapsed.
-        _runSchedule: function (until) {
+        _runScheduledTasks: function (until) {
 
             var time = (new Date()).getTime();
             var taskQueue = this._taskQueue;
