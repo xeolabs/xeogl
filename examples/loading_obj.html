@@ -15,7 +15,8 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>loading .OBJ geometry using an <a href="js/loaders/objGeometry.js" target="_other">XEO.OBJGeometry</a>
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>loading .OBJ geometry using an <a
+        href="js/loaders/objGeometry.js" target="_other">XEO.OBJGeometry</a>
 </div>
 
 <script>
@@ -31,15 +32,33 @@
 
             diffuseMap: new XEO.Texture({
                 src: "models/obj/raptor.jpg"
+            }),
+
+            specularFresnel: new XEO.Fresnel({
+                edgeBias: 0.2,
+                centerBias: 0.8,
+                power: 0.5,
+                edgeColor: [0.7, 0.7, 0.7],
+                centerColor: [0.0, 0.0, 0.0]
+            }),
+
+            emissive: [1, 1, 1],
+
+            emissiveFresnel:  new XEO.Fresnel({
+                edgeBias: 0.3,
+                centerBias: 0.8,
+                edgeColor: [0.3, 0.3, 0.4],
+                centerColor: [0.0, 0.0, 0.0],
+                power: 0.3
             })
         }),
 
         transform: new XEO.Rotate({
-            xyz: [1,0,0],
+            xyz: [1, 0, 0],
             angle: 0,
 
             parent: new XEO.Translate({
-                xyz: [10,3,10]
+                xyz: [10, 3, 10]
             })
         })
     });
@@ -53,6 +72,15 @@
                 animation.flyTo({
                     aabb: object.worldBoundary.aabb
                 });
+            });
+
+    object.scene.on("tick",
+            function () {
+
+                var view = object.scene.camera.view;
+
+                view.rotateEyeY(0.4);
+//                view.rotateEyeX(0.15);
             });
 
 </script>
