@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-11-30
+ * Built on 2015-12-16
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -182,7 +182,7 @@
                 // Process as many enqueued tasks as we can
                 // within the per-frame task budget
 
-                self._runSchedule(updateTime + taskBudget);
+                self._runScheduledTasks(updateTime + taskBudget);
 
                 tickEvent.time = updateTime;
 
@@ -293,26 +293,24 @@
         },
 
         /**
-         * Schedule a task for xeoEngine to run at the next opportunity.
+         * Schedule a task for xeoEngine to run at the next frame.
          *
          * Internally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue
          * for a certain period of time, popping tasks and running them. After each frame interval, tasks that did not
          * get a chance to run during the task are left in the queue to be run next time.
          *
-         *
-         *
          * @method schedule
          * @param {Function} callback Callback that runs the task.
          * @param {Object} [scope] Scope for the callback.
          */
-        addTask: function (callback, scope) {
+        scheduleTask: function (callback, scope) {
             this._taskQueue.push(callback);
             this._taskQueue.push(scope);
         },
 
         // Pops and propcesses tasks in the queue, until the
         // given number of milliseconds has elapsed.
-        _runSchedule: function (until) {
+        _runScheduledTasks: function (until) {
 
             var time = (new Date()).getTime();
             var taskQueue = this._taskQueue;
@@ -6408,12 +6406,25 @@
     var tempMat1 = new Float32Array(16);
     var tempMat2 = new Float32Array(16);
     var tempVec3 = new Float32Array(3);
+
+    var tempVec3a = new Float32Array(3);
     var tempVec3b = new Float32Array(3);
     var tempVec3c = new Float32Array(3);
     var tempVec3d = new Float32Array(3);
     var tempVec3e = new Float32Array(3);
     var tempVec3f = new Float32Array(3);
+
     var tempVec4 = new Float32Array(4);
+
+    var tempAABB2 = {
+        min: new Float32Array(2),
+        max: new Float32Array(2)
+    };
+
+    var tempAABB2b = {
+        min: new Float32Array(2),
+        max: new Float32Array(2)
+    };
 
     /*
      * Optimizations made based on glMatrix by Brandon Jones
@@ -8191,7 +8202,30 @@
         },
 
         /**
-         * Converts an axis-aligned boundary into an oriented boundary consisting of
+         * Collapses a 3D axis-aligned boundary, ready to expand to fit 2D points.
+         * Creates new AABB if none supplied.
+         *
+         * @method collapseAABB3
+         * @static
+         * @param {*} [aabb] 3D axis-aligned bounding box.
+         * @returns {*} 3D axis-aligned bounding box.
+         */
+        collapseAABB3: function (aabb) {
+
+            aabb = aabb || XEO.math.AABB2();
+
+            aabb.min[0] = 10000000;
+            aabb.min[1] = 10000000;
+            aabb.min[2] = 10000000;
+            aabb.max[0] = -10000000;
+            aabb.max[1] = -10000000;
+            aabb.max[2] = -10000000;
+
+            return aabb;
+        },
+
+        /**
+         * Converts an axis-aligned 3D boundary into an oriented boundary consisting of
          * an array of eight 3D positions, one for each corner of the boundary.
          *
          * @method AABB3ToOBB3
@@ -8280,7 +8314,7 @@
         },
 
         /**
-         * Finds the minimum axis-aligned boundary enclosing the 3D points given in a flattened,  1-dimensional array.
+         * Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.
          *
          * @method positions3ToAABB3
          * @static
@@ -8290,7 +8324,7 @@
          */
         positions3ToAABB3: function (positions, aabb) {
 
-            aabb = aabb ||  XEO.math.AABB3();
+            aabb = aabb || XEO.math.AABB3();
 
             var xmin = 100000;
             var ymin = 100000;
@@ -8343,7 +8377,7 @@
         },
 
         /**
-         * Finds the minimum axis-aligned boundary enclosing the given 3D points.
+         * Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.
          *
          * @method points3ToAABB3
          * @static
@@ -8353,7 +8387,7 @@
          */
         points3ToAABB3: function (points, aabb) {
 
-            aabb = aabb ||  XEO.math.AABB3();
+            aabb = aabb || XEO.math.AABB3();
 
             var xmin = 100000;
             var ymin = 100000;
@@ -8406,7 +8440,7 @@
         },
 
         /**
-         * Expands the second axis-aligned boundary to enclose the first, if needed.
+         * Expands the first axis-aligned 3D boundary to enclose the second, if required.
          *
          * @method expandAABB3
          * @static
@@ -8416,31 +8450,90 @@
          */
         expandAABB3: function (aabb1, aabb2) {
 
-            if (aabb1.min[0] < aabb2.min[0]) {
-                aabb2.min[0] = aabb1.min[0];
+            if (aabb1.min[0] > aabb2.min[0]) {
+                aabb1.min[0] = aabb2.min[0];
             }
 
-            if (aabb1.min[1] < aabb2.min[1]) {
-                aabb2.min[1] = aabb1.min[1];
+            if (aabb1.min[1] > aabb2.min[1]) {
+                aabb1.min[1] = aabb2.min[1];
             }
 
-            if (aabb1.min[2] < aabb2.min[2]) {
-                aabb2.min[2] = aabb1.min[2];
+            if (aabb1.min[2] > aabb2.min[2]) {
+                aabb1.min[2] = aabb2.min[2];
             }
 
-            if (aabb1.max[0] > aabb2.max[0]) {
-                aabb2.max[0] = aabb1.max[0];
+            if (aabb1.max[0] < aabb2.max[0]) {
+                aabb1.max[0] = aabb2.max[0];
             }
 
-            if (aabb1.max[1] > aabb2.max[1]) {
-                aabb2.max[1] = aabb1.max[1];
+            if (aabb1.max[1] < aabb2.max[1]) {
+                aabb1.max[1] = aabb2.max[1];
             }
 
-            if (aabb1.max[2] > aabb2.max[2]) {
-                aabb2.max[2] = aabb1.max[2];
+            if (aabb1.max[2] < aabb2.max[2]) {
+                aabb1.max[2] = aabb2.max[2];
             }
 
             return aabb2;
+        },
+
+        /**
+         * Expands an axis-aligned 3D boundary to enclose the given point, if needed.
+         *
+         * @method expandAABB3Point3
+         * @static
+         * @param {*} aabb AABB
+         * @param {*} p Point
+         * @returns {*} The AABB
+         */
+        expandAABB3Point3: function (aabb, p) {
+
+            if (aabb.min[0] < p[0]) {
+                aabb.min[0] = p[0];
+            }
+
+            if (aabb.min[1] < p[1]) {
+                aabb.min[1] = p[1];
+            }
+
+            if (aabb.min[2] < p[2]) {
+                aabb.min[2] = p[2];
+            }
+
+            if (aabb.max[0] > p[0]) {
+                aabb.max[0] = p[0];
+            }
+
+            if (aabb.max[1] > p[1]) {
+                aabb.max[1] = p[1];
+            }
+
+            if (aabb.max[2] > p[2]) {
+                aabb.max[2] = p[2];
+            }
+
+            return aabb;
+        },
+
+        /**
+         * Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.
+         * Creates new AABB if none supplied.
+         *
+         * @method collapseAABB2
+         * @static
+         * @param {*} [aabb] 2D axis-aligned bounding box.
+         * @returns {*} 2D axis-aligned bounding box.
+         */
+        collapseAABB2: function (aabb) {
+
+            aabb = aabb || XEO.math.AABB2();
+
+            aabb.min[0] = 10000000;
+            aabb.min[1] = 10000000;
+            aabb.max[0] = -10000000;
+            aabb.max[1] = -10000000;
+
+            return aabb;
         },
 
         /**
@@ -8454,7 +8547,7 @@
          */
         points3ToAABB2: function (points, aabb) {
 
-            aabb = aabb ||  XEO.math.AABB2();
+            aabb = aabb || XEO.math.AABB2();
 
             var xmin = 10000000;
             var ymin = 10000000;
@@ -8500,6 +8593,65 @@
             return aabb;
         },
 
+        /**
+         * Expands the first axis-aligned 2D boundary to enclose the second, if required.
+         *
+         * @method expandAABB3
+         * @static
+         * @param {*} aabb1 First AABB
+         * @param {*} aabb2 Second AABB
+         * @returns {*} The second AABB
+         */
+        expandAABB2: function (aabb1, aabb2) {
+
+            if (aabb1.min[0] > aabb2.min[0]) {
+                aabb1.min[0] = aabb2.min[0];
+            }
+
+            if (aabb1.min[1] > aabb2.min[1]) {
+                aabb1.min[1] = aabb2.min[1];
+            }
+
+            if (aabb1.max[0] < aabb2.max[0]) {
+                aabb1.max[0] = aabb2.max[0];
+            }
+
+            if (aabb1.max[1] < aabb2.max[1]) {
+                aabb1.max[1] = aabb2.max[1];
+            }
+
+            return aabb2;
+        },
+
+        /**
+         * Expands an axis-aligned 2D boundary to enclose the given point, if required.
+         *
+         * @method expandAABB2Point2
+         * @static
+         * @param {*} aabb AABB
+         * @param {*} p Point
+         * @returns {*} The AABB
+         */
+        expandAABB2Point2: function (aabb, p) {
+
+            if (aabb.min[0] > p[0]) {
+                aabb.min[0] = p[0];
+            }
+
+            if (aabb.min[1] > p[1]) {
+                aabb.min[1] = p[1];
+            }
+
+            if (aabb.max[0] < p[0]) {
+                aabb.max[0] = p[0];
+            }
+
+            if (aabb.max[1] < p[1]) {
+                aabb.max[1] = p[1];
+            }
+
+            return aabb;
+        },
 
         AABB2ToCanvas: function (aabb, canvasWidth, canvasHeight, aabb2) {
 
@@ -8540,7 +8692,6 @@
             var v2;
             var v3;
 
-            //    for (var i = 0, len = indices.length - 3; i < len; i += 3) {
             for (var i = 0, len = indices.length; i < len; i += 3) {
                 j0 = indices[i + 0];
                 j1 = indices[i + 1];
@@ -8660,6 +8811,140 @@
             }
 
             return tangents2;
+        },
+
+        /**
+         * Generates UV coordinates for triangle positions and indices.
+         *
+         * Conceptually, this function rotates the triangles into the X,Y plane, packs
+         * them as rightly together as possible, then generates UV coordinates that
+         * correspond to the X,Y coordinates.
+         *
+         * Provides the option to specify the maximum 2D range within which the UV coordinates
+         * are generated, which is 1x1 by default.
+         *
+         * @method buildUVs
+         * @static
+         * @param {Array of Number} positions One-dimensional flattened array of vertex positions.
+         * @param {Array of Number} indices One-dimensional flattened array of triangle vertex indices.*
+         * @param {Array of Number} [uvRange=[1.0, 1.0]] Optional UV range, given as a 2D vector, into which to pack the UV coordinates.
+         * @returns {Array of Number} One-dimensional flattened array of UV coordinates.
+         */
+        buildUVs: function (positions, indices, uvRange) {
+
+            uvRange = uvRange || [1.0, 1.0];
+
+            var uvs = new Array(positions.length / 2);
+
+            var math = XEO.math;
+
+            var i;
+            var len;
+
+            // Triangle vertex indices
+            var j0;
+            var j1;
+            var j2;
+
+            // Local-space triangle vertex positions
+            var v1;
+            var v2;
+            var v3;
+
+            // Local-space triangle normal vector
+            var normal;
+
+            //
+            var yVector = [0, -1, 0];
+
+            // Matrix to rotate triangle into the X,Y plane, built from normal
+            var matrix = math.mat4();
+
+            // Axis-aligned 2D boundary of each triangles on the X,Y plane
+            var aabbTriangle = tempAABB2;
+
+            // Axis-aligned 2D boundary enclosing all triangles on the X,Y plane
+            var aabbMesh = tempAABB2b;
+
+            math.collapseAABB2(aabbMesh);
+
+            var offsetX;
+            var offsetY;
+
+            var offsetBump = 0;
+
+            for (i = 0, len = indices.length; i < len; i += 3) {
+
+                // Get vertex indices
+
+                j0 = indices[i + 0];
+                j1 = indices[i + 1];
+                j2 = indices[i + 2];
+
+                // Get vertex positions
+
+                v1 = [positions[j0 * 3 + 0], positions[j0 * 3 + 1], positions[j0 * 3 + 2]];
+                v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
+                v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
+
+                v2 = math.subVec3(v2, v1, tempVec3);
+                v3 = math.subVec3(v3, v1, tempVec3b);
+
+                // Get triangle normal
+
+                normal = math.normalizeVec3(math.cross3Vec3(v2, v3, tempVec3c), tempVec3d);
+
+                // Get rotation matrix
+
+                matrix = math.quaternionToMat4(math.vec3PairToQuaternion(normal, yVector, tempVec4), tempMat1);
+
+                // Rotate the triangle into the X,Y plane
+
+                v1 = math.transformVec4(matrix, v1, tempVec3d);
+                v2 = math.transformVec4(matrix, v2, tempVec3e);
+                v3 = math.transformVec4(matrix, v3, tempVec3f);
+
+                // Bump offsetX along by width of triangle on X-axis
+
+                math.collapseAABB2(aabbTriangle);
+
+                math.expandAABB2Point2(aabbTriangle, v1);
+                math.expandAABB2Point2(aabbTriangle, v2);
+                math.expandAABB2Point2(aabbTriangle, v3);
+
+                // "Pack" the triangle into a strip
+
+                offsetX = aabbTriangle.min[0] - offsetBump;
+                offsetY = aabbTriangle.min[2];
+
+                uvs.push([v1[0] - offsetX, v1[1] - offsetY]);
+                uvs.push([v2[0] - offsetX, v2[1] - offsetY]);
+                uvs.push([v3[0] - offsetX, v3[1] - offsetY]);
+
+                offsetBump += aabbTriangle.max[0] - aabbTriangle.min[0];
+
+                // Expand boundary of all triangles in X,Y plane
+
+                math.expandAABB2(aabbMesh, aabbTriangle);
+            }
+
+            // Transform the UVs into the given UV range
+
+            var meshSizeX = aabbMesh.max[0] - aabbMesh.min[0];
+            var meshSizeY = aabbMesh.max[1] - aabbMesh.min[1];
+
+            var halfMeshX = meshSizeX / 2;
+            var halfMeshY = meshSizeY / 2;
+
+            var scaleX = uvRange[0] / meshSizeX;
+            var scaleY = uvRange[1] / meshSizeY;
+
+            for (i = 0, len = uvs.length; i < len; i += 2) {
+                uvs[i] = (uvs[i] + halfMeshX) * scaleX;
+                uvs[i + 1] = (uvs[i + 1] + halfMeshY) * scaleY;
+            }
+
+            return uvs;
         },
 
         /**
@@ -9022,25 +9307,22 @@
 
                 if (Math.abs(u[0]) > Math.abs(u[2])) {
 
-                    w[0] = -u[1];
-                    w[1] = u[0];
-                    w[2] = 0;
+                    dest[0] = -u[1];
+                    dest[1] = u[0];
+                    dest[2] = 0;
 
                 } else {
-                    w[0] = 0;
-                    w[1] = -u[2];
-                    w[2] = u[1]
+                    dest[0] = 0;
+                    dest[1] = -u[2];
+                    dest[2] = u[1]
                 }
 
             } else {
 
                 // Otherwise, build quaternion the standard way.
-                w = math.cross3Vec3(u, v);
+                math.cross3Vec3(u, v, dest);
             }
 
-            dest[0] = w[0];
-            dest[1] = w[1];
-            dest[2] = w[2];
             dest[3] = real_part;
 
             return math.normalizeQuaternion(dest);
@@ -9535,6 +9817,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             this._events = {}; // Maps locations to publications
 
+            this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
+
             if (this.scene && this.type !== "XEO.Scene") { // HACK: Don't add scene to itself
 
                 // Register this component on its scene
@@ -9542,6 +9826,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 this.scene._addComponent(this);
             }
+
+            this._updateScheduled = false;
 
             // Initialize this component using the configs
 
@@ -9599,7 +9885,15 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         sub = subs[handle];
 
-                        sub.callback.call(sub.scope, value);
+                        this._eventCallDepth++;
+
+                        if (this._eventCallDepth < 200) {
+                            sub.callback.call(sub.scope, value);
+                        } else {
+                            this.error("fire: potential stack overflow from recursive event '" + event + "' - dropping this event");
+                        }
+
+                        this._eventCallDepth--;
                     }
                 }
             }
@@ -9851,50 +10145,123 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 this._children[name] = child;
 
-                var self = this;
-
                 // Bind destruct listener to new child to remove it
                 // from this component when destroyed
 
                 this._childDestroySubs[name] = child.on("destroyed",
                     function () {
+                        this._childDestroyed(name, child);
+                    }, this);
 
-                        // Child destroyed
-                        delete self._children[name];
-
-                        // Try to fall back on default child
-                        var defaultComponent = self.scene[name];
-
-                        if (!defaultComponent || child.id === defaultComponent.id) {
-
-                            // Old child was the default,
-                            // so publish null child and bail
-
-                            self.fire(name, null);
-
-                            return;
-                        }
-
-                        // Set default child
-                        self._setChild(name, defaultComponent);
-                    });
-
-                this._childDirtySubs[name] = child.on("dirty",
-                    function () {
-                        self.fire("dirty", true);
-                    });
+                this._childDirtySubs[name] = child.on("dirty", this._childDirty, this);
 
             } else {
                 delete this._children[name];
             }
 
-            this.fire("dirty", true);
+            this.fire("dirty", this);
 
             this.fire(name, child);
 
             return child;
         },
 
+        // Callbacks as members to reduce memory churn
+
+        /**
+         * @private
+         */
+        _childDestroyed: function (name, child) {
+
+            // Child destroyed
+            delete this._children[name];
+
+            // Try to fall back on default child
+            var defaultComponent = this.scene[name];
+
+            if (!defaultComponent || child.id === defaultComponent.id) {
+
+                // Old child was the default,
+                // so publish null child and bail
+
+                this.fire(name, null);
+
+                return;
+            }
+
+            // Set default child
+            this._setChild(name, defaultComponent);
+        },
+
+        /**
+         * @private
+         */
+        _childDirty: function () {
+            this.fire("dirty", this);
+        },
+
+        /**
+         * Protected method, called by sub-classes to queue a call to _update().
+         * @protected
+         */
+        _scheduleUpdate: function () {
+
+            if (!this._updateScheduled) {
+
+                this._updateScheduled = true;
+                this._buildScheduled = true;
+
+                XEO.scheduleTask(this._doUpdate, this);
+            }
+        },
+
+        /**
+         * @private
+         */
+        _doUpdate: function () {
+
+            if (this._updateScheduled) {
+
+                if (this._buildScheduled) {
+
+                    if (this._build) {
+                        this._build();
+                    }
+
+                    this._buildScheduled = false;
+                }
+
+                if (this._update) {
+                    this._update();
+                }
+
+                this._updateScheduled = false;
+            }
+        },
+
+        /**
+         * Optional virtual template method, normally implemented
+         * by sub-classes to generate some data before _update gets
+         * callled
+         *
+         * @protected
+         */
+        _build: null,
+
+        /**
+         * Protected virtual template method, optionally implemented
+         * by sub-classes to perform a scheduled task.
+         *
+         * @protected
+         */
+        _update: null,
+
+        /**
+         * Protected template method, implemented by sub-classes to compile
+         * their state into their Scene's XEO.renderer.Renderer.
+         *
+         * @protected
+         */
         _compile: function () {
         },
 
@@ -9999,11 +10366,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.fire("destroyed", this.destroyed = true);
         },
 
+        /**
+         * Protected template method, implemented by sub-classes
+         * to clean up just before the component is destroyed.
+         *
+         * @protected
+         */
         _destroy: function () {
         }
     });
 
-})()
+})();
 ;/**
  A **Scene** models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-object</a> graph.
 
@@ -10440,69 +10813,18 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             types[c.id] = c;
 
-            var self = this;
 
-            c.on("destroyed",
-                function () {
-
-                    self._componentIDMap.removeItem(c.id);
-
-                    delete self.components[c.id];
-
-                    var types = self.types[c.type];
-
-                    if (types) {
-
-                        delete types[c.id];
-
-                        if (XEO._isEmptyObject(types)) {
-                            delete self.types[c.type];
-                        }
-                    }
-
-                    if (c.type === "XEO.GameObject") {
-
-                        // Component is a XEO.GameObject
-
-                        // Update scene statistics,
-                        // Unschedule any pending recompilation of
-                        // the GameObject into the renderer
-
-                        XEO.stats.components.objects--;
-
-                        delete self.objects[c.id];
-
-                        delete self._dirtyObjects[c.id];
-                    }
-
-                    /**
-                     * Fired whenever a component within this Scene has been destroyed.
-                     * @event componentDestroyed
-                     * @param {Component} value The component that was destroyed
-                     */
-                    self.fire("componentDestroyed", c, true);
-
-                    //self.log("Destroyed " + c.type + " " + XEO._inQuotes(c.id));
-                });
+            c.on("destroyed", this._componentDestroyed, this);
 
             if (c.type === "XEO.GameObject") {
 
                 // Component is a XEO.GameObject
 
-                c.on("dirty",
-                    function () {
-
-                        // Whenever the GameObject signals dirty,
-                        // schedule its recompilation into the renderer
-
-                        if (!self._dirtyObjects[c.id]) {
-                            self._dirtyObjects[c.id] = c;
-                        }
-                    });
+                c.on("dirty", this._objectDirty, this);
 
                 this.objects[c.id] = c;
 
-                if (self._worldBoundary) {
+                if (this._worldBoundary) {
 
                     // If we currently have a World-space Scene boundary, then invalidate
                     // it whenever GameObject's World-space boundary updates
@@ -10523,6 +10845,60 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.fire("componentCreated", c, true);
 
             //self.log("Created " + c.type + " " + XEO._inQuotes(c.id));
+        },
+
+        // Callbacks as members to reduce GC churn
+
+        _componentDestroyed: function (c) {
+
+            this._componentIDMap.removeItem(c.id);
+
+            delete this.components[c.id];
+
+            var types = this.types[c.type];
+
+            if (types) {
+
+                delete types[c.id];
+
+                if (XEO._isEmptyObject(types)) {
+                    delete this.types[c.type];
+                }
+            }
+
+            if (c.type === "XEO.GameObject") {
+
+                // Component is a XEO.GameObject
+
+                // Update scene statistics,
+                // Unschedule any pending recompilation of
+                // the GameObject into the renderer
+
+                XEO.stats.components.objects--;
+
+                delete this.objects[c.id];
+
+                delete this._dirtyObjects[c.id];
+            }
+
+            /**
+             * Fired whenever a component within this Scene has been destroyed.
+             * @event componentDestroyed
+             * @param {Component} value The component that was destroyed
+             */
+            this.fire("componentDestroyed", c, true);
+
+            //this.log("Destroyed " + c.type + " " + XEO._inQuotes(c.id));
+        },
+
+        _objectDirty: function (object) {
+
+            // Whenever the GameObject signals dirty,
+            // schedule its recompilation into the renderer
+
+            if (!this._dirtyObjects[object.id]) {
+                this._dirtyObjects[object.id] = object;
+            }
         },
 
         _props: {
@@ -11085,12 +11461,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             getAABB: function () {
 
-                                aabb.min[0] = 100000;
-                                aabb.min[1] = 100000;
-                                aabb.min[2] = 100000;
-                                aabb.max[0] = -100000;
-                                aabb.max[1] = -100000;
-                                aabb.max[2] = -100000;
+                                XEO.math.collapseAABB3(aabb);
 
                                 var objects = self.objects;
                                 var object;
@@ -11100,7 +11471,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                                         object = objects[objectId];
 
-                                        XEO.math.expandAABB3(object.worldBoundary.aabb, aabb);
+                                        XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
                                     }
                                 }
 
@@ -11184,6 +11555,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var tempMat4 = XEO.math.mat4();
             var tempMat4b = XEO.math.mat4();
 
+            var tempVec2 = XEO.math.vec2();
+
             var tempVec4 = XEO.math.vec4();
             var tempVec4b = XEO.math.vec4();
 
@@ -11250,7 +11623,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 params = params || {};
 
-                params.canvasPos = params.canvasPos || math.vec3();
+                params.canvasPos = params.canvasPos || tempVec2;
 
                 var hit = this._renderer.pick(params);
 
@@ -11819,7 +12192,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             this._flying = false;
 
-            this._ok = null;
+            this._callback = null;
+            this._callbackScope = null;
 
             this._onTick = null;
 
@@ -11853,9 +12227,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @param [params.eye] {Array of Number} Position to fly the eye position to.
          * @param [params.look] {Array of Number} Position to fly the look position to.
          * @param [params.up] {Array of Number} Position to fly the up vector to.
-         * @param [ok] {Function} Callback fired on arrival
+         * @param [callback] {Function} Callback fired on arrival
+         * @param [scope] {Object} Optional scope for callback
          */
-        flyTo: function (params, ok) {
+        flyTo: function (params, callback, scope) {
 
             if (this._flying) {
                 this.stop();
@@ -11864,15 +12239,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var camera = this._children.camera;
 
             if (!camera) {
-                if (ok) {
-                    ok();
+                if (callback) {
+                    scope ? callback.call(scope) : callback();
                 }
                 return;
             }
 
             this._flying = false;
 
-            this._ok = ok;
+            this._callback = callback;
+            this._callbackScope = scope;
 
             var lookat = camera.view;
 
@@ -11931,8 +12307,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     if (!component) {
                         this.error("Component not found: " + XEO._inQuotes(componentId));
-                        if (ok) {
-                            ok();
+                        if (callback) {
+                            scope ? callback.call(scope) : callback();
                         }
                         return;
                     }
@@ -11942,8 +12318,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 if (!worldBoundary) {
                     this.error("Can't fly to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
-                    if (ok) {
-                        ok();
+                    if (callback) {
+                        scope ? callback.call(scope) : callback();
                     }
                     return;
                 }
@@ -12002,26 +12378,21 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             this.fire("started", params, true);
 
-            var self = this;
-
-            this._time1 = (new Date()).getTime();
+            this._time1 = Date.now();
             this._time2 = this._time1 + this._duration;
 
             this._flying = true; // False as soon as we stop
 
-            this._tick = this.scene.on("tick",
-                function (params) {
-                    self._update(params);
-                });
+            XEO.scheduleTask(this._update, this);
         },
 
-        _update: function (params) {
+        _update: function () {
 
             if (!this._flying) {
                 return;
             }
 
-            var time = params.time;
+            var time = Date.now();
 
             var t = (time - this._time1) / (this._time2 - this._time1);
 
@@ -12041,7 +12412,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             if (stopping) {
                 this.stop();
+                return;
             }
+
+            XEO.scheduleTask(this._update, this); // Keep flying
         },
 
         // Quadratic easing out - decelerating to zero velocity
@@ -12058,18 +12432,18 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 return;
             }
 
-            this.scene.off(this._tick);
+            //this.scene.off(this._tick);
 
             this._flying = false;
 
             this._time1 = null;
             this._time2 = null;
 
-            var ok = this._ok;
+            var callback = this._callback;
 
-            if (ok) {
-                this._ok = null;
-                ok();
+            if (callback) {
+                this._callback = null;
+                this._callbackScope ? callback.call(this._callbackScope) : callback();
             }
 
             this.fire("stopped", true, true);
@@ -12676,8 +13050,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 matrix: XEO.math.identityMat4()
             });
 
-            this._dirty = false;
-
             this._left = -1.0;
             this._right = 1.0;
             this._bottom = -1.0;
@@ -12693,38 +13065,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.top = cfg.top;
             this.near = cfg.near;
             this.far = cfg.far;
-        },
-
-        // Schedules state rebuild on the next "tick"
-
-        _scheduleBuild: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                XEO.addTask(this._build, this);
-            }
-        },
-
-        // Rebuilds state
-
-        _build: function () {
-
-            XEO.math.frustumMat4(
-                this._left,
-                this._right,
-                this._bottom,
-                this._top,
-                this._near,
-                this._far,
-                this._state.matrix);
-
-            this._dirty = false;
-
-            /**
-             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
         },
 
         _props: {
@@ -12744,9 +13084,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._left = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/left:property"}}{{/crossLink}} property changes.
@@ -12777,9 +13115,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._right = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/right:property"}}{{/crossLink}} property changes.
@@ -12810,9 +13146,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._top = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/top:property"}}{{/crossLink}} property changes.
@@ -12843,9 +13177,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._bottom = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/bottom:property"}}{{/crossLink}} property changes.
@@ -12876,9 +13208,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} property changes.
@@ -12909,9 +13239,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Frustum's  {{#crossLink "Frustum/far:property"}}{{/crossLink}} property changes.
@@ -12939,13 +13267,45 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 get: function () {
 
-                    if (this._dirty) {
+                    if (this._buildScheduled) {
+
+                        // Matrix update is scheduled for next frame.
+                        // Lazy-build the matrix now, while leaving the update
+                        // scheduled. The update task will fire a "matrix" event,
+                        // without needlessly rebuilding the matrix again.
+
                         this._build();
+
+                        this._buildScheduled = false;
                     }
 
                     return this._state.matrix;
                 }
             }
+        },
+
+        _build: function () {
+
+            XEO.math.frustumMat4(
+                this._left,
+                this._right,
+                this._bottom,
+                this._top,
+                this._near,
+                this._far,
+                this._state.matrix);
+        },
+
+        _update: function () {
+
+            this._renderer.imageDirty = true;
+
+            /**
+             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
+             * @event matrix
+             * @param value The property's new value
+             */
+            this.fire("matrix", this._state.matrix);
         },
 
         _compile: function () {
@@ -13058,43 +13418,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 up: [0, 1, 0]
             });
 
-            this._dirty = true;
+            this._buildScheduled = false;
 
             this.eye = cfg.eye;
             this.look = cfg.look;
             this.up = cfg.up;
-        },
-
-        // Schedules a call to #_buildLookat on the next "tick"
-        _lookatDirty: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                XEO.addTask(this._buildLookat, this);
-            }
-        },
-
-        // Rebuilds rendering state
-        _buildLookat: function () {
-
-            this._state.matrix = new Float32Array(XEO.math.lookAtMat4c(
-                this._state.eye[0], this._state.eye[1], this._state.eye[2],
-                this._state.look[0], this._state.look[1], this._state.look[2],
-                this._state.up[0], this._state.up[1], this._state.up[2],
-                this._state.matrix));
-
-            this._state.normalMatrix = new Float32Array(XEO.math.transposeMat4(new Float32Array(XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
-
-            this._dirty = false;
-
-            this._renderer.imageDirty = true;
-
-            /**
-             * Fired whenever this Lookat's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is updated.
-             *
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
         },
 
         /**
@@ -13273,7 +13601,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     eye[1] = value[1];
                     eye[2] = value[2];
 
-                    this._lookatDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} property changes.
@@ -13310,7 +13638,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     look[1] = value[1];
                     look[2] = value[2];
 
-                    this._lookatDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/look:property"}}{{/crossLink}} property changes.
@@ -13345,7 +13673,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     up[1] = value[1];
                     up[2] = value[2];
 
-                    this._lookatDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/up:property"}}{{/crossLink}} property changes.
@@ -13373,8 +13701,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 get: function () {
 
-                    if (this._dirty) {
-                        this._buildLookat();
+                    if (this._buildScheduled) {
+
+                        // Matrix update is scheduled for next frame.
+                        // Lazy-build the matrix now, while leaving the update
+                        // scheduled. The update task will fire a "matrix" event,
+                        // without needlessly rebuilding the matrix again.
+
+                        this._build();
+
+                        this._buildScheduled = false;
                     }
 
                     return this._state.matrix;
@@ -13382,12 +13718,31 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
         },
 
+        _build: function () {
+
+            this._state.matrix = new Float32Array(XEO.math.lookAtMat4c(
+                this._state.eye[0], this._state.eye[1], this._state.eye[2],
+                this._state.look[0], this._state.look[1], this._state.look[2],
+                this._state.up[0], this._state.up[1], this._state.up[2],
+                this._state.matrix));
+
+            this._state.normalMatrix = new Float32Array(XEO.math.transposeMat4(new Float32Array(XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
+        },
+
+        _update: function () {
+
+            this._renderer.imageDirty = true;
+
+            /**
+             * Fired whenever this Lookat's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is updated.
+             *
+             * @event matrix
+             * @param value The property's new value
+             */
+            this.fire("matrix", this._state.matrix);
+        },
+
         _compile: function () {
-
-            if (this._dirty) {
-                this._buildLookat();
-            }
-
             this._renderer.viewTransform = this._state;
         },
 
@@ -13496,7 +13851,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             });
 
             // Ortho view volume
-            this._dirty = false;
             this._left = -1.0;
             this._right = 1.0;
             this._top = 1.0;
@@ -13511,29 +13865,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.bottom = cfg.bottom;
             this.near = cfg.near;
             this.far = cfg.far;
-        },
-
-        // Schedules a call to #_build on the next "tick"
-        _scheduleBuild: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                XEO.addTask(this._build, this);
-            }
-        },
-
-        // Rebuilds the rendering state from this component
-        _build: function () {
-
-            XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
-
-            this._dirty = false;
-
-            /**
-             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
         },
 
         _props: {
@@ -13553,9 +13884,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._left = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/left:property"}}{{/crossLink}} property changes.
@@ -13586,9 +13915,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._right = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/right:property"}}{{/crossLink}} property changes.
@@ -13619,9 +13946,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._top = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/top:property"}}{{/crossLink}} property changes.
@@ -13652,9 +13977,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._bottom = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/bottom:property"}}{{/crossLink}} property changes.
@@ -13685,9 +14008,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._near = (value !== undefined && value !== null) ? value :  0.1;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
@@ -13718,9 +14039,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._far = (value !== undefined && value !== null) ? value :  10000.0;
 
-                    this._renderer.imageDirty = true;
-
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.
@@ -13748,8 +14067,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 get: function () {
 
-                    if (this._dirty) {
+                    if (this._buildScheduled) {
+
+                        // Matrix update is scheduled for next frame.
+                        // Lazy-build the matrix now, while leaving the update
+                        // scheduled. The update task will fire a "matrix" event,
+                        // without needlessly rebuilding the matrix again.
+
                         this._build();
+
+                        this._buildScheduled = false;
                     }
 
                     return this._state.matrix;
@@ -13757,12 +14084,26 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
         },
 
+        _build: function () {
+
+            XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
+
+            this._renderer.imageDirty = true;
+        },
+
+        _update: function () {
+
+            this._renderer.imageDirty = true;
+
+            /**
+             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
+             * @event matrix
+             * @param value The property's new value
+             */
+            this.fire("matrix", this._state.matrix);
+        },
+
         _compile: function () {
-
-            if (this._dirty) {
-                this._build();
-            }
-
             this._renderer.projTransform = this._state;
         },
 
@@ -13870,33 +14211,23 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this._fovy = 60.0;
             this._near = 0.1;
             this._far = 10000.0;
-
-            var self = this;
+            
             var canvas = this.scene.canvas;
 
             // Recompute aspect from change in canvas size
-            this._canvasResized = canvas.on("size", this._scheduleBuild, this);
+            this._canvasResized = canvas.on("size", this._scheduleUpdate, this);
 
             this.fovy = cfg.fovy;
             this.near = cfg.near;
             this.far = cfg.far;
         },
 
-        _scheduleBuild: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                XEO.addTask(this._build, this);
-            }
-        },
-
-        _build: function () {
+        _update: function () {
 
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
             XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
-
-            this._dirty = false;
 
             /**
              * Fired whenever this Perspective's {{#crossLink "Perspective/matrix:property"}}{{/crossLink}} property changes.
@@ -13926,7 +14257,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Perspective's {{#crossLink "Perspective/fovy:property"}}{{/crossLink}} property changes.
@@ -13959,7 +14290,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Perspective's   {{#crossLink "Perspective/near:property"}}{{/crossLink}} property changes.
@@ -13991,7 +14322,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleBuild();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Perspective's  {{#crossLink "Perspective/far:property"}}{{/crossLink}} property changes.
@@ -14019,21 +14350,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 get: function () {
 
-                    if (this._dirty) {
-                        this._build();
+                    if (this._updateScheduled) {
+                        this._update();
                     }
-
+                    
                     return this._state.matrix;
                 }
             }
         },
 
         _compile: function () {
-
-            if (this._dirty) {
-                this._build();
-            }
-
             this._renderer.projTransform = this._state;
         },
 
@@ -15341,68 +15667,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 rayPick: true
             });
 
-            this.mousePickObject.on("pick",
-                function (e) {
-
-                    // Fly camera to each picked object
-                    // Don't change distance between look and eye
-
-                    var view = self.cameraFlight.camera.view;
-
-                    var pos;
-
-                    if (e.worldPos) {
-                        pos = e.worldPos
-
-                    } else if (e.object) {
-                        pos = e.object.worldBoundary.center
-                    }
-
-                    if (pos) {
-
-                        var diff = XEO.math.subVec3(view.eye, view.look, []);
-
-                        var input = self.scene.input;
-
-                        if (input.keyDown[input.KEY_SHIFT] && e.object) {
-
-                           // var aabb = e.object.worldBoundary.aabb;
-
-                            self._boundaryObject.geometry.obb = e.object.worldBoundary.obb;
-                            self._boundaryObject.visibility.visible = true;
-
-                            var center = e.object.worldBoundary.center;
-
-                            self.cameraFlight.flyTo({
-                                    aabb: e.object.worldBoundary.aabb,
-                                    offset: [
-                                        pos[0] - center[0],
-                                        pos[1] - center[1],
-                                        pos[2] - center[2]
-                                    ]
-                                },
-                                function () {
-                                    self._boundaryObject.visibility.visible = false;
-                                });
-
-                        } else {
-
-                            self.cameraFlight.flyTo({
-                                    look: pos,
-                                    eye: [
-                                        pos[0] + diff[0],
-                                        pos[1] + diff[1],
-                                        pos[2] + diff[2]
-                                    ]
-                                },
-                                function () {
-                                    self._boundaryObject.visibility.visible = false;
-                                });
-                            {
-                            }
-                        }
-                    }
-                });
+            this.mousePickObject.on("pick", this._objectPicked, this);
 
             this.mousePickObject.on("nopick",
                 function (e) {
@@ -15426,6 +15691,66 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.firstPerson = cfg.firstPerson;
             this.camera = cfg.camera;
             this.active = cfg.active !== false;
+        },
+
+        _objectPicked: function (e) {
+
+            // Fly camera to each picked object
+            // Don't change distance between look and eye
+
+            var view = this.cameraFlight.camera.view;
+
+            var pos;
+
+            if (e.worldPos) {
+                pos = e.worldPos
+
+            } else if (e.object) {
+                pos = e.object.worldBoundary.center
+            }
+
+            if (pos) {
+
+                var diff = XEO.math.subVec3(view.eye, view.look, []);
+
+                var input = this.scene.input;
+
+                if (input.keyDown[input.KEY_SHIFT] && e.object) {
+
+                    // var aabb = e.object.worldBoundary.aabb;
+
+                    this._boundaryObject.geometry.obb = e.object.worldBoundary.obb;
+                    this._boundaryObject.visibility.visible = true;
+
+                    var center = e.object.worldBoundary.center;
+
+                    this.cameraFlight.flyTo({
+                            aabb: e.object.worldBoundary.aabb,
+                            offset: [
+                                pos[0] - center[0],
+                                pos[1] - center[1],
+                                pos[2] - center[2]
+                            ]
+                        },
+                        this._hideObjectBoundary, this);
+
+                } else {
+
+                    this.cameraFlight.flyTo({
+                            look: pos,
+                            eye: [
+                                pos[0] + diff[0],
+                                pos[1] + diff[1],
+                                pos[2] + diff[2]
+                            ]
+                        },
+                        this._hideObjectBoundary, this);
+                }
+            }
+        },
+
+        _hideObjectBoundary: function () {
+            this._boundaryObject.visibility.visible = false;
         },
 
         _props: {
@@ -15754,7 +16079,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     || keyCode === input.KEY_NUM_6) {
 
 
-                                    XEO.addTask(function () {
+                                    XEO.scheduleTask(function () {
                                         self._fly(keyCode);
                                     });
                                 }
@@ -19741,10 +20066,9 @@ visibility.destroy();
                 }
             });
 
-            // Indicates if a call to _update is needed
-            this._updateDirty = false;
+            this._updateScheduled = false;
+            this._vboUpdateScheduled = false;
 
-            this._vbosDirty = null;
             this._hashDirty = true;
 
             // Typed arrays
@@ -19765,7 +20089,7 @@ visibility.destroy();
 
             // Flags for work pending
 
-            this._vbosDirty = false;
+            this._vboUpdateScheduled = false;
             this._positionsDirty = true;
             this._colorsDirty = true;
             this._normalsDirty = true;
@@ -19831,27 +20155,27 @@ visibility.destroy();
          *
          * @protected
          */
-        _needUpdate: function () {
-            if (!this._updateDirty) {
-                this._updateDirty = true;
-                XEO.addTask(this._doUpdate, this);
+        _scheduleUpdate: function () {
+            if (!this._updateScheduled) {
+                this._updateScheduled = true;
+                XEO.scheduleTask(this._doUpdate, this);
             }
         },
 
         _doUpdate: function () {
 
-            if (this._updateDirty) {
+            if (this._updateScheduled) {
 
-                this._vbosDirty = true; // Prevents needless scheduling within _update()
+                this._vboUpdateScheduled = true; // Prevents needless scheduling within _update()
 
                 if (this._update) {
                     this._update();
                 }
 
-                this._updateDirty = false;
+                this._updateScheduled = false;
             }
 
-            if (this._vbosDirty) {
+            if (this._vboUpdateScheduled) {
                 this._doVBOUpdate();
             }
         },
@@ -19865,29 +20189,29 @@ visibility.destroy();
 
         _scheduleVBOUpdate: function () {
 
-            if (!this._vbosDirty) {
+            if (!this._vboUpdateScheduled) {
 
-                this._vbosDirty = true;
+                this._vboUpdateScheduled = true;
 
                 // Build VBOs for renderer; no other components in the scene
                 // will be waiting them, so OK to schedule that for next tick.
-                XEO.addTask(this._doVBOUpdate, this);
+                XEO.scheduleTask(this._doVBOUpdate, this);
             }
         },
 
         _doVBOUpdate: function () {
 
-            if (this._updateDirty) {
+            if (this._updateScheduled) {
 
                 if (this._update) {
-                    this._vbosDirty = true; // Prevents needless scheduling within _update()
+                    this._vboUpdateScheduled = true; // Prevents needless scheduling within _update()
                     this._update();
                 }
 
-                this._vbosDirty = true;
-                this._updateDirty = false;
+                this._updateScheduled = false;
+                this._vboUpdateScheduled = true;
 
-            } else if (!this._vbosDirty) {
+            } else if (!this._vboUpdateScheduled) {
                 return;
             }
 
@@ -20017,53 +20341,7 @@ visibility.destroy();
                 this._pickVBOsDirty = true;
             }
 
-            this._vbosDirty = false;
-        },
-
-        _buildDefault: function () {
-
-            this._state.primitiveName = "triangles";
-
-            this._positionsData = [
-                -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, // Front face
-                -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, // Back face
-                -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, // Top face
-                -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, // Bottom face
-                1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, // Right face
-                -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0 // Left face
-            ];
-
-            this._normalsData = [
-                0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-                1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-                0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
-                -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
-                0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
-                0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
-            ];
-
-            this._uvData = [
-                1, 1, 0, 1, 0, 0, 1, 0,
-                0, 1, 0, 0, 1, 0, 1, 1,
-                1, 0, 1, 1, 0, 1, 0, 0,
-                1, 1, 0, 1, 0, 0, 1, 0,
-                0, 0, 1, 0, 1, 1, 0, 1,
-                0, 0, 1, 0, 1, 1, 0, 1
-            ];
-
-            // Tangents are lazy-computed from normals and UVs
-            // for Normal mapping once we know we have texture
-
-            this.tangents = null;
-
-            this._indicesData = [
-                0, 1, 2, 0, 2, 3,    // front
-                4, 5, 6, 4, 6, 7,    // back
-                8, 9, 10, 8, 10, 11,   // top
-                12, 13, 14, 12, 14, 15,   // bottom
-                16, 17, 18, 16, 18, 19,   // right
-                20, 21, 22, 20, 22, 23    // left
-            ];
+            this._vboUpdateScheduled = false;
 
             this._setBoundaryDirty();
         },
@@ -20074,7 +20352,7 @@ visibility.destroy();
                 return;
             }
 
-            if (this._updateDirty || this._vbosDirty) {
+            if (this._updateScheduled || this._vboUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -20104,7 +20382,7 @@ visibility.destroy();
                 return;
             }
 
-            if (this._updateDirty || this._vbosDirty) {
+            if (this._updateScheduled || this._vboUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -20287,8 +20565,6 @@ visibility.destroy();
 
                     this._scheduleVBOUpdate();
 
-                    this._setBoundaryDirty();
-
                     if (dirty) {
                         this._hashDirty = true;
                         this.fire("dirty", true);
@@ -20318,7 +20594,7 @@ visibility.destroy();
 
                 get: function () {
 
-                    if (this._updateDirty) {
+                    if (this._updateScheduled) {
                         this._doUpdate();
                     }
 
@@ -20364,7 +20640,7 @@ visibility.destroy();
 
                 get: function () {
 
-                    if (this._updateDirty) {
+                    if (this._updateScheduled) {
                         this._doUpdate();
                     }
 
@@ -20410,7 +20686,7 @@ visibility.destroy();
 
                 get: function () {
 
-                    if (this._updateDirty) {
+                    if (this._updateScheduled) {
                         this._doUpdate();
                     }
 
@@ -20456,7 +20732,7 @@ visibility.destroy();
 
                 get: function () {
 
-                    if (this._updateDirty) {
+                    if (this._updateScheduled) {
                         this._doUpdate();
                     }
 
@@ -20502,7 +20778,7 @@ visibility.destroy();
 
                 get: function () {
 
-                    if (this._updateDirty) {
+                    if (this._updateScheduled) {
                         this._doUpdate();
                     }
 
@@ -20533,6 +20809,8 @@ visibility.destroy();
 
                         var self = this;
 
+                        //this._setBoundaryDirty();
+
                         this._localBoundary = new XEO.Boundary3D(this.scene, {
 
                             // Inject callbacks through which this Geometry
@@ -20548,8 +20826,8 @@ visibility.destroy();
 
                             getPositions: function () {
 
-                                if (this._updateDirty) {
-                                    this._doUpdate();
+                                if (self._updateScheduled) {
+                                    self._doUpdate();
                                 }
 
                                 return self._positionsData;
@@ -20560,8 +20838,6 @@ visibility.destroy();
                             function () {
                                 self._localBoundary = null;
                             });
-
-                        this._setBoundaryDirty();
                     }
 
                     return this._localBoundary;
@@ -20670,7 +20946,7 @@ visibility.destroy();
 
         _compile: function () {
 
-            if (this._updateDirty || this._vbosDirty) {
+            if (this._updateScheduled || this._vboUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -20715,7 +20991,7 @@ visibility.destroy();
 
         _getJSON: function () {
 
-            if (this._updateDirty) {
+            if (this._updateScheduled) {
                 this._update();
             }
 
@@ -20939,7 +21215,7 @@ visibility.destroy();
 
                     this._xSize = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/xSize:property"}}{{/crossLink}} property changes.
@@ -20981,7 +21257,7 @@ visibility.destroy();
 
                     this._ySize = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/ySize:property"}}{{/crossLink}} property changes.
@@ -21023,7 +21299,7 @@ visibility.destroy();
 
                     this._zSize = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/zSize:property"}}{{/crossLink}} property changes.
@@ -21169,7 +21445,7 @@ visibility.destroy();
                                     return;
                                 }
                                 geometryDirty = true;
-                                XEO.addTask(function () {
+                                XEO.scheduleTask(function () {
                                         self._setPositionsFromOBB(boundary.obb);
                                         geometryDirty = false;
                                     });
@@ -21460,7 +21736,7 @@ visibility.destroy();
 
                     this._lod = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -21502,7 +21778,7 @@ visibility.destroy();
 
                     this._radius = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radius:property"}}{{/crossLink}} property changes.
@@ -21545,7 +21821,7 @@ visibility.destroy();
 
                     this._tube = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tube:property"}}{{/crossLink}} property changes.
@@ -21587,7 +21863,7 @@ visibility.destroy();
 
                     this._radialSegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radialSegments:property"}}{{/crossLink}} property changes.
@@ -21630,7 +21906,7 @@ visibility.destroy();
 
                     this._tubeSegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tubeSegments:property"}}{{/crossLink}} property changes.
@@ -21672,7 +21948,7 @@ visibility.destroy();
 
                     this._arc = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} property changes.
@@ -21872,7 +22148,7 @@ visibility.destroy();
 
                     this._lod = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -21914,7 +22190,7 @@ visibility.destroy();
 
                     this._radius = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}} property changes.
@@ -21957,7 +22233,7 @@ visibility.destroy();
 
                     this._heightSegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} property changes.
@@ -21999,7 +22275,7 @@ visibility.destroy();
 
                     this._widthSegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} property changes.
@@ -22129,7 +22405,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._onPathCurves = newPath.on("curves",
                         function () {
-                            self._needUpdate();
+                            self._scheduleUpdate();
                         });
                 }
             },
@@ -22156,7 +22432,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                 this._divisions = value;
 
-                this._needUpdate();
+                this._scheduleUpdate();
 
                 this.fire("divisions", this._divisions);
             },
@@ -22442,7 +22718,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._lod = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Cylinder's {{#crossLink "Cylinder/lod:property"}}{{/crossLink}} property changes.
@@ -22484,7 +22760,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._radiusTop = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Cylinder's {{#crossLink "Cylinder/radiusTop:property"}}{{/crossLink}} property changes.
@@ -22526,7 +22802,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._radiusBottom = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Cylinder's {{#crossLink "Cylinder/radiusBottom:property"}}{{/crossLink}} property changes.
@@ -22568,7 +22844,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._height = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Cylinder's {{#crossLink "Cylinder/height:property"}}{{/crossLink}} property changes.
@@ -22610,7 +22886,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._radialSegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Cylinder's {{#crossLink "Cylinder/radialSegments:property"}}{{/crossLink}} property changes.
@@ -22652,7 +22928,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._heightSegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Cylinder's {{#crossLink "Cylinder/heightSegments:property"}}{{/crossLink}} property changes.
@@ -22689,7 +22965,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._openEnded = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Cylinder's {{#crossLink "Cylinder/openEnded:property"}}{{/crossLink}} property changes.
@@ -22896,7 +23172,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._lod = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -22938,7 +23214,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._xSize = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}} property changes.
@@ -22980,7 +23256,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._ySize = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySize:property"}}{{/crossLink}} property changes.
@@ -23022,7 +23298,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._xSegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} property changes.
@@ -23064,7 +23340,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._ySegments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySegments:property"}}{{/crossLink}} property changes.
@@ -23245,7 +23521,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._points = value || [];
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's
@@ -23287,7 +23563,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._lod = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -23329,7 +23605,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._phiStart = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/phiStart:property"}}{{/crossLink}} property changes.
@@ -23371,7 +23647,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._phiLength = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/phiLength:property"}}{{/crossLink}} property changes.
@@ -23413,7 +23689,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                     this._segments = value;
 
-                    this._needUpdate();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/segments:property"}}{{/crossLink}} property changes.
@@ -23731,7 +24007,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
         _scheduleUpdate: function () {
             if (!this._dirty) {
                 this._dirty = true;
-                XEO.addTask(this._notifyUpdated, this);
+                XEO.scheduleTask(this._notifyUpdated, this);
             }
         },
 
@@ -27532,7 +27808,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             // Dirty flags, processed in _buildTexture()
 
-            this._dirty = false;
             this._matrixDirty = false;
             this._srcDirty = false;
             this._imageDirty = false;
@@ -27543,27 +27818,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             // Handle WebGL context restore
 
-            this._webglContextRestored = this.scene.canvas.on(
-                "webglContextRestored",
-                function () {
-
-                    self._state.texture = null;
-
-                    self._matrixDirty = true;
-                    self._propsDirty = true;
-
-                    if (self._image) {
-                        self._imageDirty = true;
-
-                    } else if (self._src) {
-                        self._srcDirty = true;
-
-                    } else if (self._target) {
-                        self._targetDirty = true;
-                    }
-
-                    self._textureDirty();
-                });
+            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._webglContextRestored, this);
 
             // Transform
 
@@ -27593,15 +27848,27 @@ XEO.PathGeometry = XEO.Geometry.extend({
             XEO.stats.memory.textures++;
         },
 
-        // Schedules a call to #_buildTexture for the next "tick"
-        _textureDirty: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                XEO.addTask(this._buildTexture, this);
+        _webglContextRestored: function () {
+
+            this._state.texture = null;
+
+            this._matrixDirty = true;
+            this._propsDirty = true;
+
+            if (this._image) {
+                this._imageDirty = true;
+
+            } else if (this._src) {
+                this._srcDirty = true;
+
+            } else if (this._target) {
+                this._targetDirty = true;
             }
+
+            this._scheduleUpdate();
         },
 
-        _buildTexture: function () {
+        _update: function () {
 
             var gl = this.scene.canvas.gl;
 
@@ -27616,8 +27883,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._srcDirty = false;
 
                     // _imageDirty is set when the image has loaded
-
-                    this._dirty = false;
 
                     return;
                 }
@@ -27720,8 +27985,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
             }
 
             this._renderer.imageDirty = true;
-
-            this._dirty = false;
         },
 
 
@@ -27750,6 +28013,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     self._srcDirty = false;
                     self._targetDirty = false;
 
+                    self._scheduleUpdate();
+
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
                      * @event image
@@ -27764,8 +28029,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
                      * @param value {HTML Image} The value of the {{#crossLink "Texture/src:property"}}{{/crossLink}} property
                      */
                     self.fire("loaded", self._src);
-
-                    self._textureDirty();
                 }
 
 //                task.setCompleted();
@@ -27816,7 +28079,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._srcDirty = false;
                     this._targetDirty = false;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
@@ -27857,7 +28120,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._srcDirty = true;
                     this._targetDirty = false;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}} property changes.
@@ -27907,7 +28170,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._srcDirty = false;
                     this._targetDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/target:property"}}{{/crossLink}} property changes.
@@ -27941,8 +28204,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._translate = value;
                     this._matrixDirty = true;
 
-                    this._textureDirty();
-
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/translate:property"}}{{/crossLink}} property changes.
@@ -27975,7 +28237,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._scale = value;
                     this._matrixDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/scale:property"}}{{/crossLink}} property changes.
@@ -28012,7 +28274,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._rotate = value;
                     this._matrixDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/rotate:property"}}{{/crossLink}} property changes.
@@ -28089,7 +28351,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._state.minFilter = value;
                     this._propsDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/minFilter:property"}}{{/crossLink}} property changes.
@@ -28139,7 +28401,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._state.magFilter = value;
                     this._propsDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property changes.
@@ -28191,7 +28453,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._state.wrapS = value;
                     this._propsDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/wrapS:property"}}{{/crossLink}} property changes.
@@ -28243,7 +28505,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._state.wrapT = value;
                     this._propsDirty = true;
 
-                    this._textureDirty();
+                    this._scheduleUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/wrapT:property"}}{{/crossLink}} property changes.
@@ -28923,17 +29185,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                         // Subscribe to new Camera's events
 
-                        var self = this;
-
-                        this._onCameraViewMatrix = newCamera.on("viewMatrix",
-                            function () {
-                                self._setViewBoundaryDirty();
-                            });
-
-                        this._onCameraProjMatrix = newCamera.on("projMatrix",
-                            function () {
-                                self._setCanvasBoundaryDirty();
-                            });
+                        this._onCameraViewMatrix = newCamera.on("viewMatrix", this._setViewBoundaryDirty, this);
+                        this._onCameraProjMatrix = newCamera.on("projMatrix", this._setCanvasBoundaryDirty, this);
                     }
                 },
 
@@ -29203,17 +29456,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
                         // World-space boundary is dirty when new Geometry's
                         // positions are updated or Geometry is destroyed.
 
-                        var self = this;
-
-                        this._onGeometryPositions = newGeometry.on("positions",
-                            function () {
-                                self._setWorldBoundaryDirty();
-                            });
-
-                        this._onGeometryDestroyed = newGeometry.on("destroyed",
-                            function () {
-                                self._setWorldBoundaryDirty();
-                            });
+                        this._onGeometryPositions = newGeometry.on("positions", this._setWorldBoundaryDirty, this);
+                        this._onGeometryDestroyed = newGeometry.on("destroyed", this._setWorldBoundaryDirty, this);
                     }
                 },
 
@@ -29519,7 +29763,10 @@ XEO.PathGeometry = XEO.Geometry.extend({
                                     return;
                                 }
                                 self._transformDirty = true;
-                                XEO.addTask(function () {
+                                XEO.scheduleTask(function () {
+                                    if (!self._transformDirty) {
+                                        return;
+                                    }
                                     newTransform._buildLeafMatrix();
 
                                     self._setWorldBoundaryDirty();
@@ -29527,10 +29774,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                                 });
                             });
 
-                        this._onTransformDestroyed = newTransform.on("destroyed",
-                            function () {
-                                self._setWorldBoundaryDirty();
-                            });
+                        this._onTransformDestroyed = newTransform.on("destroyed",this._setWorldBoundaryDirty,this);
                     }
                 },
 
@@ -29638,6 +29882,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                         var self = this;
 
+                       // this._setWorldBoundaryDirty();
+
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
                             meta: {
@@ -29666,7 +29912,16 @@ XEO.PathGeometry = XEO.Geometry.extend({
                             //},
 
                             getMatrix: function () {
-                                return self._children.transform.leafMatrix;
+
+                                var transform = self._children.transform;
+
+                                if (self._transformDirty) {
+                                    transform._buildLeafMatrix();
+                                    self._setWorldBoundaryDirty();
+                                    self._transformDirty = false;
+                                }
+
+                                return transform.leafMatrix;
                             }
                         });
 
@@ -29674,8 +29929,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
                             function () {
                                 self._worldBoundary = null;
                             });
-
-                        this._setWorldBoundaryDirty();
                     }
 
                     return this._worldBoundary;
@@ -29717,6 +29970,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                         var self = this;
 
+                   //     this._setViewBoundaryDirty();
+
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
                             meta: {
@@ -29744,8 +29999,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
                             function () {
                                 self._viewBoundary = null;
                             });
-
-                        this._setViewBoundaryDirty();
                     }
 
                     return this._viewBoundary;
@@ -29788,6 +30041,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                         var self = this;
 
+                     //   this._setCanvasBoundaryDirty();
+
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
 
                             meta: {
@@ -29815,8 +30070,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
                             function () {
                                 self._canvasBoundary = null;
                             });
-
-                        this._setCanvasBoundaryDirty();
                     }
 
                     return this._canvasBoundary;
@@ -29882,6 +30135,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 }
             }
         },
+
+        // Callbacks as members, to avoid GC churn
 
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
@@ -32602,7 +32857,7 @@ myTask2.setFailed();
                 get: function () {
 
                     if (this._getDirty()) {
-                        this._build();
+                        this._buildBoundary();
                     }
 
                     return this._aabb;
@@ -32621,7 +32876,7 @@ myTask2.setFailed();
                 get: function () {
 
                     if (this._getDirty()) {
-                        this._build();
+                        this._buildBoundary();
                     }
 
                     return this._center;
@@ -32700,7 +32955,7 @@ myTask2.setFailed();
 
         // Lazy (re)builds the obb, aabb and center.
 
-        _build: function () {
+        _buildBoundary: function () {
 
             var math = XEO.math;
 
@@ -32891,7 +33146,7 @@ myTask2.setFailed();
                 get: function () {
 
                     if (this._getDirty()) {
-                        this._build();
+                        this._buildBoundary();
                     }
 
                     return this._obb;
@@ -32910,7 +33165,7 @@ myTask2.setFailed();
                 get: function () {
 
                     if (this._getDirty()) {
-                        this._build();
+                        this._buildBoundary();
                     }
 
                     return this._aabb;
@@ -32929,7 +33184,7 @@ myTask2.setFailed();
                 get: function () {
 
                     if (this._getDirty()) {
-                        this._build();
+                        this._buildBoundary();
                     }
 
                     return this._center;
@@ -32939,7 +33194,7 @@ myTask2.setFailed();
 
         // (Re)builds the obb, aabb and center.
 
-        _build: function () {
+        _buildBoundary: function () {
 
             var math = XEO.math;
 
@@ -33143,7 +33398,7 @@ myTask2.setFailed();
         _props: {
 
             /**
-             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GroupBoundary.
              *
              * Fires a {{#crossLink "GroupBoundary/group:event"}}{{/crossLink}} event on change.
              *
@@ -33163,7 +33418,7 @@ myTask2.setFailed();
                         oldGroup.off(this._onAdded);
                         oldGroup.off(this._onRemoved);
 
-                        oldGroup.iterate(unbind);
+                        oldGroup.iterate(this._unbind, this);
                     }
 
                     /**
@@ -33174,55 +33429,14 @@ myTask2.setFailed();
                      */
                     var group = this._setChild("group", value);
 
-                    var self = this;
-
                     if (group) {
 
-                        this._onAdded = group.on("added",
-                            function (c) {
-                                if (c.worldBoundary) {
-                                    bind(c);
-                                }
-                                if (!self._aabbDirty) {
-                                    self._setAABBDirty();
-                                }
-                            });
+                        this._onAdded = group.on("added", this._added, this);
+                        this._onRemoved = group.on("removed", this._removed, this);
 
-                        this._onRemoved = group.on("removed",
-                            function (c) {
-                                if (c.worldBoundary) {
-                                    unbind(c);
-                                }
-                                if (!self._aabbDirty) {
-                                    self._setAABBDirty();
-                                }
-                            });
-
-                        group.iterate(bind);
+                        group.iterate(this._bind, this);
 
                         this._setAABBDirty();
-                    }
-
-                    function bind(c) {
-                        var worldBoundary = c.worldBoundary;
-                        if (!worldBoundary) {
-                            return;
-                        }
-                        self._onUpdated[c.id] = worldBoundary.on("updated",
-                            function () {
-                                if (!self._aabbDirty) {
-                                    self._setAABBDirty();
-                                }
-                            });
-                    }
-
-                    function unbind(c) {
-                        var worldBoundary = c.worldBoundary;
-                        if (!worldBoundary) {
-                            return;
-                        }
-                        worldBoundary.off(self._onUpdated[c.id]);
-                        delete self._onUpdated[c.id];
                     }
 
                     this._setAABBDirty();
@@ -33277,6 +33491,47 @@ myTask2.setFailed();
                     return this._worldBoundary;
                 }
             }
+        },
+
+        _added: function (c) {
+            if (c.worldBoundary) {
+                this._bind(c);
+            }
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+        },
+
+        _removed: function (c) {
+            if (c.worldBoundary) {
+                this._unbind(c);
+            }
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+        },
+
+        _bind: function (c) {
+            var worldBoundary = c.worldBoundary;
+            if (!worldBoundary) {
+                return;
+            }
+            this._onUpdated[c.id] = worldBoundary.on("updated", this._updated, this);
+        },
+
+        _updated: function () {
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+        },
+
+        _unbind: function (c) {
+            var worldBoundary = c.worldBoundary;
+            if (!worldBoundary) {
+                return;
+            }
+            worldBoundary.off(this._onUpdated[c.id]);
+            delete this._onUpdated[c.id];
         },
 
         _setAABBDirty: function () {
@@ -33506,8 +33761,7 @@ myTask2.setFailed();
 
  var angle = 0;
 
- scene.on("tick",
-    function () {
+ scene.on("tick", function () {
 
         angle += 0.5;
 
@@ -33586,29 +33840,12 @@ myTask2.setFailed();
                      */
                     this.fire("parent", this._parent);
 
-                    var self = this;
-
-                    var updated = function () {
-
-                        self._leafMatrixDirty = true;
-
-                        /**
-                         * Fired whenever this Transform's {{#crossLink "Transform/leafMatrix:property"}}{{/crossLink}} property changes.
-                         *
-                         * This event does not carry the updated property value. Instead, subscribers will need to read
-                         * that property again to get its updated value (which may be lazy-computed then).
-                         *
-                         * @event updated
-                         */
-                        self.fire("updated", true);
-                    };
-
                     if (this._parent) {
-                        this._onParentUpdated = this._parent.on("updated", updated);
-                        this._onParentDestroyed = this._parent.on("destroyed", updated);
+                        this._onParentUpdated = this._parent.on("updated", this._parentUpdated, this);
+                        this._onParentDestroyed = this._parent.on("destroyed", this._parentUpdated, this);
                     }
 
-                    updated();
+                    this._parentUpdated();
                 },
 
                 get: function () {
@@ -33681,8 +33918,19 @@ myTask2.setFailed();
             }
         },
 
-        _compile: function () {
-            this._renderer.modelTransform = this._state;
+        _parentUpdated: function () {
+
+            this._leafMatrixDirty = true;
+
+            /**
+             * Fired whenever this Transform's {{#crossLink "Transform/leafMatrix:property"}}{{/crossLink}} property changes.
+             *
+             * This event does not carry the updated property value. Instead, subscribers will need to read
+             * that property again to get its updated value (which may be lazy-computed then).
+             *
+             * @event updated
+             */
+            this.fire("updated", true);
         },
 
         // This is called if necessary when reading "leafMatrix", to update that property.
@@ -33699,6 +33947,9 @@ myTask2.setFailed();
 
             if (!this._parent) {
 
+                // No parent Transform;
+                // copy matrix property into the render state's matrix
+
                 var m1 = this._matrix;
                 var m2 = this._state.matrix;
 
@@ -33708,21 +33959,31 @@ myTask2.setFailed();
 
             } else {
 
+                // Multiply parent's leaf matrix by this matrix,
+                // store result in the render state's matrix
+
                 XEO.math.mulMat4(this._parent.leafMatrix, this._matrix, this._state.matrix);
             }
+
+            // Create normal matrix from inverse
+            // of the state's matrix
+
+            // TODO: only compute normal matrix on leaf!
 
             if (!this._state.normalMatrix) {
                 this._state.normalMatrix = XEO.math.identityMat4();
             }
 
-            // TODO: only compute normal matrix on leaf!
-
             XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix);
             XEO.math.transposeMat4(this._state.normalMatrix);
 
-            this._renderer.imageDirty = true;
+            this._renderer.imageDirty = true; //  TODO : Where should this go?
 
             this._leafMatrixDirty = false;
+        },
+
+        _compile: function () {
+            this._renderer.modelTransform = this._state;
         },
 
         _getJSON: function () {
@@ -33870,6 +34131,8 @@ myTask2.setFailed();
                         this._xyz = value;
                     }
 
+                    this._buildMatrix();
+
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/xyz:property"}}{{/crossLink}} property changes.
 
@@ -33877,8 +34140,6 @@ myTask2.setFailed();
                      @param value {Array of Number} The property's new value
                      */
                     this.fire("xyz", this._xyz);
-
-                    this._update();
                 },
 
                 get: function () {
@@ -33901,6 +34162,8 @@ myTask2.setFailed();
 
                     this._angle = value || 0;
 
+                    this._buildMatrix();
+
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/angle:property"}}{{/crossLink}} property changes.
 
@@ -33908,8 +34171,6 @@ myTask2.setFailed();
                      @param value {Array of Number} The property's new value
                      */
                     this.fire("angle", this._angle);
-
-                    this._update();
                 },
 
                 get: function () {
@@ -33918,7 +34179,7 @@ myTask2.setFailed();
             }
         },
 
-        _update: function () {
+        _buildMatrix: function () {
 
             if (this._xyz !== null && this._angle !== null) {
 
