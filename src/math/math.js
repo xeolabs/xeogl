@@ -7,12 +7,25 @@
     var tempMat1 = new Float32Array(16);
     var tempMat2 = new Float32Array(16);
     var tempVec3 = new Float32Array(3);
+
+    var tempVec3a = new Float32Array(3);
     var tempVec3b = new Float32Array(3);
     var tempVec3c = new Float32Array(3);
     var tempVec3d = new Float32Array(3);
     var tempVec3e = new Float32Array(3);
     var tempVec3f = new Float32Array(3);
+
     var tempVec4 = new Float32Array(4);
+
+    var tempAABB2 = {
+        min: new Float32Array(2),
+        max: new Float32Array(2)
+    };
+
+    var tempAABB2b = {
+        min: new Float32Array(2),
+        max: new Float32Array(2)
+    };
 
     /*
      * Optimizations made based on glMatrix by Brandon Jones
@@ -1790,7 +1803,30 @@
         },
 
         /**
-         * Converts an axis-aligned boundary into an oriented boundary consisting of
+         * Collapses a 3D axis-aligned boundary, ready to expand to fit 2D points.
+         * Creates new AABB if none supplied.
+         *
+         * @method collapseAABB3
+         * @static
+         * @param {*} [aabb] 3D axis-aligned bounding box.
+         * @returns {*} 3D axis-aligned bounding box.
+         */
+        collapseAABB3: function (aabb) {
+
+            aabb = aabb || XEO.math.AABB2();
+
+            aabb.min[0] = 10000000;
+            aabb.min[1] = 10000000;
+            aabb.min[2] = 10000000;
+            aabb.max[0] = -10000000;
+            aabb.max[1] = -10000000;
+            aabb.max[2] = -10000000;
+
+            return aabb;
+        },
+
+        /**
+         * Converts an axis-aligned 3D boundary into an oriented boundary consisting of
          * an array of eight 3D positions, one for each corner of the boundary.
          *
          * @method AABB3ToOBB3
@@ -1879,7 +1915,7 @@
         },
 
         /**
-         * Finds the minimum axis-aligned boundary enclosing the 3D points given in a flattened,  1-dimensional array.
+         * Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.
          *
          * @method positions3ToAABB3
          * @static
@@ -1889,7 +1925,7 @@
          */
         positions3ToAABB3: function (positions, aabb) {
 
-            aabb = aabb ||  XEO.math.AABB3();
+            aabb = aabb || XEO.math.AABB3();
 
             var xmin = 100000;
             var ymin = 100000;
@@ -1942,7 +1978,7 @@
         },
 
         /**
-         * Finds the minimum axis-aligned boundary enclosing the given 3D points.
+         * Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.
          *
          * @method points3ToAABB3
          * @static
@@ -1952,7 +1988,7 @@
          */
         points3ToAABB3: function (points, aabb) {
 
-            aabb = aabb ||  XEO.math.AABB3();
+            aabb = aabb || XEO.math.AABB3();
 
             var xmin = 100000;
             var ymin = 100000;
@@ -2005,7 +2041,7 @@
         },
 
         /**
-         * Expands the second axis-aligned boundary to enclose the first, if needed.
+         * Expands the first axis-aligned 3D boundary to enclose the second, if required.
          *
          * @method expandAABB3
          * @static
@@ -2015,31 +2051,90 @@
          */
         expandAABB3: function (aabb1, aabb2) {
 
-            if (aabb1.min[0] < aabb2.min[0]) {
-                aabb2.min[0] = aabb1.min[0];
+            if (aabb1.min[0] > aabb2.min[0]) {
+                aabb1.min[0] = aabb2.min[0];
             }
 
-            if (aabb1.min[1] < aabb2.min[1]) {
-                aabb2.min[1] = aabb1.min[1];
+            if (aabb1.min[1] > aabb2.min[1]) {
+                aabb1.min[1] = aabb2.min[1];
             }
 
-            if (aabb1.min[2] < aabb2.min[2]) {
-                aabb2.min[2] = aabb1.min[2];
+            if (aabb1.min[2] > aabb2.min[2]) {
+                aabb1.min[2] = aabb2.min[2];
             }
 
-            if (aabb1.max[0] > aabb2.max[0]) {
-                aabb2.max[0] = aabb1.max[0];
+            if (aabb1.max[0] < aabb2.max[0]) {
+                aabb1.max[0] = aabb2.max[0];
             }
 
-            if (aabb1.max[1] > aabb2.max[1]) {
-                aabb2.max[1] = aabb1.max[1];
+            if (aabb1.max[1] < aabb2.max[1]) {
+                aabb1.max[1] = aabb2.max[1];
             }
 
-            if (aabb1.max[2] > aabb2.max[2]) {
-                aabb2.max[2] = aabb1.max[2];
+            if (aabb1.max[2] < aabb2.max[2]) {
+                aabb1.max[2] = aabb2.max[2];
             }
 
             return aabb2;
+        },
+
+        /**
+         * Expands an axis-aligned 3D boundary to enclose the given point, if needed.
+         *
+         * @method expandAABB3Point3
+         * @static
+         * @param {*} aabb AABB
+         * @param {*} p Point
+         * @returns {*} The AABB
+         */
+        expandAABB3Point3: function (aabb, p) {
+
+            if (aabb.min[0] < p[0]) {
+                aabb.min[0] = p[0];
+            }
+
+            if (aabb.min[1] < p[1]) {
+                aabb.min[1] = p[1];
+            }
+
+            if (aabb.min[2] < p[2]) {
+                aabb.min[2] = p[2];
+            }
+
+            if (aabb.max[0] > p[0]) {
+                aabb.max[0] = p[0];
+            }
+
+            if (aabb.max[1] > p[1]) {
+                aabb.max[1] = p[1];
+            }
+
+            if (aabb.max[2] > p[2]) {
+                aabb.max[2] = p[2];
+            }
+
+            return aabb;
+        },
+
+        /**
+         * Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.
+         * Creates new AABB if none supplied.
+         *
+         * @method collapseAABB2
+         * @static
+         * @param {*} [aabb] 2D axis-aligned bounding box.
+         * @returns {*} 2D axis-aligned bounding box.
+         */
+        collapseAABB2: function (aabb) {
+
+            aabb = aabb || XEO.math.AABB2();
+
+            aabb.min[0] = 10000000;
+            aabb.min[1] = 10000000;
+            aabb.max[0] = -10000000;
+            aabb.max[1] = -10000000;
+
+            return aabb;
         },
 
         /**
@@ -2053,7 +2148,7 @@
          */
         points3ToAABB2: function (points, aabb) {
 
-            aabb = aabb ||  XEO.math.AABB2();
+            aabb = aabb || XEO.math.AABB2();
 
             var xmin = 10000000;
             var ymin = 10000000;
@@ -2099,6 +2194,65 @@
             return aabb;
         },
 
+        /**
+         * Expands the first axis-aligned 2D boundary to enclose the second, if required.
+         *
+         * @method expandAABB3
+         * @static
+         * @param {*} aabb1 First AABB
+         * @param {*} aabb2 Second AABB
+         * @returns {*} The second AABB
+         */
+        expandAABB2: function (aabb1, aabb2) {
+
+            if (aabb1.min[0] > aabb2.min[0]) {
+                aabb1.min[0] = aabb2.min[0];
+            }
+
+            if (aabb1.min[1] > aabb2.min[1]) {
+                aabb1.min[1] = aabb2.min[1];
+            }
+
+            if (aabb1.max[0] < aabb2.max[0]) {
+                aabb1.max[0] = aabb2.max[0];
+            }
+
+            if (aabb1.max[1] < aabb2.max[1]) {
+                aabb1.max[1] = aabb2.max[1];
+            }
+
+            return aabb2;
+        },
+
+        /**
+         * Expands an axis-aligned 2D boundary to enclose the given point, if required.
+         *
+         * @method expandAABB2Point2
+         * @static
+         * @param {*} aabb AABB
+         * @param {*} p Point
+         * @returns {*} The AABB
+         */
+        expandAABB2Point2: function (aabb, p) {
+
+            if (aabb.min[0] > p[0]) {
+                aabb.min[0] = p[0];
+            }
+
+            if (aabb.min[1] > p[1]) {
+                aabb.min[1] = p[1];
+            }
+
+            if (aabb.max[0] < p[0]) {
+                aabb.max[0] = p[0];
+            }
+
+            if (aabb.max[1] < p[1]) {
+                aabb.max[1] = p[1];
+            }
+
+            return aabb;
+        },
 
         AABB2ToCanvas: function (aabb, canvasWidth, canvasHeight, aabb2) {
 
@@ -2139,7 +2293,6 @@
             var v2;
             var v3;
 
-            //    for (var i = 0, len = indices.length - 3; i < len; i += 3) {
             for (var i = 0, len = indices.length; i < len; i += 3) {
                 j0 = indices[i + 0];
                 j1 = indices[i + 1];
@@ -2621,25 +2774,22 @@
 
                 if (Math.abs(u[0]) > Math.abs(u[2])) {
 
-                    w[0] = -u[1];
-                    w[1] = u[0];
-                    w[2] = 0;
+                    dest[0] = -u[1];
+                    dest[1] = u[0];
+                    dest[2] = 0;
 
                 } else {
-                    w[0] = 0;
-                    w[1] = -u[2];
-                    w[2] = u[1]
+                    dest[0] = 0;
+                    dest[1] = -u[2];
+                    dest[2] = u[1]
                 }
 
             } else {
 
                 // Otherwise, build quaternion the standard way.
-                w = math.cross3Vec3(u, v);
+                math.cross3Vec3(u, v, dest);
             }
 
-            dest[0] = w[0];
-            dest[1] = w[1];
-            dest[2] = w[2];
             dest[3] = real_part;
 
             return math.normalizeQuaternion(dest);
