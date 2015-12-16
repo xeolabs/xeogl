@@ -14,84 +14,286 @@
         }
     </style>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeoengine.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="js/debug/debug.js"></script>
 
 <body>
 
 <script>
+
+    //    var scene = new XEO.Scene({
+    //      //  transparent: true
+    //    });
 
     // Override xeoEngine's default lights with some View-space directional lights,
     // including one that shines from behind our torus GameObject
 
     var lights = new XEO.Lights({
         lights: [
-
             new XEO.AmbientLight({
-                color: [0.8, 0.8, 0.9],
-                intensity: 0.6
+                color: [0.5, 0.5, 0.5],
+                intensity: 0.8
             }),
-
             new XEO.DirLight({
                 dir: [0.0, 0.0, 1.0],
                 color: [1.0, 1.0, 0.9],
                 intensity: 1.0,
                 space: "view"
             }),
-
             new XEO.DirLight({
                 dir: [0.1, 0.1, -0.7],
                 color: [0.5, 0.5, 0.5],
-                intensity: 0.3,
+                intensity: 0.7,
                 space: "view"
             })
         ]
     });
 
-    var geometry = new XEO.TorusGeometry({
-        radius: 1.0,
-        tube: 0.4,
-        radialSegments: 32,
-        tubeSegments: 24,
-        arc: Math.PI * 2.0
+    var wireframeTorus = new XEO.GameObject({
+        geometry: new XEO.TorusGeometry({
+            primitive: "lines",
+            radius: 0.9,
+            tube: 0.29,
+            radialSegments: 10,
+            tubeSegments: 30,
+            arc: Math.PI * 2.0
+        }),
+        material: new XEO.PhongMaterial({
+            emissive: [0.6, 0.8, 0.6],
+            diffuse: [0, 0, 0],
+            specular: [0, 0, 0],
+            opacity: 1,
+            lineWidth: 1
+        }),
+        modes: new XEO.Modes({
+            transparent: true
+        }),
+        layer: new XEO.Layer({
+            priority: 1.5
+        })
     });
 
-    var diffuseMap = new XEO.Texture({
-        src: "textures/diffuse/uvGrid2.jpg"
+
+    var solidTorus = new XEO.GameObject({
+        geometry: new XEO.TorusGeometry({
+            radius: 0.9,
+            tube: 0.3,
+            radialSegments: 60,
+            tubeSegments: 60,
+            arc: Math.PI * 2.0
+        }),
+        material: new XEO.PhongMaterial({
+            ambient: [0.3, 0.3, 0.3],
+            diffuse: [0.3, 0.5, 0.5],
+            shininess: 3,
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            specularFresnel: new XEO.Fresnel({
+                edgeBias: 0.0,
+                centerBias: 1.0,
+                power: 1.0,
+                edgeColor: [1.0, 1.0, 1.0],
+                centerColor: [0.0, 0.0, 0.0]
+            }),
+            XXXopacityFresnel: new XEO.Fresnel({
+                edgeBias: 0.2,
+                centerBias: 1.2,
+                edgeColor: [1.0, 0.0, 0.0],
+                centerColor: [0.0, 0.0, 1.0],
+                power: 7.0
+            }),
+            opacity: 0
+        }),
+        modes: new XEO.Modes({
+            transparent: true
+        }),
+        lights: lights,
+        layer: new XEO.Layer({
+            priority: 2
+        })
     });
 
-    var specularFresnel = new XEO.Fresnel({
-        edgeBias: 0.0,
-        centerBias: 1.0,
-        power: 1.0,
-        edgeColor: [1.0, 1.0, 1.0],
-        centerColor: [0.0, 0.0, 0.0]
+
+    var wireframeBox = new XEO.GameObject({
+        geometry: new XEO.Geometry({
+            primitive: "lines",
+            positions: [
+                10.0, 10.0, 10.0,
+                10.0, -10.0, 10.0,
+                -10.0, -10.0, 10.0,
+                -10.0, 10.0, 10.0,
+                10.0, 10.0, -10.0,
+                10.0, -10.0, -10.0,
+                -10.0, -10.0, -10.0,
+                -10.0, 10.0, -10.0
+            ],
+            indices: [
+                0, 1, 1, 2, 2, 3, 3, 0, 4,
+                5, 5, 6, 6, 7, 7, 4, 0, 4,
+                1, 5, 2, 6, 3, 7
+            ]
+        }),
+        material: new XEO.PhongMaterial({
+            emissive: [0.7, 1.0, 0.7],
+            diffuse: [0, 0, 0],
+            specular: [0, 0, 0],
+            opacity: 1,
+            lineWidth: 3
+        }),
+        modes: new XEO.Modes({
+            backfaces: true,
+            transparent: true
+        }),
+        layer: new XEO.Layer({
+            priority: 1
+        }),
+        visibility: new XEO.Visibility({
+            visible: true
+        })
     });
 
-    var material = new XEO.PhongMaterial({
-        ambient: [0.3, 0.3, 0.3],
-        diffuse: [0.3, 0.5, 0.5],
-        shininess: 3,
-        diffuseMap: diffuseMap,
-        specularFresnel: specularFresnel
+    var solidBox = new XEO.GameObject({
+        geometry: new XEO.BoxGeometry({
+            xSize: 10,
+            ySize: 10,
+            zSize: 10
+        }),
+        material: new XEO.PhongMaterial({
+            specular: [0.3, 0.3, 0.3],
+            ambient: [0.5, 0.5, 0.6],
+            diffuse: [0.7, 0.7, 0.8],
+            shininess: 30,
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png"
+            }),
+            opacity: 0
+        }),
+        modes: new XEO.Modes({
+            backfaces: true,
+            transparent: true
+        }),
+        lights: new XEO.Lights({
+            lights: [
+                new XEO.AmbientLight({
+                    color: [0.5, 0.5, 0.5],
+                    intensity: 1.0
+                }),
+                new XEO.DirLight({
+                    dir: [0.0, 0.0, -1.0],
+                    color: [1.0, 1.0, 0.9],
+                    intensity: 0.6,
+                    space: "view"
+                }),
+                new XEO.DirLight({
+                    dir: [0.1, 0.1, 0.7],
+                    color: [0.5, 0.5, 0.5],
+                    intensity: 0.6,
+                    space: "view"
+                })
+            ]
+        }),
+        layer: new XEO.Layer({
+            priority: 1
+        }),
+        visibility: new XEO.Visibility({
+            visible: true
+        })
     });
 
-    var object = new XEO.GameObject({
-        geometry: geometry,
-        material: material,
-        lights: lights
-    });
+    var view = XEO.scene.camera.view;
 
-    object.camera.view.zoom(-5);
+    view.zoom(-6);
+    view.rotateEyeY(40);
+    view.rotateEyeX(20);
 
-    object.scene.on("tick",
-            function () {
+    var lastCoords;
 
-                var view = object.scene.camera.view;
+    XEO.scene.on("tick",
+            function (e) {
 
-                view.rotateEyeY(0.4);
-                view.rotateEyeX(0.15);
+
+                view.rotateEyeY(0.1);
+                view.rotateEyeX(0.05);
+
+                if (wireframeBox.material.opacity > 0) {
+                    wireframeBox.material.opacity -= 0.005;
+                } else {
+                    wireframeBox.destroy();
+                }
+
+                if (solidBox.material.opacity < 1) {
+                    solidBox.material.opacity += 0.01;
+                } else {
+                    solidBox.modes.transparent = false;
+                }
+
+                if (wireframeTorus.material.opacity > 0.0) {
+                    wireframeTorus.material.opacity -= 0.005;
+                } else {
+                    //  wireframeTorus.destroy();
+                }
+
+                if (solidTorus.material.opacity < 1.0) {
+                    solidTorus.material.opacity += 0.005;
+                } else {
+//                    solidTorus.modes.transparent = false;
+                }
+
+                if (lastCoords) {
+                    //    pick(lastCoords);
+                }
+
             });
+
+    // Whenever mouse moves, attempt to pick a triangle on a GameObject,
+    // then show the cartesian coordinates at the picked position within
+    // the triangle, along with the interpolated normal vector and UV coordinates
+    // at the picked position.
+
+
+    var scene = solidTorus.scene;
+
+    scene.input.on("mousemove", function (coords) {
+
+        lastCoords = coords;
+    });
+
+    function pick(coords) {
+
+        XEO.debug.hide("cone");
+
+        // Pick a primitive on some GameObject
+
+        var hit = scene.pick({
+            canvasPos: coords,
+            rayPick: true
+        });
+
+        if (hit) {
+
+            // GameObject picked
+
+            if (hit.worldPos && hit.normal) {
+
+                XEO.debug
+                        .id("cone")
+                        .pos(hit.worldPos)
+                        .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
+                        .radius(0.3)
+                        .cone();
+            }
+
+
+        } else {
+
+            // No Triangle picked
+        }
+    }
+
+    new XEO.MouseRotateCamera();
 
 </script>
 </body>

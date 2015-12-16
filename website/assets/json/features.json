@@ -1,0 +1,55 @@
+{
+  "Main features": [
+    "Object-component scene graph API",
+    "Dynamically-editable scenes",
+    "Fully-observable scene state",
+    "[[JSON-persistable scene state|components_toJSON]]",
+    "[[Cloneable scene components|components_cloning]]",
+    "[[Multiple scenes in a page|scene_multipleScenes]]",
+    "[[Performance monitoring|#profiling_statistics]]",
+    "Fast [[ray picking|interaction_picking_triangles_normalAndUV]] for large numbers of dynamic objects"
+  ],
+  "Optimizations": [
+    "Scene graph dynamically compiled to fast internal render graph",
+    "WebGL state management (sorting, batching, caching etc.)",
+    "Task queuing with per-frame budget",
+    "#See the [[wiki|https://github.com/xeolabs/xeoengine/wiki/Implementation-Notes]] for implementation notes on optimizations in xeoEngine."
+  ],
+  "Cameras": [
+    "[[Orthographic|camera_ortho]], [[perspective|camera_perspective]] and [[frustum|camera_frustum]] projection",
+    "Camera [[controls|interaction_CameraControl]]"
+  ],
+  "Geometry": [
+    "[[Dynamic meshes|geometry_modifying]]",
+    "[[Height maps|geometry_HeightmapGeometry]]",
+    "[[Vector text|geometry_VectorTextGeometry]]",
+    "Parametric shapes ([[lathe|geometry_LatheGeometry]], [[heightmap|geometry_HeightmapGeometry]], [[plane|geometry_PlaneGeometry]],  [[box|geometry_BoxGeometry]], [[cylinder|geometry_CylinderGeometry]],  [[sphere|geometry_SphereGeometry]] etc.)",
+    "[[Vertex colors|geometry_vertexColors]]",
+    "Primitives ([[lines|geometry_lines]], [[points|geometry_points]] and [[triangles|geometry_triangles]])"
+  ],
+  "Textures": [
+    "Texture maps ([[diffuse|materials_texture_diffuse]], [[specular|materials_texture_specular]], [[opacity|materials_texture_opacity]], [[emissive|materials_texture_emissive]], [[bump|materials_texture_normalMap]] and [[ambient|materials_texture_ambient]])",
+    "[[Video textures|materials_texture_video]]",
+    "[[Animated textures|materials_texture_animation]]",
+    "[[Render target textures|materials_texture_rtt]]",
+    "[[Procedural textures|materials_texture_procedural]]"
+  ],
+  "Shaders / Rendering": [
+    "Lights ([[ambient|lights_ambient]], [[directional|lights_directional_view]] and [[point|lights_point_view]]), unlimited number in View or World-space",
+    "Fresnel term for [[diffuse|materials_fresnel_diffuse]], [[opacity|materials_fresnel_opacity]], [[emissive|materials_fresnel_emissive]], [[specular|materials_fresnel_specular]] and [[reflectivity|materials_fresnel_reflection]]",
+    "Custom shaders"
+  ],
+  "Animation and Transformation": [
+    "[[Dynamic transform hierarchies|transforms_hierarchy]]",
+    "[[Camera fly-to|animation_CameraFlight_GameObject]]"
+  ],
+  "Importers and Tools": [
+    "Importers for OBJ, DAE, and 3DS",
+    "3D debugging [[helper|interaction_picking_triangles]]"
+  ],
+  "FX": [
+    "[[Transparency|materials_techniques_transparencySort]] with depth-sort",
+    "Billboarding ([[spherical|billboards_spherical]] and [[cylindrical|billboards_cylindrical]])",
+    "Rendering layers"
+  ]
+}

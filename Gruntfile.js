@@ -51,7 +51,7 @@ module.exports = function (grunt) {
                 options: {
                     paths: ['src'],
                     outdir: './docs/',
-                    "exclude" : "renderer, utils, webgl"
+                    "exclude": "renderer, utils, webgl"
                 },
                 logo: '../assets/images/logo.png'
             }
@@ -67,8 +67,18 @@ module.exports = function (grunt) {
                 dest: '<%= build_dir %>/<%= PROJECT_NAME %>-<%= ENGINE_VERSION %>.js'
             },
             website: {
-                src: 'website',
-                dest: '.'
+                files: [
+                    {
+                        cwd: 'website/assets',
+                        src: ['**/*'],
+                        dest: 'assets/',
+                        expand: true
+                    },
+                    {
+                        src: ['website/index.html'],
+                        dest: 'index.html'
+                    }
+                ]
             }
         }
     });
@@ -87,7 +97,7 @@ module.exports = function (grunt) {
     // Assigns the package the current version number that's defined in package.json
     grunt.registerTask("build", ["snapshot", "yuidoc", "copy"]);
 
-    grunt.registerTask("website", ["website"]);
-
     grunt.registerTask("default", "snapshot");
+
+    grunt.registerTask("website", "copy:website");
 };
