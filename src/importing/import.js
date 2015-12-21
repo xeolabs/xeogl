@@ -26,7 +26,8 @@
 
      The Import has a {{#crossLink "Group"}}{{/crossLink}} which contains all the components
      it loaded from the glTF file.
-     Let's iterate over the {{#crossLink "Group"}}{{/crossLink}} and log the IDs of the
+
+     Let's iterate over the {{#crossLink "Group"}}{{/crossLink}} and log the ID of each
      {{#crossLink "GameObject"}}{{/crossLink}} we find in there:
 
      ````javascript
@@ -39,17 +40,16 @@
      });
      ````
 
-     As mentioned earlier, can set the Import to a different file path at any time:
+     Let's set the Import to a different file path:
 
      ````javascript
      myImport.src = "models/gltf/buggy/buggy.gltf"
      ````
 
-     Note that the {{#crossLink "Group"}}{{/crossLink}} will now contain a completely different collection of
-     components, loaded from this new glTF file.
+     Once loaded, the {{#crossLink "Group"}}{{/crossLink}} will contain an entirely different collection of scene components, loaded from this new glTF file.
 
-     Finally, an Import manages the lifecycle of it's components. When we destroy a Import, all its
-     components are destroyed as well:
+     Finally, an Import manages the lifecycle of it's components. Therefore, destroying a Import also destroys all the
+     components it loaded:
 
      ````javascript
      myImport.destroy();
