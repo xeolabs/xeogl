@@ -44,7 +44,7 @@
     "[[Camera fly-to|animation_CameraFlight_GameObject]]"
   ],
   "Importers and Tools": [
-    "Importers for OBJ, DAE, and 3DS",
+    "Importers for [[glTF|importing_gltf_buggy]], [[OBJ|importing_obj_raptor]] and [[3DS|importing_3ds_lexus]]",
     "3D debugging [[helper|interaction_picking_triangles]]"
   ],
   "FX": [

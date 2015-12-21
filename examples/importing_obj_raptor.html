@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.min.js"></script>
+
+    <script src="js/importing/k3d.js"></script>
+    <script src="js/importing/objGeometry.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>loading .OBJ geometry using an <a
+        href="js/importing/objGeometry.js" target="_other">XEO.OBJGeometry</a>
+</div>
+
+<script>
+
+
+    var object = new XEO.GameObject({
+
+        geometry: new XEO.OBJGeometry({
+            src: "models/obj/raptor.obj"
+        }),
+
+        material: new XEO.PhongMaterial({
+
+            diffuseMap: new XEO.Texture({
+                src: "models/obj/raptor.jpg"
+            }),
+
+            specularFresnel: new XEO.Fresnel({
+                edgeBias: 0.2,
+                centerBias: 0.8,
+                power: 0.5,
+                edgeColor: [0.7, 0.7, 0.7],
+                centerColor: [0.0, 0.0, 0.0]
+            }),
+
+            emissive: [1, 1, 1],
+
+            emissiveFresnel:  new XEO.Fresnel({
+                edgeBias: 0.3,
+                centerBias: 0.8,
+                edgeColor: [0.3, 0.3, 0.4],
+                centerColor: [0.0, 0.0, 0.0],
+                power: 0.3
+            })
+        }),
+
+        transform: new XEO.Rotate({
+            xyz: [1, 0, 0],
+            angle: 0,
+
+            parent: new XEO.Translate({
+                xyz: [10, 3, 10]
+            })
+        })
+    });
+
+    var control = new XEO.CameraControl();
+
+    var animation = new XEO.CameraFlight();
+
+    object.geometry.on("loaded",
+            function () {
+                animation.flyTo({
+                    aabb: object.worldBoundary.aabb
+                });
+            });
+
+    object.scene.on("tick",
+            function () {
+
+                var view = object.scene.camera.view;
+
+                view.rotateEyeY(0.4);
+//                view.rotateEyeX(0.15);
+            });
+
+</script>
+</body>
+</html>

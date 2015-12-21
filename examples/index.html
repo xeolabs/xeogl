@@ -304,6 +304,19 @@
             "boundaries_GroupBoundary_hierarchy"
         ],
 
+        "Importing": [
+            "#Wavefront OBJ",
+            "importing_obj_raptor",
+
+            "#Nintendo 3DS",
+            "importing_3ds_lexus",
+
+            "#COLLADA / glTF",
+            "importing_gltf_gearbox",
+            "importing_gltf_buggy",
+            "importing_gltf_ReciprocatingSaw"
+        ],
+
         "Interaction": [
 
             "#interacting with xeoEngine",
@@ -333,12 +346,6 @@
             "lights_directional_world",
             "lights_point_view",
             "lights_point_world"
-        ],
-
-        "Loading": [
-            "#loading models into xeoEngine",
-            "loading_obj",
-            "loading_3ds"
         ],
 
         "Materials": [
@@ -543,7 +550,7 @@
 
     var hash = window.location.hash;
 
-    window.setInterval(function() {
+    window.setInterval(function () {
         if (window.location.hash != hash) {
             load(window.location.hash.substring(1));
             hash = window.location.hash;
