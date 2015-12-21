@@ -39,7 +39,6 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
-                                <li><a href="../classes/Audio.html">Audio</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -68,6 +67,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
+                                <li><a href="../classes/Import.html">Import</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -76,7 +76,6 @@
                                 <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
-                                <li><a href="../classes/Listener.html">Listener</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
@@ -117,7 +116,6 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
-                                <li><a href="../modules/audio.html">audio</a></li>
                                 <li><a href="../modules/boundaries.html">boundaries</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
@@ -128,6 +126,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/grouping.html">grouping</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -275,11 +274,6 @@ public API and are therefore available for you to use within your application co
                             </li>
                             <li class="index-item method">
                                 <a href="#method_buildTangents">buildTangents</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_buildUVs">buildUVs</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -1443,7 +1437,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2835"><code>src&#x2F;math&#x2F;math.js:2835</code></a>
+        <a href="../files/src_math_math.js.html#l2701"><code>src&#x2F;math&#x2F;math.js:2701</code></a>
         </p>
 
 
@@ -1520,7 +1514,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2852"><code>src&#x2F;math&#x2F;math.js:2852</code></a>
+        <a href="../files/src_math_math.js.html#l2718"><code>src&#x2F;math&#x2F;math.js:2718</code></a>
         </p>
 
 
@@ -1781,107 +1775,6 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
 
 </div>
-<div id="method_buildUVs" class="method item">
-    <h3 class="name"><code>buildUVs</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>positions</code>
-                </li>
-                <li class="arg">
-                        <code>indices</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[uvRange=[1.0, 1.0]]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Array of Number</span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2417"><code>src&#x2F;math&#x2F;math.js:2417</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Generates UV coordinates for triangle positions and indices.</p>
-<p>Conceptually, this function rotates the triangles into the X,Y plane, packs
-them as rightly together as possible, then generates UV coordinates that
-correspond to the X,Y coordinates.</p>
-<p>Provides the option to specify the maximum 2D range within which the UV coordinates
-are generated, which is 1x1 by default.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">positions</code>
-                        <span class="type">Array of Number</span>
-
-
-                    <div class="param-description">
-                        <p>One-dimensional flattened array of vertex positions.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">indices</code>
-                        <span class="type">Array of Number</span>
-
-
-                    <div class="param-description">
-                        <p>One-dimensional flattened array of triangle vertex indices.*</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[uvRange=[1.0, 1.0]]</code>
-                        <span class="type">Array of Number</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Optional UV range, given as a 2D vector, into which to pack the UV coordinates.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Array of Number</span>:
-                    <p>One-dimensional flattened array of UV coordinates.</p>
-
-            </div>
-        </div>
-
-
-</div>
 <div id="method_cartesianToBaryCentric" class="method item">
     <h3 class="name"><code>cartesianToBaryCentric</code></h3>
 
@@ -1919,7 +1812,7 @@ are generated, which is 1x1 by default.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2768"><code>src&#x2F;math&#x2F;math.js:2768</code></a>
+        <a href="../files/src_math_math.js.html#l2634"><code>src&#x2F;math&#x2F;math.js:2634</code></a>
         </p>
 
 
@@ -3037,6 +2930,86 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
+        <a href="../files/src_math_math.js.html#l666"><code>src&#x2F;math&#x2F;math.js:666</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Returns the dot product of two two-element vectors.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">u</code>
+                        <span class="type">Array(Number)</span>
+
+
+                    <div class="param-description">
+                        <p>First vector</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">v</code>
+                        <span class="type">Array(Number)</span>
+
+
+                    <div class="param-description">
+                        <p>Second vector</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                    <p>The dot product</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_dotVec4" class="method item">
+    <h3 class="name"><code>dotVec4</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>u</code>
+                </li>
+                <li class="arg">
+                        <code>v</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
         <a href="../files/src_math_math.js.html#l654"><code>src&#x2F;math&#x2F;math.js:654</code></a>
         </p>
 
@@ -3126,86 +3099,6 @@ Creates new AABB if none supplied.</p>
 
     <div class="description">
         <p>Returns the dot product of two four-element vectors.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">u</code>
-                        <span class="type">Array(Number)</span>
-
-
-                    <div class="param-description">
-                        <p>First vector</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">v</code>
-                        <span class="type">Array(Number)</span>
-
-
-                    <div class="param-description">
-                        <p>Second vector</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>The dot product</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_dotVec4" class="method item">
-    <h3 class="name"><code>dotVec4</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>u</code>
-                </li>
-                <li class="arg">
-                        <code>v</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l666"><code>src&#x2F;math&#x2F;math.js:666</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Returns the dot product of two two-element vectors.</p>
 
     </div>
 
@@ -3390,7 +3283,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2197"><code>src&#x2F;math&#x2F;math.js:2197</code></a>
+        <a href="../files/src_math_math.js.html#l2043"><code>src&#x2F;math&#x2F;math.js:2043</code></a>
         </p>
 
 
@@ -3398,7 +3291,7 @@ Creates new AABB if none supplied.</p>
     </div>
 
     <div class="description">
-        <p>Expands the first axis-aligned 2D boundary to enclose the second, if required.</p>
+        <p>Expands the first axis-aligned 3D boundary to enclose the second, if required.</p>
 
     </div>
 
@@ -3471,7 +3364,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2043"><code>src&#x2F;math&#x2F;math.js:2043</code></a>
+        <a href="../files/src_math_math.js.html#l2197"><code>src&#x2F;math&#x2F;math.js:2197</code></a>
         </p>
 
 
@@ -3479,7 +3372,7 @@ Creates new AABB if none supplied.</p>
     </div>
 
     <div class="description">
-        <p>Expands the first axis-aligned 3D boundary to enclose the second, if required.</p>
+        <p>Expands the first axis-aligned 2D boundary to enclose the second, if required.</p>
 
     </div>
 
@@ -3630,7 +3523,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2551"><code>src&#x2F;math&#x2F;math.js:2551</code></a>
+        <a href="../files/src_math_math.js.html#l2417"><code>src&#x2F;math&#x2F;math.js:2417</code></a>
         </p>
 
 
@@ -3764,7 +3657,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1581"><code>src&#x2F;math&#x2F;math.js:1581</code></a>
+        <a href="../files/src_math_math.js.html#l1537"><code>src&#x2F;math&#x2F;math.js:1537</code></a>
         </p>
 
 
@@ -3796,7 +3689,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1537"><code>src&#x2F;math&#x2F;math.js:1537</code></a>
+        <a href="../files/src_math_math.js.html#l1581"><code>src&#x2F;math&#x2F;math.js:1581</code></a>
         </p>
 
 
@@ -3942,7 +3835,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2579"><code>src&#x2F;math&#x2F;math.js:2579</code></a>
+        <a href="../files/src_math_math.js.html#l2445"><code>src&#x2F;math&#x2F;math.js:2445</code></a>
         </p>
 
 
@@ -5262,6 +5155,38 @@ Creates new AABB if none supplied.</p>
 <div id="method_normalizeVec4" class="method item">
     <h3 class="name"><code>normalizeVec4</code></h3>
 
+        <span class="paren">()</span>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_math.js.html#l736"><code>src&#x2F;math&#x2F;math.js:736</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Normalizes a three-element vector</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_normalizeVec4" class="method item">
+    <h3 class="name"><code>normalizeVec4</code></h3>
+
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
@@ -5336,38 +5261,6 @@ Creates new AABB if none supplied.</p>
 
             </div>
         </div>
-
-
-</div>
-<div id="method_normalizeVec4" class="method item">
-    <h3 class="name"><code>normalizeVec4</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l736"><code>src&#x2F;math&#x2F;math.js:736</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Normalizes a three-element vector</p>
-
-    </div>
-
-
 
 
 </div>
@@ -5753,7 +5646,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2730"><code>src&#x2F;math&#x2F;math.js:2730</code></a>
+        <a href="../files/src_math_math.js.html#l2596"><code>src&#x2F;math&#x2F;math.js:2596</code></a>
         </p>
 
 
@@ -5891,7 +5784,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2682"><code>src&#x2F;math&#x2F;math.js:2682</code></a>
+        <a href="../files/src_math_math.js.html#l2548"><code>src&#x2F;math&#x2F;math.js:2548</code></a>
         </p>
 
 
@@ -6244,7 +6137,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l801"><code>src&#x2F;math&#x2F;math.js:801</code></a>
+        <a href="../files/src_math_math.js.html#l810"><code>src&#x2F;math&#x2F;math.js:810</code></a>
         </p>
 
 
@@ -6276,7 +6169,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l810"><code>src&#x2F;math&#x2F;math.js:810</code></a>
+        <a href="../files/src_math_math.js.html#l801"><code>src&#x2F;math&#x2F;math.js:801</code></a>
         </p>
 
 

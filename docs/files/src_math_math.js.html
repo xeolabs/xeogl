@@ -39,7 +39,6 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
-                                <li><a href="../classes/Audio.html">Audio</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -68,6 +67,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
+                                <li><a href="../classes/Import.html">Import</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -76,7 +76,6 @@
                                 <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
-                                <li><a href="../classes/Listener.html">Listener</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
@@ -117,7 +116,6 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
-                                <li><a href="../modules/audio.html">audio</a></li>
                                 <li><a href="../modules/boundaries.html">boundaries</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
@@ -128,6 +126,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/grouping.html">grouping</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -2589,140 +2588,6 @@
             }
 
             return tangents2;
-        },
-
-        /**
-         * Generates UV coordinates for triangle positions and indices.
-         *
-         * Conceptually, this function rotates the triangles into the X,Y plane, packs
-         * them as rightly together as possible, then generates UV coordinates that
-         * correspond to the X,Y coordinates.
-         *
-         * Provides the option to specify the maximum 2D range within which the UV coordinates
-         * are generated, which is 1x1 by default.
-         *
-         * @method buildUVs
-         * @static
-         * @param {Array of Number} positions One-dimensional flattened array of vertex positions.
-         * @param {Array of Number} indices One-dimensional flattened array of triangle vertex indices.*
-         * @param {Array of Number} [uvRange=[1.0, 1.0]] Optional UV range, given as a 2D vector, into which to pack the UV coordinates.
-         * @returns {Array of Number} One-dimensional flattened array of UV coordinates.
-         */
-        buildUVs: function (positions, indices, uvRange) {
-
-            uvRange = uvRange || [1.0, 1.0];
-
-            var uvs = new Array(positions.length / 2);
-
-            var math = XEO.math;
-
-            var i;
-            var len;
-
-            // Triangle vertex indices
-            var j0;
-            var j1;
-            var j2;
-
-            // Local-space triangle vertex positions
-            var v1;
-            var v2;
-            var v3;
-
-            // Local-space triangle normal vector
-            var normal;
-
-            //
-            var yVector = [0, -1, 0];
-
-            // Matrix to rotate triangle into the X,Y plane, built from normal
-            var matrix = math.mat4();
-
-            // Axis-aligned 2D boundary of each triangles on the X,Y plane
-            var aabbTriangle = tempAABB2;
-
-            // Axis-aligned 2D boundary enclosing all triangles on the X,Y plane
-            var aabbMesh = tempAABB2b;
-
-            math.collapseAABB2(aabbMesh);
-
-            var offsetX;
-            var offsetY;
-
-            var offsetBump = 0;
-
-            for (i = 0, len = indices.length; i &lt; len; i += 3) {
-
-                // Get vertex indices
-
-                j0 = indices[i + 0];
-                j1 = indices[i + 1];
-                j2 = indices[i + 2];
-
-                // Get vertex positions
-
-                v1 = [positions[j0 * 3 + 0], positions[j0 * 3 + 1], positions[j0 * 3 + 2]];
-                v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
-                v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
-
-                v2 = math.subVec3(v2, v1, tempVec3);
-                v3 = math.subVec3(v3, v1, tempVec3b);
-
-                // Get triangle normal
-
-                normal = math.normalizeVec3(math.cross3Vec3(v2, v3, tempVec3c), tempVec3d);
-
-                // Get rotation matrix
-
-                matrix = math.quaternionToMat4(math.vec3PairToQuaternion(normal, yVector, tempVec4), tempMat1);
-
-                // Rotate the triangle into the X,Y plane
-
-                v1 = math.transformVec4(matrix, v1, tempVec3d);
-                v2 = math.transformVec4(matrix, v2, tempVec3e);
-                v3 = math.transformVec4(matrix, v3, tempVec3f);
-
-                // Bump offsetX along by width of triangle on X-axis
-
-                math.collapseAABB2(aabbTriangle);
-
-                math.expandAABB2Point2(aabbTriangle, v1);
-                math.expandAABB2Point2(aabbTriangle, v2);
-                math.expandAABB2Point2(aabbTriangle, v3);
-
-                // &quot;Pack&quot; the triangle into a strip
-
-                offsetX = aabbTriangle.min[0] - offsetBump;
-                offsetY = aabbTriangle.min[2];
-
-                uvs.push([v1[0] - offsetX, v1[1] - offsetY]);
-                uvs.push([v2[0] - offsetX, v2[1] - offsetY]);
-                uvs.push([v3[0] - offsetX, v3[1] - offsetY]);
-
-                offsetBump += aabbTriangle.max[0] - aabbTriangle.min[0];
-
-                // Expand boundary of all triangles in X,Y plane
-
-                math.expandAABB2(aabbMesh, aabbTriangle);
-            }
-
-            // Transform the UVs into the given UV range
-
-            var meshSizeX = aabbMesh.max[0] - aabbMesh.min[0];
-            var meshSizeY = aabbMesh.max[1] - aabbMesh.min[1];
-
-            var halfMeshX = meshSizeX / 2;
-            var halfMeshY = meshSizeY / 2;
-
-            var scaleX = uvRange[0] / meshSizeX;
-            var scaleY = uvRange[1] / meshSizeY;
-
-            for (i = 0, len = uvs.length; i &lt; len; i += 2) {
-                uvs[i] = (uvs[i] + halfMeshX) * scaleX;
-                uvs[i + 1] = (uvs[i + 1] + halfMeshY) * scaleY;
-            }
-
-            return uvs;
         },
 
         /**

@@ -39,7 +39,6 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
-                                <li><a href="../classes/Audio.html">Audio</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -68,6 +67,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
+                                <li><a href="../classes/Import.html">Import</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -76,7 +76,6 @@
                                 <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
-                                <li><a href="../classes/Listener.html">Listener</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
@@ -117,7 +116,6 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
-                                <li><a href="../modules/audio.html">audio</a></li>
                                 <li><a href="../modules/boundaries.html">boundaries</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
@@ -128,6 +126,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/grouping.html">grouping</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -197,8 +196,8 @@
  @param [cfg.primitive=&quot;triangles&quot;] {String} The primitive type. Accepted values are &#x27;points&#x27;, &#x27;lines&#x27;, &#x27;line-loop&#x27;, &#x27;line-strip&#x27;, &#x27;triangles&#x27;, &#x27;triangle-strip&#x27; and &#x27;triangle-fan&#x27;.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
  @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
- @param [cfg.xSegments=4] {Number} Number of segments on the X-axis.
- @param [cfg.ySegments=4] {Number} Number of segments on the Y-axis.
+ @param [cfg.xSegments=1] {Number} Number of segments on the X-axis.
+ @param [cfg.ySegments=1] {Number} Number of segments on the Y-axis.
 
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
@@ -242,12 +241,12 @@
             var xSegments = Math.floor(this._lod * this._xSegments);
             var ySegments = Math.floor(this._lod * this._ySegments);
 
-            if (ySegments &lt; 4) {
-                ySegments = 4;
+            if (ySegments &lt; 1) {
+                ySegments = 1;
             }
 
-            if (ySegments &lt; 4) {
-                ySegments = 4;
+            if (ySegments &lt; 1) {
+                ySegments = 1;
             }
 
             var halfWidth = width / 2;
@@ -456,14 +455,14 @@
              * Fires a {{#crossLink &quot;PlaneGeometry/xSegments:event&quot;}}{{/crossLink}} event on change.
              *
              * @property xSegments
-             * @default 4
+             * @default 1
              * @type Number
              */
             xSegments: {
 
                 set: function (value) {
 
-                    value = value || 4;
+                    value = value || 1;
 
                     if (this._xSegments === value) {
                         return;
@@ -498,14 +497,14 @@
              * Fires a {{#crossLink &quot;PlaneGeometry/ySegments:event&quot;}}{{/crossLink}} event on change.
              *
              * @property ySegments
-             * @default 4
+             * @default 1
              * @type Number
              */
             ySegments: {
 
                 set: function (value) {
 
-                    value = value || 4;
+                    value = value || 1;
 
                     if (this._ySegments === value) {
                         return;

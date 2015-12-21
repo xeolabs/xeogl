@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Listener - xeoengine</title>
+    <title>Import - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -39,7 +39,6 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
-                                <li><a href="../classes/Audio.html">Audio</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -68,6 +67,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
+                                <li><a href="../classes/Import.html">Import</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -76,7 +76,6 @@
                                 <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
-                                <li><a href="../classes/Listener.html">Listener</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
@@ -117,7 +116,6 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="../modules/animation.html">animation</a></li>
-                                <li><a href="../modules/audio.html">audio</a></li>
                                 <li><a href="../modules/boundaries.html">boundaries</a></li>
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
@@ -128,6 +126,7 @@
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/grouping.html">grouping</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
@@ -171,7 +170,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Listener Class</h1>
+<h1>Import Class</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -179,154 +178,53 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_audio_listener.js.html#l1"><code>src&#x2F;audio&#x2F;listener.js:1</code></a>
+            Defined in: <a href="../files/src_importing_import.js.html#l7"><code>src&#x2F;importing&#x2F;import.js:7</code></a>
         </div>
 
-            Module: <a href="../modules/audio.html">audio</a><br>
+            Module: <a href="../modules/importing.html">importing</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>TODO</p>
-<h2 id="overview">Overview</h2>
-<p>TODO</p>
+    <p>An <strong>Import</strong> component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.</p>
+<ul><li>An Import component begins loading content into its <a href="../classes/Scene.html" class="crosslink">Scene</a> as soon as it&#39;s <a href="../classes/Import.html#property_src" class="crosslink">src</a>
+property is set to a file path.</li>
+<li>An Import provides all the components it has loaded within a <a href="../classes/Group.html" class="crosslink">Group</a>.</li>
+<li>You can set an Import&#39;s <a href="../classes/Import.html#property_src" class="crosslink">src</a> property to a new file path at any time, causing the Import
+to load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>
+</ul>
+
 <h2 id="example">Example</h2>
-<p>TODO</p>
+<p>First, create an Import, which immediately loads a glTF model into the default <a href="../classes/Scene.html" class="crosslink">Scene</a>:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var myImport = new XEO.Import({
+   src: "models/gltf/gearbox/gearbox_assy.gltf"
+});
+</code></pre>
+<p>The Import has a <a href="../classes/Group.html" class="crosslink">Group</a> which contains all the components
+it loaded from the glTF file.</p>
+<p>Let&#39;s iterate over the <a href="../classes/Group.html" class="crosslink">Group</a> and log the ID of each
+<a href="../classes/GameObject.html" class="crosslink">GameObject</a> we find in there:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var group = myImport.group;
+
+group.iterate(function(c) {
+    if (c.type === "XEO.GameObject") {
+        this.log("GameObject found: " + c.id);
+    }
+});
+</code></pre>
+<p>Let&#39;s set the Import to a different file path:</p>
+<pre class="code prettyprint"><code class="lang-javascript">myImport.src = "models/gltf/buggy/buggy.gltf"
+</code></pre>
+<p>Once loaded, the <a href="../classes/Group.html" class="crosslink">Group</a> will contain an entirely different collection of scene components, loaded from this new glTF file.</p>
+<p>Finally, an Import manages the lifecycle of it&#39;s components. Therefore, destroying a Import also destroys all the
+components it loaded:</p>
+<pre class="code prettyprint"><code class="lang-javascript">myImport.destroy();
+</code></pre>
 
 </div>
 
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_Listener" class="method item">
-            <h3 class="name"><code>Listener</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code class="optional">[scene]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[cfg]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_audio_listener.js.html#l1"><code>src&#x2F;audio&#x2F;listener.js:1</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name optional">[scene]</code>
-                                <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this Listener within the
-         default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[cfg]</code>
-                                <span class="type"></span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>The Listener configuration</p>
-        
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[id]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[meta]</code>
-                                            <span class="type">String:Object</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this Listener.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[pos=[1.0, 1.0, 1.0]]</code>
-                                            <span class="type">Array(Number)</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the <strong>space</strong> parameter.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[orient=[0.7, 0.7, 0.8]]</code>
-                                            <span class="type">Array(Number)</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The color of this Listener.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[up=1.0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The intensity of this Listener.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
-        </div>
-    </div>
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
@@ -388,6 +286,10 @@
                                 <a href="#property_destroyed">destroyed</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_group">group</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
 
@@ -404,16 +306,12 @@
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_orient">orient</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_pos">pos</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_src">src</a>
 
                             </li>
                             <li class="index-item property inherited inherited">
@@ -422,10 +320,6 @@
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_up">up</a>
 
                             </li>
                     </ul>
@@ -441,15 +335,7 @@
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_orient">orient</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_pos">pos</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_up">up</a>
+                                <a href="#event_src">src</a>
 
                             </li>
                     </ul>
@@ -1015,6 +901,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_group" class="property item">
+                        <h3 class="name"><code>group</code></h3>
+                        <span class="type"><a href="../classes/Group.html" class="crosslink">Group</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_importing_import.js.html#l136"><code>src&#x2F;importing&#x2F;import.js:136</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p><a href="../classes/Group.html" class="crosslink">Group</a> containing all the xeoEngine components for this Import.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_id" class="property item inherited">
                         <h3 class="name"><code>id</code></h3>
                         <span class="type">String</span>
@@ -1117,60 +1029,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_orient" class="property item">
-                        <h3 class="name"><code>orient</code></h3>
-                        <span class="type">Array(Number)</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_audio_listener.js.html#l78"><code>src&#x2F;audio&#x2F;listener.js:78</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Orientation of this Listener.</p>
-                    <p>Fires a <a href="../classes/Listener.html#event_orient" class="crosslink">orient</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0,0,0]</p>
-                    
-                    
-                    </div>
-                    <div id="property_pos" class="property item">
-                        <h3 class="name"><code>pos</code></h3>
-                        <span class="type">Array(Number)</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_audio_listener.js.html#l47"><code>src&#x2F;audio&#x2F;listener.js:47</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Position of this Listener.</p>
-                    <p>Fires an <a href="../classes/Listener.html#event_pos" class="crosslink">pos</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0,0,-10]</p>
-                    
-                    
-                    </div>
                     <div id="property_scene" class="property item inherited">
                         <h3 class="name"><code>scene</code></h3>
                         <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
@@ -1191,6 +1049,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_src" class="property item">
+                        <h3 class="name"><code>src</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_importing_import.js.html#l94"><code>src&#x2F;importing&#x2F;import.js:94</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Path to the glTF file.</p>
+                    <p>Fires a <a href="../classes/Import.html#event_src" class="crosslink">src</a> event on change.</p>
                     
                         </div>
                     
@@ -1255,33 +1139,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_up" class="property item">
-                        <h3 class="name"><code>up</code></h3>
-                        <span class="type">Array(Number)</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_audio_listener.js.html#l112"><code>src&#x2F;audio&#x2F;listener.js:112</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Direction of the "up" vector.</p>
-                    <p>Fires an <a href="../classes/Listener.html#event_up" class="crosslink">up</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0,1,0]</p>
-                    
-                    
-                    </div>
             </div>
 
 
@@ -1313,8 +1170,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_orient" class="events item">
-                        <h3 class="name"><code>orient</code></h3>
+                    <div id="event_src" class="events item">
+                        <h3 class="name"><code>src</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1324,98 +1181,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_audio_listener.js.html#l98"><code>src&#x2F;audio&#x2F;listener.js:98</code></a>
+                            <a href="../files/src_importing_import.js.html#l123"><code>src&#x2F;importing&#x2F;import.js:123</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Listener&#39;s  <a href="../classes/Listener.html#property_orient" class="crosslink">orient</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_pos" class="events item">
-                        <h3 class="name"><code>pos</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_audio_listener.js.html#l64"><code>src&#x2F;audio&#x2F;listener.js:64</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Listener&#39;s  <a href="../classes/Listener.html#property_pos" class="crosslink">pos</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_up" class="events item">
-                        <h3 class="name"><code>up</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_audio_listener.js.html#l132"><code>src&#x2F;audio&#x2F;listener.js:132</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Listener&#39;s  <a href="../classes/Listener.html#property_up" class="crosslink">up</a> property changes.</p>
+                            <p>Fired whenever this Import&#39;s  GLTF/src:property property changes.</p>
                     
                         </div>
                     

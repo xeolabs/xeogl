@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-12-16
+ * Built on 2015-12-21
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -8814,140 +8814,6 @@
         },
 
         /**
-         * Generates UV coordinates for triangle positions and indices.
-         *
-         * Conceptually, this function rotates the triangles into the X,Y plane, packs
-         * them as rightly together as possible, then generates UV coordinates that
-         * correspond to the X,Y coordinates.
-         *
-         * Provides the option to specify the maximum 2D range within which the UV coordinates
-         * are generated, which is 1x1 by default.
-         *
-         * @method buildUVs
-         * @static
-         * @param {Array of Number} positions One-dimensional flattened array of vertex positions.
-         * @param {Array of Number} indices One-dimensional flattened array of triangle vertex indices.*
-         * @param {Array of Number} [uvRange=[1.0, 1.0]] Optional UV range, given as a 2D vector, into which to pack the UV coordinates.
-         * @returns {Array of Number} One-dimensional flattened array of UV coordinates.
-         */
-        buildUVs: function (positions, indices, uvRange) {
-
-            uvRange = uvRange || [1.0, 1.0];
-
-            var uvs = new Array(positions.length / 2);
-
-            var math = XEO.math;
-
-            var i;
-            var len;
-
-            // Triangle vertex indices
-            var j0;
-            var j1;
-            var j2;
-
-            // Local-space triangle vertex positions
-            var v1;
-            var v2;
-            var v3;
-
-            // Local-space triangle normal vector
-            var normal;
-
-            //
-            var yVector = [0, -1, 0];
-
-            // Matrix to rotate triangle into the X,Y plane, built from normal
-            var matrix = math.mat4();
-
-            // Axis-aligned 2D boundary of each triangles on the X,Y plane
-            var aabbTriangle = tempAABB2;
-
-            // Axis-aligned 2D boundary enclosing all triangles on the X,Y plane
-            var aabbMesh = tempAABB2b;
-
-            math.collapseAABB2(aabbMesh);
-
-            var offsetX;
-            var offsetY;
-
-            var offsetBump = 0;
-
-            for (i = 0, len = indices.length; i < len; i += 3) {
-
-                // Get vertex indices
-
-                j0 = indices[i + 0];
-                j1 = indices[i + 1];
-                j2 = indices[i + 2];
-
-                // Get vertex positions
-
-                v1 = [positions[j0 * 3 + 0], positions[j0 * 3 + 1], positions[j0 * 3 + 2]];
-                v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
-                v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
-
-                v2 = math.subVec3(v2, v1, tempVec3);
-                v3 = math.subVec3(v3, v1, tempVec3b);
-
-                // Get triangle normal
-
-                normal = math.normalizeVec3(math.cross3Vec3(v2, v3, tempVec3c), tempVec3d);
-
-                // Get rotation matrix
-
-                matrix = math.quaternionToMat4(math.vec3PairToQuaternion(normal, yVector, tempVec4), tempMat1);
-
-                // Rotate the triangle into the X,Y plane
-
-                v1 = math.transformVec4(matrix, v1, tempVec3d);
-                v2 = math.transformVec4(matrix, v2, tempVec3e);
-                v3 = math.transformVec4(matrix, v3, tempVec3f);
-
-                // Bump offsetX along by width of triangle on X-axis
-
-                math.collapseAABB2(aabbTriangle);
-
-                math.expandAABB2Point2(aabbTriangle, v1);
-                math.expandAABB2Point2(aabbTriangle, v2);
-                math.expandAABB2Point2(aabbTriangle, v3);
-
-                // "Pack" the triangle into a strip
-
-                offsetX = aabbTriangle.min[0] - offsetBump;
-                offsetY = aabbTriangle.min[2];
-
-                uvs.push([v1[0] - offsetX, v1[1] - offsetY]);
-                uvs.push([v2[0] - offsetX, v2[1] - offsetY]);
-                uvs.push([v3[0] - offsetX, v3[1] - offsetY]);
-
-                offsetBump += aabbTriangle.max[0] - aabbTriangle.min[0];
-
-                // Expand boundary of all triangles in X,Y plane
-
-                math.expandAABB2(aabbMesh, aabbTriangle);
-            }
-
-            // Transform the UVs into the given UV range
-
-            var meshSizeX = aabbMesh.max[0] - aabbMesh.min[0];
-            var meshSizeY = aabbMesh.max[1] - aabbMesh.min[1];
-
-            var halfMeshX = meshSizeX / 2;
-            var halfMeshY = meshSizeY / 2;
-
-            var scaleX = uvRange[0] / meshSizeX;
-            var scaleY = uvRange[1] / meshSizeY;
-
-            for (i = 0, len = uvs.length; i < len; i += 2) {
-                uvs[i] = (uvs[i] + halfMeshX) * scaleX;
-                uvs[i + 1] = (uvs[i + 1] + halfMeshY) * scaleY;
-            }
-
-            return uvs;
-        },
-
-        /**
          * Flattens a two-dimensional array into a one-dimensional array.
          *
          * @method flatten
@@ -9887,7 +9753,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         this._eventCallDepth++;
 
-                        if (this._eventCallDepth < 200) {
+                        if (this._eventCallDepth < 300) {
                             sub.callback.call(sub.scope, value);
                         } else {
                             this.error("fire: potential stack overflow from recursive event '" + event + "' - dropping this event");
@@ -23019,8 +22885,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
  @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
- @param [cfg.xSegments=4] {Number} Number of segments on the X-axis.
- @param [cfg.ySegments=4] {Number} Number of segments on the Y-axis.
+ @param [cfg.xSegments=1] {Number} Number of segments on the X-axis.
+ @param [cfg.ySegments=1] {Number} Number of segments on the Y-axis.
 
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
@@ -23064,12 +22930,12 @@ XEO.PathGeometry = XEO.Geometry.extend({
             var xSegments = Math.floor(this._lod * this._xSegments);
             var ySegments = Math.floor(this._lod * this._ySegments);
 
-            if (ySegments < 4) {
-                ySegments = 4;
+            if (ySegments < 1) {
+                ySegments = 1;
             }
 
-            if (ySegments < 4) {
-                ySegments = 4;
+            if (ySegments < 1) {
+                ySegments = 1;
             }
 
             var halfWidth = width / 2;
@@ -23278,14 +23144,14 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * Fires a {{#crossLink "PlaneGeometry/xSegments:event"}}{{/crossLink}} event on change.
              *
              * @property xSegments
-             * @default 4
+             * @default 1
              * @type Number
              */
             xSegments: {
 
                 set: function (value) {
 
-                    value = value || 4;
+                    value = value || 1;
 
                     if (this._xSegments === value) {
                         return;
@@ -23320,14 +23186,14 @@ XEO.PathGeometry = XEO.Geometry.extend({
              * Fires a {{#crossLink "PlaneGeometry/ySegments:event"}}{{/crossLink}} event on change.
              *
              * @property ySegments
-             * @default 4
+             * @default 1
              * @type Number
              */
             ySegments: {
 
                 set: function (value) {
 
-                    value = value || 4;
+                    value = value || 1;
 
                     if (this._ySegments === value) {
                         return;
@@ -26539,7 +26405,1420 @@ XEO.PathGeometry = XEO.Geometry.extend({
     });
 
 })();
+;// Copyright (c) 2013 Fabrice Robinet
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//  * Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+//  * Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+/*
+    The Abstract Loader has two modes:
+        #1: [static] load all the JSON at once [as of now]
+        #2: [stream] stream and parse JSON progressively [not yet supported]
+
+    Whatever is the mechanism used to parse the JSON (#1 or #2),
+    The loader starts by resolving the paths to binaries and referenced json files (by replace the value of the path property with an absolute path if it was relative).
+
+    In case #1: it is guaranteed to call the concrete loader implementation methods in a order that solves the dependencies between the entries.
+    only the nodes requires an extra pass to set up the hirerarchy.
+    In case #2: the concrete implementation will have to solve the dependencies. no order is guaranteed.
+
+    When case #1 is used the followed dependency order is:
+
+    scenes -> nodes -> meshes -> materials -> techniques -> shaders
+                    -> buffers
+                    -> cameras
+                    -> lights
+
+    The readers starts with the leafs, i.e:
+        shaders, techniques, materials, meshes, buffers, cameras, lights, nodes, scenes
+
+    For each called handle method called the client should return true if the next handle can be call right after returning,
+    or false if a callback on client side will notify the loader that the next handle method can be called.
+
+*/
+var global = window;
+(function (root, factory) {
+    if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like enviroments that support module.exports,
+        // like Node.
+        factory(module.exports);
+    } else if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], function () {
+            return factory(root);
+        });
+    } else {
+        // Browser globals
+        factory(root);
+    }
+}(this, function (root) {
+    "use strict";
+
+    var categoriesDepsOrder = ["extensions", "buffers", "bufferViews", "images",  "videos", "samplers", "textures", "shaders", "programs", "techniques", "materials", "accessors", "meshes", "cameras", "lights", "skins", "nodes", "scenes", "animations", ];
+
+    var glTFParser = Object.create(Object.prototype, {
+
+        _rootDescription: { value: null, writable: true },
+
+        rootDescription: {
+            set: function(value) {
+                this._rootDescription = value;
+            },
+            get: function() {
+                return this._rootDescription;
+            }
+        },
+
+        baseURL: { value: null, writable: true },
+
+        //detect absolute path following the same protocol than window.location
+        _isAbsolutePath: {
+            value: function(path) {
+                var isAbsolutePathRegExp = new RegExp("^"+window.location.protocol, "i");
+
+                return path.match(isAbsolutePathRegExp) ? true : false;
+            }
+        },
+
+        resolvePathIfNeeded: {
+            value: function(path) {
+                if (this._isAbsolutePath(path)) {
+                    return path;
+                }
+
+                var isDataUriRegex = /^data:/;
+                if (isDataUriRegex.test(path)) {
+                    return path;
+                }
+                
+                return this.baseURL + path;
+            }
+        },
+
+        _resolvePathsForCategories: {
+            value: function(categories) {
+                categories.forEach( function(category) {
+                    var descriptions = this.json[category];
+                    if (descriptions) {
+                        var descriptionKeys = Object.keys(descriptions);
+                        descriptionKeys.forEach( function(descriptionKey) {
+                            var description = descriptions[descriptionKey];
+                            description.uri = this.resolvePathIfNeeded(description.uri);
+                        }, this);
+                    }
+                }, this);
+            }
+        },
+
+        _json: {
+            value: null,
+            writable: true
+        },
+
+        json: {
+            enumerable: true,
+            get: function() {
+                return this._json;
+            },
+            set: function(value) {
+                if (this._json !== value) {
+                    this._json = value;
+                    this._resolvePathsForCategories(["buffers", "shaders", "images", "videos"]);
+                }
+            }
+        },
+
+        _path: {
+            value: null,
+            writable: true
+        },
+
+        getEntryDescription: {
+            value: function (entryID, entryType) {
+                var entries = null;
+
+                var category = entryType;
+                entries = this.rootDescription[category];
+                if (!entries) {
+                    console.log("ERROR:CANNOT find expected category named:"+category);
+                    return null;
+                }
+
+                return entries ? entries[entryID] : null;
+            }
+        },
+
+        _stepToNextCategory: {
+            value: function() {
+                this._state.categoryIndex = this.getNextCategoryIndex(this._state.categoryIndex + 1);
+                if (this._state.categoryIndex !== -1) {
+                    this._state.categoryState.index = 0;
+                    return true;
+                }
+
+                return false;
+            }
+        },
+
+        _stepToNextDescription: {
+            enumerable: false,
+            value: function() {
+                var categoryState = this._state.categoryState;
+                var keys = categoryState.keys;
+                if (!keys) {
+                    console.log("INCONSISTENCY ERROR");
+                    return false;
+                }
+
+                categoryState.index++;
+                categoryState.keys = null;
+                if (categoryState.index >= keys.length) {
+                    return this._stepToNextCategory();
+                }
+                return false;
+            }
+        },
+
+        hasCategory: {
+            value: function(category) {
+                return this.rootDescription[category] ? true : false;
+            }
+        },
+
+        _handleState: {
+            value: function() {
+
+                var methodForType = {
+                    "buffers" : this.handleBuffer,
+                    "bufferViews" : this.handleBufferView,
+                    "shaders" : this.handleShader,
+                    "programs" : this.handleProgram,
+                    "techniques" : this.handleTechnique,
+                    "materials" : this.handleMaterial,
+                    "meshes" : this.handleMesh,
+                    "cameras" : this.handleCamera,
+                    "lights" : this.handleLight,
+                    "nodes" : this.handleNode,
+                    "scenes" : this.handleScene,
+                    "images" : this.handleImage,
+                    "animations" : this.handleAnimation,
+                    "accessors" : this.handleAccessor,
+                    "skins" : this.handleSkin,
+                    "samplers" : this.handleSampler,
+                    "textures" : this.handleTexture,
+                    "videos" : this.handleVideo,
+                    "extensions" : this.handleExtension
+                };
+
+                var success = true;
+                while (this._state.categoryIndex !== -1) {
+                    var category = categoriesDepsOrder[this._state.categoryIndex];
+                    var categoryState = this._state.categoryState;
+                    var keys = categoryState.keys;
+                    if (!keys) {
+                        categoryState.keys = keys = Object.keys(this.rootDescription[category]);
+                        if (keys) {
+                            if (keys.length == 0) {
+                                this._stepToNextDescription();
+                                continue;
+                            }
+                        }
+                    }
+
+                    var type = category;
+                    var entryID = keys[categoryState.index];
+                    var description = this.getEntryDescription(entryID, type);
+                    if (!description) {
+                        if (this.handleError) {
+                            this.handleError("INCONSISTENCY ERROR: no description found for entry "+entryID);
+                            success = false;
+                            break;
+                        }
+                    } else {
+
+                        if (methodForType[type]) {
+                            if (methodForType[type].call(this, entryID, description, this._state.userInfo) === false) {
+                                success = false;
+                                break;
+                            }
+                        }
+
+                        this._stepToNextDescription();
+                    }
+                }
+
+                if (this.handleLoadCompleted) {
+                    this.handleLoadCompleted(success);
+                }
+
+            }
+        },
+
+        _loadJSONIfNeeded: {
+            enumerable: true,
+            value: function(callback) {
+                var self = this;
+                //FIXME: handle error
+                if (!this._json)  {
+                    var jsonPath = this._path;
+                    var i = jsonPath.lastIndexOf("/");
+                    this.baseURL = (i !== 0) ? jsonPath.substring(0, i + 1) : '';
+                    var jsonfile = new XMLHttpRequest();
+                    jsonfile.open("GET", jsonPath, true);
+                    jsonfile.onreadystatechange = function() {
+                        if (jsonfile.readyState == 4) {
+                            if (jsonfile.status == 200) {
+                                self.json = JSON.parse(jsonfile.responseText);
+                                if (callback) {
+                                    callback(self.json);
+                                }
+                            }
+                        }
+                    };
+                    jsonfile.send(null);
+               } else {
+                    if (callback) {
+                        callback(this.json);
+                    }
+                }
+            }
+        },
+
+        /* load JSON and assign it as description to the reader */
+        _buildLoader: {
+            value: function(callback) {
+                var self = this;
+                function JSONReady(json) {
+                    self.rootDescription = json;
+                    if (callback)
+                        callback(this);
+                }
+
+                this._loadJSONIfNeeded(JSONReady);
+            }
+        },
+
+        _state: { value: null, writable: true },
+
+        _getEntryType: {
+            value: function(entryID) {
+                var rootKeys = categoriesDepsOrder;
+                for (var i = 0 ;  i < rootKeys.length ; i++) {
+                    var rootValues = this.rootDescription[rootKeys[i]];
+                    if (rootValues) {
+                        return rootKeys[i];
+                    }
+                }
+                return null;
+            }
+        },
+
+        getNextCategoryIndex: {
+            value: function(currentIndex) {
+                for (var i = currentIndex ; i < categoriesDepsOrder.length ; i++) {
+                    if (this.hasCategory(categoriesDepsOrder[i])) {
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+        },
+
+        load: {
+            enumerable: true,
+            value: function(userInfo, options) {
+                var self = this;
+                this._buildLoader(function loaderReady(reader) {
+                    var startCategory = self.getNextCategoryIndex.call(self,0);
+                    if (startCategory !== -1) {
+                        self._state = { "userInfo" : userInfo,
+                                        "options" : options,
+                                        "categoryIndex" : startCategory,
+                                        "categoryState" : { "index" : "0" } };
+                        self._handleState();
+                    }
+                });
+            }
+        },
+
+        initWithPath: {
+            value: function(path) {
+                this._path = path;
+                this._json = null;
+                return this;
+            }
+        },
+
+        //this is meant to be global and common for all instances
+        _knownURLs: { writable: true, value: {} },
+
+        //to be invoked by subclass, so that ids can be ensured to not overlap
+        loaderContext: {
+            value: function() {
+                if (typeof this._knownURLs[this._path] === "undefined") {
+                    this._knownURLs[this._path] = Object.keys(this._knownURLs).length;
+                }
+                return "__" + this._knownURLs[this._path];
+            }
+        },
+
+        initWithJSON: {
+            value: function(json, baseURL) {
+                this.json = json;
+                this.baseURL = baseURL;
+                if (!baseURL) {
+                    console.log("WARNING: no base URL passed to Reader:initWithJSON");
+                }
+                return this;
+            }
+        }
+
+    });
+
+    if(root) {
+        root.glTFParser = glTFParser;
+    }
+
+    return glTFParser;
+
+}));
 ;/**
+ * Private xeoEngine glTF loading utilities.
+ *
+ * Adapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)
+ * https://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js
+ */
+XEO.GLTFLoaderUtils = Object.create(Object, {
+
+    // errors
+
+    // misc constants
+    ARRAY_BUFFER: {value: "ArrayBuffer"},
+
+    _streams: {value: {}, writable: true},
+
+    _streamsStatus: {value: {}, writable: true},
+
+    _resources: {value: {}, writable: true},
+
+    _resourcesStatus: {value: {}, writable: true},
+
+    // initialization
+    init: {
+        value: function () {
+            this._streams = {};
+            this._streamsStatus = {};
+            this._resources = {};
+            this._resourcesStatus = {};
+        }
+    },
+
+    //manage entries
+    _containsResource: {
+        enumerable: false,
+        value: function (resourceID) {
+            return this._resources[resourceID] ? true : false;
+        }
+    },
+
+    _storeResource: {
+        enumerable: false,
+        value: function (resourceID, resource) {
+            if (!resourceID) {
+                console.log("ERROR: entry does not contain id, cannot store");
+                return;
+            }
+
+            if (this._containsResource[resourceID]) {
+                console.log("WARNING: resource:" + resourceID + " is already stored, overriding");
+            }
+
+            this._resources[resourceID] = resource;
+        }
+    },
+
+    _getResource: {
+        enumerable: false,
+        value: function (resourceID) {
+            return this._resources[resourceID];
+        }
+    },
+
+    _loadStream: {
+        value: function (path, type, delegate) {
+
+
+            var dataUriRegex = /^data:(.*?)(;base64)?,(.*)$/;
+
+            function decodeDataUriText(isBase64, data) {
+                var result = decodeURIComponent(data);
+                if (isBase64) {
+                    return atob(result);
+                }
+                return result;
+            }
+
+            function decodeDataUriArrayBuffer(isBase64, data) {
+                var byteString = decodeDataUriText(isBase64, data);
+                var buffer = new ArrayBuffer(byteString.length);
+                var view = new Uint8Array(buffer);
+                for (var i = 0; i < byteString.length; i++) {
+                    view[i] = byteString.charCodeAt(i);
+                }
+                return buffer;
+            }
+
+            function decodeDataUri(dataUriRegexResult, responseType) {
+                responseType = typeof responseType !== 'undefined' ? responseType : '';
+                var mimeType = dataUriRegexResult[1];
+                var isBase64 = !!dataUriRegexResult[2];
+                var data = dataUriRegexResult[3];
+
+                switch (responseType) {
+                    case '':
+                    case 'text':
+                        return decodeDataUriText(isBase64, data);
+                    case 'ArrayBuffer':
+                        return decodeDataUriArrayBuffer(isBase64, data);
+                    case 'blob':
+                        var buffer = decodeDataUriArrayBuffer(isBase64, data);
+                        return new Blob([buffer], {
+                            type: mimeType
+                        });
+                    case 'document':
+                        var parser = new DOMParser();
+                        return parser.parseFromString(decodeDataUriText(isBase64, data), mimeType);
+                    case 'json':
+                        return JSON.parse(decodeDataUriText(isBase64, data));
+                    default:
+                        throw 'Unhandled responseType: ' + responseType;
+                }
+            }
+
+            var dataUriRegexResult = dataUriRegex.exec(path);
+            if (dataUriRegexResult !== null) {
+                delegate.streamAvailable(path, decodeDataUri(dataUriRegexResult, type));
+                return;
+            }
+
+            var self = this;
+
+            if (!type) {
+                delegate.handleError(XEO.GLTFLoaderUtils.INVALID_TYPE, null);
+                return;
+            }
+
+            if (!path) {
+                delegate.handleError(XEO.GLTFLoaderUtils.INVALID_PATH);
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', path, true);
+            xhr.responseType = (type === this.ARRAY_BUFFER) ? "arraybuffer" : "text";
+
+            //if this is not specified, 1 "big blob" scenes fails to load.
+            xhr.setRequestHeader("If-Modified-Since", "Sat, 01 Jan 1970 00:00:00 GMT");
+            xhr.onload = function (e) {
+                if ((xhr.status == 200) || (xhr.status == 206)) {
+
+                    delegate.streamAvailable(path, xhr.response);
+
+                } else {
+                    delegate.handleError(XEO.GLTFLoaderUtils.XMLHTTPREQUEST_STATUS_ERROR, this.status);
+                }
+            };
+            xhr.send(null);
+        }
+    },
+
+    send: {value: 0, writable: true},
+    requested: {value: 0, writable: true},
+
+    _handleRequest: {
+        value: function (request) {
+            var resourceStatus = this._resourcesStatus[request.id];
+            if (resourceStatus) {
+                this._resourcesStatus[request.id]++;
+            }
+            else {
+                this._resourcesStatus[request.id] = 1;
+            }
+
+            var streamStatus = this._streamsStatus[request.uri];
+            if (streamStatus && streamStatus.status === "loading") {
+                streamStatus.requests.push(request);
+                return;
+            }
+
+            this._streamsStatus[request.uri] = {status: "loading", requests: [request]};
+
+            var self = this;
+            var processResourceDelegate = {};
+
+            processResourceDelegate.streamAvailable = function (path, res_) {
+                var streamStatus = self._streamsStatus[path];
+                var requests = streamStatus.requests;
+                requests.forEach(function (req_) {
+                    var subArray = res_.slice(req_.range[0], req_.range[1]);
+                    var convertedResource = req_.delegate.convert(subArray, req_.ctx);
+                    self._storeResource(req_.id, convertedResource);
+                    req_.delegate.resourceAvailable(convertedResource, req_.ctx);
+                    --self._resourcesStatus[req_.id];
+
+                }, this);
+
+                delete self._streamsStatus[path];
+
+            };
+
+            processResourceDelegate.handleError = function (errorCode, info) {
+                request.delegate.handleError(errorCode, info);
+            };
+
+            this._loadStream(request.uri, request.type, processResourceDelegate);
+        }
+    },
+
+    _elementSizeForGLType: {
+        value: function (componentType, type) {
+
+            var nElements = 0;
+            switch (type) {
+                case "SCALAR" :
+                    nElements = 1;
+                    break;
+                case "VEC2" :
+                    nElements = 2;
+                    break;
+                case "VEC3" :
+                    nElements = 3;
+                    break;
+                case "VEC4" :
+                    nElements = 4;
+                    break;
+                case "MAT2" :
+                    nElements = 4;
+                    break;
+                case "MAT3" :
+                    nElements = 9;
+                    break;
+                case "MAT4" :
+                    nElements = 16;
+                    break;
+                default :
+                    debugger;
+                    break;
+            }
+
+            switch (componentType) {
+                case WebGLRenderingContext.FLOAT :
+                    return Float32Array.BYTES_PER_ELEMENT * nElements;
+                case WebGLRenderingContext.UNSIGNED_BYTE :
+                    return Uint8Array.BYTES_PER_ELEMENT * nElements;
+                case WebGLRenderingContext.UNSIGNED_SHORT :
+                    return Uint16Array.BYTES_PER_ELEMENT * nElements;
+                default :
+                    debugger;
+                    return null;
+            }
+        }
+    },
+
+    _handleWrappedBufferViewResourceLoading: {
+        value: function (wrappedBufferView, delegate, ctx) {
+            var bufferView = wrappedBufferView.bufferView;
+            var buffer = bufferView.buffer;
+            var byteOffset = wrappedBufferView.byteOffset + bufferView.description.byteOffset;
+            var range = [byteOffset, (this._elementSizeForGLType(wrappedBufferView.componentType, wrappedBufferView.type) * wrappedBufferView.count) + byteOffset];
+
+            this._handleRequest({
+                "id": wrappedBufferView.id,
+                "range": range,
+                "type": buffer.description.type,
+                "uri": buffer.description.uri,
+                "delegate": delegate,
+                "ctx": ctx
+            }, null);
+        }
+    },
+
+    getBuffer: {
+
+        value: function (wrappedBufferView, delegate, ctx) {
+
+            var savedBuffer = this._getResource(wrappedBufferView.id);
+            if (savedBuffer) {
+                return savedBuffer;
+            } else {
+                this._handleWrappedBufferViewResourceLoading(wrappedBufferView, delegate, ctx);
+            }
+
+            return null;
+        }
+    },
+
+    getFile: {
+
+        value: function (request, delegate, ctx) {
+
+            request.delegate = delegate;
+            request.ctx = ctx;
+
+            this._handleRequest({
+                "id": request.id,
+                "uri": request.uri,
+                "range": [0],
+                "type": "text",
+                "delegate": delegate,
+                "ctx": ctx
+            }, null);
+
+            return null;
+        }
+    },
+});
+;/**
+ * Private xeoEngine glTF loader core.
+ *
+ * Adapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)
+ * https://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js
+ */
+(function () {
+
+    "use strict";
+
+    function log(type, entryId, description) {
+        console.log(type + ": " + entryId + ": " + JSON.stringify(description, null, 4));
+    }
+
+    // Resource management
+
+    var ResourceEntry = function (entryID, object, description) {
+        this.entryID = entryID;
+        this.object = object;
+        this.description = description;
+    };
+
+    var Resources = function () {
+        this._entries = {};
+    };
+
+    Resources.prototype.setEntry = function (entryID, object, description) {
+        if (!entryID) {
+            console.error("No EntryID provided, cannot store", description);
+            return;
+        }
+
+        if (this._entries[entryID]) {
+            console.warn("entry[" + entryID + "] is being overwritten");
+        }
+
+        this._entries[entryID] = new ResourceEntry(entryID, object, description);
+    };
+
+    Resources.prototype.getEntry = function (entryID) {
+        return this._entries[entryID];
+    };
+
+    Resources.prototype.clearEntries = function () {
+        this._entries = {};
+    };
+
+    // Delegate for processing index buffers
+    var IndicesDelegate = function () {
+    };
+
+    IndicesDelegate.prototype.handleError = function (errorCode, info) {
+        // FIXME: report error
+        console.log("ERROR(IndicesDelegate):" + errorCode + ":" + info);
+    };
+
+    IndicesDelegate.prototype.convert = function (resource, ctx) {
+        return new Uint16Array(resource, 0, ctx.indices.count);
+    };
+
+    IndicesDelegate.prototype.resourceAvailable = function (glResource, ctx) {
+        var geometry = ctx.geometry;
+        geometry.indices = glResource;
+        //geometry.checkFinished();
+        return true;
+    };
+
+    function componentsPerElementForGLType(type) {
+
+        var nElements = 0;
+
+        switch (type) {
+            case "SCALAR" :
+                nElements = 1;
+                break;
+            case "VEC2" :
+                nElements = 2;
+                break;
+            case "VEC3" :
+                nElements = 3;
+                break;
+            case "VEC4" :
+                nElements = 4;
+                break;
+            case "MAT2" :
+                nElements = 4;
+                break;
+            case "MAT3" :
+                nElements = 9;
+                break;
+            case "MAT4" :
+                nElements = 16;
+                break;
+            default :
+                debugger;
+                break;
+        }
+
+        return nElements;
+    }
+
+    var indicesDelegate = new IndicesDelegate();
+
+    var IndicesContext = function (indices, geometry) {
+        this.indices = indices;
+        this.geometry = geometry;
+    };
+
+    // Delegate for processing vertex attribute buffers
+    var VertexAttributeDelegate = function () {
+    };
+
+    VertexAttributeDelegate.prototype.handleError = function (errorCode, info) {
+        // FIXME: report error
+        console.log("ERROR(VertexAttributeDelegate):" + errorCode + ":" + info);
+    };
+
+    VertexAttributeDelegate.prototype.convert = function (resource, ctx) {
+        return resource;
+    };
+
+    VertexAttributeDelegate.prototype.resourceAvailable = function (glResource, ctx) {
+
+        var geometry = ctx.geometry;
+        var attribute = ctx.attribute;
+        var semantic = ctx.semantic;
+
+        //FIXME: Float32 is assumed here, but should be checked.
+
+        if (semantic == "POSITION") {
+            geometry.positions = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
+
+        } else if (semantic == "NORMAL") {
+            geometry.normals = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
+
+        } else if ((semantic == "TEXCOORD_0") || (semantic == "TEXCOORD" )) {
+            geometry.uv = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
+        }
+
+        geometry.loadedAttributes++;
+
+        //geometry.checkFinished();
+
+        return true;
+    };
+
+    var vertexAttributeDelegate = new VertexAttributeDelegate();
+
+    var VertexAttributeContext = function (attribute, semantic, geometry) {
+        this.attribute = attribute;
+        this.semantic = semantic;
+        this.geometry = geometry;
+    };
+
+
+    XEO.GLTFLoader = Object.create(glTFParser, {
+
+        setGroup: {
+            value: function (group) {
+                this.group = group;
+            }
+        },
+
+        load: {
+            enumerable: true,
+            value: function (userInfo, options) {
+
+                if (!this.group) {
+                    throw "group not set";
+                }
+
+                this.resources = new Resources();
+
+                glTFParser.load.call(this, userInfo, options);
+            }
+        },
+
+        _makeID: {
+            value: function (entryID) {
+                // https://github.com/KhronosGroup/glTF/blob/master/specification/README.md#ids-and-names
+                return this._path + "#" + entryID;
+            }
+        },
+
+        handleBuffer: {
+            value: function (entryID, description, userInfo) {
+                this.resources.setEntry(entryID, null, description);
+                description.type = "ArrayBuffer";
+                return true;
+            }
+        },
+
+        handleBufferView: {
+            value: function (entryID, description, userInfo) {
+                this.resources.setEntry(entryID, null, description);
+
+                var buffer = this.resources.getEntry(description.buffer);
+                description.type = "ArrayBufferView";
+
+                var bufferViewEntry = this.resources.getEntry(entryID);
+                bufferViewEntry.buffer = buffer;
+                return true;
+            }
+        },
+
+        handleAccessor: {
+            value: function (entryID, description, userInfo) {
+                this.resources.setEntry(entryID, description, description);
+                return true;
+            }
+        },
+
+        handleTexture: {
+            value: function (entryID, description, userInfo) {
+
+                if (!description.source) {
+                    return;
+                }
+
+                var image = this._json.images[description.source];
+
+                var texture = new XEO.Texture(this.group.scene, {
+                    src: image.uri
+                });
+
+                //   log("technique", entryID, description);
+                this.resources.setEntry(entryID, texture, description);
+
+                return true;
+            }
+        },
+
+        handleMaterial: {
+            value: function (entryID, description, userInfo) {
+
+                //   log("material", entryID, description);
+
+                var values = description.values || {};
+
+                var diffuseVal = values.diffuse;
+                var specularVal = values.specular;
+                var shininessVal = values.shininess;
+                var emissiveVal = values.emission;
+
+                var cfg = {
+                    id: this._makeID(entryID),
+                    meta: {
+                        gltf: {
+                            userInfo: userInfo
+                        }
+                    },
+                    shininess: shininessVal
+                };
+
+                var entry;
+
+                if (diffuseVal) {
+                    if (XEO._isString(diffuseVal)) {
+                        entry = this.resources.getEntry(diffuseVal);
+                        if (entry) {
+                            cfg.diffuseMap = entry.object;
+                        }
+                    } else {
+                        cfg.diffuse = diffuseVal.slice(0, 3);
+                    }
+                }
+
+                if (specularVal) {
+                    if (XEO._isString(specularVal)) {
+                        entry = this.resources.getEntry(specularVal);
+                        if (entry) {
+                            cfg.specularMap = entry.object;
+                        }
+                    } else {
+                        cfg.specular = specularVal.slice(0, 3);
+                    }
+                }
+
+                if (emissiveVal) {
+                    if (XEO._isString(emissiveVal)) {
+                        entry = this.resources.getEntry(emissiveVal);
+                        if (entry) {
+                            cfg.emissiveMap = entry.object;
+                        }
+                    } else {
+                        cfg.emissive = emissiveVal.slice(0, 3);
+                    }
+                }
+
+                var material = new XEO.PhongMaterial(this.group.scene, cfg);
+
+                this.group.add(material);
+
+                this.resources.setEntry(entryID, material, description);
+
+                return true;
+            }
+        },
+
+        handleLight: {
+            value: function (entryID, description, userInfo) {
+                log("light", entryID, description);
+                return true;
+            }
+        },
+
+        handleMesh: {
+            value: function (entryID, description, userInfo) {
+
+                var mesh = [];
+
+                this.resources.setEntry(entryID, mesh, description);
+
+                var primitivesDescription = description.primitives;
+
+                if (!primitivesDescription) {
+                    //FIXME: not implemented in delegate
+                    log("MISSING_PRIMITIVES for mesh:" + entryID);
+                    return false;
+                }
+
+                for (var i = 0; i < primitivesDescription.length; i++) {
+                    var primitiveDescription = primitivesDescription[i];
+
+                    if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
+
+                        var geometry = new XEO.Geometry(this.group.scene, {
+                            id: this._makeID(entryID + "-geo" + i)
+                        });
+
+                        var materialEntry = this.resources.getEntry(primitiveDescription.material);
+                        var material = materialEntry.object;
+
+                        mesh.push({
+                            geometry: geometry,
+                            material: material
+                        });
+
+                        var allAttributes = Object.keys(primitiveDescription.attributes);
+
+                        // count them first, async issues otherwise
+                        allAttributes.forEach(function (semantic) {
+                            geometry.totalAttributes++;
+                        }, this);
+
+                        var indices = this.resources.getEntry(primitiveDescription.indices);
+                        var bufferEntry = this.resources.getEntry(indices.description.bufferView);
+                        var indicesObject = {
+                            bufferView: bufferEntry,
+                            byteOffset: indices.description.byteOffset,
+                            count: indices.description.count,
+                            id: indices.entryID,
+                            componentType: indices.description.componentType,
+                            type: indices.description.type
+                        };
+
+                        var indicesContext = new IndicesContext(indicesObject, geometry);
+                        var alreadyProcessedIndices = XEO.GLTFLoaderUtils.getBuffer(indicesObject, indicesDelegate, indicesContext);
+
+                        // Load Vertex Attributes
+                        allAttributes.forEach(function (semantic) {
+
+                            var attribute;
+                            var attributeID = primitiveDescription.attributes[semantic];
+                            var attributeEntry = this.resources.getEntry(attributeID);
+                            var bufferEntry;
+
+                            if (!attributeEntry) {
+
+                                //let's just use an anonymous object for the attribute
+                                attribute = description.attributes[attributeID];
+                                attribute.id = attributeID;
+                                this.resources.setEntry(attributeID, attribute, attribute);
+
+                                bufferEntry = this.resources.getEntry(attribute.bufferView);
+                                attributeEntry = this.resources.getEntry(attributeID);
+
+                            } else {
+                                attribute = attributeEntry.object;
+                                attribute.id = attributeID;
+                                bufferEntry = this.resources.getEntry(attribute.bufferView);
+                            }
+
+                            var attributeObject = {
+                                bufferView: bufferEntry,
+                                byteOffset: attribute.byteOffset,
+                                byteStride: attribute.byteStride,
+                                count: attribute.count,
+                                max: attribute.max,
+                                min: attribute.min,
+                                componentType: attribute.componentType,
+                                type: attribute.type,
+                                id: attributeID
+                            };
+
+                            var attribContext = new VertexAttributeContext(attributeObject, semantic, geometry);
+
+                            var alreadyProcessedAttribute = XEO.GLTFLoaderUtils.getBuffer(attributeObject, vertexAttributeDelegate, attribContext);
+
+                            /*if(alreadyProcessedAttribute) {
+                             vertexAttributeDelegate.resourceAvailable(alreadyProcessedAttribute, attribContext);
+                             }*/
+
+                        }, this);
+                    }
+                }
+
+                return true;
+            }
+        },
+
+        handleCamera: {
+            value: function (entryID, description, userInfo) {
+                //log("camera", entryID, description);
+                return true;
+            }
+        },
+
+        handleScene: {
+            value: function (entryID, description, userInfo) {
+
+                var nodes = description.nodes;
+
+                if (nodes) {
+
+                    var node;
+                    var transform;
+
+                    for (var nodeId in nodes) {
+                        if (nodes.hasOwnProperty(nodeId)) {
+
+                            node = nodes [nodeId];
+                            transform = null;
+
+                            this._parseNode(node, transform);
+                        }
+                    }
+                }
+            }
+        },
+
+        _parseNode: {
+            value: function (nodeId, transform) {
+
+                var node = this._json.nodes[nodeId];
+
+                if (!node) {
+                    return;
+                }
+
+                if (node.matrix) {
+                    var matrix = node.matrix;
+                    transform = new XEO.Transform(this.group.scene, {
+                        id: this._makeID(nodeId + ".transform"),
+                        matrix: matrix,
+                        parent: transform
+                    });
+                    this.group.add(transform);
+                }
+
+                if (node.translation) {
+                    var translation = node.translation;
+                    transform = new XEO.Translate(this.group.scene, {
+                        id: this._makeID(nodeId + ".translation"),
+                        xyz: [translation[0], translation[1], translation[2]],
+                        parent: transform
+                    });
+                    this.group.add(transform);
+                }
+
+                if (node.rotation) {
+                    var rotation = node.rotation;
+                    transform = new XEO.Translate(this.group.scene, {
+                        id: this._makeID(nodeId + ".rotation"),
+                        xyz: [rotation[0], rotation[1], rotation[2]],
+                        angle: rotation[3],
+                        parent: transform
+                    });
+                    this.group.add(transform);
+                }
+
+                if (node.scale) {
+                    var scale = node.scale;
+                    transform = new XEO.Scale(this.group.scene, {
+                        id: this._makeID(nodeId + ".scale"),
+                        xyz: [scale[0], scale[1], scale[2]],
+                        parent: transform
+                    });
+                    this.group.add(transform);
+                }
+
+                if (node.meshes) {
+
+                    var meshes = node.meshes;
+                    var imeshes;
+                    var lenMeshes = meshes.length;
+                    var mesh;
+                    var material;
+                    var geometry;
+                    var object;
+
+                    for (imeshes = 0; imeshes < lenMeshes; imeshes++) {
+
+                        mesh = this.resources.getEntry(meshes[imeshes]);
+
+                        if (!mesh) {
+                            continue;
+                        }
+
+                        mesh = mesh.object;
+
+                        for (var i = 0, len = mesh.length; i < len; i++) {
+
+                            material = mesh[i].material;
+                            geometry = mesh[i].geometry;
+
+                            object = new XEO.GameObject(this.group.scene, {
+                                //id: this._makeID(nodeId + ".object" + i),
+                                material: material,
+                                geometry: geometry,
+                                transform: transform
+                            });
+
+                            this.group.add(object);
+                        }
+                    }
+                }
+
+                if (node.children) {
+
+                    var children = node.children;
+                    var childNode;
+
+                    for (var i = 0, len = children.length; i < len; i++) {
+                        childNode = children[i];
+                        this._parseNode(childNode, transform);
+                    }
+                }
+
+                return true;
+            }
+        }
+    });
+
+})();;(function () {
+
+    "use strict";
+
+    var glTFLoader = XEO.GLTFLoader;
+
+    /**
+     An **Import** component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
+
+     <ul><li>An Import component begins loading content into its {{#crossLink "Scene"}}{{/crossLink}} as soon as it's {{#crossLink "Import/src:property"}}{{/crossLink}}
+     property is set to a file path.</li>
+     <li>An Import provides all the components it has loaded within a {{#crossLink "Group"}}{{/crossLink}}.</li>
+     <li>You can set an Import's {{#crossLink "Import/src:property"}}{{/crossLink}} property to a new file path at any time, causing the Import
+     to load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>
+     </ul>
+
+     ## Example
+
+     First, create an Import, which immediately loads a glTF model into the default {{#crossLink "Scene"}}{{/crossLink}}:
+
+     ````javascript
+     var myImport = new XEO.Import({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+     });
+     ````
+
+     The Import has a {{#crossLink "Group"}}{{/crossLink}} which contains all the components
+     it loaded from the glTF file.
+
+     Let's iterate over the {{#crossLink "Group"}}{{/crossLink}} and log the ID of each
+     {{#crossLink "GameObject"}}{{/crossLink}} we find in there:
+
+     ````javascript
+     var group = myImport.group;
+
+     group.iterate(function(c) {
+         if (c.type === "XEO.GameObject") {
+             this.log("GameObject found: " + c.id);
+         }
+     });
+     ````
+
+     Let's set the Import to a different file path:
+
+     ````javascript
+     myImport.src = "models/gltf/buggy/buggy.gltf"
+     ````
+
+     Once loaded, the {{#crossLink "Group"}}{{/crossLink}} will contain an entirely different collection of scene components, loaded from this new glTF file.
+
+     Finally, an Import manages the lifecycle of it's components. Therefore, destroying a Import also destroys all the
+     components it loaded:
+
+     ````javascript
+     myImport.destroy();
+     ````
+
+     @class Import
+     @module XEO
+     @submodule importing
+     @extends Component
+     */
+    XEO.Import = XEO.Component.extend({
+
+        type: "XEO.Import",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            // The XEO.Group that will hold all the components
+            // we create from the glTF model; this will be available
+            // as a public, immutable #group property
+
+            this._group = new XEO.Group(this.scene);
+
+            this._src = null;
+
+            if (!cfg.src) {
+                this.error("Config missing: 'src'");
+                return;
+            }
+
+            if (!XEO._isString(cfg.src)) {
+                this.error("Value for config 'src' should be a string");
+                return;
+            }
+
+            this.src = cfg.src;
+        },
+
+        _props: {
+
+            /**
+             Path to the glTF file.
+
+             Fires a {{#crossLink "Import/src:event"}}{{/crossLink}} event on change.
+
+             @property src
+             @type String
+             */
+            src: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (!XEO._isString(value)) {
+                        this.error("Value for 'src' should be a string");
+                        return;
+                    }
+
+                    this._clear();
+
+                    this._src = value;
+
+                    glTFLoader.setGroup(this._group);
+                    glTFLoader.initWithPath(value);
+                    glTFLoader.load();
+
+                    /**
+                     Fired whenever this Import's  {{#crossLink "GLTF/src:property"}}{{/crossLink}} property changes.
+                     @event src
+                     @param value The property's new value
+                     */
+                    this.fire("src", this._src);
+                },
+
+                get: function () {
+                    return this._src;
+                }
+            },
+
+            /**
+             * {{#crossLink "Group"}}{{/crossLink}} containing all the xeoEngine components for this Import.
+             *
+             * @property group
+             * @type Group
+             * @final
+             */
+            group: {
+
+                get: function () {
+                    return this._group;
+                }
+            }
+        },
+
+        _clear: function () {
+
+            var c = [];
+
+            this._group.iterate(
+                function (component) {
+                    c.push(component);
+                });
+
+            while (c.length) {
+                c.pop().destroy();
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                src: this._src
+            };
+        },
+
+        _destroy: function () {
+            this._clear();
+        }
+    });
+
+
+})();;/**
  * Components to define the surface appearance of GameObjects.
  *
  * @module XEO
@@ -33869,10 +35148,10 @@ myTask2.setFailed();
                     value = value || XEO.math.identityMat4();
 
                     if (!this._matrix) {
-                        this._matrix = XEO.math.identityMat4();
-                    } else {
-                        this._matrix.set(value);
+                        this._matrix = XEO.math.mat4();
                     }
+
+                    this._matrix.set(value);
 
                     this._leafMatrixDirty = true;
 

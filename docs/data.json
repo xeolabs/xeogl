@@ -190,24 +190,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/audio/audio.js": {
-            "name": "src/audio/audio.js",
-            "modules": {},
-            "classes": {
-                "Audio": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/audio/listener.js": {
-            "name": "src/audio/listener.js",
-            "modules": {},
-            "classes": {
-                "Listener": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/boundaries/_module.js": {
             "name": "src/boundaries/_module.js",
             "modules": {
@@ -631,6 +613,38 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/importing/gltf/glTFLoader.js": {
+            "name": "src/importing/gltf/glTFLoader.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/importing/gltf/glTFLoaderUtils.js": {
+            "name": "src/importing/gltf/glTFLoaderUtils.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/importing/_module.js": {
+            "name": "src/importing/_module.js",
+            "modules": {
+                "importing": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/importing/import.js": {
+            "name": "src/importing/import.js",
+            "modules": {},
+            "classes": {
+                "Import": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/input/_module.js": {
             "name": "src/input/_module.js",
             "modules": {
@@ -1022,7 +1036,6 @@
             "submodules": {
                 "undefined": 1,
                 "animation": 1,
-                "audio": 1,
                 "boundaries": 1,
                 "camera": 1,
                 "canvas": 1,
@@ -1033,6 +1046,7 @@
                 "curves": 1,
                 "geometry": 1,
                 "grouping": 1,
+                "importing": 1,
                 "input": 1,
                 "lighting": 1,
                 "materials": 1,
@@ -1048,8 +1062,6 @@
                 "CameraFlight": 1,
                 "CameraPath": 1,
                 "MorphTargets": 1,
-                "Audio": 1,
-                "Listener": 1,
                 "Boundary2D": 1,
                 "Boundary3D": 1,
                 "GroupBoundary": 1,
@@ -1085,6 +1097,7 @@
                 "SphereGeometry": 1,
                 "TorusGeometry": 1,
                 "Group": 1,
+                "Import": 1,
                 "Input": 1,
                 "AmbientLight": 1,
                 "DirLight": 1,
@@ -1155,22 +1168,6 @@
             "file": "src/animation/morphTargets.js",
             "line": 6,
             "description": "Components for animating state within Scenes."
-        },
-        "audio": {
-            "name": "audio",
-            "submodules": {},
-            "classes": {
-                "Audio": 1,
-                "Listener": 1
-            },
-            "fors": {},
-            "is_submodule": 1,
-            "namespaces": {},
-            "module": "XEO",
-            "namespace": "",
-            "description": "TODO\n## Overview\nTODO\n## Example\nTODO",
-            "file": "src/audio/listener.js",
-            "line": 1
         },
         "boundaries": {
             "name": "boundaries",
@@ -1349,6 +1346,21 @@
             "file": "src/grouping/group.js",
             "line": 1,
             "description": "Components for managing groups of components."
+        },
+        "importing": {
+            "name": "importing",
+            "submodules": {},
+            "classes": {
+                "Import": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/importing/import.js",
+            "line": 7,
+            "description": "Imports content from files."
         },
         "input": {
             "name": "input",
@@ -1673,145 +1685,6 @@
                             "type": "Number",
                             "optional": true,
                             "optdefault": "0"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
-        "Audio": {
-            "name": "Audio",
-            "shortname": "Audio",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/audio/audio.js",
-            "line": 1,
-            "description": "TODO\n## Overview\nTODO\n## Example\nTODO",
-            "submodule": "audio",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Audio within the\n default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "The Audio configuration",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Audio.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "volume",
-                            "description": "A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.",
-                            "type": "Array(Number)",
-                            "optional": true,
-                            "optdefault": "[1.0, 1.0, 1.0]"
-                        },
-                        {
-                            "name": "color",
-                            "description": "The color of this Audio.",
-                            "type": "Array(Number)",
-                            "optional": true,
-                            "optdefault": "[0.7, 0.7, 0.8 ]"
-                        },
-                        {
-                            "name": "intensity",
-                            "description": "The intensity of this Audio.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1.0"
-                        },
-                        {
-                            "name": "space",
-                            "description": "The coordinate system the Audio is defined in - \"view\" or \"space\".",
-                            "type": "String",
-                            "optional": true,
-                            "optdefault": "\"view\""
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
-        "Listener": {
-            "name": "Listener",
-            "shortname": "Listener",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/audio/listener.js",
-            "line": 1,
-            "description": "TODO\n## Overview\nTODO\n## Example\nTODO",
-            "submodule": "audio",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Listener within the\n default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "The Listener configuration",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Listener.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "pos",
-                            "description": "A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.",
-                            "type": "Array(Number)",
-                            "optional": true,
-                            "optdefault": "[1.0, 1.0, 1.0]"
-                        },
-                        {
-                            "name": "orient",
-                            "description": "The color of this Listener.",
-                            "type": "Array(Number)",
-                            "optional": true,
-                            "optdefault": "[0.7, 0.7, 0.8]"
-                        },
-                        {
-                            "name": "up",
-                            "description": "The intensity of this Listener.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1.0"
                         }
                     ]
                 }
@@ -4008,14 +3881,14 @@
                             "description": "Number of segments on the X-axis.",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "4"
+                            "optdefault": "1"
                         },
                         {
                             "name": "ySegments",
                             "description": "Number of segments on the Y-axis.",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "4"
+                            "optdefault": "1"
                         },
                         {
                             "name": "lod",
@@ -4252,6 +4125,22 @@
                     ]
                 }
             ],
+            "extends": "Component"
+        },
+        "Import": {
+            "name": "Import",
+            "shortname": "Import",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/importing/import.js",
+            "line": 7,
+            "description": "An **Import** component loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<ul><li>An Import component begins loading content into its {{#crossLink \"Scene\"}}{{/crossLink}} as soon as it's {{#crossLink \"Import/src:property\"}}{{/crossLink}}\nproperty is set to a file path.</li>\n<li>An Import provides all the components it has loaded within a {{#crossLink \"Group\"}}{{/crossLink}}.</li>\n<li>You can set an Import's {{#crossLink \"Import/src:property\"}}{{/crossLink}} property to a new file path at any time, causing the Import\nto load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>\n</ul>\n\n## Example\n\nFirst, create an Import, which immediately loads a glTF model into the default {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar myImport = new XEO.Import({\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nThe Import has a {{#crossLink \"Group\"}}{{/crossLink}} which contains all the components\nit loaded from the glTF file.\n\nLet's iterate over the {{#crossLink \"Group\"}}{{/crossLink}} and log the ID of each\n{{#crossLink \"GameObject\"}}{{/crossLink}} we find in there:\n\n````javascript\nvar group = myImport.group;\n\ngroup.iterate(function(c) {\n    if (c.type === \"XEO.GameObject\") {\n        this.log(\"GameObject found: \" + c.id);\n    }\n});\n````\n\nLet's set the Import to a different file path:\n\n````javascript\nmyImport.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\nOnce loaded, the {{#crossLink \"Group\"}}{{/crossLink}} will contain an entirely different collection of scene components, loaded from this new glTF file.\n\nFinally, an Import manages the lifecycle of it's components. Therefore, destroying a Import also destroys all the\ncomponents it loaded:\n\n````javascript\nmyImport.destroy();\n````",
+            "submodule": "importing",
             "extends": "Component"
         },
         "Input": {
@@ -7662,326 +7551,6 @@
             "class": "MorphTargets",
             "module": "XEO",
             "submodule": "animation"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 134,
-            "description": "The Listener component for this Audio.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/listener:property\"}}listener{{/crossLink}}, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nFires a {{#crossLink \"Audio/listener:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "listener",
-            "type": "Listener",
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 154,
-            "description": "Fired whenever this Audio's {{#crossLink \"Audio/listener:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "listener",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 167,
-            "description": "Indicates whether this Audio automatically plays when loaded.\n\nFires a {{#crossLink \"Audio/autoplay:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "autoplay",
-            "default": "false",
-            "type": "Boolean",
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 182,
-            "description": "Fired whenever this Audio's  {{#crossLink \"Audio/autoplay:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "autoplay",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 195,
-            "description": "The src of this Audio.\n\nFires a {{#crossLink \"Audio/src:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "src",
-            "default": "null",
-            "type": "String",
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 214,
-            "description": "Fired whenever this Audio's  {{#crossLink \"Audio/src:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "src",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 227,
-            "description": "World-space position of this Audio.\n.\nFires an {{#crossLink \"Audio/pos:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "pos",
-            "default": "[0,0,0]",
-            "type": "{Array of Number}",
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 246,
-            "description": "Fired whenever this Translate's {{#crossLink \"Translate/pos:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "pos",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value",
-                    "type": "Array of Number"
-                }
-            ],
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 259,
-            "description": "The volume of this Audio.\n\nFires a {{#crossLink \"Audio/volume:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "volume",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 278,
-            "description": "Fired whenever this Audio's  {{#crossLink \"Audio/volume:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "volume",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 291,
-            "description": "Indicates whether this sound loops.\n\nFires a {{#crossLink \"Audio/loop:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "loop",
-            "default": "true",
-            "type": "Boolean",
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 310,
-            "description": "Fired whenever this Audio's  {{#crossLink \"Audio/loop:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "loop",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 323,
-            "description": "The roll-off factor of this Audio.\n\nFires a {{#crossLink \"Audio/rolloffFactor:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "rolloffFactor",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 342,
-            "description": "Fired whenever this Audio's  {{#crossLink \"Audio/rolloffFactor:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "rolloffFactor",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 355,
-            "description": "The reference distance of this Audio.\n\nFires a {{#crossLink \"Audio/refDistance:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "refDistance",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 374,
-            "description": "Fired whenever this Audio's  {{#crossLink \"Audio/refDistance:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "refDistance",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/audio.js",
-            "line": 387,
-            "description": "Indicates if this sound is playing.",
-            "itemtype": "property",
-            "name": "playing",
-            "type": "Boolean",
-            "final": 1,
-            "class": "Audio",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/listener.js",
-            "line": 47,
-            "description": "Position of this Listener.\n\nFires an {{#crossLink \"Listener/pos:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "pos",
-            "default": "[0,0,-10]",
-            "type": "Array(Number)",
-            "class": "Listener",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/listener.js",
-            "line": 64,
-            "description": "Fired whenever this Listener's  {{#crossLink \"Listener/pos:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "pos",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Listener",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/listener.js",
-            "line": 78,
-            "description": "Orientation of this Listener.\n\nFires a {{#crossLink \"Listener/orient:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "orient",
-            "default": "[0,0,0]",
-            "type": "Array(Number)",
-            "class": "Listener",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/listener.js",
-            "line": 98,
-            "description": "Fired whenever this Listener's  {{#crossLink \"Listener/orient:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "orient",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Listener",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/listener.js",
-            "line": 112,
-            "description": "Direction of the \"up\" vector.\n\nFires an {{#crossLink \"Listener/up:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "up",
-            "default": "[0,1,0]",
-            "type": "Array(Number)",
-            "class": "Listener",
-            "module": "XEO",
-            "submodule": "audio"
-        },
-        {
-            "file": "src/audio/listener.js",
-            "line": 132,
-            "description": "Fired whenever this Listener's  {{#crossLink \"Listener/up:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "up",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Listener",
-            "module": "XEO",
-            "submodule": "audio"
         },
         {
             "file": "src/boundaries/boundary2d.js",
@@ -11804,7 +11373,7 @@
             "description": "The PlaneGeometry's number of segments on the X-axis.\n\nFires a {{#crossLink \"PlaneGeometry/xSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSegments",
-            "default": "4",
+            "default": "1",
             "type": "Number",
             "class": "PlaneGeometry",
             "module": "XEO",
@@ -11833,7 +11402,7 @@
             "description": "The PlaneGeometry's number of segments on the Y-axis.\n\nFires a {{#crossLink \"PlaneGeometry/ySegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ySegments",
-            "default": "4",
+            "default": "1",
             "type": "Number",
             "class": "PlaneGeometry",
             "module": "XEO",
@@ -12322,6 +11891,59 @@
             "class": "Group",
             "module": "XEO",
             "submodule": "grouping"
+        },
+        {
+            "file": "src/importing/gltf/glTFLoader.js",
+            "line": 1,
+            "description": "Private xeoEngine glTF loader core.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
+            "class": "Import",
+            "module": "XEO"
+        },
+        {
+            "file": "src/importing/gltf/glTFLoaderUtils.js",
+            "line": 1,
+            "description": "Private xeoEngine glTF loading utilities.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
+            "class": "Import",
+            "module": "XEO"
+        },
+        {
+            "file": "src/importing/import.js",
+            "line": 94,
+            "description": "Path to the glTF file.\n\nFires a {{#crossLink \"Import/src:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "Import",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/import.js",
+            "line": 123,
+            "description": "Fired whenever this Import's  {{#crossLink \"GLTF/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Import",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/import.js",
+            "line": 136,
+            "description": "{{#crossLink \"Group\"}}{{/crossLink}} containing all the xeoEngine components for this Import.",
+            "itemtype": "property",
+            "name": "group",
+            "type": "Group",
+            "final": 1,
+            "class": "Import",
+            "module": "XEO",
+            "submodule": "importing"
         },
         {
             "file": "src/input/input.js",
@@ -17534,41 +17156,6 @@
         {
             "file": "src/math/math.js",
             "line": 2417,
-            "description": "Generates UV coordinates for triangle positions and indices.\n\nConceptually, this function rotates the triangles into the X,Y plane, packs\nthem as rightly together as possible, then generates UV coordinates that\ncorrespond to the X,Y coordinates.\n\nProvides the option to specify the maximum 2D range within which the UV coordinates\nare generated, which is 1x1 by default.",
-            "itemtype": "method",
-            "name": "buildUVs",
-            "static": 1,
-            "params": [
-                {
-                    "name": "positions",
-                    "description": "One-dimensional flattened array of vertex positions.",
-                    "type": "Array of Number"
-                },
-                {
-                    "name": "indices",
-                    "description": "One-dimensional flattened array of triangle vertex indices.*",
-                    "type": "Array of Number"
-                },
-                {
-                    "name": "uvRange",
-                    "description": "Optional UV range, given as a 2D vector, into which to pack the UV coordinates.",
-                    "type": "Array of Number",
-                    "optional": true,
-                    "optdefault": "[1.0, 1.0]"
-                }
-            ],
-            "return": {
-                "description": "One-dimensional flattened array of UV coordinates.",
-                "type": "Array of Number"
-            },
-            "class": "XEO.math.math",
-            "module": "XEO",
-            "submodule": "math",
-            "namespace": "XEO.math"
-        },
-        {
-            "file": "src/math/math.js",
-            "line": 2551,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -17590,7 +17177,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2579,
+            "line": 2445,
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "itemtype": "method",
             "name": "getPickPrimitives",
@@ -17630,7 +17217,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2682,
+            "line": 2548,
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "itemtype": "method",
             "name": "rayTriangleIntersect",
@@ -17679,7 +17266,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2730,
+            "line": 2596,
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "itemtype": "method",
             "name": "rayPlaneIntersect",
@@ -17728,7 +17315,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2768,
+            "line": 2634,
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.",
             "itemtype": "method",
             "name": "cartesianToBaryCentric",
@@ -17772,7 +17359,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2835,
+            "line": 2701,
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "itemtype": "method",
             "name": "barycentricInsideTriangle",
@@ -17795,7 +17382,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2852,
+            "line": 2718,
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "itemtype": "method",
             "name": "barycentricToCartesian",
@@ -20734,43 +20321,39 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2551"
+            "line": " src/math/math.js:2445"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2579"
+            "line": " src/math/math.js:2548"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2682"
+            "line": " src/math/math.js:2596"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2730"
+            "line": " src/math/math.js:2634"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2768"
+            "line": " src/math/math.js:2634"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2768"
+            "line": " src/math/math.js:2701"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2835"
+            "line": " src/math/math.js:2701"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2835"
+            "line": " src/math/math.js:2718"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2852"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2852"
+            "line": " src/math/math.js:2718"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21351,6 +20934,14 @@
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
             "line": " src/geometry/torusGeometry.js:49"
+        },
+        {
+            "message": "Missing item type\nPrivate xeoEngine glTF loader core.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
+            "line": " src/importing/gltf/glTFLoader.js:1"
+        },
+        {
+            "message": "Missing item type\nPrivate xeoEngine glTF loading utilities.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
+            "line": " src/importing/gltf/glTFLoaderUtils.js:1"
         },
         {
             "message": "Missing item type",

@@ -2,7 +2,6 @@ YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [
         "AmbientLight",
-        "Audio",
         "Billboard",
         "Boundary2D",
         "Boundary3D",
@@ -31,6 +30,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Geometry",
         "Group",
         "GroupBoundary",
+        "Import",
         "Input",
         "KeyboardAxisCamera",
         "KeyboardPanCamera",
@@ -39,7 +39,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "LatheGeometry",
         "Layer",
         "Lights",
-        "Listener",
         "Lookat",
         "Material",
         "Modes",
@@ -80,7 +79,6 @@ YUI.add("yuidoc-meta", function(Y) {
     "modules": [
         "XEO",
         "animation",
-        "audio",
         "boundaries",
         "camera",
         "canvas",
@@ -91,6 +89,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "curves",
         "geometry",
         "grouping",
+        "importing",
         "input",
         "lighting",
         "materials",
@@ -106,11 +105,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "animation",
             "name": "animation",
             "description": "Components for animating state within Scenes."
-        },
-        {
-            "displayName": "audio",
-            "name": "audio",
-            "description": "TODO\n## Overview\nTODO\n## Example\nTODO"
         },
         {
             "displayName": "boundaries",
@@ -161,6 +155,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "grouping",
             "name": "grouping",
             "description": "Components for managing groups of components."
+        },
+        {
+            "displayName": "importing",
+            "name": "importing",
+            "description": "Imports content from files."
         },
         {
             "displayName": "input",
