@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.min.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>importing glTF using an <a
+        href="../docs/classes/Import.html" target="_other">XEO.Import</a> component
+</div>
+
+<script>
+
+    // Load glTF
+
+    var gearbox = new XEO.Import({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    // Set initial camera position
+
+    var view = gearbox.scene.camera.view;
+
+    view.eye = [
+        184.21467781066895,
+        22.54405164718628,
+        -7.033053398132324
+    ];
+
+    view.look = [
+        159.20425415039062,
+        17.020320892333984,
+        3.210801124572754
+    ];
+
+    view.up = [
+        -0.1590631604194641,
+        0.9774724245071411,
+        0.13872624933719635
+    ];
+
+    // Allow user camera control
+
+    new XEO.CameraControl();
+
+</script>
+</body>
+</html>

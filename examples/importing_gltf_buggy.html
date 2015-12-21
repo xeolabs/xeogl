@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.min.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>importing glTF using an <a
+        href="../docs/classes/Import.html" target="_other">XEO.Import</a> component
+</div>
+
+<script>
+
+    // Load glTF
+
+    var buggy = new XEO.Import({
+        src: "models/gltf/buggy/buggy.gltf"
+    });
+
+    // Set initial camera position
+
+    var view = buggy.scene.camera.view;
+
+    view.eye = [
+        141.13860211002154,
+        63.047733306884766,
+        122.5732794213514
+    ];
+    view.look = [
+        23.656317564123093,
+        23.77500152587891,
+        20.08521942379281
+    ];
+
+    view.up = [
+        -0.014390967786312103,
+        0.9390942454338074,
+        -0.34335827827453613
+    ];
+
+    // Allow user camera control
+
+    new XEO.CameraControl();
+
+</script>
+</body>
+</html>

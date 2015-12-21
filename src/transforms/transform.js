@@ -228,10 +228,10 @@
                     value = value || XEO.math.identityMat4();
 
                     if (!this._matrix) {
-                        this._matrix = XEO.math.identityMat4();
-                    } else {
-                        this._matrix.set(value);
+                        this._matrix = XEO.math.mat4();
                     }
+
+                    this._matrix.set(value);
 
                     this._leafMatrixDirty = true;
 
