@@ -30,7 +30,7 @@
 
     view.eye = [
         184.21467781066895,
-        22.54405164718628,
+        10.54405164718628,
         -7.033053398132324
     ];
 
@@ -49,6 +49,13 @@
     // Allow user camera control
 
     new XEO.CameraControl();
+
+    // Slowly spin camera
+    gearbox.scene.on("tick",
+            function () {
+                view.rotateEyeY(0.3);
+                view.rotateEyeX(0.1);
+            });
 
 </script>
 </body>

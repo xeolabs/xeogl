@@ -49,6 +49,13 @@
 
     new XEO.CameraControl();
 
+    // Slowly spin camera
+    saw.scene.on("tick",
+            function () {
+                view.rotateEyeY(0.3);
+                view.rotateEyeX(0.1);
+            });
+
 </script>
 </body>
 </html>
