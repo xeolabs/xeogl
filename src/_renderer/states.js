@@ -249,6 +249,21 @@
         _ids: new XEO.utils.Map({})
     });
 
+    /**
+
+     Stationary transform state.
+
+     renderer.Stationary
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Stationary = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
 
     /**
 

@@ -225,6 +225,13 @@
         this.billboard = null;
 
         /**
+         Stationary render state.
+         @property stationary
+         @type {renderer.Stationary}
+         */
+        this.stationary = null;
+
+        /**
          Color target render state.
          @property colorTarget
          @type {renderer.RenderTarget}
@@ -378,6 +385,7 @@
         object.visibility = this.visibility;
         object.modes = this.modes;
         object.billboard = this.billboard;
+        object.stationary = this.stationary;
 
         // Build hash of the object's state configuration. This is used
         // to hash the object's shader so that it may be reused by other
@@ -394,7 +402,8 @@
             this.material.hash,
             //this.reflect.hash,
             this.lights.hash,
-            this.billboard.hash
+            this.billboard.hash,
+            this.stationary.hash
 
         ]).join(";");
 

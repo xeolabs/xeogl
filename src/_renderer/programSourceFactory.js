@@ -294,6 +294,10 @@
             add("   mat4 viewMatrix = xeo_uViewMatrix;");
             add("   vec4 worldPosition;");
 
+            if (states.stationary.active) {
+                add("   viewMatrix[3][0] = viewMatrix[3][2] = 0.0;")
+            }
+
             if (states.billboard.active) {
 
                 add("   mat4 modelViewMatrix =  xeo_uViewMatrix * xeo_uModelMatrix;");

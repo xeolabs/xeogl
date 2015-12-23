@@ -104,7 +104,7 @@
                     }
 
                     /**
-                     * Fired whenever this GroupBoundary's  {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this GroupBoundary's {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
                      *
                      * @event group
                      * @param value The property's new value
@@ -130,7 +130,7 @@
             },
 
             /**
-             * World-space 3D boundary.
+             * World-space 3D boundary enclosing all the components contained in {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}}.
              *
              * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
              * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next

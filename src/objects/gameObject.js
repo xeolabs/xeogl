@@ -211,6 +211,7 @@
             this.stage = cfg.stage;
             this.transform = cfg.transform;
             this.billboard = cfg.billboard;
+            this.stationary = cfg.stationary;
 
             // Cached boundary for each coordinate space
             // The GameObject's Geometry component caches the Local-space boundary
@@ -902,6 +903,41 @@
             },
 
             /**
+             * The {{#crossLink "Stationary"}}{{/crossLink}} attached to this GameObject.
+             *
+             * When {{#crossLink "Stationary/property:active"}}{{/crossLink}}, the {{#crossLink "Stationary"}}{{/crossLink}}
+             * will prevent the translation component of the viewing transform from being applied to this GameObject, yet
+             * still allowing it to rotate.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/stationary:property"}}stationary{{/crossLink}},
+             * which is disabled by default.
+             *
+             * Fires a {{#crossLink "GameObject/stationary:event"}}{{/crossLink}} event on change.
+             *
+             * @property stationary
+             * @type Stationary
+             */
+            stationary: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this GameObject's {{#crossLink "GameObject/stationary:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event stationary
+                     * @param value The property's new value
+                     */
+                    this._setChild("stationary", value);
+                },
+
+                get: function () {
+                    return this._children.stationary;
+                }
+            },
+
+            /**
              * Local-space 3D boundary of this GameObject.
              *
              * This is a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
@@ -1275,6 +1311,7 @@
             children.stage._compile();
             children.transform._compile();
             children.billboard._compile();
+            children.stationary._compile();
 
             // (Re)build this GameObject in the renderer
 
@@ -1311,7 +1348,8 @@
                 shaderParams: children.shaderParams.id,
                 stage: children.stage.id,
                 transform: children.transform.id,
-                billboard: children.billboard.id
+                billboard: children.billboard.id,
+                stationary: children.stationary.id
             };
         },
 

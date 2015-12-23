@@ -628,10 +628,11 @@
              * The default {{#crossLink "Billboard"}}Billboard{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Billboard"}}Billboard{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.billboard"
-             * and an {{#crossLink "Billboard/active:property"}}{{/crossLink}} property set to false to disable it.
+             * and an {{#crossLink "Billboard/active:property"}}{{/crossLink}} property set to false, to disable it.
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Billboard"}}Billboard{{/crossLink}} by default.
+             *
              * @property billboard
              * @final
              * @type Billboard
@@ -641,6 +642,30 @@
                     return this.components["default.billboard"] ||
                         new XEO.Billboard(this, {
                             id: "default.billboard",
+                            active: false,
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink "Stationary"}}Stationary{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Stationary"}}Stationary{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stationary"
+             * and an {{#crossLink "Stationary/active:property"}}{{/crossLink}} property set to false, to disable it.
+             *
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Stationary"}}Stationary{{/crossLink}} by default.
+             *
+             * @property stationary
+             * @final
+             * @type Stationary
+             */
+            stationary: {
+                get: function () {
+                    return this.components["default.stationary"] ||
+                        new XEO.Stationary(this, {
+                            id: "default.stationary",
                             active: false,
                             isDefault: true
                         });

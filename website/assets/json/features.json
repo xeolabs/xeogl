@@ -50,6 +50,7 @@
   "FX": [
     "[[Transparency|materials_techniques_transparencySort]] with depth-sort",
     "Billboarding ([[spherical|billboards_spherical]] and [[cylindrical|billboards_cylindrical]])",
+    "[[Skyboxes|skyboxes_customSkybox]]",
     "Rendering layers"
   ]
 }
