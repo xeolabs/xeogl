@@ -23,13 +23,13 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Billboard.
  @param [cfg.active=true] {Boolean} Indicates if this Billboard is active or not.
  @param [cfg.spherical=true] {Boolean} Indicates if this Billboard is spherical (true) or cylindrical (false).
- @extends Transform
+ @extends Component
  */
 (function () {
 
     "use strict";
 
-    XEO.Billboard = XEO.Transform.extend({
+    XEO.Billboard = XEO.Component.extend({
 
         type: "XEO.Billboard",
 
