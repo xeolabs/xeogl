@@ -5,64 +5,63 @@
     var glTFLoader = XEO.GLTFLoader;
 
     /**
-     An **Import** component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
+     A **Model** component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
 
-     <ul><li>An Import component begins loading content into its {{#crossLink "Scene"}}{{/crossLink}} as soon as it's {{#crossLink "Import/src:property"}}{{/crossLink}}
+     <ul><li>A Model component begins loading content into its {{#crossLink "Scene"}}{{/crossLink}} as soon as it's {{#crossLink "Model/src:property"}}{{/crossLink}}
      property is set to a file path.</li>
-     <li>An Import provides all the components it has loaded within a {{#crossLink "Group"}}{{/crossLink}}.</li>
-     <li>You can set an Import's {{#crossLink "Import/src:property"}}{{/crossLink}} property to a new file path at any time, causing the Import
+     <li>A Model keeps all the scene components it has loaded in a {{#crossLink "Group"}}{{/crossLink}}.</li>
+     <li>You can set a Model's {{#crossLink "Model/src:property"}}{{/crossLink}} property to a new file path at any time, causing the Model
      to load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>
      </ul>
 
      ## Example
 
-     First, create an Import, which immediately loads a glTF model into the default {{#crossLink "Scene"}}{{/crossLink}}:
+     First, create a Model, which immediately loads a glTF model into the default {{#crossLink "Scene"}}{{/crossLink}}:
 
      ````javascript
-     var myImport = new XEO.Import({
+     var myModel = new XEO.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
      });
      ````
 
-     The Import has a {{#crossLink "Group"}}{{/crossLink}} which contains all the components
-     it loaded from the glTF file.
+     The Model has a {{#crossLink "Group"}}{{/crossLink}} which now contains all the scene components
+     it created while loading the glTF file.
 
      Let's iterate over the {{#crossLink "Group"}}{{/crossLink}} and log the ID of each
      {{#crossLink "GameObject"}}{{/crossLink}} we find in there:
 
      ````javascript
-     var group = myImport.group;
-
-     group.iterate(function(c) {
+     myModel.group.iterate(function(c) {
          if (c.type === "XEO.GameObject") {
              this.log("GameObject found: " + c.id);
          }
      });
      ````
 
-     Let's set the Import to a different file path:
+     Let's set the Model to a different file path:
 
      ````javascript
-     myImport.src = "models/gltf/buggy/buggy.gltf"
+     myModel.src = "models/gltf/buggy/buggy.gltf"
      ````
 
-     Once loaded, the {{#crossLink "Group"}}{{/crossLink}} will contain an entirely different collection of scene components, loaded from this new glTF file.
+     Once loaded, the {{#crossLink "Group"}}{{/crossLink}} will then contain an entirely different collection of scene
+     components, created from this new glTF file.
 
-     Finally, an Import manages the lifecycle of it's components. Therefore, destroying a Import also destroys all the
+     Finally, a Model manages the lifecycle of it's components. Therefore, destroying a Model also destroys all the
      components it loaded:
 
      ````javascript
-     myImport.destroy();
+     myModel.destroy();
      ````
 
-     @class Import
+     @class Model
      @module XEO
      @submodule importing
      @extends Component
      */
-    XEO.Import = XEO.Component.extend({
+    XEO.Model = XEO.Component.extend({
 
-        type: "XEO.Import",
+        type: "XEO.Model",
 
         _init: function (cfg) {
 
@@ -94,7 +93,7 @@
             /**
              Path to the glTF file.
 
-             Fires a {{#crossLink "Import/src:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "Model/src:event"}}{{/crossLink}} event on change.
 
              @property src
              @type String
@@ -121,7 +120,7 @@
                     glTFLoader.load();
 
                     /**
-                     Fired whenever this Import's  {{#crossLink "GLTF/src:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Model's  {{#crossLink "GLTF/src:property"}}{{/crossLink}} property changes.
                      @event src
                      @param value The property's new value
                      */
@@ -134,7 +133,7 @@
             },
 
             /**
-             * {{#crossLink "Group"}}{{/crossLink}} containing all the xeoEngine components for this Import.
+             * {{#crossLink "Group"}}{{/crossLink}} containing all the xeoEngine components currently loaded by this Model.
              *
              * @property group
              * @type Group
