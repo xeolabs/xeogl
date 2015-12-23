@@ -10570,7 +10570,7 @@
         },
         {
             "file": "src/geometry/boxGeometry.js",
-            "line": 125,
+            "line": 230,
             "description": "The BoxGeometry's size on the X-axis.\n\nFires a {{#crossLink \"BoxGeometry/xsize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSize",
@@ -10582,7 +10582,7 @@
         },
         {
             "file": "src/geometry/boxGeometry.js",
-            "line": 153,
+            "line": 258,
             "description": "Fired whenever this BoxGeometry's {{#crossLink \"BoxGeometry/xSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSize",
@@ -10599,7 +10599,7 @@
         },
         {
             "file": "src/geometry/boxGeometry.js",
-            "line": 167,
+            "line": 272,
             "description": "The BoxGeometry's size on the Y-axis.\n\nFires a {{#crossLink \"BoxGeometry/ySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ySize",
@@ -10611,7 +10611,7 @@
         },
         {
             "file": "src/geometry/boxGeometry.js",
-            "line": 195,
+            "line": 300,
             "description": "Fired whenever this BoxGeometry's {{#crossLink \"BoxGeometry/ySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ySize",
@@ -10628,7 +10628,7 @@
         },
         {
             "file": "src/geometry/boxGeometry.js",
-            "line": 209,
+            "line": 314,
             "description": "The BoxGeometry's size on the Z-axis.\n\nFires a {{#crossLink \"BoxGeometry/zSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "zSize",
@@ -10640,7 +10640,7 @@
         },
         {
             "file": "src/geometry/boxGeometry.js",
-            "line": 237,
+            "line": 342,
             "description": "Fired whenever this BoxGeometry's {{#crossLink \"BoxGeometry/zSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "zSize",
