@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-12-22
+ * Built on 2015-12-23
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
