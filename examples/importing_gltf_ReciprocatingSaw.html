@@ -12,15 +12,15 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>importing glTF using an <a
-        href="../docs/classes/Import.html" target="_other">XEO.Import</a> component
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>importing glTF using a <a
+        href="../docs/classes/Model.html" target="_other">XEO.Model</a> component
 </div>
 
 <script>
 
     // Load glTF
 
-    var saw = new XEO.Import({
+    var saw = new XEO.Model({
         src: "models/gltf/Reciprocating_Saw/Reciprocating_Saw.gltf"
     });
 
@@ -30,7 +30,7 @@
 
     view.eye = [
         -36.588294982910156,
-        173.0135898590088,
+        200.0135898590088,
         2.269908905029297
     ];
     view.look = [
@@ -50,6 +50,7 @@
     new XEO.CameraControl();
 
     // Slowly spin camera
+
     saw.scene.on("tick",
             function () {
                 view.rotateEyeY(0.3);
