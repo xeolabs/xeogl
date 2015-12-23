@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-12-21
+ * Built on 2015-12-22
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -861,6 +861,13 @@
         this.billboard = null;
 
         /**
+         Stationary render state.
+         @property stationary
+         @type {renderer.Stationary}
+         */
+        this.stationary = null;
+
+        /**
          Color target render state.
          @property colorTarget
          @type {renderer.RenderTarget}
@@ -1014,6 +1021,7 @@
         object.visibility = this.visibility;
         object.modes = this.modes;
         object.billboard = this.billboard;
+        object.stationary = this.stationary;
 
         // Build hash of the object's state configuration. This is used
         // to hash the object's shader so that it may be reused by other
@@ -1030,7 +1038,8 @@
             this.material.hash,
             //this.reflect.hash,
             this.lights.hash,
-            this.billboard.hash
+            this.billboard.hash,
+            this.stationary.hash
 
         ]).join(";");
 
@@ -2076,6 +2085,21 @@
         _ids: new XEO.utils.Map({})
     });
 
+    /**
+
+     Stationary transform state.
+
+     renderer.Stationary
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Stationary = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
 
     /**
 
@@ -2948,6 +2972,10 @@
             add("   mat4 modelMatrix = xeo_uModelMatrix;");
             add("   mat4 viewMatrix = xeo_uViewMatrix;");
             add("   vec4 worldPosition;");
+
+            if (states.stationary.active) {
+                add("   viewMatrix[3][0] = viewMatrix[3][2] = 0.0;")
+            }
 
             if (states.billboard.active) {
 
@@ -10873,10 +10901,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * The default {{#crossLink "Billboard"}}Billboard{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Billboard"}}Billboard{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.billboard"
-             * and an {{#crossLink "Billboard/active:property"}}{{/crossLink}} property set to false to disable it.
+             * and an {{#crossLink "Billboard/active:property"}}{{/crossLink}} property set to false, to disable it.
              *
              * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Billboard"}}Billboard{{/crossLink}} by default.
+             *
              * @property billboard
              * @final
              * @type Billboard
@@ -10886,6 +10915,30 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     return this.components["default.billboard"] ||
                         new XEO.Billboard(this, {
                             id: "default.billboard",
+                            active: false,
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink "Stationary"}}Stationary{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Stationary"}}Stationary{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stationary"
+             * and an {{#crossLink "Stationary/active:property"}}{{/crossLink}} property set to false, to disable it.
+             *
+             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Stationary"}}Stationary{{/crossLink}} by default.
+             *
+             * @property stationary
+             * @final
+             * @type Stationary
+             */
+            stationary: {
+                get: function () {
+                    return this.components["default.stationary"] ||
+                        new XEO.Stationary(this, {
+                            id: "default.stationary",
                             active: false,
                             isDefault: true
                         });
@@ -26405,7 +26458,12 @@ XEO.PathGeometry = XEO.Geometry.extend({
     });
 
 })();
-;// Copyright (c) 2013 Fabrice Robinet
+;/**
+ * Imports content from files.
+ *
+ * @module XEO
+ * @submodule importing
+ */;// Copyright (c) 2013 Fabrice Robinet
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27551,7 +27609,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 if (node.matrix) {
                     var matrix = node.matrix;
                     transform = new XEO.Transform(this.group.scene, {
-                        id: this._makeID(nodeId + ".transform"),
+                        //id: this._makeID(nodeId + ".transform"),
                         matrix: matrix,
                         parent: transform
                     });
@@ -27561,7 +27619,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 if (node.translation) {
                     var translation = node.translation;
                     transform = new XEO.Translate(this.group.scene, {
-                        id: this._makeID(nodeId + ".translation"),
+                        //id: this._makeID(nodeId + ".translation"),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
@@ -27571,7 +27629,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 if (node.rotation) {
                     var rotation = node.rotation;
                     transform = new XEO.Translate(this.group.scene, {
-                        id: this._makeID(nodeId + ".rotation"),
+                        //id: this._makeID(nodeId + ".rotation"),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
                         parent: transform
@@ -27582,7 +27640,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 if (node.scale) {
                     var scale = node.scale;
                     transform = new XEO.Scale(this.group.scene, {
-                        id: this._makeID(nodeId + ".scale"),
+                        //id: this._makeID(nodeId + ".scale"),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
@@ -27649,64 +27707,63 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     var glTFLoader = XEO.GLTFLoader;
 
     /**
-     An **Import** component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
+     A **Model** component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
 
-     <ul><li>An Import component begins loading content into its {{#crossLink "Scene"}}{{/crossLink}} as soon as it's {{#crossLink "Import/src:property"}}{{/crossLink}}
+     <ul><li>A Model component begins loading content into its {{#crossLink "Scene"}}{{/crossLink}} as soon as it's {{#crossLink "Model/src:property"}}{{/crossLink}}
      property is set to a file path.</li>
-     <li>An Import provides all the components it has loaded within a {{#crossLink "Group"}}{{/crossLink}}.</li>
-     <li>You can set an Import's {{#crossLink "Import/src:property"}}{{/crossLink}} property to a new file path at any time, causing the Import
+     <li>A Model keeps all the scene components it has loaded in a {{#crossLink "Group"}}{{/crossLink}}.</li>
+     <li>You can set a Model's {{#crossLink "Model/src:property"}}{{/crossLink}} property to a new file path at any time, causing the Model
      to load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>
      </ul>
 
      ## Example
 
-     First, create an Import, which immediately loads a glTF model into the default {{#crossLink "Scene"}}{{/crossLink}}:
+     First, create a Model, which immediately loads a glTF model into the default {{#crossLink "Scene"}}{{/crossLink}}:
 
      ````javascript
-     var myImport = new XEO.Import({
+     var myModel = new XEO.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
      });
      ````
 
-     The Import has a {{#crossLink "Group"}}{{/crossLink}} which contains all the components
-     it loaded from the glTF file.
+     The Model has a {{#crossLink "Group"}}{{/crossLink}} which now contains all the scene components
+     it created while loading the glTF file.
 
      Let's iterate over the {{#crossLink "Group"}}{{/crossLink}} and log the ID of each
      {{#crossLink "GameObject"}}{{/crossLink}} we find in there:
 
      ````javascript
-     var group = myImport.group;
-
-     group.iterate(function(c) {
+     myModel.group.iterate(function(c) {
          if (c.type === "XEO.GameObject") {
              this.log("GameObject found: " + c.id);
          }
      });
      ````
 
-     Let's set the Import to a different file path:
+     Let's set the Model to a different file path:
 
      ````javascript
-     myImport.src = "models/gltf/buggy/buggy.gltf"
+     myModel.src = "models/gltf/buggy/buggy.gltf"
      ````
 
-     Once loaded, the {{#crossLink "Group"}}{{/crossLink}} will contain an entirely different collection of scene components, loaded from this new glTF file.
+     Once loaded, the {{#crossLink "Group"}}{{/crossLink}} will then contain an entirely different collection of scene
+     components, created from this new glTF file.
 
-     Finally, an Import manages the lifecycle of it's components. Therefore, destroying a Import also destroys all the
+     Finally, a Model manages the lifecycle of it's components. Therefore, destroying a Model also destroys all the
      components it loaded:
 
      ````javascript
-     myImport.destroy();
+     myModel.destroy();
      ````
 
-     @class Import
+     @class Model
      @module XEO
      @submodule importing
      @extends Component
      */
-    XEO.Import = XEO.Component.extend({
+    XEO.Model = XEO.Component.extend({
 
-        type: "XEO.Import",
+        type: "XEO.Model",
 
         _init: function (cfg) {
 
@@ -27738,7 +27795,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             /**
              Path to the glTF file.
 
-             Fires a {{#crossLink "Import/src:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "Model/src:event"}}{{/crossLink}} event on change.
 
              @property src
              @type String
@@ -27765,7 +27822,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     glTFLoader.load();
 
                     /**
-                     Fired whenever this Import's  {{#crossLink "GLTF/src:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Model's  {{#crossLink "GLTF/src:property"}}{{/crossLink}} property changes.
                      @event src
                      @param value The property's new value
                      */
@@ -27778,7 +27835,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * {{#crossLink "Group"}}{{/crossLink}} containing all the xeoEngine components for this Import.
+             * {{#crossLink "Group"}}{{/crossLink}} containing all the xeoEngine components currently loaded by this Model.
              *
              * @property group
              * @type Group
@@ -30406,6 +30463,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             this.stage = cfg.stage;
             this.transform = cfg.transform;
             this.billboard = cfg.billboard;
+            this.stationary = cfg.stationary;
 
             // Cached boundary for each coordinate space
             // The GameObject's Geometry component caches the Local-space boundary
@@ -31097,6 +31155,41 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
+             * The {{#crossLink "Stationary"}}{{/crossLink}} attached to this GameObject.
+             *
+             * When {{#crossLink "Stationary/property:active"}}{{/crossLink}}, the {{#crossLink "Stationary"}}{{/crossLink}}
+             * will prevent the translation component of the viewing transform from being applied to this GameObject, yet
+             * still allowing it to rotate.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/stationary:property"}}stationary{{/crossLink}},
+             * which is disabled by default.
+             *
+             * Fires a {{#crossLink "GameObject/stationary:event"}}{{/crossLink}} event on change.
+             *
+             * @property stationary
+             * @type Stationary
+             */
+            stationary: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this GameObject's {{#crossLink "GameObject/stationary:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event stationary
+                     * @param value The property's new value
+                     */
+                    this._setChild("stationary", value);
+                },
+
+                get: function () {
+                    return this._children.stationary;
+                }
+            },
+
+            /**
              * Local-space 3D boundary of this GameObject.
              *
              * This is a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
@@ -31470,6 +31563,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             children.stage._compile();
             children.transform._compile();
             children.billboard._compile();
+            children.stationary._compile();
 
             // (Re)build this GameObject in the renderer
 
@@ -31506,7 +31600,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 shaderParams: children.shaderParams.id,
                 stage: children.stage.id,
                 transform: children.transform.id,
-                billboard: children.billboard.id
+                billboard: children.billboard.id,
+                stationary: children.stationary.id
             };
         },
 
@@ -34701,7 +34796,7 @@ myTask2.setFailed();
                     }
 
                     /**
-                     * Fired whenever this GroupBoundary's  {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this GroupBoundary's {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
                      *
                      * @event group
                      * @param value The property's new value
@@ -34727,7 +34822,7 @@ myTask2.setFailed();
             },
 
             /**
-             * World-space 3D boundary.
+             * World-space 3D boundary enclosing all the components contained in {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}}.
              *
              * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
              * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
@@ -35974,13 +36069,13 @@ scene.on("tick", function(e) {
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Billboard.
  @param [cfg.active=true] {Boolean} Indicates if this Billboard is active or not.
  @param [cfg.spherical=true] {Boolean} Indicates if this Billboard is spherical (true) or cylindrical (false).
- @extends Transform
+ @extends Component
  */
 (function () {
 
     "use strict";
 
-    XEO.Billboard = XEO.Transform.extend({
+    XEO.Billboard = XEO.Component.extend({
 
         type: "XEO.Billboard",
 
@@ -36077,6 +36172,104 @@ scene.on("tick", function(e) {
 
         _compile: function () {
             this._renderer.billboard = this._state;
+        },
+
+
+        _getJSON: function () {
+            return {
+                active: this._state.active
+            };
+        }
+    });
+
+})();
+;/**
+
+ A **Stationary** causes associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to (TODO).
+
+ ## Overview
+
+ TODO
+
+ <img src="../../../assets/images/Stationary.png"></img>
+
+ ## Example
+
+ TODO
+
+ @class Stationary
+ @module XEO
+ @submodule transforms
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stationary in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stationary.
+ @param [cfg.active=true] {Boolean} Indicates if this Stationary is active or not.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Stationary = XEO.Component.extend({
+
+        type: "XEO.Stationary",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this._state = new XEO.renderer.Stationary({
+                active: true
+            });
+
+            this.active = cfg.active !== false;
+        },
+
+        _props: {
+
+            /**
+             * Flag which indicates whether this Stationary is active or not.
+             *
+             * Fires an {{#crossLink "Stationary/active:event"}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.active === value) {
+                        return;
+                    }
+
+                    this._state.active = value;
+
+                    this._state.hash = (this._state.active ? "a;" : ";");
+
+                    this.fire("dirty", true);
+
+                    /**
+                     * Fired whenever this Stationary's {{#crossLink "Stationary/active:property"}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property's new value
+                     */
+                    this.fire('active', this._state.active);
+                },
+
+                get: function () {
+                    return this._state.active;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.stationary = this._state;
         },
 
 

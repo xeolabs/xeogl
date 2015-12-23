@@ -636,11 +636,11 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/importing/import.js": {
-            "name": "src/importing/import.js",
+        "src/importing/model.js": {
+            "name": "src/importing/model.js",
             "modules": {},
             "classes": {
-                "Import": 1
+                "Model": 1
             },
             "fors": {},
             "namespaces": {}
@@ -980,6 +980,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/transforms/stationary.js": {
+            "name": "src/transforms/stationary.js",
+            "modules": {},
+            "classes": {
+                "Stationary": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/transforms/transform.js": {
             "name": "src/transforms/transform.js",
             "modules": {},
@@ -1097,7 +1106,7 @@
                 "SphereGeometry": 1,
                 "TorusGeometry": 1,
                 "Group": 1,
-                "Import": 1,
+                "Model": 1,
                 "Input": 1,
                 "AmbientLight": 1,
                 "DirLight": 1,
@@ -1126,6 +1135,7 @@
                 "Quaternion": 1,
                 "Rotate": 1,
                 "Scale": 1,
+                "Stationary": 1,
                 "Transform": 1,
                 "Translate": 1,
                 "Component": 1,
@@ -1351,14 +1361,14 @@
             "name": "importing",
             "submodules": {},
             "classes": {
-                "Import": 1
+                "Model": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "src/importing/import.js",
+            "file": "src/importing/model.js",
             "line": 7,
             "description": "Imports content from files."
         },
@@ -1509,6 +1519,7 @@
                 "Quaternion": 1,
                 "Rotate": 1,
                 "Scale": 1,
+                "Stationary": 1,
                 "Transform": 1,
                 "Translate": 1
             },
@@ -4127,9 +4138,9 @@
             ],
             "extends": "Component"
         },
-        "Import": {
-            "name": "Import",
-            "shortname": "Import",
+        "Model": {
+            "name": "Model",
+            "shortname": "Model",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -4137,9 +4148,9 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/importing/import.js",
+            "file": "src/importing/model.js",
             "line": 7,
-            "description": "An **Import** component loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<ul><li>An Import component begins loading content into its {{#crossLink \"Scene\"}}{{/crossLink}} as soon as it's {{#crossLink \"Import/src:property\"}}{{/crossLink}}\nproperty is set to a file path.</li>\n<li>An Import provides all the components it has loaded within a {{#crossLink \"Group\"}}{{/crossLink}}.</li>\n<li>You can set an Import's {{#crossLink \"Import/src:property\"}}{{/crossLink}} property to a new file path at any time, causing the Import\nto load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>\n</ul>\n\n## Example\n\nFirst, create an Import, which immediately loads a glTF model into the default {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar myImport = new XEO.Import({\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nThe Import has a {{#crossLink \"Group\"}}{{/crossLink}} which contains all the components\nit loaded from the glTF file.\n\nLet's iterate over the {{#crossLink \"Group\"}}{{/crossLink}} and log the ID of each\n{{#crossLink \"GameObject\"}}{{/crossLink}} we find in there:\n\n````javascript\nvar group = myImport.group;\n\ngroup.iterate(function(c) {\n    if (c.type === \"XEO.GameObject\") {\n        this.log(\"GameObject found: \" + c.id);\n    }\n});\n````\n\nLet's set the Import to a different file path:\n\n````javascript\nmyImport.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\nOnce loaded, the {{#crossLink \"Group\"}}{{/crossLink}} will contain an entirely different collection of scene components, loaded from this new glTF file.\n\nFinally, an Import manages the lifecycle of it's components. Therefore, destroying a Import also destroys all the\ncomponents it loaded:\n\n````javascript\nmyImport.destroy();\n````",
+            "description": "A **Model** component loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<ul><li>A Model component begins loading content into its {{#crossLink \"Scene\"}}{{/crossLink}} as soon as it's {{#crossLink \"Model/src:property\"}}{{/crossLink}}\nproperty is set to a file path.</li>\n<li>A Model keeps all the scene components it has loaded in a {{#crossLink \"Group\"}}{{/crossLink}}.</li>\n<li>You can set a Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property to a new file path at any time, causing the Model\nto load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>\n</ul>\n\n## Example\n\nFirst, create a Model, which immediately loads a glTF model into the default {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar myModel = new XEO.Model({\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nThe Model has a {{#crossLink \"Group\"}}{{/crossLink}} which now contains all the scene components\nit created while loading the glTF file.\n\nLet's iterate over the {{#crossLink \"Group\"}}{{/crossLink}} and log the ID of each\n{{#crossLink \"GameObject\"}}{{/crossLink}} we find in there:\n\n````javascript\nmyModel.group.iterate(function(c) {\n    if (c.type === \"XEO.GameObject\") {\n        this.log(\"GameObject found: \" + c.id);\n    }\n});\n````\n\nLet's set the Model to a different file path:\n\n````javascript\nmyModel.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\nOnce loaded, the {{#crossLink \"Group\"}}{{/crossLink}} will then contain an entirely different collection of scene\ncomponents, created from this new glTF file.\n\nFinally, a Model manages the lifecycle of it's components. Therefore, destroying a Model also destroys all the\ncomponents it loaded:\n\n````javascript\nmyModel.destroy();\n````",
             "submodule": "importing",
             "extends": "Component"
         },
@@ -5795,7 +5806,7 @@
                     ]
                 }
             ],
-            "extends": "Transform"
+            "extends": "Component"
         },
         "Quaternion": {
             "name": "Quaternion",
@@ -5880,6 +5891,58 @@
             "description": "A **Scale** applies a scaling transformation to associated {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n## Overview\n<ul>\n <li>Scale is a sub-class of {{#crossLink \"Transform\"}}{{/crossLink}}</li>\n <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>\n <li>A {{#crossLink \"GameObject\"}}{{/crossLink}} would be connected to a leaf Transform\n within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>\n <li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>\n </ul>\n<<img src=\"../../../assets/images/Scale.png\"></img>\n## Example\nIn this example we have two {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains\n {{#crossLink \"Rotate\"}}{{/crossLink}}, {{#crossLink \"Translate\"}}{{/crossLink}} and Scale transforms.\n The GameObjects share the same {{#crossLink \"Geometry\"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>\n````javascript\n var scene = new XEO.Scene();\nvar rotate = new XEO.Rotate(scene, {\n    xyz: [0, 1, 0], // Rotate 30 degrees about Y axis\n    angle: 30\n});\nvar translate1 = new XEO.Translate(scene, {\n    parent: rotate,\n    xyz: [-5, 0, 0] // Translate along -X axis\n});\nvar translate2 = new XEO.Translate(scene, {\n    parent: rotate,\n    xyz: [5, 0, 0] // Translate along +X axis\n});\nvar scale = new XEO.Scale(scene, {\n    parent: translate2,\n    xyz: [1, 2, 1] // Scale x2 on Y axis\n});\nvar geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box\nvar gameObject1 = new XEO.GameObject(scene, {\n    transform: translate1,\n    geometry: geometry\n});\nvar gameObject2 = new XEO.GameObject(scene, {\n    transform: scale,\n    geometry: geometry\n});\n ````\nSince everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.\nLet's insert a {{#crossLink \"Scale\"}}{{/crossLink}} between the first Translate and the first {{#crossLink \"GameObject\"}}{{/crossLink}}:\n````javascript\nvar scale2 = new XEO.Scale(scene, {\n    parent: translate1,\n    xyz: [1, 1, 2] // Scale x2 on Z axis\n});\ngameObject2.transform = scale2;\n ````\nAnd just for fun, we'll start spinning the {{#crossLink \"Rotate\"}}{{/crossLink}}:\n````javascript\n // Rotate 0.2 degrees on each frame\n scene.on(\"tick\", function(e) {\n    rotate.angle += 0.2;\n});\n ````",
             "submodule": "transforms",
             "extends": "Transform"
+        },
+        "Stationary": {
+            "name": "Stationary",
+            "shortname": "Stationary",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/transforms/stationary.js",
+            "line": 1,
+            "description": "A **Stationary** causes associated {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to (TODO).\n## Overview\nTODO\n<img src=\"../../../assets/images/Stationary.png\"></img>\n## Example\nTODO",
+            "submodule": "transforms",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Stationary in the default\n {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Stationary.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "active",
+                            "description": "Indicates if this Stationary is active or not.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
         },
         "Transform": {
             "name": "Transform",
@@ -7000,6 +7063,15 @@
         {
             "file": "src/_renderer/renderer.js",
             "line": 227,
+            "description": "Stationary render state.",
+            "itemtype": "property",
+            "name": "stationary",
+            "type": "{renderer.Stationary}",
+            "class": "CameraFlight"
+        },
+        {
+            "file": "src/_renderer/renderer.js",
+            "line": 234,
             "description": "Color target render state.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -7008,7 +7080,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 234,
+            "line": 241,
             "description": "Depth target render state.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -7017,7 +7089,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 241,
+            "line": 248,
             "description": "Cross-section planes render state.",
             "itemtype": "property",
             "name": "clips",
@@ -7026,7 +7098,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 248,
+            "line": 255,
             "description": "Morph targets render state.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -7035,7 +7107,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 255,
+            "line": 262,
             "description": "Custom shader render state.",
             "itemtype": "property",
             "name": "shader",
@@ -7044,7 +7116,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 262,
+            "line": 269,
             "description": "Render state providing custom shader params.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -7053,7 +7125,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 269,
+            "line": 276,
             "description": "Geometry render state.",
             "itemtype": "property",
             "name": "geometry",
@@ -7062,48 +7134,48 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 279,
+            "line": 286,
             "description": "Flags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 289,
+            "line": 296,
             "description": "Flags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 299,
+            "line": 306,
             "description": "Flags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 308,
+            "line": 315,
             "description": "Flags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 317,
+            "line": 324,
             "description": "Flags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 327,
+            "line": 334,
             "description": "Reallocates WebGL resources for objects within this renderer.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 351,
+            "line": 358,
             "description": "Internally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
             "params": [
                 {
@@ -7116,12 +7188,12 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 472,
+            "line": 481,
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 531,
+            "line": 540,
             "description": "Removes an object from this Renderer",
             "params": [
                 {
@@ -7134,43 +7206,43 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 568,
+            "line": 577,
             "description": "Renders a new frame, if neccessary.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 607,
+            "line": 616,
             "description": "Builds the object list from the object map",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 619,
+            "line": 628,
             "description": "Generates object state sort keys",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 640,
+            "line": 649,
             "description": "State-sorts the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 650,
+            "line": 659,
             "description": "Logs the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 663,
+            "line": 672,
             "description": "Builds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 839,
+            "line": 848,
             "description": "Appends an object to the draw and pick lists.",
             "params": [
                 {
@@ -7188,7 +7260,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 901,
+            "line": 910,
             "description": "Logs the contents of the draw list to the console.",
             "access": "private",
             "tagname": "",
@@ -7196,7 +7268,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 931,
+            "line": 940,
             "description": "Logs the contents of the pick list to the console.",
             "access": "private",
             "tagname": "",
@@ -7204,7 +7276,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 960,
+            "line": 969,
             "description": "Attempts to pick an object at the given canvas coordinates.",
             "params": [
                 {
@@ -7221,7 +7293,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1053,
+            "line": 1062,
             "params": [
                 {
                     "name": "params",
@@ -7257,7 +7329,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1185,
+            "line": 1194,
             "description": "Destroys this Renderer.",
             "class": "CameraFlight"
         },
@@ -7673,7 +7745,7 @@
         {
             "file": "src/boundaries/groupBoundary.js",
             "line": 106,
-            "description": "Fired whenever this GroupBoundary's  {{#crossLink \"GroupBoundary/group:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this GroupBoundary's {{#crossLink \"GroupBoundary/group:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "group",
             "params": [
@@ -7689,7 +7761,7 @@
         {
             "file": "src/boundaries/groupBoundary.js",
             "line": 132,
-            "description": "World-space 3D boundary.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
+            "description": "World-space 3D boundary enclosing all the components contained in {{#crossLink \"GroupBoundary/group:property\"}}{{/crossLink}}.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
             "itemtype": "property",
             "name": "worldBoundary",
             "type": "Boundary3D",
@@ -11896,31 +11968,31 @@
             "file": "src/importing/gltf/glTFLoader.js",
             "line": 1,
             "description": "Private xeoEngine glTF loader core.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
-            "class": "Import",
+            "class": "Model",
             "module": "XEO"
         },
         {
             "file": "src/importing/gltf/glTFLoaderUtils.js",
             "line": 1,
             "description": "Private xeoEngine glTF loading utilities.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
-            "class": "Import",
+            "class": "Model",
             "module": "XEO"
         },
         {
-            "file": "src/importing/import.js",
-            "line": 94,
-            "description": "Path to the glTF file.\n\nFires a {{#crossLink \"Import/src:event\"}}{{/crossLink}} event on change.",
+            "file": "src/importing/model.js",
+            "line": 93,
+            "description": "Path to the glTF file.\n\nFires a {{#crossLink \"Model/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
             "type": "String",
-            "class": "Import",
+            "class": "Model",
             "module": "XEO",
             "submodule": "importing"
         },
         {
-            "file": "src/importing/import.js",
-            "line": 123,
-            "description": "Fired whenever this Import's  {{#crossLink \"GLTF/src:property\"}}{{/crossLink}} property changes.",
+            "file": "src/importing/model.js",
+            "line": 122,
+            "description": "Fired whenever this Model's  {{#crossLink \"GLTF/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
             "params": [
@@ -11929,19 +12001,19 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Import",
+            "class": "Model",
             "module": "XEO",
             "submodule": "importing"
         },
         {
-            "file": "src/importing/import.js",
-            "line": 136,
-            "description": "{{#crossLink \"Group\"}}{{/crossLink}} containing all the xeoEngine components for this Import.",
+            "file": "src/importing/model.js",
+            "line": 135,
+            "description": "{{#crossLink \"Group\"}}{{/crossLink}} containing all the xeoEngine components currently loaded by this Model.",
             "itemtype": "property",
             "name": "group",
             "type": "Group",
             "final": 1,
-            "class": "Import",
+            "class": "Model",
             "module": "XEO",
             "submodule": "importing"
         },
@@ -17453,7 +17525,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 229,
+            "line": 230,
             "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -17464,7 +17536,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 258,
+            "line": 259,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
@@ -17480,7 +17552,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 282,
+            "line": 283,
             "description": "The {{#crossLink \"Clips\"}}Clips{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/clips:property\"}}clips{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/clips:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clips",
@@ -17491,7 +17563,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 298,
+            "line": 299,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/clips:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clips",
@@ -17507,7 +17579,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 311,
+            "line": 312,
             "description": "The {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorTarget:property\"}}colorTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/colorTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -17518,7 +17590,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 327,
+            "line": 328,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/colorTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorTarget",
@@ -17534,7 +17606,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 340,
+            "line": 341,
             "description": "The {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorBuf:property\"}}colorBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/colorBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -17545,7 +17617,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 356,
+            "line": 357,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/colorBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorBuf",
@@ -17561,7 +17633,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 370,
+            "line": 371,
             "description": "The {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthTarget:property\"}}depthTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/depthTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -17572,7 +17644,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 386,
+            "line": 387,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/depthTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthTarget",
@@ -17588,7 +17660,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 400,
+            "line": 401,
             "description": "The {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthBuf:property\"}}depthBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/depthBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -17599,7 +17671,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 416,
+            "line": 417,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/depthBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthBuf",
@@ -17615,7 +17687,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 430,
+            "line": 431,
             "description": "The {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/visibility:property\"}}visibility{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/visibility:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visibility",
@@ -17626,7 +17698,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 446,
+            "line": 447,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/visibility:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visibility",
@@ -17642,7 +17714,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 460,
+            "line": 461,
             "description": "The {{#crossLink \"Modes\"}}Modes{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/modes:property\"}}modes{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/modes:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "modes",
@@ -17653,7 +17725,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 476,
+            "line": 477,
             "description": "Fired whenever this GameObject's {{#crossLink \"GameObject/modes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "modes",
@@ -17669,7 +17741,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 490,
+            "line": 491,
             "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}camera{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nFires a {{#crossLink \"GameObject/geometry:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"GameObject/boundary\"}}{{/crossLink}},\n{{#crossLink \"GameObject/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"GameObject/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "geometry",
@@ -17680,7 +17752,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 526,
+            "line": 527,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/geometry:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "geometry",
@@ -17696,7 +17768,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 553,
+            "line": 554,
             "description": "The {{#crossLink \"Layer\"}}Layer{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/layer:property\"}}layer{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/layer:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "layer",
@@ -17707,7 +17779,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 569,
+            "line": 570,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/layer:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "layer",
@@ -17723,7 +17795,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 583,
+            "line": 584,
             "description": "The {{#crossLink \"Lights\"}}Lights{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/lights:property\"}}lights{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/lights:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lights",
@@ -17734,7 +17806,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 599,
+            "line": 600,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/lights:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lights",
@@ -17750,7 +17822,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 613,
+            "line": 614,
             "description": "The {{#crossLink \"Material\"}}Material{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/material:property\"}}material{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/material:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "material",
@@ -17761,7 +17833,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 629,
+            "line": 630,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/material:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "material",
@@ -17777,7 +17849,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 643,
+            "line": 644,
             "description": "The {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/morphTargets:property\"}}morphTargets{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/morphTargets:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -17788,7 +17860,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 659,
+            "line": 660,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/morphTargets:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "morphTargets",
@@ -17804,7 +17876,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 672,
+            "line": 673,
             "description": "The {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/reflect:property\"}}reflect{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/reflect:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflect",
@@ -17815,7 +17887,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 688,
+            "line": 689,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/reflect:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflect",
@@ -17831,7 +17903,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 702,
+            "line": 703,
             "description": "The {{#crossLink \"Shader\"}}Shader{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shader:property\"}}shader{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/shader:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shader",
@@ -17842,7 +17914,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 718,
+            "line": 719,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/shader:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shader",
@@ -17858,7 +17930,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 731,
+            "line": 732,
             "description": "The {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shaderParams:property\"}}shaderParams{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/shaderParams:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -17869,7 +17941,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 747,
+            "line": 748,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/shaderParams:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shaderParams",
@@ -17885,7 +17957,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 761,
+            "line": 762,
             "description": "The {{#crossLink \"Stage\"}}Stage{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stage:property\"}}stage{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GameObject/stage:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stage",
@@ -17896,7 +17968,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 777,
+            "line": 778,
             "description": "Fired whenever this GameObject's  {{#crossLink \"GameObject/stage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "stage",
@@ -17912,7 +17984,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 791,
+            "line": 792,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this GameObject.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires a {{#crossLink \"GameObject/transform:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"GameObject/boundary\"}}{{/crossLink}},\n{{#crossLink \"GameObject/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"GameObject/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "transform",
@@ -17923,7 +17995,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 824,
+            "line": 825,
             "description": "Fired whenever this GameObject's {{#crossLink \"GameObject/transform:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "transform",
@@ -17939,7 +18011,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 870,
+            "line": 871,
             "description": "The {{#crossLink \"Billboard\"}}{{/crossLink}} attached to this GameObject.\n\nWhen {{#crossLink \"Billboard/property:active\"}}{{/crossLink}}, the {{#crossLink \"Billboard\"}}{{/crossLink}}\nwill keep this GameObject oriented towards the viewpoint.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/billboard:property\"}}billboard{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires a {{#crossLink \"GameObject/billboard:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "billboard",
@@ -17950,7 +18022,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 889,
+            "line": 890,
             "description": "Fired whenever this GameObject's {{#crossLink \"GameObject/billboard:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "billboard",
@@ -17966,7 +18038,34 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 904,
+            "line": 905,
+            "description": "The {{#crossLink \"Stationary\"}}{{/crossLink}} attached to this GameObject.\n\nWhen {{#crossLink \"Stationary/property:active\"}}{{/crossLink}}, the {{#crossLink \"Stationary\"}}{{/crossLink}}\nwill prevent the translation component of the viewing transform from being applied to this GameObject, yet\nstill allowing it to rotate.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stationary:property\"}}stationary{{/crossLink}},\nwhich is disabled by default.\n\nFires a {{#crossLink \"GameObject/stationary:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "stationary",
+            "type": "Stationary",
+            "class": "GameObject",
+            "module": "XEO",
+            "submodule": "objects"
+        },
+        {
+            "file": "src/objects/gameObject.js",
+            "line": 925,
+            "description": "Fired whenever this GameObject's {{#crossLink \"GameObject/stationary:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "stationary",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "GameObject",
+            "module": "XEO",
+            "submodule": "objects"
+        },
+        {
+            "file": "src/objects/gameObject.js",
+            "line": 940,
             "description": "Local-space 3D boundary of this GameObject.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} that is attached to this GameObject.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this GameObject's {{#crossLink \"GameObject/geometry:property\"}}{{/crossLink}} is linked to\na new {{#crossLink \"Geometry\"}}{{/crossLink}}, or whenever the {{#crossLink \"Geometry\"}}{{/crossLink}}'s\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.",
             "itemtype": "property",
             "name": "localBoundary",
@@ -17978,7 +18077,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 931,
+            "line": 967,
             "description": "World-space 3D boundary of this GameObject.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses the {{#crossLink \"Geometry\"}}{{/crossLink}}\nthat is attached to this GameObject after transformation by this GameObject's modelling\n{{#crossLink \"GameObject/transform:property\"}}{{/crossLink}}.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this GameObject's {{#crossLink \"GameObject/geometry:property\"}}{{/crossLink}} is linked to\na new {{#crossLink \"Geometry\"}}{{/crossLink}}, or whenever the {{#crossLink \"Geometry\"}}{{/crossLink}}'s\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Example</h4>\n\n[here](http://xeoengine.org/examples/#boundaries_GameObject_worldBoundary)\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -17990,7 +18089,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 1022,
+            "line": 1058,
             "description": "View-space 3D boundary of this GameObject.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses the {{#crossLink \"Geometry\"}}{{/crossLink}}\nthat is attached to this GameObject after transformation by this GameObject's modelling\n{{#crossLink \"GameObject/transform:property\"}}{{/crossLink}} and {{#crossLink \"Camera\"}}{{/crossLink}}\n{{#crossLink \"Camera/view:property\"}}view transform{{/crossLink}}.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever there are any changes to the {{#crossLink \"Geometry\"}}{{/crossLink}},\n{{#crossLink \"GameObject/transform:property\"}}{{/crossLink}} or {{#crossLink \"Camera\"}}{{/crossLink}} that\nwould affect its extents.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "viewBoundary",
@@ -18002,7 +18101,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 1092,
+            "line": 1128,
             "description": "Canvas-space 2D boundary.\n\nThis is a {{#crossLink \"Boundary2D\"}}{{/crossLink}} that encloses this GameObject's\n{{#crossLink \"GameObject/geometry:property\"}}{{/crossLink}} after transformation by this GameObject's modelling\n{{#crossLink \"GameObject/transform:property\"}}{{/crossLink}} and {{#crossLink \"Camera\"}}{{/crossLink}}\n{{#crossLink \"Camera/view:property\"}}view{{/crossLink}} and\n{{#crossLink \"Camera/project:property\"}}projection{{/crossLink}} transforms.\n\nThe {{#crossLink \"Boundary2D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever there are any changes to the {{#crossLink \"Geometry\"}}{{/crossLink}},\n{{#crossLink \"GameObject/transform:property\"}}{{/crossLink}} or {{#crossLink \"Camera\"}}{{/crossLink}} that\nwould affect its extents.\n\nThe a {{#crossLink \"Boundary2D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary2D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary2D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "canvasBoundary",
@@ -18014,7 +18113,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 1163,
+            "line": 1199,
             "description": "JSON object containing the (GLSL) source code of the shaders for this GameObject.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeoEngine has not yet rendered this GameObject.",
             "itemtype": "property",
             "name": "glsl",
@@ -18026,7 +18125,7 @@
         },
         {
             "file": "src/objects/gameObject.js",
-            "line": 1200,
+            "line": 1236,
             "description": "The (GLSL) source code of the shaders for this GameObject, as a string.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeoEngine has not yet rendered this GameObject.",
             "itemtype": "property",
             "name": "glslString",
@@ -18978,6 +19077,33 @@
             "submodule": "transforms"
         },
         {
+            "file": "src/transforms/stationary.js",
+            "line": 48,
+            "description": "Flag which indicates whether this Stationary is active or not.\n\nFires an {{#crossLink \"Stationary/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "active",
+            "type": "Boolean",
+            "class": "Stationary",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/stationary.js",
+            "line": 72,
+            "description": "Fired whenever this Stationary's {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "active",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Stationary",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
             "file": "src/transforms/transform.js",
             "line": 174,
             "description": "The parent Transform.\n\nFires a {{#crossLink \"Transform/parent:event\"}}{{/crossLink}} event on change.",
@@ -19725,7 +19851,7 @@
         {
             "file": "src/scene.js",
             "line": 627,
-            "description": "The default {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.billboard\"\nand an {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property set to false to disable it.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Billboard\"}}Billboard{{/crossLink}} by default.",
+            "description": "The default {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.billboard\"\nand an {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Billboard\"}}Billboard{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "billboard",
             "final": 1,
@@ -19735,7 +19861,18 @@
         },
         {
             "file": "src/scene.js",
-            "line": 650,
+            "line": 651,
+            "description": "The default {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stationary\"\nand an {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stationary\"}}Stationary{{/crossLink}} by default.",
+            "itemtype": "property",
+            "name": "stationary",
+            "final": 1,
+            "type": "Stationary",
+            "class": "Scene",
+            "module": "XEO"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 675,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -19746,7 +19883,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 673,
+            "line": 698,
             "description": "The default {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -19757,7 +19894,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 696,
+            "line": 721,
             "description": "The default {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"ColorTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"ColorTarget/active:property\"}}inactive{{/crossLink}} by default and will have an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -19768,7 +19905,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 720,
+            "line": 745,
             "description": "The default {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -19779,7 +19916,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 744,
+            "line": 769,
             "description": "The default {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"DepthTarget/active:property\"}}inactive{{/crossLink}} by default and has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -19790,7 +19927,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 768,
+            "line": 793,
             "description": "The default {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.visibility\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Visibility\"}}Visibility{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "visibility",
@@ -19801,7 +19938,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 791,
+            "line": 816,
             "description": "The default {{#crossLink \"Modes\"}}Modes{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Modes\"}}Modes{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.modes\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Modes\"}}Modes{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "modes",
@@ -19812,7 +19949,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 813,
+            "line": 838,
             "description": "The default geometry provided by this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -19823,7 +19960,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 834,
+            "line": 859,
             "description": "The default {{#crossLink \"Layer\"}}Layer{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Layer\"}}Layer{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.layer\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Layer\"}}Layer{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "layer",
@@ -19834,7 +19971,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 857,
+            "line": 882,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided\nby this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -19845,7 +19982,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 912,
+            "line": 937,
             "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -19856,7 +19993,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 935,
+            "line": 960,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -19867,7 +20004,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 957,
+            "line": 982,
             "description": "The default {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} provided by this Scene,\n(which is initially an empty {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.reflect\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Reflect\"}}Reflect{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "reflect",
@@ -19878,7 +20015,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 980,
+            "line": 1005,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is initially an empty {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -19889,7 +20026,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1003,
+            "line": 1028,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ShaderParams\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -19900,7 +20037,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1026,
+            "line": 1051,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -19911,7 +20048,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1050,
+            "line": 1075,
             "description": "The World-space 3D boundary of this Scene.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will be lazy-initialized the first time\nyou reference this property, and will persist on this Scene until you\ncall {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nagain. The property will then be set to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -19922,7 +20059,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1127,
+            "line": 1152,
             "description": "Attempts to pick a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} at the given Canvas-space coordinates.\n\nIgnores {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nOn success, will fire a {{#crossLink \"Scene/picked:event\"}}{{/crossLink}} event on this Scene, along with\na separate {{#crossLink \"Object/picked:event\"}}{{/crossLink}} event on the target {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.\n\n````javascript\n\npick({\n     canvasPos: [23, 131],\n     rayPick: true\n     });\n\n````",
             "itemtype": "method",
             "name": "pick",
@@ -19957,7 +20094,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1388,
+            "line": 1413,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -19966,7 +20103,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1416,
+            "line": 1441,
             "description": "Displays a simple test object.\n\nClears the Scene first.\n\nThe test object is destroyed as soon as anything else is created in this Scene.",
             "itemtype": "method",
             "name": "testPattern",
@@ -19975,7 +20112,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1468,
+            "line": 1493,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -20209,7 +20346,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:960"
+            "line": " src/_renderer/renderer.js:969"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -20365,7 +20502,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1127"
+            "line": " src/scene.js:1152"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -20745,87 +20882,87 @@
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:279"
+            "line": " src/_renderer/renderer.js:286"
         },
         {
             "message": "Missing item type\nFlags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
-            "line": " src/_renderer/renderer.js:289"
+            "line": " src/_renderer/renderer.js:296"
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:299"
+            "line": " src/_renderer/renderer.js:306"
         },
         {
             "message": "Missing item type\nFlags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:308"
+            "line": " src/_renderer/renderer.js:315"
         },
         {
             "message": "Missing item type\nFlags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
-            "line": " src/_renderer/renderer.js:317"
+            "line": " src/_renderer/renderer.js:324"
         },
         {
             "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.js:327"
+            "line": " src/_renderer/renderer.js:334"
         },
         {
             "message": "Missing item type\nInternally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.js:351"
+            "line": " src/_renderer/renderer.js:358"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:472"
+            "line": " src/_renderer/renderer.js:481"
         },
         {
             "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:531"
+            "line": " src/_renderer/renderer.js:540"
         },
         {
             "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:568"
+            "line": " src/_renderer/renderer.js:577"
         },
         {
             "message": "Missing item type\nBuilds the object list from the object map",
-            "line": " src/_renderer/renderer.js:607"
+            "line": " src/_renderer/renderer.js:616"
         },
         {
             "message": "Missing item type\nGenerates object state sort keys",
-            "line": " src/_renderer/renderer.js:619"
+            "line": " src/_renderer/renderer.js:628"
         },
         {
             "message": "Missing item type\nState-sorts the object list",
-            "line": " src/_renderer/renderer.js:640"
+            "line": " src/_renderer/renderer.js:649"
         },
         {
             "message": "Missing item type\nLogs the object list",
-            "line": " src/_renderer/renderer.js:650"
+            "line": " src/_renderer/renderer.js:659"
         },
         {
             "message": "Missing item type\nBuilds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
-            "line": " src/_renderer/renderer.js:663"
+            "line": " src/_renderer/renderer.js:672"
         },
         {
             "message": "Missing item type\nAppends an object to the draw and pick lists.",
-            "line": " src/_renderer/renderer.js:839"
+            "line": " src/_renderer/renderer.js:848"
         },
         {
             "message": "Missing item type\nLogs the contents of the draw list to the console.",
-            "line": " src/_renderer/renderer.js:901"
+            "line": " src/_renderer/renderer.js:910"
         },
         {
             "message": "Missing item type\nLogs the contents of the pick list to the console.",
-            "line": " src/_renderer/renderer.js:931"
+            "line": " src/_renderer/renderer.js:940"
         },
         {
             "message": "Missing item type\nAttempts to pick an object at the given canvas coordinates.",
-            "line": " src/_renderer/renderer.js:960"
+            "line": " src/_renderer/renderer.js:969"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:1053"
+            "line": " src/_renderer/renderer.js:1062"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1185"
+            "line": " src/_renderer/renderer.js:1194"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -21021,7 +21158,7 @@
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1468"
+            "line": " src/scene.js:1493"
         },
         {
             "message": "Missing item type\nTests if the given object is an array",

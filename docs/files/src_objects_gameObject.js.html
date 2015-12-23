@@ -67,7 +67,6 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
-                                <li><a href="../classes/Import.html">Import</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -78,6 +77,7 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
@@ -103,6 +103,7 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -387,6 +388,7 @@
             this.stage = cfg.stage;
             this.transform = cfg.transform;
             this.billboard = cfg.billboard;
+            this.stationary = cfg.stationary;
 
             // Cached boundary for each coordinate space
             // The GameObject&#x27;s Geometry component caches the Local-space boundary
@@ -1078,6 +1080,41 @@
             },
 
             /**
+             * The {{#crossLink &quot;Stationary&quot;}}{{/crossLink}} attached to this GameObject.
+             *
+             * When {{#crossLink &quot;Stationary/property:active&quot;}}{{/crossLink}}, the {{#crossLink &quot;Stationary&quot;}}{{/crossLink}}
+             * will prevent the translation component of the viewing transform from being applied to this GameObject, yet
+             * still allowing it to rotate.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/stationary:property&quot;}}stationary{{/crossLink}},
+             * which is disabled by default.
+             *
+             * Fires a {{#crossLink &quot;GameObject/stationary:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property stationary
+             * @type Stationary
+             */
+            stationary: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this GameObject&#x27;s {{#crossLink &quot;GameObject/stationary:property&quot;}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event stationary
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;stationary&quot;, value);
+                },
+
+                get: function () {
+                    return this._children.stationary;
+                }
+            },
+
+            /**
              * Local-space 3D boundary of this GameObject.
              *
              * This is a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} that encloses
@@ -1451,6 +1488,7 @@
             children.stage._compile();
             children.transform._compile();
             children.billboard._compile();
+            children.stationary._compile();
 
             // (Re)build this GameObject in the renderer
 
@@ -1487,7 +1525,8 @@
                 shaderParams: children.shaderParams.id,
                 stage: children.stage.id,
                 transform: children.transform.id,
-                billboard: children.billboard.id
+                billboard: children.billboard.id,
+                stationary: children.stationary.id
             };
         },
 

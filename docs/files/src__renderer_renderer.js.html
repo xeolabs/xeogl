@@ -67,7 +67,6 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
-                                <li><a href="../classes/Import.html">Import</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -78,6 +77,7 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
@@ -103,6 +103,7 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -401,6 +402,13 @@
         this.billboard = null;
 
         /**
+         Stationary render state.
+         @property stationary
+         @type {renderer.Stationary}
+         */
+        this.stationary = null;
+
+        /**
          Color target render state.
          @property colorTarget
          @type {renderer.RenderTarget}
@@ -554,6 +562,7 @@
         object.visibility = this.visibility;
         object.modes = this.modes;
         object.billboard = this.billboard;
+        object.stationary = this.stationary;
 
         // Build hash of the object&#x27;s state configuration. This is used
         // to hash the object&#x27;s shader so that it may be reused by other
@@ -570,7 +579,8 @@
             this.material.hash,
             //this.reflect.hash,
             this.lights.hash,
-            this.billboard.hash
+            this.billboard.hash,
+            this.stationary.hash
 
         ]).join(&quot;;&quot;);
 

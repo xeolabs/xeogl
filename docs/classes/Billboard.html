@@ -67,7 +67,6 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
-                                <li><a href="../classes/Import.html">Import</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -78,6 +77,7 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
@@ -103,6 +103,7 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -174,7 +175,7 @@
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Transform.html" class="crosslink">Transform</a>
+            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
         </div>
 
         <div class="foundat">
@@ -393,16 +394,8 @@
                                 <a href="#property_json">json</a>
 
                             </li>
-                            <li class="index-item property inherited inherited">
-                                <a href="#property_matrix">matrix</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_parent">parent</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -437,20 +430,8 @@
                                 <a href="#event_destroyed">destroyed</a>
 
                             </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_matrix">matrix</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_parent">parent</a>
-
-                            </li>
                             <li class="index-item event">
                                 <a href="#event_spherical">spherical</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_updated">updated</a>
 
                             </li>
                     </ul>
@@ -1119,36 +1100,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_matrix" class="property item inherited">
-                        <h3 class="name"><code>matrix</code></h3>
-                        <span class="type">Array of Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Transform.html#property_matrix">
-                                    Transform
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_transforms_transform.js.html#l215"><code>src&#x2F;transforms&#x2F;transform.js:215</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The Transform&#39;s local matrix.</p>
-                    <p>Fires a <a href="../classes/Transform.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]</p>
-                    
-                    
-                    </div>
                     <div id="property_metadata" class="property item inherited">
                         <h3 class="name"><code>metadata</code></h3>
                         <span class="type">Object</span>
@@ -1168,32 +1119,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Arbitrary, user-defined metadata on this component.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_parent" class="property item inherited">
-                        <h3 class="name"><code>parent</code></h3>
-                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Transform.html#property_parent">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l174"><code>src&#x2F;transforms&#x2F;transform.js:174</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The parent Transform.</p>
-                    <p>Fires a <a href="../classes/Transform.html#event_parent" class="crosslink">parent</a> event on change.</p>
                     
                         </div>
                     
@@ -1383,90 +1308,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_matrix" class="events item inherited">
-                        <h3 class="name"><code>matrix</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Transform.html#event_matrix">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l238"><code>src&#x2F;transforms&#x2F;transform.js:238</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Transform&#39;s <a href="../classes/Transform.html#property_matrix" class="crosslink">matrix</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_parent" class="events item inherited">
-                        <h3 class="name"><code>parent</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Transform.html#event_parent">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l195"><code>src&#x2F;transforms&#x2F;transform.js:195</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Transform&#39;s <a href="../classes/Transform.html#property_parent" class="crosslink">parent</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_spherical" class="events item">
                         <h3 class="name"><code>spherical</code></h3>
                         <span class="type"></span>
@@ -1506,33 +1347,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     </li>
                                 </ul>
                             </div>
-                    
-                    
-                    </div>
-                    <div id="event_updated" class="events item inherited">
-                        <h3 class="name"><code>updated</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Transform.html#event_updated">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l284"><code>src&#x2F;transforms&#x2F;transform.js:284</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Transform&#39;s Transform/leafMatrix:property property changes.</p>
-                    <p>This event does not carry the updated property value. Instead, subscribers will need to read
-                    that property again to get its updated value (which may be lazy-computed then).</p>
-                    
-                        </div>
-                    
                     
                     
                     </div>

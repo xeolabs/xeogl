@@ -67,7 +67,6 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
-                                <li><a href="../classes/Import.html">Import</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -78,6 +77,7 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
@@ -103,6 +103,7 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -627,7 +628,7 @@
                 if (node.matrix) {
                     var matrix = node.matrix;
                     transform = new XEO.Transform(this.group.scene, {
-                        id: this._makeID(nodeId + &quot;.transform&quot;),
+                        //id: this._makeID(nodeId + &quot;.transform&quot;),
                         matrix: matrix,
                         parent: transform
                     });
@@ -637,7 +638,7 @@
                 if (node.translation) {
                     var translation = node.translation;
                     transform = new XEO.Translate(this.group.scene, {
-                        id: this._makeID(nodeId + &quot;.translation&quot;),
+                        //id: this._makeID(nodeId + &quot;.translation&quot;),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
@@ -647,7 +648,7 @@
                 if (node.rotation) {
                     var rotation = node.rotation;
                     transform = new XEO.Translate(this.group.scene, {
-                        id: this._makeID(nodeId + &quot;.rotation&quot;),
+                        //id: this._makeID(nodeId + &quot;.rotation&quot;),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
                         parent: transform
@@ -658,7 +659,7 @@
                 if (node.scale) {
                     var scale = node.scale;
                     transform = new XEO.Scale(this.group.scene, {
-                        id: this._makeID(nodeId + &quot;.scale&quot;),
+                        //id: this._makeID(nodeId + &quot;.scale&quot;),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });

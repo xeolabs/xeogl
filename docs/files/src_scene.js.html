@@ -67,7 +67,6 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
-                                <li><a href="../classes/Import.html">Import</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -78,6 +77,7 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
@@ -103,6 +103,7 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/Task.html">Task</a></li>
                                 <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -804,10 +805,11 @@
              * The default {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.billboard&quot;
-             * and an {{#crossLink &quot;Billboard/active:property&quot;}}{{/crossLink}} property set to false to disable it.
+             * and an {{#crossLink &quot;Billboard/active:property&quot;}}{{/crossLink}} property set to false, to disable it.
              *
              * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} by default.
+             *
              * @property billboard
              * @final
              * @type Billboard
@@ -817,6 +819,30 @@
                     return this.components[&quot;default.billboard&quot;] ||
                         new XEO.Billboard(this, {
                             id: &quot;default.billboard&quot;,
+                            active: false,
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Stationary&quot;}}Stationary{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Stationary&quot;}}Stationary{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.stationary&quot;
+             * and an {{#crossLink &quot;Stationary/active:property&quot;}}{{/crossLink}} property set to false, to disable it.
+             *
+             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Stationary&quot;}}Stationary{{/crossLink}} by default.
+             *
+             * @property stationary
+             * @final
+             * @type Stationary
+             */
+            stationary: {
+                get: function () {
+                    return this.components[&quot;default.stationary&quot;] ||
+                        new XEO.Stationary(this, {
+                            id: &quot;default.stationary&quot;,
                             active: false,
                             isDefault: true
                         });
