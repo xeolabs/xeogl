@@ -295,7 +295,7 @@
             add("   vec4 worldPosition;");
 
             if (states.stationary.active) {
-                add("   viewMatrix[3][0] = viewMatrix[3][2] = 0.0;")
+                add("   viewMatrix[3][0] = viewMatrix[3][1] = viewMatrix[3][2] = 0.0;")
             }
 
             if (states.billboard.active) {
