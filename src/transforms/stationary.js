@@ -1,12 +1,11 @@
 /**
 
- A **Stationary** causes associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to (TODO).
+ A **Stationary** disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for
+ associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
 
  TODO
-
- <img src="../../../assets/images/Stationary.png"></img>
 
  ## Example
 
