@@ -113,36 +113,6 @@
                 })
             });
 
-            createDiv(this._boundaryObject.canvasBoundary);
-
-            function createDiv(canvasBoundary) {
-
-                var body = document.getElementsByTagName("body")[0];
-                var div = document.createElement('div');
-
-                var style = div.style;
-                style.position = "absolute";
-                style.padding = "0";
-                style.margin = "0";
-                style.border = "3px solid #99FF99";
-                style["z-index"] = "1000";
-
-                body.appendChild(div);
-
-                canvasBoundary.on("updated",
-                    function () {
-
-                        var aabb = canvasBoundary.aabb;
-
-                        div.style.left = aabb.min[0] + "px";
-                        div.style.top = aabb.min[1] + "px";
-                        div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
-                        div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
-
-
-                    });
-            }
-
             /**
              * The {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} within this CameraControl.
              *
@@ -439,9 +409,7 @@
                      * @param value The property's new value
                      */
                     this.fire('active', this._active = value);
-                }
-
-                ,
+                },
 
                 get: function () {
                     return this._active;
