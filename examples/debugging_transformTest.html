@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>
+            <!--using the <a href="js/debug/debug.js" target="_other">XEO.debug</a> helper utility to visualize the result of-->
+            <!--the <a href="../docs/classes/XEO.math.math.html#method_transformPoint4">XEO.math.rayTriangleIntersect</a> function-->
+        </li>
+    </ul>
+
+</div>
+
+<script>
+
+    var positions = [
+        [2.0, 2.0, 2.0],
+        [2.0, -2.0, 2.0],
+        [-2.0, -2.0, 2.0],
+        [-2.0, 2.0, 2.0],
+        [2.0, 2.0, -2.0],
+        [2.0, -2.0, -2.0],
+        [-2.0, -2.0, -2.0],
+        [-2.0, 2.0, -2.0]
+    ];
+
+    var positions2 = [];
+
+    var angle = 0;
+
+    var axis = [0.3, 0.3, 0.3];
+
+    var matrix = XEO.math.mat4();
+
+    var object = new XEO.GameObject({
+        geometry: new XEO.Geometry({
+            primitive: "lines",
+            positions: XEO.math.flatten(positions),
+            indices: [
+                0, 1, 1, 2, 2, 3, 3, 0, 4,
+                5, 5, 6, 6, 7, 7, 4, 0, 4,
+                1, 5, 2, 6, 3, 7
+            ]
+        }),
+        material: new XEO.PhongMaterial({
+            emissive: [0.6, 0.9, 0.6],
+            diffuse: [0, 0, 0],
+            specular: [0, 0, 0],
+            lineWidth: 4
+        })
+    });
+
+    var boundary = new XEO.GameObject({
+        geometry: new XEO.BoundaryGeometry(),
+        material: new XEO.PhongMaterial({
+            emissive: [0.9, 0.6, 0.6],
+            diffuse: [0, 0, 0],
+            specular: [0, 0, 0],
+            lineWidth: 2
+        })
+    });
+
+    object.scene.on("tick",
+            function () {
+                update();
+            });
+
+
+    //  setInterval(update, 100);
+
+    function update() {
+
+        var scale = XEO.math.scalingMat4v([0.5, 0.3, 0.3]);
+        var translate = XEO.math.translationMat4v([-2, 0, 0]);
+        var rotate = XEO.math.rotationMat4v(angle, axis);
+
+        var matrix = XEO.math.mat4();
+
+        XEO.math.identityMat4(matrix);
+
+        XEO.math.mulMat4(matrix, rotate, matrix);
+        XEO.math.mulMat4(matrix, translate, matrix);
+
+        XEO.math.mulMat4(matrix, scale, matrix);
+
+        XEO.math.transformPoints3(matrix, positions, positions2);
+
+        var aabb = XEO.math.points3ToAABB3(positions2);
+
+        boundary.geometry.aabb = aabb;
+
+        object.geometry.positions = XEO.math.flatten(positions2);
+
+        angle += 0.01;
+    }
+
+</script>
+</body>
+</html>

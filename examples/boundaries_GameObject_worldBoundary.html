@@ -5,106 +5,131 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-    </style>
-
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
+    <pre id="infoTxt" style="text-align: left; color:#77FF77; border:0;"></pre>
 </div>
 
 <script>
 
-    new XEO.CameraControl();
+    // ------------------------------------------------------------------
+    // Create a tumbling red torus
+    // ------------------------------------------------------------------
 
-    var object = new XEO.GameObject({
+    // Save references to a couple of rotations within
+    // its transform hierarchy
+
+    var rotate0;
+    var rotate1;
+
+    var torus = new XEO.GameObject({
 
         geometry: new XEO.TorusGeometry({
             radius: 1.0,
-            tube: 0.3,
-            radialSegments: 32,
-            tubeSegments: 24,
-            arc: Math.PI * 2.0
+            tube: 0.3
         }),
 
         material: new XEO.PhongMaterial({
             diffuse: [1, 0.3, 0.3]
         }),
 
-        transform: getTransform()
+        transform: new XEO.Scale({
+            xyz: [0.5, 0.5, 0.5],
+
+            parent: rotate1 = new XEO.Rotate({
+                xyz: [1, 1, 0],
+                angle: 45,
+
+                parent: new XEO.Rotate({
+                    xyz: [1, 0, 1],
+                    angle: 25,
+
+                    parent: new XEO.Translate({
+                        xyz: [5, 0, 0]
+                        ,
+                        parent: rotate0 = new XEO.Rotate({
+                            xyz: [0, 0, 1],
+                            angle: 40
+                        })
+                    })
+                })
+            })
+        })
     });
 
+
+    // ------------------------------------------------------------------
+    // Animate the torus' tumbling rotations
+    // ------------------------------------------------------------------
+
+    var a = 0;
+
+    rotate1.scene.on("tick",
+            function () {
+                rotate0.angle = a * 0.1;
+                rotate1.angle = a += 4;
+            });
+
+
+    // ------------------------------------------------------------------
+    // Show the torus' World-space oriented bounding box (OBB)
+    // ------------------------------------------------------------------
+
+    // Create a boundary object that renders a snugly-fitted
+    // oriented bounding box (OBB) around the torus object.
+
+    // As the torus tumbles about, the geometry on the
+    // boundary object will automatically update to the
+    // shape of the torus' World-space oriented boundary.
 
     var boundaryObject = new XEO.GameObject({
 
         geometry: new XEO.BoundaryGeometry({
-            boundary: object.worldBoundary
+            boundary: torus.worldBoundary
         }),
 
         material: new XEO.PhongMaterial({
-            diffuse: [0.5, 1.0, 0.5],
-            emissive: [0.5, 1.0, 0.5],
+            diffuse: [0.0, 0.0, 0.0],
+            specular: [0.0, 0.0, 0.0],
+            ambient: [0.0, 0.0, 0.0],
+            emissive: [0.6, 1.0, 0.6],
             lineWidth: 2
         })
     });
 
-    function getTransform() {
+    // ------------------------------------------------------------------
+    // Log the extents of the torus' View-space axis-aligned bounding box
+    // each time it changes
+    // ------------------------------------------------------------------
 
-        var scale0 = new XEO.Scale({
-            xyz: [0.3, 0.5, 0.5]
-        });
+    var viewBoundary = torus.viewBoundary;
 
-        var rotate0 = new XEO.Rotate({
-            xyz: [0, 0, 1],
-            angle: 40
-        });
+    // FIXME: When this is uncommented, we get an event loop; if the boundary
+    // lazy-computes 'aabb' when we get it within the 'updated' handler, then
+    // that will cause the boundary to fire an additional 'uodated' event,
+    // which causes us to get 'aabb' again. Since computation of the actual
+    // AABB is deferred to the task queue, this cycle continues because the
+    // AABB will not exist yet and hence break the loop.
 
-        var translate = new XEO.Translate({
-            xyz: [5, 0, 0]
-            ,
-            parent: rotate0
-        });
+    //
+//    viewBoundary.on("updated",
+//            function () {
+//                log("object.viewBoundary.aabb", viewBoundary.aabb);
+//            });
 
-        var rotate1 = new XEO.Rotate({
-            xyz: [1, 0, 1],
-            angle: 25,
-            parent:translate
-        });
-
-        var rotate2 = new XEO.Rotate({
-            xyz: [1, 1, 0],
-            angle: 45,
-
-            parent: rotate1
-        });
-
-        var scale = new XEO.Scale({
-            xyz: [0.5, 0.5, 0.5],
-
-            parent: rotate2
-        });
-
-        var a = 0;
-
-        rotate1.scene.on("tick",
-                function () {
-                    rotate0.angle = a*0.1;
-                    rotate1.angle = a+=4;
-                });
-
-        return scale
-
+    function log(event, params) {
+        var str = event + " = " + JSON.stringify(params, "\n", 4);
+        document.getElementById("infoTxt").innerText = str;
     }
+
+    // Allow user camera control
+
+    new XEO.CameraControl();
 
 </script>
 </body>

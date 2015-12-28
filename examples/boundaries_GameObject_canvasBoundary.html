@@ -14,27 +14,85 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
-    <pre id="infoTxt" style="text-align: left; "></pre>
+    <pre id="infoTxt" style="text-align: left; color:#77FF77; border:0;"></pre>
 </div>
 
 <script>
 
     new XEO.CameraControl();
 
-    var object = new XEO.GameObject({
+    // ------------------------------------------------------------------
+    // Create a tumbling red torus
+    // ------------------------------------------------------------------
+
+    // Save references to a couple of rotations within
+    // its transform hierarchy
+
+    var rotate0;
+    var rotate1;
+
+    var torus = new XEO.GameObject({
+
+        geometry: new XEO.TorusGeometry({
+            radius: 1.0,
+            tube: 0.3
+        }),
+
         material: new XEO.PhongMaterial({
             diffuse: [1, 0.3, 0.3]
+        }),
+
+        transform: new XEO.Scale({
+            xyz: [0.5, 0.5, 0.5],
+
+            parent: rotate1 = new XEO.Rotate({
+                xyz: [1, 1, 0],
+                angle: 45,
+
+                parent: new XEO.Rotate({
+                    xyz: [1, 0, 1],
+                    angle: 25,
+
+                    parent: new XEO.Translate({
+                        xyz: [5, 0, 0],
+
+                        parent: rotate0 = new XEO.Rotate({
+                            xyz: [0, 0, 1],
+                            angle: 40
+                        })
+                    })
+                })
+            })
         })
     });
 
-    createDiv(object.canvasBoundary);
+
+    // ------------------------------------------------------------------
+    // Animate the torus' tumbling rotations
+    // ------------------------------------------------------------------
+
+    var a = 0;
+
+    rotate1.scene.on("tick",
+            function () {
+                rotate0.angle = a * 0.1;
+                rotate1.angle = a += 4;
+            });
+
+
+    // ------------------------------------------------------------------
+    // Indicate the extents of the torus' Canvas-space axis-aligned
+    // bounding box with a DIV    
+    // ------------------------------------------------------------------
+
+    createDiv(torus.canvasBoundary);
 
     function createDiv(canvasBoundary) {
 
@@ -43,10 +101,9 @@
 
         var style = div.style;
         style.position = "absolute";
-        style.padding = "10px";
+        style.padding = "0";
         style.margin = "0";
-        style.background = "green";
-        style.opacity = 0.4;
+        style.border = "3px solid #99FF99";
         style["z-index"] = "1000";
 
         body.appendChild(div);

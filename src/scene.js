@@ -1117,7 +1117,12 @@
 
                                         object = objects[objectId];
 
-                                        XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
+                                        if (!object.stationary.active) {
+
+                                            // Don't consider boundaries of skyboxed components
+
+                                            XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
+                                        }
                                     }
                                 }
 

@@ -15,10 +15,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>Implementing a custom skybox using the <a href="../docs/classes/Stationary.html"
-                                                                           target="_other">Stationary</a> component
-    <br><br><br><br>
-    <img src="textures/skybox/miramarClouds.jpg" width="400px" height="400px">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>Implementing a custom skybox using the <a
+        href="../docs/classes/Stationary.html"
+        target="_other">Stationary</a> component
 </div>
 
 <script>
@@ -47,7 +46,6 @@
     // Our custom skybox
 
     var skybox = new XEO.GameObject({
-
         geometry: new XEO.Geometry({ // Box-shaped geometry
             primitive: "triangles",
             positions: [
@@ -106,11 +104,9 @@
                 20, 22, 23
             ]
         }),
-
         transform: new XEO.Scale({ // Scale the box
             xyz: [2000, 2000, 2000]
         }),
-
         material: new XEO.PhongMaterial({ // Emissive map of sky, no diffuse, ambient or specular reflection
             ambient: [0, 0, 0],
             diffuse: [0, 0, 0],
@@ -119,14 +115,39 @@
                 src: "textures/skybox/miramarClouds.jpg"
             })
         }),
-
-        stationary: new XEO.Stationary({ // Lock skybox position with respect to viewpoint
+        stationary: new XEO.Stationary({ // Locks position with respect to viewpoint
             active: true
         }),
-
         modes: new XEO.Modes({
             backfaces: true, // Show interior faces of our skybox geometry
             pickable: false // Don't want to ba able to pick skybox
+        })
+    });
+
+    var moon = new XEO.GameObject({
+        geometry: new XEO.SphereGeometry({
+            radius: 25
+        }),
+        material: new XEO.PhongMaterial({
+            ambient: [0.3, 0.3, 0.3],
+            shininess: 30,
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/moon.jpg"
+            }),
+            pointSize: 5
+        }),
+        transform: new XEO.Rotate({
+            xyz: [0, 1, 0],
+            angle: 0,
+            parent: new XEO.Translate({
+                xyz: [50, 10, 50]
+            })
+        }),
+        stationary: new XEO.Stationary({ // Locks position with respect to viewpoint
+            active: true
+        }),
+        modes: new XEO.Modes({
+            pickable: false // Don't want to ba able to pick the moon
         })
     });
 
@@ -138,7 +159,8 @@
 
     skybox.scene.on("tick",
             function () {
-                skybox.scene.camera.view.rotateEyeY(0.2);
+                moon.transform.angle += 0.1;
+                //      skybox.scene.camera.view.rotateEyeY(0.2);
             });
 
     // Allow user camera control

@@ -5,16 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-    </style>
-
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -28,107 +19,110 @@
 
 <script>
 
-    var waterObject = new XEO.GameObject({
+    window._image = new Image();
+    window._image.src="textures/diffuse/uvGrid2.jpg";
+    window._image.onload=function() {
+        window._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(window._image)
 
-        stage: new XEO.Stage({
-            priority: 0
-        }),
+        var textureGenerator = new XEO.GameObject({
+
+            stage: new XEO.Stage({
+                priority: 0
+            }),
 
 
-        colorTarget: new XEO.ColorTarget({
-            size: [400,400]
-        }),
+            colorTarget: new XEO.ColorTarget({
+                //    size: [1000,1000]
+            }),
 
-        camera: new XEO.Camera({
-            view: new XEO.Lookat(),
-            project: new XEO.Ortho()
-        }),
+            camera: new XEO.Camera({
+                view: new XEO.Lookat(),
+                project: new XEO.Ortho()
+            }),
 
-        geometry: new XEO.PlaneGeometry({
-            xSize: 2.0,
-            ySize: 2.0
-        }),
+            geometry: new XEO.PlaneGeometry({
+                xSize: 2,
+                ySize: 2
+            }),
 
-        shader: new XEO.Shader({
-            vertex: [
-                "attribute vec3 xeo_aPosition;",
-                "attribute vec2 xeo_aUV;",
-                "varying vec2 vUv;",
-                "void main () {",
-                "    gl_Position = vec4(xeo_aPosition, 1.0);",
-                "    vUv = xeo_aUV;",
-                "}"
-            ],
-            fragment: [
-                "precision mediump float;",
+            shader: new XEO.Shader({
+                vertex: [
+                    "attribute vec3 xeo_aPosition;",
+                    //"attribute vec2 xeo_aUV;",
+                    //       "varying vec2 vUv;",
+                    "void main () {",
+                    "    gl_Position = vec4(xeo_aPosition, 1.0);",
+                    //  "    vUv = xeo_aUV;",
+                    "}"
+                ],
+                fragment: [
 
-                "uniform float time;",
-                "varying vec2 vUv;",
+                    "       precision mediump float;",
+                    "        uniform float time;",
+                    "        uniform vec2 resolution;",
+                    "        void main( void ) {",
+                    "            vec2 pos = ( gl_FragCoord.xy / resolution.xy );",
+                    "            if(min(fract(pos.x*10.0),fract(pos.y*10.0))<0.1){",
+                    "                gl_FragColor = vec4(0.0, 0.5 + fract(pos.x*0.2-time*0.05+5.0), 0.0, 1.0);",
+                    "            }",
+                    "        }"
+                ],
+                params: {
+                    time: 0.0,
+                    resolution: [50, 50]
+                }
+            }),
 
-                "void main( void ) {",
-                "    vec2 sp = vUv;",
-                "    vec2 p = sp*5.0 - vec2(10.0);",
-                "    vec2 i = p;",
-                "    float c = 1.0;",
-                "    float inten = 0.10;",
-                "    for (int n = 0; n < 10; n++) {",
-                "        float t = time * (1.0 - (3.0 / float(n+1)));",
-                "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
-                "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
-                "    }",
-                "    c /= float(10);",
-                "    c = 1.5-sqrt(c);",
-                "    gl_FragColor = vec4(vec3(c*c*c*c), 0.5) + vec4(0.0, 0.3, 0.5, 0.3);",
-                "}"
-            ],
-            params: {
-                time: 0.0
-            }
-        }),
-
-        modes: new XEO.Modes({
-            backfaces: true
-        })
-    });
-
-    // We'll apply the color target as a texture on this plane
-
-    var planeObject = new XEO.GameObject({
-
-        stage: new XEO.Stage({
-            priority: 1
-        }),
-
-        geometry: new XEO.BoxGeometry(),
-
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
-                target: waterObject.colorTarget
+            modes: new XEO.Modes({
+                backfaces: true
             })
-        })
-    });
+        });
 
-    planeObject.camera.view.zoom(-5);
+        // We'll apply the color target as a texture on this plane
 
-    // Game loop
+        var box = new XEO.GameObject({
 
-    var t = 0;
+            stage: new XEO.Stage({
+                priority: 1
+            }),
 
-    waterObject.scene.on("tick",
-            function () {
+            geometry: new XEO.BoxGeometry(),
 
-                // Orbit the water's camera
-//                waterObject.camera.view.rotateEyeY(1.2);
-//                waterObject.camera.view.rotateEyeX(0.3);
+            material: new XEO.PhongMaterial({
 
-                waterObject.shader.setParams({time: t});
+                diffuseMap: new XEO.Texture({
+                    target: textureGenerator.colorTarget
+//                    ,
+//                    wrapS: "clampToEdge",
+//                    wrapT: "clampToEdge"
 
-                t += 0.1;
+                })
+            })
+        });
 
-                // Orbit the plane's camera
-                planeObject.camera.view.rotateEyeY(0.2);
-                planeObject.camera.view.rotateEyeX(0.3);
-            });
+        box.camera.view.zoom(-5);
+
+        // Game loop
+
+        var t = 0;
+
+        box.scene.on("tick",
+                function () {
+
+                    // Orbit the water's camera
+//                water.camera.view.rotateEyeY(1.2);
+//                water.camera.view.rotateEyeX(0.3);
+
+                    box.shader.setParams({time: t});
+
+                    t += 0.1;
+
+                    // Orbit the plane's camera
+                    box.camera.view.rotateEyeY(0.2);
+                    box.camera.view.rotateEyeX(0.3);
+                });
+
+    };
 </script>
 </body>
 </html>

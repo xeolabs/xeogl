@@ -102,14 +102,46 @@
             this._boundaryObject = new XEO.GameObject(scene, {
                 geometry: new XEO.BoundaryGeometry(scene),
                 material: new XEO.PhongMaterial(scene, {
-                    diffuse: [0.5, 1.0, 0.5],
-                    emissive: [0.5, 1.0, 0.5],
-                    lineWidth: 2
+                    diffuse: [0, 0, 0],
+                    ambient: [0, 0, 0],
+                    specular: [0, 0, 0],
+                    emissive: [1.0, 1.0, 0.6],
+                    lineWidth: 4
                 }),
                 visibility: new XEO.Visibility(scene, {
                     visible: false
                 })
             });
+
+            createDiv(this._boundaryObject.canvasBoundary);
+
+            function createDiv(canvasBoundary) {
+
+                var body = document.getElementsByTagName("body")[0];
+                var div = document.createElement('div');
+
+                var style = div.style;
+                style.position = "absolute";
+                style.padding = "0";
+                style.margin = "0";
+                style.border = "3px solid #99FF99";
+                style["z-index"] = "1000";
+
+                body.appendChild(div);
+
+                canvasBoundary.on("updated",
+                    function () {
+
+                        var aabb = canvasBoundary.aabb;
+
+                        div.style.left = aabb.min[0] + "px";
+                        div.style.top = aabb.min[1] + "px";
+                        div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
+                        div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
+
+
+                    });
+            }
 
             /**
              * The {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} within this CameraControl.
@@ -247,7 +279,7 @@
 
                 var input = this.scene.input;
 
-                if (input.keyDown[input.KEY_SHIFT] && e.object) {
+              //  if (input.keyDown[input.KEY_SHIFT] && e.object) {
 
                     // var aabb = e.object.worldBoundary.aabb;
 
@@ -258,7 +290,7 @@
 
                     this.cameraFlight.flyTo({
                             aabb: e.object.worldBoundary.aabb,
-                            offset: [
+                            oXffset: [
                                 pos[0] - center[0],
                                 pos[1] - center[1],
                                 pos[2] - center[2]
@@ -266,18 +298,18 @@
                         },
                         this._hideObjectBoundary, this);
 
-                } else {
-
-                    this.cameraFlight.flyTo({
-                            look: pos,
-                            eye: [
-                                pos[0] + diff[0],
-                                pos[1] + diff[1],
-                                pos[2] + diff[2]
-                            ]
-                        },
-                        this._hideObjectBoundary, this);
-                }
+                //} else {
+                //
+                //    this.cameraFlight.flyTo({
+                //            look: pos,
+                //            eye: [
+                //                pos[0] + diff[0],
+                //                pos[1] + diff[1],
+                //                pos[2] + diff[2]
+                //            ]
+                //        },
+                //        this._hideObjectBoundary, this);
+                //}
             }
         },
 
@@ -437,6 +469,7 @@
 
             this.active = false;
 
+            // FIXME: Does not recursively destroy child components
             this._boundaryObject.destroy();
 
             this.keyboardAxis.destroy();
