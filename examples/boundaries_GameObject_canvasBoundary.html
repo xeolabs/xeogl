@@ -21,6 +21,9 @@
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
+    Visualizing a <a href="../docs/classes/GameObject.html" target="_other">GameObject's</a> Canvas-space <a
+        href="../docs/classes/Boundary2D.html" target="_other">boundary</a> as we animate the GameObject's modeling transforms
+
     <pre id="infoTxt" style="text-align: left; color:#77FF77; border:0;"></pre>
 </div>
 
@@ -92,35 +95,31 @@
     // bounding box with a DIV    
     // ------------------------------------------------------------------
 
-    createDiv(torus.canvasBoundary);
+    var body = document.getElementsByTagName("body")[0];
+    var div = document.createElement('div');
 
-    function createDiv(canvasBoundary) {
+    var style = div.style;
+    style.position = "absolute";
+    style.padding = "0";
+    style.margin = "0";
+    style.border = "3px solid #99FF99";
+    style["z-index"] = "1000";
 
-        var body = document.getElementsByTagName("body")[0];
-        var div = document.createElement('div');
+    body.appendChild(div);
 
-        var style = div.style;
-        style.position = "absolute";
-        style.padding = "0";
-        style.margin = "0";
-        style.border = "3px solid #99FF99";
-        style["z-index"] = "1000";
+    torus.canvasBoundary.on("updated",
+            function () {
 
-        body.appendChild(div);
+                var aabb = torus.canvasBoundary.aabb;
 
-        canvasBoundary.on("updated",
-                function () {
+                div.style.left = aabb.min[0] + "px";
+                div.style.top = aabb.min[1] + "px";
+                div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
+                div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
 
-                    var aabb = canvasBoundary.aabb;
+                log("torus.canvasBoundary.aabb", torus.canvasBoundary.aabb);
+            });
 
-                    div.style.left = aabb.min[0] + "px";
-                    div.style.top = aabb.min[1] + "px";
-                    div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
-                    div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
-
-                    log("object.canvasBoundary.aabb", canvasBoundary.aabb);
-                });
-    }
 
     function log(event, params) {
         var str = event + " = " + JSON.stringify(params, "\n", 4);

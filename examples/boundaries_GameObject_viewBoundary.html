@@ -5,15 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-    </style>
-
     <script src="../build/xeoengine.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -21,6 +12,9 @@
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
+    Visualizing a <a href="../docs/classes/GameObject.html" target="_other">GameObject's</a> View-space <a
+        href="../docs/classes/Boundary3D.html" target="_other">boundary</a> as we animate the GameObject's modeling transforms
+
     <pre id="infoTxt" style="text-align: left; color:#77FF77; border:0;"></pre>
 </div>
 
@@ -96,7 +90,7 @@
 
     viewBoundary.on("updated",
             function () {
-                log("object.viewBoundary.aabb", viewBoundary.aabb);
+                log("torus.viewBoundary.aabb", viewBoundary.aabb);
             });
 
     function log(event, params) {
