@@ -186,14 +186,14 @@
 
         _setPositionsFromOBB: function (obb) {
             this.positions = [
-                obb[2][0], obb[2][1], obb[4][2],
-                obb[2][0], obb[4][1], obb[4][2],
-                obb[0][0], obb[4][1], obb[4][2],
-                obb[0][0], obb[2][1], obb[4][2],
-                obb[2][0], obb[2][1], obb[3][2],
-                obb[2][0], obb[4][1], obb[3][2],
-                obb[0][0], obb[4][1], obb[3][2],
-                obb[0][0], obb[2][1], obb[3][2]
+                obb[0][0], obb[0][1], obb[0][2],
+                obb[1][0], obb[1][1], obb[1][2],
+                obb[2][0], obb[2][1], obb[2][2],
+                obb[3][0], obb[3][1], obb[3][2],
+                obb[4][0], obb[4][1], obb[4][2],
+                obb[5][0], obb[5][1], obb[5][2],
+                obb[6][0], obb[6][1], obb[6][2],
+                obb[7][0], obb[7][1], obb[7][2]
             ];
         },
 
