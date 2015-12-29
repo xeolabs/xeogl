@@ -100,6 +100,7 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -136,6 +137,7 @@
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
                                 <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
                             </ul>
@@ -175,46 +177,320 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+ A **Reflect** specifies a reflect map.
+
+ ## Overview
+
+ &lt;ul&gt;
+ &lt;li&gt;Reflects are grouped within {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}s, which are attached to
+ {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;To create a Reflect from an image file, set the Reflect&#x27;s {{#crossLink &quot;Reflect/src:property&quot;}}{{/crossLink}}
+ property to the image file path.&lt;/li&gt;
+ &lt;li&gt;To create a Reflect from an HTML DOM Image object, set the Reflect&#x27;s {{#crossLink &quot;Reflect/image:property&quot;}}{{/crossLink}}
+ property to the object.&lt;/li&gt;
+ &lt;li&gt;To render color images of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to a Reflect, set the Reflect&#x27;s {{#crossLink &quot;Reflect/target:property&quot;}}{{/crossLink}}
+ property to a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;Similarly, to render depth images of {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} to a Reflect, set the Reflect&#x27;s {{#crossLink &quot;Reflect/target:property&quot;}}{{/crossLink}}
+ property to a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;For special effects, we often use rendered Reflects in combination with {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} and {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Reflects create within xeoEngine&#x27;s shaders.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;../../../assets/images/Reflect.png&quot;&gt;&lt;/img&gt;
+
+ ## Example
+
+ The example below has:
+ &lt;ul&gt;
+ &lt;li&gt;three Reflects,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} which applies the {{#crossLink &quot;Reflect&quot;}}{{/crossLink}}s as diffuse, normal and specular maps,&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;PointLight&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that has the default box shape, and
+ &lt;li&gt;a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+ var scene = new XEO.Scene();
+
+ var reflect1 = new XEO.Reflect(scene, {
+    src: &quot;diffuseMap.jpg&quot;
+ });
+
+ var reflect2 = new XEO.Reflect(scene, {
+    src: &quot;normalMap.jpg&quot;
+ });
+
+ var reflect3 = new XEO.Reflect(scene, {
+    src: &quot;specularMap.jpg&quot;
+});
+
+ var material = new XEO.PhongMaterial(scene, {
+    ambient: [0.3, 0.3, 0.3],
+    shininess: 30,
+    diffuseMap: reflect1,
+    normalMap: reflect2,
+    specularMap: reflect3
+});
+
+ var light1 = new XEO.PointLight(scene, {
+    pos: [0, 100, 100],
+    color: [0.5, 0.7, 0.5]
+});
+
+ var light2 = new XEO.AmbientLight(scene, {
+    color: [0.5, 0.7, 0.5]
+});
+
+ var lights = new XEO.Lights(scene, {
+    lights: [
+        light1,
+        light2
+    ]
+});
+
+ // Geometry without parameters will default to a 2x2x2 box.
+ var geometry = new XEO.Geometry(scene);
+
+ var object = new XEO.GameObject(scene, {
+    lights: lights,
+    material: material,
+    geometry: geometry
+});
+ &#x60;&#x60;&#x60;&#x60;
+ @class Reflect
+ @module XEO
+ @submodule materials
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Reflect in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID for this Reflect, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Reflect.
+ @param [cfg.src=null] {String} Path to image file to load into this Reflect. See the {{#crossLink &quot;Reflect/src:property&quot;}}{{/crossLink}} property for more info.
+ @param [cfg.image=null] {HTMLImageElement} HTML Image object to load into this Reflect. See the {{#crossLink &quot;Reflect/image:property&quot;}}{{/crossLink}} property for more info.
+ @param [cfg.target=null] {String | XEO.ColorTarget | XEO.DepthTarget} Instance or ID of a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} or
+ {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} to source this Reflect from. See the {{#crossLink &quot;Reflect/target:property&quot;}}{{/crossLink}} property for more info.
+ @param [cfg.minFilter=&quot;linearMipmapLinear&quot;] {String} How the reflect is sampled when a texel covers less than one pixel. See the {{#crossLink &quot;Reflect/minFilter:property&quot;}}{{/crossLink}} property for more info.
+ @param [cfg.magFilter=&quot;linear&quot;] {String} How the reflect is sampled when a texel covers more than one pixel. See the {{#crossLink &quot;Reflect/magFilter:property&quot;}}{{/crossLink}} property for more info.
+ @param [cfg.wrapS=&quot;repeat&quot;] {String} Wrap parameter for reflect coordinate *S*. See the {{#crossLink &quot;Reflect/wrapS:property&quot;}}{{/crossLink}} property for more info.
+ @param [cfg.wrapT=&quot;repeat&quot;] {String} Wrap parameter for reflect coordinate *S*. See the {{#crossLink &quot;Reflect/wrapT:property&quot;}}{{/crossLink}} property for more info.
+ @param [cfg.translate=[0,0]] {Array of Number} 2D translation vector that will be added to reflect&#x27;s *S* and *T* coordinates.
+ @param [cfg.scale=[1,1]] {Array of Number} 2D scaling vector that will be applied to reflect&#x27;s *S* and *T* coordinates.
+ @param [cfg.rotate=0] {Number} Rotation, in degrees, that will be applied to reflect&#x27;s *S* and *T* coordinates.
+ @extends Component
+ */
 (function () {
 
     &quot;use strict&quot;;
 
-    /**
-     A **Reflect** defines a reflection as a cubemap that is applied
-     to attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
-
-     TODO
-
-     @class Reflect
-     @module XEO
-     @submodule materials
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Reflect in the default
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Reflect.    
-     @extends Component
-     */
     XEO.Reflect = XEO.Component.extend({
 
         type: &quot;XEO.Reflect&quot;,
 
         _init: function (cfg) {
+
+            // Rendering state
+
+            this._state = new XEO.renderer.Reflect({
+                texture: null
+            });
+
+            this._src = [];
+            this._images = []; // HTMLImageElement
+
+            // Dirty flags, processed in _buildReflect()
+
+            this._srcDirty = false;
+            this._imageDirty = false;
+
+            // Handle WebGL context restore
+
+            this._webglContextRestored = this.scene.canvas.on(&quot;webglContextRestored&quot;, this._webglContextRestored, this);
+
+            this.src = cfg.src;
+
+            XEO.stats.memory.textures++;
         },
 
-        _compile: function () {
-            this._renderer.reflect = this._state;
+        _webglContextRestored: function () {
+
+            this._state.reflect = null;
+
+            if (this._images) {
+                this._imageDirty = true;
+
+            } else if (this._src) {
+                this._srcDirty = true;
+
+            }
+
+            this._scheduleUpdate();
+        },
+
+        _update: function () {
+
+            var gl = this.scene.canvas.gl;
+
+            var state = this._state;
+
+            if (this._srcDirty) {
+
+                if (this._src) {
+
+                    this._loadSrc(this._src);
+
+                    this._srcDirty = false;
+
+                    // _imageDirty is set when the imagea have loaded
+
+                    return;
+                }
+            }
+
+            if (this._imageDirty) {
+
+                if (this._images) {
+
+                    state.reflect.setImage(this._image);
+
+                    this._imageDirty = false;
+                    this._propsDirty = true; // May now need to regenerate mipmaps etc
+                }
+            }
+
+            this._renderer.imageDirty = true;
+        },
+
+
+        _loadSrc: function (src) {
+
+            //var task = this.scene.tasks.create({
+            //    description: &quot;Loading reflect&quot;
+            //});
+
+            var self = this;
+
+            var image = new Image();
+
+            image.onload = function () {
+
+                if (self._src === src) {
+
+                    // Ensure data source was not changed while we were loading
+
+                    // Keep self._src because that&#x27;s where we loaded the image
+                    // from, and we may need to save that in JSON later
+
+                    self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
+
+                    self._imageDirty = true;
+                    self._srcDirty = false;
+                    self._targetDirty = false;
+
+                    self._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this Reflect&#x27;s  {{#crossLink &quot;Reflect/image:property&quot;}}{{/crossLink}} property changes.
+                     * @event image
+                     * @param value {HTML Image} The property&#x27;s new value
+                     */
+                    self.fire(&quot;image&quot;, self._image);
+
+                    /**
+                     * Fired whenever this Reflect has loaded the
+                     * image file that its {{#crossLink &quot;Reflect/src:property&quot;}}{{/crossLink}} property currently points to.
+                     * @event loaded
+                     * @param value {HTML Image} The value of the {{#crossLink &quot;Reflect/src:property&quot;}}{{/crossLink}} property
+                     */
+                    self.fire(&quot;loaded&quot;, self._src);
+                }
+
+//                task.setCompleted();
+            };
+
+            image.onerror = function () {
+                //              task.setFailed();
+            };
+
+            if (src.indexOf(&quot;data&quot;) === 0) {
+
+                // Image data
+                image.src = src;
+
+            } else {
+
+                // Image file
+                image.crossOrigin = &quot;Anonymous&quot;;
+                image.src = src;
+            }
+        },
+
+        _props: {
+
+            /**
+             * Indicates a path to an image file to source this Reflect from.
+             *
+             * Alternatively, you could indicate the source via either of properties
+             * {{#crossLink &quot;Reflect/image:property&quot;}}{{/crossLink}} or {{#crossLink &quot;Reflect/target:property&quot;}}{{/crossLink}}.
+             *
+             * Fires a {{#crossLink &quot;Reflect/src:event&quot;}}{{/crossLink}} event on change.
+             *
+             * Sets the {{#crossLink &quot;Reflect/image:property&quot;}}{{/crossLink}} and
+             * {{#crossLink &quot;Reflect/target:property&quot;}}{{/crossLink}} properties to null.
+             *
+             * @property src
+             * @default null
+             * @type String
+             */
+            src: {
+
+                set: function (value) {
+
+                    this._image = null;
+                    this._src = value;
+
+                    this._imageDirty = false;
+                    this._srcDirty = true;
+                    this._targetDirty = false;
+
+                    this._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this Reflect&#x27;s {{#crossLink &quot;Reflect/src:property&quot;}}{{/crossLink}} property changes.
+                     * @event src
+                     * @param value The property&#x27;s new value
+                     * @type String
+                     */
+                    this.fire(&quot;src&quot;, this._src);
+                },
+
+                get: function () {
+                    return this._src;
+                }
+            }
         },
 
         _getJSON: function () {
             return {
-
+                src: this._src.slice(0)
             };
+        },
+
+        _destroy: function () {
+
+            this.scene.canvas.off(this._webglContextRestored);
+
+            if (this._state.texture) {
+                this._state.texture.destroy();
+            }
+
+            XEO.stats.memory.textures--;
         }
     });
 
 })();
+
     </pre>
 </div>
                     </div>

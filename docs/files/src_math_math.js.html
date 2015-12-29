@@ -100,6 +100,7 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -136,6 +137,7 @@
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
                                 <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
                             </ul>
@@ -1453,8 +1455,8 @@
          * @method translationMat4
          * @static
          */
-        translationMat4v: function (v, temp) {
-            var m = temp || XEO.math.identityMat4();
+        translationMat4v: function (v, dest) {
+            var m = dest || XEO.math.identityMat4();
             m[12] = v[0];
             m[13] = v[1];
             m[14] = v[2];
@@ -1466,8 +1468,8 @@
          * @method translationMat4c
          * @static
          */
-        translationMat4c: function (x, y, z) {
-            return XEO.math.translationMat4v([x, y, z]);
+        translationMat4c: function (x, y, z, dest) {
+            return XEO.math.translationMat4v([x, y, z], dest);
         },
 
         /**
@@ -1475,8 +1477,8 @@
          * @method translationMat4s
          * @static
          */
-        translationMat4s: function (s) {
-            return XEO.math.translationMat4c(s, s, s);
+        translationMat4s: function (s, dest) {
+            return XEO.math.translationMat4c(s, s, s, dest);
         },
 
         /**
@@ -1816,31 +1818,26 @@
 
             var r = dest || XEO.math.vec4();
 
-            tempVec4[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
-            tempVec4[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
-            tempVec4[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
-            //tempVec4[3] = (m[3] * p[0]) + (m[7] * p[1]) + (m[11] * p[2]) + m[15];
-
-            r[0] = tempVec4[0];
-            r[1] = tempVec4[1];
-            r[2] = tempVec4[2];
+            r[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
+            r[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
+            r[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
             r[3] = 1.0;
 
             return r;
         },
 
+        /**
+         * Transforms a homogeneous coordinate by a 4x4 matrix.
+         * @method transformPoint3
+         * @static
+         */
         transformPoint4: function (m, v, dest) {
             var r = dest || XEO.math.vec4();
 
-            tempVec4[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
-            tempVec4[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
-            tempVec4[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
-            tempVec4[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
-
-            r[0] = tempVec4[0];
-            r[1] = tempVec4[1];
-            r[2] = tempVec4[2];
-            r[3] = tempVec4[3];
+            r[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
+            r[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
+            r[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
+            r[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
 
             return r;
         },
@@ -1874,7 +1871,7 @@
                 p1 = pi[1];
                 p2 = pi[2];
 
-                r = result[i] || (result[i] = [0, 0, 0, 1]);
+                r = result[i] || (result[i] = [0, 0, 0]);
 
                 r[0] = (m0 * p0) + (m4 * p1) + (m8 * p2) + m12;
                 r[1] = (m1 * p0) + (m5 * p1) + (m9 * p2) + m13;
@@ -2435,18 +2432,15 @@
 
             aabb2 = aabb2 || aabb;
 
-            var midx = canvasWidth * 0.5;
-            var midy = canvasHeight * 0.5;
+            var xmin = (aabb.min[0] + 1.0) * 0.5;
+            var ymin = (aabb.min[1] + 1.0) * 0.5;
+            var xmax = (aabb.max[0] + 1.0) * 0.5;
+            var ymax = (aabb.max[1] + 1.0) * 0.5;
 
-            var xmin = aabb.min[0];
-            var ymin = -aabb.min[1];
-            var xmax = aabb.max[0];
-            var ymax = -aabb.max[1];
-
-            aabb2.min[0] = Math.floor((xmin * midx) + midx);
-            aabb2.min[1] = canvasHeight - Math.floor((ymin * -midy) + midy);
-            aabb2.max[0] = Math.floor((xmax * midx) + midx);
-            aabb2.max[1] = canvasHeight - Math.floor((ymax * -midy) + midy);
+            aabb2.min[0] = Math.floor(xmin * canvasWidth);
+            aabb2.min[1] = canvasHeight - Math.floor(ymax * canvasHeight);
+            aabb2.max[0] = Math.floor(xmax * canvasWidth);
+            aabb2.max[1] = canvasHeight -Math.floor(ymin * canvasHeight);
 
             return aabb;
         },

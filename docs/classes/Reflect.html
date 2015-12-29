@@ -100,6 +100,7 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -136,6 +137,7 @@
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
                                 <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
                             </ul>
@@ -179,7 +181,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_materials_reflect.js.html#l5"><code>src&#x2F;materials&#x2F;reflect.js:5</code></a>
+            Defined in: <a href="../files/src_materials_reflect.js.html#l1"><code>src&#x2F;materials&#x2F;reflect.js:1</code></a>
         </div>
 
             Module: <a href="../modules/materials.html">materials</a><br>
@@ -189,9 +191,81 @@
 
 
 <div class="box intro">
-    <p>A <strong>Reflect</strong> defines a reflection as a cubemap that is applied
-to attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
-<p>TODO</p>
+    <p>A <strong>Reflect</strong> specifies a reflect map.</p>
+<h2 id="overview">Overview</h2>
+<ul>
+<li>Reflects are grouped within <a href="../classes/Material.html" class="crosslink">Material</a>s, which are attached to
+<a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+<li>To create a Reflect from an image file, set the Reflect&#39;s <a href="../classes/Reflect.html#property_src" class="crosslink">src</a>
+property to the image file path.</li>
+<li>To create a Reflect from an HTML DOM Image object, set the Reflect&#39;s Reflect/image:property
+property to the object.</li>
+<li>To render color images of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to a Reflect, set the Reflect&#39;s Reflect/target:property
+property to a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> that is attached to those <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+<li>Similarly, to render depth images of <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to a Reflect, set the Reflect&#39;s Reflect/target:property
+property to a <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> that is attached to those <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</li>
+<li>For special effects, we often use rendered Reflects in combination with <a href="../classes/Shader.html" class="crosslink">Shaders</a> and <a href="../classes/Stage.html" class="crosslink">Stages</a>.</li>
+<li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Reflects create within xeoEngine&#39;s shaders.</li>
+</ul>
+
+<p><img src="../../../assets/images/Reflect.png"></img></p>
+<h2 id="example">Example</h2>
+<p>The example below has:</p>
+<ul>
+<li>three Reflects,</li>
+<li>a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> which applies the <a href="../classes/Reflect.html" class="crosslink">Reflect</a>s as diffuse, normal and specular maps,</li>
+<li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> and a <a href="../classes/PointLight.html" class="crosslink">PointLight</a>,</li>
+<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that has the default box shape, and
+<li>a <a href="../classes/GameObject.html" class="crosslink">GameObject</a> attached to all of the above.</li>
+</ul>
+
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
+
+var reflect1 = new XEO.Reflect(scene, {
+   src: "diffuseMap.jpg"
+});
+
+var reflect2 = new XEO.Reflect(scene, {
+   src: "normalMap.jpg"
+});
+
+var reflect3 = new XEO.Reflect(scene, {
+   src: "specularMap.jpg"
+});
+
+var material = new XEO.PhongMaterial(scene, {
+   ambient: [0.3, 0.3, 0.3],
+   shininess: 30,
+   diffuseMap: reflect1,
+   normalMap: reflect2,
+   specularMap: reflect3
+});
+
+var light1 = new XEO.PointLight(scene, {
+   pos: [0, 100, 100],
+   color: [0.5, 0.7, 0.5]
+});
+
+var light2 = new XEO.AmbientLight(scene, {
+   color: [0.5, 0.7, 0.5]
+});
+
+var lights = new XEO.Lights(scene, {
+   lights: [
+       light1,
+       light2
+   ]
+});
+
+// Geometry without parameters will default to a 2x2x2 box.
+var geometry = new XEO.Geometry(scene);
+
+var object = new XEO.GameObject(scene, {
+   lights: lights,
+   material: material,
+   geometry: geometry
+});
+</code></pre>
 
 </div>
 
@@ -221,7 +295,7 @@ to attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_materials_reflect.js.html#l5"><code>src&#x2F;materials&#x2F;reflect.js:5</code></a>
+                <a href="../files/src_materials_reflect.js.html#l1"><code>src&#x2F;materials&#x2F;reflect.js:1</code></a>
                 </p>
         
         
@@ -267,7 +341,7 @@ to attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent scene, generated automatically when omitted.</p>
+                                            <p>Optional ID for this Reflect, unique among all components in the parent scene, generated automatically when omitted.</p>
         
                                         </div>
         
@@ -279,6 +353,117 @@ to attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</
         
                                         <div class="param-description">
                                             <p>Optional map of user-defined metadata to attach to this Reflect.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[src=null]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Path to image file to load into this Reflect. See the <a href="../classes/Reflect.html#property_src" class="crosslink">src</a> property for more info.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[image=null]</code>
+                                            <span class="type">HTMLImageElement</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>HTML Image object to load into this Reflect. See the Reflect/image:property property for more info.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[target=null]</code>
+                                            <span class="type">String | XEO.ColorTarget | XEO.DepthTarget</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Instance or ID of a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> or
+        <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> to source this Reflect from. See the Reflect/target:property property for more info.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[minFilter=&quot;linearMipmapLinear&quot;]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>How the reflect is sampled when a texel covers less than one pixel. See the Reflect/minFilter:property property for more info.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[magFilter=&quot;linear&quot;]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>How the reflect is sampled when a texel covers more than one pixel. See the Reflect/magFilter:property property for more info.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[wrapS=&quot;repeat&quot;]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Wrap parameter for reflect coordinate <em>S</em>. See the Reflect/wrapS:property property for more info.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[wrapT=&quot;repeat&quot;]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Wrap parameter for reflect coordinate <em>S</em>. See the Reflect/wrapT:property property for more info.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[translate=[0,0]]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>2D translation vector that will be added to reflect&#39;s <em>S</em> and <em>T</em> coordinates.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[scale=[1,1]]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>2D scaling vector that will be applied to reflect&#39;s <em>S</em> and <em>T</em> coordinates.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[rotate=0]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Rotation, in degrees, that will be applied to reflect&#39;s <em>S</em> and <em>T</em> coordinates.</p>
         
                                         </div>
         
@@ -373,6 +558,10 @@ to attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</
                                 <a href="#property_scene">scene</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_src">src</a>
+
+                            </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
 
@@ -391,6 +580,18 @@ to attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</
                     <ul class="index-list events extends">
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_image">image</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_loaded">loaded</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_src">src</a>
 
                             </li>
                     </ul>
@@ -1084,6 +1285,37 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_src" class="property item">
+                        <h3 class="name"><code>src</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_reflect.js.html#l252"><code>src&#x2F;materials&#x2F;reflect.js:252</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates a path to an image file to source this Reflect from.</p>
+                    <p>Alternatively, you could indicate the source via either of properties
+                    Reflect/image:property or Reflect/target:property.</p>
+                    <p>Fires a <a href="../classes/Reflect.html#event_src" class="crosslink">src</a> event on change.</p>
+                    <p>Sets the Reflect/image:property and
+                    Reflect/target:property properties to null.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
                     <div id="property_string" class="property item inherited">
                         <h3 class="name"><code>string</code></h3>
                         <span class="type">String</span>
@@ -1170,6 +1402,133 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="event_image" class="events item">
+                        <h3 class="name"><code>image</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_reflect.js.html#l214"><code>src&#x2F;materials&#x2F;reflect.js:214</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Reflect&#39;s  Reflect/image:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">HTML Image</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_loaded" class="events item">
+                        <h3 class="name"><code>loaded</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_reflect.js.html#l221"><code>src&#x2F;materials&#x2F;reflect.js:221</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Reflect has loaded the
+                    image file that its <a href="../classes/Reflect.html#property_src" class="crosslink">src</a> property currently points to.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">HTML Image</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The value of the <a href="../classes/Reflect.html#property_src" class="crosslink">src</a> property</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_src" class="events item">
+                        <h3 class="name"><code>src</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_reflect.js.html#l280"><code>src&#x2F;materials&#x2F;reflect.js:280</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Reflect&#39;s <a href="../classes/Reflect.html#property_src" class="crosslink">src</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
                     
                     
                     </div>

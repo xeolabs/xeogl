@@ -935,6 +935,24 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/skyboxes/_module.js": {
+            "name": "src/skyboxes/_module.js",
+            "modules": {
+                "skyboxes": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/skyboxes/skybox.js": {
+            "name": "src/skyboxes/skybox.js",
+            "modules": {},
+            "classes": {
+                "Skybox": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/transforms/_module.js": {
             "name": "src/transforms/_module.js",
             "modules": {
@@ -1064,6 +1082,7 @@
                 "rendering": 1,
                 "reporting": 1,
                 "shaders": 1,
+                "skyboxes": 1,
                 "transforms": 1
             },
             "classes": {
@@ -1131,6 +1150,7 @@
                 "Tasks": 1,
                 "Shader": 1,
                 "ShaderParams": 1,
+                "Skybox": 1,
                 "Billboard": 1,
                 "Quaternion": 1,
                 "Rotate": 1,
@@ -1510,6 +1530,21 @@
             "file": "src/shaders/shaderParams.js",
             "line": 1,
             "description": "Components for defining custom GLSL shaders."
+        },
+        "skyboxes": {
+            "name": "skyboxes",
+            "submodules": {},
+            "classes": {
+                "Skybox": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/skyboxes/skybox.js",
+            "line": 1,
+            "description": "Skybox components."
         },
         "transforms": {
             "name": "transforms",
@@ -4864,8 +4899,8 @@
             "module": "XEO",
             "namespace": "",
             "file": "src/materials/reflect.js",
-            "line": 5,
-            "description": "A **Reflect** defines a reflection as a cubemap that is applied\nto attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nTODO",
+            "line": 1,
+            "description": "A **Reflect** specifies a reflect map.\n\n## Overview\n\n<ul>\n<li>Reflects are grouped within {{#crossLink \"Material\"}}Material{{/crossLink}}s, which are attached to\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>To create a Reflect from an image file, set the Reflect's {{#crossLink \"Reflect/src:property\"}}{{/crossLink}}\nproperty to the image file path.</li>\n<li>To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink \"Reflect/image:property\"}}{{/crossLink}}\nproperty to the object.</li>\n<li>To render color images of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink \"Reflect/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>Similarly, to render depth images of {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink \"Reflect/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.</li>\n<li>For special effects, we often use rendered Reflects in combination with {{#crossLink \"Shader\"}}Shaders{{/crossLink}} and {{#crossLink \"Stage\"}}Stages{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Reflects create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Reflect.png\"></img>\n\n## Example\n\nThe example below has:\n<ul>\n<li>three Reflects,</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"Reflect\"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar reflect1 = new XEO.Reflect(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar reflect2 = new XEO.Reflect(scene, {\n   src: \"normalMap.jpg\"\n});\n\nvar reflect3 = new XEO.Reflect(scene, {\n   src: \"specularMap.jpg\"\n});\n\nvar material = new XEO.PhongMaterial(scene, {\n   ambient: [0.3, 0.3, 0.3],\n   shininess: 30,\n   diffuseMap: reflect1,\n   normalMap: reflect2,\n   specularMap: reflect3\n});\n\nvar light1 = new XEO.PointLight(scene, {\n   pos: [0, 100, 100],\n   color: [0.5, 0.7, 0.5]\n});\n\nvar light2 = new XEO.AmbientLight(scene, {\n   color: [0.5, 0.7, 0.5]\n});\n\nvar lights = new XEO.Lights(scene, {\n   lights: [\n       light1,\n       light2\n   ]\n});\n\n// Geometry without parameters will default to a 2x2x2 box.\nvar geometry = new XEO.Geometry(scene);\n\nvar object = new XEO.GameObject(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
             "submodule": "materials",
             "is_constructor": 1,
             "params": [
@@ -4883,7 +4918,7 @@
                     "props": [
                         {
                             "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "description": "Optional ID for this Reflect, unique among all components in the parent scene, generated automatically when omitted.",
                             "type": "String",
                             "optional": true
                         },
@@ -4892,6 +4927,76 @@
                             "description": "Optional map of user-defined metadata to attach to this Reflect.",
                             "type": "String:Object",
                             "optional": true
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to image file to load into this Reflect. See the {{#crossLink \"Reflect/src:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "image",
+                            "description": "HTML Image object to load into this Reflect. See the {{#crossLink \"Reflect/image:property\"}}{{/crossLink}} property for more info.",
+                            "type": "HTMLImageElement",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "target",
+                            "description": "Instance or ID of a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} or\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} to source this Reflect from. See the {{#crossLink \"Reflect/target:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String | XEO.ColorTarget | XEO.DepthTarget",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "minFilter",
+                            "description": "How the reflect is sampled when a texel covers less than one pixel. See the {{#crossLink \"Reflect/minFilter:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"linearMipmapLinear\""
+                        },
+                        {
+                            "name": "magFilter",
+                            "description": "How the reflect is sampled when a texel covers more than one pixel. See the {{#crossLink \"Reflect/magFilter:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"linear\""
+                        },
+                        {
+                            "name": "wrapS",
+                            "description": "Wrap parameter for reflect coordinate *S*. See the {{#crossLink \"Reflect/wrapS:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"repeat\""
+                        },
+                        {
+                            "name": "wrapT",
+                            "description": "Wrap parameter for reflect coordinate *S*. See the {{#crossLink \"Reflect/wrapT:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"repeat\""
+                        },
+                        {
+                            "name": "translate",
+                            "description": "2D translation vector that will be added to reflect's *S* and *T* coordinates.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[0,0]"
+                        },
+                        {
+                            "name": "scale",
+                            "description": "2D scaling vector that will be applied to reflect's *S* and *T* coordinates.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[1,1]"
+                        },
+                        {
+                            "name": "rotate",
+                            "description": "Rotation, in degrees, that will be applied to reflect's *S* and *T* coordinates.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
                         }
                     ]
                 }
@@ -5749,6 +5854,65 @@
             ],
             "extends": "Component"
         },
+        "Skybox": {
+            "name": "Skybox",
+            "shortname": "Skybox",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/skyboxes/skybox.js",
+            "line": 1,
+            "description": "A **Skybox** is a textured box that does not translate with respect to the \n {{#crossLink \"Lookat\"}}viewing transform{{/crossLink}}, to a provide the appearance of a background \n for associated {{#crossLink \"GameObjects\"}}GameObjects{{/crossLink}}.\n## Overview\nTODO\n## Example\n````javascript\n // A bunch of random cube GameObjects\nfor (var i = 0; i < 20; i++) {\n       new XEO.GameObject({\n            transform: new XEO.Translate({\n                xyz: [\n                    Math.random() * 15 - 7,\n                    Math.random() * 15 - 7,\n                    Math.random() * 15 - 7\n                ]\n            }),\n            material: new XEO.PhongMaterial({\n                diffuse: [\n                    Math.random(),\n                    Math.random(),\n                    Math.random()\n                ]\n            })\n        });\n    }\n// A Skybox that wraps our GameObjects in a cloudy background\nvar skybox = new XEO.Skybox({\n        src: \"textures/skybox/miramarClouds.jpg\",\n        size: 1000 // Default\n    });\n// Move the camera back a bit\nskybox.scene.camera.view.eye = [0, 0, -30];\n// Slowly orbit the camera on each frame\nskybox.scene.on(\"tick\",\n     function () {\n         skybox.scene.camera.view.rotateEyeY(0.2);\n     });\n// Allow user camera control\nnew XEO.CameraControl();\n ````",
+            "submodule": "skyboxes",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Skybox within the\n default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Skybox configuration",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Skybox.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to skybox texture",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "[null]"
+                        },
+                        {
+                            "name": "size",
+                            "description": "to each face.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1000]  Size of this Skybox, given as the distance from the center at [0,0,0"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
         "Billboard": {
             "name": "Billboard",
             "shortname": "Billboard",
@@ -5904,7 +6068,7 @@
             "namespace": "",
             "file": "src/transforms/stationary.js",
             "line": 1,
-            "description": "A **Stationary** causes associated {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} to (TODO).\n## Overview\nTODO\n<img src=\"../../../assets/images/Stationary.png\"></img>\n## Example\nTODO",
+            "description": "A **Stationary** disables the effect of {{#crossLink \"Lookat\"}}view transform{{/crossLink}} translations for\n associated {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n## Overview\nTODO\n## Example\nTODO",
             "submodule": "transforms",
             "is_constructor": 1,
             "params": [
@@ -8830,7 +8994,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 114,
+            "line": 116,
             "description": "The {{#crossLink \"KeyboardAxisCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardAxis",
@@ -8842,7 +9006,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 125,
+            "line": 127,
             "description": "The {{#crossLink \"KeyboardRotateCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardOrbit",
@@ -8854,7 +9018,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 136,
+            "line": 138,
             "description": "The {{#crossLink \"MouseRotateCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mouseOrbit",
@@ -8866,7 +9030,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 147,
+            "line": 149,
             "description": "The {{#crossLink \"KeyboardPanCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardPan",
@@ -8878,7 +9042,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 158,
+            "line": 160,
             "description": "The {{#crossLink \"MousePanCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mousePan",
@@ -8890,7 +9054,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 169,
+            "line": 171,
             "description": "The {{#crossLink \"KeyboardZoomCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardZoom",
@@ -8902,7 +9066,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 180,
+            "line": 182,
             "description": "The {{#crossLink \"MouseZoomCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mouseZoom",
@@ -8914,7 +9078,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 191,
+            "line": 193,
             "description": "The {{#crossLink \"MousePickObject\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mousePickObject",
@@ -8926,7 +9090,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 209,
+            "line": 211,
             "description": "The {{#crossLink \"CameraFlight\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "cameraFlight",
@@ -8938,7 +9102,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 290,
+            "line": 292,
             "description": "Flag which indicates whether this CameraControl is in \"first person\" mode.\n\nIn \"first person\" mode (disabled by default) the look position rotates about the eye position. Otherwise,\nthe eye rotates about the look.\n\nFires a {{#crossLink \"KeyboardRotateCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "firstPerson",
@@ -8950,7 +9114,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 313,
+            "line": 315,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/firstPerson:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "firstPerson",
@@ -8966,7 +9130,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 329,
+            "line": 331,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this CameraControl.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraControl. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
@@ -8977,7 +9141,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 343,
+            "line": 345,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -8993,7 +9157,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 374,
+            "line": 376,
             "description": "Flag which indicates whether this CameraControl is active or not.\n\nFires an {{#crossLink \"CameraControl/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -9004,7 +9168,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 404,
+            "line": 406,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -14884,6 +15048,69 @@
             "submodule": "materials"
         },
         {
+            "file": "src/materials/reflect.js",
+            "line": 214,
+            "description": "Fired whenever this Reflect's  {{#crossLink \"Reflect/image:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "image",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "HTML Image"
+                }
+            ],
+            "class": "Reflect",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/reflect.js",
+            "line": 221,
+            "description": "Fired whenever this Reflect has loaded the\nimage file that its {{#crossLink \"Reflect/src:property\"}}{{/crossLink}} property currently points to.",
+            "itemtype": "event",
+            "name": "loaded",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The value of the {{#crossLink \"Reflect/src:property\"}}{{/crossLink}} property",
+                    "type": "HTML Image"
+                }
+            ],
+            "class": "Reflect",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/reflect.js",
+            "line": 252,
+            "description": "Indicates a path to an image file to source this Reflect from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Reflect/image:property\"}}{{/crossLink}} or {{#crossLink \"Reflect/target:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Reflect/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Reflect/image:property\"}}{{/crossLink}} and\n{{#crossLink \"Reflect/target:property\"}}{{/crossLink}} properties to null.",
+            "itemtype": "property",
+            "name": "src",
+            "default": "null",
+            "type": "String",
+            "class": "Reflect",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/reflect.js",
+            "line": 280,
+            "description": "Fired whenever this Reflect's {{#crossLink \"Reflect/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "type": "String",
+            "class": "Reflect",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
             "file": "src/materials/texture.js",
             "line": 350,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
@@ -16794,7 +17021,19 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1672,
+            "line": 1650,
+            "description": "Transforms a homogeneous coordinate by a 4x4 matrix.",
+            "itemtype": "method",
+            "name": "transformPoint3",
+            "static": 1,
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 1667,
             "description": "Transforms an array of three-element positions by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoints3",
@@ -16806,7 +17045,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1713,
+            "line": 1708,
             "description": "Transforms a three-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec3",
@@ -16818,7 +17057,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1727,
+            "line": 1722,
             "description": "Transforms a four-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec4",
@@ -16830,7 +17069,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1742,
+            "line": 1737,
             "description": "Transforms a four-element vector by a 4x4 projection matrix.",
             "itemtype": "method",
             "name": "projectVec4",
@@ -16842,7 +17081,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1752,
+            "line": 1747,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -16854,7 +17093,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1766,
+            "line": 1761,
             "description": "Gets the diagonal size of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBDiag",
@@ -16866,7 +17105,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1776,
+            "line": 1771,
             "description": "Gets the center of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBCenter",
@@ -16878,7 +17117,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1791,
+            "line": 1786,
             "description": "Gets the center of a 2D boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABB2Center",
@@ -16890,7 +17129,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1805,
+            "line": 1800,
             "description": "Collapses a 3D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB3",
@@ -16914,7 +17153,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1828,
+            "line": 1823,
             "description": "Converts an axis-aligned 3D boundary into an oriented boundary consisting of\nan array of eight 3D positions, one for each corner of the boundary.",
             "itemtype": "method",
             "name": "AABB3ToOBB3",
@@ -16943,7 +17182,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1917,
+            "line": 1912,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.",
             "itemtype": "method",
             "name": "positions3ToAABB3",
@@ -16972,7 +17211,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1980,
+            "line": 1975,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB3",
@@ -17001,7 +17240,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2043,
+            "line": 2038,
             "description": "Expands the first axis-aligned 3D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -17029,7 +17268,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2081,
+            "line": 2076,
             "description": "Expands an axis-aligned 3D boundary to enclose the given point, if needed.",
             "itemtype": "method",
             "name": "expandAABB3Point3",
@@ -17057,7 +17296,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2119,
+            "line": 2114,
             "description": "Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB2",
@@ -17081,7 +17320,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2140,
+            "line": 2135,
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB2",
@@ -17110,7 +17349,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2197,
+            "line": 2192,
             "description": "Expands the first axis-aligned 2D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -17138,7 +17377,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2227,
+            "line": 2222,
             "description": "Expands an axis-aligned 2D boundary to enclose the given point, if required.",
             "itemtype": "method",
             "name": "expandAABB2Point2",
@@ -17166,7 +17405,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2277,
+            "line": 2269,
             "description": "Builds normal vectors from positions and indices.",
             "itemtype": "method",
             "name": "buildTangents",
@@ -17194,7 +17433,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2341,
+            "line": 2333,
             "description": "Builds vertex tangent vectors from positions, UVs and indices",
             "itemtype": "method",
             "name": "buildTangents",
@@ -17227,7 +17466,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2417,
+            "line": 2409,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -17249,7 +17488,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2445,
+            "line": 2437,
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "itemtype": "method",
             "name": "getPickPrimitives",
@@ -17289,7 +17528,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2548,
+            "line": 2540,
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "itemtype": "method",
             "name": "rayTriangleIntersect",
@@ -17338,7 +17577,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2596,
+            "line": 2588,
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "itemtype": "method",
             "name": "rayPlaneIntersect",
@@ -17387,7 +17626,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2634,
+            "line": 2626,
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.",
             "itemtype": "method",
             "name": "cartesianToBaryCentric",
@@ -17431,7 +17670,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2701,
+            "line": 2693,
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "itemtype": "method",
             "name": "barycentricInsideTriangle",
@@ -17454,7 +17693,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2718,
+            "line": 2710,
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "itemtype": "method",
             "name": "barycentricToCartesian",
@@ -18890,6 +19129,35 @@
             "submodule": "shaders"
         },
         {
+            "file": "src/skyboxes/skybox.js",
+            "line": 171,
+            "description": "Size of this Skybox, given as the distance from the center at [0,0,0] to each face.\n\nFires an {{#crossLink \"Skybox/size:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "size",
+            "default": "1000",
+            "type": "{Number}",
+            "class": "Skybox",
+            "module": "XEO",
+            "submodule": "skyboxes"
+        },
+        {
+            "file": "src/skyboxes/skybox.js",
+            "line": 188,
+            "description": "Fired whenever this Skybox's {{#crossLink \"Skybox/size:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "size",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Array of Number"
+                }
+            ],
+            "class": "Skybox",
+            "module": "XEO",
+            "submodule": "skyboxes"
+        },
+        {
             "file": "src/transforms/billboard.js",
             "line": 52,
             "description": "Flag which indicates whether this Billboard is active or not.\n\nFires an {{#crossLink \"Billboard/active:event\"}}{{/crossLink}} event on change.",
@@ -19078,7 +19346,7 @@
         },
         {
             "file": "src/transforms/stationary.js",
-            "line": 48,
+            "line": 47,
             "description": "Flag which indicates whether this Stationary is active or not.\n\nFires an {{#crossLink \"Stationary/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -19089,7 +19357,7 @@
         },
         {
             "file": "src/transforms/stationary.js",
-            "line": 72,
+            "line": 71,
             "description": "Fired whenever this Stationary's {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -20059,7 +20327,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1152,
+            "line": 1157,
             "description": "Attempts to pick a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} at the given Canvas-space coordinates.\n\nIgnores {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nOn success, will fire a {{#crossLink \"Scene/picked:event\"}}{{/crossLink}} event on this Scene, along with\na separate {{#crossLink \"Object/picked:event\"}}{{/crossLink}} event on the target {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.\n\n````javascript\n\npick({\n     canvasPos: [23, 131],\n     rayPick: true\n     });\n\n````",
             "itemtype": "method",
             "name": "pick",
@@ -20094,7 +20362,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1413,
+            "line": 1418,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -20103,7 +20371,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1441,
+            "line": 1446,
             "description": "Displays a simple test object.\n\nClears the Scene first.\n\nThe test object is destroyed as soon as anything else is created in this Scene.",
             "itemtype": "method",
             "name": "testPattern",
@@ -20112,7 +20380,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1493,
+            "line": 1498,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -20406,91 +20674,91 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1805"
+            "line": " src/math/math.js:1800"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1828"
+            "line": " src/math/math.js:1823"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1917"
+            "line": " src/math/math.js:1912"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1980"
+            "line": " src/math/math.js:1975"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2043"
+            "line": " src/math/math.js:2038"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2081"
+            "line": " src/math/math.js:2076"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2119"
+            "line": " src/math/math.js:2114"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2140"
+            "line": " src/math/math.js:2135"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2197"
+            "line": " src/math/math.js:2192"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2227"
+            "line": " src/math/math.js:2222"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2277"
+            "line": " src/math/math.js:2269"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2341"
+            "line": " src/math/math.js:2333"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2417"
+            "line": " src/math/math.js:2409"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2445"
+            "line": " src/math/math.js:2437"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2548"
+            "line": " src/math/math.js:2540"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2596"
+            "line": " src/math/math.js:2588"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2634"
+            "line": " src/math/math.js:2626"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2634"
+            "line": " src/math/math.js:2626"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2701"
+            "line": " src/math/math.js:2693"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2701"
+            "line": " src/math/math.js:2693"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2718"
+            "line": " src/math/math.js:2710"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2718"
+            "line": " src/math/math.js:2710"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -20502,7 +20770,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1152"
+            "line": " src/scene.js:1157"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21158,7 +21426,7 @@
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1493"
+            "line": " src/scene.js:1498"
         },
         {
             "message": "Missing item type\nTests if the given object is an array",

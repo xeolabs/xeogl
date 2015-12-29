@@ -63,6 +63,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Scene",
         "Shader",
         "ShaderParams",
+        "Skybox",
         "SphereGeometry",
         "SplineCurve",
         "Stage",
@@ -99,6 +100,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "rendering",
         "reporting",
         "shaders",
+        "skyboxes",
         "transforms"
     ],
     "allModules": [
@@ -201,6 +203,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "shaders",
             "name": "shaders",
             "description": "Components for defining custom GLSL shaders."
+        },
+        {
+            "displayName": "skyboxes",
+            "name": "skyboxes",
+            "description": "Skybox components."
         },
         {
             "displayName": "transforms",

@@ -100,6 +100,7 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -136,6 +137,7 @@
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
                                 <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
                             </ul>
@@ -279,9 +281,11 @@
             this._boundaryObject = new XEO.GameObject(scene, {
                 geometry: new XEO.BoundaryGeometry(scene),
                 material: new XEO.PhongMaterial(scene, {
-                    diffuse: [0.5, 1.0, 0.5],
-                    emissive: [0.5, 1.0, 0.5],
-                    lineWidth: 2
+                    diffuse: [0, 0, 0],
+                    ambient: [0, 0, 0],
+                    specular: [0, 0, 0],
+                    emissive: [1.0, 1.0, 0.6],
+                    lineWidth: 4
                 }),
                 visibility: new XEO.Visibility(scene, {
                     visible: false
@@ -424,7 +428,7 @@
 
                 var input = this.scene.input;
 
-                if (input.keyDown[input.KEY_SHIFT] &amp;&amp; e.object) {
+              //  if (input.keyDown[input.KEY_SHIFT] &amp;&amp; e.object) {
 
                     // var aabb = e.object.worldBoundary.aabb;
 
@@ -435,7 +439,7 @@
 
                     this.cameraFlight.flyTo({
                             aabb: e.object.worldBoundary.aabb,
-                            offset: [
+                            oXffset: [
                                 pos[0] - center[0],
                                 pos[1] - center[1],
                                 pos[2] - center[2]
@@ -443,18 +447,18 @@
                         },
                         this._hideObjectBoundary, this);
 
-                } else {
-
-                    this.cameraFlight.flyTo({
-                            look: pos,
-                            eye: [
-                                pos[0] + diff[0],
-                                pos[1] + diff[1],
-                                pos[2] + diff[2]
-                            ]
-                        },
-                        this._hideObjectBoundary, this);
-                }
+                //} else {
+                //
+                //    this.cameraFlight.flyTo({
+                //            look: pos,
+                //            eye: [
+                //                pos[0] + diff[0],
+                //                pos[1] + diff[1],
+                //                pos[2] + diff[2]
+                //            ]
+                //        },
+                //        this._hideObjectBoundary, this);
+                //}
             }
         },
 
@@ -614,6 +618,7 @@
 
             this.active = false;
 
+            // FIXME: Does not recursively destroy child components
             this._boundaryObject.destroy();
 
             this.keyboardAxis.destroy();

@@ -100,6 +100,7 @@
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/Shader.html">Shader</a></li>
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
@@ -136,6 +137,7 @@
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
                                 <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="../modules/transforms.html">transforms</a></li>
                                 <li><a href="../modules/XEO.html">XEO</a></li>
                             </ul>
@@ -693,6 +695,11 @@ public API and are therefore available for you to use within your application co
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
+                                <a href="#method_transformPoint3">transformPoint3</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
                                 <a href="#method_transformPoints3">transformPoints3</a>
 
                                     <span class="flag static">static</span>
@@ -878,7 +885,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1828"><code>src&#x2F;math&#x2F;math.js:1828</code></a>
+        <a href="../files/src_math_math.js.html#l1823"><code>src&#x2F;math&#x2F;math.js:1823</code></a>
         </p>
 
 
@@ -1438,7 +1445,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2701"><code>src&#x2F;math&#x2F;math.js:2701</code></a>
+        <a href="../files/src_math_math.js.html#l2693"><code>src&#x2F;math&#x2F;math.js:2693</code></a>
         </p>
 
 
@@ -1515,7 +1522,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2718"><code>src&#x2F;math&#x2F;math.js:2718</code></a>
+        <a href="../files/src_math_math.js.html#l2710"><code>src&#x2F;math&#x2F;math.js:2710</code></a>
         </p>
 
 
@@ -1631,7 +1638,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2341"><code>src&#x2F;math&#x2F;math.js:2341</code></a>
+        <a href="../files/src_math_math.js.html#l2333"><code>src&#x2F;math&#x2F;math.js:2333</code></a>
         </p>
 
 
@@ -1723,7 +1730,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2277"><code>src&#x2F;math&#x2F;math.js:2277</code></a>
+        <a href="../files/src_math_math.js.html#l2269"><code>src&#x2F;math&#x2F;math.js:2269</code></a>
         </p>
 
 
@@ -1813,7 +1820,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2634"><code>src&#x2F;math&#x2F;math.js:2634</code></a>
+        <a href="../files/src_math_math.js.html#l2626"><code>src&#x2F;math&#x2F;math.js:2626</code></a>
         </p>
 
 
@@ -1923,7 +1930,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2119"><code>src&#x2F;math&#x2F;math.js:2119</code></a>
+        <a href="../files/src_math_math.js.html#l2114"><code>src&#x2F;math&#x2F;math.js:2114</code></a>
         </p>
 
 
@@ -1992,7 +1999,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1805"><code>src&#x2F;math&#x2F;math.js:1805</code></a>
+        <a href="../files/src_math_math.js.html#l1800"><code>src&#x2F;math&#x2F;math.js:1800</code></a>
         </p>
 
 
@@ -3203,7 +3210,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2227"><code>src&#x2F;math&#x2F;math.js:2227</code></a>
+        <a href="../files/src_math_math.js.html#l2222"><code>src&#x2F;math&#x2F;math.js:2222</code></a>
         </p>
 
 
@@ -3284,7 +3291,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2043"><code>src&#x2F;math&#x2F;math.js:2043</code></a>
+        <a href="../files/src_math_math.js.html#l2038"><code>src&#x2F;math&#x2F;math.js:2038</code></a>
         </p>
 
 
@@ -3365,7 +3372,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2197"><code>src&#x2F;math&#x2F;math.js:2197</code></a>
+        <a href="../files/src_math_math.js.html#l2192"><code>src&#x2F;math&#x2F;math.js:2192</code></a>
         </p>
 
 
@@ -3446,7 +3453,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2081"><code>src&#x2F;math&#x2F;math.js:2081</code></a>
+        <a href="../files/src_math_math.js.html#l2076"><code>src&#x2F;math&#x2F;math.js:2076</code></a>
         </p>
 
 
@@ -3524,7 +3531,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2417"><code>src&#x2F;math&#x2F;math.js:2417</code></a>
+        <a href="../files/src_math_math.js.html#l2409"><code>src&#x2F;math&#x2F;math.js:2409</code></a>
         </p>
 
 
@@ -3722,7 +3729,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1791"><code>src&#x2F;math&#x2F;math.js:1791</code></a>
+        <a href="../files/src_math_math.js.html#l1786"><code>src&#x2F;math&#x2F;math.js:1786</code></a>
         </p>
 
 
@@ -3754,7 +3761,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1776"><code>src&#x2F;math&#x2F;math.js:1776</code></a>
+        <a href="../files/src_math_math.js.html#l1771"><code>src&#x2F;math&#x2F;math.js:1771</code></a>
         </p>
 
 
@@ -3786,7 +3793,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1766"><code>src&#x2F;math&#x2F;math.js:1766</code></a>
+        <a href="../files/src_math_math.js.html#l1761"><code>src&#x2F;math&#x2F;math.js:1761</code></a>
         </p>
 
 
@@ -3836,7 +3843,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2445"><code>src&#x2F;math&#x2F;math.js:2445</code></a>
+        <a href="../files/src_math_math.js.html#l2437"><code>src&#x2F;math&#x2F;math.js:2437</code></a>
         </p>
 
 
@@ -4223,7 +4230,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1752"><code>src&#x2F;math&#x2F;math.js:1752</code></a>
+        <a href="../files/src_math_math.js.html#l1747"><code>src&#x2F;math&#x2F;math.js:1747</code></a>
         </p>
 
 
@@ -5156,38 +5163,6 @@ Creates new AABB if none supplied.</p>
 <div id="method_normalizeVec4" class="method item">
     <h3 class="name"><code>normalizeVec4</code></h3>
 
-        <span class="paren">()</span>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l736"><code>src&#x2F;math&#x2F;math.js:736</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Normalizes a three-element vector</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_normalizeVec4" class="method item">
-    <h3 class="name"><code>normalizeVec4</code></h3>
-
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
@@ -5262,6 +5237,38 @@ Creates new AABB if none supplied.</p>
 
             </div>
         </div>
+
+
+</div>
+<div id="method_normalizeVec4" class="method item">
+    <h3 class="name"><code>normalizeVec4</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_math.js.html#l736"><code>src&#x2F;math&#x2F;math.js:736</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Normalizes a three-element vector</p>
+
+    </div>
+
+
 
 
 </div>
@@ -5357,7 +5364,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2140"><code>src&#x2F;math&#x2F;math.js:2140</code></a>
+        <a href="../files/src_math_math.js.html#l2135"><code>src&#x2F;math&#x2F;math.js:2135</code></a>
         </p>
 
 
@@ -5439,7 +5446,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1980"><code>src&#x2F;math&#x2F;math.js:1980</code></a>
+        <a href="../files/src_math_math.js.html#l1975"><code>src&#x2F;math&#x2F;math.js:1975</code></a>
         </p>
 
 
@@ -5521,7 +5528,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1917"><code>src&#x2F;math&#x2F;math.js:1917</code></a>
+        <a href="../files/src_math_math.js.html#l1912"><code>src&#x2F;math&#x2F;math.js:1912</code></a>
         </p>
 
 
@@ -5591,7 +5598,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1742"><code>src&#x2F;math&#x2F;math.js:1742</code></a>
+        <a href="../files/src_math_math.js.html#l1737"><code>src&#x2F;math&#x2F;math.js:1737</code></a>
         </p>
 
 
@@ -5647,7 +5654,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2596"><code>src&#x2F;math&#x2F;math.js:2596</code></a>
+        <a href="../files/src_math_math.js.html#l2588"><code>src&#x2F;math&#x2F;math.js:2588</code></a>
         </p>
 
 
@@ -5785,7 +5792,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2548"><code>src&#x2F;math&#x2F;math.js:2548</code></a>
+        <a href="../files/src_math_math.js.html#l2540"><code>src&#x2F;math&#x2F;math.js:2540</code></a>
         </p>
 
 
@@ -6138,7 +6145,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l810"><code>src&#x2F;math&#x2F;math.js:810</code></a>
+        <a href="../files/src_math_math.js.html#l801"><code>src&#x2F;math&#x2F;math.js:801</code></a>
         </p>
 
 
@@ -6170,7 +6177,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l801"><code>src&#x2F;math&#x2F;math.js:801</code></a>
+        <a href="../files/src_math_math.js.html#l810"><code>src&#x2F;math&#x2F;math.js:810</code></a>
         </p>
 
 
@@ -6842,6 +6849,38 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
+        <a href="../files/src_math_math.js.html#l1650"><code>src&#x2F;math&#x2F;math.js:1650</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Transforms a homogeneous coordinate by a 4x4 matrix.</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_transformPoint3" class="method item">
+    <h3 class="name"><code>transformPoint3</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
         <a href="../files/src_math_math.js.html#l1633"><code>src&#x2F;math&#x2F;math.js:1633</code></a>
         </p>
 
@@ -6874,7 +6913,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1672"><code>src&#x2F;math&#x2F;math.js:1672</code></a>
+        <a href="../files/src_math_math.js.html#l1667"><code>src&#x2F;math&#x2F;math.js:1667</code></a>
         </p>
 
 
@@ -6906,7 +6945,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1713"><code>src&#x2F;math&#x2F;math.js:1713</code></a>
+        <a href="../files/src_math_math.js.html#l1708"><code>src&#x2F;math&#x2F;math.js:1708</code></a>
         </p>
 
 
@@ -6938,7 +6977,7 @@ Creates new AABB if none supplied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1727"><code>src&#x2F;math&#x2F;math.js:1727</code></a>
+        <a href="../files/src_math_math.js.html#l1722"><code>src&#x2F;math&#x2F;math.js:1722</code></a>
         </p>
 
 

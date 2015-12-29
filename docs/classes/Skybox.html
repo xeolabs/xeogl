@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Billboard - xeoengine</title>
+    <title>Skybox - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -173,7 +173,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Billboard Class</h1>
+<h1>Skybox Class</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -181,29 +181,63 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_transforms_billboard.js.html#l1"><code>src&#x2F;transforms&#x2F;billboard.js:1</code></a>
+            Defined in: <a href="../files/src_skyboxes_skybox.js.html#l1"><code>src&#x2F;skyboxes&#x2F;skybox.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/transforms.html">transforms</a><br>
+            Module: <a href="../modules/skyboxes.html">skyboxes</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>Billboard</strong> causes associated <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to be always aligned towards the viewpoint.</p>
+    <p>A <strong>Skybox</strong> is a textured box that does not translate with respect to the 
+ <a href="../classes/Lookat.html" class="crosslink">viewing transform</a>, to a provide the appearance of a background 
+ for associated GameObjects.</p>
 <h2 id="overview">Overview</h2>
-<p>TODO
-<img src="../../../assets/images/Billboard.png"></img></p>
-<h2 id="example">Example</h2>
 <p>TODO</p>
+<h2 id="example">Example</h2>
+<pre class="code prettyprint"><code class="lang-javascript"> // A bunch of random cube GameObjects
+for (var i = 0; i &lt; 20; i++) {
+       new XEO.GameObject({
+            transform: new XEO.Translate({
+                xyz: [
+                    Math.random() * 15 - 7,
+                    Math.random() * 15 - 7,
+                    Math.random() * 15 - 7
+                ]
+            }),
+            material: new XEO.PhongMaterial({
+                diffuse: [
+                    Math.random(),
+                    Math.random(),
+                    Math.random()
+                ]
+            })
+        });
+    }
+// A Skybox that wraps our GameObjects in a cloudy background
+var skybox = new XEO.Skybox({
+        src: "textures/skybox/miramarClouds.jpg",
+        size: 1000 // Default
+    });
+// Move the camera back a bit
+skybox.scene.camera.view.eye = [0, 0, -30];
+// Slowly orbit the camera on each frame
+skybox.scene.on("tick",
+     function () {
+         skybox.scene.camera.view.rotateEyeY(0.2);
+     });
+// Allow user camera control
+new XEO.CameraControl();
+</code></pre>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Billboard" class="method item">
-            <h3 class="name"><code>Billboard</code></h3>
+        <div id="method_Skybox" class="method item">
+            <h3 class="name"><code>Skybox</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -226,7 +260,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_transforms_billboard.js.html#l1"><code>src&#x2F;transforms&#x2F;billboard.js:1</code></a>
+                <a href="../files/src_skyboxes_skybox.js.html#l1"><code>src&#x2F;skyboxes&#x2F;skybox.js:1</code></a>
                 </p>
         
         
@@ -248,8 +282,8 @@
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Billboard in the default
-         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this Skybox within the
+         default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
         
                             </div>
         
@@ -261,7 +295,7 @@
         
         
                             <div class="param-description">
-                                <p>Configs</p>
+                                <p>Skybox configuration</p>
         
                             </div>
         
@@ -272,7 +306,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent scene, generated automatically when omitted.</p>
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
         
                                         </div>
         
@@ -283,29 +317,29 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this Billboard.</p>
+                                            <p>Optional map of user-defined metadata to attach to this Skybox.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[active=true]</code>
-                                            <span class="type">Boolean</span>
+                                            <code class="param-name optional">[src=[null]]</code>
+                                            <span class="type">String</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Indicates if this Billboard is active or not.</p>
+                                            <p>Path to skybox texture</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[spherical=true]</code>
-                                            <span class="type">Boolean</span>
+                                            <code class="param-name optional">[size=1000]  Size of this Skybox, given as the distance from the center at [0,0,0]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Indicates if this Billboard is spherical (true) or cylindrical (false).</p>
+                                            <p>to each face.</p>
         
                                         </div>
         
@@ -376,10 +410,6 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property">
-                                <a href="#property_active">active</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
@@ -405,7 +435,7 @@
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_spherical">spherical</a>
+                                <a href="#property_size">size</a>
 
                             </li>
                             <li class="index-item property inherited inherited">
@@ -424,16 +454,12 @@
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
-                            <li class="index-item event">
-                                <a href="#event_active">active</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_spherical">spherical</a>
+                                <a href="#event_size">size</a>
 
                             </li>
                     </ul>
@@ -974,32 +1000,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_active" class="property item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l52"><code>src&#x2F;transforms&#x2F;billboard.js:52</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Flag which indicates whether this Billboard is active or not.</p>
-                    <p>Fires an <a href="../classes/Billboard.html#event_active" class="crosslink">active</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1153,9 +1153,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_spherical" class="property item">
-                        <h3 class="name"><code>spherical</code></h3>
-                        <span class="type">Boolean</span>
+                    <div id="property_size" class="property item">
+                        <h3 class="name"><code>size</code></h3>
+                        <span class="type">Number</span>
                     
                     
                     
@@ -1164,18 +1164,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l89"><code>src&#x2F;transforms&#x2F;billboard.js:89</code></a>
+                            <a href="../files/src_skyboxes_skybox.js.html#l171"><code>src&#x2F;skyboxes&#x2F;skybox.js:171</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Flag which indicates whether this Billboard is spherical (true) or cylindrical (false).</p>
-                    <p>Fires an <a href="../classes/Billboard.html#event_spherical" class="crosslink">spherical</a> event on change.</p>
+                            <p>Size of this Skybox, given as the distance from the center at [0,0,0] to each face.</p>
+                    <p>Fires an <a href="../classes/Skybox.html#event_size" class="crosslink">size</a> event on change.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> 1000</p>
                     
                     
                     </div>
@@ -1243,48 +1244,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_active" class="events item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l76"><code>src&#x2F;transforms&#x2F;billboard.js:76</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Billboard&#39;s <a href="../classes/Billboard.html#property_active" class="crosslink">active</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1310,8 +1269,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_spherical" class="events item">
-                        <h3 class="name"><code>spherical</code></h3>
+                    <div id="event_size" class="events item">
+                        <h3 class="name"><code>size</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1321,14 +1280,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l113"><code>src&#x2F;transforms&#x2F;billboard.js:113</code></a>
+                            <a href="../files/src_skyboxes_skybox.js.html#l188"><code>src&#x2F;skyboxes&#x2F;skybox.js:188</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Billboard&#39;s <a href="../classes/Billboard.html#property_spherical" class="crosslink">spherical</a> property changes.</p>
+                            <p>Fired whenever this Skybox&#39;s <a href="../classes/Skybox.html#property_size" class="crosslink">size</a> property changes.</p>
                     
                         </div>
                     
@@ -1338,7 +1297,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Object</span>
+                                            <span class="type">Array of Number</span>
                     
                     
                                         <div class="param-description">
