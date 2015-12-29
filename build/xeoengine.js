@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-12-23
+ * Built on 2015-12-28
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -2974,7 +2974,7 @@
             add("   vec4 worldPosition;");
 
             if (states.stationary.active) {
-                add("   viewMatrix[3][0] = viewMatrix[3][2] = 0.0;")
+                add("   viewMatrix[3][0] = viewMatrix[3][1] = viewMatrix[3][2] = 0.0;")
             }
 
             if (states.billboard.active) {
@@ -7703,8 +7703,8 @@
          * @method translationMat4
          * @static
          */
-        translationMat4v: function (v, temp) {
-            var m = temp || XEO.math.identityMat4();
+        translationMat4v: function (v, dest) {
+            var m = dest || XEO.math.identityMat4();
             m[12] = v[0];
             m[13] = v[1];
             m[14] = v[2];
@@ -7716,8 +7716,8 @@
          * @method translationMat4c
          * @static
          */
-        translationMat4c: function (x, y, z) {
-            return XEO.math.translationMat4v([x, y, z]);
+        translationMat4c: function (x, y, z, dest) {
+            return XEO.math.translationMat4v([x, y, z], dest);
         },
 
         /**
@@ -7725,8 +7725,8 @@
          * @method translationMat4s
          * @static
          */
-        translationMat4s: function (s) {
-            return XEO.math.translationMat4c(s, s, s);
+        translationMat4s: function (s, dest) {
+            return XEO.math.translationMat4c(s, s, s, dest);
         },
 
         /**
@@ -8066,31 +8066,26 @@
 
             var r = dest || XEO.math.vec4();
 
-            tempVec4[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
-            tempVec4[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
-            tempVec4[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
-            //tempVec4[3] = (m[3] * p[0]) + (m[7] * p[1]) + (m[11] * p[2]) + m[15];
-
-            r[0] = tempVec4[0];
-            r[1] = tempVec4[1];
-            r[2] = tempVec4[2];
+            r[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
+            r[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
+            r[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
             r[3] = 1.0;
 
             return r;
         },
 
+        /**
+         * Transforms a homogeneous coordinate by a 4x4 matrix.
+         * @method transformPoint3
+         * @static
+         */
         transformPoint4: function (m, v, dest) {
             var r = dest || XEO.math.vec4();
 
-            tempVec4[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
-            tempVec4[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
-            tempVec4[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
-            tempVec4[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
-
-            r[0] = tempVec4[0];
-            r[1] = tempVec4[1];
-            r[2] = tempVec4[2];
-            r[3] = tempVec4[3];
+            r[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
+            r[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
+            r[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
+            r[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
 
             return r;
         },
@@ -8124,7 +8119,7 @@
                 p1 = pi[1];
                 p2 = pi[2];
 
-                r = result[i] || (result[i] = [0, 0, 0, 1]);
+                r = result[i] || (result[i] = [0, 0, 0]);
 
                 r[0] = (m0 * p0) + (m4 * p1) + (m8 * p2) + m12;
                 r[1] = (m1 * p0) + (m5 * p1) + (m9 * p2) + m13;
@@ -8685,18 +8680,15 @@
 
             aabb2 = aabb2 || aabb;
 
-            var midx = canvasWidth * 0.5;
-            var midy = canvasHeight * 0.5;
+            var xmin = (aabb.min[0] + 1.0) * 0.5;
+            var ymin = (aabb.min[1] + 1.0) * 0.5;
+            var xmax = (aabb.max[0] + 1.0) * 0.5;
+            var ymax = (aabb.max[1] + 1.0) * 0.5;
 
-            var xmin = aabb.min[0];
-            var ymin = -aabb.min[1];
-            var xmax = aabb.max[0];
-            var ymax = -aabb.max[1];
-
-            aabb2.min[0] = Math.floor((xmin * midx) + midx);
-            aabb2.min[1] = canvasHeight - Math.floor((ymin * -midy) + midy);
-            aabb2.max[0] = Math.floor((xmax * midx) + midx);
-            aabb2.max[1] = canvasHeight - Math.floor((ymax * -midy) + midy);
+            aabb2.min[0] = Math.floor(xmin * canvasWidth);
+            aabb2.min[1] = canvasHeight - Math.floor(ymax * canvasHeight);
+            aabb2.max[0] = Math.floor(xmax * canvasWidth);
+            aabb2.max[1] = canvasHeight -Math.floor(ymin * canvasHeight);
 
             return aabb;
         },
@@ -11390,7 +11382,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                                         object = objects[objectId];
 
-                                        XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
+                                        if (!object.stationary.active) {
+
+                                            // Don't consider boundaries of skyboxed components
+
+                                            XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
+                                        }
                                     }
                                 }
 
@@ -15489,9 +15486,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this._boundaryObject = new XEO.GameObject(scene, {
                 geometry: new XEO.BoundaryGeometry(scene),
                 material: new XEO.PhongMaterial(scene, {
-                    diffuse: [0.5, 1.0, 0.5],
-                    emissive: [0.5, 1.0, 0.5],
-                    lineWidth: 2
+                    diffuse: [0, 0, 0],
+                    ambient: [0, 0, 0],
+                    specular: [0, 0, 0],
+                    emissive: [1.0, 1.0, 0.6],
+                    lineWidth: 4
                 }),
                 visibility: new XEO.Visibility(scene, {
                     visible: false
@@ -15634,7 +15633,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 var input = this.scene.input;
 
-                if (input.keyDown[input.KEY_SHIFT] && e.object) {
+              //  if (input.keyDown[input.KEY_SHIFT] && e.object) {
 
                     // var aabb = e.object.worldBoundary.aabb;
 
@@ -15645,7 +15644,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this.cameraFlight.flyTo({
                             aabb: e.object.worldBoundary.aabb,
-                            offset: [
+                            oXffset: [
                                 pos[0] - center[0],
                                 pos[1] - center[1],
                                 pos[2] - center[2]
@@ -15653,18 +15652,18 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         },
                         this._hideObjectBoundary, this);
 
-                } else {
-
-                    this.cameraFlight.flyTo({
-                            look: pos,
-                            eye: [
-                                pos[0] + diff[0],
-                                pos[1] + diff[1],
-                                pos[2] + diff[2]
-                            ]
-                        },
-                        this._hideObjectBoundary, this);
-                }
+                //} else {
+                //
+                //    this.cameraFlight.flyTo({
+                //            look: pos,
+                //            eye: [
+                //                pos[0] + diff[0],
+                //                pos[1] + diff[1],
+                //                pos[2] + diff[2]
+                //            ]
+                //        },
+                //        this._hideObjectBoundary, this);
+                //}
             }
         },
 
@@ -15824,6 +15823,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             this.active = false;
 
+            // FIXME: Does not recursively destroy child components
             this._boundaryObject.destroy();
 
             this.keyboardAxis.destroy();
@@ -21538,14 +21538,14 @@ visibility.destroy();
 
         _setPositionsFromOBB: function (obb) {
             this.positions = [
-                obb[2][0], obb[2][1], obb[4][2],
-                obb[2][0], obb[4][1], obb[4][2],
-                obb[0][0], obb[4][1], obb[4][2],
-                obb[0][0], obb[2][1], obb[4][2],
-                obb[2][0], obb[2][1], obb[3][2],
-                obb[2][0], obb[4][1], obb[3][2],
-                obb[0][0], obb[4][1], obb[3][2],
-                obb[0][0], obb[2][1], obb[3][2]
+                obb[0][0], obb[0][1], obb[0][2],
+                obb[1][0], obb[1][1], obb[1][2],
+                obb[2][0], obb[2][1], obb[2][2],
+                obb[3][0], obb[3][1], obb[3][2],
+                obb[4][0], obb[4][1], obb[4][2],
+                obb[5][0], obb[5][1], obb[5][2],
+                obb[6][0], obb[6][1], obb[6][2],
+                obb[7][0], obb[7][1], obb[7][2]
             ];
         },
 
@@ -30311,46 +30311,320 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     });
 
 })();
-;(function () {
+;/**
+ A **Reflect** specifies a reflect map.
+
+ ## Overview
+
+ <ul>
+ <li>Reflects are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>To create a Reflect from an image file, set the Reflect's {{#crossLink "Reflect/src:property"}}{{/crossLink}}
+ property to the image file path.</li>
+ <li>To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink "Reflect/image:property"}}{{/crossLink}}
+ property to the object.</li>
+ <li>To render color images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>Similarly, to render depth images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>For special effects, we often use rendered Reflects in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Reflects create within xeoEngine's shaders.</li>
+ </ul>
+
+ <img src="../../../assets/images/Reflect.png"></img>
+
+ ## Example
+
+ The example below has:
+ <ul>
+ <li>three Reflects,</li>
+ <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Reflect"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>
+ <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
+ <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
+ <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ </ul>
+
+ ```` javascript
+ var scene = new XEO.Scene();
+
+ var reflect1 = new XEO.Reflect(scene, {
+    src: "diffuseMap.jpg"
+ });
+
+ var reflect2 = new XEO.Reflect(scene, {
+    src: "normalMap.jpg"
+ });
+
+ var reflect3 = new XEO.Reflect(scene, {
+    src: "specularMap.jpg"
+});
+
+ var material = new XEO.PhongMaterial(scene, {
+    ambient: [0.3, 0.3, 0.3],
+    shininess: 30,
+    diffuseMap: reflect1,
+    normalMap: reflect2,
+    specularMap: reflect3
+});
+
+ var light1 = new XEO.PointLight(scene, {
+    pos: [0, 100, 100],
+    color: [0.5, 0.7, 0.5]
+});
+
+ var light2 = new XEO.AmbientLight(scene, {
+    color: [0.5, 0.7, 0.5]
+});
+
+ var lights = new XEO.Lights(scene, {
+    lights: [
+        light1,
+        light2
+    ]
+});
+
+ // Geometry without parameters will default to a 2x2x2 box.
+ var geometry = new XEO.Geometry(scene);
+
+ var object = new XEO.GameObject(scene, {
+    lights: lights,
+    material: material,
+    geometry: geometry
+});
+ ````
+ @class Reflect
+ @module XEO
+ @submodule materials
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Reflect in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID for this Reflect, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Reflect.
+ @param [cfg.src=null] {String} Path to image file to load into this Reflect. See the {{#crossLink "Reflect/src:property"}}{{/crossLink}} property for more info.
+ @param [cfg.image=null] {HTMLImageElement} HTML Image object to load into this Reflect. See the {{#crossLink "Reflect/image:property"}}{{/crossLink}} property for more info.
+ @param [cfg.target=null] {String | XEO.ColorTarget | XEO.DepthTarget} Instance or ID of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} or
+ {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} to source this Reflect from. See the {{#crossLink "Reflect/target:property"}}{{/crossLink}} property for more info.
+ @param [cfg.minFilter="linearMipmapLinear"] {String} How the reflect is sampled when a texel covers less than one pixel. See the {{#crossLink "Reflect/minFilter:property"}}{{/crossLink}} property for more info.
+ @param [cfg.magFilter="linear"] {String} How the reflect is sampled when a texel covers more than one pixel. See the {{#crossLink "Reflect/magFilter:property"}}{{/crossLink}} property for more info.
+ @param [cfg.wrapS="repeat"] {String} Wrap parameter for reflect coordinate *S*. See the {{#crossLink "Reflect/wrapS:property"}}{{/crossLink}} property for more info.
+ @param [cfg.wrapT="repeat"] {String} Wrap parameter for reflect coordinate *S*. See the {{#crossLink "Reflect/wrapT:property"}}{{/crossLink}} property for more info.
+ @param [cfg.translate=[0,0]] {Array of Number} 2D translation vector that will be added to reflect's *S* and *T* coordinates.
+ @param [cfg.scale=[1,1]] {Array of Number} 2D scaling vector that will be applied to reflect's *S* and *T* coordinates.
+ @param [cfg.rotate=0] {Number} Rotation, in degrees, that will be applied to reflect's *S* and *T* coordinates.
+ @extends Component
+ */
+(function () {
 
     "use strict";
 
-    /**
-     A **Reflect** defines a reflection as a cubemap that is applied
-     to attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
-
-     TODO
-
-     @class Reflect
-     @module XEO
-     @submodule materials
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Reflect in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Reflect.    
-     @extends Component
-     */
     XEO.Reflect = XEO.Component.extend({
 
         type: "XEO.Reflect",
 
         _init: function (cfg) {
+
+            // Rendering state
+
+            this._state = new XEO.renderer.Reflect({
+                texture: null
+            });
+
+            this._src = [];
+            this._images = []; // HTMLImageElement
+
+            // Dirty flags, processed in _buildReflect()
+
+            this._srcDirty = false;
+            this._imageDirty = false;
+
+            // Handle WebGL context restore
+
+            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._webglContextRestored, this);
+
+            this.src = cfg.src;
+
+            XEO.stats.memory.textures++;
         },
 
-        _compile: function () {
-            this._renderer.reflect = this._state;
+        _webglContextRestored: function () {
+
+            this._state.reflect = null;
+
+            if (this._images) {
+                this._imageDirty = true;
+
+            } else if (this._src) {
+                this._srcDirty = true;
+
+            }
+
+            this._scheduleUpdate();
+        },
+
+        _update: function () {
+
+            var gl = this.scene.canvas.gl;
+
+            var state = this._state;
+
+            if (this._srcDirty) {
+
+                if (this._src) {
+
+                    this._loadSrc(this._src);
+
+                    this._srcDirty = false;
+
+                    // _imageDirty is set when the imagea have loaded
+
+                    return;
+                }
+            }
+
+            if (this._imageDirty) {
+
+                if (this._images) {
+
+                    state.reflect.setImage(this._image);
+
+                    this._imageDirty = false;
+                    this._propsDirty = true; // May now need to regenerate mipmaps etc
+                }
+            }
+
+            this._renderer.imageDirty = true;
+        },
+
+
+        _loadSrc: function (src) {
+
+            //var task = this.scene.tasks.create({
+            //    description: "Loading reflect"
+            //});
+
+            var self = this;
+
+            var image = new Image();
+
+            image.onload = function () {
+
+                if (self._src === src) {
+
+                    // Ensure data source was not changed while we were loading
+
+                    // Keep self._src because that's where we loaded the image
+                    // from, and we may need to save that in JSON later
+
+                    self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
+
+                    self._imageDirty = true;
+                    self._srcDirty = false;
+                    self._targetDirty = false;
+
+                    self._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this Reflect's  {{#crossLink "Reflect/image:property"}}{{/crossLink}} property changes.
+                     * @event image
+                     * @param value {HTML Image} The property's new value
+                     */
+                    self.fire("image", self._image);
+
+                    /**
+                     * Fired whenever this Reflect has loaded the
+                     * image file that its {{#crossLink "Reflect/src:property"}}{{/crossLink}} property currently points to.
+                     * @event loaded
+                     * @param value {HTML Image} The value of the {{#crossLink "Reflect/src:property"}}{{/crossLink}} property
+                     */
+                    self.fire("loaded", self._src);
+                }
+
+//                task.setCompleted();
+            };
+
+            image.onerror = function () {
+                //              task.setFailed();
+            };
+
+            if (src.indexOf("data") === 0) {
+
+                // Image data
+                image.src = src;
+
+            } else {
+
+                // Image file
+                image.crossOrigin = "Anonymous";
+                image.src = src;
+            }
+        },
+
+        _props: {
+
+            /**
+             * Indicates a path to an image file to source this Reflect from.
+             *
+             * Alternatively, you could indicate the source via either of properties
+             * {{#crossLink "Reflect/image:property"}}{{/crossLink}} or {{#crossLink "Reflect/target:property"}}{{/crossLink}}.
+             *
+             * Fires a {{#crossLink "Reflect/src:event"}}{{/crossLink}} event on change.
+             *
+             * Sets the {{#crossLink "Reflect/image:property"}}{{/crossLink}} and
+             * {{#crossLink "Reflect/target:property"}}{{/crossLink}} properties to null.
+             *
+             * @property src
+             * @default null
+             * @type String
+             */
+            src: {
+
+                set: function (value) {
+
+                    this._image = null;
+                    this._src = value;
+
+                    this._imageDirty = false;
+                    this._srcDirty = true;
+                    this._targetDirty = false;
+
+                    this._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this Reflect's {{#crossLink "Reflect/src:property"}}{{/crossLink}} property changes.
+                     * @event src
+                     * @param value The property's new value
+                     * @type String
+                     */
+                    this.fire("src", this._src);
+                },
+
+                get: function () {
+                    return this._src;
+                }
+            }
         },
 
         _getJSON: function () {
             return {
-
+                src: this._src.slice(0)
             };
+        },
+
+        _destroy: function () {
+
+            this.scene.canvas.off(this._webglContextRestored);
+
+            if (this._state.texture) {
+                this._state.texture.destroy();
+            }
+
+            XEO.stats.memory.textures--;
         }
     });
 
-})();;/**
+})();
+;/**
  * Game object components.
  *
  * @module XEO
@@ -33618,6 +33892,11 @@ myTask2.setFailed();
 
 })();
 ;/**
+ * Components for defining custom GLSL shaders.
+ *
+ * @module XEO
+ * @submodule shaders
+ */;/**
  A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
@@ -34183,6 +34462,222 @@ myTask2.setFailed();
         _getJSON: function () {
             return {
                 params: this._state.params
+            };
+        }
+    });
+
+})();
+;/**
+ * Skybox components.
+ *
+ * @module XEO
+ * @submodule skyboxes
+ */;/**
+
+ A **Skybox** is a textured box that does not translate with respect to the 
+ {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background 
+ for associated {{#crossLink "GameObjects"}}GameObjects{{/crossLink}}.
+
+ ## Overview
+
+ TODO
+
+ ## Example
+
+ ````javascript
+ // A bunch of random cube GameObjects
+
+ for (var i = 0; i < 20; i++) {
+
+        new XEO.GameObject({
+            transform: new XEO.Translate({
+                xyz: [
+                    Math.random() * 15 - 7,
+                    Math.random() * 15 - 7,
+                    Math.random() * 15 - 7
+                ]
+            }),
+            material: new XEO.PhongMaterial({
+                diffuse: [
+                    Math.random(),
+                    Math.random(),
+                    Math.random()
+                ]
+            })
+        });
+    }
+
+ // A Skybox that wraps our GameObjects in a cloudy background
+
+ var skybox = new XEO.Skybox({
+        src: "textures/skybox/miramarClouds.jpg",
+        size: 1000 // Default
+    });
+
+ // Move the camera back a bit
+
+ skybox.scene.camera.view.eye = [0, 0, -30];
+
+ // Slowly orbit the camera on each frame
+
+ skybox.scene.on("tick",
+     function () {
+         skybox.scene.camera.view.rotateEyeY(0.2);
+     });
+
+ // Allow user camera control
+
+ new XEO.CameraControl();
+ ````
+
+ @class Skybox
+ @module XEO
+ @submodule skyboxes
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Skybox within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} Skybox configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Skybox.
+ @param [cfg.src=[null]] {String} Path to skybox texture
+ @param [cfg.size=1000] {Number} Size of this Skybox, given as the distance from the center at [0,0,0] to each face.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Skybox = XEO.Component.extend({
+
+        type: "XEO.Skybox",
+
+        _init: function (cfg) {
+
+            this._skybox = new XEO.GameObject(this.scene, {
+
+                geometry: new XEO.Geometry(this.scene, { // Box-shaped geometry
+                    primitive: "triangles",
+                    positions: [
+                        1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, // v0-v1-v2-v3 front
+                        1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, // v0-v3-v4-v5 right
+                        1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, // v0-v5-v6-v1 top
+                        -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, // v1-v6-v7-v2 left
+                        -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, // v7-v4-v3-v2 bottom
+                        1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1 // v4-v7-v6-v5 back
+                    ],
+                    uv: [
+                        0.5, 0.6666,
+                        0.25, 0.6666,
+                        0.25, 0.3333,
+                        0.5, 0.3333,
+
+                        0.5, 0.6666,
+                        0.5, 0.3333,
+                        0.75, 0.3333,
+                        0.75, 0.6666,
+
+                        0.5, 0.6666,
+                        0.5, 1,
+                        0.25, 1,
+                        0.25, 0.6666,
+
+                        0.25, 0.6666,
+                        0.0, 0.6666,
+                        0.0, 0.3333,
+                        0.25, 0.3333,
+
+                        0.25, 0,
+                        0.50, 0,
+                        0.50, 0.3333,
+                        0.25, 0.3333,
+
+                        0.75, 0.3333,
+                        1.0, 0.3333,
+                        1.0, 0.6666,
+                        0.75, 0.6666
+                    ],
+                    indices: [
+                        0, 1, 2,
+                        0, 2, 3,
+                        4, 5, 6,
+                        4, 6, 7,
+                        8, 9, 10,
+                        8, 10, 11,
+                        12, 13, 14,
+                        12, 14, 15,
+
+                        16, 17, 18,
+                        16, 18, 19,
+
+                        20, 21, 22,
+                        20, 22, 23
+                    ]
+                }),
+
+                transform: new XEO.Scale(this.scene, { // Scale the box
+                    xyz: [2000, 2000, 2000] // Overridden when we initialize the 'size' property, below
+                }),
+
+                material: new XEO.PhongMaterial(this.scene, { // Emissive map of sky, no diffuse, ambient or specular reflection
+                    ambient: [0, 0, 0],
+                    diffuse: [0, 0, 0],
+                    specular: [0, 0, 0],
+                    emissiveMap: new XEO.Texture(this.scene, {
+                        src: cfg.src
+                    })
+                }),
+
+                stationary: new XEO.Stationary(this.scene, { // Lock skybox position with respect to viewpoint
+                    active: true
+                }),
+
+                modes: new XEO.Modes(this.scene, {
+                    backfaces: true, // Show interior faces of our skybox geometry
+                    pickable: false // Don't want to ba able to pick skybox
+                })
+            });
+
+            this.size = cfg.size; // Sets 'xyz' property on the GameObject's Scale transform
+        },
+
+        _props: {
+
+            /**
+             * Size of this Skybox, given as the distance from the center at [0,0,0] to each face.
+             *
+             * Fires an {{#crossLink "Skybox/size:event"}}{{/crossLink}} event on change.
+             *
+             * @property size
+             * @default 1000
+             * @type {Number}
+             */
+            size: {
+
+                set: function (value) {
+
+                    this._size = value || 1000;
+
+                    this._skybox.transform.xyz = [this._size, this._size, this._size];
+
+                    /**
+                     Fired whenever this Skybox's {{#crossLink "Skybox/size:property"}}{{/crossLink}} property changes.
+
+                     @event size
+                     @param value {Array of Number} The property's new value
+                     */
+                    this.fire("size", this._size);
+                },
+
+                get: function () {
+                    return this._size;
+                }
+            }
+        },
+
+        _getJSON: function () {
+            return {
+                src: this._skybox.material.emissiveMap.src,
+                size: this._size
             };
         }
     });
@@ -36290,13 +36785,12 @@ scene.on("tick", function(e) {
 })();
 ;/**
 
- A **Stationary** causes associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to (TODO).
+ A **Stationary** disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for
+ associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
 
  ## Overview
 
  TODO
-
- <img src="../../../assets/images/Stationary.png"></img>
 
  ## Example
 
