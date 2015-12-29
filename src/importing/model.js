@@ -14,6 +14,8 @@
      to load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>
      </ul>
 
+     <img src="../../../assets/images/Model.png"></img>
+
      ## Example
 
      First, create a Model, which immediately loads a glTF model into the default {{#crossLink "Scene"}}{{/crossLink}}:

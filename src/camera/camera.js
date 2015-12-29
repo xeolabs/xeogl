@@ -25,9 +25,7 @@
 
  ## Example
 
- <iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
-
- In this example we have
+ In the example below, we have
 
  <ul>
  <li>a {{#crossLink "Lookat"}}{{/crossLink}} view transform,</li>
