@@ -119,7 +119,15 @@
 
                     glTFLoader.setGroup(this._group);
                     glTFLoader.initWithPath(value);
-                    glTFLoader.load();
+
+                    var self = this;
+                    var userInfo = null;
+                    var options = null;
+
+                    glTFLoader.load(userInfo, options,
+                        function () {
+                            self.fire("loaded");
+                        });
 
                     /**
                      Fired whenever this Model's  {{#crossLink "GLTF/src:property"}}{{/crossLink}} property changes.

@@ -163,7 +163,7 @@
 
         load: {
             enumerable: true,
-            value: function (userInfo, options) {
+            value: function (userInfo, options, ok) {
 
                 if (!this.group) {
                     throw "group not set";
@@ -171,6 +171,7 @@
 
                 this.resources = new Resources();
 
+                glTFParser.handleLoadCompleted = ok;
                 glTFParser.load.call(this, userInfo, options);
             }
         },
