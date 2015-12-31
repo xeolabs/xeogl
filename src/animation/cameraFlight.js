@@ -280,7 +280,7 @@
 
                 var vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, tempVec3));
                 var diag = XEO.math.getAABBDiag(aabb);
-                var sca = Math.abs((diag) / Math.tan(this._stopFOV / 2));
+                var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
 
                 this._eye2[0] = this._look2[0] + (vec[0] * sca);
                 this._eye2[1] = this._look2[1] + (vec[1] * sca);
@@ -312,7 +312,7 @@
             this.fire("started", params, true);
 
             this._time1 = Date.now();
-            this._time2 = this._time1 + this._duration;
+            this._time2 = this._time1 + (params.duration ? params.duration * 1000 : this._duration);
 
             this._flying = true; // False as soon as we stop
 
