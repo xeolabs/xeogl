@@ -193,6 +193,8 @@
      to load components from the new file path (after destroying any components that it had loaded from the previous file path).&lt;/li&gt;
      &lt;/ul&gt;
 
+     &lt;img src=&quot;../../../assets/images/Model.png&quot;&gt;&lt;/img&gt;
+
      ## Example
 
      First, create a Model, which immediately loads a glTF model into the default {{#crossLink &quot;Scene&quot;}}{{/crossLink}}:
@@ -296,7 +298,15 @@
 
                     glTFLoader.setGroup(this._group);
                     glTFLoader.initWithPath(value);
-                    glTFLoader.load();
+
+                    var self = this;
+                    var userInfo = null;
+                    var options = null;
+
+                    glTFLoader.load(userInfo, options,
+                        function () {
+                            self.fire(&quot;loaded&quot;);
+                        });
 
                     /**
                      Fired whenever this Model&#x27;s  {{#crossLink &quot;GLTF/src:property&quot;}}{{/crossLink}} property changes.

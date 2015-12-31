@@ -1969,7 +1969,7 @@
             "namespace": "",
             "file": "src/camera/camera.js",
             "line": 3,
-            "description": "A **Camera** defines a viewpoint on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li> A Camera is composed of a viewing transform and a projection transform.</li>\n\n<li>The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.</li>\n\n<li>The projection transform may be an {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}}\nor {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.</li>\n\n<li> By default, each Camera is composed of its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Example\n\n<iframe style=\"width: 600px; height: 400px\" src=\"../../examples/camera_perspective.html\"></iframe>\n\nIn this example we have\n\n<ul>\n<li>a {{#crossLink \"Lookat\"}}{{/crossLink}} view transform,</li>\n<li>a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform,</li>\n<li>a Camera attached to the {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -10],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar perspective = new XEO.Lookat(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
+            "description": "A **Camera** defines a viewpoint on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li> A Camera is composed of a viewing transform and a projection transform.</li>\n\n<li>The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.</li>\n\n<li>The projection transform may be an {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}}\nor {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.</li>\n\n<li> By default, each Camera is composed of its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Example\n\nIn the example below, we have\n\n<ul>\n<li>a {{#crossLink \"Lookat\"}}{{/crossLink}} view transform,</li>\n<li>a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform,</li>\n<li>a Camera attached to the {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>a {{#crossLink \"GameObject\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -10],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar perspective = new XEO.Lookat(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar object = new XEO.GameObject(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
             "submodule": "camera",
             "is_constructor": 1,
             "params": [
@@ -4185,7 +4185,7 @@
             "namespace": "",
             "file": "src/importing/model.js",
             "line": 7,
-            "description": "A **Model** component loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<ul><li>A Model component begins loading content into its {{#crossLink \"Scene\"}}{{/crossLink}} as soon as it's {{#crossLink \"Model/src:property\"}}{{/crossLink}}\nproperty is set to a file path.</li>\n<li>A Model keeps all the scene components it has loaded in a {{#crossLink \"Group\"}}{{/crossLink}}.</li>\n<li>You can set a Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property to a new file path at any time, causing the Model\nto load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>\n</ul>\n\n## Example\n\nFirst, create a Model, which immediately loads a glTF model into the default {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar myModel = new XEO.Model({\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nThe Model has a {{#crossLink \"Group\"}}{{/crossLink}} which now contains all the scene components\nit created while loading the glTF file.\n\nLet's iterate over the {{#crossLink \"Group\"}}{{/crossLink}} and log the ID of each\n{{#crossLink \"GameObject\"}}{{/crossLink}} we find in there:\n\n````javascript\nmyModel.group.iterate(function(c) {\n    if (c.type === \"XEO.GameObject\") {\n        this.log(\"GameObject found: \" + c.id);\n    }\n});\n````\n\nLet's set the Model to a different file path:\n\n````javascript\nmyModel.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\nOnce loaded, the {{#crossLink \"Group\"}}{{/crossLink}} will then contain an entirely different collection of scene\ncomponents, created from this new glTF file.\n\nFinally, a Model manages the lifecycle of it's components. Therefore, destroying a Model also destroys all the\ncomponents it loaded:\n\n````javascript\nmyModel.destroy();\n````",
+            "description": "A **Model** component loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<ul><li>A Model component begins loading content into its {{#crossLink \"Scene\"}}{{/crossLink}} as soon as it's {{#crossLink \"Model/src:property\"}}{{/crossLink}}\nproperty is set to a file path.</li>\n<li>A Model keeps all the scene components it has loaded in a {{#crossLink \"Group\"}}{{/crossLink}}.</li>\n<li>You can set a Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property to a new file path at any time, causing the Model\nto load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>\n</ul>\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n## Example\n\nFirst, create a Model, which immediately loads a glTF model into the default {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar myModel = new XEO.Model({\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nThe Model has a {{#crossLink \"Group\"}}{{/crossLink}} which now contains all the scene components\nit created while loading the glTF file.\n\nLet's iterate over the {{#crossLink \"Group\"}}{{/crossLink}} and log the ID of each\n{{#crossLink \"GameObject\"}}{{/crossLink}} we find in there:\n\n````javascript\nmyModel.group.iterate(function(c) {\n    if (c.type === \"XEO.GameObject\") {\n        this.log(\"GameObject found: \" + c.id);\n    }\n});\n````\n\nLet's set the Model to a different file path:\n\n````javascript\nmyModel.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\nOnce loaded, the {{#crossLink \"Group\"}}{{/crossLink}} will then contain an entirely different collection of scene\ncomponents, created from this new glTF file.\n\nFinally, a Model manages the lifecycle of it's components. Therefore, destroying a Model also destroys all the\ncomponents it loaded:\n\n````javascript\nmyModel.destroy();\n````",
             "submodule": "importing",
             "extends": "Component"
         },
@@ -6068,7 +6068,7 @@
             "namespace": "",
             "file": "src/transforms/stationary.js",
             "line": 1,
-            "description": "A **Stationary** disables the effect of {{#crossLink \"Lookat\"}}view transform{{/crossLink}} translations for\n associated {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n## Overview\nTODO\n## Example\nTODO",
+            "description": "A **Stationary** disables the effect of {{#crossLink \"Lookat\"}}view transform{{/crossLink}} translations for\n associated {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n## Overview\nTODO\n<img src=\"../../../assets/images/Stationary.png\"></img>\n## Example\nTODO",
             "submodule": "transforms",
             "is_constructor": 1,
             "params": [
@@ -7936,7 +7936,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 109,
+            "line": 107,
             "description": "The projection transform component for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/project:property\"}}project{{/crossLink}}, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/project:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "project",
@@ -7947,7 +7947,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 133,
+            "line": 131,
             "description": "Fired whenever this Camera's {{#crossLink \"Camera/project:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "project",
@@ -7963,7 +7963,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 160,
+            "line": 158,
             "description": "The viewing transform component for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/view:property\"}}view{{/crossLink}}, which is\na {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/view:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "view",
@@ -7974,7 +7974,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 184,
+            "line": 182,
             "description": "Fired whenever this Camera's {{#crossLink \"Camera/view:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "view",
@@ -12144,7 +12144,7 @@
         },
         {
             "file": "src/importing/model.js",
-            "line": 93,
+            "line": 95,
             "description": "Path to the glTF file.\n\nFires a {{#crossLink \"Model/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
@@ -12155,7 +12155,7 @@
         },
         {
             "file": "src/importing/model.js",
-            "line": 122,
+            "line": 132,
             "description": "Fired whenever this Model's  {{#crossLink \"GLTF/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -12171,7 +12171,7 @@
         },
         {
             "file": "src/importing/model.js",
-            "line": 135,
+            "line": 145,
             "description": "{{#crossLink \"Group\"}}{{/crossLink}} containing all the xeoEngine components currently loaded by this Model.",
             "itemtype": "property",
             "name": "group",
@@ -19346,7 +19346,7 @@
         },
         {
             "file": "src/transforms/stationary.js",
-            "line": 47,
+            "line": 49,
             "description": "Flag which indicates whether this Stationary is active or not.\n\nFires an {{#crossLink \"Stationary/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -19357,7 +19357,7 @@
         },
         {
             "file": "src/transforms/stationary.js",
-            "line": 71,
+            "line": 73,
             "description": "Fired whenever this Stationary's {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
