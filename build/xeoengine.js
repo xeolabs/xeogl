@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-12-28
+ * Built on 2015-12-30
  *
  * MIT License
  * Copyright 2015, Lindsay Kay
@@ -12263,7 +12263,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 var vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, tempVec3));
                 var diag = XEO.math.getAABBDiag(aabb);
-                var sca = Math.abs((diag) / Math.tan(this._stopFOV / 2));
+                var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
 
                 this._eye2[0] = this._look2[0] + (vec[0] * sca);
                 this._eye2[1] = this._look2[1] + (vec[1] * sca);
@@ -12295,7 +12295,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.fire("started", params, true);
 
             this._time1 = Date.now();
-            this._time2 = this._time1 + this._duration;
+            this._time2 = this._time1 + (params.duration ? params.duration * 1000 : this._duration);
 
             this._flying = true; // False as soon as we stop
 
@@ -12668,9 +12668,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  ## Example
 
- <iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
-
- In this example we have
+ In the example below, we have
 
  <ul>
  <li>a {{#crossLink "Lookat"}}{{/crossLink}} view transform,</li>
@@ -15793,9 +15791,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @param value The property's new value
                      */
                     this.fire('active', this._active = value);
-                }
-
-                ,
+                },
 
                 get: function () {
                     return this._active;
@@ -27426,7 +27422,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         load: {
             enumerable: true,
-            value: function (userInfo, options) {
+            value: function (userInfo, options, ok) {
 
                 if (!this.group) {
                     throw "group not set";
@@ -27434,6 +27430,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 this.resources = new Resources();
 
+                glTFParser.handleLoadCompleted = ok;
                 glTFParser.load.call(this, userInfo, options);
             }
         },
@@ -27821,6 +27818,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
      to load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>
      </ul>
 
+     <img src="../../../assets/images/Model.png"></img>
+
      ## Example
 
      First, create a Model, which immediately loads a glTF model into the default {{#crossLink "Scene"}}{{/crossLink}}:
@@ -27924,7 +27923,15 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     glTFLoader.setGroup(this._group);
                     glTFLoader.initWithPath(value);
-                    glTFLoader.load();
+
+                    var self = this;
+                    var userInfo = null;
+                    var options = null;
+
+                    glTFLoader.load(userInfo, options,
+                        function () {
+                            self.fire("loaded");
+                        });
 
                     /**
                      Fired whenever this Model's  {{#crossLink "GLTF/src:property"}}{{/crossLink}} property changes.
@@ -36791,6 +36798,8 @@ scene.on("tick", function(e) {
  ## Overview
 
  TODO
+
+ <img src="../../../assets/images/Stationary.png"></img>
 
  ## Example
 
