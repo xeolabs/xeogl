@@ -14,15 +14,6 @@
     <link rel="stylesheet" href="./js/libs/jstree/themes/default/style.min.css"/>
     <script src="./js/libs/jstree/jstree.min.js"></script>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-    </style>
 
 <body>
 
@@ -156,9 +147,6 @@
                     var nextObject; // Next object we'll fly to
                     var lastObject; // Last object we flew to
 
-                    var lastHandler;// Subscribes to the Canvas AABB of the object we're flying to, so we can dynamically update the blue box
-
-
                     // Build explorer tree
                     $('#explorer').jstree({
                         'core': {
@@ -177,7 +165,6 @@
                                     if (lastObject) {
                                         lastObject.modes.transparent = true;
                                         nextObject.material.emissive = [0, 0, 0];
-                                        lastObject.off(lastHandler);
                                     }
 
                                     nextObject.modes.transparent = false;
