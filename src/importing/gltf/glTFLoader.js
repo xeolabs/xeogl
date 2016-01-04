@@ -246,9 +246,7 @@
                 var cfg = {
                     id: this._makeID(entryID),
                     meta: {
-                        gltf: {
-                            userInfo: userInfo
-                        }
+                        userInfo: userInfo
                     },
                     shininess: shininessVal
                 };
@@ -517,6 +515,9 @@
 
                             object = new XEO.GameObject(this.group.scene, {
                                 //id: this._makeID(nodeId + ".object" + i),
+                                meta: {
+                                    name: node.name
+                                },
                                 material: material,
                                 geometry: geometry,
                                 transform: transform
