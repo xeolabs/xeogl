@@ -4,10 +4,10 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2015-12-30
+ * Built on 2016-01-03
  *
  * MIT License
- * Copyright 2015, Lindsay Kay
+ * Copyright 2016, Lindsay Kay
  * http://xeolabs.com/
  *
  */
@@ -27776,6 +27776,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                             object = new XEO.GameObject(this.group.scene, {
                                 //id: this._makeID(nodeId + ".object" + i),
+                                meta: {
+                                    name: node.name
+                                },
                                 material: material,
                                 geometry: geometry,
                                 transform: transform
