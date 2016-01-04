@@ -396,6 +396,18 @@ modes.destroy();
                                         </div>
         
                                     </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[collidable=true]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Whether attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are included in boundary-related calculations. Set this false if the
+        <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are things like helpers or indicators that should not be included in boundary calculations.</p>
+        
+                                        </div>
+        
+                                    </li>
                                 </ul>
                         </li>
                     </ul>
@@ -470,6 +482,10 @@ modes.destroy();
                                 <a href="#property_clipping">clipping</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_collidable">collidable</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
@@ -528,6 +544,10 @@ modes.destroy();
                             </li>
                             <li class="index-item event">
                                 <a href="#event_clipping">clipping</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_collidable">collidable</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -1095,7 +1115,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l215"><code>src&#x2F;rendering&#x2F;modes.js:215</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l219"><code>src&#x2F;rendering&#x2F;modes.js:219</code></a>
                             </p>
                     
                     
@@ -1124,7 +1144,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l145"><code>src&#x2F;rendering&#x2F;modes.js:145</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l149"><code>src&#x2F;rendering&#x2F;modes.js:149</code></a>
                             </p>
                     
                     
@@ -1135,6 +1155,38 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>Clipping is done by <a href="../classes/Clips.html" class="crosslink">Clips</a> that are also attached to
                     the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_clipping" class="crosslink">clipping</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
+                    
+                    
+                    </div>
+                    <div id="property_collidable" class="property item">
+                        <h3 class="name"><code>collidable</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_rendering_modes.js.html#l289"><code>src&#x2F;rendering&#x2F;modes.js:289</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Whether attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are included
+                    in boundary-related calculations.</p>
+                    <p>Set this false if the
+                    <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are things like helpers or indicators that should not be included in boundary calculations.</p>
+                    <p>For example, when set false, the <a href="../classes/GameObject.html#property_worldBoundary" class="crosslink">World-space boundary</a> of all attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> would not be considered when calculating the <a href="../classes/Scene.html#property_worldBoundary" class="crosslink">World-space boundary</a> of their
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                    <p>Fires a <a href="../classes/Modes.html#event_collidable" class="crosslink">collidable</a> event on change.</p>
                     
                         </div>
                     
@@ -1178,7 +1230,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l251"><code>src&#x2F;rendering&#x2F;modes.js:251</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l255"><code>src&#x2F;rendering&#x2F;modes.js:255</code></a>
                             </p>
                     
                     
@@ -1309,7 +1361,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l112"><code>src&#x2F;rendering&#x2F;modes.js:112</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l116"><code>src&#x2F;rendering&#x2F;modes.js:116</code></a>
                             </p>
                     
                     
@@ -1392,7 +1444,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l179"><code>src&#x2F;rendering&#x2F;modes.js:179</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l183"><code>src&#x2F;rendering&#x2F;modes.js:183</code></a>
                             </p>
                     
                     
@@ -1458,7 +1510,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l237"><code>src&#x2F;rendering&#x2F;modes.js:237</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l241"><code>src&#x2F;rendering&#x2F;modes.js:241</code></a>
                             </p>
                     
                     
@@ -1500,7 +1552,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l165"><code>src&#x2F;rendering&#x2F;modes.js:165</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l169"><code>src&#x2F;rendering&#x2F;modes.js:169</code></a>
                             </p>
                     
                     
@@ -1508,6 +1560,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Modes&#39; <a href="../classes/Modes.html#property_clipping" class="crosslink">clipping</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_collidable" class="events item">
+                        <h3 class="name"><code>collidable</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_rendering_modes.js.html#l317"><code>src&#x2F;rendering&#x2F;modes.js:317</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Modes&#39; <a href="../classes/Modes.html#property_collidable" class="crosslink">collidable</a> property changes.</p>
                     
                         </div>
                     
@@ -1567,7 +1661,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l271"><code>src&#x2F;rendering&#x2F;modes.js:271</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l275"><code>src&#x2F;rendering&#x2F;modes.js:275</code></a>
                             </p>
                     
                     
@@ -1609,7 +1703,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l131"><code>src&#x2F;rendering&#x2F;modes.js:131</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l135"><code>src&#x2F;rendering&#x2F;modes.js:135</code></a>
                             </p>
                     
                     
@@ -1651,7 +1745,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l201"><code>src&#x2F;rendering&#x2F;modes.js:201</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l205"><code>src&#x2F;rendering&#x2F;modes.js:205</code></a>
                             </p>
                     
                     

@@ -5642,6 +5642,13 @@
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "\"ccw\""
+                        },
+                        {
+                            "name": "collidable",
+                            "description": "Whether attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are included in boundary-related calculations. Set this false if the\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
                         }
                     ]
                 }
@@ -8994,7 +9001,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 116,
+            "line": 122,
             "description": "The {{#crossLink \"KeyboardAxisCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardAxis",
@@ -9006,7 +9013,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 127,
+            "line": 133,
             "description": "The {{#crossLink \"KeyboardRotateCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardOrbit",
@@ -9018,7 +9025,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 138,
+            "line": 144,
             "description": "The {{#crossLink \"MouseRotateCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mouseOrbit",
@@ -9030,7 +9037,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 149,
+            "line": 155,
             "description": "The {{#crossLink \"KeyboardPanCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardPan",
@@ -9042,7 +9049,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 160,
+            "line": 166,
             "description": "The {{#crossLink \"MousePanCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mousePan",
@@ -9054,7 +9061,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 171,
+            "line": 177,
             "description": "The {{#crossLink \"KeyboardZoomCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardZoom",
@@ -9066,7 +9073,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 182,
+            "line": 188,
             "description": "The {{#crossLink \"MouseZoomCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mouseZoom",
@@ -9078,7 +9085,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 193,
+            "line": 199,
             "description": "The {{#crossLink \"MousePickObject\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mousePickObject",
@@ -9090,7 +9097,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 211,
+            "line": 217,
             "description": "The {{#crossLink \"CameraFlight\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "cameraFlight",
@@ -9102,7 +9109,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 292,
+            "line": 298,
             "description": "Flag which indicates whether this CameraControl is in \"first person\" mode.\n\nIn \"first person\" mode (disabled by default) the look position rotates about the eye position. Otherwise,\nthe eye rotates about the look.\n\nFires a {{#crossLink \"KeyboardRotateCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "firstPerson",
@@ -9114,7 +9121,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 315,
+            "line": 321,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/firstPerson:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "firstPerson",
@@ -9130,7 +9137,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 331,
+            "line": 337,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this CameraControl.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraControl. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
@@ -9141,7 +9148,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 345,
+            "line": 351,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -9157,7 +9164,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 376,
+            "line": 382,
             "description": "Flag which indicates whether this CameraControl is active or not.\n\nFires an {{#crossLink \"CameraControl/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -9168,7 +9175,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 406,
+            "line": 412,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -18644,7 +18651,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 112,
+            "line": 116,
             "description": "Whether this Modes enables picking of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nPicking is performed via calls to {{#crossLink \"Canvas/pick:method\"}}Canvas#pick{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/pickable:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "pickable",
@@ -18656,7 +18663,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 131,
+            "line": 135,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/pickable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "pickable",
@@ -18672,7 +18679,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 145,
+            "line": 149,
             "description": "Whether this Modes enables clipping of attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nClipping is done by {{#crossLink \"Clips\"}}{{/crossLink}} that are also attached to\nthe {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/clipping:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clipping",
@@ -18684,7 +18691,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 165,
+            "line": 169,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/clipping:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clipping",
@@ -18700,7 +18707,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 179,
+            "line": 183,
             "description": "Whether this Modes sets attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} transparent.\n\nWhen true. this property will set attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a\ntransparency pass with blending enabled etc), while\nthe {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} will be used to indicate the **degree** of their transparency\n(ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).\n\nFires a {{#crossLink \"Modes/transparent:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transparent",
@@ -18712,7 +18719,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 201,
+            "line": 205,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/transparent:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transparent",
@@ -18728,7 +18735,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 215,
+            "line": 219,
             "description": "Whether this Modes enables backfaces to be visible on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nThe backfaces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} compoents that are also attached to\nthe {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/backfaces:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backfaces",
@@ -18740,7 +18747,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 237,
+            "line": 241,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/backfaces:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backfaces",
@@ -18756,7 +18763,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 251,
+            "line": 255,
             "description": "Indicates the winding direction of front faces on attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nThe faces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} components that are also attached to\nthe {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/frontface:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "frontface",
@@ -18768,10 +18775,38 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 271,
+            "line": 275,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/frontface:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "frontface",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Modes",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/rendering/modes.js",
+            "line": 289,
+            "description": "Whether attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are included\nin boundary-related calculations.\n\nSet this false if the\n{{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.\n\nFor example, when set false, the {{#crossLink \"GameObject/worldBoundary:property\"}}World-space boundary{{/crossLink}} of all attached {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} would not be considered when calculating the {{#crossLink \"Scene/worldBoundary:property\"}}World-space boundary{{/crossLink}} of their\n{{#crossLink \"Scene\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/collidable:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "collidable",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Modes",
+            "module": "XEO",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/rendering/modes.js",
+            "line": 317,
+            "description": "Fired whenever this Modes' {{#crossLink \"Modes/collidable:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "collidable",
             "params": [
                 {
                     "name": "value",
@@ -19130,7 +19165,7 @@
         },
         {
             "file": "src/skyboxes/skybox.js",
-            "line": 171,
+            "line": 175,
             "description": "Size of this Skybox, given as the distance from the center at [0,0,0] to each face.\n\nFires an {{#crossLink \"Skybox/size:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "size",
@@ -19142,7 +19177,7 @@
         },
         {
             "file": "src/skyboxes/skybox.js",
-            "line": 188,
+            "line": 192,
             "description": "Fired whenever this Skybox's {{#crossLink \"Skybox/size:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "size",
@@ -20327,7 +20362,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1157,
+            "line": 1158,
             "description": "Attempts to pick a {{#crossLink \"GameObject\"}}GameObject{{/crossLink}} at the given Canvas-space coordinates.\n\nIgnores {{#crossLink \"GameObject\"}}GameObjects{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nOn success, will fire a {{#crossLink \"Scene/picked:event\"}}{{/crossLink}} event on this Scene, along with\na separate {{#crossLink \"Object/picked:event\"}}{{/crossLink}} event on the target {{#crossLink \"GameObject\"}}GameObject{{/crossLink}}.\n\n````javascript\n\npick({\n     canvasPos: [23, 131],\n     rayPick: true\n     });\n\n````",
             "itemtype": "method",
             "name": "pick",
@@ -20362,7 +20397,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1418,
+            "line": 1419,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -20371,7 +20406,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1446,
+            "line": 1447,
             "description": "Displays a simple test object.\n\nClears the Scene first.\n\nThe test object is destroyed as soon as anything else is created in this Scene.",
             "itemtype": "method",
             "name": "testPattern",
@@ -20380,7 +20415,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1498,
+            "line": 1499,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -20770,7 +20805,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1157"
+            "line": " src/scene.js:1158"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21426,7 +21461,7 @@
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1498"
+            "line": " src/scene.js:1499"
         },
         {
             "message": "Missing item type\nTests if the given object is an array",

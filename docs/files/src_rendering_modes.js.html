@@ -259,6 +259,8 @@
  (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
  @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface=&quot;ccw&quot;] {Boolean} The winding order for {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} front faces - &quot;cw&quot; for clockwise, or &quot;ccw&quot; for counter-clockwise.
+ @param [cfg.collidable=true] {Boolean} Whether attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are included in boundary-related calculations. Set this false if the
+ {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
  @extends Component
  */
 (function () {
@@ -276,7 +278,8 @@
                 clipping: true,
                 transparent: false,
                 backfaces: false,
-                frontface: true // Boolean for speed; true == &quot;ccw&quot;, false == &quot;cw&quot;
+                frontface: true, // Boolean for speed; true == &quot;ccw&quot;, false == &quot;cw&quot;
+                collidable: true
             });
 
             this.pickable = cfg.pickable;
@@ -284,6 +287,7 @@
             this.transparent = cfg.transparent;
             this.backfaces = cfg.backfaces;
             this.frontface = cfg.frontface;
+            this.collidable = cfg.collidable;
         },
 
         _props: {
@@ -459,6 +463,48 @@
                 get: function () {
                     return this._state.frontface ? &quot;ccw&quot; : &quot;cw&quot;;
                 }
+            },
+
+            /**
+             Whether attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are included
+             in boundary-related calculations.
+
+             Set this false if the
+             {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
+
+             For example, when set false, the {{#crossLink &quot;GameObject/worldBoundary:property&quot;}}World-space boundary{{/crossLink}} of all attached {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} would not be considered when calculating the {{#crossLink &quot;Scene/worldBoundary:property&quot;}}World-space boundary{{/crossLink}} of their
+             {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
+
+             Fires a {{#crossLink &quot;Modes/collidable:event&quot;}}{{/crossLink}} event on change.
+
+             @property collidable
+             @default true
+             @type Boolean
+             */
+            collidable: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.collidable) {
+                        return;
+                    }
+
+                    this._state.collidable = value;
+
+                    /**
+                     Fired whenever this Modes&#x27; {{#crossLink &quot;Modes/collidable:property&quot;}}{{/crossLink}} property changes.
+
+                     @event collidable
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;collidable&quot;, this._state.collidable);
+                },
+
+                get: function () {
+                    return this._state.collidable;
+                }
             }
         },
 
@@ -472,7 +518,8 @@
                 clipping: this._state.clipping,
                 transparent: this._state.transparent,
                 backfaces: this._state.backfaces,
-                frontface: this._state.frontface
+                frontface: this._state.frontface,
+                collidable: this._state.collidable
             };
         },
 
