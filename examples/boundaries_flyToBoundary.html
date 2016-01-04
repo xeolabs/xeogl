@@ -37,6 +37,30 @@
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
+    var scene = gearbox.scene;
+
+    // Set initial camera position
+
+    var view = scene.camera.view;
+
+    view.eye = [
+        184.21467781066895,
+        10.54405164718628,
+        -7.033053398132324
+    ];
+
+    view.look = [
+        159.20425415039062,
+        17.020320892333984,
+        3.210801124572754
+    ];
+
+    view.up = [
+        -0.1590631604194641,
+        0.9774724245071411,
+        0.13872624933719635
+    ];
+
     // Yellow wireframe box object, indicates the
     // World-space axis-aligned bounding box (AABB)
     // of each object we fly to
@@ -52,6 +76,12 @@
         }),
         visibility: new XEO.Visibility({ // Boundary is initially invisible
             visible: false
+        }),
+        modes: new XEO.Modes({
+
+            // Does not contribute to the size of any enclosing boundaries
+            // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+            collidable: false
         })
     });
 
@@ -69,6 +99,12 @@
         }),
         visibility: new XEO.Visibility({ // Boundary is initially invisible
             visible: false
+        }),
+        modes: new XEO.Modes({
+
+            // Does not contribute to the size of any enclosing boundaries
+            // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+            collidable: false
         })
     });
 
@@ -194,8 +230,6 @@
 
 
     // Slowly orbit the camera
-
-    var view = gearbox.scene.camera.view;
 
     gearbox.scene.on("tick",
             function () {
