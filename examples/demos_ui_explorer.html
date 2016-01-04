@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="./js/libs/jquery-1.8.3.min.js"></script>
+
+    <link rel="stylesheet" href="./js/libs/jstree/themes/default/style.min.css"/>
+    <script src="./js/libs/jstree/jstree.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>a simple explorer UI to browse the <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a>
+            in a <a href="../docs/classes/Scene.html" target="_other">Scene</a></li>
+        <li>click a node in the explorer below to fly to its GameObject</li>
+    </ul>
+
+</div>
+
+<div id="explorerPanel"
+     style="margin: 0; top: 120px; left:15px; opacity: 0.7;background: white; z-index:10000000; width: 300px; height:60%; position:absolute; overflow-y: scroll; overflow-x: hidden;">
+    <div id="explorer" style=""></div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        // Load glTF
+
+        var gearbox = new XEO.Model({
+            src: "models/gltf/gearbox/gearbox_assy.gltf"
+        });
+
+        var scene = gearbox.scene;
+
+        // Set initial camera position
+
+        var view = scene.camera.view;
+
+        view.eye = [
+            184.21467781066895,
+            10.54405164718628,
+            -7.033053398132324
+        ];
+
+        view.look = [
+            159.20425415039062,
+            17.020320892333984,
+            3.210801124572754
+        ];
+
+        view.up = [
+            -0.1590631604194641,
+            0.9774724245071411,
+            0.13872624933719635
+        ];
+
+        // Yellow wireframe box object, indicates the
+        // World-space axis-aligned bounding box (AABB)
+        // of each object we fly to
+
+        var orientedBoundary = new XEO.GameObject({
+            id: "myOBB",
+            geometry: new XEO.BoundaryGeometry(),
+            material: new XEO.PhongMaterial({
+                diffuse: [0, 0, 0],
+                ambient: [0, 0, 0],
+                specular: [0, 0, 0],
+                emissive: [1.0, 1.0, 0.5],
+                lineWidth: 3
+            }),
+            visibility: new XEO.Visibility({ // Boundary is initially invisible
+                visible: false
+            })
+        });
+
+        // Allow user camera control
+
+        new XEO.CameraControl();
+
+        // Camera flight animation, flies the default camera 
+        // to each GameObject as we select it in the explorer 
+
+        var cameraFlight = new XEO.CameraFlight();
+
+        gearbox.on("loaded",
+                function () {
+
+                    // When the Model has loaded, iterate over all the GameObjects in the Scene:
+                    //
+                    // 1. Ensure that they each have their own Material and Modes components, so that
+                    // we can set them transparent individually. This is quick-and-dirty, where we
+                    // may be creating excess Materials and Modes, while needlessly keeping unused ones.
+                    //
+                    // 2. Add an item to the JSON data we'll build our explorer from.
+
+                    var data = [];
+                    var sceneObjects = scene.types["XEO.GameObject"];
+                    var object;
+
+                    for (var objectId in sceneObjects) {
+                        if (sceneObjects.hasOwnProperty(objectId)) {
+
+                            if (objectId === "myOOBB") {
+
+                                // Don't list our OOBB boundary indicator in the explorer
+                                continue;
+                            }
+
+                            object = sceneObjects[objectId];
+
+                            // Ensure the GameObject has its own unique Material and Modes
+
+                            object.material = object.material.clone();
+                            object.material.opacity = 0.4;
+
+                            object.modes = object.modes.clone();
+                            object.modes.transparent = true;
+
+                            // To each GameObject it loads, a Model will attach metadata
+                            // containing a human-readable name - use that to list a 
+                            // human-readable name in the explorer.
+
+                            data.push({
+                                id: object.id,
+                                text: object.meta.name || "unnamed"
+                            })
+                        }
+                    }
+
+                    // Build explorer (using JSTree), bind a selection handler
+                    // that flies to the selected GameObject
+
+                    var nextObject; // Next object we'll fly to
+                    var lastObject; // Last object we flew to
+
+                    var lastHandler;// Subscribes to the Canvas AABB of the object we're flying to, so we can dynamically update the blue box
+
+
+                    // Build explorer tree
+                    $('#explorer').jstree({
+                        'core': {
+                            'data': data
+                        }
+                    })
+                        // Bind selection handler
+                            .on("changed.jstree",
+                            function (e, data) {
+                                if (data.selected.length) {
+
+                                    var objectID = data.instance.get_node(data.selected[0]).id;
+
+                                    nextObject = scene.components[objectID];
+
+                                    if (lastObject) {
+                                        lastObject.modes.transparent = true;
+                                        nextObject.material.emissive = [0, 0, 0];
+                                        lastObject.off(lastHandler);
+                                    }
+
+                                    nextObject.modes.transparent = false;
+
+                                    orientedBoundary.geometry.obb = nextObject.worldBoundary.obb;
+                                    orientedBoundary.visibility.visible = true;
+
+                                    cameraFlight.flyTo({
+                                                aabb: nextObject.worldBoundary.aabb, // Fly to object's AABB
+                                                stopFOV: 45, // Make sure the camera stops far enough back from the object
+                                                duration: 1.0 // One second flight time to each object
+                                            },
+                                            function () {
+                                                // Camera has arrived at object
+                                            });
+
+                                    lastObject = nextObject;
+                                }
+                            });
+                });
+    });
+</script>
+</body>
+</html>
