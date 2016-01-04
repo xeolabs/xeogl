@@ -1117,9 +1117,10 @@
 
                                         object = objects[objectId];
 
-                                        if (!object.stationary.active) {
+                                        if (object.modes.collidable) {
 
-                                            // Don't consider boundaries of skyboxed components
+                                            // Only include boundaries of objects that are allowed
+                                            // to contribute to the size of an enclosing boundary
 
                                             XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
                                         }

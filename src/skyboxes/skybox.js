@@ -159,7 +159,11 @@
 
                 modes: new XEO.Modes(this.scene, {
                     backfaces: true, // Show interior faces of our skybox geometry
-                    pickable: false // Don't want to ba able to pick skybox
+                    pickable: false, // Don't want to ba able to pick skybox
+
+                    // SkyBox does not contribute to the size of any enclosing boundaries
+                    // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+                    collidable: false
                 })
             });
 
