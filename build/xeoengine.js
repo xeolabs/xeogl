@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-01-03
+ * Built on 2016-01-04
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -11382,9 +11382,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                                         object = objects[objectId];
 
-                                        if (!object.stationary.active) {
+                                        if (object.modes.collidable) {
 
-                                            // Don't consider boundaries of skyboxed components
+                                            // Only include boundaries of objects that are allowed
+                                            // to contribute to the size of an enclosing boundary
 
                                             XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
                                         }
@@ -15492,6 +15493,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 }),
                 visibility: new XEO.Visibility(scene, {
                     visible: false
+                }),
+                modes: new XEO.Modes({
+
+                    // Does not contribute to the size of any enclosing boundaries
+                    // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+                    collidable: false
                 })
             });
 
@@ -27505,9 +27512,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 var cfg = {
                     id: this._makeID(entryID),
                     meta: {
-                        gltf: {
-                            userInfo: userInfo
-                        }
+                        userInfo: userInfo
                     },
                     shininess: shininessVal
                 };
@@ -33165,6 +33170,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
  @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
+ @param [cfg.collidable=true] {Boolean} Whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are included in boundary-related calculations. Set this false if the
+ {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
  @extends Component
  */
 (function () {
@@ -33182,7 +33189,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 clipping: true,
                 transparent: false,
                 backfaces: false,
-                frontface: true // Boolean for speed; true == "ccw", false == "cw"
+                frontface: true, // Boolean for speed; true == "ccw", false == "cw"
+                collidable: true
             });
 
             this.pickable = cfg.pickable;
@@ -33190,6 +33198,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             this.transparent = cfg.transparent;
             this.backfaces = cfg.backfaces;
             this.frontface = cfg.frontface;
+            this.collidable = cfg.collidable;
         },
 
         _props: {
@@ -33365,6 +33374,48 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 get: function () {
                     return this._state.frontface ? "ccw" : "cw";
                 }
+            },
+
+            /**
+             Whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are included
+             in boundary-related calculations.
+
+             Set this false if the
+             {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
+
+             For example, when set false, the {{#crossLink "GameObject/worldBoundary:property"}}World-space boundary{{/crossLink}} of all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} would not be considered when calculating the {{#crossLink "Scene/worldBoundary:property"}}World-space boundary{{/crossLink}} of their
+             {{#crossLink "Scene"}}{{/crossLink}}.
+
+             Fires a {{#crossLink "Modes/collidable:event"}}{{/crossLink}} event on change.
+
+             @property collidable
+             @default true
+             @type Boolean
+             */
+            collidable: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.collidable) {
+                        return;
+                    }
+
+                    this._state.collidable = value;
+
+                    /**
+                     Fired whenever this Modes' {{#crossLink "Modes/collidable:property"}}{{/crossLink}} property changes.
+
+                     @event collidable
+                     @param value The property's new value
+                     */
+                    this.fire("collidable", this._state.collidable);
+                },
+
+                get: function () {
+                    return this._state.collidable;
+                }
             }
         },
 
@@ -33378,7 +33429,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 clipping: this._state.clipping,
                 transparent: this._state.transparent,
                 backfaces: this._state.backfaces,
-                frontface: this._state.frontface
+                frontface: this._state.frontface,
+                collidable: this._state.collidable
             };
         },
 
@@ -34643,7 +34695,11 @@ myTask2.setFailed();
 
                 modes: new XEO.Modes(this.scene, {
                     backfaces: true, // Show interior faces of our skybox geometry
-                    pickable: false // Don't want to ba able to pick skybox
+                    pickable: false, // Don't want to ba able to pick skybox
+
+                    // SkyBox does not contribute to the size of any enclosing boundaries
+                    // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+                    collidable: false
                 })
             });
 
