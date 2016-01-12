@@ -14,7 +14,9 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
+
+                <h1 style="color:white !important;"><a href="../../" style="color:white; font-weight: normal;">xeoEngine</a> / <a href="../../docs" style="color:white; font-weight: normal;">API Docs</a></h1>
+
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.1.0</em>
@@ -25,7 +27,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                    <h2 class="off-left">APIs</h2>
+                
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -57,13 +59,13 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
-                                <li><a href="../classes/Cylinder.html">Cylinder</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
-                                <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
@@ -81,7 +83,7 @@
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
                                 <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -126,6 +128,7 @@
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
@@ -133,7 +136,6 @@
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
                                 <li><a href="../modules/math.html">math</a></li>
-                                <li><a href="../modules/objects.html">objects</a></li>
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
                                 <li><a href="../modules/shaders.html">shaders</a></li>
@@ -147,28 +149,28 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <div id="api-options">
-                    Show:
-                    <label for="api-show-inherited">
-                        <input type="checkbox" id="api-show-inherited" checked>
-                        Inherited
-                    </label>
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
             
-                    <label for="api-show-protected">
-                        <input type="checkbox" id="api-show-protected">
-                        Protected
-                    </label>
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
             
-                    <label for="api-show-private">
-                        <input type="checkbox" id="api-show-private">
-                        Private
-                    </label>
-                    <label for="api-show-deprecated">
-                        <input type="checkbox" id="api-show-deprecated">
-                        Deprecated
-                    </label>
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
             
-                </div>
+                <!--</div>-->
             
             <div class="apidocs">
                 <div id="docs-main">
@@ -178,7 +180,7 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Scene** models a 3D scene as a fully-editable and serializable &lt;a href=&quot;http://gameprogrammingpatterns.com/component.html&quot; target=&quot;_other&quot;&gt;component-object&lt;/a&gt; graph.
+ A **Scene** models a 3D scene as a fully-editable and serializable &lt;a href=&quot;http://gameprogrammingpatterns.com/component.html&quot; target=&quot;_other&quot;&gt;component-entity&lt;/a&gt; graph.
 
  ## Contents
 
@@ -193,11 +195,11 @@
  ## &lt;a name=&quot;sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;
 
  A Scene contains a soup of instances of various {{#crossLink &quot;Component&quot;}}Component{{/crossLink}} subtypes, such as
- {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}, {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}, {{#crossLink &quot;Material&quot;}}Material{{/crossLink}},
- {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} etc.  Each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} has a link to one of each of the other types,
- and the same component instances can be shared among many {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}.
+ {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}}, {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}, {{#crossLink &quot;Material&quot;}}Material{{/crossLink}},
+ {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} etc.  Each {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} has a link to one of each of the other types,
+ and the same component instances can be shared among many {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
- *** Under the hood:*** Within xeoEngine, each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} represents a draw call,
+ *** Under the hood:*** Within xeoEngine, each {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} represents a draw call,
  while its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses
  the graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).
 
@@ -206,9 +208,9 @@
  #### Default Components
 
  A Scene provides its own default *flyweight* instance of each component type
- (except for {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}). Each {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} you create
- will implicitly link to a default instance for each type of component that you don&#x27;t explicitly link it to. For example, when you create a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} without
- a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}}, the {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} will link to the
+ (except for {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}}). Each {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} you create
+ will implicitly link to a default instance for each type of component that you don&#x27;t explicitly link it to. For example, when you create an {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} without
+ a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}}, the {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} will link to the
  {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/lights:property&quot;}}{{/crossLink}}. This mechanism
  provides ***training wheels*** to help you learn the API, and also helps keep examples simple, where many of the examples in this
  documentation are implicitly using those defaults when they are not central to discussion.
@@ -218,25 +220,25 @@
  represent some of the defaults provided by our Scene. For brevity, the diagram only shows those three
  types of component (there are actually around two dozen).
 
- Note that we did not link the second {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} to a
+ Note that we did not link the second {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} to a
  {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}, causing it to be implicitly linked to our Scene&#x27;s
  default {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}. That {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}
- is the only default our {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} are falling back on in this example, with other
+ is the only default our {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} are falling back on in this example, with other
  default component types, such as the {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} and the {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}},
- hanging around dormant until a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} is linked to them.
+ hanging around dormant until an {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} is linked to them.
 
  Note also how the same {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} is linked to both of our
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}}. Whenever we update that
+ {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}. Whenever we update that
  {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}, it&#x27;s going to affect both of those
- {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} in one shot. Think of the defaults as the Scene&#x27;s ***global*** component
- instances, which you may optionally override on a per-{{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} basis with your own
+ {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} in one shot. Think of the defaults as the Scene&#x27;s ***global*** component
+ instances, which you may optionally override on a per-{{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} basis with your own
  component instances. In many Scenes, for example, you might not even bother to create your own {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} and just
- let all your {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} fall back on the default one.
+ let all your {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} fall back on the default one.
 
  ## Example
 
- Here&#x27;s the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} when we need to
- override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple Objects.
+ Here&#x27;s the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} when we need to
+ override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple Entities.
 
  &#x60;&#x60;&#x60;&#x60; javascript
  var scene = new XEO.Scene({
@@ -259,14 +261,14 @@
 
  var camera = new XEO.Camera(myScene);
 
- var object1 = new XEO.GameObject(myScene, {
+ var entity1 = new XEO.Entity(myScene, {
        material: myMaterial,
        geometry: myGeometry,
        camera: myCamera
   });
 
- // Second object uses Scene&#x27;s default Material
- var object3 = new XEO.GameObject(myScene, {
+ // Second entity uses Scene&#x27;s default Material
+ var entity3 = new XEO.Entity(myScene, {
        geometry: myGeometry,
        camera: myCamera
   });
@@ -278,7 +280,7 @@
 
  ## &lt;a name=&quot;findingByID&quot;&gt;Finding Scenes and Components by ID&lt;/a&gt;
 
- We can have as many Scenes as we want, and can find them by ID on the {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s {{#crossLink &quot;XEO/scenes:property&quot;}}scenes{{/crossLink}} map:
+ We can have as many Scenes as we want, and can find them by ID on the {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} entity&#x27;s {{#crossLink &quot;XEO/scenes:property&quot;}}scenes{{/crossLink}} map:
 
  &#x60;&#x60;&#x60;&#x60;javascript
  var theScene = XEO.scenes[&quot;myScene&quot;];
@@ -313,14 +315,14 @@
 
  var camera = new XEO.Camera();
 
- var object1 = new XEO.GameObject({
+ var entity1 = new XEO.Entity({
      material: material2,
      geometry: geometry2,
      camera: camera2
 });
  &#x60;&#x60;&#x60;&#x60;
 
- You can then obtain the default Scene from the {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s
+ You can then obtain the default Scene from the {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} entity&#x27;s
  {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} property:
 
  &#x60;&#x60;&#x60;&#x60;javascript
@@ -333,8 +335,8 @@
  &#x60;&#x60;&#x60;&#x60;
 
  ***Note:*** xeoEngine creates the default Scene as soon as you either
- create your first Sceneless {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} or reference the
- {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} object&#x27;s {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} property. Expect to
+ create your first Sceneless {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} or reference the
+ {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} entity&#x27;s {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} property. Expect to
  see the HTML canvas for the default Scene magically appear in the page when you do that.
 
  ## &lt;a name=&quot;savingAndLoading&quot;&gt;Saving and Loading Scenes&lt;/a&gt;
@@ -422,8 +424,8 @@
              * The {{#crossLink &quot;Component&quot;}}Component{{/crossLink}}s within
              * this Scene, mapped to their IDs.
              *
-             * Will also contain the {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}s
-             * contained in {{#crossLink &quot;GameObject/components:property&quot;}}{{/crossLink}}.
+             * Will also contain the {{#crossLink &quot;Entity&quot;}}{{/crossLink}}s
+             * contained in {{#crossLink &quot;Entity/components:property&quot;}}{{/crossLink}}.
              *
              * @property components
              * @type {String:XEO.Component}
@@ -440,19 +442,19 @@
             this.types = {};
 
             /**
-             * The {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}s within
+             * The {{#crossLink &quot;Entity&quot;}}{{/crossLink}}s within
              * this Scene, mapped to their IDs.
              *
-             * The {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}s in this map
-             * will also be contained in {{#crossLink &quot;GameObject/components:property&quot;}}{{/crossLink}}.
+             * The {{#crossLink &quot;Entity&quot;}}{{/crossLink}}s in this map
+             * will also be contained in {{#crossLink &quot;Entity/components:property&quot;}}{{/crossLink}}.
              *
-             * @property objects
-             * @type {String:XEO.GameObject}
+             * @property entities
+             * @type {String:XEO.Entity}
              */
-            this.objects = {};
+            this.entities = {};
 
-            // Contains XEO.GameObjects that need to be recompiled back into this._renderer
-            this._dirtyObjects = {};
+            // Contains XEO.Entities that need to be recompiled back into this._renderer
+            this._dirtyEntities = {};
 
             /**
              * Configurations for this Scene. Set whatever properties on here
@@ -555,7 +557,7 @@
         _initDefaults: function () {
 
             // Create this Scene&#x27;s default components, which every
-            // GameObject created in this Scene will inherit by default
+            // Entity created in this Scene will inherit by default
 
             this.view;
             this.project;
@@ -616,25 +618,25 @@
 
             c.on(&quot;destroyed&quot;, this._componentDestroyed, this);
 
-            if (c.type === &quot;XEO.GameObject&quot;) {
+            if (c.type === &quot;XEO.Entity&quot;) {
 
-                // Component is a XEO.GameObject
+                // Component is a XEO.Entity
 
-                c.on(&quot;dirty&quot;, this._objectDirty, this);
+                c.on(&quot;dirty&quot;, this._entityDirty, this);
 
-                this.objects[c.id] = c;
+                this.entities[c.id] = c;
 
                 if (this._worldBoundary) {
 
                     // If we currently have a World-space Scene boundary, then invalidate
-                    // it whenever GameObject&#x27;s World-space boundary updates
+                    // it whenever Entity&#x27;s World-space boundary updates
 
                     c.worldBoundary.on(&quot;updated&quot;, this._setWorldBoundaryDirty, this);
                 }
 
                 // Update scene statistics
 
-                XEO.stats.components.objects++;
+                XEO.stats.components.entities++;
             }
 
             /**
@@ -666,19 +668,19 @@
                 }
             }
 
-            if (c.type === &quot;XEO.GameObject&quot;) {
+            if (c.type === &quot;XEO.Entity&quot;) {
 
-                // Component is a XEO.GameObject
+                // Component is a XEO.Entity
 
                 // Update scene statistics,
                 // Unschedule any pending recompilation of
-                // the GameObject into the renderer
+                // the Entity into the renderer
 
-                XEO.stats.components.objects--;
+                XEO.stats.components.entities--;
 
-                delete this.objects[c.id];
+                delete this.entities[c.id];
 
-                delete this._dirtyObjects[c.id];
+                delete this._dirtyEntities[c.id];
             }
 
             /**
@@ -691,13 +693,13 @@
             //this.log(&quot;Destroyed &quot; + c.type + &quot; &quot; + XEO._inQuotes(c.id));
         },
 
-        _objectDirty: function (object) {
+        _entityDirty: function (entity) {
 
-            // Whenever the GameObject signals dirty,
+            // Whenever the Entity signals dirty,
             // schedule its recompilation into the renderer
 
-            if (!this._dirtyObjects[object.id]) {
-                this._dirtyObjects[object.id] = object;
+            if (!this._dirtyEntities[entity.id]) {
+                this._dirtyEntities[entity.id] = entity;
             }
         },
 
@@ -760,7 +762,7 @@
              * This {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.camera&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to
              * this {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} by default.
              * @property camera
              * @final
@@ -785,7 +787,7 @@
              * This {{#crossLink &quot;Transform&quot;}}{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.transform&quot;,
              * with all other properties initialised to their default values (ie. an identity matrix).
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to
              * this {{#crossLink &quot;Transform&quot;}}{{/crossLink}} by default.
              *
              * @property transform
@@ -809,7 +811,7 @@
              * This {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.billboard&quot;
              * and an {{#crossLink &quot;Billboard/active:property&quot;}}{{/crossLink}} property set to false, to disable it.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} by default.
              *
              * @property billboard
@@ -833,7 +835,7 @@
              * This {{#crossLink &quot;Stationary&quot;}}Stationary{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.stationary&quot;
              * and an {{#crossLink &quot;Stationary/active:property&quot;}}{{/crossLink}} property set to false, to disable it.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Stationary&quot;}}Stationary{{/crossLink}} by default.
              *
              * @property stationary
@@ -857,7 +859,7 @@
              * This {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.clips&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} by default.
              * @property clips
              * @final
@@ -880,7 +882,7 @@
              * This {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.colorBuf&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} by default.
              * @property colorBuf
              * @final
@@ -904,7 +906,7 @@
              * {{#crossLink &quot;ColorTarget/active:property&quot;}}inactive{{/crossLink}} by default and will have an
              * {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthTarget&quot;.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} by default.
              * @property colorTarget
              * @final
@@ -927,7 +929,7 @@
              * This {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthBuf&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} by default.
              *
              * @property depthBuf
@@ -952,7 +954,7 @@
              * {{#crossLink &quot;DepthTarget/active:property&quot;}}inactive{{/crossLink}} by default and has an
              * {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthTarget&quot;.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} by default.
              * @property depthTarget
              * @final
@@ -975,7 +977,7 @@
              * This {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.visibility&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} by default.
              * @property visibility
              * @final
@@ -998,7 +1000,7 @@
              * This {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.modes&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} by default.
              * @property modes
              * @final
@@ -1019,7 +1021,7 @@
              *
              * This {{#crossLink &quot;BoxGeometry&quot;}}BoxGeometry{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.geometry&quot;.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} by default.
              * @property geometry
              * @final
@@ -1041,7 +1043,7 @@
              * This {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.layer&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} by default.
              * @property layer
              * @final
@@ -1065,7 +1067,7 @@
              * This {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to *&#x60;&#x60;&#x60;&#x60;&quot;default.lights&quot;&#x60;&#x60;&#x60;&#x60;*,
              * with all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}}).
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} by default.
              *
              * @property lights
@@ -1120,7 +1122,7 @@
              * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.material&quot;, with all
              * other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial{{/crossLink}} by default.
              * @property material
              * @final
@@ -1142,7 +1144,7 @@
              * This {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.morphTargets&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;MorphTargets&quot;}}MorphTargets{{/crossLink}} by default.
              * @property morphTargets
              * @final
@@ -1165,7 +1167,7 @@
              * This {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.reflect&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Reflect&quot;}}Reflect{{/crossLink}} by default.
              * @property reflect
              * @final
@@ -1188,7 +1190,7 @@
              * This {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.shader&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} by default.
              * @property shader
              * @final
@@ -1210,7 +1212,7 @@
              * This {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.shaderParams&quot;,
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;ShaderParams&quot;}}{{/crossLink}} by default.
              *
              * @property shaderParams
@@ -1234,7 +1236,7 @@
              * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.stage&quot; and
              * a {{#crossLink &quot;Stage/priority:property&quot;}}priority{{/crossLink}} equal to &#x60;&#x60;&#x60;&#x60;0&#x60;&#x60;&#x60;&#x60;.
              *
-             * {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} by default.
              * @property stage
              * @final
@@ -1288,20 +1290,20 @@
 
                                 XEO.math.collapseAABB3(aabb);
 
-                                var objects = self.objects;
-                                var object;
+                                var entities = self.entities;
+                                var entity;
 
-                                for (var objectId in objects) {
-                                    if (objects.hasOwnProperty(objectId)) {
+                                for (var entityId in entities) {
+                                    if (entities.hasOwnProperty(entityId)) {
 
-                                        object = objects[objectId];
+                                        entity = entities[entityId];
 
-                                        if (object.modes.collidable) {
+                                        if (entity.modes.collidable) {
 
-                                            // Only include boundaries of objects that are allowed
+                                            // Only include boundaries of entities that are allowed
                                             // to contribute to the size of an enclosing boundary
 
-                                            XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
+                                            XEO.math.expandAABB3(aabb, entity.worldBoundary.aabb);
                                         }
                                     }
                                 }
@@ -1335,14 +1337,14 @@
         },
 
         /**
-         * Attempts to pick a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} at the given Canvas-space coordinates.
+         * Attempts to pick an {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} at the given Canvas-space coordinates.
          *
-         * Ignores {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} that are attached
+         * Ignores {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} that are attached
          * to either a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} with {{#crossLink &quot;Stage/pickable:property&quot;}}pickable{{/crossLink}}
          * set *false* or a {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} with {{#crossLink &quot;Modes/pickable:property&quot;}}pickable{{/crossLink}} set *false*.
          *
          * On success, will fire a {{#crossLink &quot;Scene/picked:event&quot;}}{{/crossLink}} event on this Scene, along with
-         * a separate {{#crossLink &quot;Object/picked:event&quot;}}{{/crossLink}} event on the target {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.
+         * a separate {{#crossLink &quot;Entity/picked:event&quot;}}{{/crossLink}} event on the target {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}}.
          *
          * &#x60;&#x60;&#x60;&#x60;javascript
          *
@@ -1357,7 +1359,7 @@
          * @param {*} params Picking parameters.
          * @param {Array of Number} [params.canvasPos] Canvas-space coordinates.
          * @param {Boolean} [params.rayPick=false] Whether to ray-pick.
-         * @returns {*} Hit record, returned when a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}} is picked, else null.
+         * @returns {*} Hit record, returned when an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is picked, else null.
          */
         pick: (function () {
 
@@ -1403,20 +1405,20 @@
             var tempVec3j = XEO.math.vec3();
 
 
-            // Given a GameObject and camvas coordinates, gets a ray
+            // Given a Entity and camvas coordinates, gets a ray
             // originating at the World-space eye position that passes
             // through the perspective projection plane. The ray is
             // returned via the origin and dir arguments.
 
-            function getLocalRay(object, canvasCoords, origin, dir) {
+            function getLocalRay(entity, canvasCoords, origin, dir) {
 
                 var math = XEO.math;
 
-                var canvas = object.scene.canvas.canvas;
+                var canvas = entity.scene.canvas.canvas;
 
-                var modelMat = object.transform.matrix;
-                var viewMat = object.camera.view.matrix;
-                var projMat = object.camera.project.matrix;
+                var modelMat = entity.transform.matrix;
+                var viewMat = entity.camera.view.matrix;
+                var projMat = entity.camera.project.matrix;
 
                 var vmMat = math.mulMat4(viewMat, modelMat, tempMat4);
                 var pvMat = math.mulMat4(projMat, vmMat, tempMat4b);
@@ -1460,18 +1462,18 @@
 
                 if (hit) {
 
-                    var object = this.objects[hit.object];
+                    var entity = this.entities[hit.entity];
 
-                    hit.object = object; // Swap string ID for XEO.Object
+                    hit.entity = entity; // Swap string ID for XEO.Entity
 
                     if (hit.primitiveIndex !== -1) {
 
-                        var geometry = object.geometry;
+                        var geometry = entity.geometry;
 
                         if (geometry.primitive === &quot;triangles&quot;) {
 
                             // Triangle picked; this only happens when the
-                            // GameObject has a Geometry that has primitives of type &quot;triangle&quot;
+                            // Entity has a Geometry that has primitives of type &quot;triangle&quot;
 
                             hit.primitive = &quot;triangle&quot;;
 
@@ -1508,7 +1510,7 @@
                             // from the eye position through the mouse position
                             // on the perspective projection plane
 
-                            getLocalRay(object, params.canvasPos, origin, dir);
+                            getLocalRay(entity, params.canvasPos, origin, dir);
 
                             math.rayPlaneIntersect(origin, dir, a, b, c, position);
 
@@ -1527,7 +1529,7 @@
 
                             // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                            math.transformVec4(object.transform.matrix, tempVec4, tempVec4b);
+                            math.transformVec4(entity.transform.matrix, tempVec4, tempVec4b);
 
                             worldPos[0] = tempVec4b[0];
                             worldPos[1] = tempVec4b[1];
@@ -1618,17 +1620,17 @@
 
             this._initDefaults();
 
-            this._dirtyObjects = {};
+            this._dirtyEntities = {};
         }
 
         ,
 
         /**
-         * Displays a simple test object.
+         * Displays a simple test entity.
          *
          * Clears the Scene first.
          *
-         * The test object is destroyed as soon as anything else is created in this Scene.
+         * The test entity is destroyed as soon as anything else is created in this Scene.
          *
          * @method testPattern
          */
@@ -1638,14 +1640,14 @@
 
             this.clear();
 
-            // Create spinning test object
+            // Create spinning test entity
 
             var rotate = new XEO.Rotate(this, {
                 xyz: [0, .5, .5],
                 angle: 0
             });
 
-            var object = new XEO.GameObject(this, {
+            var entity = new XEO.Entity(this, {
                 transform: rotate
             });
 
@@ -1653,23 +1655,23 @@
 
             var spin = this.on(&quot;tick&quot;,
                 function () {
-                    object.transform.angle = angle;
+                    entity.transform.angle = angle;
                     angle += 0.5;
                 });
 
             var self = this;
 
-            object.on(&quot;destroyed&quot;,
+            entity.on(&quot;destroyed&quot;,
                 function () {
                     self.off(spin);
                 });
 
-            // Destroy spinning test object as soon as something
+            // Destroy spinning test entity as soon as something
             // is created subsequently in the scene
 
             this.on(&quot;componentCreated&quot;,
                 function () {
-                    object.destroy();
+                    entity.destroy();
                     rotate.destroy();
                 });
         }
@@ -1681,37 +1683,37 @@
          */
         _compile: function () {
 
-            // Compile dirty objects into this._renderer
+            // Compile dirty entities into this._renderer
 
-            var countCompiledObjects = 0;
+            var countCompiledEntities = 0;
 
             var time1 = Date.now();
-            var object;
+            var entity;
 
-            for (var id in this._dirtyObjects) {
-                if (this._dirtyObjects.hasOwnProperty(id)) {
+            for (var id in this._dirtyEntities) {
+                if (this._dirtyEntities.hasOwnProperty(id)) {
 
-                    object = this._dirtyObjects[id];
+                    entity = this._dirtyEntities[id];
 
-                    if (object._valid()) {
+                    if (entity._valid()) {
 
-                        object._compile();
+                        entity._compile();
 
-                        delete this._dirtyObjects[id];
+                        delete this._dirtyEntities[id];
 
-                        countCompiledObjects++;
+                        countCompiledEntities++;
                     }
                     //if (Date.now() - time1 &gt; 30) {
                     //
-                    //    // Throttle the time we spend (re)compiling GameObjects each frame
+                    //    // Throttle the time we spend (re)compiling Entities each frame
                     //
                     //    break;
                     //}
                 }
             }
 
-            if (countCompiledObjects &gt; 0) {
-                //    this.log(&quot;Compiled &quot; + countCompiledObjects + &quot; XEO.GameObject&quot; + (countCompiledObjects &gt; 1 ? &quot;s&quot; : &quot;&quot;));
+            if (countCompiledEntities &gt; 0) {
+                //    this.log(&quot;Compiled &quot; + countCompiledEntities + &quot; XEO.Entity&quot; + (countCompiledEntities &gt; 1 ? &quot;s&quot; : &quot;&quot;));
             }
 
             // Render a frame

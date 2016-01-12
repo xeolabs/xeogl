@@ -14,7 +14,9 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
+
+                <h1 style="color:white !important;"><a href="../../" style="color:white; font-weight: normal;">xeoEngine</a> / <a href="../../docs" style="color:white; font-weight: normal;">API Docs</a></h1>
+
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.1.0</em>
@@ -25,7 +27,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                    <h2 class="off-left">APIs</h2>
+                
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -57,13 +59,13 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
-                                <li><a href="../classes/Cylinder.html">Cylinder</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
-                                <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
@@ -81,7 +83,7 @@
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
                                 <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -126,6 +128,7 @@
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
@@ -133,7 +136,6 @@
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
                                 <li><a href="../modules/math.html">math</a></li>
-                                <li><a href="../modules/objects.html">objects</a></li>
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
                                 <li><a href="../modules/shaders.html">shaders</a></li>
@@ -147,33 +149,33 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <div id="api-options">
-                    Show:
-                    <label for="api-show-inherited">
-                        <input type="checkbox" id="api-show-inherited" checked>
-                        Inherited
-                    </label>
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
             
-                    <label for="api-show-protected">
-                        <input type="checkbox" id="api-show-protected">
-                        Protected
-                    </label>
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
             
-                    <label for="api-show-private">
-                        <input type="checkbox" id="api-show-private">
-                        Private
-                    </label>
-                    <label for="api-show-deprecated">
-                        <input type="checkbox" id="api-show-deprecated">
-                        Deprecated
-                    </label>
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
             
-                </div>
+                <!--</div>-->
             
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Modes Class</h1>
+<h1>Modes</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -191,14 +193,14 @@
 
 
 <div class="box intro">
-    <p>A <strong>Modes</strong> toggles various xeoEngine modes and capabilities for attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+    <p>A <strong>Modes</strong> toggles various xeoEngine modes and capabilities for attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <h2 id="overview">Overview</h2>
 <ul>
 
-<li>Though the rendering modes are defined by various different components attached to the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>,
+<li>Though the rendering modes are defined by various different components attached to the <a href="../classes/Entity.html" class="crosslink">Entities</a>,
 Modes components provide a single point through which you can toggle them on or off.</li>
 
-<li>A Modes may be shared among multiple <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> to toggle
+<li>A Modes may be shared among multiple <a href="../classes/Entity.html" class="crosslink">Entities</a> to toggle
 rendering modes for them as a group.</li>
 
 <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeoEngine&#39;s shaders.</li>
@@ -208,7 +210,7 @@ rendering modes for them as a group.</li>
 <p><img src="../../../assets/images/Modes.png"></img></p>
 <h2 id="example">Example</h2>
 <p>In this example we have a Modes that toggles rendering modes for
-two <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>. The properties of the Modes are initialised to their
+two <a href="../classes/Entity.html" class="crosslink">Entities</a>. The properties of the Modes are initialised to their
 default values.</p>
 <pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
@@ -221,13 +223,13 @@ var modes = new XEO.Modes(scene, {
    frontface : "ccw"
 });
 
-// Create two GameObjects whose rendering modes will be controlled by our Modes
+// Create two Entities whose rendering modes will be controlled by our Modes
 
-var object1 = new XEO.GameObject(scene, {
+var entity1 = new XEO.Entity(scene, {
       modes: modes
 });
 
-var object2 = new XEO.GameObject(scene, {
+var entity2 = new XEO.Entity(scene, {
       modes: modes
 });
 
@@ -236,14 +238,14 @@ var handle = modes.on("backfaces", function(value) {
       //...
 });
 
-// Hide backfaces on our GameObjects by flipping the Modes&#39; "backfaces" property,
+// Hide backfaces on our Entities by flipping the Modes&#39; "backfaces" property,
 // which will also call our handler
 modes.backfaces = false;
 
 // Unsubscribe from the Modes again
 modes.off(handle);
 
-// When we destroy our Modes, the GameObjects will fall back
+// When we destroy our Modes, the Entities will fall back
 // on the Scene&#39;s default Modes instance
 modes.destroy();
 </code></pre>
@@ -272,6 +274,8 @@ modes.destroy();
         
         
         
+        
+            <!---->
         
             <div class="meta">
                         <p>
@@ -366,7 +370,7 @@ modes.destroy();
         
                                         <div class="param-description">
                                             <p>Whether to enable the transparency effect created by <a href="../classes/Material.html" class="crosslink">Material</a>s when they have
-        <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> &lt; 1.0. This mode will set attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> transparent (ie. to be rendered in a
+        <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> &lt; 1.0. This mode will set attached <a href="../classes/Entity.html" class="crosslink">Entities</a> transparent (ie. to be rendered in a
         transparency pass with blending enabled etc), while
         the <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> will indicate the <strong>degree</strong> of their transparency
         (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).</p>
@@ -402,8 +406,8 @@ modes.destroy();
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Whether attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are included in boundary-related calculations. Set this false if the
-        <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are things like helpers or indicators that should not be included in boundary calculations.</p>
+                                            <p>Whether attached <a href="../classes/Entity.html" class="crosslink">Entities</a> are included in boundary-related calculations. Set this false if the
+        <a href="../classes/Entity.html" class="crosslink">Entities</a> are things like helpers or indicators that should not be included in boundary calculations.</p>
         
                                         </div>
         
@@ -429,7 +433,7 @@ modes.destroy();
 
     <div>
         <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
+            <h2 class="off-left">Index</h2>
 
                 <div class="index-section methods">
                     <h3>Methods</h3>
@@ -585,6 +589,8 @@ modes.destroy();
 
 
 
+    <!---->
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
@@ -624,6 +630,8 @@ defaults that this component overrode on them.</p>
 
 
 
+
+    <!---->
 
     <div class="meta">
                 <p>Inherited from
@@ -687,6 +695,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+
+    <!---->
 
     <div class="meta">
                 <p>Inherited from
@@ -767,6 +777,8 @@ any subsequent notifications on that location as they are made.</p>
 
 
 
+    <!---->
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
@@ -823,6 +835,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+
+    <!---->
 
     <div class="meta">
                 <p>Inherited from
@@ -887,6 +901,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+
+    <!---->
 
     <div class="meta">
                 <p>Inherited from
@@ -981,6 +997,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+    <!---->
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
@@ -1060,6 +1078,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+    <!---->
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
@@ -1122,9 +1142,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables backfaces to be visible on attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                            <p>Whether this Modes enables backfaces to be visible on attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
                     <p>The backfaces will belong to <a href="../classes/Geometry.html" class="crosslink">Geometry</a> compoents that are also attached to
-                    the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    the <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_backfaces" class="crosslink">backfaces</a> event on change.</p>
                     
                         </div>
@@ -1151,9 +1171,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables clipping of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                            <p>Whether this Modes enables clipping of attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
                     <p>Clipping is done by <a href="../classes/Clips.html" class="crosslink">Clips</a> that are also attached to
-                    the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    the <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_clipping" class="crosslink">clipping</a> event on change.</p>
                     
                         </div>
@@ -1180,11 +1200,11 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are included
+                            <p>Whether attached <a href="../classes/Entity.html" class="crosslink">Entities</a> are included
                     in boundary-related calculations.</p>
                     <p>Set this false if the
-                    <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> are things like helpers or indicators that should not be included in boundary calculations.</p>
-                    <p>For example, when set false, the <a href="../classes/GameObject.html#property_worldBoundary" class="crosslink">World-space boundary</a> of all attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> would not be considered when calculating the <a href="../classes/Scene.html#property_worldBoundary" class="crosslink">World-space boundary</a> of their
+                    <a href="../classes/Entity.html" class="crosslink">Entities</a> are things like helpers or indicators that should not be included in boundary calculations.</p>
+                    <p>For example, when set false, the <a href="../classes/Entity.html#property_worldBoundary" class="crosslink">World-space boundary</a> of all attached <a href="../classes/Entity.html" class="crosslink">Entities</a> would not be considered when calculating the <a href="../classes/Scene.html#property_worldBoundary" class="crosslink">World-space boundary</a> of their
                     <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_collidable" class="crosslink">collidable</a> event on change.</p>
                     
@@ -1237,9 +1257,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Indicates the winding direction of front faces on attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                            <p>Indicates the winding direction of front faces on attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
                     <p>The faces will belong to <a href="../classes/Geometry.html" class="crosslink">Geometry</a> components that are also attached to
-                    the <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                    the <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_frontface" class="crosslink">frontface</a> event on change.</p>
                     
                         </div>
@@ -1368,7 +1388,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes enables picking of attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a>.</p>
+                            <p>Whether this Modes enables picking of attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
                     <p>Picking is performed via calls to Canvas/pick:method.</p>
                     <p>Fires a <a href="../classes/Modes.html#event_pickable" class="crosslink">pickable</a> event on change.</p>
                     
@@ -1451,8 +1471,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Whether this Modes sets attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> transparent.</p>
-                    <p>When true. this property will set attached <a href="../classes/GameObject.html" class="crosslink">GameObjects</a> transparent (ie. to be rendered in a
+                            <p>Whether this Modes sets attached <a href="../classes/Entity.html" class="crosslink">Entities</a> transparent.</p>
+                    <p>When true. this property will set attached <a href="../classes/Entity.html" class="crosslink">Entities</a> transparent (ie. to be rendered in a
                     transparency pass with blending enabled etc), while
                     the <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> will be used to indicate the <strong>degree</strong> of their transparency
                     (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).</p>

@@ -20,13 +20,13 @@ YUI.add("yuidoc-meta", function(Y) {
         "Configs",
         "CubicBezierCurve",
         "Curve",
-        "Cylinder",
+        "CylinderGeometry",
         "DepthBuf",
         "DepthTarget",
         "DirLight",
+        "Entity",
         "Fresnel",
         "Frustum",
-        "GameObject",
         "Geometry",
         "Group",
         "GroupBoundary",
@@ -44,7 +44,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Modes",
         "MorphTargets",
         "MousePanCamera",
-        "MousePickObject",
+        "MousePickEntity",
         "MouseRotateCamera",
         "MouseZoomCamera",
         "Ortho",
@@ -89,6 +89,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "controls",
         "culling",
         "curves",
+        "entities",
         "geometry",
         "grouping",
         "importing",
@@ -96,7 +97,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "lighting",
         "materials",
         "math",
-        "objects",
         "rendering",
         "reporting",
         "shaders",
@@ -127,7 +127,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "clipping",
             "name": "clipping",
-            "description": "Components for cross-section views of GameObjects."
+            "description": "Components for cross-section views of Entities."
         },
         {
             "displayName": "configs",
@@ -142,12 +142,17 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "culling",
             "name": "culling",
-            "description": "Components for controlling the visibility of GameObjects."
+            "description": "Components for controlling the visibility of Entities."
         },
         {
             "displayName": "curves",
             "name": "curves",
             "description": "Components for defining 3D curves."
+        },
+        {
+            "displayName": "entities",
+            "name": "entities",
+            "description": "Entities."
         },
         {
             "displayName": "geometry",
@@ -177,7 +182,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "materials",
             "name": "materials",
-            "description": "Components to define the surface appearance of GameObjects."
+            "description": "Components to define the surface appearance of Entities."
         },
         {
             "displayName": "math",
@@ -185,14 +190,9 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Math utilities."
         },
         {
-            "displayName": "objects",
-            "name": "objects",
-            "description": "Game object components."
-        },
-        {
             "displayName": "rendering",
             "name": "rendering",
-            "description": "Components that influence the way objects are rendered on WebGL."
+            "description": "Components that influence the way entities are rendered with WebGL."
         },
         {
             "displayName": "reporting",

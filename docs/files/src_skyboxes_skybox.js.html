@@ -14,7 +14,9 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
+
+                <h1 style="color:white !important;"><a href="../../" style="color:white; font-weight: normal;">xeoEngine</a> / <a href="../../docs" style="color:white; font-weight: normal;">API Docs</a></h1>
+
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.1.0</em>
@@ -25,7 +27,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                    <h2 class="off-left">APIs</h2>
+                
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -57,13 +59,13 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
-                                <li><a href="../classes/Cylinder.html">Cylinder</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
-                                <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
@@ -81,7 +83,7 @@
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
                                 <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -126,6 +128,7 @@
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
@@ -133,7 +136,6 @@
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
                                 <li><a href="../modules/math.html">math</a></li>
-                                <li><a href="../modules/objects.html">objects</a></li>
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
                                 <li><a href="../modules/shaders.html">shaders</a></li>
@@ -147,28 +149,28 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <div id="api-options">
-                    Show:
-                    <label for="api-show-inherited">
-                        <input type="checkbox" id="api-show-inherited" checked>
-                        Inherited
-                    </label>
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
             
-                    <label for="api-show-protected">
-                        <input type="checkbox" id="api-show-protected">
-                        Protected
-                    </label>
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
             
-                    <label for="api-show-private">
-                        <input type="checkbox" id="api-show-private">
-                        Private
-                    </label>
-                    <label for="api-show-deprecated">
-                        <input type="checkbox" id="api-show-deprecated">
-                        Deprecated
-                    </label>
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
             
-                </div>
+                <!--</div>-->
             
             <div class="apidocs">
                 <div id="docs-main">
@@ -181,7 +183,7 @@
 
  A **Skybox** is a textured box that does not translate with respect to the 
  {{#crossLink &quot;Lookat&quot;}}viewing transform{{/crossLink}}, to a provide the appearance of a background 
- for associated {{#crossLink &quot;GameObjects&quot;}}GameObjects{{/crossLink}}.
+ for associated {{#crossLink &quot;Entities&quot;}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -190,11 +192,11 @@
  ## Example
 
  &#x60;&#x60;&#x60;&#x60;javascript
- // A bunch of random cube GameObjects
+ // A bunch of random cube Entities
 
  for (var i = 0; i &lt; 20; i++) {
 
-        new XEO.GameObject({
+        new XEO.Entity({
             transform: new XEO.Translate({
                 xyz: [
                     Math.random() * 15 - 7,
@@ -212,7 +214,7 @@
         });
     }
 
- // A Skybox that wraps our GameObjects in a cloudy background
+ // A Skybox that wraps our Entities in a cloudy background
 
  var skybox = new XEO.Skybox({
         src: &quot;textures/skybox/miramarClouds.jpg&quot;,
@@ -258,7 +260,7 @@
 
         _init: function (cfg) {
 
-            this._skybox = new XEO.GameObject(this.scene, {
+            this._skybox = new XEO.Entity(this.scene, {
 
                 geometry: new XEO.Geometry(this.scene, { // Box-shaped geometry
                     primitive: &quot;triangles&quot;,
@@ -346,7 +348,7 @@
                 })
             });
 
-            this.size = cfg.size; // Sets &#x27;xyz&#x27; property on the GameObject&#x27;s Scale transform
+            this.size = cfg.size; // Sets &#x27;xyz&#x27; property on the Entity&#x27;s Scale transform
         },
 
         _props: {

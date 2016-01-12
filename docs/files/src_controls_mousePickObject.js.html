@@ -14,7 +14,9 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="../../assets/images/logo.png" title="xeoengine"></h1>
+
+                <h1 style="color:white !important;"><a href="../../" style="color:white; font-weight: normal;">xeoEngine</a> / <a href="../../docs" style="color:white; font-weight: normal;">API Docs</a></h1>
+
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.1.0</em>
@@ -25,7 +27,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                    <h2 class="off-left">APIs</h2>
+                
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -57,13 +59,13 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
-                                <li><a href="../classes/Cylinder.html">Cylinder</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
-                                <li><a href="../classes/GameObject.html">GameObject</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/Group.html">Group</a></li>
                                 <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
@@ -81,7 +83,7 @@
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
                                 <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickObject.html">MousePickObject</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
                                 <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -126,6 +128,7 @@
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
                                 <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
@@ -133,7 +136,6 @@
                                 <li><a href="../modules/lighting.html">lighting</a></li>
                                 <li><a href="../modules/materials.html">materials</a></li>
                                 <li><a href="../modules/math.html">math</a></li>
-                                <li><a href="../modules/objects.html">objects</a></li>
                                 <li><a href="../modules/rendering.html">rendering</a></li>
                                 <li><a href="../modules/reporting.html">reporting</a></li>
                                 <li><a href="../modules/shaders.html">shaders</a></li>
@@ -147,28 +149,28 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <div id="api-options">
-                    Show:
-                    <label for="api-show-inherited">
-                        <input type="checkbox" id="api-show-inherited" checked>
-                        Inherited
-                    </label>
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
             
-                    <label for="api-show-protected">
-                        <input type="checkbox" id="api-show-protected">
-                        Protected
-                    </label>
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
             
-                    <label for="api-show-private">
-                        <input type="checkbox" id="api-show-private">
-                        Private
-                    </label>
-                    <label for="api-show-deprecated">
-                        <input type="checkbox" id="api-show-deprecated">
-                        Deprecated
-                    </label>
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
             
-                </div>
+                <!--</div>-->
             
             <div class="apidocs">
                 <div id="docs-main">
@@ -178,7 +180,7 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **MousePickObject** picks {{#crossLink &quot;GameObject&quot;}}GameObjects{{/crossLink}} with mouse clicks.
+ A **MousePickEntity** picks {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} with mouse clicks.
 
  ## Overview
 
@@ -189,25 +191,25 @@
  &#x60;&#x60;&#x60;&#x60;Javascript
  var scene = new XEO.Scene({ element: &quot;myDiv&quot; });
 
- // Create some GameObjects
+ // Create some Entities
 
- var object1 = new XEO.GameObject(scene, {
-    id: &quot;object1&quot;,
+ var entity1 = new XEO.Entity(scene, {
+    id: &quot;entity1&quot;,
     transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })
  });
 
- var object2 = new XEO.GameObject(scene, {
-    id: &quot;object2&quot;,
+ var entity2 = new XEO.Entity(scene, {
+    id: &quot;entity2&quot;,
     transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })
  });
 
- var object3 = new XEO.GameObject(scene, {
-    id: &quot;object3&quot;,
+ var entity3 = new XEO.Entity(scene, {
+    id: &quot;entity3&quot;,
     transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })
  });
 
- // Create a MousePickObject
- var mousePickObject = new XEO.MousePickObject(scene, {
+ // Create a MousePickEntity
+ var mousePickEntity = new XEO.MousePickEntity(scene, {
 
     // We want the 3D World-space coordinates
     // of each location we pick
@@ -215,37 +217,37 @@
     rayPick: true
  });
 
- // Handle picked GameObjects
- mousePickObject.on(&quot;pick&quot;, function(e) {
-    var object = e.object;
+ // Handle picked Entities
+ mousePickEntity.on(&quot;pick&quot;, function(e) {
+    var entity = e.entity;
     var canvasPos = e.canvasPos;
     var primitiveIndex = e.primitiveIndex;
  });
 
  // Handle nothing picked
- mousePickObject.on(&quot;nopick&quot;, function(e) {
+ mousePickEntity.on(&quot;nopick&quot;, function(e) {
     var canvasPos = e.canvasPos;
  });
  &#x60;&#x60;&#x60;&#x60;
 
- @class MousePickObject
+ @class MousePickEntity
  @module XEO
  @submodule controls
  @constructor
  @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickObject.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
- {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
- @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickObject is active.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickEntity.
+ @param [rayPick=false] {Boolean} Indicates whether this MousePickEntity will find the 3D ray intersection whenever it picks a
+ {{#crossLink &quot;Entity&quot;}}{{/crossLink}}.
+ @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickEntity is active.
  @extends Component
  */
 (function () {
 
     &quot;use strict&quot;;
 
-    XEO.MousePickObject = XEO.Component.extend({
+    XEO.MousePickEntity = XEO.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -254,7 +256,7 @@
          @type String
          @final
          */
-        type: &quot;XEO.MousePickObject&quot;,
+        type: &quot;XEO.MousePickEntity&quot;,
 
         _init: function (cfg) {
 
@@ -266,9 +268,9 @@
         _props: {
 
             /**
-             * Flag which indicates whether this MousePickObject is active or not.
+             * Flag which indicates whether this MousePickEntity is active or not.
              *
-             * Fires a {{#crossLink &quot;MousePickObject/active:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;MousePickEntity/active:event&quot;}}{{/crossLink}} event on change.
              *
              * @property active
              * @type Boolean
@@ -319,20 +321,20 @@
                                     if (hit) {
 
                                         /**
-                                         * Fired whenever a {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} is picked.
+                                         * Fired whenever an {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} is picked.
                                          * @event picked
-                                         * @param {String} objectId The ID of the picked {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+                                         * @param {String} entityId The ID of the picked {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
                                          * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                         * @param {Array of Number} worldPos When {{#crossLink &quot;MousePickObject/rayPick&quot;}}{{/crossLink}} is true,
+                                         * @param {Array of Number} worldPos When {{#crossLink &quot;MousePickEntity/rayPick&quot;}}{{/crossLink}} is true,
                                          * provides the World-space coordinate that was ray-picked on the surface of the
-                                         * {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}}.
+                                         * {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}}.
                                          */
                                         self.fire(&quot;pick&quot;, hit);
 
                                     } else {
 
                                         /**
-                                         * Fired whenever an attempt to pick {{#crossLink &quot;GameObject&quot;}}GameObject{{/crossLink}} picks empty space.
+                                         * Fired whenever an attempt to pick {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} picks empty space.
                                          * @event nopick
                                          * @param {Array of Number} canvasPos The Canvas-space coordinate at which the pick was attempted.
                                          */
@@ -351,7 +353,7 @@
                     }
 
                     /**
-                     * Fired whenever this MousePickObject&#x27;s {{#crossLink &quot;MousePickObject/active:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this MousePickEntity&#x27;s {{#crossLink &quot;MousePickEntity/active:property&quot;}}{{/crossLink}} property changes.
                      * @event active
                      * @param value The property&#x27;s new value
                      */
@@ -365,13 +367,13 @@
             },
 
             /**
-             * Indicates whether this MousePickObject will try to pick a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} primitive
-             * whenever it picks a {{#crossLink &quot;GameObject&quot;}}{{/crossLink}}.
+             * Indicates whether this MousePickEntity will try to pick a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} primitive
+             * whenever it picks an {{#crossLink &quot;Entity&quot;}}{{/crossLink}}.
              *
-             * When true, this MousePickObject will try to return the primitive index in a
-             * {{#crossLink &quot;MousePickObject/picked:event&quot;}}{{/crossLink}} event.
+             * When true, this MousePickEntity will try to return the primitive index in a
+             * {{#crossLink &quot;MousePickEntity/picked:event&quot;}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink &quot;MousePickObject/rayPick:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;MousePickEntity/rayPick:event&quot;}}{{/crossLink}} event on change.
              *
              * @property rayPick
              * @type Boolean
@@ -389,7 +391,7 @@
                     this._dirty = false;
 
                     /**
-                     * Fired whenever this MousePickObject&#x27;s {{#crossLink &quot;MousePickObject/rayPick:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this MousePickEntity&#x27;s {{#crossLink &quot;MousePickEntity/rayPick:property&quot;}}{{/crossLink}} property changes.
                      * @event rayPick
                      * @param value The property&#x27;s new value
                      */
