@@ -49,6 +49,7 @@ module.exports = function (grunt) {
                 version: '<%= pkg.version %>',
                 url: '<%= pkg.homepage %>',
                 options: {
+                    themedir: "yuiDocThemes/xeoengine",
                     paths: ['src'],
                     outdir: './docs/',
                     "exclude": "renderer, utils, webgl"
