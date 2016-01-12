@@ -66,7 +66,7 @@ dd p:first-child, td p:first-child { margin-top: 0; }
 /* -- Headings -------------------------------------------------------------- */
 h1, h2, h3, h4, h5, h6 {
     color: #D98527;/*was #f80*/
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Trebuchet MS', sans-serif;
     font-weight: bold;
     line-height: 1.1;
     margin: 1.1em 0 0.5em;
@@ -391,7 +391,7 @@ specific tabview, see the other sections below.
 /* Headings */
 h2, h3, h4, h5, h6 {
     border: none;
-    color: #333333;
+    color: #30418C;
     font-weight: bold;
     text-decoration: none;
 }
