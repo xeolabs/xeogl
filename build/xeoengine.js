@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-01-04
+ * Built on 2016-01-12
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -58,7 +58,7 @@
             //},
             components: {
                 scenes: 0,
-                objects: 0
+                entities: 0
             },
             memory: {
 
@@ -231,7 +231,7 @@
          {{#crossLink "Scene"}}Scene{{/crossLink}} by default.
 
          xeoEngine creates the default {{#crossLink "Scene"}}Scene{{/crossLink}} as soon as you either
-         reference this property for the first time, or create your first {{#crossLink "GameObject"}}GameObject{{/crossLink}} without
+         reference this property for the first time, or create your first {{#crossLink "Entity"}}Entity{{/crossLink}} without
          a specified {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
          @property scene
@@ -334,6 +334,7 @@
          * clears the default {{#crossLink "Scene"}}Scene{{/crossLink}}.
          *
          * @method clear
+         * @demo foo
          */
         clear: function () {
 
@@ -361,8 +362,8 @@
          * Tests if the given object is an array
          * @private
          */
-        _isArray: function (testGameObject) {
-            return testGameObject && !(testGameObject.propertyIsEnumerable('length')) && typeof testGameObject === 'object' && typeof testGameObject.length === 'number';
+        _isArray: function (testEntity) {
+            return testEntity && !(testEntity.propertyIsEnumerable('length')) && typeof testEntity === 'object' && typeof testEntity.length === 'number';
         },
 
         /**
@@ -1659,7 +1660,7 @@
             // Object was picked
 
             hit = {
-                object: object.id,
+                entity: object.id,
                 canvasPos: [
                     canvasX,
                     canvasY
@@ -9418,7 +9419,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeoEngine generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
  scene comprised of {{#crossLink "Scene"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}}, {{#crossLink "Geometry"}}{{/crossLink}} and
- {{#crossLink "GameObject"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for
+ {{#crossLink "Entity"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for
  the {{#crossLink "Geometry"}}{{/crossLink}}:
 
  ````javascript
@@ -9435,8 +9436,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     id: "myGeometry"
 });
 
- // Let xeoEngine automatically generate the ID for our Object
- var object = new XEO.GameObject(scene, {
+ // Let xeoEngine automatically generate the ID for our Entity
+ var entity = new XEO.Entity(scene, {
     material: material,
     geometry: geometry
 });
@@ -9473,18 +9474,18 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````
 
  We can also subscribe to changes in the way components are attached to each other, since components are properties
- of other components. For example, we can subscribe to the '{{#crossLink "Object/material:event"}}{{/crossLink}}' event that a
- {{#crossLink "GameObject"}}GameObject{{/crossLink}} fires when its {{#crossLink "Object/material:property"}}{{/crossLink}}
+ of other components. For example, we can subscribe to the '{{#crossLink "Entity/material:event"}}{{/crossLink}}' event that a
+ {{#crossLink "Entity"}}Entity{{/crossLink}} fires when its {{#crossLink "Entity/material:property"}}{{/crossLink}}
  property is set to a different {{#crossLink "Material"}}Material{{/crossLink}}:
 
  ```` javascript
- // Bind a change callback to the Object's Material
- object1.on("material", function(material) {
-    console.log("Object's Material has changed to: " + material.id);
+ // Bind a change callback to the Entity's Material
+ entity1.on("material", function(material) {
+    console.log("Entity's Material has changed to: " + material.id);
 });
 
  // Now replace that Material with another
- object1.material = new XEO.PhongMaterial({
+ entity1.material = new XEO.PhongMaterial({
     id: "myOtherMaterial",
     diffuse: [ 0.3, 0.3, 0.6 ]
     //..
@@ -9579,7 +9580,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````
 
  Other Components that are linked to it will fall back on a default of some sort. For example, any
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that were linked to our {{#crossLink "Material"}}{{/crossLink}}
+ {{#crossLink "Entity"}}Entities{{/crossLink}} that were linked to our {{#crossLink "Material"}}{{/crossLink}}
  will then automatically link to the {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/material:property"}}{{/crossLink}}.
 
  @class Component
@@ -9931,7 +9932,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          *
          * The clone will share (by reference) the components of the original, unless overridden.
          *
-         * For example, if this component is a {{#crossLink "GameObject"}}{{/crossLink}}, then the clone
+         * For example, if this component is an {{#crossLink "Entity"}}{{/crossLink}}, then the clone
          * will be attached to the **same** instances of {{#crossLink "PhoneMaterial"}}{{/crossLink}},
          * {{#crossLink "Camera"}}{{/crossLink}} etc as this component, unless it supplies its own
          * instances for those via the configs.
@@ -10264,7 +10265,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
 })();
 ;/**
- A **Scene** models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-object</a> graph.
+ A **Scene** models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-entity</a> graph.
 
  ## Contents
 
@@ -10279,11 +10280,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ## <a name="sceneStructure">Scene Structure</a>
 
  A Scene contains a soup of instances of various {{#crossLink "Component"}}Component{{/crossLink}} subtypes, such as
- {{#crossLink "GameObject"}}GameObject{{/crossLink}}, {{#crossLink "Camera"}}Camera{{/crossLink}}, {{#crossLink "Material"}}Material{{/crossLink}},
- {{#crossLink "Lights"}}Lights{{/crossLink}} etc.  Each {{#crossLink "GameObject"}}GameObject{{/crossLink}} has a link to one of each of the other types,
- and the same component instances can be shared among many {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ {{#crossLink "Entity"}}Entity{{/crossLink}}, {{#crossLink "Camera"}}Camera{{/crossLink}}, {{#crossLink "Material"}}Material{{/crossLink}},
+ {{#crossLink "Lights"}}Lights{{/crossLink}} etc.  Each {{#crossLink "Entity"}}Entity{{/crossLink}} has a link to one of each of the other types,
+ and the same component instances can be shared among many {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- *** Under the hood:*** Within xeoEngine, each {{#crossLink "GameObject"}}GameObject{{/crossLink}} represents a draw call,
+ *** Under the hood:*** Within xeoEngine, each {{#crossLink "Entity"}}Entity{{/crossLink}} represents a draw call,
  while its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses
  the graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).
 
@@ -10292,9 +10293,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  #### Default Components
 
  A Scene provides its own default *flyweight* instance of each component type
- (except for {{#crossLink "GameObject"}}GameObject{{/crossLink}}). Each {{#crossLink "GameObject"}}GameObject{{/crossLink}} you create
- will implicitly link to a default instance for each type of component that you don't explicitly link it to. For example, when you create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} without
- a {{#crossLink "Lights"}}Lights{{/crossLink}}, the {{#crossLink "GameObject"}}GameObject{{/crossLink}} will link to the
+ (except for {{#crossLink "Entity"}}Entity{{/crossLink}}). Each {{#crossLink "Entity"}}Entity{{/crossLink}} you create
+ will implicitly link to a default instance for each type of component that you don't explicitly link it to. For example, when you create an {{#crossLink "Entity"}}Entity{{/crossLink}} without
+ a {{#crossLink "Lights"}}Lights{{/crossLink}}, the {{#crossLink "Entity"}}Entity{{/crossLink}} will link to the
  {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/lights:property"}}{{/crossLink}}. This mechanism
  provides ***training wheels*** to help you learn the API, and also helps keep examples simple, where many of the examples in this
  documentation are implicitly using those defaults when they are not central to discussion.
@@ -10304,25 +10305,25 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  represent some of the defaults provided by our Scene. For brevity, the diagram only shows those three
  types of component (there are actually around two dozen).
 
- Note that we did not link the second {{#crossLink "GameObject"}}GameObject{{/crossLink}} to a
+ Note that we did not link the second {{#crossLink "Entity"}}Entity{{/crossLink}} to a
  {{#crossLink "Material"}}Material{{/crossLink}}, causing it to be implicitly linked to our Scene's
  default {{#crossLink "Material"}}Material{{/crossLink}}. That {{#crossLink "Material"}}Material{{/crossLink}}
- is the only default our {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are falling back on in this example, with other
+ is the only default our {{#crossLink "Entity"}}Entities{{/crossLink}} are falling back on in this example, with other
  default component types, such as the {{#crossLink "Geometry"}}Geometry{{/crossLink}} and the {{#crossLink "Camera"}}Camera{{/crossLink}},
- hanging around dormant until a {{#crossLink "GameObject"}}GameObject{{/crossLink}} is linked to them.
+ hanging around dormant until an {{#crossLink "Entity"}}Entity{{/crossLink}} is linked to them.
 
  Note also how the same {{#crossLink "Camera"}}Camera{{/crossLink}} is linked to both of our
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. Whenever we update that
+ {{#crossLink "Entity"}}Entities{{/crossLink}}. Whenever we update that
  {{#crossLink "Camera"}}Camera{{/crossLink}}, it's going to affect both of those
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in one shot. Think of the defaults as the Scene's ***global*** component
- instances, which you may optionally override on a per-{{#crossLink "GameObject"}}GameObject{{/crossLink}} basis with your own
+ {{#crossLink "Entity"}}Entities{{/crossLink}} in one shot. Think of the defaults as the Scene's ***global*** component
+ instances, which you may optionally override on a per-{{#crossLink "Entity"}}Entity{{/crossLink}} basis with your own
  component instances. In many Scenes, for example, you might not even bother to create your own {{#crossLink "Camera"}}Camera{{/crossLink}} and just
- let all your {{#crossLink "GameObject"}}GameObjects{{/crossLink}} fall back on the default one.
+ let all your {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the default one.
 
  ## Example
 
- Here's the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink "GameObject"}}GameObjects{{/crossLink}} when we need to
- override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple Objects.
+ Here's the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink "Entity"}}Entities{{/crossLink}} when we need to
+ override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple Entities.
 
  ```` javascript
  var scene = new XEO.Scene({
@@ -10345,14 +10346,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  var camera = new XEO.Camera(myScene);
 
- var object1 = new XEO.GameObject(myScene, {
+ var entity1 = new XEO.Entity(myScene, {
        material: myMaterial,
        geometry: myGeometry,
        camera: myCamera
   });
 
- // Second object uses Scene's default Material
- var object3 = new XEO.GameObject(myScene, {
+ // Second entity uses Scene's default Material
+ var entity3 = new XEO.Entity(myScene, {
        geometry: myGeometry,
        camera: myCamera
   });
@@ -10364,7 +10365,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  ## <a name="findingByID">Finding Scenes and Components by ID</a>
 
- We can have as many Scenes as we want, and can find them by ID on the {{#crossLink "XEO"}}XEO{{/crossLink}} object's {{#crossLink "XEO/scenes:property"}}scenes{{/crossLink}} map:
+ We can have as many Scenes as we want, and can find them by ID on the {{#crossLink "XEO"}}XEO{{/crossLink}} entity's {{#crossLink "XEO/scenes:property"}}scenes{{/crossLink}} map:
 
  ````javascript
  var theScene = XEO.scenes["myScene"];
@@ -10399,14 +10400,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  var camera = new XEO.Camera();
 
- var object1 = new XEO.GameObject({
+ var entity1 = new XEO.Entity({
      material: material2,
      geometry: geometry2,
      camera: camera2
 });
  ````
 
- You can then obtain the default Scene from the {{#crossLink "XEO"}}XEO{{/crossLink}} object's
+ You can then obtain the default Scene from the {{#crossLink "XEO"}}XEO{{/crossLink}} entity's
  {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} property:
 
  ````javascript
@@ -10419,8 +10420,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````
 
  ***Note:*** xeoEngine creates the default Scene as soon as you either
- create your first Sceneless {{#crossLink "GameObject"}}GameObject{{/crossLink}} or reference the
- {{#crossLink "XEO"}}XEO{{/crossLink}} object's {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} property. Expect to
+ create your first Sceneless {{#crossLink "Entity"}}Entity{{/crossLink}} or reference the
+ {{#crossLink "XEO"}}XEO{{/crossLink}} entity's {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} property. Expect to
  see the HTML canvas for the default Scene magically appear in the page when you do that.
 
  ## <a name="savingAndLoading">Saving and Loading Scenes</a>
@@ -10508,8 +10509,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * The {{#crossLink "Component"}}Component{{/crossLink}}s within
              * this Scene, mapped to their IDs.
              *
-             * Will also contain the {{#crossLink "GameObject"}}{{/crossLink}}s
-             * contained in {{#crossLink "GameObject/components:property"}}{{/crossLink}}.
+             * Will also contain the {{#crossLink "Entity"}}{{/crossLink}}s
+             * contained in {{#crossLink "Entity/components:property"}}{{/crossLink}}.
              *
              * @property components
              * @type {String:XEO.Component}
@@ -10526,19 +10527,19 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.types = {};
 
             /**
-             * The {{#crossLink "GameObject"}}{{/crossLink}}s within
+             * The {{#crossLink "Entity"}}{{/crossLink}}s within
              * this Scene, mapped to their IDs.
              *
-             * The {{#crossLink "GameObject"}}{{/crossLink}}s in this map
-             * will also be contained in {{#crossLink "GameObject/components:property"}}{{/crossLink}}.
+             * The {{#crossLink "Entity"}}{{/crossLink}}s in this map
+             * will also be contained in {{#crossLink "Entity/components:property"}}{{/crossLink}}.
              *
-             * @property objects
-             * @type {String:XEO.GameObject}
+             * @property entities
+             * @type {String:XEO.Entity}
              */
-            this.objects = {};
+            this.entities = {};
 
-            // Contains XEO.GameObjects that need to be recompiled back into this._renderer
-            this._dirtyObjects = {};
+            // Contains XEO.Entities that need to be recompiled back into this._renderer
+            this._dirtyEntities = {};
 
             /**
              * Configurations for this Scene. Set whatever properties on here
@@ -10641,7 +10642,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         _initDefaults: function () {
 
             // Create this Scene's default components, which every
-            // GameObject created in this Scene will inherit by default
+            // Entity created in this Scene will inherit by default
 
             this.view;
             this.project;
@@ -10702,25 +10703,25 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             c.on("destroyed", this._componentDestroyed, this);
 
-            if (c.type === "XEO.GameObject") {
+            if (c.type === "XEO.Entity") {
 
-                // Component is a XEO.GameObject
+                // Component is a XEO.Entity
 
-                c.on("dirty", this._objectDirty, this);
+                c.on("dirty", this._entityDirty, this);
 
-                this.objects[c.id] = c;
+                this.entities[c.id] = c;
 
                 if (this._worldBoundary) {
 
                     // If we currently have a World-space Scene boundary, then invalidate
-                    // it whenever GameObject's World-space boundary updates
+                    // it whenever Entity's World-space boundary updates
 
                     c.worldBoundary.on("updated", this._setWorldBoundaryDirty, this);
                 }
 
                 // Update scene statistics
 
-                XEO.stats.components.objects++;
+                XEO.stats.components.entities++;
             }
 
             /**
@@ -10752,19 +10753,19 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 }
             }
 
-            if (c.type === "XEO.GameObject") {
+            if (c.type === "XEO.Entity") {
 
-                // Component is a XEO.GameObject
+                // Component is a XEO.Entity
 
                 // Update scene statistics,
                 // Unschedule any pending recompilation of
-                // the GameObject into the renderer
+                // the Entity into the renderer
 
-                XEO.stats.components.objects--;
+                XEO.stats.components.entities--;
 
-                delete this.objects[c.id];
+                delete this.entities[c.id];
 
-                delete this._dirtyObjects[c.id];
+                delete this._dirtyEntities[c.id];
             }
 
             /**
@@ -10777,13 +10778,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             //this.log("Destroyed " + c.type + " " + XEO._inQuotes(c.id));
         },
 
-        _objectDirty: function (object) {
+        _entityDirty: function (entity) {
 
-            // Whenever the GameObject signals dirty,
+            // Whenever the Entity signals dirty,
             // schedule its recompilation into the renderer
 
-            if (!this._dirtyObjects[object.id]) {
-                this._dirtyObjects[object.id] = object;
+            if (!this._dirtyEntities[entity.id]) {
+                this._dirtyEntities[entity.id] = entity;
             }
         },
 
@@ -10846,7 +10847,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Camera"}}Camera{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.camera",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to
              * this {{#crossLink "Camera"}}Camera{{/crossLink}} by default.
              * @property camera
              * @final
@@ -10871,7 +10872,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Transform"}}{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.transform",
              * with all other properties initialised to their default values (ie. an identity matrix).
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to
              * this {{#crossLink "Transform"}}{{/crossLink}} by default.
              *
              * @property transform
@@ -10895,7 +10896,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Billboard"}}Billboard{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.billboard"
              * and an {{#crossLink "Billboard/active:property"}}{{/crossLink}} property set to false, to disable it.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Billboard"}}Billboard{{/crossLink}} by default.
              *
              * @property billboard
@@ -10919,7 +10920,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Stationary"}}Stationary{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stationary"
              * and an {{#crossLink "Stationary/active:property"}}{{/crossLink}} property set to false, to disable it.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Stationary"}}Stationary{{/crossLink}} by default.
              *
              * @property stationary
@@ -10943,7 +10944,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Clips"}}Clips{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.clips",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Clips"}}Clips{{/crossLink}} by default.
              * @property clips
              * @final
@@ -10966,7 +10967,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.colorBuf",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} by default.
              * @property colorBuf
              * @final
@@ -10990,7 +10991,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * {{#crossLink "ColorTarget/active:property"}}inactive{{/crossLink}} by default and will have an
              * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} by default.
              * @property colorTarget
              * @final
@@ -11013,7 +11014,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthBuf",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} by default.
              *
              * @property depthBuf
@@ -11038,7 +11039,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * {{#crossLink "DepthTarget/active:property"}}inactive{{/crossLink}} by default and has an
              * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} by default.
              * @property depthTarget
              * @final
@@ -11061,7 +11062,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Visibility"}}Visibility{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.visibility",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Visibility"}}Visibility{{/crossLink}} by default.
              * @property visibility
              * @final
@@ -11084,7 +11085,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Modes"}}Modes{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.modes",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Modes"}}Modes{{/crossLink}} by default.
              * @property modes
              * @final
@@ -11105,7 +11106,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              *
              * This {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.geometry".
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Geometry"}}Geometry{{/crossLink}} by default.
              * @property geometry
              * @final
@@ -11127,7 +11128,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Layer"}}Layer{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.layer",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Layer"}}Layer{{/crossLink}} by default.
              * @property layer
              * @final
@@ -11151,7 +11152,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Lights"}}Lights{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to *````"default.lights"````*,
              * with all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink "Lights"}}Lights{{/crossLink}}).
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Lights"}}Lights{{/crossLink}} by default.
              *
              * @property lights
@@ -11206,7 +11207,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.material", with all
              * other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} by default.
              * @property material
              * @final
@@ -11228,7 +11229,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.morphTargets",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} by default.
              * @property morphTargets
              * @final
@@ -11251,7 +11252,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Reflect"}}Reflect{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.reflect",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Reflect"}}Reflect{{/crossLink}} by default.
              * @property reflect
              * @final
@@ -11274,7 +11275,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "Shader"}}Shader{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.shader",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Shader"}}Shader{{/crossLink}} by default.
              * @property shader
              * @final
@@ -11296,7 +11297,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * This {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.shaderParams",
              * with all other properties initialised to their default values.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ShaderParams"}}{{/crossLink}} by default.
              *
              * @property shaderParams
@@ -11320,7 +11321,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stage" and
              * a {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} equal to ````0````.
              *
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "Stage"}}Stage{{/crossLink}} by default.
              * @property stage
              * @final
@@ -11374,20 +11375,20 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                                 XEO.math.collapseAABB3(aabb);
 
-                                var objects = self.objects;
-                                var object;
+                                var entities = self.entities;
+                                var entity;
 
-                                for (var objectId in objects) {
-                                    if (objects.hasOwnProperty(objectId)) {
+                                for (var entityId in entities) {
+                                    if (entities.hasOwnProperty(entityId)) {
 
-                                        object = objects[objectId];
+                                        entity = entities[entityId];
 
-                                        if (object.modes.collidable) {
+                                        if (entity.modes.collidable) {
 
-                                            // Only include boundaries of objects that are allowed
+                                            // Only include boundaries of entities that are allowed
                                             // to contribute to the size of an enclosing boundary
 
-                                            XEO.math.expandAABB3(aabb, object.worldBoundary.aabb);
+                                            XEO.math.expandAABB3(aabb, entity.worldBoundary.aabb);
                                         }
                                     }
                                 }
@@ -11421,14 +11422,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         },
 
         /**
-         * Attempts to pick a {{#crossLink "GameObject"}}GameObject{{/crossLink}} at the given Canvas-space coordinates.
+         * Attempts to pick an {{#crossLink "Entity"}}Entity{{/crossLink}} at the given Canvas-space coordinates.
          *
-         * Ignores {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are attached
+         * Ignores {{#crossLink "Entity"}}Entities{{/crossLink}} that are attached
          * to either a {{#crossLink "Stage"}}Stage{{/crossLink}} with {{#crossLink "Stage/pickable:property"}}pickable{{/crossLink}}
          * set *false* or a {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/pickable:property"}}pickable{{/crossLink}} set *false*.
          *
          * On success, will fire a {{#crossLink "Scene/picked:event"}}{{/crossLink}} event on this Scene, along with
-         * a separate {{#crossLink "Object/picked:event"}}{{/crossLink}} event on the target {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
+         * a separate {{#crossLink "Entity/picked:event"}}{{/crossLink}} event on the target {{#crossLink "Entity"}}Entity{{/crossLink}}.
          *
          * ````javascript
          *
@@ -11443,7 +11444,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @param {*} params Picking parameters.
          * @param {Array of Number} [params.canvasPos] Canvas-space coordinates.
          * @param {Boolean} [params.rayPick=false] Whether to ray-pick.
-         * @returns {*} Hit record, returned when a {{#crossLink "GameObject"}}{{/crossLink}} is picked, else null.
+         * @returns {*} Hit record, returned when an {{#crossLink "Entity"}}{{/crossLink}} is picked, else null.
          */
         pick: (function () {
 
@@ -11489,20 +11490,20 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var tempVec3j = XEO.math.vec3();
 
 
-            // Given a GameObject and camvas coordinates, gets a ray
+            // Given a Entity and camvas coordinates, gets a ray
             // originating at the World-space eye position that passes
             // through the perspective projection plane. The ray is
             // returned via the origin and dir arguments.
 
-            function getLocalRay(object, canvasCoords, origin, dir) {
+            function getLocalRay(entity, canvasCoords, origin, dir) {
 
                 var math = XEO.math;
 
-                var canvas = object.scene.canvas.canvas;
+                var canvas = entity.scene.canvas.canvas;
 
-                var modelMat = object.transform.matrix;
-                var viewMat = object.camera.view.matrix;
-                var projMat = object.camera.project.matrix;
+                var modelMat = entity.transform.matrix;
+                var viewMat = entity.camera.view.matrix;
+                var projMat = entity.camera.project.matrix;
 
                 var vmMat = math.mulMat4(viewMat, modelMat, tempMat4);
                 var pvMat = math.mulMat4(projMat, vmMat, tempMat4b);
@@ -11546,18 +11547,18 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 if (hit) {
 
-                    var object = this.objects[hit.object];
+                    var entity = this.entities[hit.entity];
 
-                    hit.object = object; // Swap string ID for XEO.Object
+                    hit.entity = entity; // Swap string ID for XEO.Entity
 
                     if (hit.primitiveIndex !== -1) {
 
-                        var geometry = object.geometry;
+                        var geometry = entity.geometry;
 
                         if (geometry.primitive === "triangles") {
 
                             // Triangle picked; this only happens when the
-                            // GameObject has a Geometry that has primitives of type "triangle"
+                            // Entity has a Geometry that has primitives of type "triangle"
 
                             hit.primitive = "triangle";
 
@@ -11594,7 +11595,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                             // from the eye position through the mouse position
                             // on the perspective projection plane
 
-                            getLocalRay(object, params.canvasPos, origin, dir);
+                            getLocalRay(entity, params.canvasPos, origin, dir);
 
                             math.rayPlaneIntersect(origin, dir, a, b, c, position);
 
@@ -11613,7 +11614,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                            math.transformVec4(object.transform.matrix, tempVec4, tempVec4b);
+                            math.transformVec4(entity.transform.matrix, tempVec4, tempVec4b);
 
                             worldPos[0] = tempVec4b[0];
                             worldPos[1] = tempVec4b[1];
@@ -11704,17 +11705,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             this._initDefaults();
 
-            this._dirtyObjects = {};
+            this._dirtyEntities = {};
         }
 
         ,
 
         /**
-         * Displays a simple test object.
+         * Displays a simple test entity.
          *
          * Clears the Scene first.
          *
-         * The test object is destroyed as soon as anything else is created in this Scene.
+         * The test entity is destroyed as soon as anything else is created in this Scene.
          *
          * @method testPattern
          */
@@ -11724,14 +11725,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             this.clear();
 
-            // Create spinning test object
+            // Create spinning test entity
 
             var rotate = new XEO.Rotate(this, {
                 xyz: [0, .5, .5],
                 angle: 0
             });
 
-            var object = new XEO.GameObject(this, {
+            var entity = new XEO.Entity(this, {
                 transform: rotate
             });
 
@@ -11739,23 +11740,23 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             var spin = this.on("tick",
                 function () {
-                    object.transform.angle = angle;
+                    entity.transform.angle = angle;
                     angle += 0.5;
                 });
 
             var self = this;
 
-            object.on("destroyed",
+            entity.on("destroyed",
                 function () {
                     self.off(spin);
                 });
 
-            // Destroy spinning test object as soon as something
+            // Destroy spinning test entity as soon as something
             // is created subsequently in the scene
 
             this.on("componentCreated",
                 function () {
-                    object.destroy();
+                    entity.destroy();
                     rotate.destroy();
                 });
         }
@@ -11767,37 +11768,37 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          */
         _compile: function () {
 
-            // Compile dirty objects into this._renderer
+            // Compile dirty entities into this._renderer
 
-            var countCompiledObjects = 0;
+            var countCompiledEntities = 0;
 
             var time1 = Date.now();
-            var object;
+            var entity;
 
-            for (var id in this._dirtyObjects) {
-                if (this._dirtyObjects.hasOwnProperty(id)) {
+            for (var id in this._dirtyEntities) {
+                if (this._dirtyEntities.hasOwnProperty(id)) {
 
-                    object = this._dirtyObjects[id];
+                    entity = this._dirtyEntities[id];
 
-                    if (object._valid()) {
+                    if (entity._valid()) {
 
-                        object._compile();
+                        entity._compile();
 
-                        delete this._dirtyObjects[id];
+                        delete this._dirtyEntities[id];
 
-                        countCompiledObjects++;
+                        countCompiledEntities++;
                     }
                     //if (Date.now() - time1 > 30) {
                     //
-                    //    // Throttle the time we spend (re)compiling GameObjects each frame
+                    //    // Throttle the time we spend (re)compiling Entities each frame
                     //
                     //    break;
                     //}
                 }
             }
 
-            if (countCompiledObjects > 0) {
-                //    this.log("Compiled " + countCompiledObjects + " XEO.GameObject" + (countCompiledObjects > 1 ? "s" : ""));
+            if (countCompiledEntities > 0) {
+                //    this.log("Compiled " + countCompiledEntities + " XEO.Entity" + (countCompiledEntities > 1 ? "s" : ""));
             }
 
             // Render a frame
@@ -11872,7 +11873,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
     /**
      A **MorphTargets** defines interpolation targets for morphing {{#crossLink "Geometry"}}Geometry{{/crossLink}}s on
-     attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
      <img src="../../../assets/images/MorphTargets.png"></img>
 
@@ -12004,8 +12005,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  ## Example #1
 
- Flying to a {{#crossLink "GameObject"}}{{/crossLink}} (which provides a World-space
- {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "GameObject/worldBoundary:property"}}{{/crossLink}} property):
+ Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
+ {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property):
 
  ````Javascript
  var camera = new XEO.Camera();
@@ -12017,11 +12018,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     duration: 20
  });
 
- // Create a GameObject, which gets all the default components
- var object = new GameObject();
+ // Create a Entity, which gets all the default components
+ var entity = new Entity();
 
- // Fly to the GameObject's worldBoundary
- cameraFlight.flyTo(object);
+ // Fly to the Entity's worldBoundary
+ cameraFlight.flyTo(entity);
  ````
 
  ## Example #2
@@ -12041,10 +12042,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ## Example #3
 
  Flying the CameraFlight from the previous two examples explicitly to the World-space
- {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "GameObject"}}{{/crossLink}} property):
+ {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "Entity"}}{{/crossLink}} property):
 
  ````Javascript
- var worldBoundary = object.worldBoundary;
+ var worldBoundary = entity.worldBoundary;
 
  cameraFlight.flyTo(worldBoundary);
  ````
@@ -12055,7 +12056,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  axis-aligned bounding box:
 
  ````Javascript
- var worldBoundary = object.worldBoundary;
+ var worldBoundary = entity.worldBoundary;
 
  var aabb = worldBoundary.aabb;
 
@@ -12428,7 +12429,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  ````Javascript
 
- var object = new XEO.GameObject();
+ var entity = new XEO.Entity();
 
  var camera = new XEO.Camera();
 
@@ -12645,7 +12646,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 ;
 
 /**
- A **Camera** defines a viewpoint on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Camera** defines a viewpoint on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -12676,7 +12677,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  <li>a {{#crossLink "Perspective"}}{{/crossLink}} projection transform,</li>
  <li>a Camera attached to the {{#crossLink "Lookat"}}{{/crossLink}} and {{#crossLink "Perspective"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
 
@@ -12702,7 +12703,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
         camera: camera,
         geometry: geometry
     });
@@ -12881,7 +12882,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
  </ul>
 
@@ -12889,11 +12890,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  ## Example
 
- ## Example
-
- <iframe style="width: 600px; height: 400px" src="../../examples/camera_frustum.html"></iframe>
-
- In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
+ In this example we have an {{#crossLink "Entity"}}Entity{{/crossLink}} that's attached to a
  {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Frustum
  projection transform.
 
@@ -12923,7 +12920,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
         camera: camera,
         geometry: geometry
     });
@@ -13253,7 +13250,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
- {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>
  </ul>
 
@@ -13262,7 +13259,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ## Example
 
  In this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.
- Then we attach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to a {{#crossLink "GameObject"}}{{/crossLink}}.
+ Then we attach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to an {{#crossLink "Entity"}}{{/crossLink}}.
 
  ````Javascript
  var scene = new XEO.Scene();
@@ -13286,7 +13283,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
         camera: camera,
         geometry: geometry
     });
@@ -13338,6 +13335,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.eye = cfg.eye;
             this.look = cfg.look;
             this.up = cfg.up;
+            this.gimbalLockY = cfg.gimbalLockY;
         },
 
         /**
@@ -13350,12 +13348,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             // Get 'look' -> 'eye' vector
             var eye2 = XEO.math.subVec3(this._state.eye, this._state.look, []);
 
-            // Rotate 'eye' vector about 'up' vector
-            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._state.up);
+            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? [0, 1, 0] : this._state.up);
             eye2 = XEO.math.transformPoint3(mat, eye2, []);
 
             // Set eye position as 'look' plus 'eye' vector
             this.eye = XEO.math.addVec3(eye2, this._state.look, []);
+
+            if (this._gimbalLockY) {
+
+                // Rotate 'up' vector about orthogonal vector
+                this.up = XEO.math.transformPoint3(mat, this._state.up, []);
+            }
         },
 
         /**
@@ -13494,6 +13497,36 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         },
 
         _props: {
+
+            /**
+             * Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
+             *
+             * Fires an {{#crossLink "Lookat/gimbalLockY:event"}}{{/crossLink}} event on change.
+             *
+             * @property gimbalLockY
+             * @default false
+             * @type Boolean
+             */
+            gimbalLockY: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    this._gimbalLockY = value;
+                    /**
+                     * Fired whenever this Lookat's  {{#crossLink "Lookat/gimbalLockY:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event gimbalLockY
+                     * @param value The property's new value
+                     */
+                    this.fire("gimbalLockY", this._state.gimbalLockY);
+                },
+
+                get: function () {
+                    return this._gimbalLockY;
+                }
+            },
 
             /**
              * Position of this Lookat's eye.
@@ -13682,7 +13715,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>Alternatively, use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
  </ul>
@@ -13691,9 +13724,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  ## Example
 
- <iframe style="width: 600px; height: 400px" src="../../examples/camera_ortho.html"></iframe>
-
- In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
+ In this example we have an {{#crossLink "Entity"}}Entity{{/crossLink}} that's attached to a
  {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and an Ortho
  projection transform.
 
@@ -13722,7 +13753,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
         camera: camera,
         geometry: geometry
     });
@@ -14047,7 +14078,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  <ul>
 
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Perspective components create within xeoEngine's shaders.</li>
  </ul>
@@ -14056,9 +14087,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  ## Example
 
- <iframe style="width: 600px; height: 400px" src="../../examples/camera_perspective.html"></iframe>
-
- In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
+ In this example we have an {{#crossLink "Entity"}}Entity{{/crossLink}} that's attached to a
  {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Perspective
  projection transform.
 
@@ -14084,7 +14113,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
         camera: camera,
         geometry: geometry
     });
@@ -14685,7 +14714,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
 })();
 ;/**
- * Components for cross-section views of GameObjects.
+ * Components for cross-section views of Entities.
  *
  * @module XEO
  * @submodule clipping
@@ -14693,14 +14722,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
 /**
  A **Clip** is an arbitrarily-aligned World-space clipping plane, which may be used to create
- cross-sectional views of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ cross-sectional views of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
 
  <li>These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
+ {{#crossLink "Entity"}}Entities{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
  for more info.</li>
 
  <li>A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
@@ -14717,9 +14746,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  <li>You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
  switch which side it discards fragments from.</li>
 
- <li>Clipping may also be enabled or disabled for specific {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
 
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeoEngine's shaders.</li>
 
@@ -14731,13 +14760,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <ul>
 
- <li>In this example we have a {{#crossLink "GameObject"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
+ <li>In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
  that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.</li>
 
  <li>The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
  positive diagonal, while the second is on the negative diagonal.</li>
 
- <li>The {{#crossLink "GameObject"}}GameObject's{{/crossLink}}
+ <li>The {{#crossLink "Entity"}}Entity's{{/crossLink}}
  {{#crossLink "Geometry"}}{{/crossLink}} is the default 2x2x2 box, and the planes will clip off two of the box's corners.</li>
 
  </ul>
@@ -14770,8 +14799,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  // Geometry defaults to a 2x2x2 box
  var geometry = new XEO.Geometry(scene);
 
- // Create an Object, which is a box sliced by our clip planes
- var object = new XEO.GameObject(scene, {
+ // Create an Entity, which is a box sliced by our clip planes
+ var entity = new XEO.Entity(scene, {
         clips: clips,
         geometry: geometry
      });
@@ -14779,7 +14808,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  ### Toggling clipping on and off
 
- Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to the {{#crossLink "GameObject"}}{{/crossLink}}, so that we can
+ Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to the {{#crossLink "Entity"}}{{/crossLink}}, so that we can
  enable or disable clipping of it:
 
  ```` javascript
@@ -14788,10 +14817,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     clipping: true
  });
 
- // Attach our Object to the Modes
- object.modes = modes;
+ // Attach our Entity to the Modes
+ entity.modes = modes;
 
- // Disable clipping for the Object
+ // Disable clipping for the Entity
  modes.clipping = false;
  ````
 
@@ -14952,7 +14981,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 })();
 ;/**
  A **Clips** is a group of arbitrarily-aligned World-space {{#crossLink "Clip"}}Clip{{/crossLink}} planes, which may be used to create
- cross-sectional views of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ cross-sectional views of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -14973,9 +15002,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  <li>You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
  activate or deactivate it, or to switch which side it discards fragments from.</li>
 
- <li>Clipping may also be enabled or disabled for specific {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
 
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeoEngine's shaders.</li>
 
@@ -14987,13 +15016,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <ul>
 
- <li>In this example we have a {{#crossLink "GameObject"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
+ <li>In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
  that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.</li>
 
  <li>The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
  positive diagonal, while the second is on the negative diagonal.</li>
 
- <li>The {{#crossLink "GameObject"}}GameObject's{{/crossLink}}
+ <li>The {{#crossLink "Entity"}}Entity's{{/crossLink}}
  {{#crossLink "Geometry"}}{{/crossLink}} is the default 2x2x2 box, and the planes will clip off two of the box's corners.</li>
 
  </ul>
@@ -15026,8 +15055,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  // Geometry defaults to a 2x2x2 box
  var geometry = new XEO.Geometry(scene);
 
- // Create an Object, which is a box sliced by our clip planes
- var object = new XEO.GameObject(scene, {
+ // Create an Entity, which is a box sliced by our clip planes
+ var entity = new XEO.Entity(scene, {
         clips: clips,
         geometry: geometry
      });
@@ -15035,7 +15064,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  ### Toggling clipping on and off
 
- Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to the {{#crossLink "GameObject"}}{{/crossLink}}, so that we can
+ Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to the {{#crossLink "Entity"}}{{/crossLink}}, so that we can
  enable or disable clipping of it:
 
  ```` javascript
@@ -15044,10 +15073,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     clipping: true
  });
 
- // Attach our Object to the Modes
- object.modes = modes;
+ // Attach our Entity to the Modes
+ entity.modes = modes;
 
- // Disable clipping for the Object
+ // Disable clipping for the Entity
  modes.clipping = false;
  ````
 
@@ -15392,7 +15421,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  <li>rotation - {{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} and {{#crossLink "MouseRotateCamera"}}{{/crossLink}}</li>
  <li>zooming - {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} and {{#crossLink "MouseZoomCamera"}}{{/crossLink}}</li>
  <li>switching preset views - {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}}</li>
- <li>picking - {{#crossLink "MousePickObject"}}{{/crossLink}}</li>
+ <li>picking - {{#crossLink "MousePickEntity"}}{{/crossLink}}</li>
  <li>camera flight animation - {{#crossLink "CameraFlight"}}{{/crossLink}}</li>
  </ul>
 
@@ -15429,8 +15458,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  // Deactivate switching between preset views
  cameraControl.axisCamera.active = false;
 
- // Create a GameObject
- var object = new XEO.GameObject(scene);
+ // Create a Entity
+ var entity = new XEO.Entity(scene);
  ````
 
  @class CameraControl
@@ -15481,8 +15510,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             var scene = this.scene;
 
-            // Shows a bounding box around each GameObject we fly to
-            this._boundaryObject = new XEO.GameObject(scene, {
+            // Shows a bounding box around each Entity we fly to
+            this._boundaryEntity = new XEO.Entity(scene, {
                 geometry: new XEO.BoundaryGeometry(scene),
                 material: new XEO.PhongMaterial(scene, {
                     diffuse: [0, 0, 0],
@@ -15580,19 +15609,19 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             });
 
             /**
-             * The {{#crossLink "MousePickObject"}}{{/crossLink}} within this CameraControl.
+             * The {{#crossLink "MousePickEntity"}}{{/crossLink}} within this CameraControl.
              *
-             * @property mousePickObject
+             * @property mousePickEntity
              * @final
-             * @type MousePickObject
+             * @type MousePickEntity
              */
-            this.mousePickObject = new XEO.MousePickObject(scene, {
+            this.mousePickEntity = new XEO.MousePickEntity(scene, {
                 rayPick: true
             });
 
-            this.mousePickObject.on("pick", this._objectPicked, this);
+            this.mousePickEntity.on("pick", this._entityPicked, this);
 
-            this.mousePickObject.on("nopick",
+            this.mousePickEntity.on("nopick",
                 function (e) {
                     //alert("Nothing picked");
                 });
@@ -15616,9 +15645,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.active = cfg.active !== false;
         },
 
-        _objectPicked: function (e) {
+        _entityPicked: function (e) {
 
-            // Fly camera to each picked object
+            // Fly camera to each picked entity
             // Don't change distance between look and eye
 
             var view = this.cameraFlight.camera.view;
@@ -15628,8 +15657,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             if (e.worldPos) {
                 pos = e.worldPos
 
-            } else if (e.object) {
-                pos = e.object.worldBoundary.center
+            } else if (e.entity) {
+                pos = e.entity.worldBoundary.center
             }
 
             if (pos) {
@@ -15638,24 +15667,24 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 var input = this.scene.input;
 
-              //  if (input.keyDown[input.KEY_SHIFT] && e.object) {
+              //  if (input.keyDown[input.KEY_SHIFT] && e.entity) {
 
-                    // var aabb = e.object.worldBoundary.aabb;
+                    // var aabb = e.entity.worldBoundary.aabb;
 
-                    this._boundaryObject.geometry.obb = e.object.worldBoundary.obb;
-                    this._boundaryObject.visibility.visible = true;
+                    this._boundaryEntity.geometry.obb = e.entity.worldBoundary.obb;
+                    this._boundaryEntity.visibility.visible = true;
 
-                    var center = e.object.worldBoundary.center;
+                    var center = e.entity.worldBoundary.center;
 
                     this.cameraFlight.flyTo({
-                            aabb: e.object.worldBoundary.aabb,
+                            aabb: e.entity.worldBoundary.aabb,
                             oXffset: [
                                 pos[0] - center[0],
                                 pos[1] - center[1],
                                 pos[2] - center[2]
                             ]
                         },
-                        this._hideObjectBoundary, this);
+                        this._hideEntityBoundary, this);
 
                 //} else {
                 //
@@ -15667,13 +15696,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 //                pos[2] + diff[2]
                 //            ]
                 //        },
-                //        this._hideObjectBoundary, this);
+                //        this._hideEntityBoundary, this);
                 //}
             }
         },
 
-        _hideObjectBoundary: function () {
-            this._boundaryObject.visibility.visible = false;
+        _hideEntityBoundary: function () {
+            this._boundaryEntity.visibility.visible = false;
         },
 
         _props: {
@@ -15789,7 +15818,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     this.mousePan.active = value;
                     this.keyboardZoom.active = value;
                     this.mouseZoom.active = value;
-                    this.mousePickObject.active = value;
+                    this.mousePickEntity.active = value;
                     this.cameraFlight.active = value;
 
                     /**
@@ -15827,7 +15856,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.active = false;
 
             // FIXME: Does not recursively destroy child components
-            this._boundaryObject.destroy();
+            this._boundaryEntity.destroy();
 
             this.keyboardAxis.destroy();
             this.keyboardRotate.destroy();
@@ -15836,7 +15865,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.mousePan.destroy();
             this.keyboardZoom.destroy();
             this.mouseZoom.destroy();
-            this.mousePickObject.destroy();
+            this.mousePickEntity.destroy();
             this.cameraFlight.destroy();
         }
     });
@@ -15874,7 +15903,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         camera: camera
     });
 
- var object = new XEO.GameObject(scene);
+ var entity = new XEO.Entity(scene);
  ````
 
  @class KeyboardAxisCamera
@@ -15884,7 +15913,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardAxisCamera.
+ @param [cfg.meta] {String:Entity} Optional map of user-defined metadata to attach to this KeyboardAxisCamera.
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardAxisCamera. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
@@ -16171,7 +16200,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         firstPerson: false
     });
 
- var object = new XEO.GameObject(scene);
+ var entity = new XEO.Entity(scene);
  ````
 
 
@@ -16463,7 +16492,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         camera: camera
     });
 
- var object = new XEO.GameObject(scene);
+ var entity = new XEO.Entity(scene);
  ````
 
  @class KeyboardPanCamera
@@ -16710,7 +16739,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         camera: camera
     });
 
- var object = new XEO.GameObject(scene);
+ var entity = new XEO.Entity(scene);
  ````
 
  @class KeyboardZoomCamera
@@ -16949,7 +16978,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         firstPerson: false
     });
 
- var object = new XEO.GameObject(scene);
+ var entity = new XEO.Entity(scene);
  ````
 
  @class MouseRotateCamera
@@ -17265,7 +17294,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         camera: camera
     });
 
- var object = new XEO.GameObject(scene);
+ var entity = new XEO.Entity(scene);
  ````
 
  @class MousePanCamera
@@ -17496,7 +17525,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
 })();
 ;/**
- A **MousePickObject** picks {{#crossLink "GameObject"}}GameObjects{{/crossLink}} with mouse clicks.
+ A **MousePickEntity** picks {{#crossLink "Entity"}}Entities{{/crossLink}} with mouse clicks.
 
  ## Overview
 
@@ -17507,25 +17536,25 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var scene = new XEO.Scene({ element: "myDiv" });
 
- // Create some GameObjects
+ // Create some Entities
 
- var object1 = new XEO.GameObject(scene, {
-    id: "object1",
+ var entity1 = new XEO.Entity(scene, {
+    id: "entity1",
     transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })
  });
 
- var object2 = new XEO.GameObject(scene, {
-    id: "object2",
+ var entity2 = new XEO.Entity(scene, {
+    id: "entity2",
     transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })
  });
 
- var object3 = new XEO.GameObject(scene, {
-    id: "object3",
+ var entity3 = new XEO.Entity(scene, {
+    id: "entity3",
     transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })
  });
 
- // Create a MousePickObject
- var mousePickObject = new XEO.MousePickObject(scene, {
+ // Create a MousePickEntity
+ var mousePickEntity = new XEO.MousePickEntity(scene, {
 
     // We want the 3D World-space coordinates
     // of each location we pick
@@ -17533,37 +17562,37 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     rayPick: true
  });
 
- // Handle picked GameObjects
- mousePickObject.on("pick", function(e) {
-    var object = e.object;
+ // Handle picked Entities
+ mousePickEntity.on("pick", function(e) {
+    var entity = e.entity;
     var canvasPos = e.canvasPos;
     var primitiveIndex = e.primitiveIndex;
  });
 
  // Handle nothing picked
- mousePickObject.on("nopick", function(e) {
+ mousePickEntity.on("nopick", function(e) {
     var canvasPos = e.canvasPos;
  });
  ````
 
- @class MousePickObject
+ @class MousePickEntity
  @module XEO
  @submodule controls
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickObject.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
- {{#crossLink "GameObject"}}{{/crossLink}}.
- @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickObject is active.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickEntity.
+ @param [rayPick=false] {Boolean} Indicates whether this MousePickEntity will find the 3D ray intersection whenever it picks a
+ {{#crossLink "Entity"}}{{/crossLink}}.
+ @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickEntity is active.
  @extends Component
  */
 (function () {
 
     "use strict";
 
-    XEO.MousePickObject = XEO.Component.extend({
+    XEO.MousePickEntity = XEO.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -17572,7 +17601,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          @type String
          @final
          */
-        type: "XEO.MousePickObject",
+        type: "XEO.MousePickEntity",
 
         _init: function (cfg) {
 
@@ -17584,9 +17613,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         _props: {
 
             /**
-             * Flag which indicates whether this MousePickObject is active or not.
+             * Flag which indicates whether this MousePickEntity is active or not.
              *
-             * Fires a {{#crossLink "MousePickObject/active:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "MousePickEntity/active:event"}}{{/crossLink}} event on change.
              *
              * @property active
              * @type Boolean
@@ -17637,20 +17666,20 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     if (hit) {
 
                                         /**
-                                         * Fired whenever a {{#crossLink "GameObject"}}GameObject{{/crossLink}} is picked.
+                                         * Fired whenever an {{#crossLink "Entity"}}Entity{{/crossLink}} is picked.
                                          * @event picked
-                                         * @param {String} objectId The ID of the picked {{#crossLink "GameObject"}}GameObject{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+                                         * @param {String} entityId The ID of the picked {{#crossLink "Entity"}}Entity{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
                                          * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                         * @param {Array of Number} worldPos When {{#crossLink "MousePickObject/rayPick"}}{{/crossLink}} is true,
+                                         * @param {Array of Number} worldPos When {{#crossLink "MousePickEntity/rayPick"}}{{/crossLink}} is true,
                                          * provides the World-space coordinate that was ray-picked on the surface of the
-                                         * {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
+                                         * {{#crossLink "Entity"}}Entity{{/crossLink}}.
                                          */
                                         self.fire("pick", hit);
 
                                     } else {
 
                                         /**
-                                         * Fired whenever an attempt to pick {{#crossLink "GameObject"}}GameObject{{/crossLink}} picks empty space.
+                                         * Fired whenever an attempt to pick {{#crossLink "Entity"}}Entity{{/crossLink}} picks empty space.
                                          * @event nopick
                                          * @param {Array of Number} canvasPos The Canvas-space coordinate at which the pick was attempted.
                                          */
@@ -17669,7 +17698,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     }
 
                     /**
-                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/active:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this MousePickEntity's {{#crossLink "MousePickEntity/active:property"}}{{/crossLink}} property changes.
                      * @event active
                      * @param value The property's new value
                      */
@@ -17683,13 +17712,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             },
 
             /**
-             * Indicates whether this MousePickObject will try to pick a {{#crossLink "Geometry"}}{{/crossLink}} primitive
-             * whenever it picks a {{#crossLink "GameObject"}}{{/crossLink}}.
+             * Indicates whether this MousePickEntity will try to pick a {{#crossLink "Geometry"}}{{/crossLink}} primitive
+             * whenever it picks an {{#crossLink "Entity"}}{{/crossLink}}.
              *
-             * When true, this MousePickObject will try to return the primitive index in a
-             * {{#crossLink "MousePickObject/picked:event"}}{{/crossLink}} event.
+             * When true, this MousePickEntity will try to return the primitive index in a
+             * {{#crossLink "MousePickEntity/picked:event"}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink "MousePickObject/rayPick:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "MousePickEntity/rayPick:event"}}{{/crossLink}} event on change.
              *
              * @property rayPick
              * @type Boolean
@@ -17707,7 +17736,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     this._dirty = false;
 
                     /**
-                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/rayPick:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this MousePickEntity's {{#crossLink "MousePickEntity/rayPick:property"}}{{/crossLink}} property changes.
                      * @event rayPick
                      * @param value The property's new value
                      */
@@ -17757,7 +17786,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         camera: camera
     });
 
- var object = new XEO.GameObject(scene);
+ var entity = new XEO.Entity(scene);
  ````
 
  @class MouseZoomCamera
@@ -18009,17 +18038,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
 })();
 ;/**
- * Components for controlling the visibility of GameObjects.
+ * Components for controlling the visibility of Entities.
  *
  * @module XEO
  * @submodule culling
  */;/**
- A **Visibility** toggles the visibility of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Visibility** toggles the visibility of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
- <li>A Visibility may be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to toggle
+ <li>A Visibility may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
  their visibility as a group.</li>
  </ul>
 
@@ -18028,7 +18057,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ## Example
 
  This example creates a Visibility that toggles the visibility of
- two {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ two {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ````javascript
 var scene = new XEO.Scene();
@@ -18038,13 +18067,13 @@ var visibility = new XEO.Visibility(scene, {
     visible: true
 });
 
-// Create two GameObjects whose visibility will be controlled by our Visibility
+// Create two Entities whose visibility will be controlled by our Visibility
 
-var object1 = new XEO.GameObject(scene, {
+var entity1 = new XEO.Entity(scene, {
     visibility: visibility
 });
 
-var object2 = new XEO.GameObject(scene, {
+var entity2 = new XEO.Entity(scene, {
     visibility: visibility
 });
 
@@ -18053,14 +18082,14 @@ var handle = visibility.on("visible", function(value) {
     //...
 });
 
-// Hide our GameObjects by flipping the Visibility's "visible" property,
+// Hide our Entities by flipping the Visibility's "visible" property,
 // which will also call our handler
 visibility.visible = false;
 
 // Unsubscribe from the Visibility again
 visibility.off(handle);
 
-// When we destroy our Visibility, the GameObjects will fall back
+// When we destroy our Visibility, the Entities will fall back
 // on the Scene's default Visibility instance
 visibility.destroy();
  ````
@@ -18073,7 +18102,7 @@ visibility.destroy();
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Visibility.
- @param [cfg.visible=true] {Boolean} Flag which controls visibility of the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ @param [cfg.visible=true] {Boolean} Flag which controls visibility of the attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  @extends Component
  */
 (function () {
@@ -18096,7 +18125,7 @@ visibility.destroy();
         _props: {
 
             /**
-             Indicates whether this Visibility makes attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} visible or not.
+             Indicates whether this Visibility makes attached {{#crossLink "Entity"}}Entities{{/crossLink}} visible or not.
 
              Fires a {{#crossLink "Visibility/visible:event"}}{{/crossLink}} event on change.
 
@@ -18990,7 +19019,7 @@ visibility.destroy();
 
  ## Example 2
 
- In the next example, we'll create a {{#crossLink "GameObject"}}{{/crossLink}} with a
+ In the next example, we'll create an {{#crossLink "Entity"}}{{/crossLink}} with a
  {{#crossLink "PhongMaterial"}}{{/crossLink}} whose diffuse color is bound to the
  interpolated {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}} property on the QuadraticBezierCurve.
 
@@ -19004,12 +19033,12 @@ visibility.destroy();
         v2: [0, 0, 1]
     });
 
- // Create a GameObject with a PhongMaterial
+ // Create a Entity with a PhongMaterial
  var material = new XEO.PhongMaterial({
         diffuse: [0, 0, 0]
     });
 
- var object = new XEO.GameObject({
+ var entity = new XEO.Entity({
         material: material
     });
 
@@ -19021,7 +19050,7 @@ visibility.destroy();
 
  // Animate the QuadraticBezierCurve, which in turn
  // updates the PhongMaterial diffuse color
- var tick = object.scene.on("tick", function (e) {
+ var tick = entity.scene.on("tick", function (e) {
         curve.t = (e.time - e.startTime) * 0.00005;
    });
  ````
@@ -19667,7 +19696,7 @@ visibility.destroy();
  * @module XEO
  * @submodule geometry
  */;/**
- A **Geometry** defines the geometric shape of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Geometry** defines the geometric shape of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Contents
 
@@ -19675,7 +19704,7 @@ visibility.destroy();
  <li><a href="#overview">Overview</a></li>
  <li><a href="#defaultShape">Default box shape</a></li>
  <li><a href="#sceneDefault">Scene's default Geometry</a></li>
- <li><a href="#sharing">Sharing among GameObjects</a></li>
+ <li><a href="#sharing">Sharing among Entities</a></li>
  <li><a href="#triangles">Defining a triangle mesh</a></li>
  <li><a href="#editing">Editing Geometry</a></li>
  <li><a href="#backfaces">Toggling backfaces on or off</li>
@@ -19694,7 +19723,7 @@ visibility.destroy();
  <li>When no shape is specified (ie. no primitive type, vertex arrays and indices), a Geometry will default to a 2x2x2 box
  made of triangles, with UV coordinates, vertex colors and normals. This default is used for most of the examples in this documentation.</li>
  <li>A {{#crossLink "Scene"}}{{/crossLink}} provides such a box as its default {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
- for {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to fall back on, when they are not explicitly attached to a Geometry.</li>
+ for {{#crossLink "Entity"}}Entities{{/crossLink}} to fall back on, when they are not explicitly attached to a Geometry.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Geometries create within xeoEngine's shaders.</li>
  </ul>
 
@@ -19707,48 +19736,48 @@ visibility.destroy();
  ```` javascript
  var geometry = new XEO.Geometry(scene); // 2x2x2 box
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
     geometry: geometry
 });
  ````
 
  ## <a name="sceneDefault">Scene's default Geometry</a>
 
- If you create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene{{/crossLink}}'s
+ If you create an {{#crossLink "Entity"}}Entity{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene{{/crossLink}}'s
  default {{#crossLink "Scene/geometry:property"}}{{/crossLink}}, which is also a 2x2x2 box:
 
  ```` javascript
  var scene = new XEO.Scene();
 
- var object1 = new XEO.GameObject(scene);
+ var entity1 = new XEO.Entity(scene);
  ````
 
- ## <a name="sharing">Sharing among GameObjects</a>
+ ## <a name="sharing">Sharing among Entities</a>
 
- xeoEngine components can be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. For components like
+ xeoEngine components can be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}}. For components like
  Geometry and {{#crossLink "Texture"}}{{/crossLink}}, this can provide significant memory
  and performance savings. To render the example below, xeoEngine will issue two draw WebGL calls, one for
- each {{#crossLink "GameObject"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.
+ each {{#crossLink "Entity"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.
 
  ```` javascript
  var scene = new XEO.Scene();
 
  var geometry = new XEO.Geometry(scene); // 2x2x2 box by default
 
- // Create two GameObjects which share our Geometry
+ // Create two Entities which share our Geometry
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
     geometry: geometry
 });
 
- // Offset the second Object slightly on the World-space
+ // Offset the second Entity slightly on the World-space
  // X-axis using a Translate modelling transform
 
  var translate = new XEO.Translate(scene, {
     xyz: [5, 0, 0
 });
 
- var object2 = new XEO.GameObject(scene, {
+ var entity2 = new XEO.Entity(scene, {
     geometry: geometry,
     transform: translate
 });
@@ -19756,7 +19785,7 @@ visibility.destroy();
 
  ## <a name="triangles">Defining a triangle mesh</a>
 
- Finally, we'll create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} with a Geometry that we've **explicitly**
+ Finally, we'll create an {{#crossLink "Entity"}}Entity{{/crossLink}} with a Geometry that we've **explicitly**
  configured as a 2x2x2 box:
 
  ```` javascript
@@ -19850,7 +19879,7 @@ visibility.destroy();
         ]
 });
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     geometry: geometry
 });
  ````
@@ -19876,13 +19905,13 @@ visibility.destroy();
 
  ## <a name="backfaces">Toggling backfaces on or off</a>
 
- Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "GameObject"}}{{/crossLink}}, so that
+ Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "Entity"}}{{/crossLink}}, so that
  we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} backfaces:
 
  ```` javascript
  var modes = new XEO.Modes(scene);
 
- object.modes = modes;
+ entity.modes = modes;
 
  // Hide backfaces
 
@@ -19903,7 +19932,7 @@ visibility.destroy();
  // Set the winding order for frontfaces to clockwise
  // Options are "ccw" for counter-clockwise or "cw" for clockwise
 
- object.frontface = "cw";
+ entity.frontface = "cw";
  ````
 
 
@@ -20988,7 +21017,7 @@ visibility.destroy();
     });
 })();
 ;/**
- A **BoxGeometry** defines box-shaped geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **BoxGeometry** defines box-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 
@@ -21203,15 +21232,6 @@ visibility.destroy();
             // for Normal mapping once we know we have texture
 
             this.tangents = null;
-
-            this.indices = [
-                0, 1, 2, 0, 2, 3,    // front
-                4, 5, 6, 4, 6, 7,    // back
-                8, 9, 10, 8, 10, 11,   // top
-                12, 13, 14, 12, 14, 15,   // bottom
-                16, 17, 18, 16, 18, 19,   // right
-                20, 21, 22, 20, 22, 23    // left
-            ];
         },
 
         _props: {
@@ -21354,7 +21374,7 @@ visibility.destroy();
 
 })();
 ;/**
- A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the object-aligned wireframe bounding box (OBB)
+ A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the entity-aligned wireframe bounding box (OBB)
  of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  ## Example
@@ -21591,7 +21611,7 @@ visibility.destroy();
     });
 })();
 ;/**
- A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 
@@ -22006,7 +22026,7 @@ visibility.destroy();
 
 })();
 ;/**
- A **SphereGeometry** defines spherical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **SphereGeometry** defines spherical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 
@@ -22492,7 +22512,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
         this._super();
     }
 });;/**
- A **Cylinder** defines cylindrical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Cylinder** defines cylindrical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 
@@ -22500,23 +22520,23 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  ````
 
- @class Cylinder
+ @class CylinderGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Cylinder in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CylinderGeometry in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Cylinder.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CylinderGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.radiusTop=1] {Number} Radius of top.
  @param [cfg.radiusBottom=1] {Number} Radius of bottom.
  @param [cfg.height=1] {Number} Height.
- @param [cfg.radialSegments=60] {Number} Number of segments around the Cylinder.
+ @param [cfg.radialSegments=60] {Number} Number of segments around the CylinderGeometry.
  @param [cfg.heightSegments=1] {Number} Number of vertical segments.
- @param [cfg.openEnded=false] {Boolean} Whether or not the Cylinder has solid caps on the ends.
+ @param [cfg.openEnded=false] {Boolean} Whether or not the CylinderGeometry has solid caps on the ends.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -22720,9 +22740,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
         _props: {
 
             /**
-             * The Cylinder's level-of-detail factor.
+             * The CylinderGeometry's level-of-detail factor.
              *
-             * Fires a {{#crossLink "Cylinder/lod:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/lod:event"}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -22748,7 +22768,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/lod:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property's new value
@@ -22762,9 +22782,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Cylinder's top radius.
+             * The CylinderGeometry's top radius.
              *
-             * Fires a {{#crossLink "Cylinder/radiusTop:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/radiusTop:event"}}{{/crossLink}} event on change.
              *
              * @property radiusTop
              * @default 1
@@ -22790,7 +22810,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/radiusTop:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radiusTop:property"}}{{/crossLink}} property changes.
                      * @event radiusTop
                      * @type Number
                      * @param value The property's new value
@@ -22804,9 +22824,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Cylinder's bottom radius.
+             * The CylinderGeometry's bottom radius.
              *
-             * Fires a {{#crossLink "Cylinder/radiusBottom:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/radiusBottom:event"}}{{/crossLink}} event on change.
              *
              * @property radiusBottom
              * @default 1
@@ -22832,7 +22852,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/radiusBottom:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radiusBottom:property"}}{{/crossLink}} property changes.
                      * @event radiusBottom
                      * @type Number
                      * @param value The property's new value
@@ -22846,9 +22866,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Cylinder's height.
+             * The CylinderGeometry's height.
              *
-             * Fires a {{#crossLink "Cylinder/height:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/height:event"}}{{/crossLink}} event on change.
              *
              * @property height
              * @default 1
@@ -22874,7 +22894,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/height:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/height:property"}}{{/crossLink}} property changes.
                      * @event height
                      * @type Number
                      * @param value The property's new value
@@ -22888,9 +22908,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Cylinder's radial segments.
+             * The CylinderGeometry's radial segments.
              *
-             * Fires a {{#crossLink "Cylinder/radialSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/radialSegments:event"}}{{/crossLink}} event on change.
              *
              * @property radialSegments
              * @default 60
@@ -22916,7 +22936,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/radialSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radialSegments:property"}}{{/crossLink}} property changes.
                      * @event radialSegments
                      * @type Number
                      * @param value The property's new value
@@ -22930,9 +22950,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * The Cylinder's height segments.
+             * The CylinderGeometry's height segments.
              *
-             * Fires a {{#crossLink "Cylinder/heightSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/heightSegments:event"}}{{/crossLink}} event on change.
              *
              * @property heightSegments
              * @default 1
@@ -22958,7 +22978,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/heightSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/heightSegments:property"}}{{/crossLink}} property changes.
                      * @event heightSegments
                      * @type Number
                      * @param value The property's new value
@@ -22972,9 +22992,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
             },
 
             /**
-             * Indicates whether this Cylinder's is open-ended.
+             * Indicates whether this CylinderGeometry's is open-ended.
              *
-             * Fires a {{#crossLink "Cylinder/openEnded:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/openEnded:event"}}{{/crossLink}} event on change.
              *
              * @property openEnded
              * @default false
@@ -22995,7 +23015,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/openEnded:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/openEnded:property"}}{{/crossLink}} property changes.
                      * @event openEnded
                      * @type Boolean
                      * @param value The property's new value
@@ -23025,7 +23045,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
 })();
 ;/**
- A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 
@@ -23762,58 +23782,48 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  ## Example
 
- In this example we have:
-
- <ul>
- <li>a {{#crossLink "Material"}}{{/crossLink}},
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} (that is the default box shape),
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above,</li>
- <li>two {{#crossLink "Group"}}Groups{{/crossLink}}, each containing a subset of all our components.</li>
- </ul>
 
  ````javascript
- var scene = new XEO.Scene();
-
- var material = new XEO.PhongMaterial(scene, {
+ var material = new XEO.PhongMaterial({
      id: "myMaterial",
      diffuse: [0.5, 0.5, 0.0]
  });
 
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new XEO.BoxGeometry();
 
- var gameObject = new XEO.GameObject(scene, {
-    id: "myObject",
+ var Entity = new XEO.Entity({
+    id: "myEntity",
     material: material,
     geometry: geometry
  });
 
  // Our first group contains the Material, added by ID,
- // plus the Geometry and GameObject, both added by instance.
+ // plus the Geometry and Entity, both added by instance.
 
- var group1 = new XEO.Group(scene, { // Initialize with three components
+ var group1 = new XEO.Group({ // Initialize with three components
     components: [
         "myMaterial",
         geometry,
-        gameObject
+        Entity
     ]
  });
 
  // Our second Group includes the geometry, added by instance,
- // and the GameObject, added by type. If there were more than
- // one GameObject in the scene, then that type would ensure
- // that all the GameObjects were in the Group.
+ // and the Entity, added by type. If there were more than
+ // one Entity in the scene, then that type would ensure
+ // that all the Entities were in the Group.
 
- var group2 = new XEO.Group(scene);
+ var group2 = new XEO.Group();
 
  group2.add([  // Add two components
- geometry,
- "XEO.GameObject",
+    geometry,
+    "XEO.Entity",
  ]);
 
  // We can iterate over the components in a Group like so:
 
  group1.iterate(
- function(component) {
+    function(component) {
         //..
     });
 
@@ -23821,7 +23831,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  // by instance, ID or type:
 
  group1.remove("myMaterial"); // Remove one component by ID
- group1.remove([geometry, gameObject]); // Remove two components by instance
+ group1.remove([geometry, Entity]); // Remove two components by instance
 
  group2.remove("XEO.Geometry"); // Remove all Geometries
  ````
@@ -25414,7 +25424,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  * @module XEO
  * @submodule lighting
  */;/**
- A **Lights** defines a group of light sources that illuminate attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Lights** defines a group of light sources that illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -25422,18 +25432,18 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  <ul>
  <li>{{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
- affect all the {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally,</li>
+ affect all the {{#crossLink "Entity"}}Entities{{/crossLink}} equally,</li>
  <li>{{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
  originates from a single point and spreads outward in all directions, and </li>
  <li>{{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally from a given direction</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}} equally from a given direction</li>
  </ul>
 
  <img src="../../../assets/images/Lights.png"></img>
 
  ## Example
 
- In this example we have a {{#crossLink "GameObject"}}{{/crossLink}} that has a {{#crossLink "Geometry"}}{{/crossLink}},
+ In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that has a {{#crossLink "Geometry"}}{{/crossLink}},
  a {{#crossLink "PhongMaterial"}}{{/crossLink}} and a {{#crossLink "Lights"}}{{/crossLink}}. The {{#crossLink "Lights"}}{{/crossLink}}
  contains an {{#crossLink "AmbientLight"}}{{/crossLink}}, a {{#crossLink "DirLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}}.
 
@@ -25480,7 +25490,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry
@@ -25497,7 +25507,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
- @param [cfg.lights] {{Array of String|GameObject}} Array of light source IDs or instances.
+ @param [cfg.lights] {{Array of String|Entity}} Array of light source IDs or instances.
  @extends Component
  */
 (function () {
@@ -25716,15 +25726,15 @@ XEO.PathGeometry = XEO.Geometry.extend({
 })();
 ;/**
 
- An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  equally.
 
  ## Overview
 
  <ul>
  <li>AmbientLights are grouped, along with other light source types, within
- {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
- <li>When the {{#crossLink "GameObject"}}GameObjects{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
+ {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
+ <li>When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that AmbientLights create within xeoEngine's shaders.</li>
@@ -25740,7 +25750,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  <li>an AmbientLight,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the AmbientLight,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ```` javascript
@@ -25773,7 +25783,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry
@@ -25903,14 +25913,14 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
 })();
 ;/**
- A **DirLight** is a directional light source that illuminates all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally
+ A **DirLight** is a directional light source that illuminates all attached {{#crossLink "Entity"}}Entities{{/crossLink}} equally
  from a given direction.
 
  ## Overview
 
  <ul>
  <li>DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>DirLights have a direction, but no position.</li>
  <li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
  is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
@@ -25923,71 +25933,29 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  ## Example
 
- In this example we have:
-
- <ul>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}},</li>
- <li>a DirLight that points along the negative diagonal of the View coordinate system,</li>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the DirLight,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
-
- <iframe style="width: 600px; height: 400px" src="../../examples/light_DirLight.html"></iframe>
-
  ```` javascript
- var scene = new XEO.Scene();
+ var entity = new XEO.Entity({
 
- // A shiny PhongMaterial with quantities of reflected
- // ambient, diffuse and specular color
- var material = new XEO.PhongMaterial(scene, {
-    ambient:    [0.3, 0.3, 0.3],
-    diffuse:    [0.7, 0.7, 0.7],
-    specular:   [1. 1, 1],
-    shininess:  30
+    lights: new XEO.Lights({
+        lights: [
+            new XEO.DirLight(scene, {
+                dir:         [-1, -1, -1],
+                color:       [0.5, 0.7, 0.5],
+                intensity:   1.0,
+                space:      "view"  // Other option is "world", for World-space
+            })
+        ]
+    }),
+
+    material: new XEO.PhongMaterial({
+        ambient:    [0.3, 0.3, 0.3],
+        diffuse:    [0.7, 0.7, 0.7],
+        specular:   [1. 1, 1],
+        shininess:  30
+    }),
+
+    geometry: new XEO.BoxGeometry()
 });
-
- // DirLight with color and intensity, pointing along
- // the negative diagonal within the View coordinate system
- var dirLight = new XEO.DirLight(scene, {
-    dir:         [-1, -1, -1],
-    color:       [0.5, 0.7, 0.5],
-    intensity:   1.0,
-    space:      "view"  // Other option is "world", for World-space
-});
-
- // Lights which contains our DirLight
- var lights = new XEO.Lights(scene, {
-    lights: [
-        dirLight
-    ]
-});
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- // Object which renders our Geometry, colored with
- // the Material and illuminated with the DirLight
- var object = new XEO.GameObject(scene, {
-    lights: lights,
-    material: material,
-    geometry: geometry
-});
- ````
-
- As with all components, we can observe and change properties on a DirLights, like so:
-
- ````Javascript
- // Attach a change listener to a property
- var handle = dirLight.on("color",
- function(value) {
-        // Property value has changed
-    });
-
- // Set the property, which fires our change listener
- dirLight.color = [0.0, 0.3, 0.3];
-
- // Detach the change listener
- dirLight.off(handle);
  ````
 
  @class DirLight
@@ -26188,20 +26156,20 @@ XEO.PathGeometry = XEO.Geometry.extend({
 })();
 ;/**
  A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate
- attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
 
  <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
 
  <li>PointLights have a position, but no direction.</li>
 
- <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their position
- is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
- When in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer's
+ <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
+ are relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
+ When in View-space, their positions are relative to the View coordinate system, and will behave as if fixed to the viewer's
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
 
  <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
@@ -26215,63 +26183,33 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  ## Example
 
- In this example we have
- <ul>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}},</li>
- <li>a PointLight,</li>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the PointLight,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
-
- <iframe style="width: 600px; height: 400px" src="../../examples/light_PointLight.html"></iframe>
-
  ```` javascript
- var scene = new XEO.Scene();
+ var entity = new XEO.Entity(scene, {
 
- var material = new XEO.PhongMaterial(scene, {
-        color: [1, 1, 1],
-        intensity: 1
- });
+        lights: new XEO.Lights({
+            lights: [
+                new XEO.PointLight({
+                    pos: [0, 100, 100],
+                    color: [0.5, 0.7, 0.5],
+                    intensity: 1
+                    constantAttenuation: 0,
+                    linearAttenuation: 0,
+                    quadraticAttenuation: 0,
+                    space: "view"
+                })
+            ]
+        }),
+ ,
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 0.5, 0.0]
+        }),
 
- // Our PointLight's intensity does not attenuate over distance.
-
- var pointLight = new XEO.PointLight(scene, {
-        pos: [0, 100, 100],
-        color: [0.5, 0.7, 0.5],
-        intensity: 1
-        constantAttenuation: 0,
-        linearAttenuation: 0,
-        quadraticAttenuation: 0,
-        space: "view"
- });
-
- var lights = new XEO.Lights(scene, {
-        lights: [
-            pointLight
-        ]
- });
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var object = new XEO.GameObject(scene, {
-        lights: lights,
-        material: material,
-        geometry: geometry
+        geometry: new XEO.BoxGeometry()
   });
- ````
 
- As with all components, we can <a href="XEO.Component.html#changeEvents" class="crosslink">observe and change properties</a> on PointLights like so:
+ // Update the light's color
+ entity.lights.lights[0].color[0] = 1.0;
 
- ````Javascript
- var handle = pointLight.on("color", // Attach a change listener to a property
- function(value) {
-        // Property value has changed
-    });
-
- pointLight.color = [0.4, 0.6, 0.4]; // Fires the change listener
-
- pointLight.off(handle); // Detach the change listener
  ````
 
  @class PointLight
@@ -26290,7 +26228,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
  @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
  @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
  @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
- @param [cfg.space="view"] {String} The coordinate system this PointLight is defined in - "view" or "space".
+ @param [cfg.space="view"] {String} The coordinate system this PointLight is defined in - "view" or "world".
  */
 (function () {
 
@@ -27762,7 +27700,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     var mesh;
                     var material;
                     var geometry;
-                    var object;
+                    var entity;
 
                     for (imeshes = 0; imeshes < lenMeshes; imeshes++) {
 
@@ -27779,8 +27717,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
 
-                            object = new XEO.GameObject(this.group.scene, {
-                                //id: this._makeID(nodeId + ".object" + i),
+                            entity = new XEO.Entity(this.group.scene, {
+                                //id: this._makeID(nodeId + ".entity" + i),
                                 meta: {
                                     name: node.name
                                 },
@@ -27789,7 +27727,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                                 transform: transform
                             });
 
-                            this.group.add(object);
+                            this.group.add(entity);
                         }
                     }
                 }
@@ -27817,7 +27755,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     var glTFLoader = XEO.GLTFLoader;
 
     /**
-     A **Model** component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
+     A **Model** component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent {{#crossLink "Scene"}}{{/crossLink}}.
 
      <ul><li>A Model component begins loading content into its {{#crossLink "Scene"}}{{/crossLink}} as soon as it's {{#crossLink "Model/src:property"}}{{/crossLink}}
      property is set to a file path.</li>
@@ -27842,12 +27780,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
      it created while loading the glTF file.
 
      Let's iterate over the {{#crossLink "Group"}}{{/crossLink}} and log the ID of each
-     {{#crossLink "GameObject"}}{{/crossLink}} we find in there:
+     {{#crossLink "Entity"}}{{/crossLink}} we find in there:
 
      ````javascript
      myModel.group.iterate(function(c) {
-         if (c.type === "XEO.GameObject") {
-             this.log("GameObject found: " + c.id);
+         if (c.type === "XEO.Entity") {
+             this.log("Entity found: " + c.id);
          }
      });
      ````
@@ -27996,12 +27934,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
 
 })();;/**
- * Components to define the surface appearance of GameObjects.
+ * Components to define the surface appearance of Entities.
  *
  * @module XEO
  * @submodule materials
  */;/**
- A **Material** defines the surface appearance of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Material** defines the surface appearance of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  Material is the base class for:
 
@@ -28035,7 +27973,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 })();
 ;/**
  A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} using
+ attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
  the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.
 
  ## Overview
@@ -28058,7 +27996,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  {{#crossLink "Geometry"}}{{/crossLink}} surface, ie. they are not multiplied by
  the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>
 
- <li>When the {{#crossLink "GameObject"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
+ <li>When the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
  {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines" or "points" then only the {{#crossLink "PhongMaterial"}}{{/crossLink}}'s
  {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
@@ -28080,7 +28018,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and the {{#crossLink "Fresnel"}}{{/crossLink}} as a specular Fresnel effect,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  Note that the value for the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
@@ -28131,7 +28069,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry
@@ -28388,7 +28326,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
              A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 
-             Attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached
+             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
              set to **true**.
 
@@ -29129,15 +29067,15 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <ul>
  <li>Textures are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
  property to the image file path.</li>
  <li>To create a Texture from an HTML DOM Image object, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
  property to the object.</li>
- <li>To render color images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
- <li>Similarly, to render depth images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ <li>To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
+ <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>
  </ul>
@@ -29152,7 +29090,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ```` javascript
@@ -29197,7 +29135,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  // Geometry without parameters will default to a 2x2x2 box.
  var geometry = new XEO.Geometry(scene);
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry
@@ -30043,7 +29981,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <ul>
  <li>Fresnels are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Fresnels create within xeoEngine's shaders.</li>
  </ul>
 
@@ -30057,7 +29995,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Fresnel"}}{{/crossLink}}s to diffuse and specular shading,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ```` javascript
@@ -30104,7 +30042,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  // Geometry without parameters will default to a 2x2x2 box.
  var geometry = new XEO.Geometry(scene);
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry
@@ -30333,15 +30271,15 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <ul>
  <li>Reflects are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>To create a Reflect from an image file, set the Reflect's {{#crossLink "Reflect/src:property"}}{{/crossLink}}
  property to the image file path.</li>
  <li>To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink "Reflect/image:property"}}{{/crossLink}}
- property to the object.</li>
- <li>To render color images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
- <li>Similarly, to render depth images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ property to the entity.</li>
+ <li>To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
+ <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>For special effects, we often use rendered Reflects in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Reflects create within xeoEngine's shaders.</li>
  </ul>
@@ -30356,7 +30294,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Reflect"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ```` javascript
@@ -30401,7 +30339,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  // Geometry without parameters will default to a 2x2x2 box.
  var geometry = new XEO.Geometry(scene);
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry
@@ -30640,25 +30578,25 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- * Game object components.
+ * Entities.
  *
  * @module XEO
- * @submodule objects
+ * @submodule entities
  */;/**
- A **GameObject** is an GameObject within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ A **Entity** is an object within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
  ## Overview
 
- See the {{#crossLink "Scene"}}Scene{{/crossLink}} class documentation for more information on GameObjects.</li>
+ See the {{#crossLink "Scene"}}Scene{{/crossLink}} class documentation for more information on Entities.</li>
 
- <img src="../../../assets/images/GameObject.png"></img>
+ <img src="../../../assets/images/Entity.png"></img>
 
 
  ## Boundaries
 
  #### Local-space
 
- A GameObject provides its Local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
+ A Entity provides its Local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.</li>
 
  ```` javascript
@@ -30668,33 +30606,33 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
       //...
   });
 
- var object = new XEO.GameObject(myScene, {
+ var entity = new XEO.Entity(myScene, {
        geometry: myGeometry,
        transform: translate
   });
 
  // Get the Local-space Boundary3D
- var localBoundary = object.localBoundary;
+ var localBoundary = entity.localBoundary;
 
- // Get Local-space object-aligned bounding box (OBB),
+ // Get Local-space entity-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
- // the box that is aligned with the GameObject's Geometry
+ // the box that is aligned with the Entity's Geometry
  var obb = localBoundary.obb;
 
  // Get the Local-space axis-aligned bounding box (ABB),
  // which contains the extents of the boundary on each axis
  var aabb = localBoundary.aabb;
 
- // get the Local-space center of the GameObject:
+ // get the Local-space center of the Entity:
  var center = localBoundary.center;
 
  ````
 
  #### World-space
 
- A GameObject provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
+ A Entity provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
- transformation by the GameObject's {{#crossLink "GameObject/transform:property"}}Modelling transform{{/crossLink}}.</li>
+ transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}.</li>
 
 
  ```` javascript
@@ -30708,123 +30646,123 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     xyz: [-5, 0, 0] // Translate along -X axis
  });
 
- var object = new XEO.GameObject(myScene, {
+ var entity = new XEO.Entity(myScene, {
        geometry: myGeometry,
        transform: translate
   });
 
  // Get the World-space Boundary3D
- var worldBoundary = object.worldBoundary;
+ var worldBoundary = entity.worldBoundary;
 
- // Get World-space object-aligned bounding box (OBB),
+ // Get World-space entity-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
- // the box that is aligned with the GameObject
+ // the box that is aligned with the Entity
  var obb = worldBoundary.obb;
 
  // Get the World-space axis-aligned bounding box (ABB),
  // which contains the extents of the boundary on each axis
  var aabb = worldBoundary.aabb;
 
- // get the World-space center of the GameObject:
+ // get the World-space center of the Entity:
  var center = worldBoundary.center;
 
  ````
 
  #### View-space
 
- A GameObject also provides its View-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
+ A Entity also provides its View-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry/positions:property"}}Geometry positions{{/crossLink}} after
  their transformation by the {{#crossLink "Camera/view:property"}}View{{/crossLink}} and
- {{#crossLink "GameObject/transform:property"}}Modelling{{/crossLink}} transforms.</li>
+ {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}} transforms.</li>
 
  ```` javascript
  // Get the View-space Boundary3D
- var viewBoundary = object.viewBoundary;
+ var viewBoundary = entity.viewBoundary;
 
- // Get View-space object-aligned bounding box (OBB),
+ // Get View-space entity-aligned bounding box (OBB),
  // which is an array of eight vertices that describes
- // the box that is aligned with the GameObject
+ // the box that is aligned with the Entity
  var obb = viewBoundary.obb;
 
  // Get the View-space axis-aligned bounding box (ABB),
  // which contains the extents of the boundary on each axis
  var aabb = viewBoundary.aabb;
 
- // get the View-space center of the GameObject:
+ // get the View-space center of the Entity:
  var center = viewBoundary.center;
 
  ````
 
  #### View-space
 
- A GameObject also provides its Canvas-space boundary as a {{#crossLink "Boundary2D"}}{{/crossLink}} that encloses
+ A Entity also provides its Canvas-space boundary as a {{#crossLink "Boundary2D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry/positions:property"}}Geometry positions{{/crossLink}} after
- their transformation by the {{#crossLink "GameObject/transform:property"}}Modelling{{/crossLink}},
+ their transformation by the {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}},
  {{#crossLink "Camera/view:property"}}View{{/crossLink}} and {{#crossLink "Camera/project:property"}}Projection{{/crossLink}} transforms.</li>
 
  ```` javascript
  // Get the Canvas-space Boundary2D
- var canvasBoundary = object.canvasBoundary;
+ var canvasBoundary = entity.canvasBoundary;
 
  // Get the Canvas-space axis-aligned bounding box (ABB),
  // which contains the extents of the boundary on each axis
  var aabb = canvasBoundary.aabb;
 
- // get the Canvas-space center of the GameObject:
+ // get the Canvas-space center of the Entity:
  var center = canvasBoundary.center;
 
  ````
 
- @class GameObject
+ @class Entity
  @module XEO
- @submodule objects
+ @submodule entities
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this GameObject within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Entity within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GameObject.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to attach to this GameObject.  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Entity.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to attach to this Entity.  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink "Clips"}}Clips{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink "Clips"}}Clips{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/clips:property"}}clips{{/crossLink}}.
- @param [cfg.colorTarget] {String|ColorTarget} ID or instance of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.colorTarget] {String|ColorTarget} ID or instance of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/colorTarget:property"}}colorTarget{{/crossLink}}.
- @param [cfg.depthTarget] {String|DepthTarget} ID or instance of a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.depthTarget] {String|DepthTarget} ID or instance of a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/depthTarget:property"}}depthTarget{{/crossLink}}.
- @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, depth {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}}.
- @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/visibility:property"}}visibility{{/crossLink}}.
- @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink "Modes"}}Modes{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink "Modes"}}Modes{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/modes:property"}}modes{{/crossLink}}.
- @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}, which is a 2x2x2 box.
- @param [cfg.layer] {String|Layer} ID or instance of a {{#crossLink "Layer"}}Layer{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.layer] {String|Layer} ID or instance of a {{#crossLink "Layer"}}Layer{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}.
- @param [cfg.lights] {String|Lights} ID or instance of a {{#crossLink "Lights"}}Lights{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.lights] {String|Lights} ID or instance of a {{#crossLink "Lights"}}Lights{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/lights:property"}}lights{{/crossLink}}.
- @param [cfg.material] {String|Material} ID or instance of a {{#crossLink "Material"}}Material{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+ @param [cfg.material] {String|Material} ID or instance of a {{#crossLink "Material"}}Material{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/material:property"}}material{{/crossLink}}.
- @param [cfg.morphTargets] {String|MorphTargets} ID or instance of a {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
+ @param [cfg.morphTargets] {String|MorphTargets} ID or instance of a {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
  default instance, {{#crossLink "Scene/morphTargets:property"}}morphTargets{{/crossLink}}.
- @param [cfg.reflect] {String|Reflect} ID or instance of a {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ @param [cfg.reflect] {String|Reflect} ID or instance of a {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/reflect:property"}}reflection{{/crossLink}}.
- @param [cfg.shader] {String|Shader} ID or instance of a {{#crossLink "Shader"}}Shader{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ @param [cfg.shader] {String|Shader} ID or instance of a {{#crossLink "Shader"}}Shader{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/shader:property"}}shader{{/crossLink}}.
- @param [cfg.shaderParams] {String|ShaderParams} ID or instance of a {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ @param [cfg.shaderParams] {String|ShaderParams} ID or instance of a {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/shaderParams:property"}}shaderParams{{/crossLink}}.
- @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink "Stage"}}Stage{{/crossLink}} to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink "Stage"}}Stage{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}.
- @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this GameObject. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/transform:property"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
  @extends Component
  */
 
 /**
- * Fired when this GameObject is *picked* via a call to the {{#crossLink "Canvas/pick:method"}}{{/crossLink}} method
+ * Fired when this Entity is *picked* via a call to the {{#crossLink "Canvas/pick:method"}}{{/crossLink}} method
  * on the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas {{/crossLink}}.
  * @event picked
- * @param {String} objectId The ID of this GameObject.
+ * @param {String} entityId The ID of this Entity.
  * @param {Number} canvasX The X-axis Canvas coordinate that was picked.
  * @param {Number} canvasY The Y-axis Canvas coordinate that was picked.
  */
@@ -30832,9 +30770,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
     "use strict";
 
-    XEO.GameObject = XEO.Component.extend({
+    XEO.Entity = XEO.Component.extend({
 
-        type: "XEO.GameObject",
+        type: "XEO.Entity",
 
         _init: function (cfg) {
 
@@ -30860,7 +30798,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             this.stationary = cfg.stationary;
 
             // Cached boundary for each coordinate space
-            // The GameObject's Geometry component caches the Local-space boundary
+            // The Entity's Geometry component caches the Local-space boundary
 
             this._worldBoundary = null;
             this._viewBoundary = null;
@@ -30874,13 +30812,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
         _props: {
 
             /**
-             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Camera"}}Camera{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/camera:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/camera:event"}}{{/crossLink}} event on change.
              *
              * @property camera
              * @type Camera
@@ -30903,7 +30841,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     }
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/camera:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/camera:property"}}{{/crossLink}} property changes.
                      *
                      * @event camera
                      * @param value The property's new value
@@ -30927,13 +30865,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Clips"}}Clips{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Clips"}}Clips{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/clips:property"}}clips{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/clips:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/clips:event"}}{{/crossLink}} event on change.
              *
              * @property clips
              * @type Clips
@@ -30943,7 +30881,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/clips:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/clips:property"}}{{/crossLink}} property changes.
                      * @event clips
                      * @param value The property's new value
                      */
@@ -30956,13 +30894,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/colorTarget:property"}}colorTarget{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/colorTarget:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/colorTarget:event"}}{{/crossLink}} event on change.
              *
              * @property colorTarget
              * @type ColorTarget
@@ -30972,7 +30910,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/colorTarget:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/colorTarget:property"}}{{/crossLink}} property changes.
                      * @event colorTarget
                      * @param value The property's new value
                      */
@@ -30985,13 +30923,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/colorBuf:property"}}colorBuf{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/colorBuf:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/colorBuf:event"}}{{/crossLink}} event on change.
              *
              * @property colorBuf
              * @type ColorBuf
@@ -31001,7 +30939,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/colorBuf:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/colorBuf:property"}}{{/crossLink}} property changes.
                      *
                      * @event colorBuf
                      * @param value The property's new value
@@ -31015,13 +30953,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/depthTarget:property"}}depthTarget{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/depthTarget:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/depthTarget:event"}}{{/crossLink}} event on change.
              *
              * @property depthTarget
              * @type DepthTarget
@@ -31031,7 +30969,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/depthTarget:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/depthTarget:property"}}{{/crossLink}} property changes.
                      *
                      * @event depthTarget
                      * @param value The property's new value
@@ -31045,13 +30983,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
              * parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/depthBuf:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/depthBuf:event"}}{{/crossLink}} event on change.
              *
              * @property depthBuf
              * @type DepthBuf
@@ -31061,7 +30999,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/depthBuf:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/depthBuf:property"}}{{/crossLink}} property changes.
                      *
                      * @event depthBuf
                      * @param value The property's new value
@@ -31075,13 +31013,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Visibility"}}Visibility{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Visibility"}}Visibility{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/visibility:property"}}visibility{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/visibility:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/visibility:event"}}{{/crossLink}} event on change.
              *
              * @property visibility
              * @type Visibility
@@ -31091,7 +31029,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/visibility:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/visibility:property"}}{{/crossLink}} property changes.
                      *
                      * @event visibility
                      * @param value The property's new value
@@ -31105,13 +31043,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Modes"}}Modes{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Modes"}}Modes{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/modes:property"}}modes{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/modes:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/modes:event"}}{{/crossLink}} event on change.
              *
              * @property modes
              * @type Modes
@@ -31121,7 +31059,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's {{#crossLink "GameObject/modes:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's {{#crossLink "Entity/modes:property"}}{{/crossLink}} property changes.
                      *
                      * @event modes
                      * @param value The property's new value
@@ -31135,17 +31073,17 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Geometry"}}Geometry{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Geometry"}}Geometry{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/geometry:property"}}camera{{/crossLink}}
              * (a simple box) when set to a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/geometry:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/geometry:event"}}{{/crossLink}} event on change.
              *
-             * Updates {{#crossLink "GameObject/boundary"}}{{/crossLink}},
-             * {{#crossLink "GameObject/worldObb"}}{{/crossLink}} and
-             * {{#crossLink "GameObject/center"}}{{/crossLink}}
+             * Updates {{#crossLink "Entity/boundary"}}{{/crossLink}},
+             * {{#crossLink "Entity/worldObb"}}{{/crossLink}} and
+             * {{#crossLink "Entity/center"}}{{/crossLink}}
              *
              * @property geometry
              * @type Geometry
@@ -31171,7 +31109,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     }
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/geometry:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/geometry:property"}}{{/crossLink}} property changes.
                      *
                      * @event geometry
                      * @param value The property's new value
@@ -31198,13 +31136,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Layer"}}Layer{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Layer"}}Layer{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/layer:property"}}layer{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/layer:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/layer:event"}}{{/crossLink}} event on change.
              *
              * @property layer
              * @type Layer
@@ -31214,7 +31152,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/layer:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/layer:property"}}{{/crossLink}} property changes.
                      *
                      * @event layer
                      * @param value The property's new value
@@ -31228,13 +31166,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Lights"}}Lights{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Lights"}}Lights{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/lights:property"}}lights{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/lights:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/lights:event"}}{{/crossLink}} event on change.
              *
              * @property lights
              * @type Lights
@@ -31244,7 +31182,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/lights:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/lights:property"}}{{/crossLink}} property changes.
                      *
                      * @event lights
                      * @param value The property's new value
@@ -31258,13 +31196,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Material"}}Material{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Material"}}Material{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/material:property"}}material{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/material:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/material:event"}}{{/crossLink}} event on change.
              *
              * @property material
              * @type Material
@@ -31274,7 +31212,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/material:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/material:property"}}{{/crossLink}} property changes.
                      *
                      * @event material
                      * @param value The property's new value
@@ -31288,13 +31226,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/morphTargets:property"}}morphTargets{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/morphTargets:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/morphTargets:event"}}{{/crossLink}} event on change.
              *
              * @property morphTargets
              * @type MorphTargets
@@ -31304,7 +31242,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/morphTargets:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/morphTargets:property"}}{{/crossLink}} property changes.
                      * @event morphTargets
                      * @param value The property's new value
                      */
@@ -31317,13 +31255,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Reflect"}}Reflect{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Reflect"}}Reflect{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/reflect:property"}}reflect{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/reflect:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/reflect:event"}}{{/crossLink}} event on change.
              *
              * @property reflect
              * @type Reflect
@@ -31333,7 +31271,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/reflect:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/reflect:property"}}{{/crossLink}} property changes.
                      *
                      * @event reflect
                      * @param value The property's new value
@@ -31347,13 +31285,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Shader"}}Shader{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Shader"}}Shader{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/shader:property"}}shader{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/shader:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/shader:event"}}{{/crossLink}} event on change.
              *
              * @property shader
              * @type Shader
@@ -31363,7 +31301,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/shader:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/shader:property"}}{{/crossLink}} property changes.
                      * @event shader
                      * @param value The property's new value
                      */
@@ -31376,13 +31314,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/shaderParams:property"}}shaderParams{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/shaderParams:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/shaderParams:event"}}{{/crossLink}} event on change.
              *
              * @property shaderParams
              * @type ShaderParams
@@ -31392,7 +31330,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/shaderParams:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/shaderParams:property"}}{{/crossLink}} property changes.
                      *
                      * @event shaderParams
                      * @param value The property's new value
@@ -31406,13 +31344,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Stage"}}Stage{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Stage"}}Stage{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/stage:property"}}stage{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/stage:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/stage:event"}}{{/crossLink}} event on change.
              *
              * @property stage
              * @type Stage
@@ -31422,7 +31360,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's  {{#crossLink "GameObject/stage:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Entity's  {{#crossLink "Entity/stage:property"}}{{/crossLink}} property changes.
                      *
                      * @event stage
                      * @param value The property's new value
@@ -31436,17 +31374,17 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this GameObject.
+             * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/transform:property"}}transform{{/crossLink}}
              * (an identity matrix) when set to a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/transform:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/transform:event"}}{{/crossLink}} event on change.
              *
-             * Updates {{#crossLink "GameObject/boundary"}}{{/crossLink}},
-             * {{#crossLink "GameObject/worldObb"}}{{/crossLink}} and
-             * {{#crossLink "GameObject/center"}}{{/crossLink}}
+             * Updates {{#crossLink "Entity/boundary"}}{{/crossLink}},
+             * {{#crossLink "Entity/worldObb"}}{{/crossLink}} and
+             * {{#crossLink "Entity/center"}}{{/crossLink}}
              *
              * @property transform
              * @type Transform
@@ -31469,7 +31407,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     }
 
                     /**
-                     * Fired whenever this GameObject's {{#crossLink "GameObject/transform:property"}}{{/crossLink}}
+                     * Fired whenever this Entity's {{#crossLink "Entity/transform:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event transform
@@ -31515,16 +31453,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Billboard"}}{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Billboard"}}{{/crossLink}} attached to this Entity.
              *
              * When {{#crossLink "Billboard/property:active"}}{{/crossLink}}, the {{#crossLink "Billboard"}}{{/crossLink}}
-             * will keep this GameObject oriented towards the viewpoint.
+             * will keep this Entity oriented towards the viewpoint.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/billboard:property"}}billboard{{/crossLink}}
              * (an identity matrix) when set to a null or undefined value.
              *
-             * Fires a {{#crossLink "GameObject/billboard:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/billboard:event"}}{{/crossLink}} event on change.
              *
              * @property billboard
              * @type Billboard
@@ -31534,7 +31472,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's {{#crossLink "GameObject/billboard:property"}}{{/crossLink}}
+                     * Fired whenever this Entity's {{#crossLink "Entity/billboard:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event billboard
@@ -31549,17 +31487,17 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Stationary"}}{{/crossLink}} attached to this GameObject.
+             * The {{#crossLink "Stationary"}}{{/crossLink}} attached to this Entity.
              *
              * When {{#crossLink "Stationary/property:active"}}{{/crossLink}}, the {{#crossLink "Stationary"}}{{/crossLink}}
-             * will prevent the translation component of the viewing transform from being applied to this GameObject, yet
+             * will prevent the translation component of the viewing transform from being applied to this Entity, yet
              * still allowing it to rotate.
              *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GameObject. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/stationary:property"}}stationary{{/crossLink}},
              * which is disabled by default.
              *
-             * Fires a {{#crossLink "GameObject/stationary:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Entity/stationary:event"}}{{/crossLink}} event on change.
              *
              * @property stationary
              * @type Stationary
@@ -31569,7 +31507,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this GameObject's {{#crossLink "GameObject/stationary:property"}}{{/crossLink}}
+                     * Fired whenever this Entity's {{#crossLink "Entity/stationary:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event stationary
@@ -31584,13 +31522,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * Local-space 3D boundary of this GameObject.
+             * Local-space 3D boundary of this Entity.
              *
              * This is a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
-             * the {{#crossLink "Geometry"}}{{/crossLink}} that is attached to this GameObject.
+             * the {{#crossLink "Geometry"}}{{/crossLink}} that is attached to this Entity.
              *
              * The {{#crossLink "Boundary3D"}}{{/crossLink}} will fire an {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}}
-             * event whenever this GameObject's {{#crossLink "GameObject/geometry:property"}}{{/crossLink}} is linked to
+             * event whenever this Entity's {{#crossLink "Entity/geometry:property"}}{{/crossLink}} is linked to
              * a new {{#crossLink "Geometry"}}{{/crossLink}}, or whenever the {{#crossLink "Geometry"}}{{/crossLink}}'s
              * {{#crossLink "Geometry/positions:property"}}{{/crossLink}} are updated.
              *
@@ -31611,14 +31549,14 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * World-space 3D boundary of this GameObject.
+             * World-space 3D boundary of this Entity.
              *
              * This is a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses the {{#crossLink "Geometry"}}{{/crossLink}}
-             * that is attached to this GameObject after transformation by this GameObject's modelling
-             * {{#crossLink "GameObject/transform:property"}}{{/crossLink}}.
+             * that is attached to this Entity after transformation by this Entity's modelling
+             * {{#crossLink "Entity/transform:property"}}{{/crossLink}}.
              *
              * The {{#crossLink "Boundary3D"}}{{/crossLink}} will fire an {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}}
-             * event whenever this GameObject's {{#crossLink "GameObject/geometry:property"}}{{/crossLink}} is linked to
+             * event whenever this Entity's {{#crossLink "Entity/geometry:property"}}{{/crossLink}} is linked to
              * a new {{#crossLink "Geometry"}}{{/crossLink}}, or whenever the {{#crossLink "Geometry"}}{{/crossLink}}'s
              * {{#crossLink "Geometry/positions:property"}}{{/crossLink}} are updated.
              *
@@ -31629,7 +31567,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
              *
              * <h4>Example</h4>
              *
-             * [here](http://xeoengine.org/examples/#boundaries_GameObject_worldBoundary)
+             * [here](http://xeoengine.org/examples/#boundaries_Entity_worldBoundary)
              *
              * <h4>Performance</h4>
              *
@@ -31653,7 +31591,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
                             meta: {
-                                desc: "GameObject " + self.id + " World-space boundary" // For debugging
+                                desc: "Entity " + self.id + " World-space boundary" // For debugging
                             },
 
                             getDirty: function () {
@@ -31702,16 +31640,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * View-space 3D boundary of this GameObject.
+             * View-space 3D boundary of this Entity.
              *
              * This is a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses the {{#crossLink "Geometry"}}{{/crossLink}}
-             * that is attached to this GameObject after transformation by this GameObject's modelling
-             * {{#crossLink "GameObject/transform:property"}}{{/crossLink}} and {{#crossLink "Camera"}}{{/crossLink}}
+             * that is attached to this Entity after transformation by this Entity's modelling
+             * {{#crossLink "Entity/transform:property"}}{{/crossLink}} and {{#crossLink "Camera"}}{{/crossLink}}
              * {{#crossLink "Camera/view:property"}}view transform{{/crossLink}}.
              *
              * The {{#crossLink "Boundary3D"}}{{/crossLink}} will fire an {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}}
              * event whenever there are any changes to the {{#crossLink "Geometry"}}{{/crossLink}},
-             * {{#crossLink "GameObject/transform:property"}}{{/crossLink}} or {{#crossLink "Camera"}}{{/crossLink}} that
+             * {{#crossLink "Entity/transform:property"}}{{/crossLink}} or {{#crossLink "Camera"}}{{/crossLink}} that
              * would affect its extents.
              *
              * The a {{#crossLink "Boundary3D"}}{{/crossLink}} is lazy-instantiated the first time that this
@@ -31741,7 +31679,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
                             meta: {
-                                desc: "GameObject " + self.id + " View-space boundary" // For debugging
+                                desc: "Entity " + self.id + " View-space boundary" // For debugging
                             },
 
                             getDirty: function () {
@@ -31774,15 +31712,15 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             /**
              * Canvas-space 2D boundary.
              *
-             * This is a {{#crossLink "Boundary2D"}}{{/crossLink}} that encloses this GameObject's
-             * {{#crossLink "GameObject/geometry:property"}}{{/crossLink}} after transformation by this GameObject's modelling
-             * {{#crossLink "GameObject/transform:property"}}{{/crossLink}} and {{#crossLink "Camera"}}{{/crossLink}}
+             * This is a {{#crossLink "Boundary2D"}}{{/crossLink}} that encloses this Entity's
+             * {{#crossLink "Entity/geometry:property"}}{{/crossLink}} after transformation by this Entity's modelling
+             * {{#crossLink "Entity/transform:property"}}{{/crossLink}} and {{#crossLink "Camera"}}{{/crossLink}}
              * {{#crossLink "Camera/view:property"}}view{{/crossLink}} and
              * {{#crossLink "Camera/project:property"}}projection{{/crossLink}} transforms.
              *
              * The {{#crossLink "Boundary2D"}}{{/crossLink}} will fire an {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}}
              * event whenever there are any changes to the {{#crossLink "Geometry"}}{{/crossLink}},
-             * {{#crossLink "GameObject/transform:property"}}{{/crossLink}} or {{#crossLink "Camera"}}{{/crossLink}} that
+             * {{#crossLink "Entity/transform:property"}}{{/crossLink}} or {{#crossLink "Camera"}}{{/crossLink}} that
              * would affect its extents.
              *
              * The a {{#crossLink "Boundary2D"}}{{/crossLink}} is lazy-instantiated the first time that this
@@ -31812,7 +31750,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
 
                             meta: {
-                                desc: "GameObject " + self.id + " Canvas-space boundary" // For debugging
+                                desc: "Entity " + self.id + " Canvas-space boundary" // For debugging
                             },
 
                             getDirty: function () {
@@ -31843,12 +31781,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * JSON object containing the (GLSL) source code of the shaders for this GameObject.
+             * JSON object containing the (GLSL) source code of the shaders for this Entity.
              *
              * This is sometimes useful to have as a reference
              * when constructing your own custom {{#crossLink "Shader"}}{{/crossLink}} components.
              *
-             * Will return null if xeoEngine has not yet rendered this GameObject.
+             * Will return null if xeoEngine has not yet rendered this Entity.
              *
              * @property glsl
              * @type JSON
@@ -31880,12 +31818,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The (GLSL) source code of the shaders for this GameObject, as a string.
+             * The (GLSL) source code of the shaders for this Entity, as a string.
              *
              * This is sometimes useful to have as a reference
              * when constructing your own custom {{#crossLink "Shader"}}{{/crossLink}} components.
              *
-             * Will return null if xeoEngine has not yet rendered this GameObject.
+             * Will return null if xeoEngine has not yet rendered this Entity.
              *
              * @property glslString
              * @type String
@@ -31927,7 +31865,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             }
         },
 
-        // Returns true if there is enough on this GameObject to render something.
+        // Returns true if there is enough on this Entity to render something.
         _valid: function () {
             var geometry = this._children.geometry;
             return geometry && geometry.positions && geometry.indices;
@@ -31959,9 +31897,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             children.billboard._compile();
             children.stationary._compile();
 
-            // (Re)build this GameObject in the renderer
+            // (Re)build this Entity in the renderer; for each Entity in teh scene graph,
+            // there is an "object" in the renderer, that has the same ID as the entity
 
-            var result = this._renderer.buildObject(this.id);
+            var objectId = this.id;
+
+            var result = this._renderer.buildObject(objectId);
 
             if (result && result.error) {
 
@@ -32030,12 +31971,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- * Components that influence the way objects are rendered on WebGL.
+ * Components that influence the way entities are rendered with WebGL.
  *
  * @module XEO
  * @submodule rendering
  */;/**
- A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -32051,14 +31992,14 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  ## Example
 
- In this example we're configuring the WebGL color buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
+ In this example we're configuring the WebGL color buffer for an {{#crossLink "Entity"}}{{/crossLink}}.
 
  This example scene contains:
 
  <ul>
  <li>a ColorBuf that enables blending and sets the color mask,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ````javascript
@@ -32071,7 +32012,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var gameObject = new XEO.GameObject(scene, {
+ var Entity = new XEO.Entity(scene, {
     colorBuf: colorBuf,
     geometry: geometry
 });
@@ -32192,7 +32133,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **DepthBuf** configures the WebGL depth buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **DepthBuf** configures the WebGL depth buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -32206,14 +32147,14 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  ## Example
 
- In this example we're configuring the WebGL depth buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
+ In this example we're configuring the WebGL depth buffer for an {{#crossLink "Entity"}}{{/crossLink}}.
 
  The scene contains:
 
  <ul>
  <li>a DepthBuf that configures the clear depth and depth comparison function,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ````javascript
@@ -32228,9 +32169,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- // Create a Object that renders the Geometry to the depth buffer,
+ // Create a Entity that renders the Geometry to the depth buffer,
  // as configured by our DepthBuf
- var gameObject = new XEO.GameObject(scene, {
+ var Entity = new XEO.Entity(scene, {
     depthBuf: depthBuf,
     geometry: geometry
 });
@@ -32422,30 +32363,30 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Layer** specifies the render order of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
+ A **Layer** specifies the render order of {{#crossLink "Entity"}}Entities{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  ## Overview
 
  <ul>
  <li>When xeoEngine renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
- of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
+ of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
 
  <li>{{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
 
- <li>You can control the render order of the individual {{#crossLink "GameObject"}}GameObjects{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
+ <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
  by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
 
  <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
 
 
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly
+ <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
  a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.</li>
 
  <li>You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
  </ul>
 
@@ -32454,7 +32395,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  ## Example
 
  In this example we'll use Layers to perform <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency sorting</a>,
- which ensures that transparent objects are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.
+ which ensures that transparent entities are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.
 
  We want to render the three nested boxes shown below, in which the innermost box is opaque and blue,
  the box enclosing that is transparent and yellow, and the outermost box is transparent and green. We need the boxes to
@@ -32464,7 +32405,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  Our scene has one {{#crossLink "Stage"}}{{/crossLink}}, just for completeness. As mentioned earlier, you don't have to
  create this because the {{#crossLink "Scene"}}{{/crossLink}} will provide its default {{#crossLink "Stage"}}{{/crossLink}}.
- Then, within that {{#crossLink "Stage"}}{{/crossLink}}, we create a {{#crossLink "GameObject"}}{{/crossLink}} for each box,
+ Then, within that {{#crossLink "Stage"}}{{/crossLink}}, we create an {{#crossLink "Entity"}}{{/crossLink}} for each box,
  each assigned to a different prioritised {{#crossLink "Layer"}}{{/crossLink}} to ensure that they are rendered in the right order.
 
  ````javascript
@@ -32503,7 +32444,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     opacity: 1.0
 });
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
     camera: camera,
     geometry: geometry,
     stage: stage,
@@ -32529,7 +32470,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     xyz: [6, 6, 6]
 });
 
- var object2 = new XEO.GameObject(scene, {
+ var entity2 = new XEO.Entity(scene, {
     camera: camera,
     geometry: geometry,
     stage: stage,
@@ -32556,7 +32497,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     xyz: [9, 9, 9]
 });
 
- var object3 = new XEO.GameObject(scene, {
+ var entity3 = new XEO.Entity(scene, {
     camera: camera,
     geometry: geometry,
     stage: stage,
@@ -32599,9 +32540,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
         _props: {
 
             /**
-             * Indicates this Layer's rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             * Indicates this Layer's rendering priority for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
              *
-             * Each {{#crossLink "GameObject"}}{{/crossLink}} is also attached to a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
+             * Each {{#crossLink "Entity"}}{{/crossLink}} is also attached to a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
              * priority via its {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} property.
              *
              * Fires a {{#crossLink "Layer/priority:event"}}{{/crossLink}} event on change.
@@ -32662,7 +32603,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 })();
 ;/**
  A **ColorTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
- captures the colors of the pixels rendered for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ captures the colors of the pixels rendered for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -32680,18 +32621,18 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  ## Example
 
- In this example we essentially have one {{#crossLink "GameObject"}}{{/crossLink}}
- that's rendered to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied to a second {{#crossLink "GameObject"}}{{/crossLink}}.
+ In this example we essentially have one {{#crossLink "Entity"}}{{/crossLink}}
+ that's rendered to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
 
  The scene contains:
 
  <ul>
  <li>a ColorTarget,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} pixel color values to the ColorTarget,</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} pixel color values to the ColorTarget,</li>
  <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the ColorTarget,</li>
  <li>a {{#crossLink "Material"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
- <li>a second {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
+ <li>a second {{#crossLink "Entity"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
  </ul>
 
 
@@ -32702,9 +32643,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- // First Object renders to the ColorTarget
+ // First Entity renders to the ColorTarget
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
     geometry: geometry,
     colorTarget: colorTarget
 });
@@ -32719,10 +32660,10 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     ]
 });
 
- // Second Object is textured with the
- // image of the first Object
+ // Second Entity is textured with the
+ // image of the first Entity
 
- var object2 = new XEO.GameObject(scene, {
+ var entity2 = new XEO.Entity(scene, {
     geometry: geometry,  // Reuse our simple box geometry
     material: material
 });
@@ -32810,7 +32751,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             /**
              * Determines whether this ColorTarget is active or not.
              *
-             * When active, the pixel colors of associated {{#crossLink "GameObjects"}}{{/crossLink}} will be rendered
+             * When active, the pixel colors of associated {{#crossLink "Entities"}}{{/crossLink}} will be rendered
              * to this ColorTarget. When inactive, the colors will be written to the default WebGL color buffer instead.
              *
              * Fires a {{#crossLink "ColorTarget/active:event"}}{{/crossLink}} event on change.
@@ -32897,7 +32838,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 })();
 ;/**
  A **DepthTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
- captures the depths of the pixels rendered for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ captures the depths of the pixels rendered for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -32915,24 +32856,24 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  ## Example
 
- In the example below, we essentially have one {{#crossLink "GameObject"}}{{/crossLink}}
+ In the example below, we essentially have one {{#crossLink "Entity"}}{{/crossLink}}
  that renders its pixel Z-depth values to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied
- to a second {{#crossLink "GameObject"}}{{/crossLink}}.
+ to a second {{#crossLink "Entity"}}{{/crossLink}}.
 
  The scene contains:
 
  <ul>
  <li>a DepthTarget,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} fragment depth values to the DepthTarget,</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} fragment depth values to the DepthTarget,</li>
  <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the DepthTarget,</li>
  <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
- <li>a second {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
+ <li>a second {{#crossLink "Entity"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
  </ul>
 
  The pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second
- {{#crossLink "GameObject"}}{{/crossLink}} as a {{#crossLink "Texture"}}{{/crossLink}}. In practice the {{#crossLink "Texture"}}{{/crossLink}}
- would carry the depth values into a custom {{#crossLink "Shader"}}{{/crossLink}}, which would then be applied to the second {{#crossLink "GameObject"}}{{/crossLink}}.
+ {{#crossLink "Entity"}}{{/crossLink}} as a {{#crossLink "Texture"}}{{/crossLink}}. In practice the {{#crossLink "Texture"}}{{/crossLink}}
+ would carry the depth values into a custom {{#crossLink "Shader"}}{{/crossLink}}, which would then be applied to the second {{#crossLink "Entity"}}{{/crossLink}}.
 
  ````javascript
  var scene = new XEO.Scene();
@@ -32941,8 +32882,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  var depthTarget = new XEO.DepthTarget(scene);
 
- // First Object renders its pixel depth values to our DepthTarget
- var object1 = new XEO.GameObject(scene, {
+ // First Entity renders its pixel depth values to our DepthTarget
+ var entity1 = new XEO.Entity(scene, {
     depthTarget: depthTarget
 });
 
@@ -32958,9 +32899,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     ]
 });
 
- // Second Object is effectively textured with the color-encoded
- // pixel depths of the first Object
- var object2 = new XEO.GameObject(scene, {
+ // Second Entity is effectively textured with the color-encoded
+ // pixel depths of the first Entity
+ var entity2 = new XEO.Entity(scene, {
     geometry: geometry,  // Reuse our simple box geometry
     material: material
 });
@@ -33011,7 +32952,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             /**
              * Indicates whether this DepthTarget is active or not.
              *
-             * When active, the pixel depths of associated {{#crossLink "GameObjects"}}{{/crossLink}} will be rendered
+             * When active, the pixel depths of associated {{#crossLink "Entities"}}{{/crossLink}} will be rendered
              * to this DepthTarget. When inactive, the colors will be written to the default WebGL depth buffer instead.
              *
              * Fires a {{#crossLink "DepthTarget/active:event"}}{{/crossLink}} event on change.
@@ -33089,16 +33030,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Modes** toggles various xeoEngine modes and capabilities for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Modes** toggles various xeoEngine modes and capabilities for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
 
- <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
+ <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
  Modes components provide a single point through which you can toggle them on or off.</li>
 
- <li>A Modes may be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to toggle
+ <li>A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
  rendering modes for them as a group.</li>
 
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeoEngine's shaders.</li>
@@ -33110,7 +33051,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  ## Example
 
  In this example we have a Modes that toggles rendering modes for
- two {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. The properties of the Modes are initialised to their
+ two {{#crossLink "Entity"}}Entities{{/crossLink}}. The properties of the Modes are initialised to their
  default values.
 
  ````javascript
@@ -33125,13 +33066,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     frontface : "ccw"
  });
 
- // Create two GameObjects whose rendering modes will be controlled by our Modes
+ // Create two Entities whose rendering modes will be controlled by our Modes
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
        modes: modes
  });
 
- var object2 = new XEO.GameObject(scene, {
+ var entity2 = new XEO.Entity(scene, {
        modes: modes
  });
 
@@ -33140,14 +33081,14 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
        //...
  });
 
- // Hide backfaces on our GameObjects by flipping the Modes' "backfaces" property,
+ // Hide backfaces on our Entities by flipping the Modes' "backfaces" property,
  // which will also call our handler
  modes.backfaces = false;
 
  // Unsubscribe from the Modes again
  modes.off(handle);
 
- // When we destroy our Modes, the GameObjects will fall back
+ // When we destroy our Modes, the Entities will fall back
  // on the Scene's default Modes instance
  modes.destroy();
 
@@ -33164,14 +33105,14 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.pickable=true] {Boolean}  Whether to enable picking.
  @param [cfg.clipping=true] {Boolean} Whether to enable clipping by {{#crossLink "Clips"}}{{/crossLink}}.
  @param [cfg.transparent=false] {Boolean} Whether to enable the transparency effect created by {{#crossLink "Material"}}Material{{/crossLink}}s when they have
- {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
+ {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
  transparency pass with blending enabled etc), while
  the {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} will indicate the **degree** of their transparency
  (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
  @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
- @param [cfg.collidable=true] {Boolean} Whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are included in boundary-related calculations. Set this false if the
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
+ @param [cfg.collidable=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are included in boundary-related calculations. Set this false if the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
  @extends Component
  */
 (function () {
@@ -33204,7 +33145,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
         _props: {
 
             /**
-             Whether this Modes enables picking of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             Whether this Modes enables picking of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              Picking is performed via calls to {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}.
 
@@ -33237,10 +33178,10 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             Whether this Modes enables clipping of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             Whether this Modes enables clipping of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              Clipping is done by {{#crossLink "Clips"}}{{/crossLink}} that are also attached to
-             the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              Fires a {{#crossLink "Modes/clipping:event"}}{{/crossLink}} event on change.
 
@@ -33271,9 +33212,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             Whether this Modes sets attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent.
+             Whether this Modes sets attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent.
 
-             When true. this property will set attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
+             When true. this property will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
              transparency pass with blending enabled etc), while
              the {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} will be used to indicate the **degree** of their transparency
              (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
@@ -33307,10 +33248,10 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             Whether this Modes enables backfaces to be visible on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             Whether this Modes enables backfaces to be visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              Fires a {{#crossLink "Modes/backfaces:event"}}{{/crossLink}} event on change.
 
@@ -33343,10 +33284,10 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              Fires a {{#crossLink "Modes/frontface:event"}}{{/crossLink}} event on change.
 
@@ -33377,13 +33318,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             Whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are included
+             Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are included
              in boundary-related calculations.
 
              Set this false if the
-             {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
+             {{#crossLink "Entity"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
 
-             For example, when set false, the {{#crossLink "GameObject/worldBoundary:property"}}World-space boundary{{/crossLink}} of all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} would not be considered when calculating the {{#crossLink "Scene/worldBoundary:property"}}World-space boundary{{/crossLink}} of their
+             For example, when set false, the {{#crossLink "Entity/worldBoundary:property"}}World-space boundary{{/crossLink}} of all attached {{#crossLink "Entity"}}Entities{{/crossLink}} would not be considered when calculating the {{#crossLink "Scene/worldBoundary:property"}}World-space boundary{{/crossLink}} of their
              {{#crossLink "Scene"}}{{/crossLink}}.
 
              Fires a {{#crossLink "Modes/collidable:event"}}{{/crossLink}} event on change.
@@ -33441,24 +33382,24 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Stage** is a bin of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that is rendered in a specified priority with respect to
+ A **Stage** is a bin of {{#crossLink "Entity"}}Entities{{/crossLink}} that is rendered in a specified priority with respect to
  other Stages in the same {{#crossLink "Scene"}}{{/crossLink}}.
 
  ## Overview
 
  <ul>
  <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
- of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
+ of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
 
  <li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
 
- <li>You can control the render order of the individual {{#crossLink "GameObject"}}GameObjects{{/crossLink}} ***within*** a Stage
+ <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a Stage
  by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
 
  <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within Stages.</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}} within Stages.</li>
 
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
+ <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Stage are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
  a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
@@ -33478,7 +33419,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  ````javascript
  var scene = new XEO.Scene();
 
- // First stage: an Object that renders to a ColorTarget
+ // First stage: an Entity that renders to a ColorTarget
 
  var stage1 = new XEO.Stage(scene, {
        priority: 0
@@ -33488,14 +33429,14 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  var colorTarget = new XEO.ColorTarget(scene);
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
        stage: stage1,
        geometry: geometry,
        colorTarget: colorTarget
   });
 
 
- // Second stage: an Object with a Texture that sources from the ColorTarget
+ // Second stage: an Entity with a Texture that sources from the ColorTarget
 
  var stage2 = new XEO.Stage(scene, {
        priority: 1
@@ -33513,7 +33454,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  var geometry2 = new XEO.Geometry(scene);
 
- var object2 = new XEO.GameObject(scene, {
+ var entity2 = new XEO.Entity(scene, {
        stage: stage2,
        material: material,
        geometry: geometry2
@@ -33529,8 +33470,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
- @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
- @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable.
+ @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are pickable.
  @extends Component
  */
 (function () {
@@ -33558,7 +33499,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 /**
                  * Indicates the rendering priority for the
-                 * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in
+                 * {{#crossLink "Entity"}}Entities{{/crossLink}} in
                  * this Stage.
                  *
                  * Fires a {{#crossLink "Stage/priority:event"}}{{/crossLink}}
@@ -33600,7 +33541,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
             /**
              * Indicates whether the attached
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} are
              * pickable (see {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}).
              *
              * Fires a {{#crossLink "Stage/pickable:event"}}{{/crossLink}} event on change.
@@ -33959,17 +33900,17 @@ myTask2.setFailed();
  * @module XEO
  * @submodule shaders
  */;/**
- A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
  <li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
  <li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
- components on the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ components on the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
- the same Shaders among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms
- differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
+ the same Shaders among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} while setting the Shaders' uniforms
+ differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.</li>
  <li>Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
  and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>
  </ul>
@@ -33983,7 +33924,7 @@ myTask2.setFailed();
 
  <img src="../../assets/images/shaderExample1.png"></img>
 
- In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
+ In our scene definition, we have an  {{#crossLink "Entity"}}Entity{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
  screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
  Finally, we animate the rippling by periodically updating the Shader's "time" uniform.
 
@@ -34047,7 +33988,7 @@ myTask2.setFailed();
        indices:[ 0, 1, 2, 0, 2, 3 ]
   });
 
- var object = new XEO.GameObject(scene, {
+ var object = new XEO.Entity(scene, {
        shader: shader,
        geometry: quad
   });
@@ -34252,7 +34193,7 @@ myTask2.setFailed();
          * Sets one or more params for this Shader.
          *
          * These will be individually overridden by any {{#crossLink "ShaderParams/setParams:method"}}params subsequently specified{{/crossLink}} on
-         * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+         * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
          * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
          *
@@ -34303,13 +34244,13 @@ myTask2.setFailed();
 
 })();
 ;/**
- A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
- <li>Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
- while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
+ <li>Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "Entity"}}Entities{{/crossLink}},
+ while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.</li>
  </ul>
 
  <img src="../../../assets/images/ShaderParams.png"></img>
@@ -34323,14 +34264,14 @@ myTask2.setFailed();
 
  <img src="../../assets/images/shaderParamsExample1.png"></img>
 
- In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
+ In our scene definition, we have an  {{#crossLink "Entity"}}Entity{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
  screen-aligned quad, plus a {{#crossLink "Shader"}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
  Finally, we animate the rippling by periodically updating the {{#crossLink "Shader"}}Shader{{/crossLink}}'s "time" uniform.
 
  ````javascript
  var scene = new XEO.Scene();
 
- // Shader that's shared by both our GameObjects. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
+ // Shader that's shared by both our Entities. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
  // which will receive the positions and UVs from the Geometry components. Also note the 'time'
  // uniform, which we'll be animating via the ShaderParams components.
 
@@ -34394,7 +34335,7 @@ myTask2.setFailed();
        }
   });
 
- var object1 = new XEO.GameObject(scene, {
+ var object1 = new XEO.Entity(scene, {
        shader: shader,
        geometry: quad1,
        shaderParams1: shaderParams1
@@ -34417,7 +34358,7 @@ myTask2.setFailed();
        }
   });
 
- var object2 = new XEO.GameObject(scene, {
+ var object2 = new XEO.Entity(scene, {
        shader: shader,
        geometry2: quad2,
        shaderParams2: shaderParams2
@@ -34471,7 +34412,7 @@ myTask2.setFailed();
 
             /**
              * Params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             * {{#crossLink "Entity"}}Entities{{/crossLink}}.
              *
              * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
              *
@@ -34489,7 +34430,7 @@ myTask2.setFailed();
 
         /**
          * Sets one or more params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
-         * {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+         * {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
          * These will individually override any params of the same names that are {{#crossLink "Shader/setParams:method"}}already specified{{/crossLink}} on
          * those {{#crossLink "Shader"}}Shaders{{/crossLink}}.
@@ -34538,7 +34479,7 @@ myTask2.setFailed();
 
  A **Skybox** is a textured box that does not translate with respect to the 
  {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background 
- for associated {{#crossLink "GameObjects"}}GameObjects{{/crossLink}}.
+ for associated {{#crossLink "Entities"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -34547,11 +34488,11 @@ myTask2.setFailed();
  ## Example
 
  ````javascript
- // A bunch of random cube GameObjects
+ // A bunch of random cube Entities
 
  for (var i = 0; i < 20; i++) {
 
-        new XEO.GameObject({
+        new XEO.Entity({
             transform: new XEO.Translate({
                 xyz: [
                     Math.random() * 15 - 7,
@@ -34569,7 +34510,7 @@ myTask2.setFailed();
         });
     }
 
- // A Skybox that wraps our GameObjects in a cloudy background
+ // A Skybox that wraps our Entities in a cloudy background
 
  var skybox = new XEO.Skybox({
         src: "textures/skybox/miramarClouds.jpg",
@@ -34615,7 +34556,7 @@ myTask2.setFailed();
 
         _init: function (cfg) {
 
-            this._skybox = new XEO.GameObject(this.scene, {
+            this._skybox = new XEO.Entity(this.scene, {
 
                 geometry: new XEO.Geometry(this.scene, { // Box-shaped geometry
                     primitive: "triangles",
@@ -34703,7 +34644,7 @@ myTask2.setFailed();
                 })
             });
 
-            this.size = cfg.size; // Sets 'xyz' property on the GameObject's Scale transform
+            this.size = cfg.size; // Sets 'xyz' property on the Entity's Scale transform
         },
 
         _props: {
@@ -34769,18 +34710,18 @@ myTask2.setFailed();
  The following components have Boundary2Ds:
 
  <ul>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} provides its Canvas-space boundary via
- its {{#crossLink "GameObject/canvasBoundary:property"}}{{/crossLink}} property</li>
+ <li>An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary via
+ its {{#crossLink "Entity/canvasBoundary:property"}}{{/crossLink}} property</li>
  </ul>
 
  <img src="../../../assets/images/Boundary2D.png"></img>
 
  ## Example
 
- A {{#crossLink "GameObject"}}{{/crossLink}} provides its Canvas-space boundary as a Boundary2D that encloses
+ An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary as a Boundary2D that encloses
  its {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
- transformation by the GameObject's {{#crossLink "GameObject/transform:property"}}Modelling transform{{/crossLink}}
- and projection by the matrix of tGameObject's {{#crossLink "GameObject/camera:property"}}Modelling transform{{/crossLink}}.
+ transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}
+ and projection by the matrix of the Entity's {{#crossLink "Entity/camera:property"}}Modelling transform{{/crossLink}}.
 
  In this example we get the boundary and subscribe to updates on it, then animate the modelling transform,
  which gives us a running update of the moving boundary extents via our update handler.
@@ -34792,13 +34733,13 @@ myTask2.setFailed();
     xyz: [-5, 0, 0]
  });
 
- // Game object that applies the modelling transform to the Geometry
- var object = new XEO.GameObject({
+ // Entity that applies the modelling transform to the Geometry
+ var entity = new XEO.Entity({
        geometry: myGeometry,
        transform: translate
   });
 
- var canvasBoundary = object.canvasBoundary();
+ var canvasBoundary = entity.canvasBoundary();
 
  // Canvas-space AABB
  var aabb = canvasBoundary.aabb;
@@ -34824,7 +34765,7 @@ myTask2.setFailed();
 
  var x = 0;
 
- object.scene.on("tick", function() {
+ entity.scene.on("tick", function() {
     translate.xyz: [x, 0, 0];
     x += 0.5;
  });
@@ -34945,11 +34886,10 @@ myTask2.setFailed();
 
                             var style = div.style;
                             style.position = "absolute";
-                            style.padding = "10px";
+                            style.padding = "0";
                             style.margin = "0";
-                            style.background = "green";
-                            style.opacity = 0.4;
-                            style.border = "1px black solid";
+                            style.border = "3px solid #99FF99";
+                            style["border-radius"] = "10px";
                             style["z-index"] = "1000";
 
                             body.appendChild(div);
@@ -35038,67 +34978,78 @@ myTask2.setFailed();
 
  ## Overview
 
- A Boundary3D provides its spatial info in these properties:
+ As shown in the diagram below, the following xeoEngine components have Boundary3Ds:
+ * A {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}} provides a **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
+ * A {{#crossLink "Geometry/localBoundary:property"}}Geometry's localBoundary{{/crossLink}} provides a **Local**-space boundary enclosing its {{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}
+ * An {{#crossLink "Entity/localBoundary:property"}}Entity's localBoundary{{/crossLink}} (also) provides the **Local**-space boundary of its {{#crossLink "Geometry"}}{{/crossLink}}
+ * An {{#crossLink "Entity/worldBoundary:property"}}Entity's worldBoundary {{/crossLink}} provides a **World**-space boundary that encloses
+ its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
+ their transformation by the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}}.
+ * An {{#crossLink "Entity/viewBoundary:property"}}Entity's viewBoundary{{/crossLink}} provides a **View**-space boundary that encloses
+ its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
+ their transformation by both the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}} **and** {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}.
+ * A {{#crossLink "GroupBoundary/worldBoundary:property"}}GroupBoundary's worldBoundary{{/crossLink}} provides a **World**-space boundary that encloses all the {{#crossLink "Entity"}}Entities{{/crossLink}} contained within its {{#crossLink "Group"}}Group{{/crossLink}}.
+
+ Also shown in the diagram is an {{#crossLink "Entity/canvasBoundary:property"}}Entity's canvasBoundary{{/crossLink}}, which is a {{#crossLink "Boundary2D"}}{{/crossLink}} that provides a **Canvas**-space boundary that encloses the {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}, after
+ their transformation by the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}}, {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}
+ and {{#crossLink "Camera/project:property"}}Projection transform{{/crossLink}}.
+
+ <br><br>
+ <img src="../../../assets/images/Boundary3D.png"></img>
+
+ ## OBB and AABB Representations
+
+ Each Boundary3D instance provides two boundary representations, in these properties:
 
  <ul>
- <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - object-aligned bounding box (OBB)</li>
- <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - axis-aligned bounding box (AABB)</li>
- <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - center coordinate </li>
+ <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an object-aligned bounding box (OBB), as an array of eight corner vertex positions</li>
+ <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions</li>
  </ul>
 
- The following components have Boundary3Ds:
+ The screenshot below shows an Entity (the green nut) with wireframe boxes indicating its World-space OOBB (yellow). World-space AABB (red) and
+ Canvas-space AABB (green).
 
- <ul>
- <li>A {{#crossLink "Geometry"}}{{/crossLink}} provides its Local-space boundary via
- property {{#crossLink "Geometry/localBoundary:property"}}{{/crossLink}}</li>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} provides its World and View-space boundaries via
- properties {{#crossLink "GameObject/worldBoundary:property"}}{{/crossLink}}
- and {{#crossLink "GameObject/viewBoundary:property"}}{{/crossLink}}</li>
- </ul>
-
- <img src="../../../assets/images/Boundary.png"></img>
+ <br><br>
+ <img src="../../../assets/images/boundaries.png"></img>
 
  ## Example
 
- A {{#crossLink "GameObject"}}{{/crossLink}} provides its World-space boundary as a Boundary3D that encloses
- its {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
- their transformation by the GameObject's {{#crossLink "GameObject/transform:property"}}Modelling transform{{/crossLink}}.
-
- In this example we get the boundary and subscribe to updates on it, then animate the modelling transform,
- which gives us a running update of the moving boundary extents via our update handler.
+ In the example below we'll get the World-space Boundary3D of an {{#crossLink "Entity"}}{{/crossLink}}, subscribe to updates on the Boundary3D,
+ then animate the {{#crossLink "Entity"}}Entity's{{/crossLink}} modelling transform, which gives our callback a running update
+ of the moving Boundary3D extents.
 
  ```` javascript
 
- // Geometry
- var geometry = new XEO.Geometry();
+ // Geometry and modelling transform components
 
- // Modelling transform
+ var geometry = new XEO.BoxGeometry();
+
  var translate = new XEO.Translate({
     xyz: [-5, 0, 0]
  });
 
- // Game object that applies the modelling transform to the Geometry
- var object = new XEO.GameObject({
+ // Create an Entity that has the Geometry and the transform
+
+ var entity = new XEO.Entity({
        geometry: myGeometry,
        transform: translate
   });
 
- var worldBoundary = object.worldBoundary;
+ // Get the Entity's World-space Boundary3D and query its
+ // various spatial properties
 
- // World-space OBB
- var obb = worldBoundary.obb;
+ var worldBoundary = entity.worldBoundary;
 
- // World-space AABB
- var aabb = worldBoundary.aabb;
-
- // World-space center
- var center = worldBoundary.center;
+ var obb = worldBoundary.obb; // Object-aligned boundary, an array of eight corner vertex positions
+ var aabb = worldBoundary.aabb; // an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions
+ var center = worldBoundary.center; // Center point
 
  // Subscribe to updates to the Boundary3D
- worldBoundary.on("updated",
- function() {
 
-        // Get the updated properties again
+ worldBoundary.on("updated",
+     function() {
+
+        // Query the updated Boundary3D properties
 
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
@@ -35109,7 +35060,7 @@ myTask2.setFailed();
 
  // Animate the modelling transform;
  // on each tick, this will update the Boundary3D and fire our
- // handler, enabling us to track the changing boundary.
+ // callback, which enables us to track the changing boundary.
 
  var x = 0;
 
@@ -35123,10 +35074,10 @@ myTask2.setFailed();
  @module XEO
  @submodule boundaries
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary3D within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary3D.
  @param [cfg.obb] {Array of Number} Optional initial 3D object-aligned bounding volume (OBB).
  @param [cfg.aabb] {Array of Number} Optional initial 3D axis-aligned bounding volume (AABB).
  @param [cfg.center] {Array of Number} Optional initial 3D center
@@ -35379,20 +35330,20 @@ myTask2.setFailed();
     group: new XEO.Group({
 
         components: [
-            new XEO.GameObject({
+            new XEO.Entity({
                 ..,,
             }),
-            new XEO.GameObject({
+            new XEO.Entity({
                 ..,,
             }),
-            new XEO.GameObject({
+            new XEO.Entity({
                 //..
             })
         ]
     })
 });
 
- var showBoundary = new XEO.GameObject({
+ var showBoundary = new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
             boundary: groupBoundary.worldBoundary
         }),
@@ -35680,7 +35631,7 @@ myTask2.setFailed();
  * @module XEO
  * @submodule transforms
  */;/**
- A **Transform** defines a modelling matrix to transform attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Transform** defines a modelling matrix to transform attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -35688,7 +35639,7 @@ myTask2.setFailed();
  <li>Sub-classes of Transform are: {{#crossLink "Translate"}}{{/crossLink}},
  {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, and {{#crossLink "Quaternion"}}{{/crossLink}}</li>
  <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ <li>An {{#crossLink "Entity"}}{{/crossLink}} would be connected to a leaf Transform
  within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
@@ -35719,7 +35670,7 @@ myTask2.setFailed();
 
  // Red table leg
 
- var tableLg1 = new XEO.GameObject({
+ var tableLg1 = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Translate({
@@ -35734,7 +35685,7 @@ myTask2.setFailed();
 
  // Green table leg
 
- var tableLeg2 = new XEO.GameObject({
+ var tableLeg2 = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Translate({
@@ -35749,7 +35700,7 @@ myTask2.setFailed();
 
  // Blue table leg
 
- var tableLeg3 = new XEO.GameObject({
+ var tableLeg3 = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Translate({
@@ -35764,7 +35715,7 @@ myTask2.setFailed();
 
  // Yellow table leg
 
- var tableLeg4 = new XEO.GameObject({
+ var tableLeg4 = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Translate({
@@ -35779,7 +35730,7 @@ myTask2.setFailed();
 
  // Purple table top
 
- var tableTop = new XEO.GameObject({
+ var tableTop = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [6, 0.5, 6],
             parent: new XEO.Translate({
@@ -35793,7 +35744,7 @@ myTask2.setFailed();
     });
 
  // Zoom camera out a bit
- // Get the Camera from one of the GameObjects
+ // Get the Camera from one of the Entities
 
  tableTop.camera.view.zoom(10);
 
@@ -35974,8 +35925,8 @@ myTask2.setFailed();
         },
 
         // This is called if necessary when reading "leafMatrix", to update that property.
-        // It's also called by GameObject when the Transform is the leaf to which the
-        // GameObject is attached, in response to an "updated" event from the Transform.
+        // It's also called by Entity when the Transform is the leaf to which the
+        // Entity is attached, in response to an "updated" event from the Transform.
 
         _buildLeafMatrix: function () {
 
@@ -36043,14 +35994,14 @@ myTask2.setFailed();
 })();
 ;/**
 
- A **Rotate** rotates associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} about an axis vector.
+ A **Rotate** rotates associated {{#crossLink "Entity"}}Entities{{/crossLink}} about an axis vector.
 
  ## Overview
 
  <ul>
  <li>Rotate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
  <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ <li>An {{#crossLink "Entity"}}{{/crossLink}} would be connected to a leaf Transform
  within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
@@ -36060,9 +36011,9 @@ myTask2.setFailed();
 
  ## Example
 
- In this example we have two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
+ In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  Rotate, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.
- The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
+ The Entities share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
 
  ````javascript
  var scene = new XEO.Scene();
@@ -36089,12 +36040,12 @@ myTask2.setFailed();
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var gameObject1 = new XEO.GameObject(scene, {
+ var Entity1 = new XEO.Entity(scene, {
     transform: translate1,
     geometry: geometry
 });
 
- var gameObject2 = new XEO.GameObject(scene, {
+ var Entity2 = new XEO.Entity(scene, {
     transform: scale,
     geometry: geometry
 });
@@ -36102,7 +36053,7 @@ myTask2.setFailed();
 
  Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
- Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
+ Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
 
  ````javascript
  var scale2 = new XEO.Scale(scene, {
@@ -36110,7 +36061,7 @@ myTask2.setFailed();
     xyz: [1, 1, 2] // Scale x2 on Z axis
 });
 
- gameObject2.transform = scale2;
+ Entity2.transform = scale2;
  ````
 
  And just for fun, we'll start spinning the {{#crossLink "Rotate"}}{{/crossLink}}:
@@ -36249,14 +36200,14 @@ myTask2.setFailed();
 })();
 ;/**
 
- A **Quaternion** applies a rotation transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Quaternion** applies a rotation transformation to associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
  <li>Quaternion is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ <li>An {{#crossLink "Entity"}}{{/crossLink}} would be connected to a leaf Transform
  within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
@@ -36265,9 +36216,9 @@ myTask2.setFailed();
 
  ## Example
 
- In this example we have two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
+ In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  Quaternion, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.
- The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
+ The Entities share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
 
  ````javascript
 var scene = new XEO.Scene();
@@ -36293,12 +36244,12 @@ var scale = new XEO.Scale(scene, {
 
 var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-var gameObject1 = new XEO.GameObject(scene, {
+var Entity1 = new XEO.Entity(scene, {
    transform: translate1,
    geometry: geometry
 });
 
-var gameObject2 = new XEO.GameObject(scene, {
+var Entity2 = new XEO.Entity(scene, {
    transform: scale,
    geometry: geometry
 });
@@ -36306,7 +36257,7 @@ var gameObject2 = new XEO.GameObject(scene, {
 
 Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
-Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
+Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
 
 ````javascript
 var scale2 = new XEO.Scale(scene, {
@@ -36314,7 +36265,7 @@ var scale2 = new XEO.Scale(scene, {
    xyz: [1, 1, 2] // Scale x2 on Z axis
 });
 
-gameObject2.transform = scale2;
+Entity2.transform = scale2;
  ````
 
 And just for fun, we'll start spinning the Quaternion:
@@ -36397,14 +36348,14 @@ scene.on("tick", function(e) {
     });
 })();;/**
 
- A **Scale** applies a scaling transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Scale** applies a scaling transformation to associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
  <li>Scale is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
  <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ <li>An {{#crossLink "Entity"}}{{/crossLink}} would be connected to a leaf Transform
  within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
@@ -36413,9 +36364,9 @@ scene.on("tick", function(e) {
 
  ## Example
 
- In this example we have two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
+ In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Translate"}}{{/crossLink}} and Scale transforms.
- The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
+ The Entities share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
 
  ````javascript
  var scene = new XEO.Scene();
@@ -36442,12 +36393,12 @@ scene.on("tick", function(e) {
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var gameObject1 = new XEO.GameObject(scene, {
+ var Entity1 = new XEO.Entity(scene, {
     transform: translate1,
     geometry: geometry
 });
 
- var gameObject2 = new XEO.GameObject(scene, {
+ var Entity2 = new XEO.Entity(scene, {
     transform: scale,
     geometry: geometry
 });
@@ -36455,7 +36406,7 @@ scene.on("tick", function(e) {
 
  Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
- Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
+ Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
 
  ````javascript
 
@@ -36464,7 +36415,7 @@ scene.on("tick", function(e) {
     xyz: [1, 1, 2] // Scale x2 on Z axis
 });
 
- gameObject2.transform = scale2;
+ Entity2.transform = scale2;
  ````
 
  And just for fun, we'll start spinning the {{#crossLink "Rotate"}}{{/crossLink}}:
@@ -36549,7 +36500,7 @@ scene.on("tick", function(e) {
 })();
 ;/**
 
- A **Translate** translates associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Translate** translates associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -36557,7 +36508,7 @@ scene.on("tick", function(e) {
 
  <li>Translate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
  <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ <li>An {{#crossLink "Entity"}}{{/crossLink}} would be connected to a leaf Transform
  within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
@@ -36568,9 +36519,9 @@ scene.on("tick", function(e) {
 
  ## Example
 
- This example has two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
+ This example has two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  {{#crossLink "Rotate"}}{{/crossLink}}, Translate and {{#crossLink "Scale"}}{{/crossLink}} transforms.
- The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
+ The Entities share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
 
  ````javascript
  var scene = new XEO.Scene();
@@ -36597,12 +36548,12 @@ scene.on("tick", function(e) {
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var gameObject1 = new XEO.GameObject(scene, {
+ var Entity1 = new XEO.Entity(scene, {
     transform: translate1,
     geometry: geometry
 });
 
- var gameObject2 = new XEO.GameObject(scene, {
+ var Entity2 = new XEO.Entity(scene, {
     transform: scale,
     geometry: geometry
 });
@@ -36610,7 +36561,7 @@ scene.on("tick", function(e) {
 
  Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
- Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
+ Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
 
  ````javascript
  var scale2 = new XEO.Scale(scene, {
@@ -36618,7 +36569,7 @@ scene.on("tick", function(e) {
     xyz: [1, 1, 2] // Scale x2 on Z axis
 });
 
- gameObject2.transform = scale2;
+ Entity2.transform = scale2;
  ````
 
  And just for fun, we'll start updating the second {{#crossLink "Translate"}}{{/crossLink}}:
@@ -36712,11 +36663,13 @@ scene.on("tick", function(e) {
 })();
 ;/**
 
- A **Billboard** causes associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to be always aligned towards the viewpoint.
+ A **Billboard** causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always aligned towards the viewpoint.
 
  ## Overview
 
- TODO
+ <ul>
+ <li>A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}{{/crossLink}}</li>
+ </ul>
 
  <img src="../../../assets/images/Billboard.png"></img>
 
@@ -36852,7 +36805,7 @@ scene.on("tick", function(e) {
 ;/**
 
  A **Stationary** disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for
- associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
