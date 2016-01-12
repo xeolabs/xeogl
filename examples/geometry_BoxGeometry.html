@@ -24,8 +24,8 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
-    <a href="../docs/classes/BoxGeometry.html" target="_other">BoxGeometry</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <a href="../docs/classes/BoxGeometry.html" target="_docs">BoxGeometry</a>
     <br><br><br>
     <img src="textures/diffuse/uvGrid2.jpg" width="300px" height="300px">
 </div>
@@ -40,7 +40,7 @@
         zSize: 1
     });
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         geometry: box,
         material: new XEO.PhongMaterial({
             ambient: [0.3, 0.3, 0.3],
@@ -52,12 +52,12 @@
         })
     });
 
-    object.scene.camera.view.zoom(-5);
+    entity.scene.camera.view.zoom(-5);
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function () {
 
-                var view = object.scene.camera.view;
+                var view = entity.scene.camera.view;
 
                 view.rotateEyeY(0.6);
                 view.rotateEyeX(0.3);

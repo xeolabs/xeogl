@@ -1,5 +1,5 @@
 /**
- A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 

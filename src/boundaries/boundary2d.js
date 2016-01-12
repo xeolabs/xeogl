@@ -13,18 +13,18 @@
  The following components have Boundary2Ds:
 
  <ul>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} provides its Canvas-space boundary via
- its {{#crossLink "GameObject/canvasBoundary:property"}}{{/crossLink}} property</li>
+ <li>An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary via
+ its {{#crossLink "Entity/canvasBoundary:property"}}{{/crossLink}} property</li>
  </ul>
 
  <img src="../../../assets/images/Boundary2D.png"></img>
 
  ## Example
 
- A {{#crossLink "GameObject"}}{{/crossLink}} provides its Canvas-space boundary as a Boundary2D that encloses
+ An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary as a Boundary2D that encloses
  its {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
- transformation by the GameObject's {{#crossLink "GameObject/transform:property"}}Modelling transform{{/crossLink}}
- and projection by the matrix of tGameObject's {{#crossLink "GameObject/camera:property"}}Modelling transform{{/crossLink}}.
+ transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}
+ and projection by the matrix of the Entity's {{#crossLink "Entity/camera:property"}}Modelling transform{{/crossLink}}.
 
  In this example we get the boundary and subscribe to updates on it, then animate the modelling transform,
  which gives us a running update of the moving boundary extents via our update handler.
@@ -36,13 +36,13 @@
     xyz: [-5, 0, 0]
  });
 
- // Game object that applies the modelling transform to the Geometry
- var object = new XEO.GameObject({
+ // Entity that applies the modelling transform to the Geometry
+ var entity = new XEO.Entity({
        geometry: myGeometry,
        transform: translate
   });
 
- var canvasBoundary = object.canvasBoundary();
+ var canvasBoundary = entity.canvasBoundary();
 
  // Canvas-space AABB
  var aabb = canvasBoundary.aabb;
@@ -68,7 +68,7 @@
 
  var x = 0;
 
- object.scene.on("tick", function() {
+ entity.scene.on("tick", function() {
     translate.xyz: [x, 0, 0];
     x += 0.5;
  });
@@ -189,11 +189,10 @@
 
                             var style = div.style;
                             style.position = "absolute";
-                            style.padding = "10px";
+                            style.padding = "0";
                             style.margin = "0";
-                            style.background = "green";
-                            style.opacity = 0.4;
-                            style.border = "1px black solid";
+                            style.border = "3px solid #99FF99";
+                            style["border-radius"] = "10px";
                             style["z-index"] = "1000";
 
                             body.appendChild(div);

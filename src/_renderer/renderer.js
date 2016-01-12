@@ -1023,7 +1023,7 @@
             // Object was picked
 
             hit = {
-                object: object.id,
+                entity: object.id,
                 canvasPos: [
                     canvasX,
                     canvasY

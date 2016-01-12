@@ -15,20 +15,20 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br><a
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br><a
         href="../docs/classes/Skybox.html"
-        target="_other">Skybox</a>
+        target="_docs">Skybox</a>
     <br><br><br><br>
     <img src="textures/skybox/miramarClouds.jpg" width="400px" height="400px">
 </div>
 
 <script>
 
-    // A bunch of random cube GameObjects
+    // A bunch of random cube Entities
 
     for (var i = 0; i < 20; i++) {
 
-        new XEO.GameObject({
+        new XEO.Entity({
             transform: new XEO.Translate({
                 xyz: [
                     Math.random() * 15 - 7,
@@ -46,7 +46,7 @@
         });
     }
 
-    // A Skybox that wraps our GameObjects in a cloudy background
+    // A Skybox that wraps our Entities in a cloudy background
 
     var skybox = new XEO.Skybox({
         src: "textures/skybox/miramarClouds.jpg",
@@ -59,9 +59,13 @@
 
     // Slowly orbit the camera on each frame
 
+    var view = skybox.scene.camera.view;
+
+    view.rotateEyeX(-20);
+
     skybox.scene.on("tick",
             function () {
-                skybox.scene.camera.view.rotateEyeY(0.2);
+                view.rotateEyeY(0.2);
             });
 
     // Allow user camera control

@@ -22,9 +22,9 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    creating a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a>, then finding it by ID within
-    its <a href="../docs/classes/Scene.html" target="_other">Scene</a> and attaching a red <a
-        href="../docs/classes/PhongMaterial.html" target="_other">PhongMaterial</a> to it
+    creating an <a href="../docs/classes/Entity.html" target="_docs">Entity</a>, then finding it by ID within
+    its <a href="../docs/classes/Scene.html" target="_docs">Scene</a> and attaching a red <a
+        href="../docs/classes/PhongMaterial.html" target="_docs">PhongMaterial</a> to it
 </div>
 
 <script>
@@ -32,16 +32,16 @@
     // For this example we'll create our own Scene
     var scene = new XEO.Scene();
 
-    // Create a GameObject with all defaults
-    new XEO.GameObject(scene, {
+    // Create a Entity with all defaults
+    new XEO.Entity(scene, {
         id: "myObject"
     });
 
-    // Find the GameObject by ID
-    var object = scene.components["myObject"];
+    // Find the Entity by ID
+    var entity = scene.components["myObject"];
 
     // Attach a new Material to it
-    object.material = new XEO.PhongMaterial(scene, {
+    entity.material = new XEO.PhongMaterial(scene, {
         diffuse: [1.0, 0.0, 0.0]
     });
 

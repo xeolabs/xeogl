@@ -1,5 +1,5 @@
 /**
- * Components to define the surface appearance of GameObjects.
+ * Components to define the surface appearance of Entities.
  *
  * @module XEO
  * @submodule materials

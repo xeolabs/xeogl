@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    using a <a href="../docs/classes/CameraFlight.html" target="_docs">CameraFlight</a> to fly a <a
+        href="../docs/classes/Camera.html" target="_docs">Camera</a> to randomly selected <a
+        href="../docs/classes/Entity.html" target="_docs">Entities</a>
+</div>
+
+<script>
+
+    // Create some random entities
+
+    var numEntities = 1000;
+
+    var entities = [];
+    var entity;
+
+    var cylinder = new XEO.CylinderGeometry({
+        radius: 2.0,
+        length: 2.0,
+        heightSegments: 30,
+        widthSegments: 30
+    });
+
+    var material= new XEO.PhongMaterial({
+        diffuse: [1, 0, 0],
+        specular: [1,1,0],
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+    });
+
+    for (var i = 0; i < numEntities; i++) {
+
+        var s = Math.random() * 5;
+
+        entity = new XEO.Entity({
+
+            geometry: cylinder,
+
+            transform: new XEO.Scale({
+                xyz: [
+                    2,
+                    1 + Math.random() * 3,
+                    2
+                ],
+                parent: new XEO.Rotate({
+                    xyz: [
+                        Math.random(),
+                        Math.random(),
+                        Math.random()
+                    ],
+                    angle: Math.random() * 360,
+
+                    parent: new XEO.Translate({
+                        xyz: [
+                            Math.random() * 100 - 50,
+                            Math.random() * 100 - 50,
+                            Math.random() * 100 - 50
+                        ]
+                    })
+                })
+            }),
+
+            material: material
+        });
+
+        entities.push(entity);
+
+        //    entity.worldBoundary.visible = true;
+    }
+
+    // Create a CameraFlight animation
+
+    var flight = new XEO.CameraFlight({
+        duration: 1.5
+    });
+
+    var boundaryObject = new XEO.Entity({
+        geometry: new XEO.BoundaryGeometry({
+            boundary: entities[0].worldBoundary
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1.0, 1.0, 0.0],
+            emissive: [1.0, 1.0, 0.0],
+            lineWidth: 4
+        })
+    });
+
+    // Create a couple of camera controls so that
+    // user can rotate and zoom camera while demo runs
+
+    new XEO.MouseRotateCamera({sensitivity: 0.2});
+    new XEO.MouseZoomCamera();
+
+
+    // Periodically highlight and fly to a randomly-selected entity
+
+    var prevObject;
+    var prevObjectDiffuse;
+
+    setInterval(function () {
+
+        if (prevObject) {
+            prevObject.material.diffuse = prevObjectDiffuse;
+        }
+
+        entity = entities[Math.floor(Math.random() * numEntities)];
+
+        prevObject = entity;
+        prevObjectDiffuse = entity.material.diffuse;
+
+        entity.material.diffuse = [1, 1, 0];
+
+        flight.flyTo(entity);
+
+        boundaryObject.geometry.boundary = entity.worldBoundary;
+
+    }, 2000);
+
+    // Slowly the eye position about the look position.
+
+    entity.scene.on("tick",
+            function () {
+
+                var view = entity.camera.view;
+
+                view.rotateEyeY(0.3);
+                view.rotateEyeX(0.2);
+            });
+
+</script>
+</body>
+</html>

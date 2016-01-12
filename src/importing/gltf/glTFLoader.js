@@ -496,7 +496,7 @@
                     var mesh;
                     var material;
                     var geometry;
-                    var object;
+                    var entity;
 
                     for (imeshes = 0; imeshes < lenMeshes; imeshes++) {
 
@@ -513,8 +513,8 @@
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
 
-                            object = new XEO.GameObject(this.group.scene, {
-                                //id: this._makeID(nodeId + ".object" + i),
+                            entity = new XEO.Entity(this.group.scene, {
+                                //id: this._makeID(nodeId + ".entity" + i),
                                 meta: {
                                     name: node.name
                                 },
@@ -523,7 +523,7 @@
                                 transform: transform
                             });
 
-                            this.group.add(object);
+                            this.group.add(entity);
                         }
                     }
                 }

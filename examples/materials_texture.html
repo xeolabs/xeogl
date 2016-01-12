@@ -20,8 +20,8 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>diffuse <a href="../docs/classes/Texture.html"
-                                                                              target="_other">Texture</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>diffuse <a href="../docs/classes/Texture.html"
+                                                                              target="_docs">Texture</a>
 </div>
 
 <script>
@@ -56,7 +56,7 @@
 
     // Diffuse map
 
-    new XEO.GameObject({
+    new XEO.Entity({
         geometry: geometry,
         material: new XEO.PhongMaterial({
             diffuseMap: diffuseMap
@@ -68,7 +68,7 @@
 
     // Emissive map
 
-    new XEO.GameObject({
+    new XEO.Entity({
         geometry: geometry,
         material: new XEO.PhongMaterial({
             diffuse: [0,0,0],
@@ -81,7 +81,7 @@
 
     // Ambient map
 
-    new XEO.GameObject({
+    new XEO.Entity({
         geometry: geometry,
         material: new XEO.PhongMaterial({
             ambientMap: ambientMap
@@ -93,7 +93,7 @@
 
     // Specular map
 
-    new XEO.GameObject({
+    new XEO.Entity({
         geometry: geometry,
         material: new XEO.PhongMaterial({
             shininess: 30,

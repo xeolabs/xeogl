@@ -1,22 +1,22 @@
 /**
- A **Stage** is a bin of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that is rendered in a specified priority with respect to
+ A **Stage** is a bin of {{#crossLink "Entity"}}Entities{{/crossLink}} that is rendered in a specified priority with respect to
  other Stages in the same {{#crossLink "Scene"}}{{/crossLink}}.
 
  ## Overview
 
  <ul>
  <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
- of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
+ of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
 
  <li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
 
- <li>You can control the render order of the individual {{#crossLink "GameObject"}}GameObjects{{/crossLink}} ***within*** a Stage
+ <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a Stage
  by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
 
  <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within Stages.</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}} within Stages.</li>
 
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Stage are implicitly
+ <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Stage are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
  a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
@@ -36,7 +36,7 @@
  ````javascript
  var scene = new XEO.Scene();
 
- // First stage: an Object that renders to a ColorTarget
+ // First stage: an Entity that renders to a ColorTarget
 
  var stage1 = new XEO.Stage(scene, {
        priority: 0
@@ -46,14 +46,14 @@
 
  var colorTarget = new XEO.ColorTarget(scene);
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
        stage: stage1,
        geometry: geometry,
        colorTarget: colorTarget
   });
 
 
- // Second stage: an Object with a Texture that sources from the ColorTarget
+ // Second stage: an Entity with a Texture that sources from the ColorTarget
 
  var stage2 = new XEO.Stage(scene, {
        priority: 1
@@ -71,7 +71,7 @@
 
  var geometry2 = new XEO.Geometry(scene);
 
- var object2 = new XEO.GameObject(scene, {
+ var entity2 = new XEO.Entity(scene, {
        stage: stage2,
        material: material,
        geometry: geometry2
@@ -87,8 +87,8 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
- @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
- @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are pickable.
+ @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are pickable.
  @extends Component
  */
 (function () {
@@ -116,7 +116,7 @@
 
                 /**
                  * Indicates the rendering priority for the
-                 * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in
+                 * {{#crossLink "Entity"}}Entities{{/crossLink}} in
                  * this Stage.
                  *
                  * Fires a {{#crossLink "Stage/priority:event"}}{{/crossLink}}
@@ -158,7 +158,7 @@
 
             /**
              * Indicates whether the attached
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} are
              * pickable (see {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}).
              *
              * Fires a {{#crossLink "Stage/pickable:event"}}{{/crossLink}} event on change.

@@ -1,6 +1,6 @@
 /**
  A **ColorTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
- captures the colors of the pixels rendered for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ captures the colors of the pixels rendered for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -18,18 +18,18 @@
 
  ## Example
 
- In this example we essentially have one {{#crossLink "GameObject"}}{{/crossLink}}
- that's rendered to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied to a second {{#crossLink "GameObject"}}{{/crossLink}}.
+ In this example we essentially have one {{#crossLink "Entity"}}{{/crossLink}}
+ that's rendered to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
 
  The scene contains:
 
  <ul>
  <li>a ColorTarget,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} pixel color values to the ColorTarget,</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} pixel color values to the ColorTarget,</li>
  <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the ColorTarget,</li>
  <li>a {{#crossLink "Material"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
- <li>a second {{#crossLink "GameObject"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
+ <li>a second {{#crossLink "Entity"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
  </ul>
 
 
@@ -40,9 +40,9 @@
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- // First Object renders to the ColorTarget
+ // First Entity renders to the ColorTarget
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
     geometry: geometry,
     colorTarget: colorTarget
 });
@@ -57,10 +57,10 @@
     ]
 });
 
- // Second Object is textured with the
- // image of the first Object
+ // Second Entity is textured with the
+ // image of the first Entity
 
- var object2 = new XEO.GameObject(scene, {
+ var entity2 = new XEO.Entity(scene, {
     geometry: geometry,  // Reuse our simple box geometry
     material: material
 });
@@ -148,7 +148,7 @@
             /**
              * Determines whether this ColorTarget is active or not.
              *
-             * When active, the pixel colors of associated {{#crossLink "GameObjects"}}{{/crossLink}} will be rendered
+             * When active, the pixel colors of associated {{#crossLink "Entities"}}{{/crossLink}} will be rendered
              * to this ColorTarget. When inactive, the colors will be written to the default WebGL color buffer instead.
              *
              * Fires a {{#crossLink "ColorTarget/active:event"}}{{/crossLink}} event on change.

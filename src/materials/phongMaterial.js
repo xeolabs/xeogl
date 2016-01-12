@@ -1,6 +1,6 @@
 /**
  A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
- attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} using
+ attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
  the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.
 
  ## Overview
@@ -23,7 +23,7 @@
  {{#crossLink "Geometry"}}{{/crossLink}} surface, ie. they are not multiplied by
  the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>
 
- <li>When the {{#crossLink "GameObject"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
+ <li>When the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
  {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines" or "points" then only the {{#crossLink "PhongMaterial"}}{{/crossLink}}'s
  {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
@@ -45,7 +45,7 @@
  <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and the {{#crossLink "Fresnel"}}{{/crossLink}} as a specular Fresnel effect,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  Note that the value for the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
@@ -96,7 +96,7 @@
 
  var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry
@@ -353,7 +353,7 @@
 
              A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 
-             Attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached
+             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
              set to **true**.
 

@@ -11,58 +11,48 @@
 
  ## Example
 
- In this example we have:
-
- <ul>
- <li>a {{#crossLink "Material"}}{{/crossLink}},
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} (that is the default box shape),
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above,</li>
- <li>two {{#crossLink "Group"}}Groups{{/crossLink}}, each containing a subset of all our components.</li>
- </ul>
 
  ````javascript
- var scene = new XEO.Scene();
-
- var material = new XEO.PhongMaterial(scene, {
+ var material = new XEO.PhongMaterial({
      id: "myMaterial",
      diffuse: [0.5, 0.5, 0.0]
  });
 
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new XEO.BoxGeometry();
 
- var gameObject = new XEO.GameObject(scene, {
-    id: "myObject",
+ var Entity = new XEO.Entity({
+    id: "myEntity",
     material: material,
     geometry: geometry
  });
 
  // Our first group contains the Material, added by ID,
- // plus the Geometry and GameObject, both added by instance.
+ // plus the Geometry and Entity, both added by instance.
 
- var group1 = new XEO.Group(scene, { // Initialize with three components
+ var group1 = new XEO.Group({ // Initialize with three components
     components: [
         "myMaterial",
         geometry,
-        gameObject
+        Entity
     ]
  });
 
  // Our second Group includes the geometry, added by instance,
- // and the GameObject, added by type. If there were more than
- // one GameObject in the scene, then that type would ensure
- // that all the GameObjects were in the Group.
+ // and the Entity, added by type. If there were more than
+ // one Entity in the scene, then that type would ensure
+ // that all the Entities were in the Group.
 
- var group2 = new XEO.Group(scene);
+ var group2 = new XEO.Group();
 
  group2.add([  // Add two components
- geometry,
- "XEO.GameObject",
+    geometry,
+    "XEO.Entity",
  ]);
 
  // We can iterate over the components in a Group like so:
 
  group1.iterate(
- function(component) {
+    function(component) {
         //..
     });
 
@@ -70,7 +60,7 @@
  // by instance, ID or type:
 
  group1.remove("myMaterial"); // Remove one component by ID
- group1.remove([geometry, gameObject]); // Remove two components by instance
+ group1.remove([geometry, Entity]); // Remove two components by instance
 
  group2.remove("XEO.Geometry"); // Remove all Geometries
  ````

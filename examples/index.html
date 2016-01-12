@@ -12,18 +12,16 @@
 
     <style>
 
-        @font-face {
-            font-family: Arial, helvetica, freesans, sans-serif monospace;
+        body {
+            font-family: 'Raleway', sans-serif;
+            font-size: 15px;
             font-weight: normal;
             font-style: normal;
-        }
-
-        body {
             background-color: #e8e8e8;
-            margin: 0px;
-            font-size: 14px;
-            font-family: Arial, helvetica, freesans, sans-serif monospace;
+            margin: 0;
             overflow: hidden;
+            line-height: 1.50;
+            color: #333333;
         }
 
         a {
@@ -203,7 +201,7 @@
 
         "Animation": [
             "#camera animation",
-            "animation_CameraFlight_GameObject",
+            "animation_CameraFlight_Entity",
             "animation_CameraFlight_Boundary3D",
             "animation_CameraFlight_AABB"
         ],
@@ -216,10 +214,10 @@
         ],
 
         "Boundaries": [
-            "#getting boundaries of GameObjects",
-            "boundaries_GameObject_worldBoundary",
-            "boundaries_GameObject_viewBoundary",
-            "boundaries_GameObject_canvasBoundary",
+            "#getting boundaries of Entities",
+            "boundaries_Entity_worldBoundary",
+            "boundaries_Entity_viewBoundary",
+            "boundaries_Entity_canvasBoundary",
             "boundaries_flyToBoundary",
 
             "#utilities",
@@ -271,9 +269,9 @@
             "demos_ui_explorer"
         ],
 
-        "GameObjects": [
+        "Entities": [
             "#xeoEngine entities",
-            "gameObjects_minimal"
+            "entities_minimal"
         ],
 
         "Geometry": [
@@ -373,7 +371,7 @@
             "materials_fresnel_opacity",
             "materials_fresnel_emissive",
 
-            "#Z-sorting transparent objects",
+            "#Z-sorting transparent entities",
             "materials_techniques_transparencySort"
         ],
 
@@ -396,7 +394,7 @@
         ],
 
         "Techniques": [
-            "#Z-sorting transparent objects",
+            "#Z-sorting transparent entities",
             "materials_techniques_transparencySort"
         ],
 

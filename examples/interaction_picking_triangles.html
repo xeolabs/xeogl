@@ -27,10 +27,10 @@
     <br><br>
     <ul>
         <li>
-            picking individual triangles on a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a>
+            picking individual triangles on an <a href="../docs/classes/Entity.html" target="_docs">Entity</a>
         </li>
         <li>
-            uses the <a href="js/debug/debug.js" target="_other">XEO.debug</a> helper to show the picked triangle
+            uses the <a href="js/debug/debug.js" target="_docs">XEO.debug</a> helper to show the picked triangle
         </li>
         <li>
             move your mouse over the heightmap!
@@ -44,9 +44,9 @@
 
     // ----------- Scene definition -----------------------------------------
 
-    // A GameObject that we can pick - a heightmap with a diffuse map
+    // A Entity that we can pick - a heightmap with a diffuse map
 
-    var terrainObject = new XEO.GameObject({
+    var terrainObject = new XEO.Entity({
 
         // XEO.HeightMap is defined in ./js/geometry/heightmapGeometry.js
         geometry: new XEO.HeightmapGeometry({
@@ -88,7 +88,7 @@
     new XEO.CameraControl();
 
 
-    // Attempt to pick a triangle on the heightmap GameObject on each mouse move
+    // Attempt to pick a triangle on the heightmap Entity on each mouse move
 
     var scene = terrainObject.scene;
 
@@ -99,7 +99,7 @@
             function (coords) {
 
                 // Attempt to pick a primitive from among whatever
-                // pickable GameObjects we have
+                // pickable Entities we have
 
                 var hit = scene.pick({
                     canvasPos: coords,
@@ -108,17 +108,17 @@
 
                 if (hit) {
 
-                    // Picked a GameObject
+                    // Picked a Entity
 
                     if (hit.primitive === "triangle") {
 
-                        // Picked a triangle on the GameObject's Geometry
+                        // Picked a triangle on the Entity's Geometry
 
                         // Show the triangle we picked
 
                         var indices = hit.indices;
 
-                        var positions = hit.object.geometry.positions;
+                        var positions = hit.entity.geometry.positions;
 
                         var ia = indices[0];
                         var ib = indices[1];

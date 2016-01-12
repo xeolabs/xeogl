@@ -1,10 +1,10 @@
 /**
- A **Visibility** toggles the visibility of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Visibility** toggles the visibility of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
- <li>A Visibility may be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to toggle
+ <li>A Visibility may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
  their visibility as a group.</li>
  </ul>
 
@@ -13,7 +13,7 @@
  ## Example
 
  This example creates a Visibility that toggles the visibility of
- two {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ two {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ````javascript
 var scene = new XEO.Scene();
@@ -23,13 +23,13 @@ var visibility = new XEO.Visibility(scene, {
     visible: true
 });
 
-// Create two GameObjects whose visibility will be controlled by our Visibility
+// Create two Entities whose visibility will be controlled by our Visibility
 
-var object1 = new XEO.GameObject(scene, {
+var entity1 = new XEO.Entity(scene, {
     visibility: visibility
 });
 
-var object2 = new XEO.GameObject(scene, {
+var entity2 = new XEO.Entity(scene, {
     visibility: visibility
 });
 
@@ -38,14 +38,14 @@ var handle = visibility.on("visible", function(value) {
     //...
 });
 
-// Hide our GameObjects by flipping the Visibility's "visible" property,
+// Hide our Entities by flipping the Visibility's "visible" property,
 // which will also call our handler
 visibility.visible = false;
 
 // Unsubscribe from the Visibility again
 visibility.off(handle);
 
-// When we destroy our Visibility, the GameObjects will fall back
+// When we destroy our Visibility, the Entities will fall back
 // on the Scene's default Visibility instance
 visibility.destroy();
  ````
@@ -58,7 +58,7 @@ visibility.destroy();
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Visibility.
- @param [cfg.visible=true] {Boolean} Flag which controls visibility of the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ @param [cfg.visible=true] {Boolean} Flag which controls visibility of the attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  @extends Component
  */
 (function () {
@@ -81,7 +81,7 @@ visibility.destroy();
         _props: {
 
             /**
-             Indicates whether this Visibility makes attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} visible or not.
+             Indicates whether this Visibility makes attached {{#crossLink "Entity"}}Entities{{/crossLink}} visible or not.
 
              Fires a {{#crossLink "Visibility/visible:event"}}{{/crossLink}} event on change.
 

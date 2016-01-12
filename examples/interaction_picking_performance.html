@@ -27,10 +27,10 @@
     <br><br>
     <ul>
         <li>
-            ray picking performance demo with 1000 <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a>
+            ray picking performance demo with 1000 <a href="../docs/classes/Entity.html" target="_docs">Entities</a>
         </li>
         <li>
-            move your mouse over an object!
+            move your mouse over an entity!
         </li>
     </ul>
     <br><br>
@@ -75,7 +75,7 @@
 
     for (var i = 0; i < 1000; i++) {
 
-        new XEO.GameObject({
+        new XEO.Entity({
 
             geometry: geometry,
 
@@ -102,7 +102,7 @@
     var cameraControl = new XEO.CameraControl();
 
 
-    // Whenever mouse moves, attempt to pick a triangle on a GameObject,
+    // Whenever mouse moves, attempt to pick a triangle on a Entity,
     // then show the cartesian coordinates at the picked position within
     // the triangle, along with the interpolated normal vector and UV coordinates
     // at the picked position.
@@ -135,7 +135,7 @@
 
         XEO.debug.hide("cone");
 
-        // Pick a primitive on some GameObject
+        // Pick a primitive on some Entity
 
         var hit = scene.pick({
             canvasPos: coords,
@@ -144,7 +144,7 @@
 
         if (hit) {
 
-            // GameObject picked
+            // Entity picked
 
             if (hit.worldPos && hit.normal) {
 

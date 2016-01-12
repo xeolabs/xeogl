@@ -2,7 +2,7 @@
 
  A **Skybox** is a textured box that does not translate with respect to the 
  {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background 
- for associated {{#crossLink "GameObjects"}}GameObjects{{/crossLink}}.
+ for associated {{#crossLink "Entities"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -11,11 +11,11 @@
  ## Example
 
  ````javascript
- // A bunch of random cube GameObjects
+ // A bunch of random cube Entities
 
  for (var i = 0; i < 20; i++) {
 
-        new XEO.GameObject({
+        new XEO.Entity({
             transform: new XEO.Translate({
                 xyz: [
                     Math.random() * 15 - 7,
@@ -33,7 +33,7 @@
         });
     }
 
- // A Skybox that wraps our GameObjects in a cloudy background
+ // A Skybox that wraps our Entities in a cloudy background
 
  var skybox = new XEO.Skybox({
         src: "textures/skybox/miramarClouds.jpg",
@@ -79,7 +79,7 @@
 
         _init: function (cfg) {
 
-            this._skybox = new XEO.GameObject(this.scene, {
+            this._skybox = new XEO.Entity(this.scene, {
 
                 geometry: new XEO.Geometry(this.scene, { // Box-shaped geometry
                     primitive: "triangles",
@@ -167,7 +167,7 @@
                 })
             });
 
-            this.size = cfg.size; // Sets 'xyz' property on the GameObject's Scale transform
+            this.size = cfg.size; // Sets 'xyz' property on the Entity's Scale transform
         },
 
         _props: {

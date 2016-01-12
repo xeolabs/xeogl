@@ -1,5 +1,5 @@
 /**
- A **VectorTextGeometry** defines vector text geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **VectorTextGeometry** defines vector text geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 

@@ -20,8 +20,8 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>opacity <a href="../docs/classes/Texture.html"
-                                                                              target="_other">Texture</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>opacity <a href="../docs/classes/Texture.html"
+                                                                              target="_docs">Texture</a>
     <br><br>
     <img src="textures/diffuse/crossGridColorMap.jpg" width="300px" height="300px">
 </div>
@@ -58,7 +58,7 @@
         transparent: true
     });
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         geometry: geometry,
         material: material,
         modes: modes
@@ -66,7 +66,7 @@
 
     // Torus
 
-    new XEO.GameObject({
+    new XEO.Entity({
 
         geometry: new XEO.TorusGeometry({}),
 
@@ -90,12 +90,12 @@
 
     // Animation
 
-    object.camera.view.zoom(-5);
+    entity.camera.view.zoom(-5);
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function () {
 
-                var view = object.scene.camera.view;
+                var view = entity.scene.camera.view;
 
                 view.rotateEyeY(0.6);
                 view.rotateEyeX(0.3);

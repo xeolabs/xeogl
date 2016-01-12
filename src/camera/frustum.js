@@ -5,7 +5,7 @@
 
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
  </ul>
 
@@ -13,11 +13,7 @@
 
  ## Example
 
- ## Example
-
- <iframe style="width: 600px; height: 400px" src="../../examples/camera_frustum.html"></iframe>
-
- In this example we have a {{#crossLink "GameObject"}}GameObject{{/crossLink}} that's attached to a
+ In this example we have an {{#crossLink "Entity"}}Entity{{/crossLink}} that's attached to a
  {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Frustum
  projection transform.
 
@@ -47,7 +43,7 @@
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
         camera: camera,
         geometry: geometry
     });

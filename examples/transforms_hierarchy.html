@@ -22,9 +22,9 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    transform hierarchy composed of <a href="../docs/classes/Rotate.html" target="_other">Rotate</a>,
-    <a href="../docs/classes/Translate.html" target="_other">Translate</a> and <a
-        href="../docs/classes/Scale.html" target="_other">Scale</a> transforms
+    transform hierarchy composed of <a href="../docs/classes/Rotate.html" target="_docs">Rotate</a>,
+    <a href="../docs/classes/Translate.html" target="_docs">Translate</a> and <a
+        href="../docs/classes/Scale.html" target="_docs">Scale</a> transforms
 </div>
 
 <script>
@@ -45,7 +45,7 @@
 
     // Red table leg
 
-    new XEO.GameObject({
+    new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Rotate({
@@ -64,7 +64,7 @@
 
     // Green table leg
 
-    new XEO.GameObject({
+    new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Rotate({
@@ -83,7 +83,7 @@
 
     // Blue table leg
 
-    new XEO.GameObject({
+    new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Rotate({
@@ -102,7 +102,7 @@
 
     // Yellow table leg
 
-    var yellowLeg = new XEO.GameObject({
+    var yellowLeg = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Rotate({
@@ -119,7 +119,7 @@
         })
     });
 
-    new XEO.GameObject({
+    new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
             boundary: yellowLeg.worldBoundary
         }),
@@ -132,7 +132,7 @@
 
     // Purple table top
 
-    var tableTop = new XEO.GameObject({
+    var tableTop = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [6, 0.5, 6],
             parent: new XEO.Translate({

@@ -22,7 +22,7 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    1000 spherical <a href="../docs/classes/Billboard.html" target="_other">Billboards</a>
+    1000 spherical <a href="../docs/classes/Billboard.html" target="_docs">Billboards</a>
 </div>
 
 <script>
@@ -69,7 +69,7 @@
 //        group: new XEO.Group()
 //    });
 //
-//    new XEO.GameObject({
+//    new XEO.Entity({
 //        geometry: new XEO.BoundaryGeometry({
 //            boundary: cloudsBoundary.worldBoundary
 //        }),
@@ -87,7 +87,7 @@
 
         (function () {
 
-            var cloudObject = new XEO.GameObject({
+            var cloudObject = new XEO.Entity({
                 geometry: geometry,
                 material: material,
                 lights: lights,
@@ -109,7 +109,7 @@
             //cloudsBoundary.group.add(cloudObject);
 
             // Dynamically set the rendering order of each
-            // cloud's GameObject in proportion to its Z-depth in View space
+            // cloud's Entity in proportion to its Z-depth in View space
 
             cloudObject.viewBoundary.on("updated",
                     function () {

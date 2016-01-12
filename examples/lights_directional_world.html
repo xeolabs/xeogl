@@ -21,7 +21,7 @@
 
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a> - <a href="../docs/classes/DirLight.html"
-                          target="_other">DirLight</a> in View-scape
+                          target="_docs">DirLight</a> in View-scape
 </div>
 
 <script>
@@ -47,14 +47,14 @@
         ]
     });
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         lights: lights
     });
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function () {
-                object.scene.view.rotateEyeY(0.6);
-                object.scene.view.rotateEyeX(0.3);
+                entity.scene.view.rotateEyeY(0.6);
+                entity.scene.view.rotateEyeX(0.3);
             });
 </script>
 </body>

@@ -76,12 +76,12 @@
         pointSize: 5
     });
 
-    // A GameObject that we can pick - a heightmap with a diffuse map
+    // A Entity that we can pick - a heightmap with a diffuse map
 
 
 
 
-    new XEO.GameObject({
+    new XEO.Entity({
 
         // XEO.HeightMap is defined in ./js/geometry/heightmapGeometry.js
         geometry: new XEO.HeightmapGeometry({
@@ -101,7 +101,7 @@
 
     // Torus
 
-    new XEO.GameObject({
+    new XEO.Entity({
         geometry: new XEO.TorusGeometry({
             radius: 3.0,
             tube: 1.0,
@@ -117,7 +117,7 @@
 
     // Sphere
 
-    new XEO.GameObject({
+    new XEO.Entity({
         geometry: new XEO.SphereGeometry({
             radius: 3.0
         }),
@@ -130,7 +130,7 @@
     //
     //    // Sphere 2
     //
-    //    new XEO.GameObject({
+    //    new XEO.Entity({
     //        geometry: new XEO.SphereGeometry({
     //            radius: 3.0
     //        }),
@@ -142,7 +142,7 @@
 
     // Cylinder
 
-    new XEO.GameObject({
+    new XEO.Entity({
         geometry: new XEO.CylinderGeometry({
             radiusTop: 1.0,
             radiusBottom: 2.0,
@@ -175,7 +175,7 @@
     new XEO.CameraControl();
 
 
-    // Whenever mouse moves, attempt to pick a triangle on a GameObject,
+    // Whenever mouse moves, attempt to pick a triangle on a Entity,
     // then show the cartesian coordinates at the picked position within
     // the triangle, along with the interpolated normal vector and UV coordinates
     // at the picked position.
@@ -189,7 +189,7 @@
 
                 showUVPos(null);
 
-                // Pick a primitive on some GameObject
+                // Pick a primitive on some Entity
 
                 var hit = scene.pick({
                     canvasPos: coords,
@@ -198,7 +198,7 @@
 
                 if (hit) {
 
-                    // GameObject picked
+                    // Entity picked
 
                     if (hit.worldPos && hit.normal) {
                         XEO.debug

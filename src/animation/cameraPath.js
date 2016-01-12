@@ -5,7 +5,7 @@
 
  ````Javascript
 
- var object = new XEO.GameObject();
+ var entity = new XEO.Entity();
 
  var camera = new XEO.Camera();
 

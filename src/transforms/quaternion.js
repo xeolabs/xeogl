@@ -1,13 +1,13 @@
 /**
 
- A **Quaternion** applies a rotation transformation to associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Quaternion** applies a rotation transformation to associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
  <li>Quaternion is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ <li>An {{#crossLink "Entity"}}{{/crossLink}} would be connected to a leaf Transform
  within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
@@ -16,9 +16,9 @@
 
  ## Example
 
- In this example we have two {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that are transformed by a hierarchy that contains
+ In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  Quaternion, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.
- The GameObjects share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
+ The Entities share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
 
  ````javascript
 var scene = new XEO.Scene();
@@ -44,12 +44,12 @@ var scale = new XEO.Scale(scene, {
 
 var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
-var gameObject1 = new XEO.GameObject(scene, {
+var Entity1 = new XEO.Entity(scene, {
    transform: translate1,
    geometry: geometry
 });
 
-var gameObject2 = new XEO.GameObject(scene, {
+var Entity2 = new XEO.Entity(scene, {
    transform: scale,
    geometry: geometry
 });
@@ -57,7 +57,7 @@ var gameObject2 = new XEO.GameObject(scene, {
 
 Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
-Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "GameObject"}}{{/crossLink}}:
+Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
 
 ````javascript
 var scale2 = new XEO.Scale(scene, {
@@ -65,7 +65,7 @@ var scale2 = new XEO.Scale(scene, {
    xyz: [1, 1, 2] // Scale x2 on Z axis
 });
 
-gameObject2.transform = scale2;
+Entity2.transform = scale2;
  ````
 
 And just for fun, we'll start spinning the Quaternion:

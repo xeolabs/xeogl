@@ -16,7 +16,7 @@
     <br><br>
     <ul>
         <li>
-            <!--using the <a href="js/debug/debug.js" target="_other">XEO.debug</a> helper utility to visualize the result of-->
+            <!--using the <a href="js/debug/debug.js" target="_docs">XEO.debug</a> helper utility to visualize the result of-->
             <!--the <a href="../docs/classes/XEO.math.math.html#method_transformPoint4">XEO.math.rayTriangleIntersect</a> function-->
         </li>
     </ul>
@@ -44,7 +44,7 @@
 
     var matrix = XEO.math.mat4();
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         geometry: new XEO.Geometry({
             primitive: "lines",
             positions: XEO.math.flatten(positions),
@@ -62,7 +62,7 @@
         })
     });
 
-    var boundary = new XEO.GameObject({
+    var boundary = new XEO.Entity({
         geometry: new XEO.BoundaryGeometry(),
         material: new XEO.PhongMaterial({
             emissive: [0.9, 0.6, 0.6],
@@ -72,7 +72,7 @@
         })
     });
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function () {
                 update();
             });
@@ -101,7 +101,7 @@
 
         boundary.geometry.aabb = aabb;
 
-        object.geometry.positions = XEO.math.flatten(positions2);
+        entity.geometry.positions = XEO.math.flatten(positions2);
 
         angle += 0.01;
     }

@@ -1,7 +1,7 @@
 /**
 
  A **Stationary** disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for
- associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 

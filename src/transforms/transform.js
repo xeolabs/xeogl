@@ -1,5 +1,5 @@
 /**
- A **Transform** defines a modelling matrix to transform attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Transform** defines a modelling matrix to transform attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -7,7 +7,7 @@
  <li>Sub-classes of Transform are: {{#crossLink "Translate"}}{{/crossLink}},
  {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, and {{#crossLink "Quaternion"}}{{/crossLink}}</li>
  <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} would be connected to a leaf Transform
+ <li>An {{#crossLink "Entity"}}{{/crossLink}} would be connected to a leaf Transform
  within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
@@ -38,7 +38,7 @@
 
  // Red table leg
 
- var tableLg1 = new XEO.GameObject({
+ var tableLg1 = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Translate({
@@ -53,7 +53,7 @@
 
  // Green table leg
 
- var tableLeg2 = new XEO.GameObject({
+ var tableLeg2 = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Translate({
@@ -68,7 +68,7 @@
 
  // Blue table leg
 
- var tableLeg3 = new XEO.GameObject({
+ var tableLeg3 = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Translate({
@@ -83,7 +83,7 @@
 
  // Yellow table leg
 
- var tableLeg4 = new XEO.GameObject({
+ var tableLeg4 = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [1, 3, 1],
             parent: new XEO.Translate({
@@ -98,7 +98,7 @@
 
  // Purple table top
 
- var tableTop = new XEO.GameObject({
+ var tableTop = new XEO.Entity({
         transform: new XEO.Scale({
             xyz: [6, 0.5, 6],
             parent: new XEO.Translate({
@@ -112,7 +112,7 @@
     });
 
  // Zoom camera out a bit
- // Get the Camera from one of the GameObjects
+ // Get the Camera from one of the Entities
 
  tableTop.camera.view.zoom(10);
 
@@ -293,8 +293,8 @@
         },
 
         // This is called if necessary when reading "leafMatrix", to update that property.
-        // It's also called by GameObject when the Transform is the leaf to which the
-        // GameObject is attached, in response to an "updated" event from the Transform.
+        // It's also called by Entity when the Transform is the leaf to which the
+        // Entity is attached, in response to an "updated" event from the Transform.
 
         _buildLeafMatrix: function () {
 

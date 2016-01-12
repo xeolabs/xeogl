@@ -1,5 +1,5 @@
 /**
- A **Cylinder** defines cylindrical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Cylinder** defines cylindrical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 
@@ -7,23 +7,23 @@
 
  ````
 
- @class Cylinder
+ @class CylinderGeometry
  @module XEO
  @submodule geometry
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Cylinder in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CylinderGeometry in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Cylinder.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CylinderGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.radiusTop=1] {Number} Radius of top.
  @param [cfg.radiusBottom=1] {Number} Radius of bottom.
  @param [cfg.height=1] {Number} Height.
- @param [cfg.radialSegments=60] {Number} Number of segments around the Cylinder.
+ @param [cfg.radialSegments=60] {Number} Number of segments around the CylinderGeometry.
  @param [cfg.heightSegments=1] {Number} Number of vertical segments.
- @param [cfg.openEnded=false] {Boolean} Whether or not the Cylinder has solid caps on the ends.
+ @param [cfg.openEnded=false] {Boolean} Whether or not the CylinderGeometry has solid caps on the ends.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -227,9 +227,9 @@
         _props: {
 
             /**
-             * The Cylinder's level-of-detail factor.
+             * The CylinderGeometry's level-of-detail factor.
              *
-             * Fires a {{#crossLink "Cylinder/lod:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/lod:event"}}{{/crossLink}} event on change.
              *
              * @property lod
              * @default 1
@@ -255,7 +255,7 @@
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/lod:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/lod:property"}}{{/crossLink}} property changes.
                      * @event lod
                      * @type Number
                      * @param value The property's new value
@@ -269,9 +269,9 @@
             },
 
             /**
-             * The Cylinder's top radius.
+             * The CylinderGeometry's top radius.
              *
-             * Fires a {{#crossLink "Cylinder/radiusTop:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/radiusTop:event"}}{{/crossLink}} event on change.
              *
              * @property radiusTop
              * @default 1
@@ -297,7 +297,7 @@
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/radiusTop:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radiusTop:property"}}{{/crossLink}} property changes.
                      * @event radiusTop
                      * @type Number
                      * @param value The property's new value
@@ -311,9 +311,9 @@
             },
 
             /**
-             * The Cylinder's bottom radius.
+             * The CylinderGeometry's bottom radius.
              *
-             * Fires a {{#crossLink "Cylinder/radiusBottom:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/radiusBottom:event"}}{{/crossLink}} event on change.
              *
              * @property radiusBottom
              * @default 1
@@ -339,7 +339,7 @@
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/radiusBottom:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radiusBottom:property"}}{{/crossLink}} property changes.
                      * @event radiusBottom
                      * @type Number
                      * @param value The property's new value
@@ -353,9 +353,9 @@
             },
 
             /**
-             * The Cylinder's height.
+             * The CylinderGeometry's height.
              *
-             * Fires a {{#crossLink "Cylinder/height:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/height:event"}}{{/crossLink}} event on change.
              *
              * @property height
              * @default 1
@@ -381,7 +381,7 @@
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/height:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/height:property"}}{{/crossLink}} property changes.
                      * @event height
                      * @type Number
                      * @param value The property's new value
@@ -395,9 +395,9 @@
             },
 
             /**
-             * The Cylinder's radial segments.
+             * The CylinderGeometry's radial segments.
              *
-             * Fires a {{#crossLink "Cylinder/radialSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/radialSegments:event"}}{{/crossLink}} event on change.
              *
              * @property radialSegments
              * @default 60
@@ -423,7 +423,7 @@
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/radialSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radialSegments:property"}}{{/crossLink}} property changes.
                      * @event radialSegments
                      * @type Number
                      * @param value The property's new value
@@ -437,9 +437,9 @@
             },
 
             /**
-             * The Cylinder's height segments.
+             * The CylinderGeometry's height segments.
              *
-             * Fires a {{#crossLink "Cylinder/heightSegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/heightSegments:event"}}{{/crossLink}} event on change.
              *
              * @property heightSegments
              * @default 1
@@ -465,7 +465,7 @@
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/heightSegments:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/heightSegments:property"}}{{/crossLink}} property changes.
                      * @event heightSegments
                      * @type Number
                      * @param value The property's new value
@@ -479,9 +479,9 @@
             },
 
             /**
-             * Indicates whether this Cylinder's is open-ended.
+             * Indicates whether this CylinderGeometry's is open-ended.
              *
-             * Fires a {{#crossLink "Cylinder/openEnded:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CylinderGeometry/openEnded:event"}}{{/crossLink}} event on change.
              *
              * @property openEnded
              * @default false
@@ -502,7 +502,7 @@
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Cylinder's {{#crossLink "Cylinder/openEnded:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/openEnded:property"}}{{/crossLink}} property changes.
                      * @event openEnded
                      * @type Boolean
                      * @param value The property's new value

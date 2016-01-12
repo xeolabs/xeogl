@@ -20,11 +20,11 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
     <br>
     <br>
     dynamically modifying a <a href="../docs/classes/Geometry.html"
-                                target="_other">Geometry</a>
+                                target="_docs">Geometry</a>
 </div>
 
 <script>
@@ -37,8 +37,8 @@
         primitive: "triangles"
     });
 
-    // GameObject that uses our Geometry
-    var object = new XEO.GameObject({
+    // Entity that uses our Geometry
+    var entity = new XEO.Entity({
         geometry: geometry,
         material: new XEO.PhongMaterial({
             diffuseMap: new XEO.Texture({
@@ -51,8 +51,8 @@
     });
 
     // Spin the Camera
-    object.scene.on("tick", function () {
-        object.camera.view.rotateEyeY(1.0);
+    entity.scene.on("tick", function () {
+        entity.camera.view.rotateEyeY(1.0);
     });
 
     // The current torus construction parameters
@@ -72,7 +72,7 @@
 
     var d = 1;
 
-    object.scene.on("tick", function () {
+    entity.scene.on("tick", function () {
 
                 // Rebuild the torus according to the torus construction parameters,
                 // put the results in the geometry arrays

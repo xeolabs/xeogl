@@ -22,16 +22,16 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    spherical <a href="../docs/classes/Billboard.html" target="_other">Billboards</a>
+    spherical <a href="../docs/classes/Billboard.html" target="_docs">Billboards</a>
 </div>
 
 <script>
 
 
     // Hoops
-    // Create a prototype hoop object and clone it two times
+    // Create a prototype hoop entity and clone it two times
 
-    new XEO.GameObject({
+    new XEO.Entity({
         geometry: new XEO.TorusGeometry({
             radius: 40,
             tube: 1,
@@ -71,9 +71,9 @@
             });
 
     // Balls at the intersections of the hoops
-    // Create a prototype ball object and clone it five times
+    // Create a prototype ball entity and clone it five times
 
-    new XEO.GameObject({
+    new XEO.Entity({
         geometry: new XEO.SphereGeometry({
             radius: 5
         }),
@@ -147,7 +147,7 @@
         var r = (Math.random() + 0.1 ) * 200;
         var halfr = r / 2;
 
-        var object = new XEO.GameObject({
+        var entity = new XEO.Entity({
             geometry: geometry,
             material: material,
             lights: lights,
@@ -164,13 +164,13 @@
         });
 
         // Dynamically set the rendering order of each
-        // GameObject in proportion to its Z-depth in View space
+        // Entity in proportion to its Z-depth in View space
 
         (function () {
 
-            var _object = object;
+            var _object = entity;
 
-            object.viewBoundary.on("updated",
+            entity.viewBoundary.on("updated",
                     function () {
                         _object.layer.priority = 1000.0 + _object.viewBoundary.center[2];
                     });

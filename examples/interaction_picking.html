@@ -24,7 +24,7 @@
     <br><br>
     <ul>
         <li>
-            picking <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a>
+            picking <a href="../docs/classes/Entity.html" target="_docs">Entities</a>
         </li>
         <li>
             click something!
@@ -63,7 +63,7 @@
 
     for (var i = 0; i < 100; i++) {
 
-        new XEO.GameObject({
+        new XEO.Entity({
 
             geometry: sphere,
 
@@ -101,8 +101,8 @@
 
     new XEO.CameraControl();
 
-    // Attempt to pick a GameObject on each mouse click.
-    // Highlight each GameObject that we successfully pick.
+    // Attempt to pick a Entity on each mouse click.
+    // Highlight each Entity that we successfully pick.
 
     var input = scene.input;
 
@@ -116,9 +116,9 @@
                 });
 
                 if (hit) {
-                    log("Picked GameObject '" + hit.object.id + "'");
+                    log("Picked Entity '" + hit.entity.id + "'");
 
-                    hit.object.material.emissive = [1, 1, 0];
+                    hit.entity.material.emissive = [1, 1, 0];
 
                 } else {
                     log("Nothing picked.");

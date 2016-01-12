@@ -1,14 +1,14 @@
 /**
- A **Modes** toggles various xeoEngine modes and capabilities for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Modes** toggles various xeoEngine modes and capabilities for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
 
- <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
+ <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
  Modes components provide a single point through which you can toggle them on or off.</li>
 
- <li>A Modes may be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to toggle
+ <li>A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
  rendering modes for them as a group.</li>
 
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeoEngine's shaders.</li>
@@ -20,7 +20,7 @@
  ## Example
 
  In this example we have a Modes that toggles rendering modes for
- two {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. The properties of the Modes are initialised to their
+ two {{#crossLink "Entity"}}Entities{{/crossLink}}. The properties of the Modes are initialised to their
  default values.
 
  ````javascript
@@ -35,13 +35,13 @@
     frontface : "ccw"
  });
 
- // Create two GameObjects whose rendering modes will be controlled by our Modes
+ // Create two Entities whose rendering modes will be controlled by our Modes
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
        modes: modes
  });
 
- var object2 = new XEO.GameObject(scene, {
+ var entity2 = new XEO.Entity(scene, {
        modes: modes
  });
 
@@ -50,14 +50,14 @@
        //...
  });
 
- // Hide backfaces on our GameObjects by flipping the Modes' "backfaces" property,
+ // Hide backfaces on our Entities by flipping the Modes' "backfaces" property,
  // which will also call our handler
  modes.backfaces = false;
 
  // Unsubscribe from the Modes again
  modes.off(handle);
 
- // When we destroy our Modes, the GameObjects will fall back
+ // When we destroy our Modes, the Entities will fall back
  // on the Scene's default Modes instance
  modes.destroy();
 
@@ -74,14 +74,14 @@
  @param [cfg.pickable=true] {Boolean}  Whether to enable picking.
  @param [cfg.clipping=true] {Boolean} Whether to enable clipping by {{#crossLink "Clips"}}{{/crossLink}}.
  @param [cfg.transparent=false] {Boolean} Whether to enable the transparency effect created by {{#crossLink "Material"}}Material{{/crossLink}}s when they have
- {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
+ {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
  transparency pass with blending enabled etc), while
  the {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} will indicate the **degree** of their transparency
  (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
  @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
- @param [cfg.collidable=true] {Boolean} Whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are included in boundary-related calculations. Set this false if the
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
+ @param [cfg.collidable=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are included in boundary-related calculations. Set this false if the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
  @extends Component
  */
 (function () {
@@ -114,7 +114,7 @@
         _props: {
 
             /**
-             Whether this Modes enables picking of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             Whether this Modes enables picking of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              Picking is performed via calls to {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}.
 
@@ -147,10 +147,10 @@
             },
 
             /**
-             Whether this Modes enables clipping of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             Whether this Modes enables clipping of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              Clipping is done by {{#crossLink "Clips"}}{{/crossLink}} that are also attached to
-             the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              Fires a {{#crossLink "Modes/clipping:event"}}{{/crossLink}} event on change.
 
@@ -181,9 +181,9 @@
             },
 
             /**
-             Whether this Modes sets attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent.
+             Whether this Modes sets attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent.
 
-             When true. this property will set attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} transparent (ie. to be rendered in a
+             When true. this property will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
              transparency pass with blending enabled etc), while
              the {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} will be used to indicate the **degree** of their transparency
              (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
@@ -217,10 +217,10 @@
             },
 
             /**
-             Whether this Modes enables backfaces to be visible on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             Whether this Modes enables backfaces to be visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              Fires a {{#crossLink "Modes/backfaces:event"}}{{/crossLink}} event on change.
 
@@ -253,10 +253,10 @@
             },
 
             /**
-             Indicates the winding direction of front faces on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
              Fires a {{#crossLink "Modes/frontface:event"}}{{/crossLink}} event on change.
 
@@ -287,13 +287,13 @@
             },
 
             /**
-             Whether attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are included
+             Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are included
              in boundary-related calculations.
 
              Set this false if the
-             {{#crossLink "GameObject"}}GameObjects{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
+             {{#crossLink "Entity"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
 
-             For example, when set false, the {{#crossLink "GameObject/worldBoundary:property"}}World-space boundary{{/crossLink}} of all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} would not be considered when calculating the {{#crossLink "Scene/worldBoundary:property"}}World-space boundary{{/crossLink}} of their
+             For example, when set false, the {{#crossLink "Entity/worldBoundary:property"}}World-space boundary{{/crossLink}} of all attached {{#crossLink "Entity"}}Entities{{/crossLink}} would not be considered when calculating the {{#crossLink "Scene/worldBoundary:property"}}World-space boundary{{/crossLink}} of their
              {{#crossLink "Scene"}}{{/crossLink}}.
 
              Fires a {{#crossLink "Modes/collidable:event"}}{{/crossLink}} event on change.

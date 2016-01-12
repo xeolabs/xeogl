@@ -1,13 +1,14 @@
 body {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    line-height: 1.50;
+    color: #333333;
     padding: 10px;
-    font-family: Arial;
     background-color: #fff;
-    color: #444;
     text-decoration: none;
     word-spacing: normal;
     text-align: left;
     letter-spacing: 0;
-    font-size: 0.9em;
     -webkit-font-smoothing: antialiased;
     overflow: auto;
     overflow-x: hidden;

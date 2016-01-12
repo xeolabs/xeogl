@@ -40,7 +40,7 @@
 
  ## Example 2
 
- In the next example, we'll create a {{#crossLink "GameObject"}}{{/crossLink}} with a
+ In the next example, we'll create an {{#crossLink "Entity"}}{{/crossLink}} with a
  {{#crossLink "PhongMaterial"}}{{/crossLink}} whose diffuse color is bound to the
  interpolated {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}} property on the QuadraticBezierCurve.
 
@@ -54,12 +54,12 @@
         v2: [0, 0, 1]
     });
 
- // Create a GameObject with a PhongMaterial
+ // Create a Entity with a PhongMaterial
  var material = new XEO.PhongMaterial({
         diffuse: [0, 0, 0]
     });
 
- var object = new XEO.GameObject({
+ var entity = new XEO.Entity({
         material: material
     });
 
@@ -71,7 +71,7 @@
 
  // Animate the QuadraticBezierCurve, which in turn
  // updates the PhongMaterial diffuse color
- var tick = object.scene.on("tick", function (e) {
+ var tick = entity.scene.on("tick", function (e) {
         curve.t = (e.time - e.startTime) * 0.00005;
    });
  ````

@@ -30,7 +30,7 @@
         camera: camera
     });
 
- var object = new XEO.GameObject(scene);
+ var entity = new XEO.Entity(scene);
  ````
 
  @class KeyboardAxisCamera
@@ -40,7 +40,7 @@
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardAxisCamera.
+ @param [cfg.meta] {String:Entity} Optional map of user-defined metadata to attach to this KeyboardAxisCamera.
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this KeyboardAxisCamera. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.

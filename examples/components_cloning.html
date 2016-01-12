@@ -22,14 +22,14 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    cloning a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a> 200 times
+    cloning an <a href="../docs/classes/Entity.html" target="_docs">Entity</a> 200 times
 </div>
 
 <script>
 
-    // Create a prototype GameObject with all defaults.
+    // Create a prototype Entity with all defaults.
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
 
         geometry: new XEO.TorusGeometry({
             radius: 1.0,
@@ -40,7 +40,7 @@
         })
     });
 
-    // Make a bunch of clones of the GameObject,
+    // Make a bunch of clones of the Entity,
     // each at a random position.
 
 
@@ -53,7 +53,7 @@
         ];
 
 
-        object.clone({
+        entity.clone({
 
             transform: new XEO.Rotate({
                 xyz: [
@@ -82,14 +82,14 @@
 
     // Move the camera back a bit
 
-    object.camera.view.zoom(20);
+    entity.camera.view.zoom(20);
 
     // Orbit the eye position about the look position.
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function () {
 
-                var view = object.camera.view;
+                var view = entity.camera.view;
 
                 view.rotateEyeY(0.5);
                 view.rotateEyeX(0.3);

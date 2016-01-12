@@ -1,6 +1,6 @@
 /**
  A **PBRMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of
- attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} using a physically-based rendering model.
+ attached {{#crossLink "Entity"}}Entities{{/crossLink}} using a physically-based rendering model.
 
  ## Overview
 
@@ -38,7 +38,7 @@
  <ul>
  <li>a dialectric (non-metallic) PBRMaterial,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
 
@@ -53,7 +53,7 @@
 
  var geometry = new XEO.Geometry(scene);  // Default box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     material: material1,
     geometry: geometry
  });
@@ -342,7 +342,7 @@
 
              This property may be overidden by {{#crossLink "PBRMaterial/opacityMap:property"}}{{/crossLink}}.
 
-             Attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} will appear transparent only if they are also attached
+             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
              set to **true**.
 

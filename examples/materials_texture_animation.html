@@ -20,9 +20,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br><a
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br><a
         href="../docs/classes/Texture.html"
-        target="_other">Texture</a> animation
+        target="_docs">Texture</a> animation
     <br><br>
     <img src="textures/diffuse/uvGrid2.jpg" width="300px" height="300px">
 </div>
@@ -44,14 +44,14 @@
         diffuseMap: texture
     });
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         geometry: geometry,
         material: material
     });
 
     // Position camera
 
-    object.camera.view.zoom(-5);
+    entity.camera.view.zoom(-5);
 
     // Scene loop
 
@@ -61,12 +61,12 @@
     var x = 0;
     var y = 0;
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function () {
 
                 // Orbit camera
 
-                var view = object.scene.camera.view;
+                var view = entity.scene.camera.view;
 
                 view.rotateEyeY(0.2);
                 view.rotateEyeX(0.1);

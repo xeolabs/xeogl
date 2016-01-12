@@ -67,6 +67,7 @@
 
 <!-- header start -->
 <!-- ================ -->
+
 <header class="header fixed clearfix navbar navbar-fixed-top">
     <div class="container">
         <div class="row">
@@ -125,9 +126,9 @@
                                         <li class="active"><a href="#banner">Home</a></li>
                                         <li><a href="#concept">Concept</a></li>
                                         <li><a href="#features">Features</a></li>
-                                        <li><a href="http://xeoengine.org/examples">Examples</a></li>
-                                        <li><a href="http://xeoengine.org/docs">Docs</a></li>
-                                        <li><a href="https://github.com/xeolabs/xeoengine">Github</a></li>
+                                        <li><a href="../examples" target="_examples">Examples</a></li>
+                                        <li><a href="../docs"  target="_docs">Docs</a></li>
+                                        <li><a href="https://github.com/xeolabs/xeoengine"  target="_github">GitHub</a></li>
                                         <li>
                                             <a href="https://github.com/xeolabs/xeoengine/archive/master.zip">Download</a>
                                         </li>
@@ -221,7 +222,7 @@
                             spinning torus scene shown in the screenshot below.</p>
 
                         <p>To show how xeoEngine scenes are dynamically editable, we'll
-                            create the scene incrementally: first we'll create the basic torus object, then
+                            create the scene incrementally: first we'll create the basic torus entity, then
                             set it spinning, and then add texture. </p>
 
                         <p>Finally, to show how data-driven xeoEngine is, we'll clone the scene, which
@@ -243,14 +244,12 @@
 
                         <br>
 
-                        <p>Using the JavaScript API, create the 3D scene as a component-object graph, as shown in the
+                        <p>Using the JavaScript API, create the 3D scene as an entity-component graph, as shown in the
                             diagram below. Note how a
                             <a href="./docs/classes/Scene.html" target="_docs">scene</a> is
-                            basically a container of <a href="./docs/classes/Component.html target="
-                                                        _docs"">components</a> that are
+                            basically a container of <a href="./docs/classes/Component.html" target="_docs">components</a> that are
                             tied
-                            together into
-                            enties by <a href="./docs/classes/GameObject.html target=" _docs"">game objects</a>.</p>
+                            together by <a href="./docs/classes/Entity.html" target="_docs">entities</a>.</p>
 
 <pre class="prettyprint lang-javascript">
 var scene = new XEO.Scene();
@@ -261,7 +260,7 @@ var material = new XEO.PhongMaterial(scene, {
 
 var geometry = new XEO.TorusGeometry(scene);
 
-var object = new XEO.GameObject(scene, {
+var entity = new XEO.Entity(scene, {
     material: material,
     geometry: geometry
 });
@@ -276,11 +275,11 @@ var object = new XEO.GameObject(scene, {
                         <h4>Defaults</h4>
 
                         <p>xeoEngine provides defaults for pretty much everything, which means that we only need to
-                            create things wherever we need to override those defaults. For our game object,
+                            create things wherever we need to override those defaults. For our entity,
                             we provided our own <a
                                     href="./docs/classes/PhongMaterial.html" target="_docs">material</a> and <a
                                     href="./docs/classes/Geometry.html" target="_docs">geometry</a> components, leaving
-                            the game object
+                            the entity
                             to
                             fall back on the scene's default flyweight instances for all the other components it needs
                             (<a href="./docs/classes/Camera.html" target="_docs">camera</a>, <a
@@ -348,7 +347,7 @@ var scene2 = new XEO.Scene({ json: json });</pre>
 
                         <ul>
                             <li><a
-                                    href="http://xeoengine.org/docs" target="_docs">API documentation</a></li>
+                                    href="http://xeoengine.org/docs" target="_docs">API reference</a></li>
                             <li><a
                                     href="https://github.com/xeolabs/xeoengine/wiki" target="_wiki">Wiki</a></li>
                             <li><a

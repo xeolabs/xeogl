@@ -1,19 +1,19 @@
 /**
  A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate
- attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
 
  <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
 
  <li>PointLights have a position, but no direction.</li>
 
- <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their position
- is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
- When in View-space, their position is relative to the View coordinate system, and will behave as if fixed to the viewer's
+ <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
+ are relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
+ When in View-space, their positions are relative to the View coordinate system, and will behave as if fixed to the viewer's
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
 
  <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
@@ -27,63 +27,33 @@
 
  ## Example
 
- In this example we have
- <ul>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}},</li>
- <li>a PointLight,</li>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the PointLight,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
-
- <iframe style="width: 600px; height: 400px" src="../../examples/light_PointLight.html"></iframe>
-
  ```` javascript
- var scene = new XEO.Scene();
+ var entity = new XEO.Entity(scene, {
 
- var material = new XEO.PhongMaterial(scene, {
-        color: [1, 1, 1],
-        intensity: 1
- });
+        lights: new XEO.Lights({
+            lights: [
+                new XEO.PointLight({
+                    pos: [0, 100, 100],
+                    color: [0.5, 0.7, 0.5],
+                    intensity: 1
+                    constantAttenuation: 0,
+                    linearAttenuation: 0,
+                    quadraticAttenuation: 0,
+                    space: "view"
+                })
+            ]
+        }),
+ ,
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 0.5, 0.0]
+        }),
 
- // Our PointLight's intensity does not attenuate over distance.
-
- var pointLight = new XEO.PointLight(scene, {
-        pos: [0, 100, 100],
-        color: [0.5, 0.7, 0.5],
-        intensity: 1
-        constantAttenuation: 0,
-        linearAttenuation: 0,
-        quadraticAttenuation: 0,
-        space: "view"
- });
-
- var lights = new XEO.Lights(scene, {
-        lights: [
-            pointLight
-        ]
- });
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var object = new XEO.GameObject(scene, {
-        lights: lights,
-        material: material,
-        geometry: geometry
+        geometry: new XEO.BoxGeometry()
   });
- ````
 
- As with all components, we can <a href="XEO.Component.html#changeEvents" class="crosslink">observe and change properties</a> on PointLights like so:
+ // Update the light's color
+ entity.lights.lights[0].color[0] = 1.0;
 
- ````Javascript
- var handle = pointLight.on("color", // Attach a change listener to a property
- function(value) {
-        // Property value has changed
-    });
-
- pointLight.color = [0.4, 0.6, 0.4]; // Fires the change listener
-
- pointLight.off(handle); // Detach the change listener
  ````
 
  @class PointLight
@@ -102,7 +72,7 @@
  @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
  @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
  @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
- @param [cfg.space="view"] {String} The coordinate system this PointLight is defined in - "view" or "space".
+ @param [cfg.space="view"] {String} The coordinate system this PointLight is defined in - "view" or "world".
  */
 (function () {
 

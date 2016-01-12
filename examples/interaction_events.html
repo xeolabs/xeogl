@@ -20,7 +20,7 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
     <br><br>
     handling input events
     <pre id="infoTxt" style="text-align: left;"></pre>
@@ -28,12 +28,12 @@
 
 <script>
 
-    var object = new XEO.GameObject();
+    var entity = new XEO.Entity();
 
-    object.camera.view.eye = [-3, 2, 1];
+    entity.camera.view.eye = [-3, 2, 1];
 
 
-    var input = object.scene.input;
+    var input = entity.scene.input;
 
     input.on("keydown", function (keyCode) {
         log("keydown, keyCode = " + keyCode);

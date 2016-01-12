@@ -20,8 +20,8 @@
 
  ## Example #1
 
- Flying to a {{#crossLink "GameObject"}}{{/crossLink}} (which provides a World-space
- {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "GameObject/worldBoundary:property"}}{{/crossLink}} property):
+ Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
+ {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property):
 
  ````Javascript
  var camera = new XEO.Camera();
@@ -33,11 +33,11 @@
     duration: 20
  });
 
- // Create a GameObject, which gets all the default components
- var object = new GameObject();
+ // Create a Entity, which gets all the default components
+ var entity = new Entity();
 
- // Fly to the GameObject's worldBoundary
- cameraFlight.flyTo(object);
+ // Fly to the Entity's worldBoundary
+ cameraFlight.flyTo(entity);
  ````
 
  ## Example #2
@@ -57,10 +57,10 @@
  ## Example #3
 
  Flying the CameraFlight from the previous two examples explicitly to the World-space
- {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "GameObject"}}{{/crossLink}} property):
+ {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "Entity"}}{{/crossLink}} property):
 
  ````Javascript
- var worldBoundary = object.worldBoundary;
+ var worldBoundary = entity.worldBoundary;
 
  cameraFlight.flyTo(worldBoundary);
  ````
@@ -71,7 +71,7 @@
  axis-aligned bounding box:
 
  ````Javascript
- var worldBoundary = object.worldBoundary;
+ var worldBoundary = entity.worldBoundary;
 
  var aabb = worldBoundary.aabb;
 

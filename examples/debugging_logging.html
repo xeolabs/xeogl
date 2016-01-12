@@ -44,34 +44,34 @@
         document.getElementById("infoTxt").innerText = buf.join("\n");
     }
 
-    // Create a GameObject
-    var object = new XEO.GameObject({
+    // Create a Entity
+    var entity = new XEO.Entity({
         id: "myObject"
     });
 
-    var scene = object.scene;
+    var scene = entity.scene;
 
     scene.on("log", log);
     scene.on("warn", log);
     scene.on("error", log);
 
-    // Log a message in context of this GameObject
+    // Log a message in context of this Entity
     // Message will appear in console as "[LOG] myObject: Everything is fine, situation normal."
-    object.log("Everything is fine, situation normal.");
+    entity.log("Everything is fine, situation normal.");
 
-    // Attach a new Material to the GameObject.
-    object.material = new XEO.PhongMaterial({
+    // Attach a new Material to the Entity.
+    entity.material = new XEO.PhongMaterial({
         id: "myMaterial",
         diffuse: [1.0, 1.0, 0.0]
     });
 
     // Log a warning message in context of the Material
     // Message will appear in console as "[WARN] myMaterial: Wait, what's that red light?."
-    object.material.warn("Wait, what's that red light?");
+    entity.material.warn("Wait, what's that red light?");
 
     // Log an error message in context of the Material
     // Message will appear in console as "[ERROR] myMaterial: Aw, snap!."
-    object.material.error("Aw, snap!");
+    entity.material.error("Aw, snap!");
 
 
 </script>

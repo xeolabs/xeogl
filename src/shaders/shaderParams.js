@@ -1,11 +1,11 @@
 /**
- A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
- <li>Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}},
- while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
+ <li>Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "Entity"}}Entities{{/crossLink}},
+ while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.</li>
  </ul>
 
  <img src="../../../assets/images/ShaderParams.png"></img>
@@ -19,14 +19,14 @@
 
  <img src="../../assets/images/shaderParamsExample1.png"></img>
 
- In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
+ In our scene definition, we have an  {{#crossLink "Entity"}}Entity{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
  screen-aligned quad, plus a {{#crossLink "Shader"}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
  Finally, we animate the rippling by periodically updating the {{#crossLink "Shader"}}Shader{{/crossLink}}'s "time" uniform.
 
  ````javascript
  var scene = new XEO.Scene();
 
- // Shader that's shared by both our GameObjects. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
+ // Shader that's shared by both our Entities. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
  // which will receive the positions and UVs from the Geometry components. Also note the 'time'
  // uniform, which we'll be animating via the ShaderParams components.
 
@@ -90,7 +90,7 @@
        }
   });
 
- var object1 = new XEO.GameObject(scene, {
+ var object1 = new XEO.Entity(scene, {
        shader: shader,
        geometry: quad1,
        shaderParams1: shaderParams1
@@ -113,7 +113,7 @@
        }
   });
 
- var object2 = new XEO.GameObject(scene, {
+ var object2 = new XEO.Entity(scene, {
        shader: shader,
        geometry2: quad2,
        shaderParams2: shaderParams2
@@ -167,7 +167,7 @@
 
             /**
              * Params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
-             * {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             * {{#crossLink "Entity"}}Entities{{/crossLink}}.
              *
              * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
              *
@@ -185,7 +185,7 @@
 
         /**
          * Sets one or more params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
-         * {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+         * {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
          * These will individually override any params of the same names that are {{#crossLink "Shader/setParams:method"}}already specified{{/crossLink}} on
          * those {{#crossLink "Shader"}}Shaders{{/crossLink}}.

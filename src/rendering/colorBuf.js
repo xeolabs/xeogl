@@ -1,5 +1,5 @@
 /**
- A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -15,14 +15,14 @@
 
  ## Example
 
- In this example we're configuring the WebGL color buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
+ In this example we're configuring the WebGL color buffer for an {{#crossLink "Entity"}}{{/crossLink}}.
 
  This example scene contains:
 
  <ul>
  <li>a ColorBuf that enables blending and sets the color mask,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ````javascript
@@ -35,7 +35,7 @@
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var gameObject = new XEO.GameObject(scene, {
+ var Entity = new XEO.Entity(scene, {
     colorBuf: colorBuf,
     geometry: geometry
 });

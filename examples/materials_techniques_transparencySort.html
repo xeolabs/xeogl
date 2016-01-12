@@ -12,9 +12,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>z-sorting 1000 transparent <a
-        href="../docs/classes/GameObject.html"
-        target="_other">GameObjects</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>z-sorting 1000 transparent <a
+        href="../docs/classes/Entity.html"
+        target="_docs">Entities</a>
 </div>
 
 <script>
@@ -45,7 +45,7 @@
 
     for (var i = 0; i < 1000; i++) {
 
-        var object = new XEO.GameObject({
+        var entity = new XEO.Entity({
 
             geometry: geometry,
             material: material,
@@ -59,19 +59,19 @@
                 ]
             }),
 
-            // A XEO.Layer sets the GameObject's rendering order,
+            // A XEO.Layer sets the Entity's rendering order,
             // typically for transparency sorting.
 
             // We'll dynamically update the Layer's priority
             // to a value that's in proportion to the Z position
-            // of the center of the GameObject's View-space bounding box.
+            // of the center of the Entity's View-space bounding box.
 
             layer: new XEO.Layer({
                 priority: 0
             })
         });
 
-        object.viewBoundary.on("updated", updateLayer, object); // Event, callback, scope
+        entity.viewBoundary.on("updated", updateLayer, entity); // Event, callback, scope
     }
 
     function updateLayer() {

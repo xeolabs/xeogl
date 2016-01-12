@@ -1,14 +1,14 @@
 /**
 
- An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  equally.
 
  ## Overview
 
  <ul>
  <li>AmbientLights are grouped, along with other light source types, within
- {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
- <li>When the {{#crossLink "GameObject"}}GameObjects{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
+ {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
+ <li>When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that AmbientLights create within xeoEngine's shaders.</li>
@@ -24,7 +24,7 @@
  <li>an AmbientLight,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the AmbientLight,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ```` javascript
@@ -57,7 +57,7 @@
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry

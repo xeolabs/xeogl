@@ -15,14 +15,14 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>loading .OBJ geometry using an <a
-        href="js/importing/objGeometry.js" target="_other">XEO.OBJGeometry</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>loading .OBJ geometry using an <a
+        href="js/importing/objGeometry.js" target="_docs">XEO.OBJGeometry</a>
 </div>
 
 <script>
 
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
 
         geometry: new XEO.OBJGeometry({
             src: "models/obj/raptor.obj"
@@ -67,17 +67,17 @@
 
     var animation = new XEO.CameraFlight();
 
-    object.geometry.on("loaded",
+    entity.geometry.on("loaded",
             function () {
                 animation.flyTo({
-                    aabb: object.worldBoundary.aabb
+                    aabb: entity.worldBoundary.aabb
                 });
             });
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function () {
 
-                var view = object.scene.camera.view;
+                var view = entity.scene.camera.view;
 
                 view.rotateEyeY(0.4);
 //                view.rotateEyeX(0.15);

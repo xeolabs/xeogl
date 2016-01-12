@@ -22,7 +22,7 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a> <br><br>
     basic non-textured <a href="../docs/classes/PhongMaterial.html"
-                          target="_other">PhongMaterial</a>
+                          target="_docs">PhongMaterial</a>
 </div>
 
 <script>
@@ -37,14 +37,14 @@
         opacity: 0
     });
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         material: material
     });
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function () {
-                object.scene.view.rotateEyeY(0.6);
-                object.scene.view.rotateEyeX(0.3);
+                entity.scene.view.rotateEyeY(0.6);
+                entity.scene.view.rotateEyeX(0.3);
             });
 
 </script>

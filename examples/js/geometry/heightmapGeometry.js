@@ -1,5 +1,5 @@
 /**
- A **Heightmap** defines spherical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Heightmap** defines spherical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 

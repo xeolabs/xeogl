@@ -1,5 +1,5 @@
 /**
- A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 

@@ -5,15 +5,15 @@
 
  <ul>
  <li>Reflects are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>To create a Reflect from an image file, set the Reflect's {{#crossLink "Reflect/src:property"}}{{/crossLink}}
  property to the image file path.</li>
  <li>To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink "Reflect/image:property"}}{{/crossLink}}
- property to the object.</li>
- <li>To render color images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
- <li>Similarly, to render depth images of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ property to the entity.</li>
+ <li>To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
+ <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>For special effects, we often use rendered Reflects in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Reflects create within xeoEngine's shaders.</li>
  </ul>
@@ -28,7 +28,7 @@
  <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Reflect"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ```` javascript
@@ -73,7 +73,7 @@
  // Geometry without parameters will default to a 2x2x2 box.
  var geometry = new XEO.Geometry(scene);
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry

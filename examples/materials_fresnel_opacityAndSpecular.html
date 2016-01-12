@@ -20,14 +20,14 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>opacity <a href="../docs/classes/Fresnel.html"
-                                                                              target="_other">Fresnel</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>opacity <a href="../docs/classes/Fresnel.html"
+                                                                              target="_docs">Fresnel</a>
 </div>
 
 <script>
 
     // Override xeoEngine's default lights with some View-space directional lights,
-    // including one that shines from behind our torus GameObject
+    // including one that shines from behind our torus Entity
 
     var lights = new XEO.Lights({
         lights: [
@@ -63,7 +63,7 @@
 
     // Sphere
 
-    new XEO.GameObject({
+    new XEO.Entity({
 
         geometry: new XEO.SphereGeometry({
             radius: 2.0,
@@ -101,7 +101,7 @@
 
     // Torus
 
-    new XEO.GameObject({
+    new XEO.Entity({
 
         geometry: new XEO.TorusGeometry({}),
 

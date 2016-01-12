@@ -1,12 +1,12 @@
 /**
- A **DirLight** is a directional light source that illuminates all attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally
+ A **DirLight** is a directional light source that illuminates all attached {{#crossLink "Entity"}}Entities{{/crossLink}} equally
  from a given direction.
 
  ## Overview
 
  <ul>
  <li>DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>DirLights have a direction, but no position.</li>
  <li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
  is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
@@ -19,71 +19,29 @@
 
  ## Example
 
- In this example we have:
-
- <ul>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}},</li>
- <li>a DirLight that points along the negative diagonal of the View coordinate system,</li>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the DirLight,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
-
- <iframe style="width: 600px; height: 400px" src="../../examples/light_DirLight.html"></iframe>
-
  ```` javascript
- var scene = new XEO.Scene();
+ var entity = new XEO.Entity({
 
- // A shiny PhongMaterial with quantities of reflected
- // ambient, diffuse and specular color
- var material = new XEO.PhongMaterial(scene, {
-    ambient:    [0.3, 0.3, 0.3],
-    diffuse:    [0.7, 0.7, 0.7],
-    specular:   [1. 1, 1],
-    shininess:  30
+    lights: new XEO.Lights({
+        lights: [
+            new XEO.DirLight(scene, {
+                dir:         [-1, -1, -1],
+                color:       [0.5, 0.7, 0.5],
+                intensity:   1.0,
+                space:      "view"  // Other option is "world", for World-space
+            })
+        ]
+    }),
+
+    material: new XEO.PhongMaterial({
+        ambient:    [0.3, 0.3, 0.3],
+        diffuse:    [0.7, 0.7, 0.7],
+        specular:   [1. 1, 1],
+        shininess:  30
+    }),
+
+    geometry: new XEO.BoxGeometry()
 });
-
- // DirLight with color and intensity, pointing along
- // the negative diagonal within the View coordinate system
- var dirLight = new XEO.DirLight(scene, {
-    dir:         [-1, -1, -1],
-    color:       [0.5, 0.7, 0.5],
-    intensity:   1.0,
-    space:      "view"  // Other option is "world", for World-space
-});
-
- // Lights which contains our DirLight
- var lights = new XEO.Lights(scene, {
-    lights: [
-        dirLight
-    ]
-});
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- // Object which renders our Geometry, colored with
- // the Material and illuminated with the DirLight
- var object = new XEO.GameObject(scene, {
-    lights: lights,
-    material: material,
-    geometry: geometry
-});
- ````
-
- As with all components, we can observe and change properties on a DirLights, like so:
-
- ````Javascript
- // Attach a change listener to a property
- var handle = dirLight.on("color",
- function(value) {
-        // Property value has changed
-    });
-
- // Set the property, which fires our change listener
- dirLight.color = [0.0, 0.3, 0.3];
-
- // Detach the change listener
- dirLight.off(handle);
  ````
 
  @class DirLight

@@ -5,7 +5,7 @@
     /**
      Quick-and-dirty utility for debugging XEO {{#crossLink "Scene"}}Scenes{{/crossLink}}.
 
-     The utility has fluent builder API that lets you create and update simple objects to help you
+     The utility has fluent builder API that lets you create and update simple entities to help you
      debug or demo things on XEO.
 
      The utility does not clean up any components it created with your {{#crossLink "Scene"}}Scenes{{/crossLink}}.
@@ -135,7 +135,7 @@
         };
 
         this.show = function (id) {
-            var object = getScene().objects[id];
+            var object = getScene().entities[id];
             if (object) {
                 object.visibility.visible = true;
             }
@@ -143,7 +143,7 @@
         };
 
         this.hide = function (id) {
-            var object = getScene().objects[id];
+            var object = getScene().entities[id];
             if (object) {
                 object.visibility.visible = false;
             }
@@ -190,11 +190,11 @@
                 }
             }
 
-            var object = getScene().objects[_id];
+            var object = getScene().entities[_id];
 
             if (!object) {
 
-                new XEO.GameObject(getScene(), {
+                new XEO.Entity(getScene(), {
                     id: _id,
                     geometry: new XEO.Geometry({
                         primitive: "lines",
@@ -206,11 +206,11 @@
                         opacity: opacity,
                         lineWidth: lineWidth
                     }),
-                    modes: new XEO.Modes({  // This GameObject should not be pickable
+                    modes: new XEO.Modes({  // This Entity should not be pickable
                         pickable: false,
                         transparent: opacity < 1.0
                     }),
-                    visibility: new XEO.Visibility({  // This GameObject should not be pickable
+                    visibility: new XEO.Visibility({  // This Entity should not be pickable
                         visible: true
                     })
                     //,
@@ -238,11 +238,11 @@
 
             var _id = id || "__debugLabel";
 
-            var object = getScene().objects[_id];
+            var object = getScene().entities[_id];
 
             if (!object) {
 
-                object = new XEO.GameObject(getScene(), {
+                object = new XEO.Entity(getScene(), {
                     id: _id,
                     transform: new XEO.Translate({
                         xyz: pos[0]
@@ -250,14 +250,14 @@
                     geometry: new XEO.SphereGeometry({
                         radius: 0.1
                     }),
-                    modes: new XEO.Modes({  // This GameObject should not be pickable
+                    modes: new XEO.Modes({  // This Entity should not be pickable
                         pickable: false,
                         transparent: true
                     }),
                     material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
                         opacity: 0
                     }),
-                    visibility: new XEO.Visibility({  // This GameObject should not be pickable
+                    visibility: new XEO.Visibility({  // This Entity should not be pickable
                         visible: true
                     })
                 });
@@ -297,7 +297,7 @@
                 style["z-index"] = "1001";
                 body.appendChild(pointDiv);
 
-                // Synch visibility of HTML elements with the GameObject
+                // Synch visibility of HTML elements with the Entity
                 object.visibility.on("visible",
                     function (visible) {
                         boxDiv.style.visibility = visible ? "visible" : "hidden";
@@ -347,11 +347,11 @@
 
             var _id = id || "__debugSphere";
 
-            var object = getScene().objects[_id];
+            var object = getScene().entities[_id];
 
             if (!object) {
 
-                new XEO.GameObject(getScene(), {
+                new XEO.Entity(getScene(), {
                     id: _id,
                     transform: new XEO.Translate({
                         xyz: pos[0]
@@ -359,7 +359,7 @@
                     geometry: new XEO.SphereGeometry({
                         radius: radius
                     }),
-                    modes: new XEO.Modes({  // This GameObject should not be pickable
+                    modes: new XEO.Modes({  // This Entity should not be pickable
                         pickable: false,
                         transparent: opacity < 1.0,
                         backfaces: false
@@ -370,7 +370,7 @@
                         opacity: opacity,
                         specular: [1, 1, 1]
                     }),
-                    visibility: new XEO.Visibility({  // This GameObject should not be pickable
+                    visibility: new XEO.Visibility({  // This Entity should not be pickable
                         visible: true
                     })
                 });
@@ -395,11 +395,11 @@
 
             var _id = id || "__debugStylus";
 
-            var object = getScene().objects[_id];
+            var object = getScene().entities[_id];
 
             if (!object) {
 
-                new XEO.GameObject({
+                new XEO.Entity({
                     id: _id,
                     geometry: new XEO.CylinderGeometry({
                         radiusTop: radius,
@@ -425,7 +425,7 @@
                     modes: new XEO.Modes({
                         pickable: false
                     }),
-                    visibility: new XEO.Visibility({  // This GameObject should not be pickable
+                    visibility: new XEO.Visibility({  // This Entity should not be pickable
                         visible: true
                     })
                 });
@@ -452,11 +452,11 @@
 
             var _id = id || "__debugLabel3d";
 
-            var object = getScene().objects[_id];
+            var object = getScene().entities[_id];
 
             if (!object) {
 
-                object = new XEO.GameObject(getScene(), {
+                object = new XEO.Entity(getScene(), {
                     id: _id,
                     transform: new XEO.Translate({
                         xyz: pos[0]
@@ -464,7 +464,7 @@
                     geometry: new XEO.VectorTextGeometry({
                         text: text
                     }),
-                    modes: new XEO.Modes({  // This GameObject should not be pickable
+                    modes: new XEO.Modes({  // This Entity should not be pickable
                         pickable: false,
                         transparent: true
                     }),
@@ -476,7 +476,7 @@
                     billboard: new XEO.Billboard({
                         spherical: true
                     }),
-                    visbility: new XEO.Visibility({  // This GameObject should not be pickable
+                    visbility: new XEO.Visibility({  // This Entity should not be pickable
                         visible: true
                     })
                 });

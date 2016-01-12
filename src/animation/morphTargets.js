@@ -5,7 +5,7 @@
 
     /**
      A **MorphTargets** defines interpolation targets for morphing {{#crossLink "Geometry"}}Geometry{{/crossLink}}s on
-     attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+     attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
      <img src="../../../assets/images/MorphTargets.png"></img>
 

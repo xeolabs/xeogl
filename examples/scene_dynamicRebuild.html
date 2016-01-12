@@ -5,28 +5,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-    </style>
-
     <script src="../build/xeoengine.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>dynamic scene rebuild
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>dynamic scene rebuild
 </div>
 
 <script>
 
-    // Holds randomly-created GameObjects
-    var objects = [];
+    // Holds randomly-created Entities
+    var entities = [];
 
     // Move eye back a bit
     XEO.scene.camera.view.zoom(10);
@@ -43,22 +34,22 @@
 
     function buildScene() {
 
-        // Destroy objects
+        // Destroy entities
 
-        while (objects.length) {
-            objects.pop().destroy();
+        while (entities.length) {
+            entities.pop().destroy();
         }
 
-        // Recreate objects
+        // Recreate entities
 
-        var object;
+        var entity;
 
         for (var i = 0; i < 100; i++) {
 
-            // Each object uses defaults for everything
+            // Each entity uses defaults for everything
             // except for its modelling transform
 
-            object = new XEO.GameObject({
+            entity = new XEO.Entity({
                 transform: new XEO.Translate({
                     xyz: [
                         Math.random() * 10 - 5,
@@ -68,7 +59,7 @@
                 })
             });
 
-            objects.push(object);
+            entities.push(entity);
         }
     }
 

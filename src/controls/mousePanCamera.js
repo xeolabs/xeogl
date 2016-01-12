@@ -28,7 +28,7 @@
         camera: camera
     });
 
- var object = new XEO.GameObject(scene);
+ var entity = new XEO.Entity(scene);
  ````
 
  @class MousePanCamera

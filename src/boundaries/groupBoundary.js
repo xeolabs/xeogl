@@ -21,20 +21,20 @@
     group: new XEO.Group({
 
         components: [
-            new XEO.GameObject({
+            new XEO.Entity({
                 ..,,
             }),
-            new XEO.GameObject({
+            new XEO.Entity({
                 ..,,
             }),
-            new XEO.GameObject({
+            new XEO.Entity({
                 //..
             })
         ]
     })
 });
 
- var showBoundary = new XEO.GameObject({
+ var showBoundary = new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
             boundary: groupBoundary.worldBoundary
         }),

@@ -1,5 +1,5 @@
 /**
- * Components for cross-section views of GameObjects.
+ * Components for cross-section views of Entities.
  *
  * @module XEO
  * @submodule clipping

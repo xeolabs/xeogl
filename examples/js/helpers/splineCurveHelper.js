@@ -2,7 +2,7 @@
  Shows the shape and control points of {{#crossLink "SplineCurve"}}{{/crossLink}}
 
  @class SplineCurveHelper
- @module objects
+ @module entities
  @extends Component
  */
 XEO.SplineCurveHelper = XEO.Component.extend({
@@ -15,7 +15,7 @@ XEO.SplineCurveHelper = XEO.Component.extend({
 
         this._divisions = 100;
 
-        this._line = new XEO.GameObject(this.scene, {
+        this._line = new XEO.Entity(this.scene, {
             geometry: new XEO.Geometry(this.scene, {
                 primitive: "lines",
                 positions: [0, 0, 0],

@@ -1,5 +1,5 @@
 /**
- A **Geometry** defines the geometric shape of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Geometry** defines the geometric shape of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Contents
 
@@ -7,7 +7,7 @@
  <li><a href="#overview">Overview</a></li>
  <li><a href="#defaultShape">Default box shape</a></li>
  <li><a href="#sceneDefault">Scene's default Geometry</a></li>
- <li><a href="#sharing">Sharing among GameObjects</a></li>
+ <li><a href="#sharing">Sharing among Entities</a></li>
  <li><a href="#triangles">Defining a triangle mesh</a></li>
  <li><a href="#editing">Editing Geometry</a></li>
  <li><a href="#backfaces">Toggling backfaces on or off</li>
@@ -26,7 +26,7 @@
  <li>When no shape is specified (ie. no primitive type, vertex arrays and indices), a Geometry will default to a 2x2x2 box
  made of triangles, with UV coordinates, vertex colors and normals. This default is used for most of the examples in this documentation.</li>
  <li>A {{#crossLink "Scene"}}{{/crossLink}} provides such a box as its default {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
- for {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to fall back on, when they are not explicitly attached to a Geometry.</li>
+ for {{#crossLink "Entity"}}Entities{{/crossLink}} to fall back on, when they are not explicitly attached to a Geometry.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Geometries create within xeoEngine's shaders.</li>
  </ul>
 
@@ -39,48 +39,48 @@
  ```` javascript
  var geometry = new XEO.Geometry(scene); // 2x2x2 box
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
     geometry: geometry
 });
  ````
 
  ## <a name="sceneDefault">Scene's default Geometry</a>
 
- If you create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene{{/crossLink}}'s
+ If you create an {{#crossLink "Entity"}}Entity{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene{{/crossLink}}'s
  default {{#crossLink "Scene/geometry:property"}}{{/crossLink}}, which is also a 2x2x2 box:
 
  ```` javascript
  var scene = new XEO.Scene();
 
- var object1 = new XEO.GameObject(scene);
+ var entity1 = new XEO.Entity(scene);
  ````
 
- ## <a name="sharing">Sharing among GameObjects</a>
+ ## <a name="sharing">Sharing among Entities</a>
 
- xeoEngine components can be shared among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. For components like
+ xeoEngine components can be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}}. For components like
  Geometry and {{#crossLink "Texture"}}{{/crossLink}}, this can provide significant memory
  and performance savings. To render the example below, xeoEngine will issue two draw WebGL calls, one for
- each {{#crossLink "GameObject"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.
+ each {{#crossLink "Entity"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.
 
  ```` javascript
  var scene = new XEO.Scene();
 
  var geometry = new XEO.Geometry(scene); // 2x2x2 box by default
 
- // Create two GameObjects which share our Geometry
+ // Create two Entities which share our Geometry
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
     geometry: geometry
 });
 
- // Offset the second Object slightly on the World-space
+ // Offset the second Entity slightly on the World-space
  // X-axis using a Translate modelling transform
 
  var translate = new XEO.Translate(scene, {
     xyz: [5, 0, 0
 });
 
- var object2 = new XEO.GameObject(scene, {
+ var entity2 = new XEO.Entity(scene, {
     geometry: geometry,
     transform: translate
 });
@@ -88,7 +88,7 @@
 
  ## <a name="triangles">Defining a triangle mesh</a>
 
- Finally, we'll create a {{#crossLink "GameObject"}}GameObject{{/crossLink}} with a Geometry that we've **explicitly**
+ Finally, we'll create an {{#crossLink "Entity"}}Entity{{/crossLink}} with a Geometry that we've **explicitly**
  configured as a 2x2x2 box:
 
  ```` javascript
@@ -182,7 +182,7 @@
         ]
 });
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     geometry: geometry
 });
  ````
@@ -208,13 +208,13 @@
 
  ## <a name="backfaces">Toggling backfaces on or off</a>
 
- Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "GameObject"}}{{/crossLink}}, so that
+ Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "Entity"}}{{/crossLink}}, so that
  we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} backfaces:
 
  ```` javascript
  var modes = new XEO.Modes(scene);
 
- object.modes = modes;
+ entity.modes = modes;
 
  // Hide backfaces
 
@@ -235,7 +235,7 @@
  // Set the winding order for frontfaces to clockwise
  // Options are "ccw" for counter-clockwise or "cw" for clockwise
 
- object.frontface = "cw";
+ entity.frontface = "cw";
  ````
 
 

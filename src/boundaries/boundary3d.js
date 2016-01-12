@@ -3,67 +3,78 @@
 
  ## Overview
 
- A Boundary3D provides its spatial info in these properties:
+ As shown in the diagram below, the following xeoEngine components have Boundary3Ds:
+ * A {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}} provides a **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
+ * A {{#crossLink "Geometry/localBoundary:property"}}Geometry's localBoundary{{/crossLink}} provides a **Local**-space boundary enclosing its {{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}
+ * An {{#crossLink "Entity/localBoundary:property"}}Entity's localBoundary{{/crossLink}} (also) provides the **Local**-space boundary of its {{#crossLink "Geometry"}}{{/crossLink}}
+ * An {{#crossLink "Entity/worldBoundary:property"}}Entity's worldBoundary {{/crossLink}} provides a **World**-space boundary that encloses
+ its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
+ their transformation by the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}}.
+ * An {{#crossLink "Entity/viewBoundary:property"}}Entity's viewBoundary{{/crossLink}} provides a **View**-space boundary that encloses
+ its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
+ their transformation by both the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}} **and** {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}.
+ * A {{#crossLink "GroupBoundary/worldBoundary:property"}}GroupBoundary's worldBoundary{{/crossLink}} provides a **World**-space boundary that encloses all the {{#crossLink "Entity"}}Entities{{/crossLink}} contained within its {{#crossLink "Group"}}Group{{/crossLink}}.
+
+ Also shown in the diagram is an {{#crossLink "Entity/canvasBoundary:property"}}Entity's canvasBoundary{{/crossLink}}, which is a {{#crossLink "Boundary2D"}}{{/crossLink}} that provides a **Canvas**-space boundary that encloses the {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}, after
+ their transformation by the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}}, {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}
+ and {{#crossLink "Camera/project:property"}}Projection transform{{/crossLink}}.
+
+ <br><br>
+ <img src="../../../assets/images/Boundary3D.png"></img>
+
+ ## OBB and AABB Representations
+
+ Each Boundary3D instance provides two boundary representations, in these properties:
 
  <ul>
- <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - object-aligned bounding box (OBB)</li>
- <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - axis-aligned bounding box (AABB)</li>
- <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - center coordinate </li>
+ <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an object-aligned bounding box (OBB), as an array of eight corner vertex positions</li>
+ <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions</li>
  </ul>
 
- The following components have Boundary3Ds:
+ The screenshot below shows an Entity (the green nut) with wireframe boxes indicating its World-space OOBB (yellow). World-space AABB (red) and
+ Canvas-space AABB (green).
 
- <ul>
- <li>A {{#crossLink "Geometry"}}{{/crossLink}} provides its Local-space boundary via
- property {{#crossLink "Geometry/localBoundary:property"}}{{/crossLink}}</li>
- <li>A {{#crossLink "GameObject"}}{{/crossLink}} provides its World and View-space boundaries via
- properties {{#crossLink "GameObject/worldBoundary:property"}}{{/crossLink}}
- and {{#crossLink "GameObject/viewBoundary:property"}}{{/crossLink}}</li>
- </ul>
-
- <img src="../../../assets/images/Boundary.png"></img>
+ <br><br>
+ <img src="../../../assets/images/boundaries.png"></img>
 
  ## Example
 
- A {{#crossLink "GameObject"}}{{/crossLink}} provides its World-space boundary as a Boundary3D that encloses
- its {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
- their transformation by the GameObject's {{#crossLink "GameObject/transform:property"}}Modelling transform{{/crossLink}}.
-
- In this example we get the boundary and subscribe to updates on it, then animate the modelling transform,
- which gives us a running update of the moving boundary extents via our update handler.
+ In the example below we'll get the World-space Boundary3D of an {{#crossLink "Entity"}}{{/crossLink}}, subscribe to updates on the Boundary3D,
+ then animate the {{#crossLink "Entity"}}Entity's{{/crossLink}} modelling transform, which gives our callback a running update
+ of the moving Boundary3D extents.
 
  ```` javascript
 
- // Geometry
- var geometry = new XEO.Geometry();
+ // Geometry and modelling transform components
 
- // Modelling transform
+ var geometry = new XEO.BoxGeometry();
+
  var translate = new XEO.Translate({
     xyz: [-5, 0, 0]
  });
 
- // Game object that applies the modelling transform to the Geometry
- var object = new XEO.GameObject({
+ // Create an Entity that has the Geometry and the transform
+
+ var entity = new XEO.Entity({
        geometry: myGeometry,
        transform: translate
   });
 
- var worldBoundary = object.worldBoundary;
+ // Get the Entity's World-space Boundary3D and query its
+ // various spatial properties
 
- // World-space OBB
- var obb = worldBoundary.obb;
+ var worldBoundary = entity.worldBoundary;
 
- // World-space AABB
- var aabb = worldBoundary.aabb;
-
- // World-space center
- var center = worldBoundary.center;
+ var obb = worldBoundary.obb; // Object-aligned boundary, an array of eight corner vertex positions
+ var aabb = worldBoundary.aabb; // an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions
+ var center = worldBoundary.center; // Center point
 
  // Subscribe to updates to the Boundary3D
- worldBoundary.on("updated",
- function() {
 
-        // Get the updated properties again
+ worldBoundary.on("updated",
+     function() {
+
+        // Query the updated Boundary3D properties
 
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
@@ -74,7 +85,7 @@
 
  // Animate the modelling transform;
  // on each tick, this will update the Boundary3D and fire our
- // handler, enabling us to track the changing boundary.
+ // callback, which enables us to track the changing boundary.
 
  var x = 0;
 
@@ -88,10 +99,10 @@
  @module XEO
  @submodule boundaries
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary3D within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary3D.
  @param [cfg.obb] {Array of Number} Optional initial 3D object-aligned bounding volume (OBB).
  @param [cfg.aabb] {Array of Number} Optional initial 3D axis-aligned bounding volume (AABB).
  @param [cfg.center] {Array of Number} Optional initial 3D center

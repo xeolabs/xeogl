@@ -11,10 +11,10 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
     <br><br>
-    render-to-texture using <a href="../docs/classes/ColorTarget.html" target="_other">ColorTarget</a>
-    and <a href="../docs/classes/Texture.html" target="_other">Texture</a> components
+    render-to-texture using <a href="../docs/classes/ColorTarget.html" target="_docs">ColorTarget</a>
+    and <a href="../docs/classes/Texture.html" target="_docs">Texture</a> components
 </div>
 
 <script>
@@ -24,7 +24,7 @@
     window._image.onload=function() {
         window._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(window._image)
 
-        var textureGenerator = new XEO.GameObject({
+        var textureGenerator = new XEO.Entity({
 
             stage: new XEO.Stage({
                 priority: 0
@@ -80,7 +80,7 @@
 
         // We'll apply the color target as a texture on this plane
 
-        var box = new XEO.GameObject({
+        var box = new XEO.Entity({
 
             stage: new XEO.Stage({
                 priority: 1

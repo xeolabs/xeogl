@@ -5,7 +5,7 @@
 
  <ul>
  <li>Fresnels are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Fresnels create within xeoEngine's shaders.</li>
  </ul>
 
@@ -19,7 +19,7 @@
  <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Fresnel"}}{{/crossLink}}s to diffuse and specular shading,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ```` javascript
@@ -66,7 +66,7 @@
  // Geometry without parameters will default to a 2x2x2 box.
  var geometry = new XEO.Geometry(scene);
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry

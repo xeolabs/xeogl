@@ -11,9 +11,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>multiple <a
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>multiple <a
         href="../docs/classes/Scene.html"
-        target="_other">Scenes</a> in a page
+        target="_docs">Scenes</a> in a page
 </div>
 
 <canvas id="myCanvas1" width="500px" height="500px"></canvas>
@@ -30,7 +30,7 @@
         canvas: "myCanvas1"
     });
 
-    new XEO.GameObject(scene1, {
+    new XEO.Entity(scene1, {
         geometry: new XEO.SphereGeometry(scene1),
         material: new XEO.PhongMaterial(scene1, {
             diffuseMap: new XEO.Texture(scene1, {
@@ -55,7 +55,7 @@
         canvas: "myCanvas2"
     });
 
-    new XEO.GameObject(scene2, {
+    new XEO.Entity(scene2, {
         geometry: new XEO.BoxGeometry(scene2),
         material: new XEO.PhongMaterial(scene2, {
             diffuseMap: new XEO.Texture(scene2, {
@@ -80,7 +80,7 @@
         canvas: "myCanvas3"
     });
 
-    new XEO.GameObject(scene3, {
+    new XEO.Entity(scene3, {
         geometry: new XEO.TorusGeometry(scene3),
         material: new XEO.PhongMaterial(scene3, {
             diffuseMap: new XEO.Texture(scene3, {

@@ -2,14 +2,14 @@
 
 /**
  A **Clip** is an arbitrarily-aligned World-space clipping plane, which may be used to create
- cross-sectional views of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ cross-sectional views of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
 
  <li>These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
+ {{#crossLink "Entity"}}Entities{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
  for more info.</li>
 
  <li>A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
@@ -26,9 +26,9 @@
  <li>You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
  switch which side it discards fragments from.</li>
 
- <li>Clipping may also be enabled or disabled for specific {{#crossLink "GameObject"}}GameObjects{{/crossLink}}
+ <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
 
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeoEngine's shaders.</li>
 
@@ -40,13 +40,13 @@
 
  <ul>
 
- <li>In this example we have a {{#crossLink "GameObject"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
+ <li>In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
  that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.</li>
 
  <li>The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
  positive diagonal, while the second is on the negative diagonal.</li>
 
- <li>The {{#crossLink "GameObject"}}GameObject's{{/crossLink}}
+ <li>The {{#crossLink "Entity"}}Entity's{{/crossLink}}
  {{#crossLink "Geometry"}}{{/crossLink}} is the default 2x2x2 box, and the planes will clip off two of the box's corners.</li>
 
  </ul>
@@ -79,8 +79,8 @@
  // Geometry defaults to a 2x2x2 box
  var geometry = new XEO.Geometry(scene);
 
- // Create an Object, which is a box sliced by our clip planes
- var object = new XEO.GameObject(scene, {
+ // Create an Entity, which is a box sliced by our clip planes
+ var entity = new XEO.Entity(scene, {
         clips: clips,
         geometry: geometry
      });
@@ -88,7 +88,7 @@
 
  ### Toggling clipping on and off
 
- Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to the {{#crossLink "GameObject"}}{{/crossLink}}, so that we can
+ Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to the {{#crossLink "Entity"}}{{/crossLink}}, so that we can
  enable or disable clipping of it:
 
  ```` javascript
@@ -97,10 +97,10 @@
     clipping: true
  });
 
- // Attach our Object to the Modes
- object.modes = modes;
+ // Attach our Entity to the Modes
+ entity.modes = modes;
 
- // Disable clipping for the Object
+ // Disable clipping for the Entity
  modes.clipping = false;
  ````
 

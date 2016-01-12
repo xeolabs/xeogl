@@ -22,13 +22,13 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    a <a href="../docs/classes/GroupBoundary.html" target="_other">GroupBoundary</a> containing
-    1000 animated <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a>
+    a <a href="../docs/classes/GroupBoundary.html" target="_docs">GroupBoundary</a> containing
+    1000 animated <a href="../docs/classes/Entity.html" target="_docs">Entities</a>
     <br>
     <br>
     controls:
     <ul>
-        <li>mouse drag, arrow keys - orbit</li><li>Z,X  - pan forwards and backwards</li><li>A,D  - pan left and right</li><li>W,S  - pan up and down</li><li>1,2,3,4,5,6 - select axis-aligned view</li><li>click on object to fly to it</li><li>shift-click object to fly to its boundary</li><li>mouse wheel or '+' and '-' keys to zoom in and out</li>
+        <li>mouse drag, arrow keys - orbit</li><li>Z,X  - pan forwards and backwards</li><li>A,D  - pan left and right</li><li>W,S  - pan up and down</li><li>1,2,3,4,5,6 - select axis-aligned view</li><li>click on entity to fly to it</li><li>shift-click entity to fly to its boundary</li><li>mouse wheel or '+' and '-' keys to zoom in and out</li>
     </ul>
 </div>
 
@@ -39,9 +39,9 @@
         group: new XEO.Group()
     });
 
-    // GameObject which shows the boundary of the GroupBoundary
+    // Entity which shows the boundary of the GroupBoundary
     // as a wireframe box
-    var groupBoundaryIndicator = new XEO.GameObject({
+    var groupBoundaryIndicator = new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
             boundary: groupBoundary.worldBoundary
         }),
@@ -52,9 +52,9 @@
         })
     });
 
-    // Create 1000 moving GameObjects within the GroupBoundary
+    // Create 1000 moving Entities within the GroupBoundary
 
-    // Geometry shared by our GameObjects
+    // Geometry shared by our Entities
     var sphereGeometry = new XEO.SphereGeometry({
         radius: 5
     });
@@ -72,9 +72,9 @@
 
         (function () {
 
-            // Create a randomly-positioned sphere GameObject
+            // Create a randomly-positioned sphere Entity
 
-            var object = new XEO.GameObject({
+            var entity = new XEO.Entity({
                 geometry: sphereGeometry,
                 material: material,
                 transform: new XEO.Translate({
@@ -86,7 +86,7 @@
                 })
             });
 
-            // Animate the position of the GameObject back and forth
+            // Animate the position of the Entity back and forth
             // along a random trajectory vector
 
             var count = 0;
@@ -97,23 +97,23 @@
                 Math.random() * 2.0 - 1.0
             ];
 
-            object.scene.on("tick",
+            entity.scene.on("tick",
                     function () {
 
                         var dir = ((count++ % 300) > 150) ? 1.0 : -1.0;
 
-                        var xyz = object.transform.xyz;
+                        var xyz = entity.transform.xyz;
 
-                        object.transform.xyz = [
+                        entity.transform.xyz = [
                             xyz[0] + trajectory[0] * dir,
                             xyz[1] + trajectory[1] * dir,
                             xyz[2] + trajectory[2] * dir
                         ];
                     });
 
-            // Add the GameObject to the GroupBoundary
+            // Add the Entity to the GroupBoundary
 
-            groupBoundary.group.add(object);
+            groupBoundary.group.add(entity);
 
         })();
     }

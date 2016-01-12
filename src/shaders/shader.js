@@ -1,15 +1,15 @@
 /**
- A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
  <li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
  <li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
- components on the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ components on the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
- the same Shaders among multiple {{#crossLink "GameObject"}}GameObjects{{/crossLink}} while setting the Shaders' uniforms
- differently for each {{#crossLink "GameObject"}}GameObject{{/crossLink}}.</li>
+ the same Shaders among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} while setting the Shaders' uniforms
+ differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.</li>
  <li>Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
  and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>
  </ul>
@@ -23,7 +23,7 @@
 
  <img src="../../assets/images/shaderExample1.png"></img>
 
- In our scene definition, we have an  {{#crossLink "GameObject"}}GameObject{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
+ In our scene definition, we have an  {{#crossLink "Entity"}}Entity{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
  screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
  Finally, we animate the rippling by periodically updating the Shader's "time" uniform.
 
@@ -87,7 +87,7 @@
        indices:[ 0, 1, 2, 0, 2, 3 ]
   });
 
- var object = new XEO.GameObject(scene, {
+ var object = new XEO.Entity(scene, {
        shader: shader,
        geometry: quad
   });
@@ -292,7 +292,7 @@
          * Sets one or more params for this Shader.
          *
          * These will be individually overridden by any {{#crossLink "ShaderParams/setParams:method"}}params subsequently specified{{/crossLink}} on
-         * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+         * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
          * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
          *

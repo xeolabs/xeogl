@@ -20,23 +20,23 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br> <br><br>rotating a <a href="../docs/classes/Camera.html"
-                                                                      target="_other">Camera</a> on each <a
-        href="../docs/classes/Scene.html" target="_other">Scene</a> "tick" event
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br> <br><br>rotating a <a href="../docs/classes/Camera.html"
+                                                                      target="_docs">Camera</a> on each <a
+        href="../docs/classes/Scene.html" target="_docs">Scene</a> "tick" event
     <pre id="infoTxt" style="text-align: left;"></pre>
 </div>
 
 <script>
 
-    var object = new XEO.GameObject();
+    var entity = new XEO.Entity();
 
-    object.camera.view.eye = [0,0,-5];
+    entity.camera.view.eye = [0,0,-5];
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function (params) {
 
-                object.camera.view.rotateEyeY(0.5);
-                object.camera.view.rotateEyeX(0.3);
+                entity.camera.view.rotateEyeY(0.5);
+                entity.camera.view.rotateEyeX(0.3);
 
                 log("tick", params);;
             });

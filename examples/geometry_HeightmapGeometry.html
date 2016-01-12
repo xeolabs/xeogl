@@ -25,9 +25,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
     <br><br><a href="js/geometry/heightmapGeometry.js"
-               target="_other">XEO.HeightmapGeometry</a>
+               target="_docs">XEO.HeightmapGeometry</a>
 </div>
 <div id="dat-gui-container">
 </div>
@@ -54,7 +54,7 @@
         src: "textures/diffuse/uvGrid2.jpg"
     });
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         geometry: heightmap,
         material: new XEO.PhongMaterial({
             diffuseMap: diffuseMap,
@@ -65,7 +65,7 @@
 
     // Position camera
 
-    var view = object.scene.camera.view;
+    var view = entity.scene.camera.view;
 
     view.zoom(2);
     view.rotateEyeX(-60);

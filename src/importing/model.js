@@ -5,7 +5,7 @@
     var glTFLoader = XEO.GLTFLoader;
 
     /**
-     A **Model** component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
+     A **Model** component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent {{#crossLink "Scene"}}{{/crossLink}}.
 
      <ul><li>A Model component begins loading content into its {{#crossLink "Scene"}}{{/crossLink}} as soon as it's {{#crossLink "Model/src:property"}}{{/crossLink}}
      property is set to a file path.</li>
@@ -30,12 +30,12 @@
      it created while loading the glTF file.
 
      Let's iterate over the {{#crossLink "Group"}}{{/crossLink}} and log the ID of each
-     {{#crossLink "GameObject"}}{{/crossLink}} we find in there:
+     {{#crossLink "Entity"}}{{/crossLink}} we find in there:
 
      ````javascript
      myModel.group.iterate(function(c) {
-         if (c.type === "XEO.GameObject") {
-             this.log("GameObject found: " + c.id);
+         if (c.type === "XEO.Entity") {
+             this.log("Entity found: " + c.id);
          }
      });
      ````

@@ -7,7 +7,7 @@
 
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
- {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.</li>
+ {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>
  </ul>
 
@@ -16,7 +16,7 @@
  ## Example
 
  In this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.
- Then we attach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to a {{#crossLink "GameObject"}}{{/crossLink}}.
+ Then we attach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to an {{#crossLink "Entity"}}{{/crossLink}}.
 
  ````Javascript
  var scene = new XEO.Scene();
@@ -40,7 +40,7 @@
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
         camera: camera,
         geometry: geometry
     });
@@ -92,6 +92,7 @@
             this.eye = cfg.eye;
             this.look = cfg.look;
             this.up = cfg.up;
+            this.gimbalLockY = cfg.gimbalLockY;
         },
 
         /**
@@ -104,12 +105,17 @@
             // Get 'look' -> 'eye' vector
             var eye2 = XEO.math.subVec3(this._state.eye, this._state.look, []);
 
-            // Rotate 'eye' vector about 'up' vector
-            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._state.up);
+            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? [0, 1, 0] : this._state.up);
             eye2 = XEO.math.transformPoint3(mat, eye2, []);
 
             // Set eye position as 'look' plus 'eye' vector
             this.eye = XEO.math.addVec3(eye2, this._state.look, []);
+
+            if (this._gimbalLockY) {
+
+                // Rotate 'up' vector about orthogonal vector
+                this.up = XEO.math.transformPoint3(mat, this._state.up, []);
+            }
         },
 
         /**
@@ -248,6 +254,36 @@
         },
 
         _props: {
+
+            /**
+             * Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
+             *
+             * Fires an {{#crossLink "Lookat/gimbalLockY:event"}}{{/crossLink}} event on change.
+             *
+             * @property gimbalLockY
+             * @default false
+             * @type Boolean
+             */
+            gimbalLockY: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    this._gimbalLockY = value;
+                    /**
+                     * Fired whenever this Lookat's  {{#crossLink "Lookat/gimbalLockY:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event gimbalLockY
+                     * @param value The property's new value
+                     */
+                    this.fire("gimbalLockY", this._state.gimbalLockY);
+                },
+
+                get: function () {
+                    return this._gimbalLockY;
+                }
+            },
 
             /**
              * Position of this Lookat's eye.

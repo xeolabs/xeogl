@@ -9,7 +9,7 @@
  <li>rotation - {{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} and {{#crossLink "MouseRotateCamera"}}{{/crossLink}}</li>
  <li>zooming - {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} and {{#crossLink "MouseZoomCamera"}}{{/crossLink}}</li>
  <li>switching preset views - {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}}</li>
- <li>picking - {{#crossLink "MousePickObject"}}{{/crossLink}}</li>
+ <li>picking - {{#crossLink "MousePickEntity"}}{{/crossLink}}</li>
  <li>camera flight animation - {{#crossLink "CameraFlight"}}{{/crossLink}}</li>
  </ul>
 
@@ -46,8 +46,8 @@
  // Deactivate switching between preset views
  cameraControl.axisCamera.active = false;
 
- // Create a GameObject
- var object = new XEO.GameObject(scene);
+ // Create a Entity
+ var entity = new XEO.Entity(scene);
  ````
 
  @class CameraControl
@@ -98,8 +98,8 @@
 
             var scene = this.scene;
 
-            // Shows a bounding box around each GameObject we fly to
-            this._boundaryObject = new XEO.GameObject(scene, {
+            // Shows a bounding box around each Entity we fly to
+            this._boundaryEntity = new XEO.Entity(scene, {
                 geometry: new XEO.BoundaryGeometry(scene),
                 material: new XEO.PhongMaterial(scene, {
                     diffuse: [0, 0, 0],
@@ -197,19 +197,19 @@
             });
 
             /**
-             * The {{#crossLink "MousePickObject"}}{{/crossLink}} within this CameraControl.
+             * The {{#crossLink "MousePickEntity"}}{{/crossLink}} within this CameraControl.
              *
-             * @property mousePickObject
+             * @property mousePickEntity
              * @final
-             * @type MousePickObject
+             * @type MousePickEntity
              */
-            this.mousePickObject = new XEO.MousePickObject(scene, {
+            this.mousePickEntity = new XEO.MousePickEntity(scene, {
                 rayPick: true
             });
 
-            this.mousePickObject.on("pick", this._objectPicked, this);
+            this.mousePickEntity.on("pick", this._entityPicked, this);
 
-            this.mousePickObject.on("nopick",
+            this.mousePickEntity.on("nopick",
                 function (e) {
                     //alert("Nothing picked");
                 });
@@ -233,9 +233,9 @@
             this.active = cfg.active !== false;
         },
 
-        _objectPicked: function (e) {
+        _entityPicked: function (e) {
 
-            // Fly camera to each picked object
+            // Fly camera to each picked entity
             // Don't change distance between look and eye
 
             var view = this.cameraFlight.camera.view;
@@ -245,8 +245,8 @@
             if (e.worldPos) {
                 pos = e.worldPos
 
-            } else if (e.object) {
-                pos = e.object.worldBoundary.center
+            } else if (e.entity) {
+                pos = e.entity.worldBoundary.center
             }
 
             if (pos) {
@@ -255,24 +255,24 @@
 
                 var input = this.scene.input;
 
-              //  if (input.keyDown[input.KEY_SHIFT] && e.object) {
+              //  if (input.keyDown[input.KEY_SHIFT] && e.entity) {
 
-                    // var aabb = e.object.worldBoundary.aabb;
+                    // var aabb = e.entity.worldBoundary.aabb;
 
-                    this._boundaryObject.geometry.obb = e.object.worldBoundary.obb;
-                    this._boundaryObject.visibility.visible = true;
+                    this._boundaryEntity.geometry.obb = e.entity.worldBoundary.obb;
+                    this._boundaryEntity.visibility.visible = true;
 
-                    var center = e.object.worldBoundary.center;
+                    var center = e.entity.worldBoundary.center;
 
                     this.cameraFlight.flyTo({
-                            aabb: e.object.worldBoundary.aabb,
+                            aabb: e.entity.worldBoundary.aabb,
                             oXffset: [
                                 pos[0] - center[0],
                                 pos[1] - center[1],
                                 pos[2] - center[2]
                             ]
                         },
-                        this._hideObjectBoundary, this);
+                        this._hideEntityBoundary, this);
 
                 //} else {
                 //
@@ -284,13 +284,13 @@
                 //                pos[2] + diff[2]
                 //            ]
                 //        },
-                //        this._hideObjectBoundary, this);
+                //        this._hideEntityBoundary, this);
                 //}
             }
         },
 
-        _hideObjectBoundary: function () {
-            this._boundaryObject.visibility.visible = false;
+        _hideEntityBoundary: function () {
+            this._boundaryEntity.visibility.visible = false;
         },
 
         _props: {
@@ -406,7 +406,7 @@
                     this.mousePan.active = value;
                     this.keyboardZoom.active = value;
                     this.mouseZoom.active = value;
-                    this.mousePickObject.active = value;
+                    this.mousePickEntity.active = value;
                     this.cameraFlight.active = value;
 
                     /**
@@ -444,7 +444,7 @@
             this.active = false;
 
             // FIXME: Does not recursively destroy child components
-            this._boundaryObject.destroy();
+            this._boundaryEntity.destroy();
 
             this.keyboardAxis.destroy();
             this.keyboardRotate.destroy();
@@ -453,7 +453,7 @@
             this.mousePan.destroy();
             this.keyboardZoom.destroy();
             this.mouseZoom.destroy();
-            this.mousePickObject.destroy();
+            this.mousePickEntity.destroy();
             this.cameraFlight.destroy();
         }
     });

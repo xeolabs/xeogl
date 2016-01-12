@@ -1,10 +1,12 @@
 /**
 
- A **Billboard** causes associated {{#crossLink "GameObject"}}GameObjects{{/crossLink}} to be always aligned towards the viewpoint.
+ A **Billboard** causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always aligned towards the viewpoint.
 
  ## Overview
 
- TODO
+ <ul>
+ <li>A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}{{/crossLink}}</li>
+ </ul>
 
  <img src="../../../assets/images/Billboard.png"></img>
 

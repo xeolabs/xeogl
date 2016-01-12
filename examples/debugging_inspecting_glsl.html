@@ -23,7 +23,7 @@
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
 
-    <p>demonstrates how to inspect the GLSL shader for a GameObject</p>
+    <p>demonstrates how to inspect the GLSL shader for a Entity</p>
     <pre id="infoTxt" style="text-align: left;"></pre>
 </div>
 
@@ -39,13 +39,13 @@
         document.getElementById("infoTxt").innerText = buf.join("\n");
     }
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         id: "myObject"
     });
 
-    object.scene.once("tick2",
+    entity.scene.once("tick2",
             function () {
-                log(object.glsl);
+                log(entity.glsl);
             });
 
 </script>

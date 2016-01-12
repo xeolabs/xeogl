@@ -15,9 +15,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>Implementing a custom skybox using the <a
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>Implementing a custom skybox using the <a
         href="../docs/classes/Stationary.html"
-        target="_other">Stationary</a> component
+        target="_docs">Stationary</a> component
 </div>
 
 <script>
@@ -25,7 +25,7 @@
     // A bunch of random cubes
 
     for (var i = 0; i < 20; i++) {
-        new XEO.GameObject({
+        new XEO.Entity({
             transform: new XEO.Translate({
                 xyz: [
                     Math.random() * 15 - 7,
@@ -45,7 +45,7 @@
 
     // Our custom skybox
 
-    var skybox = new XEO.GameObject({
+    var skybox = new XEO.Entity({
         geometry: new XEO.Geometry({ // Box-shaped geometry
             primitive: "triangles",
             positions: [
@@ -128,7 +128,7 @@
         })
     });
 
-    var moon = new XEO.GameObject({
+    var moon = new XEO.Entity({
         geometry: new XEO.SphereGeometry({
             radius: 25
         }),

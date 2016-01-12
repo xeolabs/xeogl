@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    Visualizing an <a href="../docs/classes/Entity.html" target="_docs">Entity's</a> Canvas-space <a
+        href="../docs/classes/Boundary2D.html" target="_docs">boundary</a> as we animate the Entity's modeling transforms
+
+    <pre id="infoTxt" style="text-align: left; color:#77FF77; border:0;"></pre>
+</div>
+
+<script>
+
+    new XEO.CameraControl();
+
+    // ------------------------------------------------------------------
+    // Create a tumbling red torus
+    // ------------------------------------------------------------------
+
+    // Save references to a couple of rotations within
+    // its transform hierarchy
+
+    var rotate0;
+    var rotate1;
+
+    var torus = new XEO.Entity({
+
+        geometry: new XEO.TorusGeometry({
+            radius: 1.0,
+            tube: 0.3
+        }),
+
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 0.3, 0.3]
+        }),
+
+        transform: new XEO.Scale({
+            xyz: [0.5, 0.5, 0.5],
+
+            parent: rotate1 = new XEO.Rotate({
+                xyz: [1, 1, 0],
+                angle: 45,
+
+                parent: new XEO.Rotate({
+                    xyz: [1, 0, 1],
+                    angle: 25,
+
+                    parent: new XEO.Translate({
+                        xyz: [5, 0, 0],
+
+                        parent: rotate0 = new XEO.Rotate({
+                            xyz: [0, 0, 1],
+                            angle: 40
+                        })
+                    })
+                })
+            })
+        })
+    });
+
+
+    // ------------------------------------------------------------------
+    // Animate the torus' tumbling rotations
+    // ------------------------------------------------------------------
+
+    var a = 0;
+
+    rotate1.scene.on("tick",
+            function () {
+                rotate0.angle = a * 0.1;
+                rotate1.angle = a += 4;
+            });
+
+
+    // ------------------------------------------------------------------
+    // Indicate the extents of the torus' Canvas-space axis-aligned
+    // bounding box with a DIV    
+    // ------------------------------------------------------------------
+
+    var body = document.getElementsByTagName("body")[0];
+    var div = document.createElement('div');
+
+    var style = div.style;
+    style.position = "absolute";
+    style.padding = "0";
+    style.margin = "0";
+    style.border = "3px solid #99FF99";
+    style["z-index"] = "1000";
+
+    body.appendChild(div);
+
+    torus.canvasBoundary.on("updated",
+            function () {
+
+                var aabb = torus.canvasBoundary.aabb;
+
+                div.style.left = aabb.min[0] + "px";
+                div.style.top = aabb.min[1] + "px";
+                div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
+                div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
+
+                log("torus.canvasBoundary.aabb", torus.canvasBoundary.aabb);
+            });
+
+
+    function log(event, params) {
+        var str = event + " = " + JSON.stringify(params, "\n", 4);
+        document.getElementById("infoTxt").innerText = str;
+    }
+
+</script>
+</body>
+</html>

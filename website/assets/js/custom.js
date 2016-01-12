@@ -93,7 +93,7 @@ function addFeatures() {
 
 function parse(markdown) {
     //return markdown.replace(/\[\[([^|]*?)\|(.*?)\]\]/g, '<a href="javascript:Window.__openLink(\'$2\')">$1</a>');
-    return markdown.replace(/\[\[([^|]*?)\|(.*?)\]\]/g, '<a href="../examples/index.html#$2" target="_docs">$1</a>');
+    return markdown.replace(/\[\[([^|]*?)\|(.*?)\]\]/g, '<a href="../examples/index.html#$2" target="_examples">$1</a>');
 }
 
 Window.__openLink = function (ref) {

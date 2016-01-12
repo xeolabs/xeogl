@@ -20,8 +20,8 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
-    <a href="../docs/classes/Geometry.html" target="_other">Geometry</a> with triangles and a diffuse <a href="../docs/classes/Texture.html" target="_other">Texture</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <a href="../docs/classes/Geometry.html" target="_docs">Geometry</a> with triangles and a diffuse <a href="../docs/classes/Texture.html" target="_docs">Texture</a>
     <br><br><br>
     <img src="textures/diffuse/uvGrid2.jpg" width="300px" height="300px">
 </div>
@@ -248,15 +248,15 @@
         })
     });
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         geometry: geometry,
         material: material
     });
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function () {
-                object.camera.view.rotateEyeY(0.6);
-                object.camera.view.rotateEyeX(0.3);
+                entity.camera.view.rotateEyeY(0.6);
+                entity.camera.view.rotateEyeX(0.3);
             });
 
 </script>

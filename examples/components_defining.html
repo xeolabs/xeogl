@@ -23,40 +23,40 @@
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
 
-    <p>creating a <a href="../docs/classes/GameObject.html" target="_other">GameObject</a>, then finding it by ID within
-        its <a href="../docs/classes/Scene.html" target="_other">Scene</a> and attaching a red <a
-                href="../docs/classes/PhongMaterial.html" target="_other">PhongMaterial</a> to it</p>
+    <p>creating an <a href="../docs/classes/Entity.html" target="_docs">Entity</a>, then finding it by ID within
+        its <a href="../docs/classes/Scene.html" target="_docs">Scene</a> and attaching a red <a
+                href="../docs/classes/PhongMaterial.html" target="_docs">PhongMaterial</a> to it</p>
     <pre id="infoTxt" style="text-align: left;"></pre>
 </div>
 
 <script>
 
 
-    // Create a GameObject with all defaults
-    var object = new XEO.GameObject();
+    // Create a Entity with all defaults
+    var entity = new XEO.Entity();
 
-    // Subscribe to change of material on our GameObject.
+    // Subscribe to change of material on our Entity.
     // This will immediately fire a change event for the current value of that property.
 
-    object.on("material", function (material) {
-        log("GameObject's material is: " + material.id);
+    entity.on("material", function (material) {
+        log("Entity's material is: " + material.id);
     });
 
-    // Attach a new Material to the GameObject.
+    // Attach a new Material to the Entity.
     // This will fire another
 
-    object.material = new XEO.PhongMaterial({
+    entity.material = new XEO.PhongMaterial({
         id: "myMaterial",
         diffuse: [1.0, 1.0, 0.0]
     });
 
     // Subscribe to change of diffuse color on our material
-    object.material.on("diffuse", function (diffuse) {
-        log("GameObject's material's diffuse color is: " + JSON.stringify(diffuse));
+    entity.material.on("diffuse", function (diffuse) {
+        log("Entity's material's diffuse color is: " + JSON.stringify(diffuse));
     });
 
     // Change the material's diffuse color
-    object.material.diffuse = [1.0, 0.0, 0.0];
+    entity.material.diffuse = [1.0, 0.0, 0.0];
 
     // Logs text to the page
     function log(msg) {

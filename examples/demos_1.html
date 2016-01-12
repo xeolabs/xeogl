@@ -23,12 +23,10 @@
 
 <script>
 
-    //    var scene = new XEO.Scene({
-    //      //  transparent: true
-    //    });
+
 
     // Override xeoEngine's default lights with some View-space directional lights,
-    // including one that shines from behind our torus GameObject
+    // including one that shines from behind our torus Entity
 
     var lights = new XEO.Lights({
         lights: [
@@ -51,7 +49,8 @@
         ]
     });
 
-    var wireframeTorus = new XEO.GameObject({
+    var wireframeTorus = new XEO.Entity({
+        lights: new XEO.Lights(),
         geometry: new XEO.TorusGeometry({
             primitive: "lines",
             radius: 0.9,
@@ -76,7 +75,7 @@
     });
 
 
-    var solidTorus = new XEO.GameObject({
+    var solidTorus = new XEO.Entity({
         geometry: new XEO.TorusGeometry({
             radius: 0.9,
             tube: 0.3,
@@ -117,7 +116,8 @@
     });
 
 
-    var wireframeBox = new XEO.GameObject({
+    var wireframeBox = new XEO.Entity({
+        lights: new XEO.Lights(),
         geometry: new XEO.Geometry({
             primitive: "lines",
             positions: [
@@ -155,7 +155,7 @@
         })
     });
 
-    var solidBox = new XEO.GameObject({
+    var solidBox = new XEO.Entity({
         geometry: new XEO.BoxGeometry({
             xSize: 10,
             ySize: 10,
@@ -242,13 +242,10 @@
 //                    solidTorus.modes.transparent = false;
                 }
 
-                if (lastCoords) {
-                    //    pick(lastCoords);
-                }
 
             });
 
-    // Whenever mouse moves, attempt to pick a triangle on a GameObject,
+    // Whenever mouse moves, attempt to pick a triangle on a Entity,
     // then show the cartesian coordinates at the picked position within
     // the triangle, along with the interpolated normal vector and UV coordinates
     // at the picked position.
@@ -265,7 +262,7 @@
 
         XEO.debug.hide("cone");
 
-        // Pick a primitive on some GameObject
+        // Pick a primitive on some Entity
 
         var hit = scene.pick({
             canvasPos: coords,
@@ -274,7 +271,7 @@
 
         if (hit) {
 
-            // GameObject picked
+            // Entity picked
 
             if (hit.worldPos && hit.normal) {
 

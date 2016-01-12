@@ -27,7 +27,7 @@
     <br><br>
     <ul>
         <li>
-            using the <a href="js/debug/debug.js" target="_other">XEO.debug</a> helper utility to visualize the result
+            using the <a href="js/debug/debug.js" target="_docs">XEO.debug</a> helper utility to visualize the result
             of
             the <a
                 href="../docs/classes/XEO.math.math.html#method_rayTriangleIntersect">XEO.math.rayTriangleIntersect</a>
@@ -288,7 +288,7 @@
         ]
     });
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         geometry: geometry,
         material: new XEO.PhongMaterial({
             diffuseMap: new XEO.Texture({
@@ -302,15 +302,15 @@
         })
     });
 
-    // Hook our drawing component up to the GameObject's emissive texture
+    // Hook our drawing component up to the Entity's emissive texture
 
     var textureCanvas = new XEO.TextureCanvas({
-        texture: object.material.emissiveMap
+        texture: entity.material.emissiveMap
     });
 
     new XEO.CameraControl();
 
-    var scene = object.scene;
+    var scene = entity.scene;
 
     // Orbit the camera on each frame
 
@@ -351,7 +351,7 @@
                 }
             });
 
-    // Whenever mouse moves, attempt to pick a triangle on a GameObject,
+    // Whenever mouse moves, attempt to pick a triangle on a Entity,
     // then show the cartesian coordinates at the picked position within
     // the triangle, along with the interpolated normal vector and UV coordinates
     // at the picked position.
@@ -378,7 +378,7 @@
 
                 XEO.debug.hide("cone");
 
-                // Pick a primitive on some GameObject
+                // Pick a primitive on some Entity
 
                 var hit = scene.pick({
                     canvasPos: coords,

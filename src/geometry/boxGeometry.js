@@ -1,5 +1,5 @@
 /**
- A **BoxGeometry** defines box-shaped geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **BoxGeometry** defines box-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 

@@ -20,8 +20,8 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>diffuse <a href="../docs/classes/Fresnel.html"
-                                                                              target="_other">Fresnel</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>diffuse <a href="../docs/classes/Fresnel.html"
+                                                                              target="_docs">Fresnel</a>
 </div>
 
 <script>
@@ -54,17 +54,17 @@
         diffuseFresnel: diffuseFresnel
     });
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         geometry: geometry,
         material: material
     });
 
-    object.camera.view.zoom(-5);
+    entity.camera.view.zoom(-5);
 
-    object.scene.on("tick",
+    entity.scene.on("tick",
             function () {
 
-                var view = object.scene.camera.view;
+                var view = entity.scene.camera.view;
 
                 view.rotateEyeY(0.6);
                 view.rotateEyeX(0.3);

@@ -29,10 +29,10 @@
     <br><br>
     <ul>
         <li>
-            drawing on the surface of an object
+            drawing on the surface of an entity
         </li>
         <li>
-            hold down SPACE and move your mouse over the object to draw on it
+            hold down SPACE and move your mouse over the entity to draw on it
         </li>
     </ul>
     <br><br>
@@ -123,9 +123,9 @@
     });
 
 
-    // Heightmap GameObject
+    // Heightmap Entity
 
-    var heightmap = new XEO.GameObject({
+    var heightmap = new XEO.Entity({
 
         // XEO.HeightMap is defined in ./js/geometry/heightmapGeometry.js
         geometry: new XEO.HeightmapGeometry({
@@ -152,7 +152,7 @@
         })
     });
 
-    // Hook our drawing component up to the GameObject's emissive texture
+    // Hook our drawing component up to the Entity's emissive texture
 
     var textureCanvas = new XEO.TextureCanvas({
         texture: heightmap.material.emissiveMap
@@ -195,7 +195,7 @@
                 }
             });
 
-    // Whenever mouse moves, attempt to pick a triangle on a GameObject,
+    // Whenever mouse moves, attempt to pick a triangle on a Entity,
     // then show the cartesian coordinates at the picked position within
     // the triangle, along with the interpolated normal vector and UV coordinates
     // at the picked position.
@@ -217,7 +217,7 @@
 
                 XEO.debug.hide("cone");
 
-                // Pick a primitive on some GameObject
+                // Pick a primitive on some Entity
 
                 var hit = scene.pick({
                     canvasPos: coords,

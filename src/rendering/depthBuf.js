@@ -1,5 +1,5 @@
 /**
- A **DepthBuf** configures the WebGL depth buffer for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **DepthBuf** configures the WebGL depth buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -13,14 +13,14 @@
 
  ## Example
 
- In this example we're configuring the WebGL depth buffer for a {{#crossLink "GameObject"}}{{/crossLink}}.
+ In this example we're configuring the WebGL depth buffer for an {{#crossLink "Entity"}}{{/crossLink}}.
 
  The scene contains:
 
  <ul>
  <li>a DepthBuf that configures the clear depth and depth comparison function,</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ````javascript
@@ -35,9 +35,9 @@
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- // Create a Object that renders the Geometry to the depth buffer,
+ // Create a Entity that renders the Geometry to the depth buffer,
  // as configured by our DepthBuf
- var gameObject = new XEO.GameObject(scene, {
+ var Entity = new XEO.Entity(scene, {
     depthBuf: depthBuf,
     geometry: geometry
 });

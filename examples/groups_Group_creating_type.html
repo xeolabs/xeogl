@@ -20,14 +20,14 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>
-    creating a <a href="../docs/classes/Group.html" target="_other">Group</a> that contains all <a href="../docs/classes/Scene.html" target="_other">Scene</a> components
-    of type "XEO.GameObject"
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    creating a <a href="../docs/classes/Group.html" target="_docs">Group</a> that contains all <a href="../docs/classes/Scene.html" target="_docs">Scene</a> components
+    of type "XEO.Entity"
 </div>
 
 <script>
 
-    // Create multiple spinning GameObjects, each at a random position
+    // Create multiple spinning Entities, each at a random position
     // and with a random axis of spin
 
     var geometry = new XEO.TorusGeometry({
@@ -46,7 +46,7 @@
 
     for (var i = 0; i < 20; i++) {
 
-        new XEO.GameObject({
+        new XEO.Entity({
 
             geometry: geometry,
 
@@ -62,15 +62,15 @@
         });
     }
 
-    // Put all GameObjects into a Group
+    // Put all Entities into a Group
 
     var group = new XEO.Group({
-        components: ["XEO.GameObject"]
+        components: ["XEO.Entity"]
     });
 
     new XEO.CameraControl();
 
-    // On each tick, iterate over each GameObject in the Group
+    // On each tick, iterate over each Entity in the Group
     // and increment it's rotation angle
 
     XEO.scene.on("tick",

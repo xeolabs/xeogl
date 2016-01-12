@@ -1,5 +1,5 @@
 /**
- A **Material** defines the surface appearance of attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Material** defines the surface appearance of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  Material is the base class for:
 

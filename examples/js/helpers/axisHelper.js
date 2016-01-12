@@ -24,7 +24,7 @@
 
     "use strict";
 
-    XEO.AxisHelper = XEO.GameObject.extend({
+    XEO.AxisHelper = XEO.Entity.extend({
 
         type: "XEO.AxisHelper",
 
@@ -48,7 +48,7 @@
                 phiLength: 360
             }));
 
-            this._push(new XEO.GameObject(this.scene, {
+            this._push(new XEO.Entity(this.scene, {
                 geometry: arrowGeometry,
                 material: this._push(new XEO.PhongMaterial(this.scene, {
                     diffuse: [1, 0, 0]
@@ -59,7 +59,7 @@
                 }))
             }));
 
-            this._push(new XEO.GameObject(this.scene, {
+            this._push(new XEO.Entity(this.scene, {
                 geometry: arrowGeometry,
                 material: this._push(new XEO.PhongMaterial(this.scene, {
                     diffuse: [0, 1, 0]
@@ -70,7 +70,7 @@
                 }))
             }));
 
-            this._push(new XEO.GameObject(this.scene, {
+            this._push(new XEO.Entity(this.scene, {
                 geometry: arrowGeometry,
                 material: this._push(new XEO.PhongMaterial(this.scene, {
                     diffuse: [0, 0, 1]
@@ -81,7 +81,7 @@
                 }))
             }));
 
-            this._push(new XEO.GameObject(this.scene, {
+            this._push(new XEO.Entity(this.scene, {
                 geometry: this._push(new XEO.Sphere(this.scene, {
                     radius: 1.0
                 })),
@@ -90,7 +90,7 @@
                 }))
             }));
 
-            this._push(new XEO.GameObject(this.scene, {
+            this._push(new XEO.Entity(this.scene, {
                 geometry: this._push(new XEO.PlaneGeometry(this.scene, {
                     xSize: 100,
                     ySize: 100

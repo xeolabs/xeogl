@@ -48,7 +48,7 @@
     var halfWidth = width / 2;
 
     for (var i = 0; i < 200; i++) {
-        new XEO.GameObject({
+        new XEO.Entity({
             geometry: geometry,
             material: material,
 
@@ -116,11 +116,11 @@
         divisions: 200
     });
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         geometry: pathGeometry
     });
 
-    var scene = object.scene;
+    var scene = entity.scene;
 
     scene.camera.project.fovy = 65;
 

@@ -23,8 +23,8 @@
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
     <ul>
-        <li>using <a href="../docs/classes/Modes.html" target="_other">Modes</a> components to disable picking for <a
-                href="../docs/classes/GameObject.html" target="_other">GameObjects</a></li>
+        <li>using <a href="../docs/classes/Modes.html" target="_docs">Modes</a> components to disable picking for <a
+                href="../docs/classes/Entity.html" target="_docs">Entities</a></li>
         <li>picking is disabled for the red spheres</li>
         <li>
             click something!
@@ -69,9 +69,9 @@
 
         var pickable = Math.random() < 0.5;
 
-        new XEO.GameObject({
+        new XEO.Entity({
 
-            id: "object" + i,
+            id: "entity" + i,
 
             geometry: sphere,
 
@@ -108,8 +108,8 @@
 
     new XEO.CameraControl();
 
-    // Attempt to pick a GameObject on each mouse click.
-    // Highlight each GameObject that we successfully pick.
+    // Attempt to pick a Entity on each mouse click.
+    // Highlight each Entity that we successfully pick.
 
     var input = scene.input;
 
@@ -123,9 +123,9 @@
                 });
 
                 if (hit) {
-                    log("Picked GameObject '" + hit.object.id + "'");
+                    log("Picked Entity '" + hit.entity.id + "'");
 
-                    hit.object.material.emissive = [1, 1, 0];
+                    hit.entity.material.emissive = [1, 1, 0];
 
                 } else {
                     log("Nothing picked.");

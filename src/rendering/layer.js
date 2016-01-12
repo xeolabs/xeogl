@@ -1,28 +1,28 @@
 /**
- A **Layer** specifies the render order of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
+ A **Layer** specifies the render order of {{#crossLink "Entity"}}Entities{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  ## Overview
 
  <ul>
  <li>When xeoEngine renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
- of {{#crossLink "GameObject"}}GameObjects{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
+ of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
 
  <li>{{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
 
- <li>You can control the render order of the individual {{#crossLink "GameObject"}}GameObjects{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
+ <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
  by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
 
  <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
 
 
- <li>{{#crossLink "GameObject"}}GameObjects{{/crossLink}} not explicitly attached to a Layer are implicitly
+ <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
  a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.</li>
 
  <li>You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
  </ul>
 
@@ -31,7 +31,7 @@
  ## Example
 
  In this example we'll use Layers to perform <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency sorting</a>,
- which ensures that transparent objects are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.
+ which ensures that transparent entities are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.
 
  We want to render the three nested boxes shown below, in which the innermost box is opaque and blue,
  the box enclosing that is transparent and yellow, and the outermost box is transparent and green. We need the boxes to
@@ -41,7 +41,7 @@
 
  Our scene has one {{#crossLink "Stage"}}{{/crossLink}}, just for completeness. As mentioned earlier, you don't have to
  create this because the {{#crossLink "Scene"}}{{/crossLink}} will provide its default {{#crossLink "Stage"}}{{/crossLink}}.
- Then, within that {{#crossLink "Stage"}}{{/crossLink}}, we create a {{#crossLink "GameObject"}}{{/crossLink}} for each box,
+ Then, within that {{#crossLink "Stage"}}{{/crossLink}}, we create an {{#crossLink "Entity"}}{{/crossLink}} for each box,
  each assigned to a different prioritised {{#crossLink "Layer"}}{{/crossLink}} to ensure that they are rendered in the right order.
 
  ````javascript
@@ -80,7 +80,7 @@
     opacity: 1.0
 });
 
- var object1 = new XEO.GameObject(scene, {
+ var entity1 = new XEO.Entity(scene, {
     camera: camera,
     geometry: geometry,
     stage: stage,
@@ -106,7 +106,7 @@
     xyz: [6, 6, 6]
 });
 
- var object2 = new XEO.GameObject(scene, {
+ var entity2 = new XEO.Entity(scene, {
     camera: camera,
     geometry: geometry,
     stage: stage,
@@ -133,7 +133,7 @@
     xyz: [9, 9, 9]
 });
 
- var object3 = new XEO.GameObject(scene, {
+ var entity3 = new XEO.Entity(scene, {
     camera: camera,
     geometry: geometry,
     stage: stage,
@@ -176,9 +176,9 @@
         _props: {
 
             /**
-             * Indicates this Layer's rendering priority for the attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+             * Indicates this Layer's rendering priority for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
              *
-             * Each {{#crossLink "GameObject"}}{{/crossLink}} is also attached to a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
+             * Each {{#crossLink "Entity"}}{{/crossLink}} is also attached to a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
              * priority via its {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} property.
              *
              * Fires a {{#crossLink "Layer/priority:event"}}{{/crossLink}} event on change.

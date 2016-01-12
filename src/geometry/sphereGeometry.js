@@ -1,5 +1,5 @@
 /**
- A **SphereGeometry** defines spherical geometry for attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **SphereGeometry** defines spherical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 

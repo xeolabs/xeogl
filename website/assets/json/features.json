@@ -1,19 +1,19 @@
 {
   "Main features": [
-    "Object-component scene graph API",
+    "Entity-component scene graph API",
     "Dynamically-editable scenes",
     "Fully-observable scene state",
     "[[JSON-persistable scene state|components_toJSON]]",
     "[[Cloneable scene components|components_cloning]]",
     "[[Multiple scenes in a page|scene_multipleScenes]]",
-    "[[Performance monitoring|#profiling_statistics]]",
-    "Fast [[ray picking|interaction_picking_triangles_normalAndUV]] for large numbers of dynamic objects"
+    "[[Performance monitoring|profiling_statistics]]",
+    "Fast [[ray picking|interaction_picking_triangles_normalAndUV]] for large numbers of dynamic entities"
   ],
   "Optimizations": [
     "Scene graph dynamically compiled to fast internal render graph",
     "WebGL state management (sorting, batching, caching etc.)",
     "Task queuing with per-frame budget",
-    "#See the [[wiki|https://github.com/xeolabs/xeoengine/wiki/Implementation-Notes]] for implementation notes on optimizations in xeoEngine."
+    "#See the <a href='https://github.com/xeolabs/xeoengine/wiki/Implementation-Notes' target='_wiki'>wiki</a> for implementation notes on optimizations in xeoEngine."
   ],
   "Cameras": [
     "[[Orthographic|camera_ortho]], [[perspective|camera_perspective]] and [[frustum|camera_frustum]] projection",
@@ -41,16 +41,16 @@
   ],
   "Animation and Transformation": [
     "[[Dynamic transform hierarchies|transforms_hierarchy]]",
-    "[[Camera fly-to|animation_CameraFlight_GameObject]]"
+    "[[Camera fly-to|animation_CameraFlight_Entity]]"
   ],
   "Importers and Tools": [
-    "Importers for [[glTF|importing_gltf_buggy]], [[OBJ|importing_obj_raptor]] and [[3DS|importing_3ds_lexus]]",
+    "Importers for [[glTF|importing_gltf_gearbox]], [[OBJ|importing_obj_raptor]] and [[3DS|importing_3ds_lexus]]",
     "3D debugging [[helper|interaction_picking_triangles]]"
   ],
   "FX": [
     "[[Transparency|materials_techniques_transparencySort]] with depth-sort",
     "Billboarding ([[spherical|billboards_spherical]] and [[cylindrical|billboards_cylindrical]])",
-    "[[Skyboxes|skyboxes_customSkybox]]",
+    "[[Skyboxes|skyboxes_skybox]]",
     "Rendering layers"
   ]
 }

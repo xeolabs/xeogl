@@ -1,5 +1,5 @@
 /**
- A **Lights** defines a group of light sources that illuminate attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Lights** defines a group of light sources that illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -7,18 +7,18 @@
 
  <ul>
  <li>{{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
- affect all the {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally,</li>
+ affect all the {{#crossLink "Entity"}}Entities{{/crossLink}} equally,</li>
  <li>{{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
  originates from a single point and spreads outward in all directions, and </li>
  <li>{{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} equally from a given direction</li>
+ {{#crossLink "Entity"}}Entities{{/crossLink}} equally from a given direction</li>
  </ul>
 
  <img src="../../../assets/images/Lights.png"></img>
 
  ## Example
 
- In this example we have a {{#crossLink "GameObject"}}{{/crossLink}} that has a {{#crossLink "Geometry"}}{{/crossLink}},
+ In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that has a {{#crossLink "Geometry"}}{{/crossLink}},
  a {{#crossLink "PhongMaterial"}}{{/crossLink}} and a {{#crossLink "Lights"}}{{/crossLink}}. The {{#crossLink "Lights"}}{{/crossLink}}
  contains an {{#crossLink "AmbientLight"}}{{/crossLink}}, a {{#crossLink "DirLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}}.
 
@@ -65,7 +65,7 @@
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry
@@ -82,7 +82,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
- @param [cfg.lights] {{Array of String|GameObject}} Array of light source IDs or instances.
+ @param [cfg.lights] {{Array of String|Entity}} Array of light source IDs or instances.
  @extends Component
  */
 (function () {

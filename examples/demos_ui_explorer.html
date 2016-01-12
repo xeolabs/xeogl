@@ -17,12 +17,12 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
     <br><br>
     <ul>
-        <li>a simple explorer UI to browse the <a href="../docs/classes/GameObject.html" target="_other">GameObjects</a>
-            in a <a href="../docs/classes/Scene.html" target="_other">Scene</a></li>
-        <li>click a node in the explorer below to fly to its GameObject</li>
+        <li>a simple explorer UI to browse the <a href="../docs/classes/Entity.html" target="_docs">Entities</a>
+            in a <a href="../docs/classes/Scene.html" target="_docs">Scene</a></li>
+        <li>click a node in the explorer below to fly to its Entity</li>
     </ul>
 
 </div>
@@ -67,11 +67,11 @@
             0.13872624933719635
         ];
 
-        // Yellow wireframe box object, indicates the
+        // Yellow wireframe box entity, indicates the
         // World-space axis-aligned bounding box (AABB)
-        // of each object we fly to
+        // of each entity we fly to
 
-        var orientedBoundary = new XEO.GameObject({
+        var orientedBoundary = new XEO.Entity({
             id: "myOBB",
             geometry: new XEO.BoundaryGeometry(),
             material: new XEO.PhongMaterial({
@@ -97,14 +97,14 @@
         new XEO.CameraControl();
 
         // Camera flight animation, flies the default camera 
-        // to each GameObject as we select it in the explorer 
+        // to each Entity as we select it in the explorer
 
         var cameraFlight = new XEO.CameraFlight();
 
         gearbox.on("loaded",
                 function () {
 
-                    // When the Model has loaded, iterate over all the GameObjects in the Scene:
+                    // When the Model has loaded, iterate over all the Entities in the Scene:
                     //
                     // 1. Ensure that they each have their own Material and Modes components, so that
                     // we can set them transparent individually. This is quick-and-dirty, where we
@@ -113,11 +113,11 @@
                     // 2. Add an item to the JSON data we'll build our explorer from.
 
                     var data = [];
-                    var sceneObjects = scene.types["XEO.GameObject"];
-                    var object;
+                    var sceneEntities = scene.types["XEO.Entity"];
+                    var entity;
 
-                    for (var objectId in sceneObjects) {
-                        if (sceneObjects.hasOwnProperty(objectId)) {
+                    for (var objectId in sceneEntities) {
+                        if (sceneEntities.hasOwnProperty(objectId)) {
 
                             if (objectId === "myOOBB") {
 
@@ -125,32 +125,32 @@
                                 continue;
                             }
 
-                            object = sceneObjects[objectId];
+                            entity = sceneEntities[objectId];
 
-                            // Ensure the GameObject has its own unique Material and Modes
+                            // Ensure the Entity has its own unique Material and Modes
 
-                            object.material = object.material.clone();
-                            object.material.opacity = 0.4;
+                            entity.material = entity.material.clone();
+                            entity.material.opacity = 0.4;
 
-                            object.modes = object.modes.clone();
-                            object.modes.transparent = true;
+                            entity.modes = entity.modes.clone();
+                            entity.modes.transparent = true;
 
-                            // To each GameObject it loads, a Model will attach metadata
+                            // To each Entity it loads, a Model will attach metadata
                             // containing a human-readable name - use that to list a 
                             // human-readable name in the explorer.
 
                             data.push({
-                                id: object.id,
-                                text: object.meta.name || "unnamed"
+                                id: entity.id,
+                                text: entity.meta.name || "unnamed"
                             })
                         }
                     }
 
                     // Build explorer (using JSTree), bind a selection handler
-                    // that flies to the selected GameObject
+                    // that flies to the selected Entity
 
-                    var nextObject; // Next object we'll fly to
-                    var lastObject; // Last object we flew to
+                    var nextObject; // Next entity we'll fly to
+                    var lastObject; // Last entity we flew to
 
                     // Build explorer tree
                     $('#explorer').jstree({
@@ -177,12 +177,12 @@
                                     orientedBoundary.visibility.visible = true;
 
                                     cameraFlight.flyTo({
-                                                aabb: nextObject.worldBoundary.aabb, // Fly to object's AABB
-                                                stopFOV: 45, // Make sure the camera stops far enough back from the object
-                                                duration: 1.0 // One second flight time to each object
+                                                aabb: nextObject.worldBoundary.aabb, // Fly to entity's AABB
+                                                stopFOV: 45, // Make sure the camera stops far enough back from the entity
+                                                duration: 1.0 // One second flight time to each entity
                                             },
                                             function () {
-                                                // Camera has arrived at object
+                                                // Camera has arrived at entity
                                             });
 
                                     lastObject = nextObject;

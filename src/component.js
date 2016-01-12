@@ -17,7 +17,7 @@
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeoEngine generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
  scene comprised of {{#crossLink "Scene"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}}, {{#crossLink "Geometry"}}{{/crossLink}} and
- {{#crossLink "GameObject"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for
+ {{#crossLink "Entity"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for
  the {{#crossLink "Geometry"}}{{/crossLink}}:
 
  ````javascript
@@ -34,8 +34,8 @@
     id: "myGeometry"
 });
 
- // Let xeoEngine automatically generate the ID for our Object
- var object = new XEO.GameObject(scene, {
+ // Let xeoEngine automatically generate the ID for our Entity
+ var entity = new XEO.Entity(scene, {
     material: material,
     geometry: geometry
 });
@@ -72,18 +72,18 @@
  ````
 
  We can also subscribe to changes in the way components are attached to each other, since components are properties
- of other components. For example, we can subscribe to the '{{#crossLink "Object/material:event"}}{{/crossLink}}' event that a
- {{#crossLink "GameObject"}}GameObject{{/crossLink}} fires when its {{#crossLink "Object/material:property"}}{{/crossLink}}
+ of other components. For example, we can subscribe to the '{{#crossLink "Entity/material:event"}}{{/crossLink}}' event that a
+ {{#crossLink "Entity"}}Entity{{/crossLink}} fires when its {{#crossLink "Entity/material:property"}}{{/crossLink}}
  property is set to a different {{#crossLink "Material"}}Material{{/crossLink}}:
 
  ```` javascript
- // Bind a change callback to the Object's Material
- object1.on("material", function(material) {
-    console.log("Object's Material has changed to: " + material.id);
+ // Bind a change callback to the Entity's Material
+ entity1.on("material", function(material) {
+    console.log("Entity's Material has changed to: " + material.id);
 });
 
  // Now replace that Material with another
- object1.material = new XEO.PhongMaterial({
+ entity1.material = new XEO.PhongMaterial({
     id: "myOtherMaterial",
     diffuse: [ 0.3, 0.3, 0.6 ]
     //..
@@ -178,7 +178,7 @@
  ````
 
  Other Components that are linked to it will fall back on a default of some sort. For example, any
- {{#crossLink "GameObject"}}GameObjects{{/crossLink}} that were linked to our {{#crossLink "Material"}}{{/crossLink}}
+ {{#crossLink "Entity"}}Entities{{/crossLink}} that were linked to our {{#crossLink "Material"}}{{/crossLink}}
  will then automatically link to the {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/material:property"}}{{/crossLink}}.
 
  @class Component
@@ -530,7 +530,7 @@
          *
          * The clone will share (by reference) the components of the original, unless overridden.
          *
-         * For example, if this component is a {{#crossLink "GameObject"}}{{/crossLink}}, then the clone
+         * For example, if this component is an {{#crossLink "Entity"}}{{/crossLink}}, then the clone
          * will be attached to the **same** instances of {{#crossLink "PhoneMaterial"}}{{/crossLink}},
          * {{#crossLink "Camera"}}{{/crossLink}} etc as this component, unless it supplies its own
          * instances for those via the configs.

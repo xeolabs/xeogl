@@ -29,19 +29,19 @@
 
 <script>
 
-    // Create a GameObject
+    // Create a Entity
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
         meta: {
-            description: "This is my GameObject!",
+            description: "This is my Entity!",
             version: "0.1",
             foo: "bar"
         }
     });
 
-    // Attach a new Material to the GameObject.
+    // Attach a new Material to the Entity.
 
-    object.material = new XEO.PhongMaterial({
+    entity.material = new XEO.PhongMaterial({
         id: "myMaterial",
         diffuse: [1.0, 1.0, 0.0],
         meta: {
@@ -51,10 +51,10 @@
         }
     });
 
-    object.meta.version = "0.2";
-    object.meta.bar = "foo";
+    entity.meta.version = "0.2";
+    entity.meta.bar = "foo";
 
-    logJSON(object.meta);
+    logJSON(entity.meta);
 
     function logJSON(json) {
         document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);

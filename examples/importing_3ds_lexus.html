@@ -15,13 +15,13 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_other">xeoEngine</a><br><br>loading .3DS geometry using an <a
-        href="js/importing/nintendo3DSGeometry.js" target="_other">XEO.Nintendo3DSGeometry</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>loading .3DS geometry using an <a
+        href="js/importing/nintendo3DSGeometry.js" target="_docs">XEO.Nintendo3DSGeometry</a>
 </div>
 
 <script>
 
-    var object = new XEO.GameObject({
+    var entity = new XEO.Entity({
 
         geometry: new XEO.Nintendo3DSGeometry({
             src: "models/3ds/lexus.3ds"
@@ -49,9 +49,9 @@
 
     var cameraFlight = new XEO.CameraFlight();
 
-    object.geometry.on("loaded",
+    entity.geometry.on("loaded",
             function () {
-                cameraFlight.flyTo(object);
+                cameraFlight.flyTo(entity);
             });
 
 </script>

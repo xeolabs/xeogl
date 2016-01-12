@@ -1,5 +1,5 @@
 /**
- A **MousePickObject** picks {{#crossLink "GameObject"}}GameObjects{{/crossLink}} with mouse clicks.
+ A **MousePickEntity** picks {{#crossLink "Entity"}}Entities{{/crossLink}} with mouse clicks.
 
  ## Overview
 
@@ -10,25 +10,25 @@
  ````Javascript
  var scene = new XEO.Scene({ element: "myDiv" });
 
- // Create some GameObjects
+ // Create some Entities
 
- var object1 = new XEO.GameObject(scene, {
-    id: "object1",
+ var entity1 = new XEO.Entity(scene, {
+    id: "entity1",
     transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })
  });
 
- var object2 = new XEO.GameObject(scene, {
-    id: "object2",
+ var entity2 = new XEO.Entity(scene, {
+    id: "entity2",
     transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })
  });
 
- var object3 = new XEO.GameObject(scene, {
-    id: "object3",
+ var entity3 = new XEO.Entity(scene, {
+    id: "entity3",
     transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })
  });
 
- // Create a MousePickObject
- var mousePickObject = new XEO.MousePickObject(scene, {
+ // Create a MousePickEntity
+ var mousePickEntity = new XEO.MousePickEntity(scene, {
 
     // We want the 3D World-space coordinates
     // of each location we pick
@@ -36,37 +36,37 @@
     rayPick: true
  });
 
- // Handle picked GameObjects
- mousePickObject.on("pick", function(e) {
-    var object = e.object;
+ // Handle picked Entities
+ mousePickEntity.on("pick", function(e) {
+    var entity = e.entity;
     var canvasPos = e.canvasPos;
     var primitiveIndex = e.primitiveIndex;
  });
 
  // Handle nothing picked
- mousePickObject.on("nopick", function(e) {
+ mousePickEntity.on("nopick", function(e) {
     var canvasPos = e.canvasPos;
  });
  ````
 
- @class MousePickObject
+ @class MousePickEntity
  @module XEO
  @submodule controls
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickObject.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickObject will find the 3D ray intersection whenever it picks a
- {{#crossLink "GameObject"}}{{/crossLink}}.
- @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickObject is active.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickEntity.
+ @param [rayPick=false] {Boolean} Indicates whether this MousePickEntity will find the 3D ray intersection whenever it picks a
+ {{#crossLink "Entity"}}{{/crossLink}}.
+ @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickEntity is active.
  @extends Component
  */
 (function () {
 
     "use strict";
 
-    XEO.MousePickObject = XEO.Component.extend({
+    XEO.MousePickEntity = XEO.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -75,7 +75,7 @@
          @type String
          @final
          */
-        type: "XEO.MousePickObject",
+        type: "XEO.MousePickEntity",
 
         _init: function (cfg) {
 
@@ -87,9 +87,9 @@
         _props: {
 
             /**
-             * Flag which indicates whether this MousePickObject is active or not.
+             * Flag which indicates whether this MousePickEntity is active or not.
              *
-             * Fires a {{#crossLink "MousePickObject/active:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "MousePickEntity/active:event"}}{{/crossLink}} event on change.
              *
              * @property active
              * @type Boolean
@@ -140,20 +140,20 @@
                                     if (hit) {
 
                                         /**
-                                         * Fired whenever a {{#crossLink "GameObject"}}GameObject{{/crossLink}} is picked.
+                                         * Fired whenever an {{#crossLink "Entity"}}Entity{{/crossLink}} is picked.
                                          * @event picked
-                                         * @param {String} objectId The ID of the picked {{#crossLink "GameObject"}}GameObject{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+                                         * @param {String} entityId The ID of the picked {{#crossLink "Entity"}}Entity{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
                                          * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                         * @param {Array of Number} worldPos When {{#crossLink "MousePickObject/rayPick"}}{{/crossLink}} is true,
+                                         * @param {Array of Number} worldPos When {{#crossLink "MousePickEntity/rayPick"}}{{/crossLink}} is true,
                                          * provides the World-space coordinate that was ray-picked on the surface of the
-                                         * {{#crossLink "GameObject"}}GameObject{{/crossLink}}.
+                                         * {{#crossLink "Entity"}}Entity{{/crossLink}}.
                                          */
                                         self.fire("pick", hit);
 
                                     } else {
 
                                         /**
-                                         * Fired whenever an attempt to pick {{#crossLink "GameObject"}}GameObject{{/crossLink}} picks empty space.
+                                         * Fired whenever an attempt to pick {{#crossLink "Entity"}}Entity{{/crossLink}} picks empty space.
                                          * @event nopick
                                          * @param {Array of Number} canvasPos The Canvas-space coordinate at which the pick was attempted.
                                          */
@@ -172,7 +172,7 @@
                     }
 
                     /**
-                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/active:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this MousePickEntity's {{#crossLink "MousePickEntity/active:property"}}{{/crossLink}} property changes.
                      * @event active
                      * @param value The property's new value
                      */
@@ -186,13 +186,13 @@
             },
 
             /**
-             * Indicates whether this MousePickObject will try to pick a {{#crossLink "Geometry"}}{{/crossLink}} primitive
-             * whenever it picks a {{#crossLink "GameObject"}}{{/crossLink}}.
+             * Indicates whether this MousePickEntity will try to pick a {{#crossLink "Geometry"}}{{/crossLink}} primitive
+             * whenever it picks an {{#crossLink "Entity"}}{{/crossLink}}.
              *
-             * When true, this MousePickObject will try to return the primitive index in a
-             * {{#crossLink "MousePickObject/picked:event"}}{{/crossLink}} event.
+             * When true, this MousePickEntity will try to return the primitive index in a
+             * {{#crossLink "MousePickEntity/picked:event"}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink "MousePickObject/rayPick:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "MousePickEntity/rayPick:event"}}{{/crossLink}} event on change.
              *
              * @property rayPick
              * @type Boolean
@@ -210,7 +210,7 @@
                     this._dirty = false;
 
                     /**
-                     * Fired whenever this MousePickObject's {{#crossLink "MousePickObject/rayPick:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this MousePickEntity's {{#crossLink "MousePickEntity/rayPick:property"}}{{/crossLink}} property changes.
                      * @event rayPick
                      * @param value The property's new value
                      */

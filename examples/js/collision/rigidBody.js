@@ -29,7 +29,7 @@
  any axis no rotation will occur about that axis.
  @param [cfg.friction=0] {Number} How rapidly this RigidBody loses velocity when in contact with other bodies.
  @param [cfg.restitution=0] {Number} The bounciness of this RigidBody, given as a factor between 0 and 1.
- @param [cfg.active=true] {Boolean} If active and if the {{#crossLink "GameObject"}}{{/crossLink}} has a
+ @param [cfg.active=true] {Boolean} If active and if the {{#crossLink "Entity"}}{{/crossLink}} has a
  * sibling {{#crossLink "Collider"}}{{/crossLink}} component, the RigidBody will participate in the physics simulation.
  @extends Component
  */
@@ -407,7 +407,7 @@
             },
 
             /**
-             * If active and if the {{#crossLink "GameObject"}}{{/crossLink}} has a
+             * If active and if the {{#crossLink "Entity"}}{{/crossLink}} has a
              * sibling {{#crossLink "Collider"}}{{/crossLink}} component, the RigidBody will participate in the physics simulation.
              *
              * Fires an {{#crossLink "RigidBody/active:event"}}{{/crossLink}} event on change.

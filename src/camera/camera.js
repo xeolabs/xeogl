@@ -1,7 +1,7 @@
 
 
 /**
- A **Camera** defines a viewpoint on attached {{#crossLink "GameObject"}}GameObjects{{/crossLink}}.
+ A **Camera** defines a viewpoint on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -32,7 +32,7 @@
  <li>a {{#crossLink "Perspective"}}{{/crossLink}} projection transform,</li>
  <li>a Camera attached to the {{#crossLink "Lookat"}}{{/crossLink}} and {{#crossLink "Perspective"}}{{/crossLink}},</li>
  <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>a {{#crossLink "GameObject"}}{{/crossLink}} attached to all of the above.</li>
+ <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
 
@@ -58,7 +58,7 @@
 
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
 
- var object = new XEO.GameObject(scene, {
+ var entity = new XEO.Entity(scene, {
         camera: camera,
         geometry: geometry
     });
