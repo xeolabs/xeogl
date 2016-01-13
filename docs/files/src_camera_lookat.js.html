@@ -15,7 +15,19 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Documentation</a></h1>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class=""><a href="#banner">Home</a></li>
+                <li class=""><a href="#concept">Concept</a></li>
+                <li class="active"><a href="#features">Features</a></li>
+                <li><a href="http://xeoengine.org/examples">Examples</a></li>
+                <li><a href="http://xeoengine.org/docs">Docs</a></li>
+                <li><a href="https://github.com/xeolabs/xeoengine">Github</a></li>
+                <li>
+                    <a href="https://github.com/xeolabs/xeoengine/archive/master.zip">Download</a>
+                </li>
+            </ul>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -205,7 +217,8 @@
  var lookat = new XEO.Lookat(scene, {
         eye: [0, 0, -4],
         look: [0, 0, 0],
-        up: [0, 1, 0]
+        up: [0, 1, 0],
+        gimbalLockY: true // Rotate about world-space Y-axis (default is false)
     });
 
  var perspective = new XEO.Perspective(scene, {
@@ -244,6 +257,7 @@
  @param [cfg.eye=[0,0,-10]] {Array of Number} Eye position.
  @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we&#x27;re looking at.
  @param [cfg.up=[0,1,0]] {Array of Number} The &quot;up&quot; vector.
+ @param [cfg.gimbalLockY=false] {Boolean} Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
  @extends Component
  @author xeolabs / http://xeolabs.com/
  */
@@ -439,7 +453,7 @@
             /**
              * Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
              *
-             * Fires an {{#crossLink &quot;Lookat/gimbalLockY:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;Lookat/gimbalLockY:event&quot;}}{{/crossLink}} event on change.
              *
              * @property gimbalLockY
              * @default false

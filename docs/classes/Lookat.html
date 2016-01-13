@@ -15,7 +15,19 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Documentation</a></h1>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class=""><a href="#banner">Home</a></li>
+                <li class=""><a href="#concept">Concept</a></li>
+                <li class="active"><a href="#features">Features</a></li>
+                <li><a href="http://xeoengine.org/examples">Examples</a></li>
+                <li><a href="http://xeoengine.org/docs">Docs</a></li>
+                <li><a href="https://github.com/xeolabs/xeoengine">Github</a></li>
+                <li>
+                    <a href="https://github.com/xeolabs/xeoengine/archive/master.zip">Download</a>
+                </li>
+            </ul>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -212,7 +224,8 @@ Then we attach our Lookat to a <a href="../classes/Camera.html" class="crosslink
 var lookat = new XEO.Lookat(scene, {
        eye: [0, 0, -4],
        look: [0, 0, 0],
-       up: [0, 1, 0]
+       up: [0, 1, 0],
+       gimbalLockY: true // Rotate about world-space Y-axis (default is false)
    });
 
 var perspective = new XEO.Perspective(scene, {
@@ -359,6 +372,17 @@ scene.on("tick", function () {
         
                                         <div class="param-description">
                                             <p>The &quot;up&quot; vector.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[gimbalLockY=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.</p>
         
                                         </div>
         
@@ -1095,7 +1119,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l288"><code>src&#x2F;camera&#x2F;lookat.js:288</code></a>
+                            <a href="../files/src_camera_lookat.js.html#l290"><code>src&#x2F;camera&#x2F;lookat.js:290</code></a>
                             </p>
                     
                     
@@ -1122,7 +1146,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l258"><code>src&#x2F;camera&#x2F;lookat.js:258</code></a>
+                            <a href="../files/src_camera_lookat.js.html#l260"><code>src&#x2F;camera&#x2F;lookat.js:260</code></a>
                             </p>
                     
                     
@@ -1130,7 +1154,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.</p>
-                    <p>Fires an <a href="../classes/Lookat.html#event_gimbalLockY" class="crosslink">gimbalLockY</a> event on change.</p>
+                    <p>Fires a <a href="../classes/Lookat.html#event_gimbalLockY" class="crosslink">gimbalLockY</a> event on change.</p>
                     
                         </div>
                     
@@ -1226,7 +1250,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l325"><code>src&#x2F;camera&#x2F;lookat.js:325</code></a>
+                            <a href="../files/src_camera_lookat.js.html#l327"><code>src&#x2F;camera&#x2F;lookat.js:327</code></a>
                             </p>
                     
                     
@@ -1253,7 +1277,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l397"><code>src&#x2F;camera&#x2F;lookat.js:397</code></a>
+                            <a href="../files/src_camera_lookat.js.html#l399"><code>src&#x2F;camera&#x2F;lookat.js:399</code></a>
                             </p>
                     
                     
@@ -1388,7 +1412,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l362"><code>src&#x2F;camera&#x2F;lookat.js:362</code></a>
+                            <a href="../files/src_camera_lookat.js.html#l364"><code>src&#x2F;camera&#x2F;lookat.js:364</code></a>
                             </p>
                     
                     
@@ -1446,7 +1470,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l311"><code>src&#x2F;camera&#x2F;lookat.js:311</code></a>
+                            <a href="../files/src_camera_lookat.js.html#l313"><code>src&#x2F;camera&#x2F;lookat.js:313</code></a>
                             </p>
                     
                     
@@ -1488,7 +1512,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l274"><code>src&#x2F;camera&#x2F;lookat.js:274</code></a>
+                            <a href="../files/src_camera_lookat.js.html#l276"><code>src&#x2F;camera&#x2F;lookat.js:276</code></a>
                             </p>
                     
                     
@@ -1530,7 +1554,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l348"><code>src&#x2F;camera&#x2F;lookat.js:348</code></a>
+                            <a href="../files/src_camera_lookat.js.html#l350"><code>src&#x2F;camera&#x2F;lookat.js:350</code></a>
                             </p>
                     
                     
@@ -1572,7 +1596,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l441"><code>src&#x2F;camera&#x2F;lookat.js:441</code></a>
+                            <a href="../files/src_camera_lookat.js.html#l443"><code>src&#x2F;camera&#x2F;lookat.js:443</code></a>
                             </p>
                     
                     
@@ -1614,7 +1638,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l383"><code>src&#x2F;camera&#x2F;lookat.js:383</code></a>
+                            <a href="../files/src_camera_lookat.js.html#l385"><code>src&#x2F;camera&#x2F;lookat.js:385</code></a>
                             </p>
                     
                     

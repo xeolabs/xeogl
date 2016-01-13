@@ -2113,7 +2113,7 @@
             "namespace": "",
             "file": "src/camera/lookat.js",
             "line": 1,
-            "description": "A **Lookat** defines a viewing transform as an {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}} position, a\n{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} position and an {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}\nvector.\n\n## Overview\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with projection transforms such as\n{{#crossLink \"Perspective\"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Lookat.png\"></img>\n\n## Example\n\nIn this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.\nThen we attach our Lookat to a {{#crossLink \"Camera\"}}{{/crossLink}}. which we attach to an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -4],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar perspective = new XEO.Perspective(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar entity = new XEO.Entity(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
+            "description": "A **Lookat** defines a viewing transform as an {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}} position, a\n{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} position and an {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}\nvector.\n\n## Overview\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with projection transforms such as\n{{#crossLink \"Perspective\"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Lookat.png\"></img>\n\n## Example\n\nIn this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.\nThen we attach our Lookat to a {{#crossLink \"Camera\"}}{{/crossLink}}. which we attach to an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\n````Javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -4],\n       look: [0, 0, 0],\n       up: [0, 1, 0],\n       gimbalLockY: true // Rotate about world-space Y-axis (default is false)\n   });\n\nvar perspective = new XEO.Perspective(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar entity = new XEO.Entity(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
             "submodule": "camera",
             "is_constructor": 1,
             "params": [
@@ -2161,6 +2161,13 @@
                             "type": "Array of Number",
                             "optional": true,
                             "optdefault": "[0,1,0]"
+                        },
+                        {
+                            "name": "gimbalLockY",
+                            "description": "Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
                         }
                     ]
                 }
@@ -8192,7 +8199,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 98,
+            "line": 100,
             "description": "Rotate 'eye' about 'look', around the 'up' vector",
             "params": [
                 {
@@ -8207,7 +8214,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 121,
+            "line": 123,
             "description": "Rotate 'eye' about 'look' around the X-axis",
             "params": [
                 {
@@ -8222,7 +8229,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 145,
+            "line": 147,
             "description": "Rotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
             "params": [
                 {
@@ -8237,7 +8244,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 165,
+            "line": 167,
             "description": "Rotate 'eye' about 'look' around the X-axis",
             "params": [
                 {
@@ -8252,7 +8259,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 189,
+            "line": 191,
             "description": "Pans the camera along X and Y axis.",
             "params": [
                 {
@@ -8266,7 +8273,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 241,
+            "line": 243,
             "description": "Increments/decrements zoom factor, ie. distance between eye and look.",
             "params": [
                 {
@@ -8280,8 +8287,8 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 258,
-            "description": "Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.\n\nFires an {{#crossLink \"Lookat/gimbalLockY:event\"}}{{/crossLink}} event on change.",
+            "line": 260,
+            "description": "Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.\n\nFires a {{#crossLink \"Lookat/gimbalLockY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "gimbalLockY",
             "default": "false",
@@ -8292,7 +8299,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 274,
+            "line": 276,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/gimbalLockY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "gimbalLockY",
@@ -8308,7 +8315,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 288,
+            "line": 290,
             "description": "Position of this Lookat's eye.\n\nFires an {{#crossLink \"Lookat/eye:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "eye",
@@ -8320,7 +8327,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 311,
+            "line": 313,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "eye",
@@ -8336,7 +8343,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 325,
+            "line": 327,
             "description": "Position of this Lookat's point-of-interest.\n\nFires a {{#crossLink \"Lookat/look:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "look",
@@ -8348,7 +8355,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 348,
+            "line": 350,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "look",
@@ -8364,7 +8371,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 362,
+            "line": 364,
             "description": "Direction of the \"up\" vector.\nFires an {{#crossLink \"Lookat/up:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "up",
@@ -8376,7 +8383,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 383,
+            "line": 385,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/up:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "up",
@@ -8392,7 +8399,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 397,
+            "line": 399,
             "description": "The elements of this Lookat's view transform matrix.\n\nFires a {{#crossLink \"Lookat/matrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "matrix",
@@ -8403,7 +8410,7 @@
         },
         {
             "file": "src/camera/lookat.js",
-            "line": 441,
+            "line": 443,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is updated.",
             "itemtype": "event",
             "name": "matrix",
@@ -21322,27 +21329,27 @@
         },
         {
             "message": "Missing item type\nRotate 'eye' about 'look', around the 'up' vector",
-            "line": " src/camera/lookat.js:98"
+            "line": " src/camera/lookat.js:100"
         },
         {
             "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
-            "line": " src/camera/lookat.js:121"
+            "line": " src/camera/lookat.js:123"
         },
         {
             "message": "Missing item type\nRotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
-            "line": " src/camera/lookat.js:145"
+            "line": " src/camera/lookat.js:147"
         },
         {
             "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
-            "line": " src/camera/lookat.js:165"
+            "line": " src/camera/lookat.js:167"
         },
         {
             "message": "Missing item type\nPans the camera along X and Y axis.",
-            "line": " src/camera/lookat.js:189"
+            "line": " src/camera/lookat.js:191"
         },
         {
             "message": "Missing item type\nIncrements/decrements zoom factor, ie. distance between eye and look.",
-            "line": " src/camera/lookat.js:241"
+            "line": " src/camera/lookat.js:243"
         },
         {
             "message": "Missing item type\nAttributes for the WebGL context",
