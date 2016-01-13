@@ -5,15 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-    </style>
-
     <script src="../build/xeoengine.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -35,16 +26,38 @@
     var entities = [];
     var entity;
 
+    var torus = new XEO.TorusGeometry();
+
     for (var i = 0; i < 20; i++) {
 
         entity = new XEO.Entity({
 
-            transform: new XEO.Translate({
+            geometry: torus,
+
+            transform: new XEO.Scale({
                 xyz: [
-                    Math.random() * 15 - 7,
-                    Math.random() * 15 - 7,
-                    Math.random() * 15 - 7
-                ]
+                    0.5 + Math.random() * 2,
+                    0.5 + Math.random() * 2,
+                    0.5 + Math.random() * 2
+                ],
+
+                parent: new XEO.Rotate({
+                    xyz: [
+                        Math.random(),
+                        Math.random(),
+                        Math.random()
+                    ],
+                    angle: Math.random() * 360,
+
+                    parent: new XEO.Translate({
+                        xyz: [
+                            Math.random() * 15 - 7,
+                            Math.random() * 15 - 7,
+                            Math.random() * 15 - 7
+                        ]
+                    })
+                })
+
             }),
 
             material: new XEO.PhongMaterial({
@@ -65,6 +78,19 @@
         duration: 1.5
     });
 
+    // Target boundary indicator
+
+    var boundaryIndicator = new XEO.Entity({
+        geometry: new XEO.BoundaryGeometry({
+            boundary: entities[0].worldBoundary
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [1.0, 1.0, 0.0],
+            emissive: [1.0, 1.0, 0.0],
+            lineWidth: 4
+        })
+    });
+
     // Create a couple of camera controls so that
     // user can rotate and zoom camera while demo runs
 
@@ -74,25 +100,29 @@
 
     // Periodically highlight and fly to a randomly-selected entity
 
-    var prevObject;
-    var prevObjectDiffuse;
+    var prevEntity;
+    var prevEntityDiffuse;
 
     setInterval(function () {
 
-        if (prevObject) {
-            prevObject.material.diffuse = prevObjectDiffuse;
+        if (prevEntity) {
+            prevEntity.material.diffuse = prevEntityDiffuse;
         }
 
         entity = entities[Math.floor(Math.random() * 10)];
 
-        prevObject = entity;
-        prevObjectDiffuse = entity.material.diffuse;
+        prevEntity = entity;
+        prevEntityDiffuse = entity.material.diffuse;
 
         entity.material.diffuse = [1, 1, 0];
 
         var worldBoundary = entity.worldBoundary;
 
         flight.flyTo(worldBoundary);
+
+        // Set target boundary to the entity's OBB
+
+        boundaryIndicator.geometry.obb = worldBoundary.obb;
 
     }, 2000);
 

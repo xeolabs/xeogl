@@ -5,15 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-    </style>
-
     <script src="../build/xeoengine.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -97,7 +88,9 @@
         duration: 1.5
     });
 
-    var boundaryObject = new XEO.Entity({
+    // Target boundary indicator
+
+    var boundaryIndicator = new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
             boundary: entities[0].worldBoundary
         }),
@@ -117,25 +110,25 @@
 
     // Periodically highlight and fly to a randomly-selected entity
 
-    var prevObject;
-    var prevObjectDiffuse;
+    var prevEntity;
+    var prevEntityDiffuse;
 
     setInterval(function () {
 
-        if (prevObject) {
-            prevObject.material.diffuse = prevObjectDiffuse;
+        if (prevEntity) {
+            prevEntity.material.diffuse = prevEntityDiffuse;
         }
 
         entity = entities[Math.floor(Math.random() * numEntities)];
 
-        prevObject = entity;
-        prevObjectDiffuse = entity.material.diffuse;
+        prevEntity = entity;
+        prevEntityDiffuse = entity.material.diffuse;
 
         entity.material.diffuse = [1, 1, 0];
 
         flight.flyTo(entity);
 
-        boundaryObject.geometry.boundary = entity.worldBoundary;
+        boundaryIndicator.geometry.boundary = entity.worldBoundary;
 
     }, 2000);
 
