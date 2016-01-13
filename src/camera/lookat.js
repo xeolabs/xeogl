@@ -24,7 +24,8 @@
  var lookat = new XEO.Lookat(scene, {
         eye: [0, 0, -4],
         look: [0, 0, 0],
-        up: [0, 1, 0]
+        up: [0, 1, 0],
+        gimbalLockY: true // Rotate about world-space Y-axis (default is false)
     });
 
  var perspective = new XEO.Perspective(scene, {
@@ -63,6 +64,7 @@
  @param [cfg.eye=[0,0,-10]] {Array of Number} Eye position.
  @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
  @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
+ @param [cfg.gimbalLockY=false] {Boolean} Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
  @extends Component
  @author xeolabs / http://xeolabs.com/
  */
@@ -258,7 +260,7 @@
             /**
              * Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
              *
-             * Fires an {{#crossLink "Lookat/gimbalLockY:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Lookat/gimbalLockY:event"}}{{/crossLink}} event on change.
              *
              * @property gimbalLockY
              * @default false
