@@ -1,0 +1,1 @@
+This directory contains custom templates for the YUIDoc-generated API documentation pages in ../docs

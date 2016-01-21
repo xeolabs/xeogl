@@ -1,6 +1,6 @@
 {
   "Main features": [
-    "Entity-component scene graph API",
+    "Data-driven, entity-component scene graph",
     "Dynamically-editable scenes",
     "Fully-observable scene state",
     "[[JSON-persistable scene state|components_toJSON]]",

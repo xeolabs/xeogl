@@ -1,1 +1,1 @@
-Assets, such as images, that are linked to from API documentation pages in ../docs
+This directory contains assets (eg. images) that are used in the API documentation pages generated in ../docs

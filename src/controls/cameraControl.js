@@ -2,36 +2,39 @@
  A **CameraControl** pans, rotates and zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse and keyboard,
  as well as switches it between preset left, right, anterior, posterior, superior and inferior views.
 
- A CameraControl is comprised of the following control components, which each handle an aspect of interaction:
+ A CameraControl contains the following control sub-components, each of which handle an aspect of interaction:
 
  <ul>
- <li>panning - {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} and {{#crossLink "MousePanCamera"}}{{/crossLink}}</li>
- <li>rotation - {{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} and {{#crossLink "MouseRotateCamera"}}{{/crossLink}}</li>
- <li>zooming - {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} and {{#crossLink "MouseZoomCamera"}}{{/crossLink}}</li>
- <li>switching preset views - {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}}</li>
- <li>picking - {{#crossLink "MousePickEntity"}}{{/crossLink}}</li>
- <li>camera flight animation - {{#crossLink "CameraFlight"}}{{/crossLink}}</li>
+ <li>{{#crossLink "KeyboardPanCamera"}}{{/crossLink}} pans the camera with the W,S,A,D,X and Z keys</li>
+ <li>{{#crossLink "MousePanCamera"}}{{/crossLink}} pans horizontally and vertically by dragging the mouse with left and right buttons down</li>
+ <li>{{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} rotates the camera with the arrow keys</li>
+ <li>{{#crossLink "MouseRotateCamera"}}{{/crossLink}} rotates the camera by dragging with the left mouse button down</li>
+ <li>{{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} zooms the *eye* position closer and further from the *look* position with the + and - keys</li>
+ <li>{{#crossLink "MouseZoomCamera"}}{{/crossLink}} zooms the *eye* closer and further from *look* using the mousewheel</li>
+ <li>{{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} between preset left, right, anterior, posterior, superior and inferior views using keys 1-6</li>
+ <li>{{#crossLink "MousePickEntity"}}{{/crossLink}} TODO</li>
+ <li>{{#crossLink "CameraFlight"}}{{/crossLink}} TODO</li>
  </ul>
 
- A CameraControl provides the controls as read-only properties, in case you need to configure or deactivate
- them individually.
+ A CameraControl provides these control sub-components as read-only properties, which allows them to be individually configured (or deactivated) as required.
 
  <ul>
- <li>Activating or deactivating the CameraControl will activate/deactivate all the controls in unison.</li>
+ <li>Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.</li>
  <li>Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
- {{#crossLink "Camera"}}{{/crossLink}} to all the controls.</li>
- <li>The controls are not intended to be attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.</li>
- <li>The CameraControl manages the lifecycles of the controls, destroying them when the CameraControl is destroyed.</li>
+ {{#crossLink "Camera"}}{{/crossLink}} to all the control sub-components.</li>
+ <li>The control sub-components are not supposed to be re-attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.</li>
+ <li>A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.</li>
  </ul>
+
+ <br><br>
+ <img src="../../../assets/images/CameraControl.png"></img>
 
  ## Example
 
  ````Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera();
 
- var camera = new XEO.Camera(scene);
-
- var cameraControl = new XEO.CameraControl(scene, {
+ var cameraControl = new XEO.CameraControl({
 
         camera: camera,
 
@@ -44,10 +47,12 @@
  cameraControl.mouseRotate.sensitivity = 0.7;
 
  // Deactivate switching between preset views
- cameraControl.axisCamera.active = false;
+ cameraControl.keyboardAxis.active = false;
 
  // Create a Entity
- var entity = new XEO.Entity(scene);
+ var entity = new XEO.Entity({
+    camera: camera
+ });
  ````
 
  @class CameraControl
@@ -144,7 +149,7 @@
             /**
              * The {{#crossLink "MouseRotateCamera"}}{{/crossLink}} within this CameraControl.
              *
-             * @property mouseOrbit
+             * @property mouseRotate
              * @final
              * @type MouseRotateCamera
              */

@@ -12,13 +12,28 @@
  A target can be:
 
  <ul>
+ <li>specific ````eye````, ````look```` and ````up```` positions,</li>
  <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
  <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
  {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
- <li>specific ````eye````, ````look```` and ````up```` positions.</li>
+ <li>an axis-aligned World-space bounding box.</li>
+
  </ul>
 
- ## Example #1
+ ### Example 1: Flying to a position
+
+ Flying the CameraFlight from the previous example to specified eye, look and up positions:
+
+ ````Javascript
+ cameraFlight.flyTo({
+    eye: [-5,-5,-5],
+    look: [0,0,0]
+    up: [0,1,0]
+ }, function() {
+    // Arrived
+ });
+ ````
+ ### Example 2: Flying to an Entity
 
  Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
  {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property):
@@ -40,21 +55,7 @@
  cameraFlight.flyTo(entity);
  ````
 
- ## Example #2
-
- Flying the CameraFlight from the previous example to specified eye, look and up positions:
-
- ````Javascript
- cameraFlight.flyTo({
-    eye: [-5,-5,-5],
-    look: [0,0,0]
-    up: [0,1,0]
- }, function() {
-    // Arrived
- });
- ````
-
- ## Example #3
+ ### Example 3: Flying to a Boundary3D
 
  Flying the CameraFlight from the previous two examples explicitly to the World-space
  {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "Entity"}}{{/crossLink}} property):
@@ -65,7 +66,7 @@
  cameraFlight.flyTo(worldBoundary);
  ````
 
- ## Example #4
+ ### Example 4: Flying to an AABB
 
  Flying the CameraFlight from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
  axis-aligned bounding box:

@@ -1,5 +1,5 @@
 /**
- A **KeyboardPanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the W, S, A and D keys.
+ A **KeyboardPanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the W,S,A,D,X and Z keys.
 
  ## Overview
 

@@ -27,26 +27,24 @@
  <li>three Textures,</li>
  <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
+ <li>a {{#crossLink "BoxGeometry"}}{{/crossLink}}, and
  <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ```` javascript
- var scene = new XEO.Scene();
-
- var texture1 = new XEO.Texture(scene, {
+ var texture1 = new XEO.Texture({
     src: "diffuseMap.jpg"
  });
 
- var texture2 = new XEO.Texture(scene, {
+ var texture2 = new XEO.Texture({
     src: "normalMap.jpg"
  });
 
- var texture3 = new XEO.Texture(scene, {
+ var texture3 = new XEO.Texture({
     src: "specularMap.jpg"
 });
 
- var material = new XEO.PhongMaterial(scene, {
+ var material = new XEO.PhongMaterial({
     ambient: [0.3, 0.3, 0.3],
     shininess: 30,
     diffuseMap: texture1,
@@ -54,26 +52,25 @@
     specularMap: texture3
 });
 
- var light1 = new XEO.PointLight(scene, {
+ var light1 = new XEO.PointLight({
     pos: [0, 100, 100],
     color: [0.5, 0.7, 0.5]
 });
 
- var light2 = new XEO.AmbientLight(scene, {
+ var light2 = new XEO.AmbientLight({
     color: [0.5, 0.7, 0.5]
 });
 
- var lights = new XEO.Lights(scene, {
+ var lights = new XEO.Lights({
     lights: [
         light1,
         light2
     ]
 });
 
- // Geometry without parameters will default to a 2x2x2 box.
- var geometry = new XEO.Geometry(scene);
+ var geometry = new XEO.BoxGeometry();
 
- var entity = new XEO.Entity(scene, {
+ var entity = new XEO.Entity({
     lights: lights,
     material: material,
     geometry: geometry

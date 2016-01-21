@@ -1102,10 +1102,10 @@
              * Set true to make this Geometry automatically generate {{#crossLink "Geometry/normals:property"}}{{/crossLink}} from
              * {{#crossLink "Geometry/positions:property"}}{{/crossLink}} and {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
              *
-             * This Geomatry will auto-generate its {{#crossLink "Geometry/normals:property"}}{{/crossLink}} on the
+             * When true, causes this Geometry to auto-generate its {{#crossLink "Geometry/normals:property"}}{{/crossLink}} on the
              * next {{#crossLink "Scene"}}{{/crossLink}} {{#crossLink "Scene/tick:event"}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink "Geometry/autoNormals:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Geometry/autoNormals:event"}}{{/crossLink}} event on change.
              *
              * @property autoNormals
              * @default  false
