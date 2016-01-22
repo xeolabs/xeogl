@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-01-12
+ * Built on 2016-01-22
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -11997,13 +11997,28 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  A target can be:
 
  <ul>
+ <li>specific ````eye````, ````look```` and ````up```` positions,</li>
  <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
  <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
  {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
- <li>specific ````eye````, ````look```` and ````up```` positions.</li>
+ <li>an axis-aligned World-space bounding box.</li>
+
  </ul>
 
- ## Example #1
+ ### Example 1: Flying to a position
+
+ Flying the CameraFlight from the previous example to specified eye, look and up positions:
+
+ ````Javascript
+ cameraFlight.flyTo({
+    eye: [-5,-5,-5],
+    look: [0,0,0]
+    up: [0,1,0]
+ }, function() {
+    // Arrived
+ });
+ ````
+ ### Example 2: Flying to an Entity
 
  Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
  {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property):
@@ -12025,21 +12040,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  cameraFlight.flyTo(entity);
  ````
 
- ## Example #2
-
- Flying the CameraFlight from the previous example to specified eye, look and up positions:
-
- ````Javascript
- cameraFlight.flyTo({
-    eye: [-5,-5,-5],
-    look: [0,0,0]
-    up: [0,1,0]
- }, function() {
-    // Arrived
- });
- ````
-
- ## Example #3
+ ### Example 3: Flying to a Boundary3D
 
  Flying the CameraFlight from the previous two examples explicitly to the World-space
  {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "Entity"}}{{/crossLink}} property):
@@ -12050,7 +12051,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  cameraFlight.flyTo(worldBoundary);
  ````
 
- ## Example #4
+ ### Example 4: Flying to an AABB
 
  Flying the CameraFlight from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
  axis-aligned bounding box:
@@ -13267,7 +13268,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  var lookat = new XEO.Lookat(scene, {
         eye: [0, 0, -4],
         look: [0, 0, 0],
-        up: [0, 1, 0]
+        up: [0, 1, 0],
+        gimbalLockY: true // Rotate about world-space Y-axis (default is false)
     });
 
  var perspective = new XEO.Perspective(scene, {
@@ -13306,6 +13308,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg.eye=[0,0,-10]] {Array of Number} Eye position.
  @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
  @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
+ @param [cfg.gimbalLockY=false] {Boolean} Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
  @extends Component
  @author xeolabs / http://xeolabs.com/
  */
@@ -13501,7 +13504,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             /**
              * Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
              *
-             * Fires an {{#crossLink "Lookat/gimbalLockY:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Lookat/gimbalLockY:event"}}{{/crossLink}} event on change.
              *
              * @property gimbalLockY
              * @default false
@@ -15414,36 +15417,39 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  A **CameraControl** pans, rotates and zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse and keyboard,
  as well as switches it between preset left, right, anterior, posterior, superior and inferior views.
 
- A CameraControl is comprised of the following control components, which each handle an aspect of interaction:
+ A CameraControl contains the following control sub-components, each of which handle an aspect of interaction:
 
  <ul>
- <li>panning - {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} and {{#crossLink "MousePanCamera"}}{{/crossLink}}</li>
- <li>rotation - {{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} and {{#crossLink "MouseRotateCamera"}}{{/crossLink}}</li>
- <li>zooming - {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} and {{#crossLink "MouseZoomCamera"}}{{/crossLink}}</li>
- <li>switching preset views - {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}}</li>
- <li>picking - {{#crossLink "MousePickEntity"}}{{/crossLink}}</li>
- <li>camera flight animation - {{#crossLink "CameraFlight"}}{{/crossLink}}</li>
+ <li>{{#crossLink "KeyboardPanCamera"}}{{/crossLink}} pans the camera with the W,S,A,D,X and Z keys</li>
+ <li>{{#crossLink "MousePanCamera"}}{{/crossLink}} pans horizontally and vertically by dragging the mouse with left and right buttons down</li>
+ <li>{{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} rotates the camera with the arrow keys</li>
+ <li>{{#crossLink "MouseRotateCamera"}}{{/crossLink}} rotates the camera by dragging with the left mouse button down</li>
+ <li>{{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} zooms the *eye* position closer and further from the *look* position with the + and - keys</li>
+ <li>{{#crossLink "MouseZoomCamera"}}{{/crossLink}} zooms the *eye* closer and further from *look* using the mousewheel</li>
+ <li>{{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} between preset left, right, anterior, posterior, superior and inferior views using keys 1-6</li>
+ <li>{{#crossLink "MousePickEntity"}}{{/crossLink}} TODO</li>
+ <li>{{#crossLink "CameraFlight"}}{{/crossLink}} TODO</li>
  </ul>
 
- A CameraControl provides the controls as read-only properties, in case you need to configure or deactivate
- them individually.
+ A CameraControl provides these control sub-components as read-only properties, which allows them to be individually configured (or deactivated) as required.
 
  <ul>
- <li>Activating or deactivating the CameraControl will activate/deactivate all the controls in unison.</li>
+ <li>Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.</li>
  <li>Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
- {{#crossLink "Camera"}}{{/crossLink}} to all the controls.</li>
- <li>The controls are not intended to be attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.</li>
- <li>The CameraControl manages the lifecycles of the controls, destroying them when the CameraControl is destroyed.</li>
+ {{#crossLink "Camera"}}{{/crossLink}} to all the control sub-components.</li>
+ <li>The control sub-components are not supposed to be re-attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.</li>
+ <li>A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.</li>
  </ul>
+
+ <br><br>
+ <img src="../../../assets/images/CameraControl.png"></img>
 
  ## Example
 
  ````Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera();
 
- var camera = new XEO.Camera(scene);
-
- var cameraControl = new XEO.CameraControl(scene, {
+ var cameraControl = new XEO.CameraControl({
 
         camera: camera,
 
@@ -15456,10 +15462,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  cameraControl.mouseRotate.sensitivity = 0.7;
 
  // Deactivate switching between preset views
- cameraControl.axisCamera.active = false;
+ cameraControl.keyboardAxis.active = false;
 
  // Create a Entity
- var entity = new XEO.Entity(scene);
+ var entity = new XEO.Entity({
+    camera: camera
+ });
  ````
 
  @class CameraControl
@@ -15556,7 +15564,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             /**
              * The {{#crossLink "MouseRotateCamera"}}{{/crossLink}} within this CameraControl.
              *
-             * @property mouseOrbit
+             * @property mouseRotate
              * @final
              * @type MouseRotateCamera
              */
@@ -16464,7 +16472,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
 })();
 ;/**
- A **KeyboardPanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the W, S, A and D keys.
+ A **KeyboardPanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the W,S,A,D,X and Z keys.
 
  ## Overview
 
@@ -20799,10 +20807,10 @@ visibility.destroy();
              * Set true to make this Geometry automatically generate {{#crossLink "Geometry/normals:property"}}{{/crossLink}} from
              * {{#crossLink "Geometry/positions:property"}}{{/crossLink}} and {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
              *
-             * This Geomatry will auto-generate its {{#crossLink "Geometry/normals:property"}}{{/crossLink}} on the
+             * When true, causes this Geometry to auto-generate its {{#crossLink "Geometry/normals:property"}}{{/crossLink}} on the
              * next {{#crossLink "Scene"}}{{/crossLink}} {{#crossLink "Scene/tick:event"}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink "Geometry/autoNormals:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Geometry/autoNormals:event"}}{{/crossLink}} event on change.
              *
              * @property autoNormals
              * @default  false
@@ -23765,20 +23773,24 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
 })();
 ;/**
- * Components for managing groups of components.
+ * Components for managing collections of components.
  *
  * @module XEO
- * @submodule grouping
+ * @submodule collections
  */;/**
- A **Group** is a collection of {{#crossLink "Component"}}Components{{/crossLink}}.
+ A **Collection** is a general-purpose group of {{#crossLink "Component"}}Components{{/crossLink}}.
 
  ## Overview
 
  <ul>
- <li>Supports addition and removal of {{#crossLink "Component"}}Components{{/crossLink}} by instance, ID or type.</li>
+ <li>A {{#crossLink "Component"}}Component{{/crossLink}} can be included in more than one Collection.</li>
+ <li>{{#crossLink "Component"}}Components{{/crossLink}} can be added to a Collection by instance, ID or type.</li>
+ <li>A Collection supports iteration over its {{#crossLink "Component"}}Components{{/crossLink}}.</li>
+ <li>A {{#crossLink "Model"}}Model{{/crossLink}} stores the {{#crossLink "Component"}}Components{{/crossLink}} it has loaded in a Collection.</li>
+ <li>A {{#crossLink "CollectionBoundary"}}CollectionBoundary{{/crossLink}} can be used to track the World-space bounding box that encloses a Collection.</li>
  </ul>
 
- <img src="../../../assets/images/Group.png"></img>
+ <img src="../../../assets/images/Collection.png"></img>
 
  ## Example
 
@@ -23797,10 +23809,10 @@ XEO.PathGeometry = XEO.Geometry.extend({
     geometry: geometry
  });
 
- // Our first group contains the Material, added by ID,
+ // Our first collection contains the Material, added by ID,
  // plus the Geometry and Entity, both added by instance.
 
- var group1 = new XEO.Group({ // Initialize with three components
+ var collection1 = new XEO.Collection({ // Initialize with three components
     components: [
         "myMaterial",
         geometry,
@@ -23808,44 +23820,44 @@ XEO.PathGeometry = XEO.Geometry.extend({
     ]
  });
 
- // Our second Group includes the geometry, added by instance,
+ // Our second Collection includes the geometry, added by instance,
  // and the Entity, added by type. If there were more than
  // one Entity in the scene, then that type would ensure
- // that all the Entities were in the Group.
+ // that all the Entities were in the Collection.
 
- var group2 = new XEO.Group();
+ var collection2 = new XEO.Collection();
 
- group2.add([  // Add two components
+ collection2.add([  // Add two components
     geometry,
     "XEO.Entity",
  ]);
 
- // We can iterate over the components in a Group like so:
+ // We can iterate over the components in a Collection like so:
 
- group1.iterate(
+ collection1.iterate(
     function(component) {
         //..
     });
 
- // And remove components from a Group
+ // And remove components from a Collection
  // by instance, ID or type:
 
- group1.remove("myMaterial"); // Remove one component by ID
- group1.remove([geometry, Entity]); // Remove two components by instance
+ collection1.remove("myMaterial"); // Remove one component by ID
+ collection1.remove([geometry, Entity]); // Remove two components by instance
 
- group2.remove("XEO.Geometry"); // Remove all Geometries
+ collection2.remove("XEO.Geometry"); // Remove all Geometries
  ````
 
  TODO
 
- @class Group
+ @class Collection
  @module XEO
- @submodule grouping
+ @submodule collections
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Component} Optional map of user-defined metadata to attach to this Group.
+ @param [cfg.meta] {String:Component} Optional map of user-defined metadata to attach to this Collection.
  @param [cfg.components] {{Array of String|Component}} Array of {{#crossLink "Component"}}{{/crossLink}} IDs or instances.
  @extends Component
  */
@@ -23853,7 +23865,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
     "use strict";
 
-    XEO.Group = XEO.Component.extend({
+    XEO.Collection = XEO.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -23862,14 +23874,14 @@ XEO.PathGeometry = XEO.Geometry.extend({
          @type String
          @final
          */
-        type: "XEO.Group",
+        type: "XEO.Collection",
 
         _init: function (cfg) {
 
             /**
-             * The {{#crossLink "Components"}}{{/crossLink}} within this Group, mapped to their IDs.
+             * The {{#crossLink "Components"}}{{/crossLink}} within this Collection, mapped to their IDs.
              *
-             * Fires an {{#crossLink "Group/updated:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "Collection/updated:event"}}{{/crossLink}} event on change.
              *
              * @property components
              * @type {{String:Component}}
@@ -23877,7 +23889,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             this.components = {};
 
             /**
-             * The number of {{#crossLink "Components"}}{{/crossLink}} within this Group.
+             * The number of {{#crossLink "Components"}}{{/crossLink}} within this Collection.
              *
              * @property numComponents
              * @type Number
@@ -23885,7 +23897,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             this.numComponents = 0;
 
             /**
-             * A map of maps; for each {{#crossLink "Component"}}{{/crossLink}} type in this Group,
+             * A map of maps; for each {{#crossLink "Component"}}{{/crossLink}} type in this Collection,
              * a map to IDs to {{#crossLink "Component"}}{{/crossLink}} instances, eg.
              *
              * ````
@@ -23915,15 +23927,15 @@ XEO.PathGeometry = XEO.Geometry.extend({
         },
 
         /**
-         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}}s to this Group.
+         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}}s to this Collection.
          *
          * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
          *
          * See class comment for usage examples.
          *
-         * The {{#crossLink "Component"}}Components{{/crossLink}} must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Group.
+         * The {{#crossLink "Component"}}Components{{/crossLink}} must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Collection.
          *
-         * Fires an {{#crossLink "Group/added:event"}}{{/crossLink}} event.
+         * Fires an {{#crossLink "Collection/added:event"}}{{/crossLink}} event.
          *
          * @method add
          * @param {Array of Component} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
@@ -24002,7 +24014,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             if (this.components[component.id]) {
 
-                // Component already in this Group
+                // Component already in this Collection
                 return;
             }
 
@@ -24030,7 +24042,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 });
 
             /**
-             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is added to this {{#crossLink "Group"}}{{/crossLink}}.
+             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is added to this {{#crossLink "Collection"}}{{/crossLink}}.
              * @event added
              * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was added.
              */
@@ -24053,7 +24065,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             /* Fired on the next {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} whenever
              * {{#crossLink "Component"}}Components{{/crossLink}} were added or removed since the
              * last {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} event, to provide a batched change event
-             * for subscribers who don't want to react to every individual addition or removal on this Group.
+             * for subscribers who don't want to react to every individual addition or removal on this Collection.
              *
              * @event updated
              */
@@ -24062,9 +24074,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
         },
 
         /**
-         * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Group.
+         * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Collection.
          *
-         * Fires an {{#crossLink "Group/updated:event"}}{{/crossLink}} event.
+         * Fires an {{#crossLink "Collection/updated:event"}}{{/crossLink}} event.
          *
          * @method clear
          */
@@ -24076,7 +24088,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
         },
 
         /**
-         * Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Group.
+         * Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Collection.
          *
          * @method destroyAll
          */
@@ -24088,13 +24100,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
         },
 
         /**
-         * Removes one or more {{#crossLink "Component"}}Components{{/crossLink}} from this Group.
+         * Removes one or more {{#crossLink "Component"}}Components{{/crossLink}} from this Collection.
          *
          * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
          *
          * See class comment for usage examples.
          *
-         * Fires a {{#crossLink "Group/removed:event"}}{{/crossLink}} event.
+         * Fires a {{#crossLink "Collection/removed:event"}}{{/crossLink}} event.
          *
          * @method remove
          * @param {Array of Components} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
@@ -24136,7 +24148,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             this.numComponents--;
 
             /**
-             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is removed from this {{#crossLink "Group"}}{{/crossLink}}.
+             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is removed from this {{#crossLink "Collection"}}{{/crossLink}}.
              * @event removed
              * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was removed.
              */
@@ -24148,11 +24160,11 @@ XEO.PathGeometry = XEO.Geometry.extend({
         },
 
         /**
-         * Iterates with a callback over the {{#crossLink "Component"}}Components{{/crossLink}} in this Group.
+         * Iterates with a callback over the {{#crossLink "Component"}}Components{{/crossLink}} in this Collection.
          *
          * @method iterate
          * @param {Function} callback Callback called for each {{#crossLink "Component"}}{{/crossLink}}.
-         * @param {Object} [scope=this] Optional scope for the callback, defaults to this Group.
+         * @param {Object} [scope=this] Optional scope for the callback, defaults to this Collection.
          */
         iterate: function (callback, scope) {
             scope = scope || this;
@@ -27359,9 +27371,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
     XEO.GLTFLoader = Object.create(glTFParser, {
 
-        setGroup: {
-            value: function (group) {
-                this.group = group;
+        setCollection: {
+            value: function (collection) {
+                this.collection = collection;
             }
         },
 
@@ -27369,8 +27381,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             enumerable: true,
             value: function (userInfo, options, ok) {
 
-                if (!this.group) {
-                    throw "group not set";
+                if (!this.collection) {
+                    throw "collection not set";
                 }
 
                 this.resources = new Resources();
@@ -27424,7 +27436,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 var image = this._json.images[description.source];
 
-                var texture = new XEO.Texture(this.group.scene, {
+                var texture = new XEO.Texture(this.collection.scene, {
                     src: image.uri
                 });
 
@@ -27490,9 +27502,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     }
                 }
 
-                var material = new XEO.PhongMaterial(this.group.scene, cfg);
+                var material = new XEO.PhongMaterial(this.collection.scene, cfg);
 
-                this.group.add(material);
+                this.collection.add(material);
 
                 this.resources.setEntry(entryID, material, description);
 
@@ -27527,7 +27539,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
-                        var geometry = new XEO.Geometry(this.group.scene, {
+                        var geometry = new XEO.Geometry(this.collection.scene, {
                             id: this._makeID(entryID + "-geo" + i)
                         });
 
@@ -27653,43 +27665,43 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 if (node.matrix) {
                     var matrix = node.matrix;
-                    transform = new XEO.Transform(this.group.scene, {
+                    transform = new XEO.Transform(this.collection.scene, {
                         //id: this._makeID(nodeId + ".transform"),
                         matrix: matrix,
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.translation) {
                     var translation = node.translation;
-                    transform = new XEO.Translate(this.group.scene, {
+                    transform = new XEO.Translate(this.collection.scene, {
                         //id: this._makeID(nodeId + ".translation"),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.rotation) {
                     var rotation = node.rotation;
-                    transform = new XEO.Translate(this.group.scene, {
+                    transform = new XEO.Translate(this.collection.scene, {
                         //id: this._makeID(nodeId + ".rotation"),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.scale) {
                     var scale = node.scale;
-                    transform = new XEO.Scale(this.group.scene, {
+                    transform = new XEO.Scale(this.collection.scene, {
                         //id: this._makeID(nodeId + ".scale"),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.meshes) {
@@ -27717,7 +27729,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
 
-                            entity = new XEO.Entity(this.group.scene, {
+                            entity = new XEO.Entity(this.collection.scene, {
                                 //id: this._makeID(nodeId + ".entity" + i),
                                 meta: {
                                     name: node.name
@@ -27727,7 +27739,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                                 transform: transform
                             });
 
-                            this.group.add(entity);
+                            this.collection.add(entity);
                         }
                     }
                 }
@@ -27755,55 +27767,116 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     var glTFLoader = XEO.GLTFLoader;
 
     /**
-     A **Model** component loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent {{#crossLink "Scene"}}{{/crossLink}}.
+     A **Model** loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent {{#crossLink "Scene"}}{{/crossLink}}.
 
-     <ul><li>A Model component begins loading content into its {{#crossLink "Scene"}}{{/crossLink}} as soon as it's {{#crossLink "Model/src:property"}}{{/crossLink}}
-     property is set to a file path.</li>
-     <li>A Model keeps all the scene components it has loaded in a {{#crossLink "Group"}}{{/crossLink}}.</li>
-     <li>You can set a Model's {{#crossLink "Model/src:property"}}{{/crossLink}} property to a new file path at any time, causing the Model
-     to load components from the new file path (after destroying any components that it had loaded from the previous file path).</li>
+     <ul><li>A Model begins loading as soon as it's {{#crossLink "Model/src:property"}}{{/crossLink}}
+     property is set to the location of a valid glTF file.</li>
+     <li>A Model keeps all its loaded components in a {{#crossLink "Collection"}}{{/crossLink}}.</li>
+     <li>You can set a Model's {{#crossLink "Model/src:property"}}{{/crossLink}} property to a new file path at any time,
+     which will cause it to load components from the new file, after destroying any components loaded previously.</li>
      </ul>
 
      <img src="../../../assets/images/Model.png"></img>
 
-     ## Example
+     ### Loading a glTF file
 
-     First, create a Model, which immediately loads a glTF model into the default {{#crossLink "Scene"}}{{/crossLink}}:
+     First, create a Model, which immediately loads a glTF model into its {{#crossLink "Scene"}}{{/crossLink}} (which in this case is the default {{#crossLink "Scene"}}{{/crossLink}}, since we didn't explicitly configure the Model with one):
 
      ````javascript
-     var myModel = new XEO.Model({
+     var gearboxModel = new XEO.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
      });
      ````
 
-     The Model has a {{#crossLink "Group"}}{{/crossLink}} which now contains all the scene components
-     it created while loading the glTF file.
-
-     Let's iterate over the {{#crossLink "Group"}}{{/crossLink}} and log the ID of each
-     {{#crossLink "Entity"}}{{/crossLink}} we find in there:
+     We can bind a callback, to get notification when the Model has loaded, which will
+     fire immediately if the Model happens to be loaded already:
 
      ````javascript
-     myModel.group.iterate(function(c) {
+     gearboxModel.on("loaded",
+         function() {
+             // Model has loaded!
+         });
+     ````
+
+     ### Iterating over loaded components
+
+     The Model's {{#crossLink "Collection"}}{{/crossLink}} which now contains all the scene components
+     it created while loading the glTF file.
+
+     Let's iterate over the {{#crossLink "Collection"}}{{/crossLink}} and log the ID of each
+     {{#crossLink "Entity"}}{{/crossLink}} we that find in there:
+
+     ````javascript
+     gearboxModel.collection.iterate(function(c) {
          if (c.type === "XEO.Entity") {
              this.log("Entity found: " + c.id);
          }
      });
      ````
 
+     ### Getting the boundary of a Model
+
+     To visualize the World-space boundary of a Model, we can create a {{#crossLink "CollectionBoundary"}}{{/crossLink}},
+     generate a {{#crossLink "BoundaryGeometry"}}{{/crossLink}} from that, then create an {{#crossLink "Entity"}}{{/crossLink}}
+     to visualize the {{#crossLink "BoundaryGeometry"}}{{/crossLink}}:
+
+     ````javascript
+     var collectionBoundary = new XEO.CollectionBoundary({
+         collection: model.collection
+     });
+
+     var boundaryGeometry = new XEO.BoundaryGeometry({
+         boundary: collectionBoundary.worldBoundary
+     });
+
+     // The Entity will be a red wireframe box indicating the
+     // extents of the boundary
+
+     new XEO.Entity({
+         geometry: boundaryGeometry,
+         material: new XEO.PhongMaterial({
+             diffuse: [1,0,0]
+         })
+     });
+     ````
+
+     Now whenever we set the Model to a new file (see example below), the World-space boundary will automatically update accordingly, as will
+     our boundary indicator {{#crossLink "Entity"}}{{/crossLink}}.
+
+     ### Flying the Camera to look at a Model
+
+     To position the Model entirely within view, we can use a {{#crossLink "CameraFlight"}}{{/crossLink}} to fly the {{#crossLink "Camera"}}{{/crossLink}} (in this case the default, implicit one) to look at the World-space extents of our {{#crossLink "CollectionBoundary"}}{{/crossLink}}:
+
+     ````javascript
+     var flight = new XEO.CameraFlight({
+        duration: 1.5
+     });
+
+     flight.flyTo(collectionBoundary.worldBoundary,
+         function() {
+             // Optional callback to fire on arrival
+         });
+
+     ````
+
+     ### Switching to a different glTF file
+
      Let's set the Model to a different file path:
 
      ````javascript
-     myModel.src = "models/gltf/buggy/buggy.gltf"
+     gearboxModel.src = "models/gltf/buggy/buggy.gltf"
      ````
 
-     Once loaded, the {{#crossLink "Group"}}{{/crossLink}} will then contain an entirely different collection of scene
+     Once loaded, the {{#crossLink "Collection"}}{{/crossLink}} will then contain an entirely different collection of scene
      components, created from this new glTF file.
+
+     ### Destroying a Model
 
      Finally, a Model manages the lifecycle of it's components. Therefore, destroying a Model also destroys all the
      components it loaded:
 
      ````javascript
-     myModel.destroy();
+     gearboxModel.destroy();
      ````
 
      @class Model
@@ -27819,11 +27892,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
             this._super(cfg);
 
-            // The XEO.Group that will hold all the components
+            // The XEO.Collection that will hold all the components
             // we create from the glTF model; this will be available
-            // as a public, immutable #group property
+            // as a public, immutable #collection property
 
-            this._group = new XEO.Group(this.scene);
+            this._collection = new XEO.Collection(this.scene);
 
             this._src = null;
 
@@ -27844,6 +27917,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
             /**
              Path to the glTF file.
+
+             You can set this to a new file path at any time, which will cause the Model to load components from
+             the new file (after first destroying any components loaded from a previous file path).
 
              Fires a {{#crossLink "Model/src:event"}}{{/crossLink}} event on change.
 
@@ -27867,8 +27943,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     this._src = value;
 
-                    glTFLoader.setGroup(this._group);
-                    glTFLoader.initWithPath(value);
+                    glTFLoader.setCollection(this._collection);
+                    glTFLoader.initWithPath(this._src);
 
                     var self = this;
                     var userInfo = null;
@@ -27876,11 +27952,17 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     glTFLoader.load(userInfo, options,
                         function () {
+
+                            /**
+                             Fired whenever this Model has finished loading components from the glTF file
+                             specified by {{#crossLink "Model/src:property"}}{{/crossLink}}.
+                             @event loaded
+                             */
                             self.fire("loaded");
                         });
 
                     /**
-                     Fired whenever this Model's  {{#crossLink "GLTF/src:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Model's {{#crossLink "Model/src:property"}}{{/crossLink}} property changes.
                      @event src
                      @param value The property's new value
                      */
@@ -27893,16 +27975,22 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * {{#crossLink "Group"}}{{/crossLink}} containing all the xeoEngine components currently loaded by this Model.
+             * A {{#crossLink "Collection"}}{{/crossLink}} containing the scene components loaded by this Model.
              *
-             * @property group
-             * @type Group
+             * Whenever {{#crossLink "Model/src:property"}}{{/crossLink}} is set to the location of a valid glTF file,
+             * and once the file has been loaded, this {{#crossLink "Collection"}}{{/crossLink}} will contain whatever
+             * components were loaded from that file.
+             *
+             * Note that prior to loading the file, the Model will destroy any components in the {{#crossLink "Collection"}}{{/crossLink}}.
+             *
+             * @property collection
+             * @type Collection
              * @final
              */
-            group: {
+            collection: {
 
                 get: function () {
-                    return this._group;
+                    return this._collection;
                 }
             }
         },
@@ -27911,7 +27999,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
             var c = [];
 
-            this._group.iterate(
+            this._collection.iterate(
                 function (component) {
                     c.push(component);
                 });
@@ -29089,26 +29177,24 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <li>three Textures,</li>
  <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Texture"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>
  <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
+ <li>a {{#crossLink "BoxGeometry"}}{{/crossLink}}, and
  <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
  </ul>
 
  ```` javascript
- var scene = new XEO.Scene();
-
- var texture1 = new XEO.Texture(scene, {
+ var texture1 = new XEO.Texture({
     src: "diffuseMap.jpg"
  });
 
- var texture2 = new XEO.Texture(scene, {
+ var texture2 = new XEO.Texture({
     src: "normalMap.jpg"
  });
 
- var texture3 = new XEO.Texture(scene, {
+ var texture3 = new XEO.Texture({
     src: "specularMap.jpg"
 });
 
- var material = new XEO.PhongMaterial(scene, {
+ var material = new XEO.PhongMaterial({
     ambient: [0.3, 0.3, 0.3],
     shininess: 30,
     diffuseMap: texture1,
@@ -29116,26 +29202,25 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     specularMap: texture3
 });
 
- var light1 = new XEO.PointLight(scene, {
+ var light1 = new XEO.PointLight({
     pos: [0, 100, 100],
     color: [0.5, 0.7, 0.5]
 });
 
- var light2 = new XEO.AmbientLight(scene, {
+ var light2 = new XEO.AmbientLight({
     color: [0.5, 0.7, 0.5]
 });
 
- var lights = new XEO.Lights(scene, {
+ var lights = new XEO.Lights({
     lights: [
         light1,
         light2
     ]
 });
 
- // Geometry without parameters will default to a 2x2x2 box.
- var geometry = new XEO.Geometry(scene);
+ var geometry = new XEO.BoxGeometry();
 
- var entity = new XEO.Entity(scene, {
+ var entity = new XEO.Entity({
     lights: lights,
     material: material,
     geometry: geometry
@@ -34988,7 +35073,7 @@ myTask2.setFailed();
  * An {{#crossLink "Entity/viewBoundary:property"}}Entity's viewBoundary{{/crossLink}} provides a **View**-space boundary that encloses
  its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
  their transformation by both the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}} **and** {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}.
- * A {{#crossLink "GroupBoundary/worldBoundary:property"}}GroupBoundary's worldBoundary{{/crossLink}} provides a **World**-space boundary that encloses all the {{#crossLink "Entity"}}Entities{{/crossLink}} contained within its {{#crossLink "Group"}}Group{{/crossLink}}.
+ * A {{#crossLink "CollectionBoundary/worldBoundary:property"}}CollectionBoundary's worldBoundary{{/crossLink}} provides a **World**-space boundary that encloses all the {{#crossLink "Entity"}}Entities{{/crossLink}} contained within its {{#crossLink "Collection"}}Collection{{/crossLink}}.
 
  Also shown in the diagram is an {{#crossLink "Entity/canvasBoundary:property"}}Entity's canvasBoundary{{/crossLink}}, which is a {{#crossLink "Boundary2D"}}{{/crossLink}} that provides a **Canvas**-space boundary that encloses the {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}, after
  their transformation by the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}}, {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}
@@ -35308,7 +35393,7 @@ myTask2.setFailed();
 
 })();
 ;/**
- A **GroupBoundary** TODO.
+ A **CollectionBoundary** TODO.
 
  ## Overview
 
@@ -35318,16 +35403,16 @@ myTask2.setFailed();
 
  </ul>
 
- <img src="../../../assets/images/GroupBoundary.png"></img>
+ <img src="../../../assets/images/CollectionBoundary.png"></img>
 
  ## Example
 
  TODO
 
  ````javascript
- var groupBoundary = new XEO.GroupBoundary({
+ var collectionBoundary = new XEO.CollectionBoundary({
 
-    group: new XEO.Group({
+    collection: new XEO.Collection({
 
         components: [
             new XEO.Entity({
@@ -35345,7 +35430,7 @@ myTask2.setFailed();
 
  var showBoundary = new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
-            boundary: groupBoundary.worldBoundary
+            boundary: collectionBoundary.worldBoundary
         }),
         material: new XEO.PhongMaterial({
             diffuse: [1,0,0]
@@ -35353,25 +35438,25 @@ myTask2.setFailed();
     });
  ````
 
- @class GroupBoundary
+ @class CollectionBoundary
  @module XEO
  @submodule boundaries
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this GroupBoundary within the
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this CollectionBoundary within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} GroupBoundary configuration
+ @param [cfg] {*} CollectionBoundary configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GroupBoundary.
- @param [cfg.emissiveMap=null] {Group} A {{#crossLink "Group"}}Group{{/crossLink}} to fit the {{#crossLink "GroupBoundary/worldBoundary:property"}}{{/crossLink}} to. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GroupBoundary.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CollectionBoundary.
+ @param [cfg.emissiveMap=null] {Collection} A {{#crossLink "Collection"}}Collection{{/crossLink}} to fit the {{#crossLink "CollectionBoundary/worldBoundary:property"}}{{/crossLink}} to. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CollectionBoundary.
  @extends Component
  */
 (function () {
 
     "use strict";
 
-    XEO.GroupBoundary = XEO.Component.extend({
+    XEO.CollectionBoundary = XEO.Component.extend({
 
-        type: "XEO.GroupBoundary",
+        type: "XEO.CollectionBoundary",
 
         _init: function (cfg) {
 
@@ -35383,49 +35468,49 @@ myTask2.setFailed();
             this._aabbDirty = false;
             this._worldBoundary = null;
 
-            this.group = cfg.group;
+            this.collection = cfg.collection;
         },
 
         _props: {
 
             /**
-             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GroupBoundary.
+             * The {{#crossLink "Collection"}}{{/crossLink}} attached to this CollectionBoundary.
              *
-             * Fires a {{#crossLink "GroupBoundary/group:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CollectionBoundary/collection:event"}}{{/crossLink}} event on change.
              *
-             * @property group
-             * @type Group
+             * @property collection
+             * @type Collection
              */
-            group: {
+            collection: {
 
                 set: function (value) {
 
-                    // Unsubscribe from old Group's events
+                    // Unsubscribe from old Collection's events
 
-                    var oldGroup = this._children.group;
+                    var oldCollection = this._children.collection;
 
-                    if (oldGroup && (!value || value.id !== oldGroup.id)) {
+                    if (oldCollection && (!value || value.id !== oldCollection.id)) {
 
-                        oldGroup.off(this._onAdded);
-                        oldGroup.off(this._onRemoved);
+                        oldCollection.off(this._onAdded);
+                        oldCollection.off(this._onRemoved);
 
-                        oldGroup.iterate(this._unbind, this);
+                        oldCollection.iterate(this._unbind, this);
                     }
 
                     /**
-                     * Fired whenever this GroupBoundary's {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CollectionBoundary's {{#crossLink "CollectionBoundary/collection:property"}}{{/crossLink}} property changes.
                      *
-                     * @event group
+                     * @event collection
                      * @param value The property's new value
                      */
-                    var group = this._setChild("group", value);
+                    var collection = this._setChild("collection", value);
 
-                    if (group) {
+                    if (collection) {
 
-                        this._onAdded = group.on("added", this._added, this);
-                        this._onRemoved = group.on("removed", this._removed, this);
+                        this._onAdded = collection.on("added", this._added, this);
+                        this._onRemoved = collection.on("removed", this._removed, this);
 
-                        group.iterate(this._bind, this);
+                        collection.iterate(this._bind, this);
 
                         this._setAABBDirty();
                     }
@@ -35434,12 +35519,12 @@ myTask2.setFailed();
                 },
 
                 get: function () {
-                    return this._children.group;
+                    return this._children.collection;
                 }
             },
 
             /**
-             * World-space 3D boundary enclosing all the components contained in {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}}.
+             * World-space 3D boundary enclosing all the components contained in {{#crossLink "CollectionBoundary/collection:property"}}{{/crossLink}}.
              *
              * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
              * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
@@ -35551,11 +35636,11 @@ myTask2.setFailed();
             var min;
             var max;
 
-            var group = this.group;
+            var collection = this.collection;
 
-            if (group) {
+            if (collection) {
 
-                var components = group.components;
+                var components = collection.components;
 
                 for (var componentId in components) {
                     if (components.hasOwnProperty(componentId)) {
@@ -35607,15 +35692,15 @@ myTask2.setFailed();
 
         _getJSON: function () {
             var json = {};
-            if (this.group) {
-                json.group = this.group.id
+            if (this.collection) {
+                json.collection = this.collection.id
             }
             return json;
         },
 
         _destroy: function () {
 
-            this.group = null; // Unsubscribes from worldBoundary updates on Group members
+            this.collection = null; // Unsubscribes from worldBoundary updates on Collection members
 
             if (this._worldBoundary) {
                 this._worldBoundary.destroy();
