@@ -53,6 +53,8 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -67,8 +69,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -124,13 +124,13 @@
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
                                 <li><a href="../modules/configs.html">configs</a></li>
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
@@ -183,36 +183,39 @@
  A **CameraControl** pans, rotates and zooms a {{#crossLink &quot;Camera&quot;}}{{/crossLink}} using the mouse and keyboard,
  as well as switches it between preset left, right, anterior, posterior, superior and inferior views.
 
- A CameraControl is comprised of the following control components, which each handle an aspect of interaction:
+ A CameraControl contains the following control sub-components, each of which handle an aspect of interaction:
 
  &lt;ul&gt;
- &lt;li&gt;panning - {{#crossLink &quot;KeyboardPanCamera&quot;}}{{/crossLink}} and {{#crossLink &quot;MousePanCamera&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;rotation - {{#crossLink &quot;KeyboardRotateCamera&quot;}}{{/crossLink}} and {{#crossLink &quot;MouseRotateCamera&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;zooming - {{#crossLink &quot;KeyboardZoomCamera&quot;}}{{/crossLink}} and {{#crossLink &quot;MouseZoomCamera&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;switching preset views - {{#crossLink &quot;KeyboardAxisCamera&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;picking - {{#crossLink &quot;MousePickEntity&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;camera flight animation - {{#crossLink &quot;CameraFlight&quot;}}{{/crossLink}}&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;KeyboardPanCamera&quot;}}{{/crossLink}} pans the camera with the W,S,A,D,X and Z keys&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;MousePanCamera&quot;}}{{/crossLink}} pans horizontally and vertically by dragging the mouse with left and right buttons down&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;KeyboardRotateCamera&quot;}}{{/crossLink}} rotates the camera with the arrow keys&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;MouseRotateCamera&quot;}}{{/crossLink}} rotates the camera by dragging with the left mouse button down&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;KeyboardZoomCamera&quot;}}{{/crossLink}} zooms the *eye* position closer and further from the *look* position with the + and - keys&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;MouseZoomCamera&quot;}}{{/crossLink}} zooms the *eye* closer and further from *look* using the mousewheel&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;KeyboardAxisCamera&quot;}}{{/crossLink}} between preset left, right, anterior, posterior, superior and inferior views using keys 1-6&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;MousePickEntity&quot;}}{{/crossLink}} TODO&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;CameraFlight&quot;}}{{/crossLink}} TODO&lt;/li&gt;
  &lt;/ul&gt;
 
- A CameraControl provides the controls as read-only properties, in case you need to configure or deactivate
- them individually.
+ A CameraControl provides these control sub-components as read-only properties, which allows them to be individually configured (or deactivated) as required.
 
  &lt;ul&gt;
- &lt;li&gt;Activating or deactivating the CameraControl will activate/deactivate all the controls in unison.&lt;/li&gt;
+ &lt;li&gt;Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.&lt;/li&gt;
  &lt;li&gt;Attaching a different {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to the CameraControl will also attach that
- {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to all the controls.&lt;/li&gt;
- &lt;li&gt;The controls are not intended to be attached to a different {{#crossLink &quot;Camera&quot;}}{{/crossLink}} than the owner CameraControl.&lt;/li&gt;
- &lt;li&gt;The CameraControl manages the lifecycles of the controls, destroying them when the CameraControl is destroyed.&lt;/li&gt;
+ {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to all the control sub-components.&lt;/li&gt;
+ &lt;li&gt;The control sub-components are not supposed to be re-attached to a different {{#crossLink &quot;Camera&quot;}}{{/crossLink}} than the owner CameraControl.&lt;/li&gt;
+ &lt;li&gt;A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.&lt;/li&gt;
  &lt;/ul&gt;
+
+ &lt;br&gt;&lt;br&gt;
+ &lt;img src=&quot;../../../assets/images/CameraControl.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
  &#x60;&#x60;&#x60;&#x60;Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera();
 
- var camera = new XEO.Camera(scene);
-
- var cameraControl = new XEO.CameraControl(scene, {
+ var cameraControl = new XEO.CameraControl({
 
         camera: camera,
 
@@ -225,10 +228,12 @@
  cameraControl.mouseRotate.sensitivity = 0.7;
 
  // Deactivate switching between preset views
- cameraControl.axisCamera.active = false;
+ cameraControl.keyboardAxis.active = false;
 
  // Create a Entity
- var entity = new XEO.Entity(scene);
+ var entity = new XEO.Entity({
+    camera: camera
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  @class CameraControl
@@ -325,7 +330,7 @@
             /**
              * The {{#crossLink &quot;MouseRotateCamera&quot;}}{{/crossLink}} within this CameraControl.
              *
-             * @property mouseOrbit
+             * @property mouseRotate
              * @final
              * @type MouseRotateCamera
              */

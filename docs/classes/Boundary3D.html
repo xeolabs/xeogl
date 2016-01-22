@@ -53,6 +53,8 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -67,8 +69,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -124,13 +124,13 @@
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
                                 <li><a href="../modules/configs.html">configs</a></li>
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
@@ -206,7 +206,7 @@ their transformation by the <a href="../classes/Entity.html#property_transform" 
 <li>An <a href="../classes/Entity.html#property_viewBoundary" class="crosslink">Entity&#39;s viewBoundary</a> provides a <strong>View</strong>-space boundary that encloses
 its <a href="../classes/Geometry.html" class="crosslink">Geometry&#39;s</a> <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> after
 their transformation by both the <a href="../classes/Entity.html#property_transform" class="crosslink">Entity&#39;s Modelling transform</a> <strong>and</strong> <a href="../classes/Camera.html#property_view" class="crosslink">Viewing transform</a>.</li>
-<li>A <a href="../classes/GroupBoundary.html#property_worldBoundary" class="crosslink">GroupBoundary&#39;s worldBoundary</a> provides a <strong>World</strong>-space boundary that encloses all the <a href="../classes/Entity.html" class="crosslink">Entities</a> contained within its <a href="../classes/Group.html" class="crosslink">Group</a>.</li>
+<li>A <a href="../classes/CollectionBoundary.html#property_worldBoundary" class="crosslink">CollectionBoundary&#39;s worldBoundary</a> provides a <strong>World</strong>-space boundary that encloses all the <a href="../classes/Entity.html" class="crosslink">Entities</a> contained within its <a href="../classes/Collection.html" class="crosslink">Collection</a>.</li>
 </ul>
 <p>Also shown in the diagram is an <a href="../classes/Entity.html#property_canvasBoundary" class="crosslink">Entity&#39;s canvasBoundary</a>, which is a <a href="../classes/Boundary2D.html" class="crosslink">Boundary2D</a> that provides a <strong>Canvas</strong>-space boundary that encloses the <a href="../classes/Geometry.html" class="crosslink">Geometry&#39;s</a> <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a>, after
 their transformation by the <a href="../classes/Entity.html#property_transform" class="crosslink">Entity&#39;s Modelling transform</a>, <a href="../classes/Camera.html#property_view" class="crosslink">Viewing transform</a>

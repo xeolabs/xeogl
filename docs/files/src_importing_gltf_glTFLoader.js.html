@@ -53,6 +53,8 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -67,8 +69,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -124,13 +124,13 @@
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
                                 <li><a href="../modules/configs.html">configs</a></li>
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
@@ -336,9 +336,9 @@
 
     XEO.GLTFLoader = Object.create(glTFParser, {
 
-        setGroup: {
-            value: function (group) {
-                this.group = group;
+        setCollection: {
+            value: function (collection) {
+                this.collection = collection;
             }
         },
 
@@ -346,8 +346,8 @@
             enumerable: true,
             value: function (userInfo, options, ok) {
 
-                if (!this.group) {
-                    throw &quot;group not set&quot;;
+                if (!this.collection) {
+                    throw &quot;collection not set&quot;;
                 }
 
                 this.resources = new Resources();
@@ -401,7 +401,7 @@
 
                 var image = this._json.images[description.source];
 
-                var texture = new XEO.Texture(this.group.scene, {
+                var texture = new XEO.Texture(this.collection.scene, {
                     src: image.uri
                 });
 
@@ -467,9 +467,9 @@
                     }
                 }
 
-                var material = new XEO.PhongMaterial(this.group.scene, cfg);
+                var material = new XEO.PhongMaterial(this.collection.scene, cfg);
 
-                this.group.add(material);
+                this.collection.add(material);
 
                 this.resources.setEntry(entryID, material, description);
 
@@ -504,7 +504,7 @@
 
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
-                        var geometry = new XEO.Geometry(this.group.scene, {
+                        var geometry = new XEO.Geometry(this.collection.scene, {
                             id: this._makeID(entryID + &quot;-geo&quot; + i)
                         });
 
@@ -630,43 +630,43 @@
 
                 if (node.matrix) {
                     var matrix = node.matrix;
-                    transform = new XEO.Transform(this.group.scene, {
+                    transform = new XEO.Transform(this.collection.scene, {
                         //id: this._makeID(nodeId + &quot;.transform&quot;),
                         matrix: matrix,
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.translation) {
                     var translation = node.translation;
-                    transform = new XEO.Translate(this.group.scene, {
+                    transform = new XEO.Translate(this.collection.scene, {
                         //id: this._makeID(nodeId + &quot;.translation&quot;),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.rotation) {
                     var rotation = node.rotation;
-                    transform = new XEO.Translate(this.group.scene, {
+                    transform = new XEO.Translate(this.collection.scene, {
                         //id: this._makeID(nodeId + &quot;.rotation&quot;),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.scale) {
                     var scale = node.scale;
-                    transform = new XEO.Scale(this.group.scene, {
+                    transform = new XEO.Scale(this.collection.scene, {
                         //id: this._makeID(nodeId + &quot;.scale&quot;),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.meshes) {
@@ -694,7 +694,7 @@
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
 
-                            entity = new XEO.Entity(this.group.scene, {
+                            entity = new XEO.Entity(this.collection.scene, {
                                 //id: this._makeID(nodeId + &quot;.entity&quot; + i),
                                 meta: {
                                     name: node.name
@@ -704,7 +704,7 @@
                                 transform: transform
                             });
 
-                            this.group.add(entity);
+                            this.collection.add(entity);
                         }
                     }
                 }

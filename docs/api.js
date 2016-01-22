@@ -14,6 +14,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "Canvas",
         "Clip",
         "Clips",
+        "Collection",
+        "CollectionBoundary",
         "ColorBuf",
         "ColorTarget",
         "Component",
@@ -28,8 +30,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Fresnel",
         "Frustum",
         "Geometry",
-        "Group",
-        "GroupBoundary",
         "Input",
         "KeyboardAxisCamera",
         "KeyboardPanCamera",
@@ -85,13 +85,13 @@ YUI.add("yuidoc-meta", function(Y) {
         "camera",
         "canvas",
         "clipping",
+        "collections",
         "configs",
         "controls",
         "culling",
         "curves",
         "entities",
         "geometry",
-        "grouping",
         "importing",
         "input",
         "lighting",
@@ -130,6 +130,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Components for cross-section views of Entities."
         },
         {
+            "displayName": "collections",
+            "name": "collections",
+            "description": "Components for managing collections of components."
+        },
+        {
             "displayName": "configs",
             "name": "configs",
             "description": "Components for managing Scene configuration."
@@ -158,11 +163,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "geometry",
             "name": "geometry",
             "description": "A path geometry."
-        },
-        {
-            "displayName": "grouping",
-            "name": "grouping",
-            "description": "Components for managing groups of components."
         },
         {
             "displayName": "importing",

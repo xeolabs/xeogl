@@ -53,6 +53,8 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -67,8 +69,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -124,13 +124,13 @@
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
                                 <li><a href="../modules/configs.html">configs</a></li>
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
@@ -194,7 +194,7 @@
  * An {{#crossLink &quot;Entity/viewBoundary:property&quot;}}Entity&#x27;s viewBoundary{{/crossLink}} provides a **View**-space boundary that encloses
  its {{#crossLink &quot;Geometry&quot;}}Geometry&#x27;s{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} after
  their transformation by both the {{#crossLink &quot;Entity/transform:property&quot;}}Entity&#x27;s Modelling transform{{/crossLink}} **and** {{#crossLink &quot;Camera/view:property&quot;}}Viewing transform{{/crossLink}}.
- * A {{#crossLink &quot;GroupBoundary/worldBoundary:property&quot;}}GroupBoundary&#x27;s worldBoundary{{/crossLink}} provides a **World**-space boundary that encloses all the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} contained within its {{#crossLink &quot;Group&quot;}}Group{{/crossLink}}.
+ * A {{#crossLink &quot;CollectionBoundary/worldBoundary:property&quot;}}CollectionBoundary&#x27;s worldBoundary{{/crossLink}} provides a **World**-space boundary that encloses all the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} contained within its {{#crossLink &quot;Collection&quot;}}Collection{{/crossLink}}.
 
  Also shown in the diagram is an {{#crossLink &quot;Entity/canvasBoundary:property&quot;}}Entity&#x27;s canvasBoundary{{/crossLink}}, which is a {{#crossLink &quot;Boundary2D&quot;}}{{/crossLink}} that provides a **Canvas**-space boundary that encloses the {{#crossLink &quot;Geometry&quot;}}Geometry&#x27;s{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}}, after
  their transformation by the {{#crossLink &quot;Entity/transform:property&quot;}}Entity&#x27;s Modelling transform{{/crossLink}}, {{#crossLink &quot;Camera/view:property&quot;}}Viewing transform{{/crossLink}}

@@ -53,6 +53,8 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -67,8 +69,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -124,13 +124,13 @@
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
                                 <li><a href="../modules/configs.html">configs</a></li>
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
@@ -195,32 +195,34 @@
 <div class="box intro">
     <p>A <strong>CameraControl</strong> pans, rotates and zooms a <a href="../classes/Camera.html" class="crosslink">Camera</a> using the mouse and keyboard,
 as well as switches it between preset left, right, anterior, posterior, superior and inferior views.</p>
-<p>A CameraControl is comprised of the following control components, which each handle an aspect of interaction:</p>
+<p>A CameraControl contains the following control sub-components, each of which handle an aspect of interaction:</p>
 <ul>
-<li>panning - <a href="../classes/KeyboardPanCamera.html" class="crosslink">KeyboardPanCamera</a> and <a href="../classes/MousePanCamera.html" class="crosslink">MousePanCamera</a></li>
-<li>rotation - <a href="../classes/KeyboardRotateCamera.html" class="crosslink">KeyboardRotateCamera</a> and <a href="../classes/MouseRotateCamera.html" class="crosslink">MouseRotateCamera</a></li>
-<li>zooming - <a href="../classes/KeyboardZoomCamera.html" class="crosslink">KeyboardZoomCamera</a> and <a href="../classes/MouseZoomCamera.html" class="crosslink">MouseZoomCamera</a></li>
-<li>switching preset views - <a href="../classes/KeyboardAxisCamera.html" class="crosslink">KeyboardAxisCamera</a></li>
-<li>picking - <a href="../classes/MousePickEntity.html" class="crosslink">MousePickEntity</a></li>
-<li>camera flight animation - <a href="../classes/CameraFlight.html" class="crosslink">CameraFlight</a></li>
+<li><a href="../classes/KeyboardPanCamera.html" class="crosslink">KeyboardPanCamera</a> pans the camera with the W,S,A,D,X and Z keys</li>
+<li><a href="../classes/MousePanCamera.html" class="crosslink">MousePanCamera</a> pans horizontally and vertically by dragging the mouse with left and right buttons down</li>
+<li><a href="../classes/KeyboardRotateCamera.html" class="crosslink">KeyboardRotateCamera</a> rotates the camera with the arrow keys</li>
+<li><a href="../classes/MouseRotateCamera.html" class="crosslink">MouseRotateCamera</a> rotates the camera by dragging with the left mouse button down</li>
+<li><a href="../classes/KeyboardZoomCamera.html" class="crosslink">KeyboardZoomCamera</a> zooms the <em>eye</em> position closer and further from the <em>look</em> position with the + and - keys</li>
+<li><a href="../classes/MouseZoomCamera.html" class="crosslink">MouseZoomCamera</a> zooms the <em>eye</em> closer and further from <em>look</em> using the mousewheel</li>
+<li><a href="../classes/KeyboardAxisCamera.html" class="crosslink">KeyboardAxisCamera</a> between preset left, right, anterior, posterior, superior and inferior views using keys 1-6</li>
+<li><a href="../classes/MousePickEntity.html" class="crosslink">MousePickEntity</a> TODO</li>
+<li><a href="../classes/CameraFlight.html" class="crosslink">CameraFlight</a> TODO</li>
 </ul>
 
-<p>A CameraControl provides the controls as read-only properties, in case you need to configure or deactivate
-them individually.</p>
+<p>A CameraControl provides these control sub-components as read-only properties, which allows them to be individually configured (or deactivated) as required.</p>
 <ul>
-<li>Activating or deactivating the CameraControl will activate/deactivate all the controls in unison.</li>
+<li>Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.</li>
 <li>Attaching a different <a href="../classes/Camera.html" class="crosslink">Camera</a> to the CameraControl will also attach that
-<a href="../classes/Camera.html" class="crosslink">Camera</a> to all the controls.</li>
-<li>The controls are not intended to be attached to a different <a href="../classes/Camera.html" class="crosslink">Camera</a> than the owner CameraControl.</li>
-<li>The CameraControl manages the lifecycles of the controls, destroying them when the CameraControl is destroyed.</li>
+<a href="../classes/Camera.html" class="crosslink">Camera</a> to all the control sub-components.</li>
+<li>The control sub-components are not supposed to be re-attached to a different <a href="../classes/Camera.html" class="crosslink">Camera</a> than the owner CameraControl.</li>
+<li>A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.</li>
 </ul>
 
+<p><br><br>
+<img src="../../../assets/images/CameraControl.png"></img></p>
 <h2 id="example">Example</h2>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
+<pre class="code prettyprint"><code class="lang-Javascript">var camera = new XEO.Camera();
 
-var camera = new XEO.Camera(scene);
-
-var cameraControl = new XEO.CameraControl(scene, {
+var cameraControl = new XEO.CameraControl({
 
        camera: camera,
 
@@ -233,10 +235,12 @@ var cameraControl = new XEO.CameraControl(scene, {
 cameraControl.mouseRotate.sensitivity = 0.7;
 
 // Deactivate switching between preset views
-cameraControl.axisCamera.active = false;
+cameraControl.keyboardAxis.active = false;
 
 // Create a Entity
-var entity = new XEO.Entity(scene);
+var entity = new XEO.Entity({
+   camera: camera
+});
 </code></pre>
 
 </div>
@@ -491,15 +495,15 @@ var entity = new XEO.Entity(scene);
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_mouseOrbit">mouseOrbit</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_mousePan">mousePan</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_mousePickEntity">mousePickEntity</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_mouseRotate">mouseRotate</a>
 
                             </li>
                             <li class="index-item property">
@@ -1099,7 +1103,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l382"><code>src&#x2F;controls&#x2F;cameraControl.js:382</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l387"><code>src&#x2F;controls&#x2F;cameraControl.js:387</code></a>
                             </p>
                     
                     
@@ -1125,7 +1129,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l337"><code>src&#x2F;controls&#x2F;cameraControl.js:337</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l342"><code>src&#x2F;controls&#x2F;cameraControl.js:342</code></a>
                             </p>
                     
                     
@@ -1154,7 +1158,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l217"><code>src&#x2F;controls&#x2F;cameraControl.js:217</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l222"><code>src&#x2F;controls&#x2F;cameraControl.js:222</code></a>
                             </p>
                     
                     
@@ -1205,7 +1209,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l84"><code>src&#x2F;controls&#x2F;cameraControl.js:84</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l89"><code>src&#x2F;controls&#x2F;cameraControl.js:89</code></a>
                             </p>
                     
                     
@@ -1232,7 +1236,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l298"><code>src&#x2F;controls&#x2F;cameraControl.js:298</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l303"><code>src&#x2F;controls&#x2F;cameraControl.js:303</code></a>
                             </p>
                     
                     
@@ -1339,7 +1343,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l122"><code>src&#x2F;controls&#x2F;cameraControl.js:122</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l127"><code>src&#x2F;controls&#x2F;cameraControl.js:127</code></a>
                             </p>
                     
                     
@@ -1365,7 +1369,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l133"><code>src&#x2F;controls&#x2F;cameraControl.js:133</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l138"><code>src&#x2F;controls&#x2F;cameraControl.js:138</code></a>
                             </p>
                     
                     
@@ -1391,7 +1395,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l155"><code>src&#x2F;controls&#x2F;cameraControl.js:155</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l160"><code>src&#x2F;controls&#x2F;cameraControl.js:160</code></a>
                             </p>
                     
                     
@@ -1417,7 +1421,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l177"><code>src&#x2F;controls&#x2F;cameraControl.js:177</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l182"><code>src&#x2F;controls&#x2F;cameraControl.js:182</code></a>
                             </p>
                     
                     
@@ -1456,32 +1460,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_mouseOrbit" class="property item">
-                        <h3 class="name"><code>mouseOrbit</code></h3>
-                        <span class="type"><a href="../classes/MouseRotateCamera.html" class="crosslink">MouseRotateCamera</a></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l144"><code>src&#x2F;controls&#x2F;cameraControl.js:144</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/MouseRotateCamera.html" class="crosslink">MouseRotateCamera</a> within this CameraControl.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_mousePan" class="property item">
                         <h3 class="name"><code>mousePan</code></h3>
                         <span class="type"><a href="../classes/MousePanCamera.html" class="crosslink">MousePanCamera</a></span>
@@ -1494,7 +1472,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l166"><code>src&#x2F;controls&#x2F;cameraControl.js:166</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l171"><code>src&#x2F;controls&#x2F;cameraControl.js:171</code></a>
                             </p>
                     
                     
@@ -1520,7 +1498,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l199"><code>src&#x2F;controls&#x2F;cameraControl.js:199</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l204"><code>src&#x2F;controls&#x2F;cameraControl.js:204</code></a>
                             </p>
                     
                     
@@ -1528,6 +1506,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The <a href="../classes/MousePickEntity.html" class="crosslink">MousePickEntity</a> within this CameraControl.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_mouseRotate" class="property item">
+                        <h3 class="name"><code>mouseRotate</code></h3>
+                        <span class="type"><a href="../classes/MouseRotateCamera.html" class="crosslink">MouseRotateCamera</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l149"><code>src&#x2F;controls&#x2F;cameraControl.js:149</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/MouseRotateCamera.html" class="crosslink">MouseRotateCamera</a> within this CameraControl.</p>
                     
                         </div>
                     
@@ -1546,7 +1550,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l188"><code>src&#x2F;controls&#x2F;cameraControl.js:188</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l193"><code>src&#x2F;controls&#x2F;cameraControl.js:193</code></a>
                             </p>
                     
                     
@@ -1630,7 +1634,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_controls_cameraControl.js.html#l75"><code>src&#x2F;controls&#x2F;cameraControl.js:75</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l80"><code>src&#x2F;controls&#x2F;cameraControl.js:80</code></a>
                             </p>
                     
                     
@@ -1661,7 +1665,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l412"><code>src&#x2F;controls&#x2F;cameraControl.js:412</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l417"><code>src&#x2F;controls&#x2F;cameraControl.js:417</code></a>
                             </p>
                     
                     
@@ -1703,7 +1707,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l351"><code>src&#x2F;controls&#x2F;cameraControl.js:351</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l356"><code>src&#x2F;controls&#x2F;cameraControl.js:356</code></a>
                             </p>
                     
                     
@@ -1771,7 +1775,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l321"><code>src&#x2F;controls&#x2F;cameraControl.js:321</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l326"><code>src&#x2F;controls&#x2F;cameraControl.js:326</code></a>
                             </p>
                     
                     

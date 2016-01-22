@@ -53,6 +53,8 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -67,8 +69,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -124,13 +124,13 @@
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
                                 <li><a href="../modules/configs.html">configs</a></li>
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
@@ -1118,9 +1118,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>Set true to make this Geometry automatically generate <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> from
                     <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> and <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>.</p>
-                    <p>This Geomatry will auto-generate its <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> on the
+                    <p>When true, causes this Geometry to auto-generate its <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> on the
                     next <a href="../classes/Scene.html" class="crosslink">Scene</a> <a href="../classes/Scene.html#event_tick" class="crosslink">tick</a> event.</p>
-                    <p>Fires a <a href="../classes/Geometry.html#event_autoNormals" class="crosslink">autoNormals</a> event on change.</p>
+                    <p>Fires an <a href="../classes/Geometry.html#event_autoNormals" class="crosslink">autoNormals</a> event on change.</p>
                     
                         </div>
                     

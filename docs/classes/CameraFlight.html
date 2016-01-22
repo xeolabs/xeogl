@@ -53,6 +53,8 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -67,8 +69,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -124,13 +124,13 @@
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
                                 <li><a href="../modules/configs.html">configs</a></li>
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
@@ -203,13 +203,25 @@
 
 <p>A target can be:</p>
 <ul>
+<li>specific <code>eye</code>, <code>look</code> and <code>up</code> positions,</li>
 <li>a World-space <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>,</li>
 <li>an instance or ID of any <a href="../classes/Component.html" class="crosslink">Component</a> subtype that provides a World-space</li>
 <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> in a "worldBoundary" property, or</li>
-<li>specific <code>eye</code>, <code>look</code> and <code>up</code> positions.</li>
+<li>an axis-aligned World-space bounding box.</li>
+
 </ul>
 
-<h2 id="example-1">Example #1</h2>
+<h3 id="example-1-flying-to-a-position">Example 1: Flying to a position</h3>
+<p>Flying the CameraFlight from the previous example to specified eye, look and up positions:</p>
+<pre class="code prettyprint"><code class="lang-Javascript">cameraFlight.flyTo({
+   eye: [-5,-5,-5],
+   look: [0,0,0]
+   up: [0,1,0]
+}, function() {
+   // Arrived
+});
+</code></pre>
+<h3 id="example-2-flying-to-an-entity">Example 2: Flying to an Entity</h3>
 <p>Flying to an <a href="../classes/Entity.html" class="crosslink">Entity</a> (which provides a World-space
 <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> via its <a href="../classes/Entity.html#property_worldBoundary" class="crosslink">worldBoundary</a> property):</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var camera = new XEO.Camera();
@@ -227,24 +239,14 @@ var entity = new Entity();
 // Fly to the Entity&#39;s worldBoundary
 cameraFlight.flyTo(entity);
 </code></pre>
-<h2 id="example-2">Example #2</h2>
-<p>Flying the CameraFlight from the previous example to specified eye, look and up positions:</p>
-<pre class="code prettyprint"><code class="lang-Javascript">cameraFlight.flyTo({
-   eye: [-5,-5,-5],
-   look: [0,0,0]
-   up: [0,1,0]
-}, function() {
-   // Arrived
-});
-</code></pre>
-<h2 id="example-3">Example #3</h2>
+<h3 id="example-3-flying-to-a-boundary3d">Example 3: Flying to a Boundary3D</h3>
 <p>Flying the CameraFlight from the previous two examples explicitly to the World-space
 <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> of the <a href="../classes/Entity.html" class="crosslink">Entity</a> property):</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var worldBoundary = entity.worldBoundary;
 
 cameraFlight.flyTo(worldBoundary);
 </code></pre>
-<h2 id="example-4">Example #4</h2>
+<h3 id="example-4-flying-to-an-aabb">Example 4: Flying to an AABB</h3>
 <p>Flying the CameraFlight from the previous two examples explicitly to the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D&#39;s</a>
 axis-aligned bounding box:</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var worldBoundary = entity.worldBoundary;
@@ -773,7 +775,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_animation_cameraFlight.js.html#l145"><code>src&#x2F;animation&#x2F;cameraFlight.js:145</code></a>
+        <a href="../files/src_animation_cameraFlight.js.html#l146"><code>src&#x2F;animation&#x2F;cameraFlight.js:146</code></a>
         </p>
 
 
@@ -1937,7 +1939,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_animation_cameraFlight.js.html#l107"><code>src&#x2F;animation&#x2F;cameraFlight.js:107</code></a>
+                            <a href="../files/src_animation_cameraFlight.js.html#l108"><code>src&#x2F;animation&#x2F;cameraFlight.js:108</code></a>
                             </p>
                     
                     
@@ -2018,7 +2020,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlight.js.html#l391"><code>src&#x2F;animation&#x2F;cameraFlight.js:391</code></a>
+                            <a href="../files/src_animation_cameraFlight.js.html#l392"><code>src&#x2F;animation&#x2F;cameraFlight.js:392</code></a>
                             </p>
                     
                     

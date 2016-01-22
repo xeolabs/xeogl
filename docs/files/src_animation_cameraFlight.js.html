@@ -53,6 +53,8 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -67,8 +69,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/Group.html">Group</a></li>
-                                <li><a href="../classes/GroupBoundary.html">GroupBoundary</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -124,13 +124,13 @@
                                 <li><a href="../modules/camera.html">camera</a></li>
                                 <li><a href="../modules/canvas.html">canvas</a></li>
                                 <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
                                 <li><a href="../modules/configs.html">configs</a></li>
                                 <li><a href="../modules/controls.html">controls</a></li>
                                 <li><a href="../modules/culling.html">culling</a></li>
                                 <li><a href="../modules/curves.html">curves</a></li>
                                 <li><a href="../modules/entities.html">entities</a></li>
                                 <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/grouping.html">grouping</a></li>
                                 <li><a href="../modules/importing.html">importing</a></li>
                                 <li><a href="../modules/input.html">input</a></li>
                                 <li><a href="../modules/lighting.html">lighting</a></li>
@@ -193,13 +193,28 @@
  A target can be:
 
  &lt;ul&gt;
+ &lt;li&gt;specific &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60; positions,&lt;/li&gt;
  &lt;li&gt;a World-space {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}},&lt;/li&gt;
  &lt;li&gt;an instance or ID of any {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that provides a World-space&lt;/li&gt;
  {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} in a &quot;worldBoundary&quot; property, or&lt;/li&gt;
- &lt;li&gt;specific &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60; positions.&lt;/li&gt;
+ &lt;li&gt;an axis-aligned World-space bounding box.&lt;/li&gt;
+
  &lt;/ul&gt;
 
- ## Example #1
+ ### Example 1: Flying to a position
+
+ Flying the CameraFlight from the previous example to specified eye, look and up positions:
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+ cameraFlight.flyTo({
+    eye: [-5,-5,-5],
+    look: [0,0,0]
+    up: [0,1,0]
+ }, function() {
+    // Arrived
+ });
+ &#x60;&#x60;&#x60;&#x60;
+ ### Example 2: Flying to an Entity
 
  Flying to an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} (which provides a World-space
  {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} via its {{#crossLink &quot;Entity/worldBoundary:property&quot;}}{{/crossLink}} property):
@@ -221,21 +236,7 @@
  cameraFlight.flyTo(entity);
  &#x60;&#x60;&#x60;&#x60;
 
- ## Example #2
-
- Flying the CameraFlight from the previous example to specified eye, look and up positions:
-
- &#x60;&#x60;&#x60;&#x60;Javascript
- cameraFlight.flyTo({
-    eye: [-5,-5,-5],
-    look: [0,0,0]
-    up: [0,1,0]
- }, function() {
-    // Arrived
- });
- &#x60;&#x60;&#x60;&#x60;
-
- ## Example #3
+ ### Example 3: Flying to a Boundary3D
 
  Flying the CameraFlight from the previous two examples explicitly to the World-space
  {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} of the {{#crossLink &quot;Entity&quot;}}{{/crossLink}} property):
@@ -246,7 +247,7 @@
  cameraFlight.flyTo(worldBoundary);
  &#x60;&#x60;&#x60;&#x60;
 
- ## Example #4
+ ### Example 4: Flying to an AABB
 
  Flying the CameraFlight from the previous two examples explicitly to the {{#crossLink &quot;Boundary3D&quot;}}Boundary3D&#x27;s{{/crossLink}}
  axis-aligned bounding box:
