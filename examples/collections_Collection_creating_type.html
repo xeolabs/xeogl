@@ -21,16 +21,14 @@
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
-    creating a <a href="../docs/classes/Group.html" target="_docs">Group</a> of individually-added <a
-        href="../docs/classes/Entity.html" target="_docs">Entities</a>
+    creating a <a href="../docs/classes/Collection.html" target="_docs">Collection</a> that contains all <a href="../docs/classes/Scene.html" target="_docs">Scene</a> components
+    of type "XEO.Entity"
 </div>
 
 <script>
 
-    // Create a Group of multiple spinning Entities, each at a random position
+    // Create multiple spinning Entities, each at a random position
     // and with a random axis of spin
-
-    var group = new XEO.Group();
 
     var geometry = new XEO.TorusGeometry({
         radius: 1.0,
@@ -48,7 +46,7 @@
 
     for (var i = 0; i < 20; i++) {
 
-        var entity = new XEO.Entity({
+        new XEO.Entity({
 
             geometry: geometry,
 
@@ -62,25 +60,29 @@
                 })
             })
         });
-
-        group.add(entity);
     }
+
+    // Put all Entities into a Collection
+
+    var collection = new XEO.Collection({
+        components: ["XEO.Entity"]
+    });
 
     new XEO.CameraControl();
 
-    // On each tick, iterate over each Entity in the Group
+    // On each tick, iterate over each Entity in the Collection
     // and increment it's rotation angle
 
     XEO.scene.on("tick",
             function () {
 
-                group.iterate(
+                collection.iterate(
                         function (component) {
 
                             var transform = component.transform;
 
                             if (transform) { // Will be a XEO.Rotate
-                                transform.angle += 1.5;
+                                transform.angle += 1.0;
                             }
                         });
             });

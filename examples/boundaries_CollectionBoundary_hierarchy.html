@@ -23,7 +23,7 @@
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
     <ul>
-        <li>a <a href="../docs/classes/GroupBoundary.html" target="_docs">GroupBoundary</a> hierarchy
+        <li>a <a href="../docs/classes/CollectionBoundary.html" target="_docs">CollectionBoundary</a> hierarchy
             containing 200 animated <a href="../docs/classes/Entity.html" target="_docs">Entities</a></li>
 
     </ul>
@@ -44,30 +44,30 @@
     });
 
 
-    // A hierarchy of GroupBoundary's
+    // A hierarchy of CollectionBoundary's
 
-    var childGroupBoundary1 = new XEO.GroupBoundary({
-        group: new XEO.Group()
+    var childCollectionBoundary1 = new XEO.CollectionBoundary({
+        collection: new XEO.Collection()
     });
 
-    var childGroupBoundary2 = new XEO.GroupBoundary({
-        group: new XEO.Group()
+    var childCollectionBoundary2 = new XEO.CollectionBoundary({
+        collection: new XEO.Collection()
     });
 
-    var rootGroupBoundary = new XEO.GroupBoundary({
-        group: new XEO.Group({
+    var rootCollectionBoundary = new XEO.CollectionBoundary({
+        collection: new XEO.Collection({
             components: [
-                childGroupBoundary1,
-                childGroupBoundary2
+                childCollectionBoundary1,
+                childCollectionBoundary2
             ]
         })
     });
 
-    // Show the boundary of each GroupBoundary as a wireframe box
+    // Show the boundary of each CollectionBoundary as a wireframe box
 
     new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
-            boundary: rootGroupBoundary.worldBoundary
+            boundary: rootCollectionBoundary.worldBoundary
         }),
         material: new XEO.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
@@ -78,19 +78,19 @@
 
     new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
-            boundary: childGroupBoundary1.worldBoundary
+            boundary: childCollectionBoundary1.worldBoundary
         }),
         material: material
     });
 
     new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
-            boundary: childGroupBoundary2.worldBoundary
+            boundary: childCollectionBoundary2.worldBoundary
         }),
         material: material
     });
 
-    // Create 1000 moving Entities within one child GroupBoundary
+    // Create 1000 moving Entities within one child CollectionBoundary
 
     for (var i = 0; i < 200; i++) {
 
@@ -114,9 +114,9 @@
             });
 
 
-            // Add the Entity to the GroupBoundary
+            // Add the Entity to the CollectionBoundary
 
-            childGroupBoundary1.group.add(entity);
+            childCollectionBoundary1.collection.add(entity);
 
 
             // Animate the position of the Entity back and forth
@@ -146,7 +146,7 @@
         })();
     }
 
-    // Create a torus within the other child GroupBoundary
+    // Create a torus within the other child CollectionBoundary
 
     var torus = new XEO.Entity({
         geometry: new XEO.TorusGeometry({
@@ -165,7 +165,7 @@
         })
     });
 
-    childGroupBoundary2.group.add(torus);
+    childCollectionBoundary2.collection.add(torus);
 
     var sphere = new XEO.Entity({
         geometry: new XEO.SphereGeometry({
@@ -183,7 +183,7 @@
         })
     });
 
-    childGroupBoundary2.group.add(sphere);
+    childCollectionBoundary2.collection.add(sphere);
 
     torus.scene.on("tick",
             function () {

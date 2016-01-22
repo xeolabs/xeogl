@@ -21,8 +21,7 @@
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
-    creating a <a href="../docs/classes/Group.html" target="_docs">Group</a> that contains all <a href="../docs/classes/Scene.html" target="_docs">Scene</a> components
-    of type "XEO.Entity"
+    iterating over the components in a <a href="../docs/classes/Collection.html" target="_docs">Collection</a>
 </div>
 
 <script>
@@ -33,8 +32,8 @@
     var geometry = new XEO.TorusGeometry({
         radius: 1.0,
         tube: 0.4,
-        radialSegments: 32,
-        tubeSegments: 24,
+        radialSegments: 60,
+        tubeSegments: 60,
         arc: Math.PI * 2.0
     });
 
@@ -62,22 +61,27 @@
         });
     }
 
-    // Put all Entities into a Group
+    // Put all Entities into a Collection
 
-    var group = new XEO.Group({
+    var collection = new XEO.Collection({
         components: ["XEO.Entity"]
     });
 
     new XEO.CameraControl();
 
-    // On each tick, iterate over each Entity in the Group
+    // On each tick, iterate over each Entity in the Collection
     // and increment it's rotation angle
 
     XEO.scene.on("tick",
             function () {
 
-                group.iterate(
+                collection.iterate(
                         function (component) {
+
+                            // We're assuming that all components in our
+                            // Collection are of Entity type, since we only
+                            // added that type, so we don't bother checking
+                            // each component as we visit it.
 
                             var transform = component.transform;
 

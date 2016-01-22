@@ -22,7 +22,7 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    a <a href="../docs/classes/GroupBoundary.html" target="_docs">GroupBoundary</a> containing
+    a <a href="../docs/classes/CollectionBoundary.html" target="_docs">CollectionBoundary</a> containing
     1000 animated <a href="../docs/classes/Entity.html" target="_docs">Entities</a>
     <br>
     <br>
@@ -34,16 +34,16 @@
 
 <script>
 
-    // The GroupBoundary
-    var groupBoundary = new XEO.GroupBoundary({
-        group: new XEO.Group()
+    // The CollectionBoundary
+    var collectionBoundary = new XEO.CollectionBoundary({
+        collection: new XEO.Collection()
     });
 
-    // Entity which shows the boundary of the GroupBoundary
+    // Entity which shows the boundary of the CollectionBoundary
     // as a wireframe box
-    var groupBoundaryIndicator = new XEO.Entity({
+    var collectionBoundaryIndicator = new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
-            boundary: groupBoundary.worldBoundary
+            boundary: collectionBoundary.worldBoundary
         }),
         material: new XEO.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
@@ -52,7 +52,7 @@
         })
     });
 
-    // Create 1000 moving Entities within the GroupBoundary
+    // Create 1000 moving Entities within the CollectionBoundary
 
     // Geometry shared by our Entities
     var sphereGeometry = new XEO.SphereGeometry({
@@ -111,9 +111,9 @@
                         ];
                     });
 
-            // Add the Entity to the GroupBoundary
+            // Add the Entity to the CollectionBoundary
 
-            groupBoundary.group.add(entity);
+            collectionBoundary.collection.add(entity);
 
         })();
     }

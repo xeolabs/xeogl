@@ -155,9 +155,9 @@
 
     XEO.GLTFLoader = Object.create(glTFParser, {
 
-        setGroup: {
-            value: function (group) {
-                this.group = group;
+        setCollection: {
+            value: function (collection) {
+                this.collection = collection;
             }
         },
 
@@ -165,8 +165,8 @@
             enumerable: true,
             value: function (userInfo, options, ok) {
 
-                if (!this.group) {
-                    throw "group not set";
+                if (!this.collection) {
+                    throw "collection not set";
                 }
 
                 this.resources = new Resources();
@@ -220,7 +220,7 @@
 
                 var image = this._json.images[description.source];
 
-                var texture = new XEO.Texture(this.group.scene, {
+                var texture = new XEO.Texture(this.collection.scene, {
                     src: image.uri
                 });
 
@@ -286,9 +286,9 @@
                     }
                 }
 
-                var material = new XEO.PhongMaterial(this.group.scene, cfg);
+                var material = new XEO.PhongMaterial(this.collection.scene, cfg);
 
-                this.group.add(material);
+                this.collection.add(material);
 
                 this.resources.setEntry(entryID, material, description);
 
@@ -323,7 +323,7 @@
 
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
-                        var geometry = new XEO.Geometry(this.group.scene, {
+                        var geometry = new XEO.Geometry(this.collection.scene, {
                             id: this._makeID(entryID + "-geo" + i)
                         });
 
@@ -449,43 +449,43 @@
 
                 if (node.matrix) {
                     var matrix = node.matrix;
-                    transform = new XEO.Transform(this.group.scene, {
+                    transform = new XEO.Transform(this.collection.scene, {
                         //id: this._makeID(nodeId + ".transform"),
                         matrix: matrix,
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.translation) {
                     var translation = node.translation;
-                    transform = new XEO.Translate(this.group.scene, {
+                    transform = new XEO.Translate(this.collection.scene, {
                         //id: this._makeID(nodeId + ".translation"),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.rotation) {
                     var rotation = node.rotation;
-                    transform = new XEO.Translate(this.group.scene, {
+                    transform = new XEO.Translate(this.collection.scene, {
                         //id: this._makeID(nodeId + ".rotation"),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.scale) {
                     var scale = node.scale;
-                    transform = new XEO.Scale(this.group.scene, {
+                    transform = new XEO.Scale(this.collection.scene, {
                         //id: this._makeID(nodeId + ".scale"),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
-                    this.group.add(transform);
+                    this.collection.add(transform);
                 }
 
                 if (node.meshes) {
@@ -513,7 +513,7 @@
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
 
-                            entity = new XEO.Entity(this.group.scene, {
+                            entity = new XEO.Entity(this.collection.scene, {
                                 //id: this._makeID(nodeId + ".entity" + i),
                                 meta: {
                                     name: node.name
@@ -523,7 +523,7 @@
                                 transform: transform
                             });
 
-                            this.group.add(entity);
+                            this.collection.add(entity);
                         }
                     }
                 }

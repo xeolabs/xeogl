@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.min.js"></script>
+
+    <!--<script src="js/geometry/vectorTextGeometry.js"></script>-->
+    <script src="js/geometry/heightmapGeometry.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+
+<body>
+
+<!--<audio autoplay="true" src="sounds/tng_commandcenter.mp3" type="audio/mpeg"></audio>-->
+
+<div id="infoLight">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <a href="https://en.wikipedia.org/wiki/Cray-1">Cray-1 supercomputer</a>
+</div>
+
+<script>
+
+    // Lenses
+
+    var sphereGeometry = new XEO.SphereGeometry({});
+
+    var cylinderGeometry = new XEO.CylinderGeometry({});
+
+    var boxGeometry = new XEO.BoxGeometry();
+
+    var lensModes = new XEO.Modes({
+        transparent: true,
+        pickable: false
+    });
+
+    new XEO.Entity({
+        geometry: sphereGeometry,
+        material: new XEO.PhongMaterial({
+            emissive: [1, 1, 0]
+        }),
+//        modes: lensModes,
+        transform: new XEO.Scale({
+            xyz: [0.4, 0.4, 0.1]
+        }),
+        layer: new XEO.Layer({
+            priority: 1
+        })
+    });
+
+    new XEO.Entity({
+        geometry: sphereGeometry,
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 0, 0],
+            opacity: 0.8,
+            opacityFresnel: new XEO.Fresnel({
+                edgeBias: 0.6,
+                centerBias: 1.0,
+                edgeColor: [1.0, 0.0, 0.0],
+                centerColor: [0.0, 0.0, 1.0],
+                power: 1.0
+            }),
+            XspecularFresnel: new XEO.Fresnel({
+                edgeBias: 0.0,
+                centerBias: 1.0,
+                power: 3.0,
+                edgeColor: [1.0, 1.0, 1.0],
+                centerColor: [1.0, 1.0, 0.0]
+            })
+        }),
+        modes: lensModes,
+        transform: new XEO.Scale({
+            xyz: [1, 1, 0.5]
+        }),
+        layer: new XEO.Layer({
+            priority: 2
+        })
+    });
+
+    new XEO.Entity({
+        geometry: sphereGeometry,
+        material: new XEO.PhongMaterial({
+            diffuse: [1, 0, 0],
+            opacity: 0.8,
+            opacityFresnel: new XEO.Fresnel({
+                edgeBias: 0.6,
+                centerBias: 1.0,
+                edgeColor: [1.0, 0.0, 0.0],
+                centerColor: [0.0, 0.0, 1.0],
+                power: 1.0
+            }),
+            XspecularFresnel: new XEO.Fresnel({
+                edgeBias: 0.0,
+                centerBias: 1.0,
+                power: 1.0,
+                edgeColor: [1.0, 1.0, 1.0],
+                centerColor: [0.0, 0.0, 0.0]
+            })
+        }),
+        modes: lensModes,
+        transform: new XEO.Scale({
+            xyz: [2, 2, 1]
+        }),
+        layer: new XEO.Layer({
+            priority: 3
+        })
+    });
+
+    new XEO.Entity({
+        geometry: sphereGeometry,
+        material: new XEO.PhongMaterial({
+            diffuse: [0.4, 0.0, 0.0],
+            specular: [1, 1, 1],
+            opacity: 0.8,
+            opacityFresnel: new XEO.Fresnel({
+                edgeBias: 0.7,
+                centerBias: 1.0,
+                edgeColor: [1.0, 0.0, 0.0],
+                centerColor: [0.0, 0.0, 1.0],
+                power: 1.0
+            }),
+            XspecularFresnel: new XEO.Fresnel({
+                edgeBias: 0.0,
+                centerBias: 1.0,
+                power: 1.0,
+                edgeColor: [1.0, 1.0, 1.0],
+                centerColor: [0.0, 0.0, 0.0]
+            }),
+            shininess: 60
+        }),
+        modes: lensModes,
+        transform: new XEO.Scale({
+            xyz: [2.5, 2.5, 1.2]
+        }),
+        layer: new XEO.Layer({
+            priority: 4
+        })
+    });
+
+    // Black backing 
+
+    new XEO.Entity({
+        geometry: cylinderGeometry,
+        material: new XEO.PhongMaterial({
+            diffuse: [0.0, 0.0, 0.0],
+            specular: [1, 1, 1]
+        }),
+        transform: new XEO.Rotate({
+            xyz: [1, 0, 0],
+            angle: 90,
+            parent: new XEO.Scale({
+                xyz: [2.5, 2.5, 1.5],
+                parent: new XEO.Translate({
+                    xyz: [0, 0, 0.7]
+                })
+            })
+        }),
+        layer: new XEO.Layer({
+            priority: 0
+        })
+    });
+
+    // Collar around lens
+
+    new XEO.Entity({
+        geometry: boxGeometry,
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 0.5, 0.5],
+            specular: [1, 1, 1]
+        }),
+        transform:  new XEO.Scale({
+                xyz: [3.5, 10.5, 1.5],
+                parent: new XEO.Translate({
+                    xyz: [0, 0, 1.5]
+                })
+            }),
+        layer: new XEO.Layer({
+            priority: 0
+        })
+    });
+
+    new XEO.CameraControl();
+
+</script>
+</body>
+</html>

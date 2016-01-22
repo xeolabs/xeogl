@@ -1,5 +1,5 @@
 /**
- A **GroupBoundary** TODO.
+ A **CollectionBoundary** TODO.
 
  ## Overview
 
@@ -9,16 +9,16 @@
 
  </ul>
 
- <img src="../../../assets/images/GroupBoundary.png"></img>
+ <img src="../../../assets/images/CollectionBoundary.png"></img>
 
  ## Example
 
  TODO
 
  ````javascript
- var groupBoundary = new XEO.GroupBoundary({
+ var collectionBoundary = new XEO.CollectionBoundary({
 
-    group: new XEO.Group({
+    collection: new XEO.Collection({
 
         components: [
             new XEO.Entity({
@@ -36,7 +36,7 @@
 
  var showBoundary = new XEO.Entity({
         geometry: new XEO.BoundaryGeometry({
-            boundary: groupBoundary.worldBoundary
+            boundary: collectionBoundary.worldBoundary
         }),
         material: new XEO.PhongMaterial({
             diffuse: [1,0,0]
@@ -44,25 +44,25 @@
     });
  ````
 
- @class GroupBoundary
+ @class CollectionBoundary
  @module XEO
  @submodule boundaries
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this GroupBoundary within the
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this CollectionBoundary within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} GroupBoundary configuration
+ @param [cfg] {*} CollectionBoundary configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GroupBoundary.
- @param [cfg.emissiveMap=null] {Group} A {{#crossLink "Group"}}Group{{/crossLink}} to fit the {{#crossLink "GroupBoundary/worldBoundary:property"}}{{/crossLink}} to. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this GroupBoundary.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CollectionBoundary.
+ @param [cfg.emissiveMap=null] {Collection} A {{#crossLink "Collection"}}Collection{{/crossLink}} to fit the {{#crossLink "CollectionBoundary/worldBoundary:property"}}{{/crossLink}} to. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CollectionBoundary.
  @extends Component
  */
 (function () {
 
     "use strict";
 
-    XEO.GroupBoundary = XEO.Component.extend({
+    XEO.CollectionBoundary = XEO.Component.extend({
 
-        type: "XEO.GroupBoundary",
+        type: "XEO.CollectionBoundary",
 
         _init: function (cfg) {
 
@@ -74,49 +74,49 @@
             this._aabbDirty = false;
             this._worldBoundary = null;
 
-            this.group = cfg.group;
+            this.collection = cfg.collection;
         },
 
         _props: {
 
             /**
-             * The {{#crossLink "Group"}}{{/crossLink}} attached to this GroupBoundary.
+             * The {{#crossLink "Collection"}}{{/crossLink}} attached to this CollectionBoundary.
              *
-             * Fires a {{#crossLink "GroupBoundary/group:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CollectionBoundary/collection:event"}}{{/crossLink}} event on change.
              *
-             * @property group
-             * @type Group
+             * @property collection
+             * @type Collection
              */
-            group: {
+            collection: {
 
                 set: function (value) {
 
-                    // Unsubscribe from old Group's events
+                    // Unsubscribe from old Collection's events
 
-                    var oldGroup = this._children.group;
+                    var oldCollection = this._children.collection;
 
-                    if (oldGroup && (!value || value.id !== oldGroup.id)) {
+                    if (oldCollection && (!value || value.id !== oldCollection.id)) {
 
-                        oldGroup.off(this._onAdded);
-                        oldGroup.off(this._onRemoved);
+                        oldCollection.off(this._onAdded);
+                        oldCollection.off(this._onRemoved);
 
-                        oldGroup.iterate(this._unbind, this);
+                        oldCollection.iterate(this._unbind, this);
                     }
 
                     /**
-                     * Fired whenever this GroupBoundary's {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CollectionBoundary's {{#crossLink "CollectionBoundary/collection:property"}}{{/crossLink}} property changes.
                      *
-                     * @event group
+                     * @event collection
                      * @param value The property's new value
                      */
-                    var group = this._setChild("group", value);
+                    var collection = this._setChild("collection", value);
 
-                    if (group) {
+                    if (collection) {
 
-                        this._onAdded = group.on("added", this._added, this);
-                        this._onRemoved = group.on("removed", this._removed, this);
+                        this._onAdded = collection.on("added", this._added, this);
+                        this._onRemoved = collection.on("removed", this._removed, this);
 
-                        group.iterate(this._bind, this);
+                        collection.iterate(this._bind, this);
 
                         this._setAABBDirty();
                     }
@@ -125,12 +125,12 @@
                 },
 
                 get: function () {
-                    return this._children.group;
+                    return this._children.collection;
                 }
             },
 
             /**
-             * World-space 3D boundary enclosing all the components contained in {{#crossLink "GroupBoundary/group:property"}}{{/crossLink}}.
+             * World-space 3D boundary enclosing all the components contained in {{#crossLink "CollectionBoundary/collection:property"}}{{/crossLink}}.
              *
              * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
              * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
@@ -242,11 +242,11 @@
             var min;
             var max;
 
-            var group = this.group;
+            var collection = this.collection;
 
-            if (group) {
+            if (collection) {
 
-                var components = group.components;
+                var components = collection.components;
 
                 for (var componentId in components) {
                     if (components.hasOwnProperty(componentId)) {
@@ -298,15 +298,15 @@
 
         _getJSON: function () {
             var json = {};
-            if (this.group) {
-                json.group = this.group.id
+            if (this.collection) {
+                json.collection = this.collection.id
             }
             return json;
         },
 
         _destroy: function () {
 
-            this.group = null; // Unsubscribes from worldBoundary updates on Group members
+            this.collection = null; // Unsubscribes from worldBoundary updates on Collection members
 
             if (this._worldBoundary) {
                 this._worldBoundary.destroy();

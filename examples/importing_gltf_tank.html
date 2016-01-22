@@ -22,8 +22,8 @@
         src: "models/gltf/tank/tank.gltf"
     });
 
-    var groupBoundary = new XEO.GroupBoundary({
-        group: gearbox.group
+    var collectionBoundary = new XEO.CollectionBoundary({
+        collection: gearbox.collection
     });
 
     var control = new XEO.CameraControl();
@@ -33,7 +33,7 @@
     gearbox.on("loaded",
             function () {
                 animation.flyTo({
-                    aabb: groupBoundary.worldBoundary.aabb
+                    aabb: collectionBoundary.worldBoundary.aabb
                 });
             });
 
