@@ -4339,7 +4339,7 @@
             "namespace": "",
             "file": "src/importing/model.js",
             "line": 7,
-            "description": "A **Model** loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file into its parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n<ul><li>A Model begins loading as soon as it's {{#crossLink \"Model/src:property\"}}{{/crossLink}}\nproperty is set to the location of a valid glTF file.</li>\n<li>A Model keeps all its loaded components in a {{#crossLink \"Collection\"}}{{/crossLink}}.</li>\n<li>You can set a Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property to a new file path at any time,\nwhich will cause it to load components from the new file, after destroying any components loaded previously.</li>\n</ul>\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n### Loading a glTF file\n\nFirst, create a Model, which immediately loads a glTF model into its {{#crossLink \"Scene\"}}{{/crossLink}} (which in this case is the default {{#crossLink \"Scene\"}}{{/crossLink}}, since we didn't explicitly configure the Model with one):\n\n````javascript\nvar gearboxModel = new XEO.Model({\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nWe can bind a callback, to get notification when the Model has loaded, which will\nfire immediately if the Model happens to be loaded already:\n\n````javascript\ngearboxModel.on(\"loaded\",\n    function() {\n        // Model has loaded!\n    });\n````\n\n### Iterating over loaded components\n\nThe Model's {{#crossLink \"Collection\"}}{{/crossLink}} which now contains all the scene components\nit created while loading the glTF file.\n\nLet's iterate over the {{#crossLink \"Collection\"}}{{/crossLink}} and log the ID of each\n{{#crossLink \"Entity\"}}{{/crossLink}} we that find in there:\n\n````javascript\ngearboxModel.collection.iterate(function(c) {\n    if (c.type === \"XEO.Entity\") {\n        this.log(\"Entity found: \" + c.id);\n    }\n});\n````\n\n### Getting the boundary of a Model\n\nTo visualize the World-space boundary of a Model, we can create a {{#crossLink \"CollectionBoundary\"}}{{/crossLink}},\ngenerate a {{#crossLink \"BoundaryGeometry\"}}{{/crossLink}} from that, then create an {{#crossLink \"Entity\"}}{{/crossLink}}\nto visualize the {{#crossLink \"BoundaryGeometry\"}}{{/crossLink}}:\n\n````javascript\nvar collectionBoundary = new XEO.CollectionBoundary({\n    collection: model.collection\n});\n\nvar boundaryGeometry = new XEO.BoundaryGeometry({\n    boundary: collectionBoundary.worldBoundary\n});\n\n// The Entity will be a red wireframe box indicating the\n// extents of the boundary\n\nnew XEO.Entity({\n    geometry: boundaryGeometry,\n    material: new XEO.PhongMaterial({\n        diffuse: [1,0,0]\n    })\n});\n````\n\nNow whenever we set the Model to a new file (see example below), the World-space boundary will automatically update accordingly, as will\nour boundary indicator {{#crossLink \"Entity\"}}{{/crossLink}}.\n\n### Flying the Camera to look at a Model\n\nTo position the Model entirely within view, we can use a {{#crossLink \"CameraFlight\"}}{{/crossLink}} to fly the {{#crossLink \"Camera\"}}{{/crossLink}} (in this case the default, implicit one) to look at the World-space extents of our {{#crossLink \"CollectionBoundary\"}}{{/crossLink}}:\n\n````javascript\nvar flight = new XEO.CameraFlight({\n   duration: 1.5\n});\n\nflight.flyTo(collectionBoundary.worldBoundary,\n    function() {\n        // Optional callback to fire on arrival\n    });\n\n````\n\n### Switching to a different glTF file\n\nLet's set the Model to a different file path:\n\n````javascript\ngearboxModel.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\nOnce loaded, the {{#crossLink \"Collection\"}}{{/crossLink}} will then contain an entirely different collection of scene\ncomponents, created from this new glTF file.\n\n### Destroying a Model\n\nFinally, a Model manages the lifecycle of it's components. Therefore, destroying a Model also destroys all the\ncomponents it loaded:\n\n````javascript\ngearboxModel.destroy();\n````",
+            "description": "A **Model** loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file into its parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n<ul><li>A Model begins loading as soon as it's {{#crossLink \"Model/src:property\"}}{{/crossLink}}\nproperty is set to the location of a valid glTF file.</li>\n<li>A Model keeps all its loaded components in a {{#crossLink \"Collection\"}}{{/crossLink}}.</li>\n<li>You can set a Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property to a new file path at any time,\nwhich will cause it to load components from the new file, after destroying any components loaded previously.</li>\n</ul>\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n### Loading a glTF file\n\nFirst, create a Model, which immediately loads a glTF model into its {{#crossLink \"Scene\"}}{{/crossLink}} (which in this case is the default {{#crossLink \"Scene\"}}{{/crossLink}}, since we didn't explicitly configure the Model with one):\n\n````javascript\nvar gearboxModel = new XEO.Model({\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nWe can bind a callback, to get notification when the Model has loaded, which will\nfire immediately if the Model happens to be loaded already:\n\n````javascript\ngearboxModel.on(\"loaded\",\nfunction() {\n        // Model has loaded!\n    });\n````\n\n### Iterating over loaded components\n\nThe Model's {{#crossLink \"Collection\"}}{{/crossLink}} which now contains all the scene components\nit created while loading the glTF file.\n\nLet's iterate over the {{#crossLink \"Collection\"}}{{/crossLink}} and log the ID of each\n{{#crossLink \"Entity\"}}{{/crossLink}} we that find in there:\n\n````javascript\ngearboxModel.collection.iterate(function(c) {\n    if (c.type === \"XEO.Entity\") {\n        this.log(\"Entity found: \" + c.id);\n    }\n});\n````\n\n### Getting the boundary of a Model\n\nTo visualize the World-space boundary of a Model, we can create a {{#crossLink \"CollectionBoundary\"}}{{/crossLink}},\ngenerate a {{#crossLink \"BoundaryGeometry\"}}{{/crossLink}} from that, then create an {{#crossLink \"Entity\"}}{{/crossLink}}\nto visualize the {{#crossLink \"BoundaryGeometry\"}}{{/crossLink}}:\n\n````javascript\nvar collectionBoundary = new XEO.CollectionBoundary({\n    collection: model.collection\n});\n\nvar boundaryGeometry = new XEO.BoundaryGeometry({\n    boundary: collectionBoundary.worldBoundary\n});\n\n// The Entity will be a red wireframe box indicating the\n// extents of the boundary\n\nnew XEO.Entity({\n    geometry: boundaryGeometry,\n    material: new XEO.PhongMaterial({\n        diffuse: [1,0,0]\n    })\n});\n````\n\nNow whenever we set the Model to a new file (see example below), the World-space boundary will automatically update accordingly, as will\nour boundary indicator {{#crossLink \"Entity\"}}{{/crossLink}}.\n\n### Flying the Camera to look at a Model\n\nTo position the Model entirely within view, we can use a {{#crossLink \"CameraFlight\"}}{{/crossLink}} to fly the {{#crossLink \"Camera\"}}{{/crossLink}} (in this case the default, implicit one) to look at the World-space extents of our {{#crossLink \"CollectionBoundary\"}}{{/crossLink}}:\n\n````javascript\nvar flight = new XEO.CameraFlight({\n   duration: 1.5\n});\n\nflight.flyTo(collectionBoundary.worldBoundary,\nfunction() {\n        // Optional callback to fire on arrival\n    });\n\n````\n\n### Switching to a different glTF file\n\nLet's set the Model to a different file path:\n\n````javascript\ngearboxModel.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\nOnce loaded, the {{#crossLink \"Collection\"}}{{/crossLink}} will then contain an entirely different collection of scene\ncomponents, created from this new glTF file.\n\n### Destroying a Model\n\nFinally, a Model manages the lifecycle of it's components. Therefore, destroying a Model also destroys all the\ncomponents it loaded:\n\n````javascript\ngearboxModel.destroy();\n````",
             "submodule": "importing",
             "extends": "Component"
         },
@@ -4371,7 +4371,7 @@
             "namespace": "",
             "file": "src/lighting/ambientLight.js",
             "line": 1,
-            "description": "An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}\n equally.\n## Overview\n<ul>\n <li>AmbientLights are grouped, along with other light source types, within\n {{#crossLink \"Lights\"}}Lights{{/crossLink}} components, which are attached to {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n <li>When the {{#crossLink \"Entity\"}}Entities{{/crossLink}} have {{#crossLink \"PhongMaterial\"}}PhongMaterials{{/crossLink}},\n AmbientLight {{#crossLink \"AmbientLight/color:property\"}}color{{/crossLink}} is multiplied by\n {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} {{#crossLink \"PhongMaterial/ambient:property\"}}{{/crossLink}}.</li>\n <li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that AmbientLights create within xeoEngine's shaders.</li>\n </ul>\n<img src=\"../../../assets/images/AmbientLight.png\"></img>\n## Example\nIn this example we have\n <ul>\n <li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}},</li>\n <li>an AmbientLight,</li>\n <li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing the AmbientLight,</li>\n <li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n <li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n </ul>\n```` javascript\n var scene = new XEO.Scene();\n\nvar material = new XEO.PhongMaterial(scene, {\n    ambient: [0.3, 0.3, 0.3],\n    diffuse: [1, 1, 1],\n    specular: [1.1, 1],\n    shininess: 30\n });\n\n// Within xeoEngine's lighting calculations, the AmbientLight's\n // ambient color will be multiplied by the Material's ambient color\nvar ambientLight = new XEO.AmbientLight(scene, {\n    color: [0.7, 0.7, 0.7]\n });\n\nvar lights = new XEO.Lights(scene, {\n    lights: [\n        ambientLight\n    ]\n });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar entity = new XEO.Entity(scene, {\n    lights: lights,\n    material: material,\n    geometry: geometry\n });\n````\nAs with all components, we can observe and change properties on AmbientLights like so:\n````Javascript\n // Attach a change listener to a property\n var handle = ambientLight.on(\"color\",\n function(value) {\n            // Property value has changed\n    });\n\nambientLight.color = [0.6, 0.6, 0.6]; // Fires the change listener\n\nambientLight.off(handle); // Detach the change listener\n ````",
+            "description": "An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}\n equally.\n<ul>\n <li>AmbientLights are grouped, along with other light source types, within\n {{#crossLink \"Lights\"}}Lights{{/crossLink}} components, which are attached to {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n <li>When the {{#crossLink \"Entity\"}}Entities{{/crossLink}} have {{#crossLink \"PhongMaterial\"}}PhongMaterials{{/crossLink}},\n AmbientLight {{#crossLink \"AmbientLight/color:property\"}}color{{/crossLink}} is multiplied by\n {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} {{#crossLink \"PhongMaterial/ambient:property\"}}{{/crossLink}}.</li>\n <li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that AmbientLights create within xeoEngine's shaders.</li>\n </ul>\n<img src=\"../../../assets/images/AmbientLight.png\"></img>\n### Example\nIn this example we have\n <ul>\n <li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}},</li>\n <li>an AmbientLight,</li>\n <li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing the AmbientLight,</li>\n <li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n <li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n </ul>\n```` javascript\n var scene = new XEO.Scene();\nvar material = new XEO.PhongMaterial(scene, {\n    ambient: [0.3, 0.3, 0.3],\n    diffuse: [1, 1, 1],\n    specular: [1.1, 1],\n    shininess: 30\n });\n// Within xeoEngine's lighting calculations, the AmbientLight's\n // ambient color will be multiplied by the Material's ambient color\nvar ambientLight = new XEO.AmbientLight(scene, {\n    color: [0.7, 0.7, 0.7]\n });\nvar lights = new XEO.Lights(scene, {\n    lights: [\n        ambientLight\n    ]\n });\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\nvar entity = new XEO.Entity(scene, {\n    lights: lights,\n    material: material,\n    geometry: geometry\n });\n````\n As with all components, we can observe and change properties on AmbientLights like so:\n````Javascript\n // Attach a change listener to a property\n var handle = ambientLight.on(\"color\",\n function(value) {\n            // Property value has changed\n    });\n\nambientLight.color = [0.6, 0.6, 0.6]; // Fires the change listener\n\nambientLight.off(handle); // Detach the change listener\n ````",
             "submodule": "lighting",
             "is_constructor": 1,
             "params": [
@@ -5939,13 +5939,13 @@
             "namespace": "",
             "file": "src/transforms/billboard.js",
             "line": 1,
-            "description": "A **Billboard** causes associated {{#crossLink \"Entity\"}}Entities{{/crossLink}} to be always aligned towards the viewpoint.\n## Overview\n<ul>\n <li>A Billboard will cause {{#crossLink \"Scale\"}}{{/crossLink}} transformations to have no effect on its {{#crossLink \"Entity\"}}{{/crossLink}}</li>\n </ul>\n<img src=\"../../../assets/images/Billboard.png\"></img>\n## Example\nTODO",
+            "description": "A **Billboard** causes associated {{#crossLink \"Entity\"}}Entities{{/crossLink}} to be always oriented towards the Camera.\n\n<ul>\n<li>**Spherical** billboards are free to rotate their {{#crossLink \"Entity\"}}Entities{{/crossLink}} in any direction and always face the {{#crossLink \"Camera\"}}{{/crossLink}} perfectly.</li>\n<li>**Cylindrical** billboards rotate their {{#crossLink \"Entity\"}}Entities{{/crossLink}} towards the {{#crossLink \"Camera\"}}{{/crossLink}}, but only around the Y-axis.</li>\n<li>A Billboard will cause {{#crossLink \"Scale\"}}{{/crossLink}} transformations to have no effect on its {{#crossLink \"Entity\"}}Entities{{/crossLink}}</li>\n</ul>\n<br>\n<img src=\"../../../assets/images/Billboard.png\"></img>\n\n### Example\n\n```` javascript\nvar geometry = new XEO.Geometry({\n       primitive: \"triangles\",\n       positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],\n       normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],\n       uv: [1, 1, 0, 1, 0, 0, 1, 0],\n       indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces\n   });\n\nvar material = new XEO.PhongMaterial({\n       emissiveMap: new XEO.Texture({\n           src: \"textures/diffuse/teapot.jpg\"\n       })\n   });\n\nvar billboard = new XEO.Billboard({\n       spherical: true\n   });\n\nfor (var i = 0; i < 1000; i++) {\n\n       new XEO.Entity({\n           geometry: geometry,\n           material: material,\n           billboard: billboard,\n           transform: new XEO.Translate({\n               xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]\n           })\n       });\n }\n\nvar scene = XEO.scene;\n\n// Move the camera back a bit\n\nscene.camera.view.zoom(120);\n\n// Orbit the eye position about the look position.\n\nscene.on(\"tick\",\n    function () {\n\n         var view = scene.camera.view;\n\n         view.rotateEyeY(0.2);\n         view.rotateEyeX(0.1);\n    });\n````",
             "submodule": "transforms",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Billboard in the default\n {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Billboard in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -14260,7 +14260,7 @@
         },
         {
             "file": "src/lighting/ambientLight.js",
-            "line": 118,
+            "line": 110,
             "description": "The color of this AmbientLight.\n\nFires an {{#crossLink \"AmbientLight/color:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "color",
@@ -14272,7 +14272,7 @@
         },
         {
             "file": "src/lighting/ambientLight.js",
-            "line": 135,
+            "line": 127,
             "description": "Fired whenever this AmbientLight's {{#crossLink \"AmbientLight/color:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "color",
@@ -14288,7 +14288,7 @@
         },
         {
             "file": "src/lighting/ambientLight.js",
-            "line": 149,
+            "line": 141,
             "description": "The intensity of this AmbientLight.\n\nFires a {{#crossLink \"AmbientLight/intensity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "intensity",
@@ -14300,7 +14300,7 @@
         },
         {
             "file": "src/lighting/ambientLight.js",
-            "line": 166,
+            "line": 158,
             "description": "Fired whenever this AmbientLight's  {{#crossLink \"AmbientLight/intensity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "intensity",
@@ -19239,7 +19239,7 @@
         },
         {
             "file": "src/transforms/billboard.js",
-            "line": 54,
+            "line": 100,
             "description": "Flag which indicates whether this Billboard is active or not.\n\nFires an {{#crossLink \"Billboard/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -19250,7 +19250,7 @@
         },
         {
             "file": "src/transforms/billboard.js",
-            "line": 78,
+            "line": 124,
             "description": "Fired whenever this Billboard's {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -19266,7 +19266,7 @@
         },
         {
             "file": "src/transforms/billboard.js",
-            "line": 91,
+            "line": 137,
             "description": "Flag which indicates whether this Billboard is spherical (true) or cylindrical (false).\n\nFires an {{#crossLink \"Billboard/spherical:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "spherical",
@@ -19277,7 +19277,7 @@
         },
         {
             "file": "src/transforms/billboard.js",
-            "line": 115,
+            "line": 161,
             "description": "Fired whenever this Billboard's {{#crossLink \"Billboard/spherical:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "spherical",

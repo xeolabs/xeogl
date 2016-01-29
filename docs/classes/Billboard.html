@@ -193,14 +193,62 @@
 
 
 <div class="box intro">
-    <p>A <strong>Billboard</strong> causes associated <a href="../classes/Entity.html" class="crosslink">Entities</a> to be always aligned towards the viewpoint.</p>
-<h2 id="overview">Overview</h2>
-<p><ul>
- <li>A Billboard will cause <a href="../classes/Scale.html" class="crosslink">Scale</a> transformations to have no effect on its <a href="../classes/Entity.html" class="crosslink">Entity</a></li>
- </ul>
+    <p>A <strong>Billboard</strong> causes associated <a href="../classes/Entity.html" class="crosslink">Entities</a> to be always oriented towards the Camera.</p>
+<p><ul></p>
+<p><li><strong>Spherical</strong> billboards are free to rotate their <a href="../classes/Entity.html" class="crosslink">Entities</a> in any direction and always face the <a href="../classes/Camera.html" class="crosslink">Camera</a> perfectly.</li></p>
+<p><li><strong>Cylindrical</strong> billboards rotate their <a href="../classes/Entity.html" class="crosslink">Entities</a> towards the <a href="../classes/Camera.html" class="crosslink">Camera</a>, but only around the Y-axis.</li></p>
+<p><li>A Billboard will cause <a href="../classes/Scale.html" class="crosslink">Scale</a> transformations to have no effect on its <a href="../classes/Entity.html" class="crosslink">Entities</a></li>
+</ul>
+<br>
 <img src="../../../assets/images/Billboard.png"></img></p>
-<h2 id="example">Example</h2>
-<p>TODO</p>
+<h3 id="example">Example</h3>
+<pre class="code prettyprint"><code class="lang-javascript">var geometry = new XEO.Geometry({
+       primitive: "triangles",
+       positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
+       normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+       uv: [1, 1, 0, 1, 0, 0, 1, 0],
+       indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
+   });
+
+var material = new XEO.PhongMaterial({
+       emissiveMap: new XEO.Texture({
+           src: "textures/diffuse/teapot.jpg"
+       })
+   });
+
+var billboard = new XEO.Billboard({
+       spherical: true
+   });
+
+for (var i = 0; i &lt; 1000; i++) {
+
+       new XEO.Entity({
+           geometry: geometry,
+           material: material,
+           billboard: billboard,
+           transform: new XEO.Translate({
+               xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
+           })
+       });
+ }
+
+var scene = XEO.scene;
+
+// Move the camera back a bit
+
+scene.camera.view.zoom(120);
+
+// Orbit the eye position about the look position.
+
+scene.on("tick",
+    function () {
+
+         var view = scene.camera.view;
+
+         view.rotateEyeY(0.2);
+         view.rotateEyeX(0.1);
+    });
+</code></pre>
 
 </div>
 
@@ -254,7 +302,7 @@
         
                             <div class="param-description">
                                 <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Billboard in the default
-         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -998,7 +1046,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l54"><code>src&#x2F;transforms&#x2F;billboard.js:54</code></a>
+                            <a href="../files/src_transforms_billboard.js.html#l100"><code>src&#x2F;transforms&#x2F;billboard.js:100</code></a>
                             </p>
                     
                     
@@ -1177,7 +1225,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l91"><code>src&#x2F;transforms&#x2F;billboard.js:91</code></a>
+                            <a href="../files/src_transforms_billboard.js.html#l137"><code>src&#x2F;transforms&#x2F;billboard.js:137</code></a>
                             </p>
                     
                     
@@ -1267,7 +1315,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l78"><code>src&#x2F;transforms&#x2F;billboard.js:78</code></a>
+                            <a href="../files/src_transforms_billboard.js.html#l124"><code>src&#x2F;transforms&#x2F;billboard.js:124</code></a>
                             </p>
                     
                     
@@ -1334,7 +1382,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l115"><code>src&#x2F;transforms&#x2F;billboard.js:115</code></a>
+                            <a href="../files/src_transforms_billboard.js.html#l161"><code>src&#x2F;transforms&#x2F;billboard.js:161</code></a>
                             </p>
                     
                     

@@ -211,7 +211,7 @@ which will cause it to load components from the new file, after destroying any c
 <p>We can bind a callback, to get notification when the Model has loaded, which will
 fire immediately if the Model happens to be loaded already:</p>
 <pre class="code prettyprint"><code class="lang-javascript">gearboxModel.on("loaded",
-    function() {
+function() {
         // Model has loaded!
     });
 </code></pre>
@@ -257,7 +257,7 @@ our boundary indicator <a href="../classes/Entity.html" class="crosslink">Entity
 });
 
 flight.flyTo(collectionBoundary.worldBoundary,
-    function() {
+function() {
         // Optional callback to fire on arrival
     });
 </code></pre>

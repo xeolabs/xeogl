@@ -180,20 +180,66 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
-
- A **Billboard** causes associated {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to be always aligned towards the viewpoint.
-
- ## Overview
+ A **Billboard** causes associated {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to be always oriented towards the Camera.
 
  &lt;ul&gt;
- &lt;li&gt;A Billboard will cause {{#crossLink &quot;Scale&quot;}}{{/crossLink}} transformations to have no effect on its {{#crossLink &quot;Entity&quot;}}{{/crossLink}}&lt;/li&gt;
+ &lt;li&gt;**Spherical** billboards are free to rotate their {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} in any direction and always face the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} perfectly.&lt;/li&gt;
+ &lt;li&gt;**Cylindrical** billboards rotate their {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} towards the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}, but only around the Y-axis.&lt;/li&gt;
+ &lt;li&gt;A Billboard will cause {{#crossLink &quot;Scale&quot;}}{{/crossLink}} transformations to have no effect on its {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}&lt;/li&gt;
  &lt;/ul&gt;
-
+&lt;br&gt;
  &lt;img src=&quot;../../../assets/images/Billboard.png&quot;&gt;&lt;/img&gt;
 
- ## Example
+ ### Example
 
- TODO
+ &#x60;&#x60;&#x60;&#x60; javascript
+ var geometry = new XEO.Geometry({
+        primitive: &quot;triangles&quot;,
+        positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
+        normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+        uv: [1, 1, 0, 1, 0, 0, 1, 0],
+        indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
+    });
+
+ var material = new XEO.PhongMaterial({
+        emissiveMap: new XEO.Texture({
+            src: &quot;textures/diffuse/teapot.jpg&quot;
+        })
+    });
+
+ var billboard = new XEO.Billboard({
+        spherical: true
+    });
+
+ for (var i = 0; i &lt; 1000; i++) {
+
+        new XEO.Entity({
+            geometry: geometry,
+            material: material,
+            billboard: billboard,
+            transform: new XEO.Translate({
+                xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
+            })
+        });
+  }
+
+ var scene = XEO.scene;
+
+ // Move the camera back a bit
+
+ scene.camera.view.zoom(120);
+
+ // Orbit the eye position about the look position.
+
+ scene.on(&quot;tick&quot;,
+     function () {
+
+          var view = scene.camera.view;
+
+          view.rotateEyeY(0.2);
+          view.rotateEyeX(0.1);
+     });
+ &#x60;&#x60;&#x60;&#x60;
 
  @class Billboard
  @module XEO
