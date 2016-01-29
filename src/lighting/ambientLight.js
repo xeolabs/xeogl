@@ -3,8 +3,6 @@
  An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  equally.
 
- ## Overview
-
  <ul>
  <li>AmbientLights are grouped, along with other light source types, within
  {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
@@ -16,7 +14,7 @@
 
  <img src="../../../assets/images/AmbientLight.png"></img>
 
- ## Example
+ ### Example
 
  In this example we have
  <ul>
@@ -30,14 +28,12 @@
  ```` javascript
  var scene = new XEO.Scene();
 
-
  var material = new XEO.PhongMaterial(scene, {
     ambient: [0.3, 0.3, 0.3],
     diffuse: [1, 1, 1],
     specular: [1.1, 1],
     shininess: 30
  });
-
 
  // Within xeoEngine's lighting calculations, the AmbientLight's
  // ambient color will be multiplied by the Material's ambient color
@@ -46,16 +42,13 @@
     color: [0.7, 0.7, 0.7]
  });
 
-
  var lights = new XEO.Lights(scene, {
     lights: [
         ambientLight
     ]
  });
 
-
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
 
  var entity = new XEO.Entity(scene, {
     lights: lights,
@@ -64,7 +57,6 @@
  });
 
  ````
-
  As with all components, we can observe and change properties on AmbientLights like so:
 
  ````Javascript

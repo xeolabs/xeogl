@@ -31,7 +31,7 @@
 
      ````javascript
      gearboxModel.on("loaded",
-         function() {
+     function() {
              // Model has loaded!
          });
      ````
@@ -91,7 +91,7 @@
      });
 
      flight.flyTo(collectionBoundary.worldBoundary,
-         function() {
+     function() {
              // Optional callback to fire on arrival
          });
 
